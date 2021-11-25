@@ -14,10 +14,7 @@ const getIds = (_id) => {
 
 	// DM with rocket.cat
 	if (_id.match(/rocket\.cat/)) {
-		return [
-			'rocket.cat',
-			_id.replace('rocket.cat', ''),
-		];
+		return ['rocket.cat', _id.replace('rocket.cat', '')];
 	}
 
 	const total = _id.length;
@@ -39,7 +36,10 @@ async function migrateDMs(models, total, current) {
 
 	console.log(`DM rooms schema migration ${ current }/${ total }`);
 
-	const items = await roomCollection.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } }).limit(batchSize).toArray();
+	const items = await roomCollection
+		.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } })
+		.limit(batchSize)
+		.toArray();
 
 	const actions = items.map((room) => ({
 		updateOne: {
@@ -82,7 +82,9 @@ addMigration({
 				return fut.return();
 			}
 
-			console.log('Changing schema of Direct Message rooms, this may take a long time ...');
+			console.log(
+				'Changing schema of Direct Message rooms, this may take a long time ...',
+			);
 
 			await migrateDMs({ roomCollection }, total, 0);
 

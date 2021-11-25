@@ -16,28 +16,32 @@ import { Users, Rooms } from '../../../models';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
+export const call = (...args) =>
+	new Promise(function(resolve, reject) {
+		Meteor.call(...args, function(err, result) {
+			if (err) {
+				handleError(err);
+				reject(err);
+			}
+			resolve(result);
+		});
 	});
-});
 
-export const close = (popup) => new Promise(function(resolve) {
-	const checkInterval = setInterval(() => {
-		if (popup.closed) {
-			clearInterval(checkInterval);
-			resolve();
-		}
-	}, 300);
-});
+export const close = (popup) =>
+	new Promise(function(resolve) {
+		const checkInterval = setInterval(() => {
+			if (popup.closed) {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 300);
+	});
 
 function optionsFromUrl(url) {
 	const options = {};
-	const parsedUrl = url.match(/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
+	const parsedUrl = url.match(
+		/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/,
+	);
 	options.url = url;
 	if (parsedUrl != null) {
 		options.id = parsedUrl[6];
@@ -55,32 +59,55 @@ Template.liveStreamTab.helpers({
 		return !!settings.get('Broadcasting_enabled');
 	},
 	streamingSource() {
-		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
+		return Template.instance().streamingOptions.get()
+			? Template.instance().streamingOptions.get().url
+			: '';
 	},
 	streamingUnavailableMessage() {
-		return Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().message && Template.instance().streamingOptions.get().message !== '' ? Template.instance().streamingOptions.get().message : t('Livestream_not_found');
+		return Template.instance().streamingOptions.get()
+			&& Template.instance().streamingOptions.get().message
+			&& Template.instance().streamingOptions.get().message !== ''
+			? Template.instance().streamingOptions.get().message
+			: t('Livestream_not_found');
 	},
 	thumbnailUrl() {
-		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().thumbnail : '';
+		return Template.instance().streamingOptions.get()
+			? Template.instance().streamingOptions.get().thumbnail
+			: '';
 	},
 	hasThumbnail() {
-		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().thumbnail && Template.instance().streamingOptions.get().thumbnail !== '';
+		return (
+			!!Template.instance().streamingOptions.get()
+			&& !!Template.instance().streamingOptions.get().thumbnail
+			&& Template.instance().streamingOptions.get().thumbnail !== ''
+		);
 	},
 	hasSource() {
-		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().url && Template.instance().streamingOptions.get().url !== '';
+		return (
+			!!Template.instance().streamingOptions.get()
+			&& !!Template.instance().streamingOptions.get().url
+			&& Template.instance().streamingOptions.get().url !== ''
+		);
 	},
 	canEdit() {
 		return hasAllPermission('edit-room', this.rid);
 	},
 	editing() {
-		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && (Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''));
+		return (
+			Template.instance().editing.get()
+			|| Template.instance().streamingOptions.get() == null
+			|| (Template.instance().streamingOptions.get() != null
+				&& (Template.instance().streamingOptions.get().url == null
+					|| Template.instance().streamingOptions.get().url === ''))
+		);
 	},
 	canDock() {
-		const livestreamTabSource = Template.instance().streamingOptions.get().url;
+		const livestreamTabSource =			Template.instance().streamingOptions.get().url;
 		let popoutSource = null;
 		try {
 			if (popout.context) {
-				popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+				popoutSource =					Blaze.getData(popout.context).data
+					&& Blaze.getData(popout.context).data.streamingSource;
 			}
 			if (popoutSource != null && livestreamTabSource === popoutSource) {
 				return true;
@@ -94,7 +121,9 @@ Template.liveStreamTab.helpers({
 		return Template.instance().popoutOpen.get();
 	},
 	isAudioOnly() {
-		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().isAudioOnly : false;
+		return Template.instance().streamingOptions.get()
+			? Template.instance().streamingOptions.get().isAudioOnly
+			: false;
 	},
 });
 
@@ -104,7 +133,9 @@ Template.liveStreamTab.onCreated(function() {
 	this.popoutOpen = new ReactiveVar(popout.context != null);
 
 	this.autorun(() => {
-		const room = Rooms.findOne(this.data.rid, { fields: { streamingOptions: 1 } });
+		const room = Rooms.findOne(this.data.rid, {
+			fields: { streamingOptions: 1 },
+		});
 		this.streamingOptions.set(room.streamingOptions);
 	});
 });
@@ -115,7 +146,6 @@ Template.liveStreamTab.onDestroyed(function() {
 	}
 });
 
-
 Template.liveStreamTab.events({
 	'click .js-cancel'(e, i) {
 		e.preventDefault();
@@ -124,19 +154,33 @@ Template.liveStreamTab.events({
 	'click .js-clear'(e, i) {
 		e.preventDefault();
 
-		const clearedObject = {
-		};
+		const clearedObject = {};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function(err) {
-			if (err) {
-				return handleError(err);
-			}
-			i.editing.set(false);
-			i.streamingOptions.set(clearedObject);
-			const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-			if (roomAnnouncement.getMessage() !== '') { roomAnnouncement.clear(); }
-			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
-		});
+		Meteor.call(
+			'saveRoomSettings',
+			this.rid,
+			'streamingOptions',
+			clearedObject,
+			function(err) {
+				if (err) {
+					return handleError(err);
+				}
+				i.editing.set(false);
+				i.streamingOptions.set(clearedObject);
+				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(
+					i.data.rid,
+				);
+				if (roomAnnouncement.getMessage() !== '') {
+					roomAnnouncement.clear();
+				}
+				return dispatchToastMessage({
+					type: 'success',
+					message: TAPi18n.__(
+						'Livestream_source_changed_succesfully',
+					),
+				});
+			},
+		);
 	},
 	'click .js-save'(e, i) {
 		e.preventDefault();
@@ -148,27 +192,38 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
-			if (err) {
-				return handleError(err);
-			}
-			i.editing.set(false);
-			i.streamingOptions.set(streamingOptions);
-			if (streamingOptions.url !== '') {
-				new RocketChatAnnouncement({
-					room: i.data.rid,
-					message: 'Broadcast is now live. Click here to watch!',
-					callback: 'openBroadcast',
-				}).save();
-			} else {
-				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-				if (roomAnnouncement.getMessage() !== '') {
-					roomAnnouncement.clear();
+		Meteor.call(
+			'saveRoomSettings',
+			this.rid,
+			'streamingOptions',
+			streamingOptions,
+			function(err) {
+				if (err) {
+					return handleError(err);
 				}
-			}
+				i.editing.set(false);
+				i.streamingOptions.set(streamingOptions);
+				if (streamingOptions.url !== '') {
+					new RocketChatAnnouncement({
+						room: i.data.rid,
+						message: 'Broadcast is now live. Click here to watch!',
+						callback: 'openBroadcast',
+					}).save();
+				} else {
+					const roomAnnouncement =						new RocketChatAnnouncement().getByRoom(i.data.rid);
+					if (roomAnnouncement.getMessage() !== '') {
+						roomAnnouncement.clear();
+					}
+				}
 
-			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
-		});
+				return dispatchToastMessage({
+					type: 'success',
+					message: TAPi18n.__(
+						'Livestream_source_changed_succesfully',
+					),
+				});
+			},
+		);
 	},
 	'click .streaming-source-settings'(e, i) {
 		e.preventDefault();
@@ -182,7 +237,8 @@ Template.liveStreamTab.events({
 		e.stopPropagation();
 		let popoutSource = '';
 		if (popout.context) {
-			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+			popoutSource =				Blaze.getData(popout.context).data
+				&& Blaze.getData(popout.context).data.streamingSource;
 		}
 		popout.close();
 		if (popoutSource !== Template.instance().streamingOptions.get().url) {
@@ -209,26 +265,37 @@ Template.liveStreamTab.events({
 			type: 'livestream',
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
-			if (err) {
-				return handleError(err);
-			}
-			i.editing.set(false);
-			i.streamingOptions.set(streamingOptions);
-			if (streamingOptions.url !== '') {
-				new RocketChatAnnouncement({
-					room: i.data.rid,
-					message: 'Broadcast is now live. Click here to watch!',
-					callback: 'openBroadcast',
-				}).save();
-			} else {
-				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-				if (roomAnnouncement.getMessage() !== '') {
-					roomAnnouncement.clear();
+		Meteor.call(
+			'saveRoomSettings',
+			this.rid,
+			'streamingOptions',
+			streamingOptions,
+			function(err) {
+				if (err) {
+					return handleError(err);
 				}
-			}
-			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
-		});
+				i.editing.set(false);
+				i.streamingOptions.set(streamingOptions);
+				if (streamingOptions.url !== '') {
+					new RocketChatAnnouncement({
+						room: i.data.rid,
+						message: 'Broadcast is now live. Click here to watch!',
+						callback: 'openBroadcast',
+					}).save();
+				} else {
+					const roomAnnouncement =						new RocketChatAnnouncement().getByRoom(i.data.rid);
+					if (roomAnnouncement.getMessage() !== '') {
+						roomAnnouncement.clear();
+					}
+				}
+				return dispatchToastMessage({
+					type: 'success',
+					message: TAPi18n.__(
+						'Livestream_source_changed_succesfully',
+					),
+				});
+			},
+		);
 	},
 	'click .js-popout'(e, i) {
 		e.preventDefault();
@@ -248,7 +315,10 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		e.currentTarget.classList.add('loading');
 		try {
-			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.livestream': 1 } });
+			const user = Users.findOne(
+				{ _id: Meteor.userId() },
+				{ fields: { 'settings.livestream': 1 } },
+			);
 			if (!user.settings || !user.settings.livestream) {
 				await auth();
 			}
@@ -272,7 +342,9 @@ Template.liveStreamTab.events({
 
 callbacks.add('openBroadcast', (rid) => {
 	const roomData = Session.get(`roomData${ rid }`);
-	if (!roomData) { return; }
+	if (!roomData) {
+		return;
+	}
 	popout.open({
 		content: 'liveStreamView',
 		data: {

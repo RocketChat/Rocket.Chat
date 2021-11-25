@@ -28,7 +28,9 @@ export const EmojiPicker = {
 
 		this.initiated = true;
 
-		this.recent = Meteor._localStorage.getItem('emoji.recent') ? Meteor._localStorage.getItem('emoji.recent').split(',') : [];
+		this.recent = Meteor._localStorage.getItem('emoji.recent')
+			? Meteor._localStorage.getItem('emoji.recent').split(',')
+			: [];
 		this.tone = Meteor._localStorage.getItem('emoji.tone') || 0;
 
 		Blaze.render(Template.emojiPicker, document.body);
@@ -37,19 +39,24 @@ export const EmojiPicker = {
 			if (!this.opened) {
 				return;
 			}
-			if (!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
+			if (
+				!$(event.target).closest('.emoji-picker').length
+				&& !$(event.target).is('.emoji-picker')
+			) {
 				if (this.opened) {
 					this.close();
 				}
 			}
 		});
 
-		$(window).resize(_.debounce(() => {
-			if (!this.opened) {
-				return;
-			}
-			this.setPosition();
-		}, 300));
+		$(window).resize(
+			_.debounce(() => {
+				if (!this.opened) {
+					return;
+				}
+				this.setPosition();
+			}, 300),
+		);
 	},
 	isOpened() {
 		return this.opened;
@@ -82,7 +89,9 @@ export const EmojiPicker = {
 		}
 
 		if (left + this.width >= windowWidth) {
-			cssProperties.left = isLargerThanWindow ? 0 : windowWidth - this.width - windowBorder;
+			cssProperties.left = isLargerThanWindow
+				? 0
+				: windowWidth - this.width - windowBorder;
 		}
 
 		return $('.emoji-picker').css(cssProperties);
@@ -104,8 +113,16 @@ export const EmojiPicker = {
 
 		this.calculateCategoryPositions();
 
-		if (this.recent.length === 0 && this.currentCategory.get() === 'recent') {
-			this.showCategory(emoji.packages.emojiCustom.list.length > 0 ? 'rocket' : 'people', false);
+		if (
+			this.recent.length === 0
+			&& this.currentCategory.get() === 'recent'
+		) {
+			this.showCategory(
+				emoji.packages.emojiCustom.list.length > 0
+					? 'rocket'
+					: 'people',
+				false,
+			);
 		}
 
 		this.opened = true;
@@ -157,7 +174,9 @@ export const EmojiPicker = {
 
 		const containerScroll = $('.emoji-picker .emojis').scrollTop();
 
-		this.catPositions = Array.from(document.querySelectorAll('.emoji-list-category')).map((el) => {
+		this.catPositions = Array.from(
+			document.querySelectorAll('.emoji-list-category'),
+		).map((el) => {
 			const { top } = $(el).position();
 			return {
 				el,
@@ -171,10 +190,7 @@ export const EmojiPicker = {
 	showCategory(category, animate = true) {
 		this.scrollingToCategory = animate;
 
-		$('.emoji-picker .js-emojipicker-search')
-			.val('')
-			.change()
-			.focus();
+		$('.emoji-picker .js-emojipicker-search').val('').change().focus();
 
 		this.currentCategory.set(category);
 
@@ -182,12 +198,18 @@ export const EmojiPicker = {
 			const header = $(`#emoji-list-category-${ category }`);
 			const container = $('.emoji-picker .emojis');
 
-			const scrollTop = header.position().top + container.scrollTop();// - container.position().top;
+			const scrollTop = header.position().top + container.scrollTop(); // - container.position().top;
 
 			if (animate) {
-				return container.animate({
-					scrollTop,
-				}, 300, () => { this.scrollingToCategory = false; });
+				return container.animate(
+					{
+						scrollTop,
+					},
+					300,
+					() => {
+						this.scrollingToCategory = false;
+					},
+				);
 			}
 
 			container.scrollTop(scrollTop);

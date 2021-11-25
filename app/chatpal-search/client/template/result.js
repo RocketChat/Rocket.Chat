@@ -18,7 +18,7 @@ Template.ChatpalSearchResultTemplate.onCreated(function() {
 
 Template.ChatpalSearchResultTemplate.events = {
 	'click .chatpal-search-typefilter li'(evt, t) {
-		t.data.parentPayload.resultType = evt.currentTarget.getAttribute('value');
+		t.data.parentPayload.resultType =			evt.currentTarget.getAttribute('value');
 		t.data.payload.start = 0;
 		t.resultType.set(t.data.parentPayload.resultType);
 		t.data.search();
@@ -28,7 +28,7 @@ Template.ChatpalSearchResultTemplate.events = {
 		t.data.search();
 	},
 	'click .chatpal-paging-next'(env, t) {
-		t.data.payload.start = (t.data.payload.start || 0) + t.data.settings.PageSize;
+		t.data.payload.start =			(t.data.payload.start || 0) + t.data.settings.PageSize;
 		t.data.search();
 	},
 	'click .chatpal-show-more-messages'(evt, t) {
@@ -56,9 +56,15 @@ Template.ChatpalSearchResultTemplate.helpers({
 	resultsFoundForAllSearch() {
 		const result = Template.instance().data.result.get();
 
-		if (!result) { return true; }
+		if (!result) {
+			return true;
+		}
 
-		return result.message.numFound > 0 || result.user.numFound > 0 || result.room.numFound > 0;
+		return (
+			result.message.numFound > 0
+			|| result.user.numFound > 0
+			|| result.room.numFound > 0
+		);
 	},
 	moreMessagesThanDisplayed() {
 		const result = Template.instance().data.result.get();
@@ -74,13 +80,18 @@ Template.ChatpalSearchResultTemplate.helpers({
 				case 1:
 					return TAPi18n.__('Chatpal_one_search_result');
 				default:
-					return TAPi18n.__('Chatpal_search_results', result.message.numFound);
+					return TAPi18n.__(
+						'Chatpal_search_results',
+						result.message.numFound,
+					);
 			}
 		}
 	},
 	resultMessagesOnly() {
-		return Template.instance().resultType.get() === 'Messages'
-			|| Template.instance().resultType.get() === 'Room';
+		return (
+			Template.instance().resultType.get() === 'Messages'
+			|| Template.instance().resultType.get() === 'Room'
+		);
 	},
 	resultPaging() {
 		const result = Template.instance().data.result.get();
@@ -144,7 +155,7 @@ Template.ChatpalSearchSingleRoom.helpers({
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
 		const username = this.user_username || this.username; // varies whether users or messages of users are displayed
-		return username.replace(/<\/?em>/ig, '');
+		return username.replace(/<\/?em>/gi, '');
 	},
 	getAvatarUrl,
 	getDMUrl,

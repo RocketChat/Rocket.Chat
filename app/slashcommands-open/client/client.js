@@ -32,7 +32,11 @@ function Open(command, params /* , item*/) {
 	const subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomTypes.openRouteLink(
+			subscription.t,
+			subscription,
+			FlowRouter.current().queryParams,
+		);
 	}
 
 	if (type && type.indexOf('d') === -1) {
@@ -43,7 +47,11 @@ function Open(command, params /* , item*/) {
 			return;
 		}
 		const subscription = Subscriptions.findOne(query);
-		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomTypes.openRouteLink(
+			subscription.t,
+			subscription,
+			FlowRouter.current().queryParams,
+		);
 	});
 }
 
@@ -51,5 +59,11 @@ slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room_name',
 	clientOnly: true,
-	permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
+	permission: [
+		'view-c-room',
+		'view-c-room',
+		'view-d-room',
+		'view-joined-room',
+		'create-d',
+	],
 });

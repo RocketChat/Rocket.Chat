@@ -13,7 +13,10 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
+import {
+	dropzoneEvents,
+	dropzoneHelpers,
+} from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
@@ -38,7 +41,9 @@ Template.thread.events({
 	}, 150),
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
-		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
+		document
+			.querySelector(`#thread-${ id }`)
+			.classList.toggle('message--ignored');
 	},
 });
 
@@ -71,8 +76,10 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
-
+		const {
+			mainMessage: { rid, _id: tmid },
+			subscription,
+		} = Template.currentData();
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
@@ -84,24 +91,45 @@ Template.thread.helpers({
 			onSend: (...args) => {
 				instance.sendToBottom();
 				instance.state.set('sendToChannel', false);
-				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
+				return (
+					instance.chatMessages
+					&& instance.chatMessages.send.apply(
+						instance.chatMessages,
+						args,
+					)
+				);
 			},
-			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
+			onKeyUp: (...args) =>
+				instance.chatMessages
+				&& instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => {
-				const result = instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args);
+				const result =					instance.chatMessages
+					&& instance.chatMessages.keydown.apply(
+						instance.chatMessages,
+						args,
+					);
 				const [event] = args;
 
 				const { which: keyCode } = event;
 
-				if (keyCode === keyCodes.ESCAPE && !result && !event.target.value.trim()) {
-					const { route: { name }, params: { context, tab, ...params } } = FlowRouter.current();
+				if (
+					keyCode === keyCodes.ESCAPE
+					&& !result
+					&& !event.target.value.trim()
+				) {
+					const {
+						route: { name },
+						params: { context, tab, ...params },
+					} = FlowRouter.current();
 					FlowRouter.go(name, params);
 				}
 			},
 		};
 	},
 	hideUsername() {
-		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
+		return getUserPreference(Meteor.userId(), 'hideUsernames')
+			? 'hide-usernames'
+			: undefined;
 	},
 	checkboxData() {
 		const instance = Template.instance();
@@ -114,7 +142,6 @@ Template.thread.helpers({
 	},
 });
 
-
 Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
@@ -122,11 +149,14 @@ Template.thread.onRendered(function() {
 
 	this.chatMessages = new ChatMessages(this.Threads);
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
-	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+	this.chatMessages.initializeInput(this.find('.js-input-message'), {
+		rid,
+		tmid,
+	});
 
 	this.sendToBottom = _.throttle(() => {
 		this.atBottom = true;
-		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
+		this.chatMessages.wrapper.scrollTop =			this.chatMessages.wrapper.scrollHeight;
 	}, 300);
 
 	this.sendToBottomIfNecessary = () => {
@@ -137,9 +167,11 @@ Template.thread.onRendered(function() {
 	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
 
 	this.onFile = (filesToUpload) => {
-		fileUpload(filesToUpload, this.chatMessages.input, { rid: this.state.get('rid'), tmid: this.state.get('tmid') });
+		fileUpload(filesToUpload, this.chatMessages.input, {
+			rid: this.state.get('rid'),
+			tmid: this.state.get('tmid'),
+		});
 	};
-
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
@@ -149,28 +181,41 @@ Template.thread.onRendered(function() {
 		}
 		this.callbackRemove && this.callbackRemove();
 
-		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
+		this.callbackRemove = () =>
+			callbacks.remove('streamNewMessage', `thread-${ rid }`);
 
-		callbacks.add('streamNewMessage', _.debounce((msg) => {
-			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
-				return;
-			}
-			Meteor.call('readThreads', tmid);
-		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
+		callbacks.add(
+			'streamNewMessage',
+			_.debounce((msg) => {
+				if (
+					Session.get('openedRoom') !== msg.rid
+					|| rid !== msg.rid
+					|| msg.editedAt
+					|| msg.tmid !== tmid
+				) {
+					return;
+				}
+				Meteor.call('readThreads', tmid);
+			}, 1000),
+			callbacks.priority.MEDIUM,
+			`thread-${ rid }`,
+		);
 	});
-
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
-			fields: {
-				collapsed: 0,
-				threadMsg: 0,
-				repliesCount: 0,
+		this.threadsObserve = Messages.find(
+			{ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } },
+			{
+				fields: {
+					collapsed: 0,
+					threadMsg: 0,
+					repliesCount: 0,
+				},
 			},
-		}).observe({
+		).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			},
@@ -186,12 +231,14 @@ Template.thread.onRendered(function() {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		const tmid = this.state.get('tmid');
-		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+		this.chatMessages.initializeInput(this.find('.js-input-message'), {
+			rid,
+			tmid,
+		});
 		if (rid && tmid) {
 			chatMessages[`${ rid }-${ tmid }`] = this.chatMessages;
 		}
 	});
-
 
 	this.autorun(() => {
 		FlowRouter.watchPathChange();
@@ -203,7 +250,6 @@ Template.thread.onRendered(function() {
 			jump,
 		});
 	});
-
 
 	this.autorun(() => {
 		const jump = this.state.get('jump');
@@ -244,7 +290,9 @@ Template.thread.onCreated(async function() {
 
 		this.state.set('loading', true);
 
-		const messages = await callWithErrorHandling('getThreadMessages', { tmid });
+		const messages = await callWithErrorHandling('getThreadMessages', {
+			tmid,
+		});
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 

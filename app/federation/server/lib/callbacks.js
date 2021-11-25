@@ -4,7 +4,12 @@ import { settings } from '../../../settings/server';
 const callbackDefinitions = [];
 
 function enableCallback(definition) {
-	callbacks.add(definition.hook, definition.callback, callbacks.priority.LOW, definition.id);
+	callbacks.add(
+		definition.hook,
+		definition.callback,
+		callbacks.priority.LOW,
+		definition.id,
+	);
 }
 
 export function registerCallback(callbackDefinition) {

@@ -27,14 +27,22 @@ Meteor.startup(() => {
 			return;
 		}
 		try {
-			cannedResponsesStreamer.on('canned-responses', (response, options) => {
-				const { agentsId } = options || {};
-				if (Array.isArray(agentsId) && !agentsId.includes(Meteor.userId())) {
-					return;
-				}
-				events[response.type](response);
-			});
-			const { responses } = await APIClient.v1.get('canned-responses.get');
+			cannedResponsesStreamer.on(
+				'canned-responses',
+				(response, options) => {
+					const { agentsId } = options || {};
+					if (
+						Array.isArray(agentsId)
+						&& !agentsId.includes(Meteor.userId())
+					) {
+						return;
+					}
+					events[response.type](response);
+				},
+			);
+			const { responses } = await APIClient.v1.get(
+				'canned-responses.get',
+			);
 			responses.forEach((response) => CannedResponse.insert(response));
 			c.stop();
 		} catch (error) {

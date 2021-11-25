@@ -25,27 +25,33 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
+	if (
+		settings.get('Message_AllowDirectMessagesToYourself') === false
+		&& usernames.length === 1
+		&& me.username === usernames[0]
+	) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const users = usernames.filter((username) => username !== me.username).map((username) => {
-		let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = usernames
+		.filter((username) => username !== me.username)
+		.map((username) => {
+			let to = Users.findOneByUsernameIgnoringCase(username);
 
-		// If the username does have an `@`, but does not exist locally, we create it first
-		if (!to && username.indexOf('@') !== -1) {
-			to = Promise.await(addUser(username));
-		}
+			// If the username does have an `@`, but does not exist locally, we create it first
+			if (!to && username.indexOf('@') !== -1) {
+				to = Promise.await(addUser(username));
+			}
 
-		if (!to) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createDirectMessage',
-			});
-		}
-		return to;
-	});
+			if (!to) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'createDirectMessage',
+				});
+			}
+			return to;
+		});
 
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
@@ -61,7 +67,9 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		if (hasPermission(userId, 'view-d-room')) {
 			// Check if the direct room already exists, then return it
 			const uids = roomUsers.map(({ _id }) => _id).sort();
-			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
+			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, {
+				fields: { _id: 1 },
+			});
 			if (room) {
 				return {
 					t: 'd',
@@ -80,7 +88,11 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	if (excludeSelf && hasPermission(this.userId, 'view-room-administration')) {
 		options.subscriptionExtra = { open: true };
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, { }, options);
+	const {
+		_id: rid,
+		inserted,
+		...room
+	} = createRoom('d', null, null, roomUsers, null, {}, options);
 
 	return {
 		t: 'd',

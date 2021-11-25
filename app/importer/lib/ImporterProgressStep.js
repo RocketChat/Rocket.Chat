@@ -30,9 +30,7 @@ export const ImportWaitingStates = [
 	ProgressStep.DOWNLOADING_FILE,
 ];
 
-export const ImportFileReadyStates = [
-	ProgressStep.FILE_LOADED,
-];
+export const ImportFileReadyStates = [ProgressStep.FILE_LOADED];
 
 export const ImportPreparingStartedStates = [
 	ProgressStep.PREPARING_STARTED,

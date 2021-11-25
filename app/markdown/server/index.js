@@ -3,7 +3,10 @@ import { Tracker } from 'meteor/tracker';
 
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
-import { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../lib/markdown';
+import {
+	createMarkdownMessageRenderer,
+	createMarkdownNotificationRenderer,
+} from '../lib/markdown';
 import './settings';
 
 export { Markdown } from '../lib/markdown';
@@ -12,7 +15,9 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const options = {
 			parser: settings.get('Markdown_Parser'),
-			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			supportSchemesForLink: settings.get(
+				'Markdown_SupportSchemesForLink',
+			),
 			headers: settings.get('Markdown_Headers'),
 			rootUrl: Meteor.absoluteUrl(),
 			marked: {
@@ -26,11 +31,21 @@ Meteor.startup(() => {
 		};
 
 		const renderMessage = createMarkdownMessageRenderer(options);
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH, 'markdown');
+		callbacks.add(
+			'renderMessage',
+			renderMessage,
+			callbacks.priority.HIGH,
+			'markdown',
+		);
 	});
 
 	const renderNotification = createMarkdownNotificationRenderer({
 		supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
 	});
-	callbacks.add('renderNotification', renderNotification, callbacks.priority.HIGH, 'filter-markdown');
+	callbacks.add(
+		'renderNotification',
+		renderNotification,
+		callbacks.priority.HIGH,
+		'filter-markdown',
+	);
 });

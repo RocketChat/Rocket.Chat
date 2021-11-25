@@ -11,9 +11,10 @@ import { Rooms } from '../../../app/models/server';
 import { Avatars } from '../../../app/models/server/raw';
 import { roomTypes } from '../../../app/utils';
 
-
 const getRoomAvatar = async (roomId) => {
-	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
+	const room = Rooms.findOneById(roomId, {
+		fields: { t: 1, prid: 1, name: 1, fname: 1 },
+	});
 	if (!room) {
 		return {};
 	}
@@ -28,7 +29,10 @@ const getRoomAvatar = async (roomId) => {
 	return { room, file };
 };
 
-export const roomAvatar = Meteor.bindEnvironment(async function(req, res/* , next*/) {
+export const roomAvatar = Meteor.bindEnvironment(async function(
+	req,
+	res, /* , next*/
+) {
 	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	const { room, file } = await getRoomAvatar(roomId);
@@ -40,9 +44,12 @@ export const roomAvatar = Meteor.bindEnvironment(async function(req, res/* , nex
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (file) {
-		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+		res.setHeader('Content-Security-Policy', "default-src 'none'");
 
-		if (reqModifiedHeader && reqModifiedHeader === file.uploadedAt?.toUTCString()) {
+		if (
+			reqModifiedHeader
+			&& reqModifiedHeader === file.uploadedAt?.toUTCString()
+		) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();
@@ -68,7 +75,10 @@ export const roomAvatar = Meteor.bindEnvironment(async function(req, res/* , nex
 		return;
 	}
 
-	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
+	const svg = renderSVGLetters(
+		roomName,
+		req.query.size && parseInt(req.query.size),
+	);
 
 	return serveAvatar(svg, req.query.format, res);
 });

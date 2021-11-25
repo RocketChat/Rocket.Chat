@@ -42,7 +42,9 @@ Template.livechatReadOnly.events({
 
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
-		await callWithErrorHandling('livechat:takeInquiry', _id, { clientAction: true });
+		await callWithErrorHandling('livechat:takeInquiry', _id, {
+			clientAction: true,
+		});
 		instance.loadInquiry(inquiry.rid);
 	},
 
@@ -52,7 +54,9 @@ Template.livechatReadOnly.events({
 
 		const room = instance.room.get();
 
-		await callWithErrorHandling('livechat:resumeOnHold', room._id, { clientAction: true });
+		await callWithErrorHandling('livechat:resumeOnHold', room._id, {
+			clientAction: true,
+		});
 	},
 });
 
@@ -84,7 +88,9 @@ Template.livechatReadOnly.onCreated(function() {
 
 	this.loadInquiry = async (roomId) => {
 		this.preparing.set(true);
-		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ roomId }`);
+		const { inquiry } = await APIClient.v1.get(
+			`livechat/inquiries.getOne?roomId=${ roomId }`,
+		);
 		this.inquiry.set(inquiry);
 		if (inquiry && inquiry._id) {
 			inquiryDataStream.on(inquiry._id, this.updateInquiry);
@@ -94,7 +100,12 @@ Template.livechatReadOnly.onCreated(function() {
 
 	this.autorun(() => this.loadInquiry(this.rid));
 	this.autorun(() => {
-		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1, servedBy: 1 } }));
+		this.room.set(
+			ChatRoom.findOne(
+				{ _id: Template.currentData().rid },
+				{ fields: { open: 1, servedBy: 1 } },
+			),
+		);
 	});
 });
 

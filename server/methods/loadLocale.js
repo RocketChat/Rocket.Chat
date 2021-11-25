@@ -10,7 +10,10 @@ Meteor.methods({
 		try {
 			return getMomentLocale(locale);
 		} catch (error) {
-			throw new Meteor.Error(error.message, `Moment locale not found: ${ locale }`);
+			throw new Meteor.Error(
+				error.message,
+				`Moment locale not found: ${ locale }`,
+			);
 		}
 	},
 });

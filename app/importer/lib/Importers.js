@@ -15,7 +15,9 @@ class ImportersContainer {
 	 */
 	add(info, importer) {
 		if (!(info instanceof ImporterInfo)) {
-			throw new Error('The importer must be a valid ImporterInfo instance.');
+			throw new Error(
+				'The importer must be a valid ImporterInfo instance.',
+			);
 		}
 
 		info.importer = importer;

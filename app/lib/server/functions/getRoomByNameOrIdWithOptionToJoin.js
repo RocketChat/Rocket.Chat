@@ -3,7 +3,14 @@ import _ from 'underscore';
 
 import { Rooms, Users, Subscriptions } from '../../../models';
 
-export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
+export const getRoomByNameOrIdWithOptionToJoin =	function _getRoomByNameOrIdWithOptionToJoin({
+	currentUserId,
+	nameOrId,
+	type = '',
+	tryDirectByUserIdOnly = false,
+	joinChannel = true,
+	errorOnEmpty = true,
+}) {
 	let room;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
@@ -23,7 +30,9 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 			});
 		}
 
-		const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
+		const rid = _.isObject(roomUser)
+			? [currentUserId, roomUser._id].sort().join('')
+			: nameOrId;
 		room = Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
@@ -39,7 +48,10 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 			}
 
 			room = Meteor.runAsUser(currentUserId, function() {
-				const { rid } = Meteor.call('createDirectMessage', roomUser.username);
+				const { rid } = Meteor.call(
+					'createDirectMessage',
+					roomUser.username,
+				);
 				return Rooms.findOneById(rid);
 			});
 		}
@@ -69,7 +81,10 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+		const sub = Subscriptions.findOneByRoomIdAndUserId(
+			room._id,
+			currentUserId,
+		);
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function() {

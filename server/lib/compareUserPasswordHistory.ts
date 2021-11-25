@@ -9,17 +9,29 @@ import { settings } from '../../app/settings/server';
  * @param {object} user User object
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
-export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolean {
-	if (!user?.services?.passwordHistory || !settings.get('Accounts_Password_History_Enabled')) {
+export function compareUserPasswordHistory(
+	user: IUser,
+	pass: IPassword,
+): boolean {
+	if (
+		!user?.services?.passwordHistory
+		|| !settings.get('Accounts_Password_History_Enabled')
+	) {
 		return true;
 	}
 
-	if (!pass || (!pass.plain && !pass.sha256) || !user?.services?.password?.bcrypt) {
+	if (
+		!pass
+		|| (!pass.plain && !pass.sha256)
+		|| !user?.services?.password?.bcrypt
+	) {
 		return false;
 	}
 
 	const currentPassword = user.services.password.bcrypt;
-	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
+	const passwordHistory = user.services.passwordHistory.slice(
+		-Number(settings.get('Accounts_Password_History_Amount')),
+	);
 
 	for (const password of passwordHistory) {
 		if (!password.trim()) {

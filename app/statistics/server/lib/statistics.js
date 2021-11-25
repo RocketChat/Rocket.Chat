@@ -17,7 +17,15 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw, Rooms as RoomsRaw, Statistics, Sessions, Integrations, Uploads } from '../../../models/server/raw';
+import {
+	NotificationQueue,
+	Users as UsersRaw,
+	Rooms as RoomsRaw,
+	Statistics,
+	Sessions,
+	Integrations,
+	Uploads,
+} from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -65,7 +73,9 @@ export const statistics = {
 		wizardFields.forEach((field) => {
 			const record = Settings.findOne(field);
 			if (record) {
-				const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
+				const wizardField = field
+					.replace(/_/g, '')
+					.replace(field[0], field[0].toLowerCase());
 				statistics.wizard[wizardField] = record.value;
 			}
 		});
@@ -88,11 +98,16 @@ export const statistics = {
 		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
-		statistics.onlineUsers = Meteor.users.find({ status: 'online' }).count();
+		statistics.onlineUsers = Meteor.users
+			.find({ status: 'online' })
+			.count();
 		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
-		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
-		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.totalConnectedUsers =			statistics.onlineUsers + statistics.awayUsers;
+		statistics.offlineUsers =			statistics.totalUsers
+			- statistics.onlineUsers
+			- statistics.awayUsers
+			- statistics.busyUsers;
 		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
@@ -117,10 +132,9 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({
-			_id: { id, alias, type },
-			count,
-		}) => ({
+		statistics.omnichannelSources = Promise.await(
+			RoomsRaw.allRoomSourcesCount().toArray(),
+		).map(({ _id: { id, alias, type }, count }) => ({
 			id,
 			alias,
 			type,
@@ -128,17 +142,44 @@ export const statistics = {
 		}));
 
 		// Message statistics
-		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalMessages = statistics.totalChannelMessages + statistics.totalPrivateGroupMessages + statistics.totalDirectMessages + statistics.totalLivechatMessages;
+		statistics.totalChannelMessages = _.reduce(
+			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
+			function _countChannelMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalPrivateGroupMessages = _.reduce(
+			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
+			function _countPrivateGroupMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalDirectMessages = _.reduce(
+			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
+			function _countDirectMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalLivechatMessages = _.reduce(
+			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
+			function _countLivechatMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalMessages =			statistics.totalChannelMessages
+			+ statistics.totalPrivateGroupMessages
+			+ statistics.totalDirectMessages
+			+ statistics.totalLivechatMessages;
 
 		// Federation statistics
 		const federationOverviewData = federationGetStatistics();
 
 		statistics.federatedServers = federationOverviewData.numberOfServers;
-		statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
+		statistics.federatedUsers =			federationOverviewData.numberOfFederatedUsers;
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = Messages.getLastTimestamp();
@@ -167,58 +208,116 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
-		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
-		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+		statistics.readReceiptsEnabled = settings.get(
+			'Message_Read_Receipt_Enabled',
+		);
+		statistics.readReceiptsDetailed = settings.get(
+			'Message_Read_Receipt_Store_Users',
+		);
 
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Promise.await(Uploads.find().count());
-		const [result] = Promise.await(Uploads.col.aggregate([{
-			$group: { _id: 'total', total: { $sum: '$size' } },
-		}], { readPreference }).toArray());
+		const [result] = Promise.await(
+			Uploads.col
+				.aggregate(
+					[
+						{
+							$group: { _id: 'total', total: { $sum: '$size' } },
+						},
+					],
+					{ readPreference },
+				)
+				.toArray(),
+		);
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = getControl();
-		statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
+		statistics.instanceCount = InstanceStatus.getCollection()
+			.find({
+				_updatedAt: {
+					$gt: new Date(Date.now() - process.uptime() * 1000 - 2000),
+				},
+			})
+			.count();
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		const { oplogEnabled, mongoVersion, mongoStorageEngine } =			getMongoInfo();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = Promise.await(Sessions.getUniqueUsersOfYesterday());
-		statistics.uniqueUsersOfLastWeek = Promise.await(Sessions.getUniqueUsersOfLastWeek());
-		statistics.uniqueUsersOfLastMonth = Promise.await(Sessions.getUniqueUsersOfLastMonth());
-		statistics.uniqueDevicesOfYesterday = Promise.await(Sessions.getUniqueDevicesOfYesterday());
-		statistics.uniqueDevicesOfLastWeek = Promise.await(Sessions.getUniqueDevicesOfLastWeek());
-		statistics.uniqueDevicesOfLastMonth = Promise.await(Sessions.getUniqueDevicesOfLastMonth());
-		statistics.uniqueOSOfYesterday = Promise.await(Sessions.getUniqueOSOfYesterday());
-		statistics.uniqueOSOfLastWeek = Promise.await(Sessions.getUniqueOSOfLastWeek());
-		statistics.uniqueOSOfLastMonth = Promise.await(Sessions.getUniqueOSOfLastMonth());
+		statistics.uniqueUsersOfYesterday = Promise.await(
+			Sessions.getUniqueUsersOfYesterday(),
+		);
+		statistics.uniqueUsersOfLastWeek = Promise.await(
+			Sessions.getUniqueUsersOfLastWeek(),
+		);
+		statistics.uniqueUsersOfLastMonth = Promise.await(
+			Sessions.getUniqueUsersOfLastMonth(),
+		);
+		statistics.uniqueDevicesOfYesterday = Promise.await(
+			Sessions.getUniqueDevicesOfYesterday(),
+		);
+		statistics.uniqueDevicesOfLastWeek = Promise.await(
+			Sessions.getUniqueDevicesOfLastWeek(),
+		);
+		statistics.uniqueDevicesOfLastMonth = Promise.await(
+			Sessions.getUniqueDevicesOfLastMonth(),
+		);
+		statistics.uniqueOSOfYesterday = Promise.await(
+			Sessions.getUniqueOSOfYesterday(),
+		);
+		statistics.uniqueOSOfLastWeek = Promise.await(
+			Sessions.getUniqueOSOfLastWeek(),
+		);
+		statistics.uniqueOSOfLastMonth = Promise.await(
+			Sessions.getUniqueOSOfLastMonth(),
+		);
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const integrations = Promise.await(Integrations.find({}, {
-			projection: {
-				_id: 0,
-				type: 1,
-				enabled: 1,
-				scriptEnabled: 1,
-			},
-			readPreference,
-		}).toArray());
+		const integrations = Promise.await(
+			Integrations.find(
+				{},
+				{
+					projection: {
+						_id: 0,
+						type: 1,
+						enabled: 1,
+						scriptEnabled: 1,
+					},
+					readPreference,
+				},
+			).toArray(),
+		);
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
-			totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
-			totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming').length,
-			totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
-			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
+			totalIncoming: integrations.filter(
+				(integration) => integration.type === 'webhook-incoming',
+			).length,
+			totalIncomingActive: integrations.filter(
+				(integration) =>
+					integration.enabled === true
+					&& integration.type === 'webhook-incoming',
+			).length,
+			totalOutgoing: integrations.filter(
+				(integration) => integration.type === 'webhook-outgoing',
+			).length,
+			totalOutgoingActive: integrations.filter(
+				(integration) =>
+					integration.enabled === true
+					&& integration.type === 'webhook-outgoing',
+			).length,
+			totalWithScriptEnabled: integrations.filter(
+				(integration) => integration.scriptEnabled === true,
+			).length,
 		};
 
-		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+		statistics.pushQueue = Promise.await(
+			NotificationQueue.col.estimatedDocumentCount(),
+		);
 
 		statistics.enterprise = getEnterpriseStatistics();
 		Promise.await(Analytics.resetSeatRequestCount());

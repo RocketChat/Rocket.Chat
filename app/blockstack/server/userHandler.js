@@ -9,7 +9,9 @@ import { generateUsernameSuggestion } from '../../lib';
 // Updates or creates a user after we authenticate with Blockstack
 // Clones Accounts.updateOrCreateUserFromExternalService with some modifications
 export const updateOrCreateUser = (serviceData, options) => {
-	const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
+	const serviceConfig = ServiceConfiguration.configurations.findOne({
+		service: 'blockstack',
+	});
 	logger.debug('Auth config', serviceConfig);
 
 	// Extract user data from service / token
@@ -33,9 +35,14 @@ export const updateOrCreateUser = (serviceData, options) => {
 			// ID at blockstack.email - a holding domain only, no MX record, does not
 			// process email, may be used in future to provide decentralised email via
 			// gaia, encrypting mail for DID user only. @TODO: document this approach.
-			emails.push({ address: `${ did }@blockstack.email`, verified: false });
+			emails.push({
+				address: `${ did }@blockstack.email`,
+				verified: false,
+			});
 		} else {
-			const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+			const verified = settings.get(
+				'Accounts_Verify_Email_For_External_Accounts',
+			);
 			// Reformat array of emails into expected format if they exist
 			emails = profile.emails.map((address) => ({ address, verified }));
 		}

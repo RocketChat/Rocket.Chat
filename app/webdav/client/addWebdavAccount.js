@@ -28,12 +28,21 @@ Template.addWebdavAccount.events({
 			modal.close();
 			instance.loading.set(false);
 			if (error) {
-				return dispatchToastMessage({ type: 'error', message: t(error.error) });
+				return dispatchToastMessage({
+					type: 'error',
+					message: t(error.error),
+				});
 			}
 			if (!success) {
-				return dispatchToastMessage({ type: 'error', message: t('Error') });
+				return dispatchToastMessage({
+					type: 'error',
+					message: t('Error'),
+				});
 			}
-			dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('webdav-account-saved'),
+			});
 		});
 	},
 });
@@ -65,7 +74,9 @@ const validate = function() {
 	}
 	Object.entries(validationObj).forEach(([key, value]) => {
 		form.find(`input[name=${ key }], select[name=${ key }]`).addClass('error');
-		form.find(`input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
+		form.find(
+			`input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`,
+		).text(value);
 	});
 	this.loading.set(false);
 	return false;

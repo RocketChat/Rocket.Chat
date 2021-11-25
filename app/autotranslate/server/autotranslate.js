@@ -36,15 +36,27 @@ export class TranslationProviderRegistry {
 	 * Return the active Translation provider
 	 */
 	static getActiveProvider() {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]] : undefined;
+		return TranslationProviderRegistry.enabled
+			? TranslationProviderRegistry[Providers][
+				TranslationProviderRegistry[Provider]
+			  ]
+			: undefined;
 	}
 
 	static getSupportedLanguages(...args) {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args) : undefined;
+		return TranslationProviderRegistry.enabled
+			? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(
+				...args,
+			  )
+			: undefined;
 	}
 
 	static translateMessage(...args) {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args) : undefined;
+		return TranslationProviderRegistry.enabled
+			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(
+				...args,
+			  )
+			: undefined;
 	}
 
 	static getProviders() {
@@ -78,7 +90,12 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
+		callbacks.add(
+			'afterSaveMessage',
+			provider.translateMessage.bind(provider),
+			callbacks.priority.MEDIUM,
+			'autotranslate',
+		);
 	}
 }
 
@@ -133,41 +150,56 @@ export class AutoTranslate {
 	tokenizeURLs(message) {
 		let count = message.tokens.length;
 
-		const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+		const schemes = settings
+			.get('Markdown_SupportSchemesForLink')
+			.split(',')
+			.join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
-		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: pretoken,
-				text: pre,
-			});
+		message.msg = message.msg.replace(
+			new RegExp(
+				`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`,
+				'gm',
+			),
+			function(match, pre, text, post) {
+				const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
+				message.tokens.push({
+					token: pretoken,
+					text: pre,
+				});
 
-			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: posttoken,
-				text: post,
-			});
+				const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
+				message.tokens.push({
+					token: posttoken,
+					text: post,
+				});
 
-			return pretoken + text + posttoken;
-		});
+				return pretoken + text + posttoken;
+			},
+		);
 
 		// Support <http://link|Text>
-		message.msg = message.msg.replace(new RegExp(`((?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: pretoken,
-				text: pre,
-			});
+		message.msg = message.msg.replace(
+			new RegExp(
+				`((?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`,
+				'gm',
+			),
+			function(match, pre, text, post) {
+				const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
+				message.tokens.push({
+					token: pretoken,
+					text: pre,
+				});
 
-			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: posttoken,
-				text: post,
-			});
+				const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
+				message.tokens.push({
+					token: posttoken,
+					text: post,
+				});
 
-			return pretoken + text + posttoken;
-		});
+				return pretoken + text + posttoken;
+			},
+		);
 
 		return message;
 	}
@@ -200,27 +232,33 @@ export class AutoTranslate {
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach((mention) => {
-				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), (match) => {
-					const token = `<i class=notranslate>{${ count++ }}</i>`;
-					message.tokens.push({
-						token,
-						text: match,
-					});
-					return token;
-				});
+				message.msg = message.msg.replace(
+					new RegExp(`(@${ mention.username })`, 'gm'),
+					(match) => {
+						const token = `<i class=notranslate>{${ count++ }}</i>`;
+						message.tokens.push({
+							token,
+							text: match,
+						});
+						return token;
+					},
+				);
 			});
 		}
 
 		if (message.channels && message.channels.length > 0) {
 			message.channels.forEach((channel) => {
-				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), (match) => {
-					const token = `<i class=notranslate>{${ count++ }}</i>`;
-					message.tokens.push({
-						token,
-						text: match,
-					});
-					return token;
-				});
+				message.msg = message.msg.replace(
+					new RegExp(`(#${ channel.name })`, 'gm'),
+					(match) => {
+						const token = `<i class=notranslate>{${ count++ }}</i>`;
+						message.tokens.push({
+							token,
+							text: match,
+						});
+						return token;
+					},
+				);
 			});
 		}
 
@@ -250,7 +288,10 @@ export class AutoTranslate {
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
-			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+			targetLanguages =				Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(
+				room._id,
+				message.u && message.u._id,
+			);
 		}
 		if (message.msg) {
 			Meteor.defer(() => {
@@ -258,9 +299,16 @@ export class AutoTranslate {
 				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
 
-				const translations = this._translateMessage(targetMessage, targetLanguages);
+				const translations = this._translateMessage(
+					targetMessage,
+					targetLanguages,
+				);
 				if (!_.isEmpty(translations)) {
-					Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
+					Messages.addTranslations(
+						message._id,
+						translations,
+						TranslationProviderRegistry[Provider],
+					);
 				}
 			});
 		}
@@ -271,9 +319,16 @@ export class AutoTranslate {
 					if (message.attachments.hasOwnProperty(index)) {
 						const attachment = message.attachments[index];
 						if (attachment.description || attachment.text) {
-							const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+							const translations =								this._translateAttachmentDescriptions(
+								attachment,
+								targetLanguages,
+							);
 							if (!_.isEmpty(translations)) {
-								Messages.addAttachmentTranslations(message._id, index, translations);
+								Messages.addAttachmentTranslations(
+									message._id,
+									index,
+									translations,
+								);
 							}
 						}
 					}
@@ -295,7 +350,6 @@ export class AutoTranslate {
 		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
 
-
 	/**
 	 * Provides the possible languages _from_ which a message can be translated into a target language
 	 * @abstract
@@ -304,7 +358,11 @@ export class AutoTranslate {
 	 * @returns [{ language, name }]
 	 */
 	getSupportedLanguages(target) {
-		Logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
+		Logger.warn(
+			'must be implemented by subclass!',
+			'getSupportedLanguages',
+			target,
+		);
 	}
 
 	/**
@@ -317,7 +375,12 @@ export class AutoTranslate {
 	 * @return {object}
 	 */
 	_translateMessage(message, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
+		Logger.warn(
+			'must be implemented by subclass!',
+			'_translateMessage',
+			message,
+			targetLanguages,
+		);
 	}
 
 	/**
@@ -329,7 +392,12 @@ export class AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
+		Logger.warn(
+			'must be implemented by subclass!',
+			'_translateAttachmentDescriptions',
+			attachment,
+			targetLanguages,
+		);
 	}
 }
 

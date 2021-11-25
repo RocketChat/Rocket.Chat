@@ -6,16 +6,16 @@ import AutoComplete from './autocomplete-client';
 
 //  Events on template instances, sent to the autocomplete class
 const acEvents = {
-	'keydown'(e, t) {
+	keydown(e, t) {
 		t.ac.onKeyDown(e);
 	},
-	'keyup'(e, t) {
+	keyup(e, t) {
 		t.ac.onKeyUp(e);
 	},
-	'focus'(e, t) {
+	focus(e, t) {
 		t.ac.onFocus(e);
 	},
-	'blur'(e, t) {
+	blur(e, t) {
 		t.ac.onBlur(e);
 	},
 };
@@ -40,7 +40,8 @@ const autocompleteHelpers = {
 			ac.element = this.parentView.firstNode();
 			ac.$element = $(ac.element);
 		});
-		return Blaze.With(ac, function() { //eslint-disable-line
+		// eslint-disable-next-line
+		return Blaze.With(ac, function () {
 			return Template._autocompleteContainer;
 		});
 	}),
@@ -58,7 +59,6 @@ Template._autocompleteContainer.destroyed = function() {
 	// Meteor._debug "autocomplete destroyed"
 	this.data.teardown();
 };
-
 
 /*
   List rendering helpers

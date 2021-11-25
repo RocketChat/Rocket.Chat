@@ -10,17 +10,31 @@ Meteor.methods({
 	saveSetting: twoFactorRequired(async function(_id, value, editor) {
 		const uid = Meteor.userId();
 		if (!uid) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
-				method: 'saveSetting',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing settings is not allowed',
+				{
+					method: 'saveSetting',
+				},
+			);
 		}
 
-		if (!hasPermission(uid, 'edit-privileged-setting')
-			&& !hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])) { // TODO use the same function
-			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
-				method: 'saveSetting',
-				settingId: _id,
-			});
+		if (
+			!hasPermission(uid, 'edit-privileged-setting')
+			&& !hasAllPermission(uid, [
+				'manage-selected-settings',
+				getSettingPermissionId(_id),
+			])
+		) {
+			// TODO use the same function
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing settings is not allowed',
+				{
+					method: 'saveSetting',
+					settingId: _id,
+				},
+			);
 		}
 
 		// Verify the _id passed in is a string.

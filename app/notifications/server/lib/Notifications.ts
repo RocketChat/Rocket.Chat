@@ -22,17 +22,29 @@ import './Presence';
 // });
 
 export class Stream extends Streamer {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
+	registerPublication(
+		name: string,
+		fn: (
+			eventName: string,
+			options: boolean | { useCollection?: boolean; args?: any }
+		) => void,
+	): void {
 		Meteor.publish(name, function(eventName, options) {
 			return Promise.await(fn.call(this, eventName, options));
 		});
 	}
 
-	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
+	registerMethod(
+		methods: Record<string, (eventName: string, ...args: any[]) => any>,
+	): void {
 		Meteor.methods(methods);
 	}
 
-	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false {
+	changedPayload(
+		collection: string,
+		id: string,
+		fields: Record<string, any>,
+	): string | false {
 		return DDPCommon.stringifyDDP({
 			msg: 'changed',
 			collection,

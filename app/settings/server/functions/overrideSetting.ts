@@ -1,3 +1,5 @@
 import { overrideGenerator } from './overrideGenerator';
 
-export const overrideSetting = overrideGenerator((key: string) => process.env[key]);
+export const overrideSetting = overrideGenerator(
+	(key: string) => process.env[key],
+);

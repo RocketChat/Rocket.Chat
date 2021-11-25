@@ -1,11 +1,16 @@
 import { clientLogger } from '../lib/logger';
-import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
+import {
+	getFederatedRoomData,
+	hasExternalDomain,
+	isLocalUser,
+	checkRoomType,
+	checkRoomDomainsLength,
+} from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
-
 
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
@@ -22,7 +27,10 @@ async function afterAddedToRoom(involvedUsers, room) {
 	const { users, subscriptions } = getFederatedRoomData(room);
 
 	// Load the subscription
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(
+		room._id,
+		addedUser._id,
+	);
 
 	try {
 		// If the room is not on the allowed types, ignore
@@ -47,14 +55,21 @@ async function afterAddedToRoom(involvedUsers, room) {
 			// Get the users domains
 			const domainsAfterAdd = [];
 			users.forEach((user) => {
-				if (user.hasOwnProperty('federation') && !domainsAfterAdd.includes(user.federation.origin)) {
+				if (
+					user.hasOwnProperty('federation')
+					&& !domainsAfterAdd.includes(user.federation.origin)
+				) {
 					domainsAfterAdd.push(user.federation.origin);
 				}
 			});
 
 			// Check if the number of domains is allowed
 			if (!checkRoomDomainsLength(domainsAfterAdd)) {
-				throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
+				throw new Error(
+					`Cannot federate rooms with more than ${
+						process.env.FEDERATED_DOMAINS_LENGTH || 10
+					} domains`,
+				);
 			}
 
 			//
@@ -62,9 +77,15 @@ async function afterAddedToRoom(involvedUsers, room) {
 			//
 
 			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
-			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
+			const normalizedSourceSubscription =				normalizers.normalizeSubscription(subscription);
 
-			const addUserEvent = await FederationRoomEvents.createAddUserEvent(localDomain, room._id, normalizedSourceUser, normalizedSourceSubscription, domainsAfterAdd);
+			const addUserEvent = await FederationRoomEvents.createAddUserEvent(
+				localDomain,
+				room._id,
+				normalizedSourceUser,
+				normalizedSourceSubscription,
+				domainsAfterAdd,
+			);
 
 			// Dispatch the events
 			dispatchEvent(domainsAfterAdd, addUserEvent);
@@ -73,7 +94,10 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Subscriptions.remove({ _id: subscription._id });
 
-		clientLogger.error({ msg: 'afterAddedToRoom => Could not add user:', err });
+		clientLogger.error({
+			msg: 'afterAddedToRoom => Could not add user:',
+			err,
+		});
 	}
 
 	return involvedUsers;
@@ -81,6 +105,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterAddedToRoom',
-	callback: (roomOwner, room) => Promise.await(afterAddedToRoom(roomOwner, room)),
+	callback: (roomOwner, room) =>
+		Promise.await(afterAddedToRoom(roomOwner, room)),
 	id: 'federation-after-added-to-room',
 };

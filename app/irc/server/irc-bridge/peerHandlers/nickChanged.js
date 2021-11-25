@@ -12,10 +12,13 @@ export default function handleNickChanged(args) {
 	this.log(`${ user.username } changed nick: ${ args.nick } -> ${ args.newNick }`);
 
 	// Update on the database
-	Users.update({ _id: user._id }, {
-		$set: {
-			name: args.newNick,
-			'profile.irc.nick': args.newNick,
+	Users.update(
+		{ _id: user._id },
+		{
+			$set: {
+				name: args.newNick,
+				'profile.irc.nick': args.newNick,
+			},
 		},
-	});
+	);
 }

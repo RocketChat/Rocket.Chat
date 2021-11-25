@@ -52,7 +52,14 @@ class Mobex {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
+	send(
+		fromNumber,
+		toNumber,
+		message,
+		username = null,
+		password = null,
+		address = null,
+	) {
 		let currentFrom = this.from;
 		let currentUsername = this.username;
 		let currentAddress = this.address;
@@ -76,7 +83,10 @@ class Mobex {
 		};
 
 		try {
-			const response = HTTP.call('GET', `${ currentAddress }/send?username=${ currentUsername }&password=${ currentPassword }&to=${ strippedTo }&from=${ currentFrom }&content=${ message }`);
+			const response = HTTP.call(
+				'GET',
+				`${ currentAddress }/send?username=${ currentUsername }&password=${ currentPassword }&to=${ strippedTo }&from=${ currentFrom }&content=${ message }`,
+			);
 			if (response.statusCode === 200) {
 				result.resultMsg = response.content;
 				result.isSuccess = true;
@@ -108,7 +118,9 @@ class Mobex {
 		const authToken = Base64.encode(userPass);
 
 		try {
-			const response = await HTTP.call('POST', `${ this.restAddress }/secure/sendbatch`,
+			const response = await HTTP.call(
+				'POST',
+				`${ this.restAddress }/secure/sendbatch`,
 				{
 					headers: {
 						Authorization: `Basic ${ authToken }`,

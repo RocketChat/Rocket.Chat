@@ -6,7 +6,15 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import admin from '../pageobjects/administration.page';
 import { checkIfUserIsValid } from '../../data/checks';
-import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
+import {
+	adminUsername,
+	adminEmail,
+	adminPassword,
+	username,
+	email,
+	password,
+	reason,
+} from '../../data/user.js';
 import { wait } from '../../data/api-data';
 
 const request = supertest('http://localhost:3000');
@@ -29,7 +37,8 @@ const login = {
 describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password).then(() => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send(login)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -46,13 +55,18 @@ describe('[Api Settings Change]', () => {
 	});
 
 	it('/login', () => {
-		expect(credentials).to.have.property('X-Auth-Token').with.lengthOf.at.least(1);
-		expect(credentials).to.have.property('X-User-Id').with.lengthOf.at.least(1);
+		expect(credentials)
+			.to.have.property('X-Auth-Token')
+			.with.lengthOf.at.least(1);
+		expect(credentials)
+			.to.have.property('X-User-Id')
+			.with.lengthOf.at.least(1);
 	});
 
 	describe('message edit:', () => {
 		it('it should change the message editing via api', (done) => {
-			request.post(api('settings/Message_AllowEditing'))
+			request
+				.post(api('settings/Message_AllowEditing'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -71,7 +85,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message editing via api', (done) => {
-			request.post(api('settings/Message_AllowEditing'))
+			request
+				.post(api('settings/Message_AllowEditing'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -85,7 +100,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('message delete:', () => {
 		it('it should change the message deleting via api', (done) => {
-			request.post(api('settings/Message_AllowDeleting'))
+			request
+				.post(api('settings/Message_AllowDeleting'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -104,7 +120,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message deleting via api', (done) => {
-			request.post(api('settings/Message_AllowDeleting'))
+			request
+				.post(api('settings/Message_AllowDeleting'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -118,7 +135,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('block audio files:', () => {
 		it('it should change the message audio files via api', (done) => {
-			request.post(api('settings/Message_AudioRecorderEnabled'))
+			request
+				.post(api('settings/Message_AudioRecorderEnabled'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -135,7 +153,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message audio files via api', (done) => {
-			request.post(api('settings/Message_AudioRecorderEnabled'))
+			request
+				.post(api('settings/Message_AudioRecorderEnabled'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -149,7 +168,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('block video files:', () => {
 		it('it should change the message video files via api', (done) => {
-			request.post(api('settings/Message_VideoRecorderEnabled'))
+			request
+				.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -161,7 +181,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message video files via api', (done) => {
-			request.post(api('settings/Message_VideoRecorderEnabled'))
+			request
+				.post(api('settings/Message_VideoRecorderEnabled'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -175,7 +196,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('bad words filter:', () => {
 		it('it should change the bad words filter via api', (done) => {
-			request.post(api('settings/Message_AllowBadWordsFilter'))
+			request
+				.post(api('settings/Message_AllowBadWordsFilter'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -187,7 +209,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should add bad words to the filter via api', (done) => {
-			request.post(api('settings/Message_BadWordsFilterList'))
+			request
+				.post(api('settings/Message_BadWordsFilterList'))
 				.set(credentials)
 				.send({ value: 'badword' })
 				.expect('Content-Type', 'application/json')
@@ -206,7 +229,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the bad words filter via api', (done) => {
-			request.post(api('settings/Message_AllowBadWordsFilter'))
+			request
+				.post(api('settings/Message_AllowBadWordsFilter'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -220,7 +244,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('block message pin:', () => {
 		it('it should change the message pin via api', (done) => {
-			request.post(api('settings/Message_AllowPinning'))
+			request
+				.post(api('settings/Message_AllowPinning'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -244,7 +269,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message pin via api', (done) => {
-			request.post(api('settings/Message_AllowPinning'))
+			request
+				.post(api('settings/Message_AllowPinning'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -258,7 +284,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('block message star:', () => {
 		it('it should change the message star via api', (done) => {
-			request.post(api('settings/Message_AllowStarring'))
+			request
+				.post(api('settings/Message_AllowStarring'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -282,7 +309,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the message star via api', (done) => {
-			request.post(api('settings/Message_AllowStarring'))
+			request
+				.post(api('settings/Message_AllowStarring'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -296,7 +324,8 @@ describe('[Api Settings Change]', () => {
 
 	describe.skip('block file upload:', () => {
 		it('it should change the file upload via api', (done) => {
-			request.post(api('settings/FileUpload_Enabled'))
+			request
+				.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')
@@ -312,7 +341,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the file upload via api', (done) => {
-			request.post(api('settings/FileUpload_Enabled'))
+			request
+				.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -336,7 +366,8 @@ describe('[Api Settings Change]', () => {
 		});
 		describe('block profile change', () => {
 			it('it should change the allow user profile change via api', (done) => {
-				request.post(api('settings/Accounts_AllowUserProfileChange'))
+				request
+					.post(api('settings/Accounts_AllowUserProfileChange'))
 					.set(credentials)
 					.send({ value: false })
 					.expect('Content-Type', 'application/json')
@@ -352,7 +383,8 @@ describe('[Api Settings Change]', () => {
 			});
 
 			it('it should change the allow user profile change via api', (done) => {
-				request.post(api('settings/Accounts_AllowUserProfileChange'))
+				request
+					.post(api('settings/Accounts_AllowUserProfileChange'))
 					.set(credentials)
 					.send({ value: true })
 					.expect('Content-Type', 'application/json')
@@ -366,7 +398,8 @@ describe('[Api Settings Change]', () => {
 
 		describe('block avatar change', () => {
 			it('it should change the allow user avatar change via api', (done) => {
-				request.post(api('settings/Accounts_AllowUserAvatarChange'))
+				request
+					.post(api('settings/Accounts_AllowUserAvatarChange'))
 					.set(credentials)
 					.send({ value: false })
 					.expect('Content-Type', 'application/json')
@@ -382,7 +415,8 @@ describe('[Api Settings Change]', () => {
 			});
 
 			it('it should change the allow user avatar change via api', (done) => {
-				request.post(api('settings/Accounts_AllowUserAvatarChange'))
+				request
+					.post(api('settings/Accounts_AllowUserAvatarChange'))
 					.set(credentials)
 					.send({ value: true })
 					.expect('Content-Type', 'application/json')
@@ -404,7 +438,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {
-			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
+			request
+				.post(api('settings/Accounts_ManuallyApproveNewUsers'))
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -425,7 +460,11 @@ describe('[Api Settings Change]', () => {
 
 			loginPage.submit();
 
-			loginPage.registrationSucceededCard.should('have.attr', 'data-i18n', 'Registration_Succeeded');
+			loginPage.registrationSucceededCard.should(
+				'have.attr',
+				'data-i18n',
+				'Registration_Succeeded',
+			);
 			loginPage.backToLoginButton.click();
 		});
 
@@ -466,7 +505,8 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {
-			request.post(api('settings/Accounts_ManuallyApproveNewUsers'))
+			request
+				.post(api('settings/Accounts_ManuallyApproveNewUsers'))
 				.set(credentials)
 				.send({ value: false })
 				.expect('Content-Type', 'application/json')

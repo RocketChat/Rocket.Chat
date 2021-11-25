@@ -8,11 +8,15 @@ import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
 
-type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
+type SubscriptionFn = (
+	this: Publication,
+	eventName: string,
+	options: object
+) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const SERVER_ID = ejson.stringify({ server_id: '0' });
@@ -27,12 +31,17 @@ export class Server extends EventEmitter {
 	parse = (packet: string): IPacket => {
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
-	}
+	};
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._methods.has(packet.method)) {
-				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
+				const result = await MeteorService.callMethodWithToken(
+					client.userId,
+					client.userToken,
+					packet.method,
+					packet.params,
+				);
 				if (result?.result) {
 					return this.result(client, packet, result.result);
 				}
@@ -90,7 +99,12 @@ export class Server extends EventEmitter {
 		return this.publish(`stream-${ stream }`, fn);
 	}
 
-	result(client: Client, { id }: IPacket, result?: any, error?: string): void {
+	result(
+		client: Client,
+		{ id }: IPacket,
+		result?: any,
+		error?: string,
+	): void {
 		client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
@@ -119,7 +133,10 @@ export class Server extends EventEmitter {
 
 	ready(client: Client, packet: IPacket): void {
 		return client.send(
-			this.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.READY, [DDP_EVENTS.SUBSCRIPTIONS]: [packet.id] }),
+			this.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.READY,
+				[DDP_EVENTS.SUBSCRIPTIONS]: [packet.id],
+			}),
 		);
 	}
 

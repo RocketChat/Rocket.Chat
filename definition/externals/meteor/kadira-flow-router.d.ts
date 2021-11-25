@@ -11,23 +11,28 @@ declare module 'meteor/kadira:flow-router' {
 		action?: (
 			this: Route,
 			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		) => void;
 		subscriptions?: (
 			this: Route,
 			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		) => void;
 		triggersEnter?: ((
 			context: Context,
 			redirect: (pathDef: string) => void,
-			stop: () => void,
+			stop: () => void
 		) => void)[];
 		triggersExit?: ((context: Context) => void)[];
 	};
 
 	class Route {
-		constructor(router: Router, pathDef: string, options?: RouteOptions, group?: Group);
+		constructor(
+			router: Router,
+			pathDef: string,
+			options?: RouteOptions,
+			group?: Group
+		);
 
 		options: RouteOptions;
 
@@ -61,7 +66,10 @@ declare module 'meteor/kadira:flow-router' {
 
 		registerRouteClose(): void;
 
-		registerRouteChange(currentContext: Context, routeChanging?: boolean): void;
+		registerRouteChange(
+			currentContext: Context,
+			routeChanging?: boolean
+		): void;
 	}
 
 	type GroupOptions = {
@@ -72,7 +80,7 @@ declare module 'meteor/kadira:flow-router' {
 		subscriptions?: (
 			this: Route,
 			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		) => void;
 	};
 
@@ -117,19 +125,19 @@ declare module 'meteor/kadira:flow-router' {
 		path(
 			pathDef: string,
 			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		): string;
 
 		url(
 			pathDef: string,
 			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		): string;
 
 		go(
 			pathDef: string,
 			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
+			queryParams?: Record<string, string>
 		): void;
 
 		reload(): void;

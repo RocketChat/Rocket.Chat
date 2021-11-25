@@ -67,7 +67,10 @@ export class LivechatVisitors extends Base {
 
 		if (!overwrite) {
 			const user = this.findOne(query, { fields: { livechatData: 1 } });
-			if (user.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			if (
+				user.livechatData
+				&& typeof user.livechatData[key] !== 'undefined'
+			) {
 				return true;
 			}
 		}
@@ -110,8 +113,8 @@ export class LivechatVisitors extends Base {
 	getVisitorsBetweenDate(date) {
 		const query = {
 			_updatedAt: {
-				$gte: date.gte,	// ISO Date, ts >= date.gte
-				$lt: date.lt,	// ISODate, ts < date.lt
+				$gte: date.gte, // ISO Date, ts >= date.gte
+				$lt: date.lt, // ISODate, ts < date.lt
 			},
 		};
 
@@ -156,9 +159,7 @@ export class LivechatVisitors extends Base {
 
 		if (data.email) {
 			if (!_.isEmpty(s.trim(data.email))) {
-				setData.visitorEmails = [
-					{ address: s.trim(data.email) },
-				];
+				setData.visitorEmails = [{ address: s.trim(data.email) }];
 			} else {
 				unsetData.visitorEmails = 1;
 			}
@@ -166,9 +167,7 @@ export class LivechatVisitors extends Base {
 
 		if (data.phone) {
 			if (!_.isEmpty(s.trim(data.phone))) {
-				setData.phone = [
-					{ phoneNumber: s.trim(data.phone) },
-				];
+				setData.phone = [{ phoneNumber: s.trim(data.phone) }];
 			} else {
 				unsetData.phone = 1;
 			}
@@ -204,7 +203,10 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${ escapeRegExp(emailAddress) }$`, 'i'),
+			'visitorEmails.address': new RegExp(
+				`^${ escapeRegExp(emailAddress) }$`,
+				'i',
+			),
 		};
 
 		return this.findOne(query);
@@ -215,7 +217,8 @@ export class LivechatVisitors extends Base {
 			$addToSet: {},
 		};
 
-		const saveEmail = [].concat(emails)
+		const saveEmail = []
+			.concat(emails)
 			.filter((email) => email && email.trim())
 			.map((email) => ({ address: email }));
 
@@ -223,7 +226,8 @@ export class LivechatVisitors extends Base {
 			update.$addToSet.visitorEmails = { $each: saveEmail };
 		}
 
-		const savePhone = [].concat(phones)
+		const savePhone = []
+			.concat(phones)
 			.filter((phone) => phone && phone.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 

@@ -14,11 +14,15 @@ const isServerSearch = function(rule) {
 
 const validateRule = function(rule) {
 	if (rule.subscription != null && !Match.test(rule.collection, String)) {
-		throw new Error('Collection name must be specified as string for server-side search');
+		throw new Error(
+			'Collection name must be specified as string for server-side search',
+		);
 	}
 	// XXX back-compat message, to be removed
 	if (rule.callback) {
-		console.warn('autocomplete no longer supports callbacks; use event listeners instead.');
+		console.warn(
+			'autocomplete no longer supports callbacks; use event listeners instead.',
+		);
 	}
 };
 
@@ -94,10 +98,11 @@ export default class AutoComplete {
 
 		this.onSelect = settings.onSelect;
 
-		this.expressions = (() => Object.keys(rules).map((key) => {
-			const rule = rules[key];
-			return getRegExp(rule);
-		}))();
+		this.expressions = (() =>
+			Object.keys(rules).map((key) => {
+				const rule = rules[key];
+				return getRegExp(rule);
+			}))();
 		this.matched = -1;
 		this.loaded = true;
 
@@ -130,7 +135,9 @@ export default class AutoComplete {
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
 			const endpointName = rule.endpoint || 'users.autocomplete';
-			const { items } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
+			const { items } = await APIClient.v1.get(
+				`${ endpointName }?selector=${ JSON.stringify(selector) }`,
+			);
 			AutoCompleteRecords.remove({});
 			items.forEach((item) => AutoCompleteRecords.insert(item));
 			this.setLoaded(true);
@@ -192,7 +199,6 @@ export default class AutoComplete {
 		this._timeoutHandler = setTimeout(() => {
 			this._timeoutHandler = 0;
 
-
 			const startpos = this.element.selectionStart;
 			const val = this.getText().substring(0, startpos);
 
@@ -232,18 +238,19 @@ export default class AutoComplete {
 	}
 
 	onKeyDown(e) {
-		if (this.matched === -1 || (this.KEYS.indexOf(e.keyCode) < 0)) {
+		if (this.matched === -1 || this.KEYS.indexOf(e.keyCode) < 0) {
 			return;
 		}
 		switch (e.keyCode) {
 			case 9: // TAB
 			case 13: // ENTER
-				if (this.select()) { // Don't jump fields or submit if select successful
+				if (this.select()) {
+					// Don't jump fields or submit if select successful
 					e.preventDefault();
 					e.stopPropagation();
 				}
 				break;
-				// preventDefault needed below to avoid moving cursor when selecting
+			// preventDefault needed below to avoid moving cursor when selecting
 			case 40: // DOWN
 				e.preventDefault();
 				this.next();
@@ -355,13 +362,15 @@ export default class AutoComplete {
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
-
 	// Replace the appropriate region
 	replace(replacement) {
 		const startpos = this.element.selectionStart;
 		const fullStuff = this.getText();
 		let val = fullStuff.substring(0, startpos);
-		val = val.replace(this.expressions[this.matched], `$1${ this.rules[this.matched].token }${ replacement }`);
+		val = val.replace(
+			this.expressions[this.matched],
+			`$1${ this.rules[this.matched].token }${ replacement }`,
+		);
 		const posfix = fullStuff.substring(startpos, fullStuff.length);
 		const separator = posfix.match(/^\s/) ? '' : ' ';
 		const finalFight = val + separator + posfix;
@@ -386,7 +395,6 @@ export default class AutoComplete {
 		this.$element.html(text);
 	}
 
-
 	/*
 		Rendering functions
 	 */
@@ -394,11 +402,15 @@ export default class AutoComplete {
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
 		let pos = {};
-		const element = this.selector.anchor ? this.tmplInst.$(this.selector.anchor) : this.$element;
+		const element = this.selector.anchor
+			? this.tmplInst.$(this.selector.anchor)
+			: this.$element;
 
 		if (this.position === 'fixed') {
 			const width = element.outerWidth();
-			return this.tmplInst.$(this.selector.container).css({ width, position: 'fixed' });
+			return this.tmplInst
+				.$(this.selector.container)
+				.css({ width, position: 'fixed' });
 		}
 
 		const position = element.position();
@@ -407,7 +419,10 @@ export default class AutoComplete {
 		}
 
 		const rule = this.matchedRule();
-		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
+		const offset = getCaretCoordinates(
+			this.element,
+			this.element.selectionStart,
+		);
 
 		// In whole-field positioning, we don't move the container and make it the
 		// full width of the field.
@@ -416,18 +431,21 @@ export default class AutoComplete {
 			if (rule.doNotChangeWidth !== false) {
 				pos.width = element.outerWidth(); // position.offsetWidth
 			}
-		} else { // Normal positioning, at token word
+		} else {
+			// Normal positioning, at token word
 			pos = { left: position.left + offset.left };
 		}
 
 		// Position menu from top (above) or from bottom of caret (below, default)
 		if (this.position === 'top') {
-			pos.bottom = element.offsetParent().height() - position.top - offset.top;
+			pos.bottom =				element.offsetParent().height() - position.top - offset.top;
 		} else {
-			pos.top = position.top + offset.top + parseInt(element.css('font-size'));
+			pos.top =				position.top + offset.top + parseInt(element.css('font-size'));
 		}
 
-		this.tmplInst.$(this.selector.container).css({ ...pos, position: 'absolute' });
+		this.tmplInst
+			.$(this.selector.container)
+			.css({ ...pos, position: 'absolute' });
 	}
 
 	ensureSelection() {
@@ -435,7 +453,9 @@ export default class AutoComplete {
 		const selectedItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!selectedItem.length) {
 			// Select anything
-			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+			this.tmplInst
+				.$(`${ this.selector.item }:first-child`)
+				.addClass('selected');
 		}
 	}
 
@@ -443,14 +463,19 @@ export default class AutoComplete {
 	next() {
 		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!currentItem.length) {
-			return this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+			return this.tmplInst
+				.$(`${ this.selector.item }:first-child`)
+				.addClass('selected');
 		}
 		currentItem.removeClass('selected');
 		const next = currentItem.next();
 		if (next.length) {
 			next.addClass('selected');
-		} else { // End of list or lost selection; Go back to first item
-			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+		} else {
+			// End of list or lost selection; Go back to first item
+			this.tmplInst
+				.$(`${ this.selector.item }:first-child`)
+				.addClass('selected');
 		}
 	}
 
@@ -464,8 +489,11 @@ export default class AutoComplete {
 		const prev = currentItem.prev();
 		if (prev.length) {
 			prev.addClass('selected');
-		} else { // Beginning of list or lost selection; Go to end of list
-			this.tmplInst.$(`${ this.selector.item }:last-child`).addClass('selected');
+		} else {
+			// Beginning of list or lost selection; Go to end of list
+			this.tmplInst
+				.$(`${ this.selector.item }:last-child`)
+				.addClass('selected');
 		}
 	}
 

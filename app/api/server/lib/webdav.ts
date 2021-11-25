@@ -1,7 +1,11 @@
 import { WebdavAccounts } from '../../../models/server/raw';
 import { IWebdavAccount } from '../../../../definition/IWebdavAccount';
 
-export async function findWebdavAccountsByUserId({ uid }: { uid: string }): Promise<{ accounts: IWebdavAccount[] }> {
+export async function findWebdavAccountsByUserId({
+	uid,
+}: {
+	uid: string;
+}): Promise<{ accounts: IWebdavAccount[] }> {
 	return {
 		accounts: await WebdavAccounts.findWithUserId(uid, {
 			projection: {

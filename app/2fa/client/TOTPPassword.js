@@ -6,7 +6,12 @@ import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
+Meteor.loginWithPasswordAndTOTP = function(
+	selector,
+	password,
+	code,
+	callback,
+) {
 	if (typeof selector === 'string') {
 		if (selector.indexOf('@') === -1) {
 			selector = { username: selector };
@@ -16,15 +21,17 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	}
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: {
-					user: selector,
-					password: Accounts._hashPassword(password),
+		methodArguments: [
+			{
+				totp: {
+					login: {
+						user: selector,
+						password: Accounts._hashPassword(password),
+					},
+					code,
 				},
-				code,
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -44,18 +51,23 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			originalCallback: cb,
 			emailOrUsername: email,
 			onCode: (code) => {
-				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
-					if (isTotpInvalidError(error)) {
-						dispatchToastMessage({
-							type: 'error',
-							message: t('Invalid_two_factor_code'),
-						});
-						cb();
-						return;
-					}
+				Meteor.loginWithPasswordAndTOTP(
+					email,
+					password,
+					code,
+					(error) => {
+						if (isTotpInvalidError(error)) {
+							dispatchToastMessage({
+								type: 'error',
+								message: t('Invalid_two_factor_code'),
+							});
+							cb();
+							return;
+						}
 
-					cb(error);
-				});
+						cb(error);
+					},
+				);
 			},
 		});
 	});

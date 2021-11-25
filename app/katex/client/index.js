@@ -2,7 +2,6 @@ import { Random } from 'meteor/random';
 import katex from 'katex';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
-
 import 'katex/dist/katex.min.css';
 import './style.css';
 
@@ -25,17 +24,20 @@ class Katex {
 				closer: '\\]',
 				displayMode: true,
 				enabled: () => parenthesisSyntax,
-			}, {
+			},
+			{
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
 				enabled: () => parenthesisSyntax,
-			}, {
+			},
+			{
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
 				enabled: () => dollarSyntax,
-			}, {
+			},
+			{
 				opener: '$',
 				closer: '$',
 				displayMode: false,
@@ -45,12 +47,16 @@ class Katex {
 	}
 
 	findOpeningDelimiter(str, start) {
-		const matches = this.delimitersMap.filter((options) => options.enabled()).map((options) => ({
-			options,
-			pos: str.indexOf(options.opener, start),
-		}));
+		const matches = this.delimitersMap
+			.filter((options) => options.enabled())
+			.map((options) => ({
+				options,
+				pos: str.indexOf(options.opener, start),
+			}));
 
-		const positions = matches.filter(({ pos }) => pos >= 0).map(({ pos }) => pos);
+		const positions = matches
+			.filter(({ pos }) => pos >= 0)
+			.map(({ pos }) => pos);
 
 		// No opening delimiters were found
 		if (positions.length === 0) {
@@ -92,7 +98,10 @@ class Katex {
 		let start = 0;
 		let openingDelimiterMatch;
 
-		while ((openingDelimiterMatch = this.findOpeningDelimiter(str, start++)) != null) {
+		while (
+			(openingDelimiterMatch = this.findOpeningDelimiter(str, start++))
+			!= null
+		) {
 			const match = this.getLatexBoundaries(str, openingDelimiterMatch);
 			if (match && match.inner.extract(str).trim().length) {
 				match.options = openingDelimiterMatch.options;
@@ -128,10 +137,11 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
-				+ `${ escapeHTML(message) }</div>`;
+			return `<div class="katex-error katex-${
+				displayMode ? 'block' : 'inline'
+			}-error"> ${ escapeHTML(message) }</div>`;
 		}
-	}
+	};
 
 	// Takes a string and renders all latex blocks inside it
 	render(str, renderFunction) {
@@ -143,7 +153,10 @@ class Katex {
 
 			// Add to the reuslt what comes before the latex block as well as
 			// the rendered latex content
-			const rendered = renderFunction(parts.latex, match.options.displayMode);
+			const rendered = renderFunction(
+				parts.latex,
+				match.options.displayMode,
+			);
 			result += parts.before + rendered;
 			// Set what comes after the latex block to be examined next
 			str = parts.after;
@@ -175,7 +188,7 @@ class Katex {
 		});
 
 		return message;
-	}
+	};
 }
 
 export const createKatexMessageRendering = (options) => {

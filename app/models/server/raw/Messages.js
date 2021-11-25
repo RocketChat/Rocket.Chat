@@ -29,7 +29,9 @@ export class MessagesRaw extends BaseRaw {
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -60,7 +62,13 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'livechat_transfer_history',
@@ -121,7 +129,12 @@ export class MessagesRaw extends BaseRaw {
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }) {
 		const params = [
-			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },
+			{
+				$match: {
+					t: { $exists: false },
+					ts: { $gte: start, $lte: end },
+				},
+			},
 			{
 				$lookup: {
 					from: 'rocketchat_room',
@@ -140,15 +153,19 @@ export class MessagesRaw extends BaseRaw {
 					_id: {
 						_id: '$room._id',
 						name: {
-							$cond: [{ $ifNull: ['$room.fname', false] },
+							$cond: [
+								{ $ifNull: ['$room.fname', false] },
 								'$room.fname',
-								'$room.name'],
+								'$room.name',
+							],
 						},
 						t: '$room.t',
 						usernames: {
-							$cond: [{ $ifNull: ['$room.usernames', false] },
+							$cond: [
+								{ $ifNull: ['$room.usernames', false] },
 								'$room.usernames',
-								[]],
+								[],
+							],
 						},
 						date: {
 							$concat: [
@@ -189,10 +206,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(
 			{
 				rid,
-				$or: [
-					{ t: { $exists: false } },
-					{ t: 'livechat-close' },
-				],
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
 			},
 			options,
 		);

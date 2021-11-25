@@ -13,7 +13,11 @@ export class RoomTypesCommon {
 	}
 
 	getTypesToShowOnDashboard() {
-		return Object.keys(this.roomTypes).filter((key) => this.roomTypes[key].includeInDashboard && this.roomTypes[key].includeInDashboard());
+		return Object.keys(this.roomTypes).filter(
+			(key) =>
+				this.roomTypes[key].includeInDashboard
+				&& this.roomTypes[key].includeInDashboard(),
+		);
 	}
 
 	/**
@@ -24,7 +28,9 @@ export class RoomTypesCommon {
 	 */
 	add(roomConfig) {
 		if (!(roomConfig instanceof RoomTypeConfig)) {
-			throw new Error('Invalid Room Configuration object, it must extend "RoomTypeConfig"');
+			throw new Error(
+				'Invalid Room Configuration object, it must extend "RoomTypeConfig"',
+			);
 		}
 
 		if (this.roomTypes[roomConfig.identifier]) {
@@ -43,7 +49,12 @@ export class RoomTypesCommon {
 
 		this.roomTypes[roomConfig.identifier] = roomConfig;
 
-		if (roomConfig.route && roomConfig.route.path && roomConfig.route.name && roomConfig.route.action) {
+		if (
+			roomConfig.route
+			&& roomConfig.route.path
+			&& roomConfig.route.name
+			&& roomConfig.route.action
+		) {
 			const routeConfig = {
 				name: roomConfig.route.name,
 				action: roomConfig.route.action,
@@ -59,7 +70,11 @@ export class RoomTypesCommon {
 	}
 
 	hasCustomLink(roomType) {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link != null;
+		return (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].route
+			&& this.roomTypes[roomType].route.link != null
+		);
 	}
 
 	/**
@@ -97,7 +112,10 @@ export class RoomTypesCommon {
 	}
 
 	getRelativePath(roomType, subData) {
-		return this.getRouteLink(roomType, subData).replace(Meteor.absoluteUrl(), '');
+		return this.getRouteLink(roomType, subData).replace(
+			Meteor.absoluteUrl(),
+			'',
+		);
 	}
 
 	getRouteData(roomType, subData) {
@@ -106,7 +124,11 @@ export class RoomTypesCommon {
 		}
 
 		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+		if (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].route
+			&& this.roomTypes[roomType].route.link
+		) {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {

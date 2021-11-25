@@ -36,25 +36,28 @@ export class Uploader {
 		const self = this;
 
 		// Set default options
-		options = _.extend({
-			adaptive: true,
-			capacity: 0.9,
-			chunkSize: 16 * 1024,
-			data: null,
-			file: null,
-			maxChunkSize: 4 * 1024 * 1000,
-			maxTries: 5,
-			onAbort: this.onAbort,
-			onComplete: this.onComplete,
-			onCreate: this.onCreate,
-			onError: this.onError,
-			onProgress: this.onProgress,
-			onStart: this.onStart,
-			onStop: this.onStop,
-			retryDelay: 2000,
-			store: null,
-			transferDelay: 100,
-		}, options);
+		options = _.extend(
+			{
+				adaptive: true,
+				capacity: 0.9,
+				chunkSize: 16 * 1024,
+				data: null,
+				file: null,
+				maxChunkSize: 4 * 1024 * 1000,
+				maxTries: 5,
+				onAbort: this.onAbort,
+				onComplete: this.onComplete,
+				onCreate: this.onCreate,
+				onError: this.onError,
+				onProgress: this.onProgress,
+				onStart: this.onStart,
+				onStop: this.onStop,
+				retryDelay: 2000,
+				store: null,
+				transferDelay: 100,
+			},
+			options,
+		);
 
 		// Check options
 		if (typeof options.adaptive !== 'boolean') {
@@ -64,12 +67,17 @@ export class Uploader {
 			throw new TypeError('capacity is not a number');
 		}
 		if (options.capacity <= 0 || options.capacity > 1) {
-			throw new RangeError('capacity must be a float between 0.1 and 1.0');
+			throw new RangeError(
+				'capacity must be a float between 0.1 and 1.0',
+			);
 		}
 		if (typeof options.chunkSize !== 'number') {
 			throw new TypeError('chunkSize is not a number');
 		}
-		if (!(options.data instanceof Blob) && !(options.data instanceof File)) {
+		if (
+			!(options.data instanceof Blob)
+			&& !(options.data instanceof File)
+		) {
 			throw new TypeError('data is not an Blob or File');
 		}
 		if (options.file === null || typeof options.file !== 'object') {
@@ -108,8 +116,13 @@ export class Uploader {
 		if (typeof options.onStop !== 'function') {
 			throw new TypeError('onStop is not a function');
 		}
-		if (typeof options.store !== 'string' && !(options.store instanceof Store)) {
-			throw new TypeError('store must be the name of the store or an instance of UploadFS.Store');
+		if (
+			typeof options.store !== 'string'
+			&& !(options.store instanceof Store)
+		) {
+			throw new TypeError(
+				'store must be the name of the store or an instance of UploadFS.Store',
+			);
 		}
 
 		// Public attributes
@@ -159,30 +172,42 @@ export class Uploader {
 
 		function finish() {
 			// Finish the upload by telling the store the upload is complete
-			Meteor.call('ufsComplete', fileId, store, token, function(err, uploadedFile) {
-				if (err) {
-					self.onError(err, file);
-					self.abort();
-				} else if (uploadedFile) {
-					uploading = false;
-					complete = true;
-					file = uploadedFile;
-					self.onComplete(uploadedFile);
-				}
-			});
+			Meteor.call(
+				'ufsComplete',
+				fileId,
+				store,
+				token,
+				function(err, uploadedFile) {
+					if (err) {
+						self.onError(err, file);
+						self.abort();
+					} else if (uploadedFile) {
+						uploading = false;
+						complete = true;
+						file = uploadedFile;
+						self.onComplete(uploadedFile);
+					}
+				},
+			);
 		}
 
 		/**
-     * Aborts the current transfer
-     */
+		 * Aborts the current transfer
+		 */
 		self.abort = function() {
 			// Remove the file from database
-			// eslint-disable-next-line no-unused-vars
-			Meteor.call('ufsDelete', fileId, store, token, function(err, result) {
-				if (err) {
-					self.onError(err, file);
-				}
-			});
+			Meteor.call(
+				'ufsDelete',
+				fileId,
+				store,
+				token,
+				// eslint-disable-next-line no-unused-vars
+				function(err, result) {
+					if (err) {
+						self.onError(err, file);
+					}
+				},
+			);
 
 			// Reset uploader status
 			uploading = false;
@@ -196,18 +221,18 @@ export class Uploader {
 		};
 
 		/**
-     * Returns the average speed in bytes per second
-     * @returns {number}
-     */
+		 * Returns the average speed in bytes per second
+		 * @returns {number}
+		 */
 		self.getAverageSpeed = function() {
 			const seconds = self.getElapsedTime() / 1000;
 			return self.getLoaded() / seconds;
 		};
 
 		/**
-     * Returns the elapsed time in milliseconds
-     * @returns {number}
-     */
+		 * Returns the elapsed time in milliseconds
+		 * @returns {number}
+		 */
 		self.getElapsedTime = function() {
 			if (startTime && self.isUploading()) {
 				return elapsedTime + (Date.now() - startTime);
@@ -216,43 +241,45 @@ export class Uploader {
 		};
 
 		/**
-     * Returns the file
-     * @return {object}
-     */
+		 * Returns the file
+		 * @return {object}
+		 */
 		self.getFile = function() {
 			return file;
 		};
 
 		/**
-     * Returns the loaded bytes
-     * @return {number}
-     */
+		 * Returns the loaded bytes
+		 * @return {number}
+		 */
 		self.getLoaded = function() {
 			return loaded;
 		};
 
 		/**
-     * Returns current progress
-     * @return {number}
-     */
+		 * Returns current progress
+		 * @return {number}
+		 */
 		self.getProgress = function() {
-			return Math.min((loaded / total) * 100 / 100, 1.0);
+			return Math.min(((loaded / total) * 100) / 100, 1.0);
 		};
 
 		/**
-     * Returns the remaining time in milliseconds
-     * @returns {number}
-     */
+		 * Returns the remaining time in milliseconds
+		 * @returns {number}
+		 */
 		self.getRemainingTime = function() {
 			const averageSpeed = self.getAverageSpeed();
 			const remainingBytes = total - self.getLoaded();
-			return averageSpeed && remainingBytes ? Math.max(remainingBytes / averageSpeed, 0) : 0;
+			return averageSpeed && remainingBytes
+				? Math.max(remainingBytes / averageSpeed, 0)
+				: 0;
 		};
 
 		/**
-     * Returns the upload speed in bytes per second
-     * @returns {number}
-     */
+		 * Returns the upload speed in bytes per second
+		 * @returns {number}
+		 */
 		self.getSpeed = function() {
 			if (timeA && timeB && self.isUploading()) {
 				const seconds = (timeB - timeA) / 1000;
@@ -262,36 +289,36 @@ export class Uploader {
 		};
 
 		/**
-     * Returns the total bytes
-     * @return {number}
-     */
+		 * Returns the total bytes
+		 * @return {number}
+		 */
 		self.getTotal = function() {
 			return total;
 		};
 
 		/**
-     * Checks if the transfer is complete
-     * @return {boolean}
-     */
+		 * Checks if the transfer is complete
+		 * @return {boolean}
+		 */
 		self.isComplete = function() {
 			return complete;
 		};
 
 		/**
-     * Checks if the transfer is active
-     * @return {boolean}
-     */
+		 * Checks if the transfer is active
+		 * @return {boolean}
+		 */
 		self.isUploading = function() {
 			return uploading;
 		};
 
 		/**
-     * Reads a portion of file
-     * @param start
-     * @param length
-     * @param callback
-     * @returns {Blob}
-     */
+		 * Reads a portion of file
+		 * @param start
+		 * @param length
+		 * @param callback
+		 * @returns {Blob}
+		 */
 		self.readChunk = function(start, length, callback) {
 			if (typeof callback !== 'function') {
 				throw new Error('readChunk is missing callback');
@@ -322,8 +349,8 @@ export class Uploader {
 		};
 
 		/**
-     * Sends a file chunk to the store
-     */
+		 * Sends a file chunk to the store
+		 */
 		self.sendChunk = function() {
 			if (!complete && startTime !== null) {
 				if (offset < total) {
@@ -336,12 +363,19 @@ export class Uploader {
 						const min = self.capacity * (1 - capacityMargin);
 
 						if (duration >= max) {
-							chunkSize = Math.abs(Math.round(chunkSize * (max - duration)));
+							chunkSize = Math.abs(
+								Math.round(chunkSize * (max - duration)),
+							);
 						} else if (duration < min) {
-							chunkSize = Math.round(chunkSize * (min / duration));
+							chunkSize = Math.round(
+								chunkSize * (min / duration),
+							);
 						}
 						// Limit to max chunk size
-						if (self.maxChunkSize > 0 && chunkSize > self.maxChunkSize) {
+						if (
+							self.maxChunkSize > 0
+							&& chunkSize > self.maxChunkSize
+						) {
 							chunkSize = self.maxChunkSize;
 						}
 					}
@@ -374,15 +408,23 @@ export class Uploader {
 										elapsedTime = Date.now() - startTime;
 										finish();
 									} else {
-										Meteor.setTimeout(self.sendChunk, self.transferDelay);
+										Meteor.setTimeout(
+											self.sendChunk,
+											self.transferDelay,
+										);
 									}
-								} else if (![402, 403, 404, 500].includes(xhr.status)) {
+								} else if (
+									![402, 403, 404, 500].includes(xhr.status)
+								) {
 									// Retry until max tries is reach
 									// But don't retry if these errors occur
 									if (tries <= self.maxTries) {
 										tries += 1;
 										// Wait before retrying
-										Meteor.setTimeout(self.sendChunk, self.retryDelay);
+										Meteor.setTimeout(
+											self.sendChunk,
+											self.retryDelay,
+										);
 									} else {
 										self.abort();
 									}
@@ -412,27 +454,31 @@ export class Uploader {
 		};
 
 		/**
-     * Starts or resumes the transfer
-     */
+		 * Starts or resumes the transfer
+		 */
 		self.start = function() {
 			if (!fileId) {
 				// Create the file document and get the token
 				// that allows the user to send chunks to the store.
-				Meteor.call('ufsCreate', _.extend({}, file), function(err, result) {
-					if (err) {
-						self.onError(err, file);
-					} else if (result) {
-						token = result.token;
-						postUrl = result.url;
-						fileId = result.fileId;
-						file._id = result.fileId;
-						self.onCreate(file);
-						tries = 0;
-						startTime = Date.now();
-						self.onStart(file);
-						self.sendChunk();
-					}
-				});
+				Meteor.call(
+					'ufsCreate',
+					_.extend({}, file),
+					function(err, result) {
+						if (err) {
+							self.onError(err, file);
+						} else if (result) {
+							token = result.token;
+							postUrl = result.url;
+							fileId = result.fileId;
+							file._id = result.fileId;
+							self.onCreate(file);
+							tries = 0;
+							startTime = Date.now();
+							self.onStart(file);
+							self.sendChunk();
+						}
+					},
+				);
 			} else if (!uploading && !complete) {
 				// Resume uploading
 				tries = 0;
@@ -443,8 +489,8 @@ export class Uploader {
 		};
 
 		/**
-     * Stops the transfer
-     */
+		 * Stops the transfer
+		 */
 		self.stop = function() {
 			if (uploading) {
 				// Update elapsed time
@@ -453,72 +499,72 @@ export class Uploader {
 				uploading = false;
 				self.onStop(file);
 
-				// eslint-disable-next-line no-unused-vars
-				Meteor.call('ufsStop', fileId, store, token, function(err, result) {
-					if (err) {
-						self.onError(err, file);
-					}
-				});
+				Meteor.call(
+					'ufsStop',
+					fileId,
+					store,
+					token,
+					// eslint-disable-next-line no-unused-vars
+					function(err, result) {
+						if (err) {
+							self.onError(err, file);
+						}
+					},
+				);
 			}
 		};
 	}
 
 	/**
-   * Called when the file upload is aborted
-   * @param file
-   */
+	 * Called when the file upload is aborted
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onAbort(file) {
-	}
+	onAbort(file) {}
 
 	/**
-   * Called when the file upload is complete
-   * @param file
-   */
+	 * Called when the file upload is complete
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onComplete(file) {
-	}
+	onComplete(file) {}
 
 	/**
-   * Called when the file is created in the collection
-   * @param file
-   */
+	 * Called when the file is created in the collection
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onCreate(file) {
-	}
+	onCreate(file) {}
 
 	/**
-   * Called when an error occurs during file upload
-   * @param err
-   * @param file
-   */
+	 * Called when an error occurs during file upload
+	 * @param err
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
 	onError(err, file) {
 		console.error(`ufs: ${ err.message }`);
 	}
 
 	/**
-   * Called when a file chunk has been sent
-   * @param file
-   * @param progress is a float from 0.0 to 1.0
-   */
+	 * Called when a file chunk has been sent
+	 * @param file
+	 * @param progress is a float from 0.0 to 1.0
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onProgress(file, progress) {
-	}
+	onProgress(file, progress) {}
 
 	/**
-   * Called when the file upload starts
-   * @param file
-   */
+	 * Called when the file upload starts
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onStart(file) {
-	}
+	onStart(file) {}
 
 	/**
-   * Called when the file upload stops
-   * @param file
-   */
+	 * Called when the file upload stops
+	 * @param file
+	 */
 	// eslint-disable-next-line no-unused-vars
-	onStop(file) {
-	}
+	onStop(file) {}
 }

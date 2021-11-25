@@ -8,27 +8,46 @@ import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'authorization:removeUserFromRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
-				method: 'authorization:removeUserFromRole',
-				action: 'Accessing_permissions',
-			});
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'access-permissions')
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Access permissions is not allowed',
+				{
+					method: 'authorization:removeUserFromRole',
+					action: 'Accessing_permissions',
+				},
+			);
 		}
 
-		if (!roleName || !_.isString(roleName) || !username || !_.isString(username)) {
-			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-				method: 'authorization:removeUserFromRole',
-			});
+		if (
+			!roleName
+			|| !_.isString(roleName)
+			|| !username
+			|| !_.isString(username)
+		) {
+			throw new Meteor.Error(
+				'error-invalid-arguments',
+				'Invalid arguments',
+				{
+					method: 'authorization:removeUserFromRole',
+				},
+			);
 		}
 
-		const user = Meteor.users.findOne({
-			username,
-		}, {
-			fields: {
-				_id: 1,
-				roles: 1,
+		const user = Meteor.users.findOne(
+			{
+				username,
 			},
-		});
+			{
+				fields: {
+					_id: 1,
+					roles: 1,
+				},
+			},
+		);
 
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -38,18 +57,24 @@ Meteor.methods({
 
 		// prevent removing last user from admin role
 		if (roleName === 'admin') {
-			const adminCount = Meteor.users.find({
-				roles: {
-					$in: ['admin'],
-				},
-			}).count();
+			const adminCount = Meteor.users
+				.find({
+					roles: {
+						$in: ['admin'],
+					},
+				})
+				.count();
 
 			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
-				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-					method: 'removeUserFromRole',
-					action: 'Remove_last_admin',
-				});
+				throw new Meteor.Error(
+					'error-action-not-allowed',
+					'Leaving the app without admins is not allowed',
+					{
+						method: 'removeUserFromRole',
+						action: 'Remove_last_admin',
+					},
+				);
 			}
 		}
 

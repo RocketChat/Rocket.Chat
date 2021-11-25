@@ -18,37 +18,60 @@ import './roomAccessValidator.internalService';
 Meteor.startup(async () => {
 	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
-	callbacks.add('beforeLeaveRoom', function(user, room) {
-		if (room.t !== 'l') {
+	callbacks.add(
+		'beforeLeaveRoom',
+		function(user, room) {
+			if (room.t !== 'l') {
+				return user;
+			}
+			throw new Meteor.Error(
+				TAPi18n.__(
+					'You_cant_leave_a_livechat_room_Please_use_the_close_button',
+					{
+						lng: user.language || settings.get('Language') || 'en',
+					},
+				),
+			);
+		},
+		callbacks.priority.LOW,
+		'cant-leave-room',
+	);
+
+	callbacks.add(
+		'beforeJoinRoom',
+		function(user, room) {
+			if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
+				throw new Meteor.Error(
+					'error-user-is-not-agent',
+					'User is not an Omnichannel Agent',
+					{ method: 'beforeJoinRoom' },
+				);
+			}
+
 			return user;
-		}
-		throw new Meteor.Error(TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-			lng: user.language || settings.get('Language') || 'en',
-		}));
-	}, callbacks.priority.LOW, 'cant-leave-room');
-
-	callbacks.add('beforeJoinRoom', function(user, room) {
-		if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
-			throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', { method: 'beforeJoinRoom' });
-		}
-
-		return user;
-	}, callbacks.priority.LOW, 'cant-join-room');
-
+		},
+		callbacks.priority.LOW,
+		'cant-join-room',
+	);
 
 	const monitor = new LivechatAgentActivityMonitor();
 
 	let TroubleshootDisableLivechatActivityMonitor;
-	settings.watch('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
-		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
-		TroubleshootDisableLivechatActivityMonitor = value;
+	settings.watch(
+		'Troubleshoot_Disable_Livechat_Activity_Monitor',
+		(value) => {
+			if (TroubleshootDisableLivechatActivityMonitor === value) {
+				return;
+			}
+			TroubleshootDisableLivechatActivityMonitor = value;
 
-		if (value) {
-			return monitor.stop();
-		}
+			if (value) {
+				return monitor.stop();
+			}
 
-		monitor.start();
-	});
+			monitor.start();
+		},
+	);
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch('Livechat_enable_business_hours', async (value) => {
@@ -62,5 +85,15 @@ Meteor.startup(async () => {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
-	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }));
+	Accounts.onLogout(
+		({ user }) =>
+			user?.roles?.includes('livechat-agent')
+			&& !user?.roles?.includes('bot')
+			&& Livechat.setUserStatusLivechatIf(
+				user._id,
+				'not-available',
+				{},
+				{ livechatStatusSystemModified: true },
+			),
+	);
 });

@@ -25,7 +25,14 @@ const NavigationItem = ({
 			<Box withTruncatedText fontScale='p1' mi='x4' color='info'>
 				{label}{' '}
 				{tag && (
-					<Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>
+					<Tag
+						style={{
+							display: 'inline',
+							backgroundColor: '#000',
+							color: '#FFF',
+							marginLeft: 4,
+						}}
+					>
 						{tag}
 					</Tag>
 				)}

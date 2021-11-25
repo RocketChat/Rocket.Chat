@@ -23,9 +23,13 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ escaped ? code : escapeHTML(code) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${
+			escaped ? code : escapeHTML(code)
+		}</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : escapeHTML(code) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${
+			escaped ? code : escapeHTML(code)
+		}</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
@@ -64,7 +68,10 @@ renderer.blockquote = function(quote) {
 const linkRenderer = renderer.link;
 renderer.link = function(href, title, text) {
 	const html = linkRenderer.call(renderer, href, title, text);
-	return html.replace(/^<a /, '<a target="_blank" rel="nofollow noopener noreferrer" ');
+	return html.replace(
+		/^<a /,
+		'<a target="_blank" rel="nofollow noopener noreferrer" ',
+	);
 };
 
 const highlight = function(code, lang) {
@@ -80,16 +87,10 @@ const highlight = function(code, lang) {
 	}
 };
 
-export const marked = (message, {
-	marked: {
-		gfm,
-		tables,
-		breaks,
-		pedantic,
-		smartLists,
-		smartypants,
-	} = {},
-}) => {
+export const marked = (
+	message,
+	{ marked: { gfm, tables, breaks, pedantic, smartLists, smartypants } = {} },
+) => {
 	msg = message;
 
 	if (!message.tokens) {

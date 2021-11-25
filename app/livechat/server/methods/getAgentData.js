@@ -11,7 +11,12 @@ Meteor.methods({
 		const room = LivechatRooms.findOneById(roomId);
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
+		if (
+			!room
+			|| room.t !== 'l'
+			|| !room.v
+			|| room.v.token !== visitor.token
+		) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 

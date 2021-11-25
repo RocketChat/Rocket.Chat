@@ -27,7 +27,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			},
 		});
 
-
 		this.add('bigbluebutton_Open_New_Window', false, {
 			type: 'boolean',
 			enableQuery: {
@@ -37,7 +36,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			i18nLabel: 'Always_open_in_new_window',
 			public: true,
 		});
-
 
 		this.add('bigbluebutton_enable_d', true, {
 			type: 'boolean',

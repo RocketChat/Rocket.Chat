@@ -5,8 +5,13 @@ import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'view-livechat-manager')
+		) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveAppearance',
+			});
 		}
 
 		const validSettings = [
@@ -31,7 +36,9 @@ Meteor.methods({
 			'Livechat_registration_form_message',
 		];
 
-		const valid = settings.every((setting) => validSettings.indexOf(setting._id) !== -1);
+		const valid = settings.every(
+			(setting) => validSettings.indexOf(setting._id) !== -1,
+		);
 
 		if (!valid) {
 			throw new Meteor.Error('invalid-setting');

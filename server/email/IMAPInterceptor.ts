@@ -9,7 +9,7 @@ type IMAPOptions = {
 	filter: any[];
 	rejectBeforeTS?: Date;
 	markSeen: boolean;
-}
+};
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
@@ -75,7 +75,11 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	isActive(): boolean {
-		if (this.imap && this.imap.state && this.imap.state === 'disconnected') {
+		if (
+			this.imap
+			&& this.imap.state
+			&& this.imap.state === 'disconnected'
+		) {
 			return false;
 		}
 
@@ -117,7 +121,11 @@ export class IMAPInterceptor extends EventEmitter {
 						}
 
 						simpleParser(stream, (_err, email) => {
-							if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
+							if (
+								this.options.rejectBeforeTS
+								&& email.date
+								&& email.date < this.options.rejectBeforeTS
+							) {
 								this.log('Rejecting email', email.subject);
 								return;
 							}
@@ -131,7 +139,9 @@ export class IMAPInterceptor extends EventEmitter {
 						// delete message from inbox
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
-								if (err) { this.log(`Mark deleted error: ${ err }`); }
+								if (err) {
+									this.log(`Mark deleted error: ${ err }`);
+								}
 							});
 						}
 					});

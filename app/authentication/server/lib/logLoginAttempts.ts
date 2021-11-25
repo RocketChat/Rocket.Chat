@@ -8,7 +8,10 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	}
 
 	let user = 'unknown';
-	if (login.methodArguments[0]?.user?.username && settings.get('Login_Logs_Username')) {
+	if (
+		login.methodArguments[0]?.user?.username
+		&& settings.get('Login_Logs_Username')
+	) {
 		user = login.methodArguments[0]?.user?.username;
 	}
 	const { connection } = login;
@@ -16,15 +19,17 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_ClientIp')) {
 		clientAddress = '-';
 	}
-	let forwardedFor = connection.httpHeaders && connection.httpHeaders['x-forwarded-for'];
+	let forwardedFor =		connection.httpHeaders && connection.httpHeaders['x-forwarded-for'];
 	let realIp = connection.httpHeaders && connection.httpHeaders['x-real-ip'];
 	if (!settings.get('Login_Logs_ForwardedForIp')) {
 		forwardedFor = '-';
 		realIp = '-';
 	}
-	let userAgent = connection.httpHeaders && connection.httpHeaders['user-agent'];
+	let userAgent =		connection.httpHeaders && connection.httpHeaders['user-agent'];
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}
-	SystemLogger.info(`Failed login detected - Username[${ user }] ClientAddress[${ clientAddress }] ForwardedFor[${ forwardedFor }] XRealIp[${ realIp }] UserAgent[${ userAgent }]`);
+	SystemLogger.info(
+		`Failed login detected - Username[${ user }] ClientAddress[${ clientAddress }] ForwardedFor[${ forwardedFor }] XRealIp[${ realIp }] UserAgent[${ userAgent }]`,
+	);
 };

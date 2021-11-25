@@ -29,7 +29,8 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": ["warn", {
       "additionalHooks": "(useComponentDidUpdate)"
-    }]
+    }],
+    "no-mixed-spaces-and-tabs": ["error", "smart-tabs"]
   },
   "settings": {
     "import/resolver": {
@@ -124,7 +125,8 @@
           "argsIgnorePattern": "^_",
           "ignoreRestSiblings": true
         }],
-        "anti-trojan-source/no-bidi": "error"
+        "anti-trojan-source/no-bidi": "error",
+        "no-mixed-spaces-and-tabs": ["error", "smart-tabs"]
       },
       "env": {
         "browser": true,

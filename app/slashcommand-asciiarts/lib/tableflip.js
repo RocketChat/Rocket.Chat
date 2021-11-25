@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils';
 /*
-* Tableflip is a named function that will replace /Tableflip commands
-* @param {Object} message - The message object
-*/
-
+ * Tableflip is a named function that will replace /Tableflip commands
+ * @param {Object} message - The message object
+ */
 
 function Tableflip(command, params, item) {
 	if (command === 'tableflip') {

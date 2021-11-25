@@ -10,15 +10,23 @@ Meteor.methods({
 		check(name, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'setRealName',
+			});
 		}
 
 		if (!settings.get('Accounts_AllowRealNameChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'setRealName',
+			});
 		}
 
 		if (!setRealName(Meteor.userId(), name)) {
-			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', { method: 'setRealName' });
+			throw new Meteor.Error(
+				'error-could-not-change-name',
+				'Could not change name',
+				{ method: 'setRealName' },
+			);
 		}
 
 		return name;

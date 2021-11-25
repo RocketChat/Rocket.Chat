@@ -23,7 +23,6 @@ function ExtractRange(options) {
 }
 util.inherits(ExtractRange, stream.Transform);
 
-
 ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	if (this.bytes_read > this.stop) {
 		// done reading
@@ -39,7 +38,7 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 		} else {
 			start = this.start - this.bytes_read;
 		}
-		if ((this.stop - this.bytes_read + 1) < chunk.length) {
+		if (this.stop - this.bytes_read + 1 < chunk.length) {
 			stop = this.stop - this.bytes_read + 1;
 		} else {
 			stop = chunk.length;
@@ -57,10 +56,12 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
-	[rs, ws].forEach((stream) => stream.on('error', function(err) {
-		store.onReadError.call(store, err, fileId, file);
-		res.end();
-	}));
+	[rs, ws].forEach((stream) =>
+		stream.on('error', function(err) {
+			store.onReadError.call(store, err, fileId, file);
+			res.end();
+		}),
+	);
 
 	ws.on('close', function() {
 		// Close output stream at the end
@@ -79,7 +80,9 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 		}
 
 		logger.debug('File upload extracting range');
-		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
+		ws.pipe(
+			new ExtractRange({ start: range.start, stop: range.stop }),
+		).pipe(res);
 		return;
 	}
 
@@ -111,10 +114,12 @@ const copyFromGridFS = function(storeName, fileId, file, out) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 
-	[rs, out].forEach((stream) => stream.on('error', function(err) {
-		store.onReadError.call(store, err, fileId, file);
-		out.end();
-	}));
+	[rs, out].forEach((stream) =>
+		stream.on('error', function(err) {
+			store.onReadError.call(store, err, fileId, file);
+			out.end();
+		}),
+	);
 
 	rs.pipe(out);
 };
@@ -128,7 +133,7 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:UserDataFiles', {
 });
 
 // DEPRECATED: backwards compatibility (remove)
-UploadFS.getStores().rocketchat_uploads = UploadFS.getStores()['GridFS:Uploads'];
+UploadFS.getStores().rocketchat_uploads =	UploadFS.getStores()['GridFS:Uploads'];
 
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
@@ -140,7 +145,10 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`,
+		);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size);
@@ -159,7 +167,10 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`,
+		);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type);
 		res.setHeader('Content-Length', file.size);

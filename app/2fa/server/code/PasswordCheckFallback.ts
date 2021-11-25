@@ -13,7 +13,11 @@ export class PasswordCheckFallback implements ICodeCheck {
 		}
 		// TODO: Remove this setting for version 4.0 forcing the
 		// password fallback for who has password set.
-		if (settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+		if (
+			settings.get(
+				'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
+			)
+		) {
 			return user.services?.password?.bcrypt != null;
 		}
 		return false;

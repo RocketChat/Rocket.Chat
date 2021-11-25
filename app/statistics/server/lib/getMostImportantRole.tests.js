@@ -5,9 +5,15 @@ import { getMostImportantRole } from './getMostImportantRole';
 describe('getMostImportantRole', () => {
 	it('should return the same role if only one exists', () => {
 		expect(getMostImportantRole(['admin'])).to.be.eq('admin');
-		expect(getMostImportantRole(['livechat-manager'])).to.be.eq('livechat-manager');
-		expect(getMostImportantRole(['livechat-monitor'])).to.be.eq('livechat-monitor');
-		expect(getMostImportantRole(['livechat-agent'])).to.be.eq('livechat-agent');
+		expect(getMostImportantRole(['livechat-manager'])).to.be.eq(
+			'livechat-manager',
+		);
+		expect(getMostImportantRole(['livechat-monitor'])).to.be.eq(
+			'livechat-monitor',
+		);
+		expect(getMostImportantRole(['livechat-agent'])).to.be.eq(
+			'livechat-agent',
+		);
 		expect(getMostImportantRole(['user'])).to.be.eq('user');
 		expect(getMostImportantRole(['guest'])).to.be.eq('guest');
 		expect(getMostImportantRole(['anonymous'])).to.be.eq('anonymous');
@@ -33,11 +39,21 @@ describe('getMostImportantRole', () => {
 		expect(getMostImportantRole(['user', 'admin'])).to.be.eq('admin');
 		expect(getMostImportantRole(['user', 'anonymous'])).to.be.eq('user');
 		expect(getMostImportantRole(['user', 'guest'])).to.be.eq('user');
-		expect(getMostImportantRole(['user', 'guest', 'livechat-monitor'])).to.be.eq('livechat-monitor');
-		expect(getMostImportantRole(['user', 'custom1'])).to.be.eq('custom-role');
-		expect(getMostImportantRole(['custom2', 'user', 'custom1'])).to.be.eq('custom-role');
-		expect(getMostImportantRole(['custom2', 'admin', 'custom1'])).to.be.eq('admin');
-		expect(getMostImportantRole(['custom2', 'app'])).to.be.eq('custom-role');
+		expect(
+			getMostImportantRole(['user', 'guest', 'livechat-monitor']),
+		).to.be.eq('livechat-monitor');
+		expect(getMostImportantRole(['user', 'custom1'])).to.be.eq(
+			'custom-role',
+		);
+		expect(getMostImportantRole(['custom2', 'user', 'custom1'])).to.be.eq(
+			'custom-role',
+		);
+		expect(getMostImportantRole(['custom2', 'admin', 'custom1'])).to.be.eq(
+			'admin',
+		);
+		expect(getMostImportantRole(['custom2', 'app'])).to.be.eq(
+			'custom-role',
+		);
 		expect(getMostImportantRole(['anonymous', 'app'])).to.be.eq('app');
 	});
 });

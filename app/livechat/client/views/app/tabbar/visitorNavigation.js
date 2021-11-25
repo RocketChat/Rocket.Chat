@@ -16,7 +16,10 @@ Template.visitorNavigation.helpers({
 	},
 
 	pages() {
-		const room = ChatRoom.findOne({ _id: this.rid }, { fields: { 'v.token': 1 } });
+		const room = ChatRoom.findOne(
+			{ _id: this.rid },
+			{ fields: { 'v.token': 1 } },
+		);
 
 		if (room) {
 			return Template.instance().pages.get();
@@ -42,12 +45,14 @@ Template.visitorNavigation.helpers({
 	accessDateTime() {
 		return moment(this.ts).format('L LTS');
 	},
-
 });
 
 Template.visitorNavigation.events({
 	'scroll .visitor-scroll': _.throttle(function(e, instance) {
-		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
+		if (
+			e.target.scrollTop
+			>= e.target.scrollHeight - e.target.clientHeight
+		) {
 			const pages = instance.pages.get();
 			if (instance.total.get() <= pages.length) {
 				return;
@@ -69,7 +74,9 @@ Template.visitorNavigation.onCreated(async function() {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
 		if (currentData && currentData.rid) {
-			const { pages, total } = await APIClient.v1.get(`livechat/visitors.pagesVisited/${ currentData.rid }?count=${ ITEMS_COUNT }&offset=${ offset }`);
+			const { pages, total } = await APIClient.v1.get(
+				`livechat/visitors.pagesVisited/${ currentData.rid }?count=${ ITEMS_COUNT }&offset=${ offset }`,
+			);
 			this.isLoading.set(false);
 			this.total.set(total);
 			this.pages.set(this.pages.get().concat(pages));

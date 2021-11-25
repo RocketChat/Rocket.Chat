@@ -5,10 +5,17 @@ import { businessHourManager } from '../../../../../app/livechat/server/business
 
 Meteor.methods({
 	'livechat:removeBusinessHour'(id: string, type: string) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-business-hours')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeBusinessHour' });
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'view-livechat-business-hours')
+		) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:removeBusinessHour',
+			});
 		}
 
-		return Promise.await(businessHourManager.removeBusinessHourByIdAndType(id, type));
+		return Promise.await(
+			businessHourManager.removeBusinessHourByIdAndType(id, type),
+		);
 	},
 });

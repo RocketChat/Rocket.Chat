@@ -22,7 +22,11 @@ const processString = function(string: string, date: Date): string {
 	}
 };
 
-const transformLog = function(item: any): { id: string; string: string; ts: Date } {
+const transformLog = function(item: any): {
+	id: string;
+	string: string;
+	ts: Date;
+} {
 	return {
 		id: item.id,
 		string: processString(item.data, item.ts),
@@ -33,7 +37,10 @@ const transformLog = function(item: any): { id: string; string: string; ts: Date
 logEntries.on('log', (item) => {
 	// TODO having this as 'emitWithoutBroadcast' will not sent this data to ddp-streamer, so this data
 	// won't be available when using micro services.
-	notifications.streamStdout.emitWithoutBroadcast('stdout', transformLog(item));
+	notifications.streamStdout.emitWithoutBroadcast(
+		'stdout',
+		transformLog(item),
+	);
 });
 
 export function getLogs(): { id: string; string: string; ts: Date }[] {

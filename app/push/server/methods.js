@@ -65,12 +65,15 @@ Meteor.methods({
 			appTokensCollection._collection.insert(doc);
 		} else {
 			// We found the app so update the updatedAt and set the token
-			appTokensCollection.update({ _id: doc._id }, {
-				$set: {
-					updatedAt: new Date(),
-					token: options.token,
+			appTokensCollection.update(
+				{ _id: doc._id },
+				{
+					$set: {
+						updatedAt: new Date(),
+						token: options.token,
+					},
 				},
-			});
+			);
 		}
 
 		if (doc.token) {
@@ -98,7 +101,10 @@ Meteor.methods({
 		check(id, String);
 
 		logger.debug(`Settings userId "${ this.userId }" for app:`, id);
-		const found = appTokensCollection.update({ _id: id }, { $set: { userId: this.userId } });
+		const found = appTokensCollection.update(
+			{ _id: id },
+			{ $set: { userId: this.userId } },
+		);
 
 		return !!found;
 	},

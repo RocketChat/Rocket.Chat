@@ -35,7 +35,10 @@ export class AppUploadsConverter {
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
 			room: (upload) => {
-				const result = this.orch.getConverters().get('rooms').convertById(upload.rid);
+				const result = this.orch
+					.getConverters()
+					.get('rooms')
+					.convertById(upload.rid);
 				delete upload.rid;
 				return result;
 			},
@@ -44,7 +47,10 @@ export class AppUploadsConverter {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('users').convertById(upload.userId);
+				const result = this.orch
+					.getConverters()
+					.get('users')
+					.convertById(upload.userId);
 				delete upload.userId;
 				return result;
 			},
@@ -53,7 +59,10 @@ export class AppUploadsConverter {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
+				const result = this.orch
+					.getConverters()
+					.get('visitors')
+					.convertByToken(upload.visitorToken);
 				delete upload.visitorToken;
 				return result;
 			},

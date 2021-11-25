@@ -2,7 +2,10 @@ import mock from 'mock-require';
 import { expect } from 'chai';
 
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
-import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
+import {
+	appMessageMock,
+	appMessageInvalidRoomMock,
+} from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
@@ -35,7 +38,7 @@ describe('The AppMessagesConverter instance', function() {
 			};
 		};
 
-		orchestrator.getConverters().get('rooms').convertById = function convertRoomByIdStub(id) {
+		orchestrator.getConverters().get('rooms').convertById =			function convertRoomByIdStub(id) {
 			return RoomsMock.convertedData[id];
 		};
 
@@ -54,14 +57,24 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should return a proper schema', function() {
-			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
+			const appMessage = messagesConverter.convertMessage(
+				messagesMock.findOneById('SimpleMessageMock'),
+			);
 
 			expect(appMessage).to.have.property('id', 'SimpleMessageMock');
-			expect(appMessage).to.have.property('createdAt').which.equalTime(createdAt);
-			expect(appMessage).to.have.property('updatedAt').which.equalTime(updatedAt);
+			expect(appMessage)
+				.to.have.property('createdAt')
+				.which.equalTime(createdAt);
+			expect(appMessage)
+				.to.have.property('updatedAt')
+				.which.equalTime(updatedAt);
 			expect(appMessage).to.have.property('groupable', false);
-			expect(appMessage).to.have.property('sender').which.includes({ id: 'rocket.cat' });
-			expect(appMessage).to.have.property('room').which.includes({ id: 'GENERAL' });
+			expect(appMessage)
+				.to.have.property('sender')
+				.which.includes({ id: 'rocket.cat' });
+			expect(appMessage)
+				.to.have.property('room')
+				.which.includes({ id: 'GENERAL' });
 
 			expect(appMessage).not.to.have.property('editor');
 			expect(appMessage).not.to.have.property('attachments');
@@ -73,7 +86,7 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should not mutate the original message object', function() {
-			const rocketchatMessageMock = messagesMock.findOneById('SimpleMessageMock');
+			const rocketchatMessageMock =				messagesMock.findOneById('SimpleMessageMock');
 
 			messagesConverter.convertMessage(rocketchatMessageMock);
 
@@ -93,15 +106,19 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message', function() {
-			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
+			const appMessage = messagesConverter.convertMessage(
+				messagesMock.findOneById('SimpleMessageMock'),
+			);
 
 			expect(appMessage)
 				.to.have.property('_unmappedProperties_')
 				.which.has.property('t', 'uj');
 		});
 
-		it('should return basic sender info when it\'s not a Rocket.Chat user (e.g. Livechat Guest)', function() {
-			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
+		it("should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)", function() {
+			const appMessage = messagesConverter.convertMessage(
+				messagesMock.findOneById('LivechatGuestMessageMock'),
+			);
 
 			expect(appMessage).to.have.property('sender').which.includes({
 				id: 'guest1234',
@@ -113,19 +130,23 @@ describe('The AppMessagesConverter instance', function() {
 
 	describe('when converting a message from the Engine schema back to Rocket.Chat', function() {
 		it('should return `undefined` when `message` is falsy', function() {
-			const rocketchatMessage = messagesConverter.convertAppMessage(undefined);
+			const rocketchatMessage =				messagesConverter.convertAppMessage(undefined);
 
 			expect(rocketchatMessage).to.be.undefined;
 		});
 
 		it('should return a proper schema', function() {
-			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
+			const rocketchatMessage =				messagesConverter.convertAppMessage(appMessageMock);
 
 			expect(rocketchatMessage).to.have.property('_id', 'appMessageMock');
 			expect(rocketchatMessage).to.have.property('rid', 'GENERAL');
 			expect(rocketchatMessage).to.have.property('groupable', false);
-			expect(rocketchatMessage).to.have.property('ts').which.equalTime(createdAt);
-			expect(rocketchatMessage).to.have.property('_updatedAt').which.equalTime(updatedAt);
+			expect(rocketchatMessage)
+				.to.have.property('ts')
+				.which.equalTime(createdAt);
+			expect(rocketchatMessage)
+				.to.have.property('_updatedAt')
+				.which.equalTime(updatedAt);
 			expect(rocketchatMessage).to.have.property('u').which.includes({
 				_id: 'rocket.cat',
 				username: 'rocket.cat',
@@ -134,14 +155,18 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should merge `_unmappedProperties_` into the returned message', function() {
-			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
+			const rocketchatMessage =				messagesConverter.convertAppMessage(appMessageMock);
 
-			expect(rocketchatMessage).not.to.have.property('_unmappedProperties_');
+			expect(rocketchatMessage).not.to.have.property(
+				'_unmappedProperties_',
+			);
 			expect(rocketchatMessage).to.have.property('t', 'uj');
 		});
 
 		it('should throw if message has an invalid room', function() {
-			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw(Error, 'Invalid room provided on the message.');
+			expect(() =>
+				messagesConverter.convertAppMessage(appMessageInvalidRoomMock),
+			).to.throw(Error, 'Invalid room provided on the message.');
 		});
 	});
 });

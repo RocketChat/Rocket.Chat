@@ -1,7 +1,12 @@
 import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
-import { getBundleModules, isBundle, getBundleFromModule, BundleFeature } from './bundles';
+import {
+	getBundleModules,
+	isBundle,
+	getBundleFromModule,
+	BundleFeature,
+} from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
 import { ILicense } from '../definitions/ILicense';
@@ -18,7 +23,7 @@ let maxGuestUsers = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
-	private url: string|null = null;
+	private url: string | null = null;
 
 	private licenses: IValidLicense[] = [];
 
@@ -74,7 +79,11 @@ class LicenseClass {
 			license.modules
 				.filter(isBundle)
 				.map(getBundleFromModule)
-				.forEach((tag) => tag && this._addTag({ name: tag, color: getTagColor(tag) }));
+				.forEach(
+					(tag) =>
+						tag
+						&& this._addTag({ name: tag, color: getTagColor(tag) }),
+				);
 			return;
 		}
 
@@ -149,7 +158,9 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
-					console.error(`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`);
+					console.error(
+						`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`,
+					);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -157,7 +168,9 @@ class LicenseClass {
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
 				item.valid = false;
-				console.error(`#### License error: expired, valid until ${ license.expiry }`);
+				console.error(
+					`#### License error: expired, valid until ${ license.expiry }`,
+				);
 				this._invalidModules(license.modules);
 				return item;
 			}
@@ -193,7 +206,10 @@ class LicenseClass {
 	}
 
 	showLicenses(): void {
-		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
+		if (
+			!process.env.LICENSE_DEBUG
+			|| process.env.LICENSE_DEBUG === 'false'
+		) {
 			return;
 		}
 
@@ -217,7 +233,11 @@ class LicenseClass {
 const License = new LicenseClass();
 
 export function addLicense(encryptedLicense: string): boolean {
-	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
+	if (
+		!encryptedLicense
+		|| String(encryptedLicense).trim() === ''
+		|| License.isLicenseDuplicate(encryptedLicense)
+	) {
 		return false;
 	}
 
@@ -229,7 +249,10 @@ export function addLicense(encryptedLicense: string): boolean {
 			return false;
 		}
 
-		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
+		if (
+			process.env.LICENSE_DEBUG
+			&& process.env.LICENSE_DEBUG !== 'false'
+		) {
 			console.log('##### Raw license ->', decrypted);
 		}
 
@@ -239,7 +262,10 @@ export function addLicense(encryptedLicense: string): boolean {
 		return true;
 	} catch (e) {
 		console.error('##### Invalid license');
-		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
+		if (
+			process.env.LICENSE_DEBUG
+			&& process.env.LICENSE_DEBUG !== 'false'
+		) {
 			console.error('##### Invalid raw license ->', encryptedLicense, e);
 		}
 		return false;
@@ -295,7 +321,10 @@ export function canAddNewUser(): boolean {
 	return License.canAddNewUser();
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(
+	feature: BundleFeature,
+	cb: (...args: any[]) => void,
+): void {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -303,7 +332,10 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): (() => void) {
+export function onValidFeature(
+	feature: BundleFeature,
+	cb: () => void,
+): () => void {
 	EnterpriseLicenses.on(`valid:${ feature }`, cb);
 
 	if (hasLicense(feature)) {
@@ -315,7 +347,10 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): (() => v
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): (() => void) {
+export function onInvalidFeature(
+	feature: BundleFeature,
+	cb: () => void,
+): () => void {
 	EnterpriseLicenses.on(`invalid:${ feature }`, cb);
 
 	if (!hasLicense(feature)) {
@@ -327,13 +362,16 @@ export function onInvalidFeature(feature: BundleFeature, cb: () => void): (() =>
 	};
 }
 
-export function onToggledFeature(feature: BundleFeature, {
-	up,
-	down,
-}: {
-	up?: () => void;
-	down?: () => void;
-}): (() => void) {
+export function onToggledFeature(
+	feature: BundleFeature,
+	{
+		up,
+		down,
+	}: {
+		up?: () => void;
+		down?: () => void;
+	},
+): () => void {
 	let enabled = hasLicense(feature);
 
 	const offValidFeature = onValidFeature(feature, () => {
@@ -381,9 +419,13 @@ export interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 
-type Class = { new(...args: any[]): any };
+type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
+export function overwriteClassOnLicense(
+	license: BundleFeature,
+	original: Class,
+	overwrite: IOverrideClassProperties,
+): void {
 	onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];

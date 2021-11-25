@@ -10,7 +10,15 @@ export class SelectionChannel {
 	 * @param {int} creator the id of the channel owner
 	 * @param {boolean} is_direct whether the channel represents direct messages
 	 */
-	constructor(channel_id, name, is_archived, do_import, is_private, creator, is_direct) {
+	constructor(
+		channel_id,
+		name,
+		is_archived,
+		do_import,
+		is_private,
+		creator,
+		is_direct,
+	) {
 		this.channel_id = channel_id;
 		this.name = name;
 		this.is_archived = is_archived;

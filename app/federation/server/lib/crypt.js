@@ -10,7 +10,9 @@ export async function decrypt(data, peerKey) {
 
 	// Decrypt with the peer's public key
 	try {
-		data = (await FederationKeys.loadKey(peerKey, 'public')).decryptPublic(payloadBuffer);
+		data = (await FederationKeys.loadKey(peerKey, 'public')).decryptPublic(
+			payloadBuffer,
+		);
 
 		// Decrypt with the local private key
 		data = (await FederationKeys.getPrivateKey()).decrypt(data);

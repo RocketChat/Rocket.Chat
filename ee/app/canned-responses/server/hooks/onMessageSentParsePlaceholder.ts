@@ -2,9 +2,16 @@ import get from 'lodash.get';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../app/callbacks/server';
-import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
+import {
+	Users,
+	LivechatVisitors,
+	Rooms,
+} from '../../../../../app/models/server';
 import { IMessage } from '../../../../../definition/IMessage';
-import { IOmnichannelRoom, isOmnichannelRoom } from '../../../../../definition/IRoom';
+import {
+	IOmnichannelRoom,
+	isOmnichannelRoom,
+} from '../../../../../definition/IRoom';
 
 const placeholderFields = {
 	'contact.name': {
@@ -29,9 +36,13 @@ const placeholderFields = {
 	},
 };
 
-const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
+const replaceAll = (text: string, old: string, replace: string): string =>
+	text.replace(new RegExp(old, 'g'), replace);
 
-const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any => {
+const handleBeforeSaveMessage = (
+	message: IMessage,
+	room: IOmnichannelRoom,
+): any => {
 	if (!message.msg || message.msg === '') {
 		return message;
 	}
@@ -44,12 +55,14 @@ const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any
 	let messageText = message.msg;
 	const agentId = room?.servedBy?._id;
 	const visitorId = room?.v?._id;
-	const agent = Users.findOneById(agentId, { fields: { name: 1, _id: 1, emails: 1 } }) || {};
+	const agent =		Users.findOneById(agentId, {
+		fields: { name: 1, _id: 1, emails: 1 },
+	}) || {};
 	const visitor = LivechatVisitors.findOneById(visitorId) || {};
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${ field }}}`;
-		const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
+		const placeholderConfig =			placeholderFields[field as keyof typeof placeholderFields];
 		const from = placeholderConfig.from === 'agent' ? agent : visitor;
 		const data = get(from, placeholderConfig.dataKey, '');
 		messageText = replaceAll(messageText, templateKey, data);
@@ -63,9 +76,17 @@ const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any
 
 settings.watch('Canned_Responses_Enable', function(value) {
 	if (!value) {
-		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
+		callbacks.remove(
+			'beforeSaveMessage',
+			'canned-responses-replace-placeholders',
+		);
 		return;
 	}
 
-	callbacks.add('beforeSaveMessage', handleBeforeSaveMessage, callbacks.priority.MEDIUM, 'canned-responses-replace-placeholders');
+	callbacks.add(
+		'beforeSaveMessage',
+		handleBeforeSaveMessage,
+		callbacks.priority.MEDIUM,
+		'canned-responses-replace-placeholders',
+	);
 });

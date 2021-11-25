@@ -31,7 +31,10 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -39,18 +42,29 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('owner') === false) {
-			throw new Meteor.Error('error-user-not-owner', 'User is not an owner', {
-				method: 'removeRoomOwner',
-			});
+		if (
+			Array.isArray(subscription.roles) === false
+			|| subscription.roles.includes('owner') === false
+		) {
+			throw new Meteor.Error(
+				'error-user-not-owner',
+				'User is not an owner',
+				{
+					method: 'removeRoomOwner',
+				},
+			);
 		}
 
 		const numOwners = await (await getUsersInRole('owner', rid)).count();
 
 		if (numOwners === 1) {
-			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {
-				method: 'removeRoomOwner',
-			});
+			throw new Meteor.Error(
+				'error-remove-last-owner',
+				'This is the last owner. Please set a new owner before removing this one.',
+				{
+					method: 'removeRoomOwner',
+				},
+			);
 		}
 
 		Subscriptions.removeRoleById(subscription._id, 'owner');

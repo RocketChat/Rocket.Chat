@@ -29,7 +29,10 @@ export const theme = new class {
 			});
 		});
 
-		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
+		this.compileDelayed = _.debounce(
+			Meteor.bindEnvironment(this.compile.bind(this)),
+			100,
+		);
 		settings.watchByRegex(/^theme-./, (key, value) => {
 			if (key === 'theme-custom-css' && value != null) {
 				this.customCSS = value;
@@ -86,7 +89,16 @@ export const theme = new class {
 		return settingsRegistry.add(`theme-color-${ name }`, value, config);
 	}
 
-	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
+	addVariable(
+		type,
+		name,
+		value,
+		section,
+		persist = true,
+		editor,
+		allowedTypes,
+		property,
+	) {
 		this.variables[name] = {
 			type,
 			value,

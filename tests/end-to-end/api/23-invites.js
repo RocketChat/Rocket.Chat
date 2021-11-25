@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../data/api-data.js';
 
 describe('Invites', function() {
 	let testInviteID;
@@ -9,7 +14,8 @@ describe('Invites', function() {
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(api('findOrCreateInvite'))
+			request
+				.post(api('findOrCreateInvite'))
 				.send({
 					rid: 'GENERAL',
 					days: 1,
@@ -24,7 +30,8 @@ describe('Invites', function() {
 		});
 
 		it('should fail if invalid roomid', (done) => {
-			request.post(api('findOrCreateInvite'))
+			request
+				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
 					rid: 'invalid',
@@ -34,13 +41,17 @@ describe('Invites', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-room');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-invalid-room',
+					);
 				})
 				.end(done);
 		});
 
 		it('should create an invite for GENERAL', (done) => {
-			request.post(api('findOrCreateInvite'))
+			request
+				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
 					rid: 'GENERAL',
@@ -60,7 +71,8 @@ describe('Invites', function() {
 		});
 
 		it('should return an existing invite for GENERAL', (done) => {
-			request.post(api('findOrCreateInvite'))
+			request
+				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
 					rid: 'GENERAL',
@@ -81,7 +93,8 @@ describe('Invites', function() {
 
 	describe('GET [/listInvites]', () => {
 		it('should fail if not logged in', (done) => {
-			request.get(api('listInvites'))
+			request
+				.get(api('listInvites'))
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -91,7 +104,8 @@ describe('Invites', function() {
 		});
 
 		it('should return the existing invite for GENERAL', (done) => {
-			request.get(api('listInvites'))
+			request
+				.get(api('listInvites'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -103,7 +117,8 @@ describe('Invites', function() {
 
 	describe('POST [/useInviteToken]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(api('useInviteToken'))
+			request
+				.post(api('useInviteToken'))
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -113,7 +128,8 @@ describe('Invites', function() {
 		});
 
 		it('should fail if invalid token', (done) => {
-			request.post(api('useInviteToken'))
+			request
+				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
 					token: 'invalid',
@@ -121,26 +137,33 @@ describe('Invites', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-token');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-invalid-token',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if missing token', (done) => {
-			request.post(api('useInviteToken'))
+			request
+				.post(api('useInviteToken'))
 				.set(credentials)
-				.send({
-				})
+				.send({})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-token');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-invalid-token',
+					);
 				})
 				.end(done);
 		});
 
 		it('should use the existing invite for GENERAL', (done) => {
-			request.post(api('useInviteToken'))
+			request
+				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
 					token: testInviteID,
@@ -155,7 +178,8 @@ describe('Invites', function() {
 
 	describe('POST [/validateInviteToken]', () => {
 		it('should warn if invalid token', (done) => {
-			request.post(api('validateInviteToken'))
+			request
+				.post(api('validateInviteToken'))
 				.set(credentials)
 				.send({
 					token: 'invalid',
@@ -169,7 +193,8 @@ describe('Invites', function() {
 		});
 
 		it('should succeed when valid token', (done) => {
-			request.post(api('validateInviteToken'))
+			request
+				.post(api('validateInviteToken'))
 				.set(credentials)
 				.send({
 					token: testInviteID,
@@ -185,7 +210,8 @@ describe('Invites', function() {
 
 	describe('DELETE [/removeInvite]', () => {
 		it('should fail if not logged in', (done) => {
-			request.delete(api(`removeInvite/${ testInviteID }`))
+			request
+				.delete(api(`removeInvite/${ testInviteID }`))
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -194,20 +220,24 @@ describe('Invites', function() {
 				.end(done);
 		});
 
-
 		it('should fail if invalid token', (done) => {
-			request.delete(api('removeInvite/invalid'))
+			request
+				.delete(api('removeInvite/invalid'))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-invitation-id');
+					expect(res.body).to.have.property(
+						'errorType',
+						'invalid-invitation-id',
+					);
 				})
 				.end(done);
 		});
 
 		it('should succeed when valid token', (done) => {
-			request.delete(api(`removeInvite/${ testInviteID }`))
+			request
+				.delete(api(`removeInvite/${ testInviteID }`))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -217,12 +247,16 @@ describe('Invites', function() {
 		});
 
 		it('should fail when deleting the same invite again', (done) => {
-			request.delete(api(`removeInvite/${ testInviteID }`))
+			request
+				.delete(api(`removeInvite/${ testInviteID }`))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-invitation-id');
+					expect(res.body).to.have.property(
+						'errorType',
+						'invalid-invitation-id',
+					);
 				})
 				.end(done);
 		});

@@ -1,4 +1,8 @@
-import { ISetting, ISettingColor, isSettingColor } from '../../../../definition/ISetting';
+import {
+	ISetting,
+	ISettingColor,
+	isSettingColor,
+} from '../../../../definition/ISetting';
 
 export const getSettingDefaults = (
 	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,
@@ -8,7 +12,9 @@ export const getSettingDefaults = (
 ): ISetting => {
 	const { _id, value, sorter, ...props } = setting;
 
-	const options = Object.fromEntries(Object.entries(props).filter(([, value]) => value !== undefined));
+	const options = Object.fromEntries(
+		Object.entries(props).filter(([, value]) => value !== undefined),
+	);
 
 	return {
 		_id,
@@ -23,15 +29,20 @@ export const getSettingDefaults = (
 		ts: new Date(),
 		createdAt: new Date(),
 		...options,
-		...options.enableQuery && { enableQuery: JSON.stringify(options.enableQuery) },
+		...options.enableQuery && {
+			enableQuery: JSON.stringify(options.enableQuery),
+		},
 		i18nLabel: options.i18nLabel || _id,
 		hidden: options.hidden || hiddenSettings.has(_id),
 		blocked: options.blocked || blockedSettings.has(_id),
-		requiredOnWizard: options.requiredOnWizard || wizardRequiredSettings.has(_id),
+		requiredOnWizard:
+			options.requiredOnWizard || wizardRequiredSettings.has(_id),
 		type: options.type || 'string',
 		env: options.env || false,
 		public: options.public || false,
-		...options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) },
+		...options.displayQuery && {
+			displayQuery: JSON.stringify(options.displayQuery),
+		},
 		...isSettingColor(setting as ISetting) && {
 			packageEditor: (setting as ISettingColor).editor,
 		},

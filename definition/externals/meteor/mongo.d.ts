@@ -37,7 +37,7 @@ declare module 'meteor/mongo' {
 					connection?: object | null;
 					idGeneration?: string;
 					transform?: Function | null;
-				},
+				}
 			): Collection<T>;
 		}
 	}

@@ -19,7 +19,9 @@ export class CustomOAuth {
 	constructor(name, options) {
 		this.name = name;
 		if (!Match.test(this.name, String)) {
-			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
+			throw new Meteor.Error(
+				'CustomOAuth: Name is required and must be String',
+			);
 		}
 
 		this.configure(options);
@@ -31,11 +33,15 @@ export class CustomOAuth {
 
 	configure(options) {
 		if (!Match.test(options, Object)) {
-			throw new Meteor.Error('CustomOAuth: Options is required and must be Object');
+			throw new Meteor.Error(
+				'CustomOAuth: Options is required and must be Object',
+			);
 		}
 
 		if (!Match.test(options.serverURL, String)) {
-			throw new Meteor.Error('CustomOAuth: Options.serverURL is required and must be String');
+			throw new Meteor.Error(
+				'CustomOAuth: Options.serverURL is required and must be String',
+			);
 		}
 
 		if (!Match.test(options.authorizePath, String)) {
@@ -56,7 +62,9 @@ export class CustomOAuth {
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${ capitalize(String(this.name || '')) }`;
+		const loginWithService = `loginWith${ capitalize(
+			String(this.name || ''),
+		) }`;
 
 		Meteor[loginWithService] = (options, callback) => {
 			// support a callback without options
@@ -65,22 +73,29 @@ export class CustomOAuth {
 				options = null;
 			}
 
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
+			const credentialRequestCompleteCallback =				Accounts.oauth.credentialRequestCompleteHandler(callback);
 			this.requestCredential(options, credentialRequestCompleteCallback);
 		};
 	}
 
 	requestCredential(options, credentialRequestCompleteCallback) {
 		// support both (options, callback) and (callback).
-		if (!credentialRequestCompleteCallback && typeof options === 'function') {
+		if (
+			!credentialRequestCompleteCallback
+			&& typeof options === 'function'
+		) {
 			credentialRequestCompleteCallback = options;
 			options = {};
 		}
 
-		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
+		const config = ServiceConfiguration.configurations.findOne({
+			service: this.name,
+		});
 		if (!config) {
 			if (credentialRequestCompleteCallback) {
-				credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+				credentialRequestCompleteCallback(
+					new ServiceConfiguration.ConfigError(),
+				);
 			}
 			return;
 		}
@@ -90,12 +105,18 @@ export class CustomOAuth {
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 
-		const loginUrl = `${ this.authorizePath
-		}${ separator }client_id=${ config.clientId
-		}&redirect_uri=${ encodeURIComponent(OAuth._redirectUri(this.name, config))
-		}&response_type=code`
-			+ `&state=${ encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))
-			}&scope=${ encodeURIComponent(this.scope) }`;
+		const loginUrl =			`${ this.authorizePath }${ separator }client_id=${
+			config.clientId
+		}&redirect_uri=${ encodeURIComponent(
+			OAuth._redirectUri(this.name, config),
+		) }&response_type=code`
+			+ `&state=${ encodeURIComponent(
+				OAuth._stateParam(
+					loginStyle,
+					credentialToken,
+					options.redirectUrl,
+				),
+			) }&scope=${ encodeURIComponent(this.scope) }`;
 
 		OAuth.launchLogin({
 			loginService: this.name,

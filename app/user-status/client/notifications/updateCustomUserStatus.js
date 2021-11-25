@@ -4,5 +4,7 @@ import { updateCustomUserStatus } from '../lib/customUserStatus';
 import { Notifications } from '../../../notifications';
 
 Meteor.startup(() =>
-	Notifications.onLogged('updateCustomUserStatus', (data) => updateCustomUserStatus(data.userStatusData)),
+	Notifications.onLogged('updateCustomUserStatus', (data) =>
+		updateCustomUserStatus(data.userStatusData),
+	),
 );

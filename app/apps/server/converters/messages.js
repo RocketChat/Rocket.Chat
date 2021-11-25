@@ -37,7 +37,10 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			room: (message) => {
-				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
+				const result = this.orch
+					.getConverters()
+					.get('rooms')
+					.convertById(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -49,10 +52,15 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				return this.orch.getConverters().get('users').convertById(editedBy._id);
+				return this.orch
+					.getConverters()
+					.get('users')
+					.convertById(editedBy._id);
 			},
 			attachments: (message) => {
-				const result = this._convertAttachmentsToApp(message.attachments);
+				const result = this._convertAttachmentsToApp(
+					message.attachments,
+				);
 				delete message.attachments;
 				return result;
 			},
@@ -61,11 +69,17 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+				let user = this.orch
+					.getConverters()
+					.get('users')
+					.convertById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
-					user = this.orch.getConverters().get('users').convertToApp(message.u);
+					user = this.orch
+						.getConverters()
+						.get('users')
+						.convertToApp(message.u);
 				}
 
 				delete message.u;
@@ -148,36 +162,55 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		return attachments.map((attachment) => Object.assign({
-			collapsed: attachment.collapsed,
-			color: attachment.color,
-			text: attachment.text,
-			ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
-			message_link: attachment.timestampLink,
-			thumb_url: attachment.thumbnailUrl,
-			author_name: attachment.author ? attachment.author.name : undefined,
-			author_link: attachment.author ? attachment.author.link : undefined,
-			author_icon: attachment.author ? attachment.author.icon : undefined,
-			title: attachment.title ? attachment.title.value : undefined,
-			title_link: attachment.title ? attachment.title.link : undefined,
-			title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
-			image_dimensions: attachment.imageDimensions,
-			image_preview: attachment.imagePreview,
-			image_url: attachment.imageUrl,
-			image_type: attachment.imageType,
-			image_size: attachment.imageSize,
-			audio_url: attachment.audioUrl,
-			audio_type: attachment.audioType,
-			audio_size: attachment.audioSize,
-			video_url: attachment.videoUrl,
-			video_type: attachment.videoType,
-			video_size: attachment.videoSize,
-			fields: attachment.fields,
-			button_alignment: attachment.actionButtonsAlignment,
-			actions: attachment.actions,
-			type: attachment.type,
-			description: attachment.description,
-		}, attachment._unmappedProperties_));
+		return attachments.map((attachment) =>
+			Object.assign(
+				{
+					collapsed: attachment.collapsed,
+					color: attachment.color,
+					text: attachment.text,
+					ts: attachment.timestamp
+						? attachment.timestamp.toJSON()
+						: attachment.timestamp,
+					message_link: attachment.timestampLink,
+					thumb_url: attachment.thumbnailUrl,
+					author_name: attachment.author
+						? attachment.author.name
+						: undefined,
+					author_link: attachment.author
+						? attachment.author.link
+						: undefined,
+					author_icon: attachment.author
+						? attachment.author.icon
+						: undefined,
+					title: attachment.title
+						? attachment.title.value
+						: undefined,
+					title_link: attachment.title
+						? attachment.title.link
+						: undefined,
+					title_link_download: attachment.title
+						? attachment.title.displayDownloadLink
+						: undefined,
+					image_dimensions: attachment.imageDimensions,
+					image_preview: attachment.imagePreview,
+					image_url: attachment.imageUrl,
+					image_type: attachment.imageType,
+					image_size: attachment.imageSize,
+					audio_url: attachment.audioUrl,
+					audio_type: attachment.audioType,
+					audio_size: attachment.audioSize,
+					video_url: attachment.videoUrl,
+					video_type: attachment.videoType,
+					video_size: attachment.videoSize,
+					fields: attachment.fields,
+					button_alignment: attachment.actionButtonsAlignment,
+					actions: attachment.actions,
+					type: attachment.type,
+					description: attachment.description,
+				},
+				attachment._unmappedProperties_,
+			),
+		);
 	}
 
 	_convertAttachmentsToApp(attachments) {
@@ -240,6 +273,8 @@ export class AppMessagesConverter {
 			},
 		};
 
-		return attachments.map((attachment) => transformMappedData(attachment, map));
+		return attachments.map((attachment) =>
+			transformMappedData(attachment, map),
+		);
 	}
 }

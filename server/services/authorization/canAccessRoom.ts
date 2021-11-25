@@ -1,4 +1,3 @@
-
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
@@ -18,7 +17,10 @@ async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 }
 
 const roomAccessValidators: RoomAccessValidator[] = [
-	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
+	async function _validateAccessToPublicRoomsInTeams(
+		room,
+		user,
+	): Promise<boolean> {
 		if (!room) {
 			return false;
 		}
@@ -28,13 +30,18 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		}
 
 		// if team is public, access is allowed if the user can access public rooms
-		const team = await Team.findOneById<Pick<ITeam, 'type'>>(room.teamId, { projection: { type: 1 } });
+		const team = await Team.findOneById<Pick<ITeam, 'type'>>(room.teamId, {
+			projection: { type: 1 },
+		});
 		if (team?.type === TEAM_TYPE.PUBLIC) {
 			return canAccessPublicRoom(user);
 		}
 
 		// otherwise access is allowed only to members of the team
-		const membership = user?._id && await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
+		const membership =			user?._id
+			&& await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, {
+				projection: { _id: 1 },
+			});
 		return !!membership;
 	},
 
@@ -56,7 +63,10 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		return false;
 	},
 
-	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {
+	async function _validateAccessToDiscussionsParentRoom(
+		room,
+		user,
+	): Promise<boolean> {
 		if (!room?.prid) {
 			return false;
 		}
@@ -73,7 +83,11 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	canAccessRoomTokenpass,
 ];
 
-export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
+export const canAccessRoom: RoomAccessValidator = async (
+	room,
+	user,
+	extraData,
+): Promise<boolean> => {
 	// TODO livechat can send both as null, so they we need to validate nevertheless
 	// if (!room || !user) {
 	// 	return false;

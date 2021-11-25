@@ -36,12 +36,16 @@ settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = Settings.findOneById(
+			'FileUpload_MaxFileSize',
+		).packageValue;
 	}
 });
 
 const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
-const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
+const UserDataFilesModel = new Mongo.Collection(
+	UserDataFiles.col.collectionName,
+);
 const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
 
 export const FileUpload = {
@@ -56,9 +60,15 @@ export const FileUpload = {
 		const stores = UploadFS.getStores();
 		delete stores[name];
 
-		return new UploadFS.store[store](Object.assign({
-			name,
-		}, options, FileUpload[`default${ type }`]()));
+		return new UploadFS.store[store](
+			Object.assign(
+				{
+					name,
+				},
+				options,
+				FileUpload[`default${ type }`](),
+			),
+		);
 	},
 
 	validateFileUpload(fileData) {
@@ -83,15 +93,25 @@ export const FileUpload = {
 		}
 
 		if (!directMessageAllowed && room.t === 'd') {
-			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
-			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+			const reason = TAPi18n.__(
+				'File_not_allowed_direct_messages',
+				language,
+			);
+			throw new Meteor.Error(
+				'error-direct-message-file-upload-not-allowed',
+				reason,
+			);
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && file.size > maxFileSize) {
-			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-				size: filesize(maxFileSize),
-			}, language);
+			const reason = TAPi18n.__(
+				'File_exceeds_allowed_size_of_bytes',
+				{
+					size: filesize(maxFileSize),
+				},
+				language,
+			);
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
@@ -102,7 +122,9 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }));
+			Promise.await(
+				Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }),
+			);
 		} catch (error) {
 			if (error instanceof AppsEngineException) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -119,7 +141,9 @@ export const FileUpload = {
 			return false;
 		}
 
-		const user = file.uid ? Meteor.users.findOne(file.uid, { fields: { language: 1 } }) : null;
+		const user = file.uid
+			? Meteor.users.findOne(file.uid, { fields: { language: 1 } })
+			: null;
 		const language = user?.language || 'en';
 
 		// accept only images
@@ -130,9 +154,13 @@ export const FileUpload = {
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && file.size > maxFileSize) {
-			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-				size: filesize(maxFileSize),
-			}, language);
+			const reason = TAPi18n.__(
+				'File_exceeds_allowed_size_of_bytes',
+				{
+					size: filesize(maxFileSize),
+				},
+				language,
+			);
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
@@ -146,7 +174,9 @@ export const FileUpload = {
 				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file) {
-				return `${ settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
+				return `${ settings.get('uniqueID') }/uploads/${ file.rid }/${
+					file.userId
+				}/${ file._id }`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -155,7 +185,10 @@ export const FileUpload = {
 					return false;
 				}
 
-				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				res.setHeader(
+					'content-disposition',
+					`attachment; filename="${ encodeURIComponent(file.name) }"`,
+				);
 				return true;
 			},
 		};
@@ -180,7 +213,9 @@ export const FileUpload = {
 		return {
 			collection: UserDataFilesModel,
 			getPath(file) {
-				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+				return `${ settings.get('uniqueID') }/uploads/userData/${
+					file.userId
+				}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -189,7 +224,10 @@ export const FileUpload = {
 					return false;
 				}
 
-				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				res.setHeader(
+					'content-disposition',
+					`attachment; filename="${ encodeURIComponent(file.name) }"`,
+				);
 				return true;
 			},
 		};
@@ -202,10 +240,19 @@ export const FileUpload = {
 
 		if (file.rid) {
 			if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+				throw new Meteor.Error(
+					'error-not-allowed',
+					'Change avatar is not allowed',
+				);
 			}
-		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		} else if (
+			Meteor.userId() !== file.userId
+			&& !hasPermission(Meteor.userId(), 'edit-other-user-info')
+		) {
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Change avatar is not allowed',
+			);
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
@@ -217,40 +264,62 @@ export const FileUpload = {
 		const s = sharp(tempFilePath);
 		s.rotate();
 
-		s.metadata(Meteor.bindEnvironment((err, metadata) => {
-			if (!metadata) {
-				metadata = {};
-			}
+		s.metadata(
+			Meteor.bindEnvironment((err, metadata) => {
+				if (!metadata) {
+					metadata = {};
+				}
 
-			s.resize({
-				width,
-				height,
-				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
-				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
-			})
-				// Use buffer to get the result in memory then replace the existing file
-				// There is no option to override a file using this library
-				//
-				// BY THE SHARP DOCUMENTATION:
-				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
-				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
-				.toBuffer({ resolveWithObject: true })
-				.then(Meteor.bindEnvironment(({ data, info }) => {
-					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
-						if (err != null) {
-							SystemLogger.error(err);
-						}
+				s.resize({
+					width,
+					height,
+					fit: metadata.hasAlpha
+						? sharp.fit.contain
+						: sharp.fit.cover,
+					background: {
+						r: 255,
+						g: 255,
+						b: 255,
+						alpha: metadata.hasAlpha ? 0 : 1,
+					},
+				})
+					// Use buffer to get the result in memory then replace the existing file
+					// There is no option to override a file using this library
+					//
+					// BY THE SHARP DOCUMENTATION:
+					// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+					// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+					.toBuffer({ resolveWithObject: true })
+					.then(
+						Meteor.bindEnvironment(({ data, info }) => {
+							fs.writeFile(
+								tempFilePath,
+								data,
+								Meteor.bindEnvironment((err) => {
+									if (err != null) {
+										SystemLogger.error(err);
+									}
 
-						this.getCollection().direct.update({ _id: file._id }, {
-							$set: {
-								size: info.size,
-								...['gif', 'svg'].includes(metadata.format) ? { type: 'image/png' } : {},
-							},
-						});
-						future.return();
-					}));
-				}));
-		}));
+									this.getCollection().direct.update(
+										{ _id: file._id },
+										{
+											$set: {
+												size: info.size,
+												...['gif', 'svg'].includes(
+													metadata.format,
+												)
+													? { type: 'image/png' }
+													: {},
+											},
+										},
+									);
+									future.return();
+								}),
+							);
+						}),
+					);
+			}),
+		);
 
 		return future.wait();
 	},
@@ -258,13 +327,18 @@ export const FileUpload = {
 	resizeImagePreview(file) {
 		file = Promise.await(Uploads.findOneById(file._id));
 		file = FileUpload.addExtensionTo(file);
-		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(
+			file._id,
+			file,
+		);
 
 		const transformer = sharp()
 			.resize({ width: 32, height: 32, fit: 'inside' })
 			.jpeg()
 			.blur();
-		const result = transformer.toBuffer().then((out) => out.toString('base64'));
+		const result = transformer
+			.toBuffer()
+			.then((out) => out.toString('base64'));
 		image.pipe(transformer);
 		return result;
 	},
@@ -277,7 +351,11 @@ export const FileUpload = {
 		const width = settings.get('Message_Attachments_Thumbnails_Width');
 		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
-		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
+		if (
+			file.identify.size
+			&& file.identify.size.height < height
+			&& file.identify.size.width < width
+		) {
 			return;
 		}
 
@@ -286,10 +364,15 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = store._store.getReadStream(file._id, file);
 
-		const transformer = sharp()
-			.resize({ width, height, fit: 'inside' });
+		const transformer = sharp().resize({ width, height, fit: 'inside' });
 
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		const result = transformer
+			.toBuffer({ resolveWithObject: true })
+			.then(({ data, info: { width, height } }) => ({
+				data,
+				width,
+				height,
+			}));
 		image.pipe(transformer);
 
 		return result;
@@ -318,56 +401,78 @@ export const FileUpload = {
 		const fut = new Future();
 
 		const s = sharp(tmpFile);
-		s.metadata(Meteor.bindEnvironment((err, metadata) => {
-			if (err != null) {
-				SystemLogger.error(err);
-				return fut.return();
-			}
-
-			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
-
-			const identify = {
-				format: metadata.format,
-				size: {
-					width: rotated ? metadata.height : metadata.width,
-					height: rotated ? metadata.width : metadata.height,
-				},
-			};
-
-			const reorientation = (cb) => {
-				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-					return cb();
+		s.metadata(
+			Meteor.bindEnvironment((err, metadata) => {
+				if (err != null) {
+					SystemLogger.error(err);
+					return fut.return();
 				}
-				s.rotate()
-					.toFile(`${ tmpFile }.tmp`)
-					.then(Meteor.bindEnvironment(() => {
-						fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
-							fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
-								cb();
-							}));
-						}));
-					})).catch((err) => {
-						SystemLogger.error(err);
-						fut.return();
-					});
-			};
 
-			reorientation(() => {
-				const { size } = fs.lstatSync(tmpFile);
-				this.getCollection().direct.update({ _id: file._id }, {
-					$set: { size, identify },
+				const rotated =					typeof metadata.orientation !== 'undefined'
+					&& metadata.orientation !== 1;
+
+				const identify = {
+					format: metadata.format,
+					size: {
+						width: rotated ? metadata.height : metadata.width,
+						height: rotated ? metadata.width : metadata.height,
+					},
+				};
+
+				const reorientation = (cb) => {
+					if (
+						!rotated
+						|| settings.get('FileUpload_RotateImages') !== true
+					) {
+						return cb();
+					}
+					s.rotate()
+						.toFile(`${ tmpFile }.tmp`)
+						.then(
+							Meteor.bindEnvironment(() => {
+								fs.unlink(
+									tmpFile,
+									Meteor.bindEnvironment(() => {
+										fs.rename(
+											`${ tmpFile }.tmp`,
+											tmpFile,
+											Meteor.bindEnvironment(() => {
+												cb();
+											}),
+										);
+									}),
+								);
+							}),
+						)
+						.catch((err) => {
+							SystemLogger.error(err);
+							fut.return();
+						});
+				};
+
+				reorientation(() => {
+					const { size } = fs.lstatSync(tmpFile);
+					this.getCollection().direct.update(
+						{ _id: file._id },
+						{
+							$set: { size, identify },
+						},
+					);
+
+					fut.return();
 				});
-
-				fut.return();
-			});
-		}));
+			}),
+		);
 
 		return fut.wait();
 	},
 
 	avatarRoomOnFinishUpload(file) {
 		if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Change avatar is not allowed',
+			);
 		}
 	},
 	avatarsOnFinishUpload(file) {
@@ -375,8 +480,14 @@ export const FileUpload = {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
 
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		if (
+			Meteor.userId() !== file.userId
+			&& !hasPermission(Meteor.userId(), 'edit-other-user-info')
+		) {
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Change avatar is not allowed',
+			);
 		}
 		// update file record to match user's username
 		const user = Users.findOneById(file.userId);
@@ -403,11 +514,31 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
-		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		const isAuthorizedByJWT = settings.get('FileUpload_Enable_json_web_token_for_files') && token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
+		const isAuthorizedByCookies =			rc_uid
+			&& rc_token
+			&& Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders =			headers['x-user-id']
+			&& headers['x-auth-token']
+			&& Users.findOneByIdAndLoginToken(
+				headers['x-user-id'],
+				headers['x-auth-token'],
+			);
+		const isAuthorizedByRoom =			rc_room_type
+			&& roomTypes
+				.getConfig(rc_room_type)
+				.canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		const isAuthorizedByJWT =			settings.get('FileUpload_Enable_json_web_token_for_files')
+			&& token
+			&& isValidJWT(
+				token,
+				settings.get('FileUpload_json_web_token_secret_for_files'),
+			);
+		return (
+			isAuthorizedByCookies
+			|| isAuthorizedByHeaders
+			|| isAuthorizedByRoom
+			|| isAuthorizedByJWT
+		);
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -417,7 +548,10 @@ export const FileUpload = {
 		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
 		if (file.type !== 'application/octet-stream') {
 			const ext = mime.extension(file.type);
-			if (ext && new RegExp(`\\.${ ext }$`, 'i').test(file.name) === false) {
+			if (
+				ext
+				&& new RegExp(`\\.${ ext }$`, 'i').test(file.name) === false
+			) {
 				file.name = `${ file.name }.${ ext }`;
 			}
 		}
@@ -434,7 +568,9 @@ export const FileUpload = {
 
 	getStoreByName(handlerName) {
 		if (this.handlers[handlerName] == null) {
-			SystemLogger.error(`Upload handler "${ handlerName }" does not exists`);
+			SystemLogger.error(
+				`Upload handler "${ handlerName }" does not exists`,
+			);
 		}
 		return this.handlers[handlerName];
 	},
@@ -451,7 +587,9 @@ export const FileUpload = {
 	getBuffer(file, cb) {
 		const store = this.getStoreByName(file.store);
 
-		if (!store || !store.get) { cb(new Error('Store is invalid'), null); }
+		if (!store || !store.get) {
+			cb(new Error('Store is invalid'), null);
+		}
 
 		const buffer = new streamBuffers.WritableStreamBuffer({
 			initialSize: file.size,
@@ -464,7 +602,9 @@ export const FileUpload = {
 		store.copy(file, buffer);
 	},
 
-	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
+	getBufferSync: Meteor.wrapAsync((file, cb) =>
+		FileUpload.getBuffer(file, cb),
+	),
 
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
@@ -489,36 +629,54 @@ export const FileUpload = {
 	},
 
 	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
-		res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(fileName) }"`);
+		res.setHeader(
+			'Content-Disposition',
+			`${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(
+				fileName,
+			) }"`,
+		);
 
 		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }) {
-		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+		if (
+			!settings.get('FileUpload_ProtectFiles')
+			|| !settings.get('FileUpload_Enable_json_web_token_for_files')
+		) {
 			return;
 		}
-		return generateJWT({
-			rid,
-			userId,
-			fileId,
-		}, settings.get('FileUpload_json_web_token_secret_for_files'));
+		return generateJWT(
+			{
+				rid,
+				userId,
+				fileId,
+			},
+			settings.get('FileUpload_json_web_token_secret_for_files'),
+		);
 	},
 
 	removeFilesByRoomId(rid) {
 		if (typeof rid !== 'string' || rid.trim().length === 0) {
 			return;
 		}
-		Messages.find({
-			rid,
-			'file._id': {
-				$exists: true,
+		Messages.find(
+			{
+				rid,
+				'file._id': {
+					$exists: true,
+				},
 			},
-		}, {
-			fields: {
-				'file._id': 1,
+			{
+				fields: {
+					'file._id': 1,
+				},
 			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
+		)
+			.fetch()
+			.forEach((document) =>
+				FileUpload.getStore('Uploads').deleteById(document.file._id),
+			);
 	},
 };
 
@@ -599,7 +757,6 @@ export class FileUploadClass {
 
 		return store.delete(file._id);
 	}
-
 
 	deleteByRoomId(rid) {
 		const file = Promise.await(this.model.findOneByRoomId(rid));

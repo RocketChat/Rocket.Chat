@@ -18,7 +18,9 @@ Meteor.methods({
 		}
 
 		if (!rid) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'loadNextMessages' });
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'loadNextMessages',
+			});
 		}
 
 		const fromId = Meteor.userId();
@@ -42,7 +44,11 @@ Meteor.methods({
 
 		let records;
 		if (end) {
-			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = Messages.findVisibleByRoomIdAfterTimestamp(
+				rid,
+				end,
+				options,
+			).fetch();
 		} else {
 			records = Messages.findVisibleByRoomId(rid, options).fetch();
 		}

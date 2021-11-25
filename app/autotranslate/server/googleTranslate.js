@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
-import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
+import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
 
@@ -24,7 +24,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'google-translate';
-		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
+		this.apiEndPointUrl =			'https://translation.googleapis.com/language/translate/v2';
 		// Get the service provide API key.
 		settings.watch('AutoTranslate_GoogleAPIKey', (value) => {
 			this.apiKey = value;
@@ -82,18 +82,30 @@ class GoogleAutoTranslate extends AutoTranslate {
 		}
 
 		try {
-			result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-				params,
-			});
+			result = HTTP.get(
+				'https://translation.googleapis.com/language/translate/v2/languages',
+				{
+					params,
+				},
+			);
 		} catch (e) {
 			// Fallback: Get the English names of the target languages
-			if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
+			if (
+				e.response
+				&& e.response.statusCode === 400
+				&& e.response.data
+				&& e.response.data.error
+				&& e.response.data.error.status === 'INVALID_ARGUMENT'
+			) {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-						params,
-					});
+					result = HTTP.get(
+						'https://translation.googleapis.com/language/translate/v2/languages',
+						{
+							params,
+						},
+					);
 				}
 			}
 		}
@@ -122,7 +134,10 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const supportedLanguages = this.getSupportedLanguages('en');
 
 		targetLanguages.forEach((language) => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (
+				language.indexOf('-') !== -1
+				&& !_.findWhere(supportedLanguages, { language })
+			) {
 				language = language.substr(0, 2);
 			}
 
@@ -135,9 +150,20 @@ class GoogleAutoTranslate extends AutoTranslate {
 					query,
 				});
 
-				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
-					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
+				if (
+					result.statusCode === 200
+					&& result.data
+					&& result.data.data
+					&& result.data.data.translations
+					&& Array.isArray(result.data.data.translations)
+					&& result.data.data.translations.length > 0
+				) {
+					const txt = result.data.data.translations
+						.map((translation) => translation.translatedText)
+						.join('\n');
+					translations[language] = this.deTokenize(
+						Object.assign({}, message, { msg: txt }),
+					);
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);
@@ -155,11 +181,16 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
-		const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
+		const query = `q=${ encodeURIComponent(
+			attachment.description || attachment.text,
+		) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 
 		targetLanguages.forEach((language) => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (
+				language.indexOf('-') !== -1
+				&& !_.findWhere(supportedLanguages, { language })
+			) {
 				language = language.substr(0, 2);
 			}
 
@@ -172,8 +203,17 @@ class GoogleAutoTranslate extends AutoTranslate {
 					query,
 				});
 
-				if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
+				if (
+					result.statusCode === 200
+					&& result.data
+					&& result.data.data
+					&& result.data.data.translations
+					&& Array.isArray(result.data.data.translations)
+					&& result.data.data.translations.length > 0
+				) {
+					translations[language] = result.data.data.translations
+						.map((translation) => translation.translatedText)
+						.join('\n');
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);

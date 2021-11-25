@@ -2,14 +2,21 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload, USER_ACTIVITIES, UserAction } from '../../../ui';
+import {
+	AudioRecorder,
+	fileUpload,
+	USER_ACTIVITIES,
+	UserAction,
+} from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
 const startRecording = async (rid, tmid) => {
 	try {
 		await AudioRecorder.start();
-		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, {
+			tmid,
+		});
 	} catch (error) {
 		throw error;
 	}
@@ -51,10 +58,14 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 
 	if (navigator.permissions) {
 		try {
-			const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+			const permissionStatus = await navigator.permissions.query({
+				name: 'microphone',
+			});
 			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
 			permissionStatus.onchange = () => {
-				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+				this.isMicrophoneDenied.set(
+					permissionStatus.state === 'denied',
+				);
 			};
 			return;
 		} catch (error) {
@@ -68,7 +79,11 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 	}
 
 	try {
-		if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
+		if (
+			!(await navigator.mediaDevices.enumerateDevices()).some(
+				({ kind }) => kind === 'audioinput',
+			)
+		) {
 			this.isMicrophoneDenied.set(true);
 			return;
 		}
@@ -86,18 +101,27 @@ Template.messageBoxAudioMessage.onDestroyed(async function() {
 
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
-		return AudioRecorder.isSupported()
+		return (
+			AudioRecorder.isSupported()
 			&& !Template.instance().isMicrophoneDenied.get()
 			&& settings.get('FileUpload_Enabled')
 			&& settings.get('Message_AudioRecorderEnabled')
 			&& (!settings.get('FileUpload_MediaTypeBlackList')
-				|| !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i))
+				|| !settings
+					.get('FileUpload_MediaTypeBlackList')
+					.match(/audio\/mp3|audio\/\*/i))
 			&& (!settings.get('FileUpload_MediaTypeWhiteList')
-				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+				|| settings
+					.get('FileUpload_MediaTypeWhiteList')
+					.match(/audio\/mp3|audio\/\*/i))
+		);
 	},
 
 	stateClass() {
-		if (recordingRoomId.get() && (recordingRoomId.get() !== Template.currentData().rid)) {
+		if (
+			recordingRoomId.get()
+			&& recordingRoomId.get() !== Template.currentData().rid
+		) {
 			return 'rc-message-box__audio-message--busy';
 		}
 
@@ -114,7 +138,7 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
 
-		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
+		if (recordingRoomId.get() && recordingRoomId.get() !== this.rid) {
 			return;
 		}
 
@@ -123,13 +147,19 @@ Template.messageBoxAudioMessage.events({
 		try {
 			await startRecording(this.rid, this.tmid);
 			const startTime = new Date();
-			recordingInterval.set(setInterval(() => {
-				const now = new Date();
-				const distance = (now.getTime() - startTime.getTime()) / 1000;
-				const minutes = Math.floor(distance / 60);
-				const seconds = Math.floor(distance % 60);
-				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-			}, 1000));
+			recordingInterval.set(
+				setInterval(() => {
+					const now = new Date();
+					const distance =						(now.getTime() - startTime.getTime()) / 1000;
+					const minutes = Math.floor(distance / 60);
+					const seconds = Math.floor(distance % 60);
+					instance.time.set(
+						`${ String(minutes).padStart(2, '0') }:${ String(
+							seconds,
+						).padStart(2, '0') }`,
+					);
+				}, 1000),
+			);
 			recordingRoomId.set(this.rid);
 		} catch (error) {
 			console.log(error);
@@ -152,6 +182,10 @@ Template.messageBoxAudioMessage.events({
 		const { rid, tmid } = this;
 		const blob = await cancelRecording(instance, rid, tmid);
 
-		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
+		await fileUpload(
+			[{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }],
+			{ input: blob },
+			{ rid, tmid },
+		);
 	},
 });

@@ -62,7 +62,11 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = Meteor.wrapAsync(function(
+	urlObj,
+	redirectCount = 5,
+	callback,
+) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -73,19 +77,40 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 		443: 'https:',
 	};
 
-	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
-	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
+	const parsedUrl = _.pick(urlObj, [
+		'host',
+		'hash',
+		'pathname',
+		'protocol',
+		'port',
+		'query',
+		'search',
+		'hostname',
+	]);
+	const ignoredHosts =		settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',')
+		|| [];
+	if (
+		ignoredHosts.includes(parsedUrl.hostname)
+		|| ipRangeCheck(parsedUrl.hostname, ignoredHosts)
+	) {
 		return callback();
 	}
 
-	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
+	const safePorts =		settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
-	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+	if (
+		safePorts.length > 0
+		&& parsedUrl.port
+		&& !safePorts.includes(parsedUrl.port)
+	) {
 		return callback();
 	}
 
-	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
+	if (
+		safePorts.length > 0
+		&& !parsedUrl.port
+		&& !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)
+	) {
 		return callback();
 	}
 
@@ -127,21 +152,24 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 			return stream.abort();
 		}
 	});
-	stream.on('end', Meteor.bindEnvironment(function() {
-		if (error != null) {
+	stream.on(
+		'end',
+		Meteor.bindEnvironment(function() {
+			if (error != null) {
+				return callback(null, {
+					error,
+					parsedUrl,
+				});
+			}
+			const buffer = Buffer.concat(chunks);
 			return callback(null, {
-				error,
+				headers,
+				body: toUtf8(headers['content-type'], buffer),
 				parsedUrl,
+				statusCode,
 			});
-		}
-		const buffer = Buffer.concat(chunks);
-		return callback(null, {
-			headers,
-			body: toUtf8(headers['content-type'], buffer),
-			parsedUrl,
-			statusCode,
-		});
-	}));
+		}),
+	);
 	return stream.on('error', function(err) {
 		error = err;
 	});
@@ -174,22 +202,37 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 			metas[name] = metas[name] || he.unescape(value);
 			return metas[name];
 		};
-		content.body.replace(/<title[^>]*>([^<]*)<\/title>/gmi, function(meta, title) {
-			return escapeMeta('pageTitle', title);
-		});
-		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(camelCase(name), value);
-		});
-		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(camelCase(name), value);
-		});
-		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(camelCase(name), value);
-		});
-		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(camelCase(name), value);
-		});
-		if (metas.fragment === '!' && (withFragment == null)) {
+		content.body.replace(
+			/<title[^>]*>([^<]*)<\/title>/gim,
+			function(meta, title) {
+				return escapeMeta('pageTitle', title);
+			},
+		);
+		content.body.replace(
+			/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gim,
+			function(meta, name, value) {
+				return escapeMeta(camelCase(name), value);
+			},
+		);
+		content.body.replace(
+			/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gim,
+			function(meta, name, value) {
+				return escapeMeta(camelCase(name), value);
+			},
+		);
+		content.body.replace(
+			/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gim,
+			function(meta, value, name) {
+				return escapeMeta(camelCase(name), value);
+			},
+		);
+		content.body.replace(
+			/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gim,
+			function(meta, value, name) {
+				return escapeMeta(camelCase(name), value);
+			},
+		);
+		if (metas.fragment === '!' && withFragment == null) {
 			return OEmbed.getUrlMeta(url, true);
 		}
 		delete metas.oembedHtml;
@@ -237,7 +280,12 @@ const getRelevantHeaders = function(headersObj) {
 	Object.keys(headersObj).forEach((key) => {
 		const value = headersObj[key];
 		const lowerCaseKey = key.toLowerCase();
-		if ((lowerCaseKey === 'contenttype' || lowerCaseKey === 'contentlength') && (value && value.trim() !== '')) {
+		if (
+			(lowerCaseKey === 'contenttype'
+				|| lowerCaseKey === 'contentlength')
+			&& value
+			&& value.trim() !== ''
+		) {
 			headers[key] = value;
 		}
 	});
@@ -251,7 +299,13 @@ const getRelevantMetaTags = function(metaObj) {
 	const tags = {};
 	Object.keys(metaObj).forEach((key) => {
 		const value = metaObj[key];
-		if (/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(key.toLowerCase()) && (value && value.trim() !== '')) {
+		if (
+			/^(og|fb|twitter|oembed|msapplication).+|description|title|pageTitle$/.test(
+				key.toLowerCase(),
+			)
+			&& value
+			&& value.trim() !== ''
+		) {
 			tags[key] = value;
 		}
 	});
@@ -261,7 +315,11 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
+const insertMaxWidthInOembedHtml = (oembedHtml) =>
+	oembedHtml?.replace(
+		'iframe',
+		'iframe style="max-width: 100%;width:400px;height:225px"',
+	);
 
 OEmbed.rocketUrlParser = async function(message) {
 	if (Array.isArray(message.urls)) {
@@ -283,7 +341,9 @@ OEmbed.rocketUrlParser = async function(message) {
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
 					if (item.meta && item.meta.oembedHtml) {
-						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(
+							item.meta.oembedHtml,
+						);
 					}
 				}
 				if (data.headers != null) {
@@ -305,7 +365,12 @@ OEmbed.rocketUrlParser = async function(message) {
 
 settings.watch('API_Embed', function(value) {
 	if (value) {
-		return callbacks.add('afterSaveMessage', (message) => Promise.await(OEmbed.rocketUrlParser(message)), callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add(
+			'afterSaveMessage',
+			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
+			callbacks.priority.LOW,
+			'API_Embed',
+		);
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

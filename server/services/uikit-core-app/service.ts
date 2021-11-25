@@ -1,5 +1,8 @@
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { IUiKitCoreApp, IUiKitCoreAppService } from '../../sdk/types/IUiKitCoreApp';
+import {
+	IUiKitCoreApp,
+	IUiKitCoreAppService,
+} from '../../sdk/types/IUiKitCoreApp';
 
 const registeredApps = new Map();
 

@@ -1,26 +1,40 @@
 import { Meteor } from 'meteor/meteor';
 
-import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
+import {
+	createLiveStream,
+	statusLiveStream,
+	statusStreamLiveStream,
+	getBroadcastStatus,
+	setBroadcastStatus,
+} from './functions/livestream';
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 
-const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
+const selectLivestreamSettings = (user) =>
+	user && user.settings && user.settings.livestream;
 
 Meteor.methods({
-
 	async livestreamStreamStatus({ streamId }) {
 		if (!streamId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'Livestream ID not found', {
-				method: 'livestreamStreamStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Livestream ID not found',
+				{
+					method: 'livestreamStreamStatus',
+				},
+			);
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'livestreamStreamStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to stream',
+				{
+					method: 'livestreamStreamStatus',
+				},
+			);
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;
@@ -36,16 +50,24 @@ Meteor.methods({
 	async setLivestreamStatus({ broadcastId, status }) {
 		if (!broadcastId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamStart',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to livestream',
+				{
+					method: 'livestreamStart',
+				},
+			);
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamStart',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to livestream',
+				{
+					method: 'livestreamStart',
+				},
+			);
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;
@@ -63,18 +85,26 @@ Meteor.methods({
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGet',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to livestream',
+				{
+					method: 'livestreamGet',
+				},
+			);
 		}
 
 		const room = Rooms.findOne({ _id: rid });
 
 		if (!room) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGet',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to livestream',
+				{
+					method: 'livestreamGet',
+				},
+			);
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;
@@ -89,16 +119,24 @@ Meteor.methods({
 	async getBroadcastStatus({ broadcastId }) {
 		if (!broadcastId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'Broadcast ID not found', {
-				method: 'getBroadcastStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Broadcast ID not found',
+				{
+					method: 'getBroadcastStatus',
+				},
+			);
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'getBroadcastStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to stream',
+				{
+					method: 'getBroadcastStatus',
+				},
+			);
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;
@@ -114,16 +152,24 @@ Meteor.methods({
 	async setBroadcastStatus({ broadcastId, status }) {
 		if (!broadcastId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'Broadcast ID not found', {
-				method: 'setBroadcastStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'Broadcast ID not found',
+				{
+					method: 'setBroadcastStatus',
+				},
+			);
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'setBroadcastStatus',
-			});
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'You have no settings to stream',
+				{
+					method: 'setBroadcastStatus',
+				},
+			);
 		}
 
 		const { access_token, refresh_token } = livestreamSettings;

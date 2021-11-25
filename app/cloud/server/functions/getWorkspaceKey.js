@@ -2,7 +2,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { settings } from '../../../settings';
 
 export function getWorkspaceKey() {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } =		retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return false;

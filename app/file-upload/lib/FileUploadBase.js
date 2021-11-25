@@ -25,7 +25,11 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		}
 
 		// allow inserts to the UserDataFiles store
-		if (doc && doc.store && doc.store.split(':').pop() === 'UserDataFiles') {
+		if (
+			doc
+			&& doc.store
+			&& doc.store.split(':').pop() === 'UserDataFiles'
+		) {
 			return true;
 		}
 
@@ -36,10 +40,16 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		return false;
 	},
 	update(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return (
+			hasPermission(Meteor.userId(), 'delete-message', doc.rid)
+			|| (settings.get('Message_AllowDeleting') && userId === doc.userId)
+		);
 	},
 	remove(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return (
+			hasPermission(Meteor.userId(), 'delete-message', doc.rid)
+			|| (settings.get('Message_AllowDeleting') && userId === doc.userId)
+		);
 	},
 });
 
@@ -51,9 +61,7 @@ export class FileUploadBase {
 		this.store = store;
 	}
 
-	getProgress() {
-
-	}
+	getProgress() {}
 
 	getFileName() {
 		return this.meta.name;
@@ -66,7 +74,15 @@ export class FileUploadBase {
 			file: this.meta,
 			onError: (err) => callback(err),
 			onComplete: (fileData) => {
-				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
+				const file = _.pick(
+					fileData,
+					'_id',
+					'type',
+					'size',
+					'name',
+					'identify',
+					'description',
+				);
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 				return callback(null, file, this.store.options.name);

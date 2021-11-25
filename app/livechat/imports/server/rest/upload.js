@@ -14,7 +14,9 @@ settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = Settings.findOneById(
+			'FileUpload_MaxFileSize',
+		).packageValue;
 	}
 });
 
@@ -31,14 +33,19 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(
+			this.urlParams.rid,
+			visitorToken,
+		);
 		if (!room) {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(getUploadFormData({
-			request: this.request,
-		}));
+		const { file, ...fields } = Promise.await(
+			getUploadFormData({
+				request: this.request,
+			}),
+		);
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
@@ -72,6 +79,14 @@ API.v1.addRoute('livechat/upload/:rid', {
 		uploadedFile.description = fields.description;
 
 		delete fields.description;
-		return API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
+		return API.v1.success(
+			Meteor.call(
+				'sendFileLivechatMessage',
+				this.urlParams.rid,
+				visitorToken,
+				uploadedFile,
+				fields,
+			),
+		);
 	},
 });

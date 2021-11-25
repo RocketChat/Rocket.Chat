@@ -7,7 +7,6 @@ import { HTTP } from 'meteor/http';
 
 import { registerAccessTokenService } from './oauth';
 
-
 const whitelisted = [
 	'id',
 	'email',
@@ -17,7 +16,8 @@ const whitelisted = [
 	'link',
 	'gender',
 	'locale',
-	'age_range'];
+	'age_range',
+];
 
 const FB_API_VERSION = 'v2.9';
 const FB_URL = 'https://graph.facebook.com';
@@ -35,23 +35,32 @@ const getIdentity = function(accessToken, fields, secret) {
 			},
 		}).data;
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ err.message }`),
-			{ response: err.response });
+		throw _.extend(
+			new Error(`Failed to fetch identity from Facebook. ${ err.message }`),
+			{ response: err.response },
+		);
 	}
 };
 
 registerAccessTokenService('facebook', function(options) {
-	check(options, Match.ObjectIncluding({
-		accessToken: String,
-		secret: String,
-		expiresIn: Match.Integer,
-	}));
+	check(
+		options,
+		Match.ObjectIncluding({
+			accessToken: String,
+			secret: String,
+			expiresIn: Match.Integer,
+		}),
+	);
 
-	const identity = getIdentity(options.accessToken, whitelisted, options.secret);
+	const identity = getIdentity(
+		options.accessToken,
+		whitelisted,
+		options.secret,
+	);
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
 	};
 
 	const fields = _.pick(identity, whitelisted);

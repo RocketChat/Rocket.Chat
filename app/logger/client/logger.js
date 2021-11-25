@@ -29,13 +29,20 @@ if (Template.log) {
 					dict[name] = function(...args) {
 						const result = fn.apply(this, args);
 						if (Template.log === true) {
-							const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+							const completeName = `${ prefix }:${ template.viewName.replace(
+								'Template.',
+								'',
+							) }.${ name }`;
 							if (Template.logMatch.test(completeName)) {
-								console.log(`%c${ completeName }`, `color: ${ color }`, {
-									args,
-									scope: this,
-									result,
-								});
+								console.log(
+									`%c${ completeName }`,
+									`color: ${ color }`,
+									{
+										args,
+										scope: this,
+										result,
+									},
+								);
 							}
 						}
 						return result;
@@ -50,9 +57,17 @@ if (Template.log) {
 		};
 	};
 
-	Template.prototype.helpers = wrapHelpersAndEvents(Template.prototype.helpers, 'helper', 'blue');
+	Template.prototype.helpers = wrapHelpersAndEvents(
+		Template.prototype.helpers,
+		'helper',
+		'blue',
+	);
 
-	Template.prototype.events = wrapHelpersAndEvents(Template.prototype.events, 'event', 'green');
+	Template.prototype.events = wrapHelpersAndEvents(
+		Template.prototype.events,
+		'event',
+		'green',
+	);
 
 	const wrapLifeCycle = function(original, prefix, color) {
 		return function(fn) {
@@ -61,13 +76,20 @@ if (Template.log) {
 				const wrap = function(...args) {
 					const result = fn.apply(this, args);
 					if (Template.log === true) {
-						const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+						const completeName = `${ prefix }:${ template.viewName.replace(
+							'Template.',
+							'',
+						) }.${ name }`;
 						if (Template.logMatch.test(completeName)) {
-							console.log(`%c${ completeName }`, `color: ${ color }; font-weight: bold`, {
-								args,
-								scope: this,
-								result,
-							});
+							console.log(
+								`%c${ completeName }`,
+								`color: ${ color }; font-weight: bold`,
+								{
+									args,
+									scope: this,
+									result,
+								},
+							);
 						}
 					}
 					return result;
@@ -78,9 +100,21 @@ if (Template.log) {
 		};
 	};
 
-	Template.prototype.onCreated = wrapLifeCycle(Template.prototype.onCreated, 'onCreated', 'blue');
+	Template.prototype.onCreated = wrapLifeCycle(
+		Template.prototype.onCreated,
+		'onCreated',
+		'blue',
+	);
 
-	Template.prototype.onRendered = wrapLifeCycle(Template.prototype.onRendered, 'onRendered', 'green');
+	Template.prototype.onRendered = wrapLifeCycle(
+		Template.prototype.onRendered,
+		'onRendered',
+		'green',
+	);
 
-	Template.prototype.onDestroyed = wrapLifeCycle(Template.prototype.onDestroyed, 'onDestroyed', 'red');
+	Template.prototype.onDestroyed = wrapLifeCycle(
+		Template.prototype.onDestroyed,
+		'onDestroyed',
+		'red',
+	);
 }

@@ -38,27 +38,34 @@ settingsRegistry.addGroup('SlackBridge', function() {
 
 	this.add('SlackBridge_Out_All', false, {
 		type: 'boolean',
-		enableQuery: [{
-			_id: 'SlackBridge_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_Enabled',
-			value: true,
-		}],
+		enableQuery: [
+			{
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_Enabled',
+				value: true,
+			},
+		],
 	});
 
 	this.add('SlackBridge_Out_Channels', '', {
 		type: 'roomPick',
-		enableQuery: [{
-			_id: 'SlackBridge_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_All',
-			value: false,
-		}],
+		enableQuery: [
+			{
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_All',
+				value: false,
+			},
+		],
 	});
 
 	this.add('SlackBridge_AliasFormat', '', {
@@ -90,13 +97,17 @@ settingsRegistry.addGroup('SlackBridge', function() {
 		i18nLabel: 'Reactions',
 	});
 
-	this.add('SlackBridge_Remove_Channel_Links', 'removeSlackBridgeChannelLinks', {
-		type: 'action',
-		actionText: 'Remove_Channel_Links',
-		i18nDescription: 'SlackBridge_Remove_Channel_Links_Description',
-		enableQuery: {
-			_id: 'SlackBridge_Enabled',
-			value: true,
+	this.add(
+		'SlackBridge_Remove_Channel_Links',
+		'removeSlackBridgeChannelLinks',
+		{
+			type: 'action',
+			actionText: 'Remove_Channel_Links',
+			i18nDescription: 'SlackBridge_Remove_Channel_Links_Description',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
 		},
-	});
+	);
 });

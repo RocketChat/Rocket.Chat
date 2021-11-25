@@ -37,7 +37,10 @@ Meteor.startup(() => {
 						} else {
 							UserRoles.upsert(
 								{ _id: role.u._id },
-								{ $addToSet: { roles: role._id }, $set: { username: role.u.username } },
+								{
+									$addToSet: { roles: role._id },
+									$set: { username: role.u.username },
+								},
 							);
 							ChatMessage.update(
 								{ 'u._id': role.u._id },

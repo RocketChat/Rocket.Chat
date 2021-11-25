@@ -17,7 +17,10 @@ Template.pinnedMessages.helpers({
 	},
 	messages() {
 		const instance = Template.instance();
-		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
+		return instance.messages.find(
+			{},
+			{ limit: instance.limit.get(), sort: { ts: -1 } },
+		);
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -62,7 +65,9 @@ Template.pinnedMessages.onCreated(function() {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getPinnedMessages?roomId=${ this.rid }&count=${ limit }`);
+		const { messages, total } = await APIClient.v1.get(
+			`chat.getPinnedMessages?roomId=${ this.rid }&count=${ limit }`,
+		);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 
@@ -77,7 +82,11 @@ Template.mentionsFlexTab.onDestroyed(function() {
 Template.pinnedMessages.events({
 	...getCommonRoomEvents(),
 	'scroll .js-list': _.throttle(function(e, instance) {
-		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
+		if (
+			e.target.scrollTop
+				>= e.target.scrollHeight - e.target.clientHeight
+			&& instance.hasMore.get()
+		) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}
 	}, 200),

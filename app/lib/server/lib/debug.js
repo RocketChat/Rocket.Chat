@@ -12,13 +12,21 @@ const logger = new Logger('Meteor');
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
-settings.watch('Log_Trace_Methods', (value) => { Log_Trace_Methods = value; });
-settings.watch('Log_Trace_Subscriptions', (value) => { Log_Trace_Subscriptions = value; });
+settings.watch('Log_Trace_Methods', (value) => {
+	Log_Trace_Methods = value;
+});
+settings.watch('Log_Trace_Subscriptions', (value) => {
+	Log_Trace_Subscriptions = value;
+});
 
 let Log_Trace_Methods_Filter;
 let Log_Trace_Subscriptions_Filter;
-settings.watch('Log_Trace_Methods_Filter', (value) => { Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined; });
-settings.watch('Log_Trace_Subscriptions_Filter', (value) => { Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined; });
+settings.watch('Log_Trace_Methods_Filter', (value) => {
+	Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined;
+});
+settings.watch('Log_Trace_Subscriptions_Filter', (value) => {
+	Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined;
+});
 
 const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	if (!enable) {
@@ -43,7 +51,14 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
-		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
+		traceConnection(
+			Log_Trace_Methods,
+			Log_Trace_Methods_Filter,
+			'method',
+			name,
+			this.connection,
+			this.userId,
+		);
 
 		const method = name === 'stream' ? `${ name }:${ originalArgs[0] }` : name;
 
@@ -82,7 +97,14 @@ const originalMeteorPublish = Meteor.publish;
 
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function(...args) {
-		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
+		traceConnection(
+			Log_Trace_Subscriptions,
+			Log_Trace_Subscriptions_Filter,
+			'subscription',
+			name,
+			this.connection,
+			this.userId,
+		);
 
 		logger.subscription({
 			publication: name,
@@ -93,7 +115,9 @@ Meteor.publish = function(name, func) {
 			instanceId: InstanceStatus.id(),
 		});
 
-		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
+		const end = metrics.meteorSubscriptions.startTimer({
+			subscription: name,
+		});
 
 		const originalReady = this.ready;
 		this.ready = function() {

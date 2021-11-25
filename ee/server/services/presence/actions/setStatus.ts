@@ -5,34 +5,48 @@ import { UserStatus } from '../../../../../definition/UserStatus';
 import { IUserSession } from '../../../../../definition/IUserSession';
 import { api } from '../../../../../server/sdk/api';
 
-export async function setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
+export async function setStatus(
+	uid: string,
+	statusDefault: UserStatus,
+	statusText?: string,
+): Promise<boolean> {
 	const query = { _id: uid };
 
-	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const UserSession = await getCollection<IUserSession>(
+		Collections.UserSession,
+	);
+	const userSessions = await UserSession.findOne(query) || {
+		connections: [],
+	};
 
-	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
+	const { status, statusConnection } = processPresenceAndStatus(
+		userSessions.connections,
+		statusDefault,
+	);
 
 	const update = {
 		statusDefault,
 		status,
 		statusConnection,
-		...typeof statusText !== 'undefined' ? {
-			// TODO logic duplicated from Rocket.Chat core
-			statusText: String(statusText || '').trim().substr(0, 120),
-		} : {},
+		...typeof statusText !== 'undefined'
+			? {
+				// TODO logic duplicated from Rocket.Chat core
+				statusText: String(statusText || '')
+					.trim()
+					.substr(0, 120),
+			  }
+			: {},
 	};
 
 	const User = await getCollection(Collections.User);
-	const result = await User.updateOne(
-		query,
-		{
-			$set: update,
-		},
-	);
+	const result = await User.updateOne(query, {
+		$set: update,
+	});
 
 	if (result.modifiedCount > 0) {
-		const user = await User.findOne<IUser>(query, { projection: { username: 1 } });
+		const user = await User.findOne<IUser>(query, {
+			projection: { username: 1 },
+		});
 		api.broadcast('presence.status', {
 			user: { _id: uid, username: user?.username, status, statusText },
 		});
@@ -41,7 +55,11 @@ export async function setStatus(uid: string, statusDefault: UserStatus, statusTe
 	return !!result.modifiedCount;
 }
 
-export async function setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
+export async function setConnectionStatus(
+	uid: string,
+	status: UserStatus,
+	session: string,
+): Promise<boolean> {
 	const query = {
 		_id: uid,
 		'connections.id': session,

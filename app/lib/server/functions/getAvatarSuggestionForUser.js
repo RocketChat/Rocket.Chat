@@ -7,7 +7,12 @@ import { settings } from '../../../settings';
 
 const avatarProviders = {
 	facebook(user) {
-		if (user.services && user.services.facebook && user.services.facebook.id && settings.get('Accounts_OAuth_Facebook')) {
+		if (
+			user.services
+			&& user.services.facebook
+			&& user.services.facebook.id
+			&& settings.get('Accounts_OAuth_Facebook')
+		) {
 			return {
 				service: 'facebook',
 				url: `https://graph.facebook.com/${ user.services.facebook.id }/picture?type=large`,
@@ -16,7 +21,14 @@ const avatarProviders = {
 	},
 
 	google(user) {
-		if (user.services && user.services.google && user.services.google.picture && user.services.google.picture !== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg' && settings.get('Accounts_OAuth_Google')) {
+		if (
+			user.services
+			&& user.services.google
+			&& user.services.google.picture
+			&& user.services.google.picture
+				!== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg'
+			&& settings.get('Accounts_OAuth_Google')
+		) {
 			return {
 				service: 'google',
 				url: user.services.google.picture,
@@ -25,7 +37,12 @@ const avatarProviders = {
 	},
 
 	github(user) {
-		if (user.services && user.services.github && user.services.github.username && settings.get('Accounts_OAuth_Github')) {
+		if (
+			user.services
+			&& user.services.github
+			&& user.services.github.username
+			&& settings.get('Accounts_OAuth_Github')
+		) {
 			return {
 				service: 'github',
 				url: `https://avatars.githubusercontent.com/${ user.services.github.username }?s=200`,
@@ -34,26 +51,48 @@ const avatarProviders = {
 	},
 
 	linkedin(user) {
-		if (user.services && user.services.linkedin && user.services.linkedin.profilePicture && user.services.linkedin.profilePicture.identifiersUrl && user.services.linkedin.profilePicture.identifiersUrl.length > 0 && settings.get('Accounts_OAuth_Linkedin')) {
-			const total = user.services.linkedin.profilePicture.identifiersUrl.length;
+		if (
+			user.services
+			&& user.services.linkedin
+			&& user.services.linkedin.profilePicture
+			&& user.services.linkedin.profilePicture.identifiersUrl
+			&& user.services.linkedin.profilePicture.identifiersUrl.length > 0
+			&& settings.get('Accounts_OAuth_Linkedin')
+		) {
+			const total =				user.services.linkedin.profilePicture.identifiersUrl.length;
 			return {
 				service: 'linkedin',
-				url: user.services.linkedin.profilePicture.identifiersUrl[total - 1],
+				url: user.services.linkedin.profilePicture.identifiersUrl[
+					total - 1
+				],
 			};
 		}
 	},
 
 	twitter(user) {
-		if (user.services && user.services.twitter && user.services.twitter.profile_image_url_https && settings.get('Accounts_OAuth_Twitter')) {
+		if (
+			user.services
+			&& user.services.twitter
+			&& user.services.twitter.profile_image_url_https
+			&& settings.get('Accounts_OAuth_Twitter')
+		) {
 			return {
 				service: 'twitter',
-				url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, ''),
+				url: user.services.twitter.profile_image_url_https.replace(
+					/_normal|_bigger/,
+					'',
+				),
 			};
 		}
 	},
 
 	gitlab(user) {
-		if (user.services && user.services.gitlab && user.services.gitlab.avatar_url && settings.get('Accounts_OAuth_Gitlab')) {
+		if (
+			user.services
+			&& user.services.gitlab
+			&& user.services.gitlab.avatar_url
+			&& settings.get('Accounts_OAuth_Gitlab')
+		) {
 			return {
 				service: 'gitlab',
 				url: user.services.gitlab.avatar_url,
@@ -62,7 +101,12 @@ const avatarProviders = {
 	},
 
 	blockstack(user) {
-		if (user.services && user.services.blockstack && user.services.blockstack.image && settings.get('Blockstack_Enable')) {
+		if (
+			user.services
+			&& user.services.blockstack
+			&& user.services.blockstack.image
+			&& settings.get('Blockstack_Enable')
+		) {
 			return {
 				service: 'blockstack',
 				url: user.services.blockstack.image,
@@ -74,7 +118,9 @@ const avatarProviders = {
 		const avatars = [];
 		for (const service in user.services) {
 			if (user.services[service]._OAuthCustom) {
-				const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
+				const services = ServiceConfiguration.configurations
+					.find({ service }, { fields: { secret: 0 } })
+					.fetch();
 
 				if (services.length > 0) {
 					if (user.services[service].avatarUrl) {
@@ -147,7 +193,9 @@ export function getAvatarSuggestionForUser(user) {
 
 			if (result.statusCode === 200) {
 				let blob = `data:${ result.headers['content-type'] };base64,`;
-				blob += Buffer.from(result.content, 'binary').toString('base64');
+				blob += Buffer.from(result.content, 'binary').toString(
+					'base64',
+				);
 				avatar.blob = blob;
 				avatar.contentType = result.headers['content-type'];
 				validAvatars[avatar.service] = avatar;

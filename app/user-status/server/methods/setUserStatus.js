@@ -8,12 +8,21 @@ Meteor.methods({
 	setUserStatus(statusType, statusText) {
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'setUserStatus',
+			});
 		}
 
 		if (statusType) {
-			if (statusType === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', { method: 'setUserStatus' });
+			if (
+				statusType === 'offline'
+				&& !settings.get('Accounts_AllowInvisibleStatusOption')
+			) {
+				throw new Meteor.Error(
+					'error-status-not-allowed',
+					'Invisible status is disabled',
+					{ method: 'setUserStatus' },
+				);
 			}
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}

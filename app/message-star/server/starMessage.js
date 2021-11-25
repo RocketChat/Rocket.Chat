@@ -14,13 +14,21 @@ Meteor.methods({
 		}
 
 		if (!settings.get('Message_AllowStarring')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
-				method: 'starMessage',
-				action: 'Message_starring',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Message starring not allowed',
+				{
+					method: 'starMessage',
+					action: 'Message_starring',
+				},
+			);
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			message.rid,
+			Meteor.userId(),
+			{ fields: { _id: 1 } },
+		);
 		if (!subscription) {
 			return false;
 		}
@@ -28,15 +36,27 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
+		const room = Rooms.findOneById(message.rid, {
+			fields: { lastMessage: 1 },
+		});
 		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
+			throw new Meteor.Error('not-authorized', 'Not Authorized', {
+				method: 'starMessage',
+			});
 		}
 
 		if (isTheLastMessage(room, message)) {
-			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
+			Rooms.updateLastMessageStar(
+				room._id,
+				Meteor.userId(),
+				message.starred,
+			);
 		}
 
-		return Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
+		return Messages.updateUserStarById(
+			message._id,
+			Meteor.userId(),
+			message.starred,
+		);
 	},
 });

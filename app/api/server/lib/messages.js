@@ -2,7 +2,11 @@ import { canAccessRoomAsync } from '../../../authorization/server/functions/canA
 import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 
-export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findMentionedMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}) {
 	const room = await Rooms.findOneById(roomId);
 	if (!await canAccessRoomAsync(room, { _id: uid })) {
 		throw new Error('error-not-allowed');
@@ -12,11 +16,15 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const cursor = await Messages.findVisibleByMentionAndRoomId(
+		user.username,
+		roomId,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+	);
 
 	const total = await cursor.count();
 
@@ -30,7 +38,11 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findStarredMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findStarredMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}) {
 	const room = await Rooms.findOneById(roomId);
 	if (!await canAccessRoomAsync(room, { _id: uid })) {
 		throw new Error('error-not-allowed');
@@ -88,7 +100,11 @@ export async function findSnippetedMessageById({ uid, messageId }) {
 	};
 }
 
-export async function findSnippetedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findSnippetedMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}) {
 	if (!await getValue('Message_AllowSnippeting')) {
 		throw new Error('error-not-allowed');
 	}
@@ -116,7 +132,12 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: { offset, count, sort } }) {
+export async function findDiscussionsFromRoom({
+	uid,
+	roomId,
+	text,
+	pagination: { offset, count, sort },
+}) {
 	const room = await Rooms.findOneById(roomId);
 
 	if (!await canAccessRoomAsync(room, { _id: uid })) {

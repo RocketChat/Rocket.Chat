@@ -43,9 +43,15 @@ RocketChatFile.GridFS = class {
 		const mongo = MongoInternals.NpmModule;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 		this.store = new Grid(db, mongo);
-		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
+		this.findOneSync = Meteor.wrapAsync(
+			this.store
+				.collection(this.name)
+				.findOne.bind(this.store.collection(this.name)),
+		);
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
-		this.countSync = Meteor.wrapAsync(this.store._col.count.bind(this.store._col));
+		this.countSync = Meteor.wrapAsync(
+			this.store._col.count.bind(this.store._col),
+		);
 		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 
@@ -114,17 +120,23 @@ RocketChatFile.GridFS = class {
 			return cb();
 		}
 		const data = [];
-		file.readStream.on('data', Meteor.bindEnvironment(function(chunk) {
-			return data.push(chunk);
-		}));
-		return file.readStream.on('end', Meteor.bindEnvironment(function() {
-			return cb(null, {
-				buffer: Buffer.concat(data),
-				contentType: file.contentType,
-				length: file.length,
-				uploadDate: file.uploadDate,
-			});
-		}));
+		file.readStream.on(
+			'data',
+			Meteor.bindEnvironment(function(chunk) {
+				return data.push(chunk);
+			}),
+		);
+		return file.readStream.on(
+			'end',
+			Meteor.bindEnvironment(function() {
+				return cb(null, {
+					buffer: Buffer.concat(data),
+					contentType: file.contentType,
+					length: file.length,
+					uploadDate: file.uploadDate,
+				});
+			}),
+		);
 	}
 
 	deleteFile(fileName) {
@@ -143,7 +155,9 @@ RocketChatFile.FileSystem = class {
 
 		this.transformWrite = transformWrite;
 		if (absolutePath.split(path.sep)[0] === '~') {
-			const homepath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+			const homepath =				process.env.HOME
+				|| process.env.HOMEPATH
+				|| process.env.USERPROFILE;
 			if (homepath != null) {
 				absolutePath = absolutePath.replace('~', homepath);
 			} else {
@@ -207,18 +221,24 @@ RocketChatFile.FileSystem = class {
 			return cb();
 		}
 		const data = [];
-		file.readStream.on('data', Meteor.bindEnvironment(function(chunk) {
-			return data.push(chunk);
-		}));
-		return file.readStream.on('end', Meteor.bindEnvironment(function() {
-			return {
-				buffer: Buffer.concat(data)({
-					contentType: file.contentType,
-					length: file.length,
-					uploadDate: file.uploadDate,
-				}),
-			};
-		}));
+		file.readStream.on(
+			'data',
+			Meteor.bindEnvironment(function(chunk) {
+				return data.push(chunk);
+			}),
+		);
+		return file.readStream.on(
+			'end',
+			Meteor.bindEnvironment(function() {
+				return {
+					buffer: Buffer.concat(data)({
+						contentType: file.contentType,
+						length: file.length,
+						uploadDate: file.uploadDate,
+					}),
+				};
+			}),
+		);
 	}
 
 	deleteFile(fileName) {

@@ -1,11 +1,17 @@
 import { HTTP } from 'meteor/http';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
-import { IHttpResponse, IHttpRequest } from '@rocket.chat/apps-engine/definition/accessors';
+import {
+	IHttpResponse,
+	IHttpRequest,
+} from '@rocket.chat/apps-engine/definition/accessors';
 import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppServerOrchestrator } from '../orchestrator';
 
-type INpmRequestOptions = Pick<IHttpRequest, 'encoding' | 'strictSSL' | 'rejectUnauthorized'> & {
+type INpmRequestOptions = Pick<
+IHttpRequest,
+'encoding' | 'strictSSL' | 'rejectUnauthorized'
+> & {
 	agentOptions: {
 		rejectUnauthorized: boolean | undefined;
 	};
@@ -59,10 +65,17 @@ export class AppHttpBridge extends HttpBridge {
 
 		normalizeHttpOptions(info.request);
 
-		this.orch.debugLog(`The App ${ info.appId } is requesting from the outter webs:`, info);
+		this.orch.debugLog(
+			`The App ${ info.appId } is requesting from the outter webs:`,
+			info,
+		);
 
 		try {
-			return HTTP.call(info.method, info.url, info.request) as IHttpResponse;
+			return HTTP.call(
+				info.method,
+				info.url,
+				info.request,
+			) as IHttpResponse;
 		} catch (e) {
 			return e.response;
 		}

@@ -128,7 +128,10 @@ const useSearchItems = (filterText) => {
 		);
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
-		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
+		return {
+			data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])),
+			status,
+		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localRooms, name, spotlight]);
 };

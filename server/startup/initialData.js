@@ -6,11 +6,17 @@ import { FileUpload } from '../../app/file-upload/server';
 import { addUserRoles, getUsersInRole } from '../../app/authorization/server';
 import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
+import {
+	checkUsernameAvailability,
+	addUserToDefaultChannels,
+} from '../../app/lib/server';
 import { Settings } from '../../app/models/server/raw';
 
 Meteor.startup(async function() {
-	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
+	if (
+		settings.get('Show_Setup_Wizard') === 'pending'
+		&& !Rooms.findOneById('GENERAL')
+	) {
 		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 			default: true,
 		});
@@ -43,7 +49,9 @@ Meteor.startup(async function() {
 		};
 
 		Meteor.runAsUser('rocket.cat', () => {
-			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
+			fileStore.insert(file, rs, () =>
+				Users.setAvatarData('rocket.cat', 'local', null),
+			);
 		});
 	}
 
@@ -70,17 +78,26 @@ Meteor.startup(async function() {
 
 				if (re.test(process.env.ADMIN_EMAIL)) {
 					if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
-						adminUser.emails = [{
-							address: process.env.ADMIN_EMAIL,
-							verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
-						}];
+						adminUser.emails = [
+							{
+								address: process.env.ADMIN_EMAIL,
+								verified:
+									process.env.ADMIN_EMAIL_VERIFIED === 'true',
+							},
+						];
 
 						console.log(`Email: ${ process.env.ADMIN_EMAIL }`.green);
 					} else {
-						console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
+						console.log(
+							'Email provided already exists; Ignoring environment variables ADMIN_EMAIL'
+								.red,
+						);
 					}
 				} else {
-					console.log('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red);
+					console.log(
+						'Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'
+							.red,
+					);
 				}
 			}
 
@@ -88,7 +105,9 @@ Meteor.startup(async function() {
 				let nameValidation;
 
 				try {
-					nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+					nameValidation = new RegExp(
+						`^${ settings.get('UTF8_User_Names_Validation') }$`,
+					);
 				} catch (error) {
 					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 				}
@@ -97,10 +116,16 @@ Meteor.startup(async function() {
 					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
-						console.log('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'.red);
+						console.log(
+							'Username provided already exists; Ignoring environment variables ADMIN_USERNAME'
+								.red,
+						);
 					}
 				} else {
-					console.log('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red);
+					console.log(
+						'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'
+							.red,
+					);
 				}
 			}
 
@@ -114,23 +139,35 @@ Meteor.startup(async function() {
 
 			addUserRoles(id, 'admin');
 		} else {
-			console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
+			console.log(
+				'Users with admin role already exist; Ignoring environment variables ADMIN_PASS'
+					.red,
+			);
 		}
 	}
 
-	if (typeof process.env.INITIAL_USER === 'string' && process.env.INITIAL_USER.length > 0) {
+	if (
+		typeof process.env.INITIAL_USER === 'string'
+		&& process.env.INITIAL_USER.length > 0
+	) {
 		try {
 			const initialUser = JSON.parse(process.env.INITIAL_USER);
 
 			if (!initialUser._id) {
-				console.log('No _id provided; Ignoring environment variable INITIAL_USER'.red);
+				console.log(
+					'No _id provided; Ignoring environment variable INITIAL_USER'
+						.red,
+				);
 			} else if (!Users.findOneById(initialUser._id)) {
 				console.log('Inserting initial user:'.green);
 				console.log(JSON.stringify(initialUser, null, 2).green);
 				Users.create(initialUser);
 			}
 		} catch (e) {
-			console.log('Error processing environment variable INITIAL_USER'.red, e);
+			console.log(
+				'Error processing environment variable INITIAL_USER'.red,
+				e,
+			);
 		}
 	}
 
@@ -139,13 +176,19 @@ Meteor.startup(async function() {
 
 		if (oldestUser) {
 			addUserRoles(oldestUser._id, ['admin']);
-			console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
+			console.log(
+				`No admins are found. Set ${
+					oldestUser.username || oldestUser.name
+				} as admin for being the oldest user`,
+			);
 		}
 	}
 
 	if (await (await getUsersInRole('admin')).count() !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+			console.log(
+				'Setting Setup Wizard to "in_progress" because, at least, one admin was found',
+			);
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
@@ -178,11 +221,17 @@ Meteor.startup(async function() {
 		console.log(`Password: ${ adminUser._id }`.green);
 
 		if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
-			throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');
+			throw new Meteor.Error(
+				`Email ${ adminUser.emails[0].address } already exists`,
+				"Rocket.Chat can't run in test mode",
+			);
 		}
 
 		if (!checkUsernameAvailability(adminUser.username)) {
-			throw new Meteor.Error(`Username ${ adminUser.username } already exists`, 'Rocket.Chat can\'t run in test mode');
+			throw new Meteor.Error(
+				`Username ${ adminUser.username } already exists`,
+				"Rocket.Chat can't run in test mode",
+			);
 		}
 
 		Users.create(adminUser);

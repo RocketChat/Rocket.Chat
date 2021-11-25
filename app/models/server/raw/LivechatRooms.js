@@ -2,8 +2,15 @@ import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
-	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
-		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
+	getQueueMetrics({
+		departmentId,
+		agentId,
+		includeOfflineAgents,
+		options = {},
+	}) {
+		const match = {
+			$match: { t: 'l', open: true, servedBy: { $exists: true } },
+		};
 		const matchUsers = { $match: {} };
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
@@ -79,7 +86,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, departmentsGroup, usersLookup, usersUnwind];
+		const firstParams = [
+			match,
+			departmentsLookup,
+			departmentsUnwind,
+			departmentsGroup,
+			usersLookup,
+			usersUnwind,
+		];
 		if (Object.keys(matchUsers.$match)) {
 			firstParams.push(matchUsers);
 		}
@@ -94,11 +108,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	async findAllNumberOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
-				'metrics.visitorInactivity': { $gte: await getValue('Livechat_visitor_inactivity_timeout') },
+				'metrics.visitorInactivity': {
+					$gte: await getValue('Livechat_visitor_inactivity_timeout'),
+				},
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
 			},
@@ -136,7 +158,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	async findPercentageOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -152,12 +180,28 @@ export class LivechatRoomsRaw extends BaseRaw {
 				rooms: { $sum: 1 },
 				abandonedChats: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.visitorInactivity', false] },
-								{ $gte: ['$metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [
+									{
+										$ifNull: [
+											'$metrics.visitorInactivity',
+											false,
+										],
+									},
+									{
+										$gte: [
+											'$metrics.visitorInactivity',
+											await getValue(
+												'Livechat_visitor_inactivity_timeout',
+											),
+										],
+									},
+								],
+							},
+							1,
+							0,
+						],
 					},
 				},
 			},
@@ -170,7 +214,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$rooms', 0] },
 							0,
-							{ $divide: [{ $multiply: ['$abandonedChats', 100] }, '$rooms'] },
+							{
+								$divide: [
+									{ $multiply: ['$abandonedChats', 100] },
+									'$rooms',
+								],
+							},
 						],
 					},
 				},
@@ -194,7 +243,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageOfChatDurationTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -215,7 +270,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageChatDurationTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsDuration', '$rooms'] }] } },
+				averageChatDurationTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$chatsDuration', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -236,7 +299,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageWaitingTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -257,7 +326,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsFirstResponses', '$rooms'] }] } },
+				averageWaitingTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$chatsFirstResponses', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -278,7 +355,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
+	findAllRooms({
+		start,
+		end,
+		answered,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -321,7 +405,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -365,7 +455,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -426,7 +521,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 						input: '$messages',
 						as: 'message',
 						cond: {
-							$and: [{ $eq: ['$$message.t', 'livechat_transfer_history'] }],
+							$and: [
+								{
+									$eq: [
+										'$$message.t',
+										'livechat_transfer_history',
+									],
+								},
+							],
 						},
 					},
 				},
@@ -463,7 +565,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject, sort];
+		const params = [
+			...firstParams,
+			departmentsGroup,
+			departmentsProject,
+			roomsUnwind,
+			messagesLookup,
+			messagesProject,
+			transferProject,
+			transferGroup,
+			presentationProject,
+			sort,
+		];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -479,16 +592,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 			'metrics.chatDuration': {
 				$exists: false,
 			},
-			$or: [{
-				onHold: {
-					$exists: false,
+			$or: [
+				{
+					onHold: {
+						$exists: false,
+					},
 				},
-			}, {
-				onHold: {
-					$exists: true,
-					$eq: false,
+				{
+					onHold: {
+						$exists: true,
+						$eq: false,
+					},
 				},
-			}],
+			],
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
@@ -531,16 +647,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 				t: 'l',
 				'servedBy.username': { $exists: true },
 				open: true,
-				$or: [{
-					onHold: {
-						$exists: false,
+				$or: [
+					{
+						onHold: {
+							$exists: false,
+						},
 					},
-				}, {
-					onHold: {
-						$exists: true,
-						$eq: false,
+					{
+						onHold: {
+							$exists: true,
+							$eq: false,
+						},
 					},
-				}],
+				],
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
@@ -710,11 +829,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithResponseTime: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.response.avg', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [
+									{
+										$ifNull: [
+											'$metrics.response.avg',
+											false,
+										],
+									},
+								],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxFirstResponse: { $max: '$metrics.response.ft' },
@@ -727,7 +855,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$roomsWithResponseTime', 0] },
 							0,
-							{ $divide: ['$sumResponseAvg', '$roomsWithResponseTime'] },
+							{
+								$divide: [
+									'$sumResponseAvg',
+									'$roomsWithResponseTime',
+								],
+							},
 						],
 					},
 				},
@@ -755,11 +888,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithFirstReaction: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.reaction.ft', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [
+									{
+										$ifNull: [
+											'$metrics.reaction.ft',
+											false,
+										],
+									},
+								],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxFirstReaction: { $max: '$metrics.reaction.ft' },
@@ -772,7 +914,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$roomsWithFirstReaction', 0] },
 							0,
-							{ $divide: ['$sumReactionFirstResponse', '$roomsWithFirstReaction'] },
+							{
+								$divide: [
+									'$sumReactionFirstResponse',
+									'$roomsWithFirstReaction',
+								],
+							},
 						],
 					},
 				},
@@ -801,11 +948,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithChatDuration: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.chatDuration', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [
+									{
+										$ifNull: [
+											'$metrics.chatDuration',
+											false,
+										],
+									},
+								],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxChatDuration: { $max: '$metrics.chatDuration' },
@@ -818,7 +974,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$roomsWithChatDuration', 0] },
 							0,
-							{ $divide: ['$sumChatDuration', '$roomsWithChatDuration'] },
+							{
+								$divide: [
+									'$sumChatDuration',
+									'$roomsWithChatDuration',
+								],
+							},
 						],
 					},
 				},
@@ -831,7 +992,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageOfServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',
@@ -847,13 +1014,33 @@ export class LivechatRoomsRaw extends BaseRaw {
 					departmentId: '$departmentId',
 				},
 				rooms: { $sum: 1 },
-				allServiceTime: { $sum: { $divide: [{ $subtract: ['$responseBy.lastMessageTs', '$servedBy.ts'] }, 1000] } },
+				allServiceTime: {
+					$sum: {
+						$divide: [
+							{
+								$subtract: [
+									'$responseBy.lastMessageTs',
+									'$servedBy.ts',
+								],
+							},
+							1000,
+						],
+					},
+				},
 			},
 		};
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allServiceTime', '$rooms'] }] } },
+				averageServiceTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$allServiceTime', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -882,7 +1069,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		searchText,
+		open,
+		served,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				'v._id': visitorId,
@@ -890,8 +1084,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 				...served !== undefined && { servedBy: { $exists: served } },
 			},
 		};
-		const lookup = { $lookup: { from: 'rocketchat_message', localField: '_id', foreignField: 'rid', as: 'messages' } };
-		const matchMessages = searchText && { $match: { 'messages.msg': { $regex: `.*${ searchText }.*` } } };
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_message',
+				localField: '_id',
+				foreignField: 'rid',
+				as: 'messages',
+			},
+		};
+		const matchMessages = searchText && {
+			$match: { 'messages.msg': { $regex: `.*${ searchText }.*` } },
+		};
 
 		const params = [match, lookup];
 
@@ -920,7 +1123,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 
-		const unwindClosingMsg = { $unwind: { path: '$closingMessage', preserveNullAndEmptyArrays: true } };
+		const unwindClosingMsg = {
+			$unwind: {
+				path: '$closingMessage',
+				preserveNullAndEmptyArrays: true,
+			},
+		};
 		const sort = { $sort: options.sort || { ts: -1 } };
 
 		params.push(project, unwindClosingMsg, sort);
@@ -941,12 +1149,29 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, onhold, options = {} }) {
+	findRoomsWithCriteria({
+		agents,
+		roomName,
+		departmentId,
+		open,
+		served,
+		createdAt,
+		closedAt,
+		tags,
+		customFields,
+		visitorId,
+		roomIds,
+		onhold,
+		options = {},
+	}) {
 		const query = {
 			t: 'l',
 		};
 		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+			query.$or = [
+				{ 'servedBy._id': { $in: agents } },
+				{ 'servedBy.username': { $in: agents } },
+			];
 		}
 		if (roomName) {
 			query.fname = new RegExp(roomName, 'i');
@@ -986,7 +1211,9 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.tags = { $in: tags };
 		}
 		if (customFields) {
-			query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
+			query.$and = Object.keys(customFields).map((key) => ({
+				[`livechatData.${ key }`]: new RegExp(customFields[key], 'i'),
+			}));
 		}
 
 		if (roomIds) {
@@ -1000,7 +1227,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 			};
 		}
 
-		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
+		return this.find(query, {
+			sort: options.sort || { name: 1 },
+			skip: options.offset,
+			limit: options.count,
+		});
 	}
 
 	getOnHoldConversationsBetweenDate(from, to, departmentId) {
@@ -1010,8 +1241,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				$eq: true,
 			},
 			ts: {
-				$gte: new Date(from),	// ISO Date, ts >= date.gte
-				$lt: new Date(to),	// ISODate, ts < date.lt
+				$gte: new Date(from), // ISO Date, ts >= date.gte
+				$lt: new Date(to), // ISODate, ts < date.lt
 			},
 		};
 
@@ -1064,7 +1295,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
+	findAllAverageServiceTimeByAgents({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}) {
 		const match = {
 			$match: {
 				t: 'l',

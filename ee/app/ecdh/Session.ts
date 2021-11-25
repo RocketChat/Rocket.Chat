@@ -1,4 +1,9 @@
-import { SodiumPlus, X25519PublicKey, X25519SecretKey, CryptographyKey } from 'sodium-plus';
+import {
+	SodiumPlus,
+	X25519PublicKey,
+	X25519SecretKey,
+	CryptographyKey,
+} from 'sodium-plus';
 
 let sodium: SodiumPlus;
 
@@ -52,7 +57,10 @@ export class Session {
 
 	async decryptToBuffer(data: string | Buffer): Promise<Buffer> {
 		const sodium = await this.sodium();
-		const buffer = Buffer.from(Buffer.isBuffer(data) ? data.toString() : data, this.stringFormatEncryptedData);
+		const buffer = Buffer.from(
+			Buffer.isBuffer(data) ? data.toString() : data,
+			this.stringFormatEncryptedData,
+		);
 
 		const decrypted = await sodium.crypto_secretbox_open(
 			buffer.slice(24),

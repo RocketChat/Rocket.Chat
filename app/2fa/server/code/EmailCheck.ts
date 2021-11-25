@@ -16,11 +16,15 @@ export class EmailCheck implements ICodeCheck {
 		if (!Array.isArray(user.emails)) {
 			return [];
 		}
-		return user.emails.filter(({ verified }) => verified).map((e) => e.address);
+		return user.emails
+			.filter(({ verified }) => verified)
+			.map((e) => e.address);
 	}
 
 	public isEnabled(user: IUser): boolean {
-		if (!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
+		if (
+			!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')
+		) {
 			return false;
 		}
 
@@ -59,7 +63,9 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 					<b>__code__</b>
 				</p>
 				<p>${ t('Do_not_provide_this_code_to_anyone') }</p>
-				<p>${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }</p>
+				<p>${ t(
+		'If_you_didnt_try_to_login_in_your_account_please_ignore_this_email',
+	) }</p>
 			`,
 		});
 	}
@@ -97,9 +103,17 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 	public sendEmailCode(user: IUser): void {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
-		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
+		const encryptedRandom = bcrypt.hashSync(
+			random,
+			Accounts._bcryptRounds(),
+		);
 		const expire = new Date();
-		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
+		const expirationInSeconds = parseInt(
+			settings.get(
+				'Accounts_TwoFactorAuthentication_By_Email_Code_Expiration',
+			) as string,
+			10,
+		);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 
@@ -117,7 +131,9 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 		const expireWithDelta = new Date();
 		expireWithDelta.setMinutes(expireWithDelta.getMinutes() - 5);
 
-		const hasValidCode = user.services?.emailCode?.filter(({ expire }) => expire > expireWithDelta);
+		const hasValidCode = user.services?.emailCode?.filter(
+			({ expire }) => expire > expireWithDelta
+		);
 
 		if (hasValidCode?.length) {
 			return {

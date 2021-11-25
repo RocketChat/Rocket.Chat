@@ -15,21 +15,24 @@ describe('Apps - Uninstall', function() {
 		app = await installTestApp();
 	});
 
-
 	describe('[Uninstall]', () => {
 		it('should throw an error when trying to uninstall an invalid app', (done) => {
-			request.delete(apps('/invalid-id'))
+			request
+				.delete(apps('/invalid-id'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
-					expect(res.body.error).to.be.equal('No App found by the id of: invalid-id');
+					expect(res.body.error).to.be.equal(
+						'No App found by the id of: invalid-id',
+					);
 				})
 				.end(done);
 		});
 		it('should remove the app successfully', (done) => {
-			request.delete(apps(`/${ app.id }`))
+			request
+				.delete(apps(`/${ app.id }`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

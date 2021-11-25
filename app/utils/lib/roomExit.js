@@ -5,13 +5,22 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { callbacks } from '../../callbacks';
 
-const testIfPathAreEquals = (oldPath = '', newPath = '') => oldPath.replace(/"/g, '') === newPath;
+const testIfPathAreEquals = (oldPath = '', newPath = '') =>
+	oldPath.replace(/"/g, '') === newPath;
 export const roomExit = function() {
 	const oldRoute = FlowRouter.current();
 	Tracker.afterFlush(() => {
 		const context = FlowRouter.current();
 
-		if (oldRoute && testIfPathAreEquals(oldRoute.params.name || oldRoute.params.rid || oldRoute.params.id, context.params.name || context.params.rid || context.params.id)) {
+		if (
+			oldRoute
+			&& testIfPathAreEquals(
+				oldRoute.params.name
+					|| oldRoute.params.rid
+					|| oldRoute.params.id,
+				context.params.name || context.params.rid || context.params.id,
+			)
+		) {
 			return;
 		}
 		// 7370 - Close flex-tab when opening a room on mobile UI
@@ -19,7 +28,9 @@ export const roomExit = function() {
 			const flex = document.querySelector('.flex-tab');
 			if (flex) {
 				const templateData = Blaze.getData(flex);
-				templateData && templateData.tabBar && templateData.tabBar.close();
+				templateData
+					&& templateData.tabBar
+					&& templateData.tabBar.close();
 			}
 		}
 		callbacks.run('roomExit');

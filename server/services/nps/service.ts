@@ -5,8 +5,17 @@ import { Db } from 'mongodb';
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '../../../definition/INps';
-import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
+import {
+	NPSStatus,
+	INpsVoteStatus,
+	INpsVote,
+	INps,
+} from '../../../definition/INps';
+import {
+	INPSService,
+	NPSVotePayload,
+	NPSCreatePayload,
+} from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
 import { sendNpsResults } from './sendNpsResults';
@@ -30,7 +39,9 @@ export class NPSService extends ServiceClass implements INPSService {
 	}
 
 	async create(nps: NPSCreatePayload): Promise<boolean> {
-		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		const npsEnabled = await this.Settings.getValueById(
+			'NPS_survey_enabled',
+		);
 		if (!npsEnabled) {
 			throw new Error('Server opted-out for NPS surveys');
 		}
@@ -42,12 +53,7 @@ export class NPSService extends ServiceClass implements INPSService {
 			notifyAdmins(nps.startAt);
 		}
 
-		const {
-			npsId,
-			startAt,
-			expireAt,
-			createdBy,
-		} = nps;
+		const { npsId, startAt, expireAt, createdBy } = nps;
 
 		const { result } = await this.Nps.save({
 			_id: npsId,
@@ -64,26 +70,33 @@ export class NPSService extends ServiceClass implements INPSService {
 	}
 
 	async sendResults(): Promise<void> {
-		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		const npsEnabled = await this.Settings.getValueById(
+			'NPS_survey_enabled',
+		);
 		if (!npsEnabled) {
 			return;
 		}
 
 		const npsSending = await this.Nps.getOpenExpiredAlreadySending();
 
-		const nps = npsSending || await this.Nps.getOpenExpiredAndStartSending();
+		const nps =			npsSending || await this.Nps.getOpenExpiredAndStartSending();
 		if (!nps) {
 			return;
 		}
 
 		const total = await this.NpsVote.findByNpsId(nps._id).count();
 
-		const votesToSend = await this.NpsVote.findNotSentByNpsId(nps._id).toArray();
+		const votesToSend = await this.NpsVote.findNotSentByNpsId(
+			nps._id,
+		).toArray();
 
 		// if there is nothing to sent, check if something gone wrong
 		if (votesToSend.length === 0) {
 			// check if still has votes left to send
-			const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
+			const totalSent = await this.NpsVote.findByNpsIdAndStatus(
+				nps._id,
+				INpsVoteStatus.SENT,
+			).count();
 			if (totalSent === total) {
 				await this.Nps.updateStatusById(nps._id, NPSStatus.SENT);
 				return;
@@ -99,26 +112,32 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const today = new Date();
 
-		const sending = await Promise.all(votesToSend.map(async (vote) => {
-			const { value } = await this.NpsVote.col.findOneAndUpdate({
-				_id: vote._id,
-				status: INpsVoteStatus.NEW,
-			}, {
-				$set: {
-					status: INpsVoteStatus.SENDING,
-					sentAt: today,
-				},
-			}, {
-				projection: {
-					_id: 0,
-					identifier: 1,
-					roles: 1,
-					score: 1,
-					comment: 1,
-				},
-			});
-			return value;
-		}));
+		const sending = await Promise.all(
+			votesToSend.map(async (vote) => {
+				const { value } = await this.NpsVote.col.findOneAndUpdate(
+					{
+						_id: vote._id,
+						status: INpsVoteStatus.NEW,
+					},
+					{
+						$set: {
+							status: INpsVoteStatus.SENDING,
+							sentAt: today,
+						},
+					},
+					{
+						projection: {
+							_id: 0,
+							identifier: 1,
+							roles: 1,
+							score: 1,
+							comment: 1,
+						},
+					},
+				);
+				return value;
+			}),
+		);
 
 		const votes = sending.filter(Boolean) as INpsVote[];
 		if (votes.length > 0) {
@@ -133,7 +152,10 @@ export class NPSService extends ServiceClass implements INPSService {
 			this.NpsVote.updateVotesToSent(voteIds);
 		}
 
-		const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
+		const totalSent = await this.NpsVote.findByNpsIdAndStatus(
+			nps._id,
+			INpsVoteStatus.SENT,
+		).count();
 		if (totalSent < total) {
 			// send more in five minutes
 			setTimeout(() => NPS.sendResults(), 5 * 60 * 1000);
@@ -150,7 +172,9 @@ export class NPSService extends ServiceClass implements INPSService {
 		score,
 		comment,
 	}: NPSVotePayload): Promise<void> {
-		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		const npsEnabled = await this.Settings.getValueById(
+			'NPS_survey_enabled',
+		);
 		if (!npsEnabled) {
 			return;
 		}
@@ -159,7 +183,9 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('Invalid NPS id');
 		}
 
-		const nps = await this.Nps.findOneById<Pick<INps, 'status' | 'startAt' | 'expireAt'>>(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
+		const nps = await this.Nps.findOneById<
+		Pick<INps, 'status' | 'startAt' | 'expireAt'>
+		>(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
 		if (!nps) {
 			return;
 		}
@@ -177,7 +203,9 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('NPS survey not started');
 		}
 
-		const identifier = createHash('sha256').update(`${ userId }${ npsId }`).digest('hex');
+		const identifier = createHash('sha256')
+			.update(`${ userId }${ npsId }`)
+			.digest('hex');
 
 		const result = await this.NpsVote.save({
 			ts: new Date(),

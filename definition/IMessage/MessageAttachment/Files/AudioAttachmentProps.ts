@@ -1,4 +1,3 @@
-
 import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { FileAttachmentProps } from './FileAttachmentProps';
 import { FileProp } from './FileProp';
@@ -12,4 +11,5 @@ export type AudioAttachmentProps = {
 
 export const isFileAudioAttachment = (
 	attachment: FileAttachmentProps,
-): attachment is AudioAttachmentProps & { type: 'file' } => 'audio_url' in attachment;
+): attachment is AudioAttachmentProps & { type: 'file' } =>
+	'audio_url' in attachment;

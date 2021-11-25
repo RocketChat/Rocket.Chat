@@ -15,6 +15,9 @@ export class FavoriteRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
+		return (
+			settings.get('Favorite_Rooms')
+			&& getUserPreference(Meteor.userId(), 'sidebarShowFavorites')
+		);
 	}
 }

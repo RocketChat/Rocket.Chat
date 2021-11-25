@@ -9,11 +9,14 @@ Meteor.methods({
 	'livechat:closeByVisitor'({ roomId, token }) {
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		const language = (visitor && visitor.language) || settings.get('Language') || 'en';
+		const language =			(visitor && visitor.language) || settings.get('Language') || 'en';
 
 		return Livechat.closeRoom({
 			visitor,
-			room: LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token),
+			room: LivechatRooms.findOneOpenByRoomIdAndVisitorToken(
+				roomId,
+				token,
+			),
 			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
 	},

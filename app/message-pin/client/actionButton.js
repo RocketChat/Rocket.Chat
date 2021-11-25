@@ -28,7 +28,11 @@ Meteor.startup(function() {
 			});
 		},
 		condition({ msg, subscription, room }) {
-			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
+			if (
+				!settings.get('Message_AllowPinning')
+				|| msg.pinned
+				|| !subscription
+			) {
 				return false;
 			}
 			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
@@ -56,7 +60,11 @@ Meteor.startup(function() {
 			});
 		},
 		condition({ msg, subscription }) {
-			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
+			if (
+				!subscription
+				|| !settings.get('Message_AllowPinning')
+				|| !msg.pinned
+			) {
 				return false;
 			}
 
@@ -77,15 +85,19 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
@@ -106,7 +118,10 @@ Meteor.startup(function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			dispatchToastMessage({
+				type: 'success',
+				message: TAPi18n.__('Copied'),
+			});
 		},
 		condition({ subscription }) {
 			return !!subscription;

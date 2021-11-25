@@ -12,29 +12,50 @@ Meteor.startup(() => {
 	AutoTranslate.init();
 
 	Tracker.autorun(() => {
-		if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
+		if (
+			settings.get('AutoTranslate_Enabled')
+			&& hasAtLeastOnePermission(['auto-translate'])
+		) {
 			MessageAction.addButton({
 				id: 'translate',
 				icon: 'language',
 				label: 'Translate',
-				context: [
-					'message',
-					'message-mobile',
-					'threads',
-				],
+				context: ['message', 'message-mobile', 'threads'],
 				action() {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (
+						!message.translations
+						|| !message.translations[language]
+					) {
+						// } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						AutoTranslate.messageIdsToWait[message._id] = true;
-						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						Messages.update(
+							{ _id: message._id },
+							{ $set: { autoTranslateFetching: true } },
+						);
+						Meteor.call(
+							'autoTranslate.translateMessage',
+							message,
+							language,
+						);
 					}
-					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
-					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+					const action = message.autoTranslateShowInverse
+						? '$unset'
+						: '$set';
+					Messages.update(
+						{ _id: message._id },
+						{ [action]: { autoTranslateShowInverse: true } },
+					);
 				},
 				condition({ msg, u }) {
-					return msg && msg.u && msg.u._id !== u._id && msg.translations && !msg.translations.original;
+					return (
+						msg
+						&& msg.u
+						&& msg.u._id !== u._id
+						&& msg.translations
+						&& !msg.translations.original
+					);
 				},
 				order: 90,
 			});
@@ -42,24 +63,42 @@ Meteor.startup(() => {
 				id: 'view-original',
 				icon: 'language',
 				label: 'View_original',
-				context: [
-					'message',
-					'message-mobile',
-					'threads',
-				],
+				context: ['message', 'message-mobile', 'threads'],
 				action() {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (
+						!message.translations
+						|| !message.translations[language]
+					) {
+						// } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						AutoTranslate.messageIdsToWait[message._id] = true;
-						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						Meteor.call('autoTranslate.translateMessage', message, language);
+						Messages.update(
+							{ _id: message._id },
+							{ $set: { autoTranslateFetching: true } },
+						);
+						Meteor.call(
+							'autoTranslate.translateMessage',
+							message,
+							language,
+						);
 					}
-					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
-					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+					const action = message.autoTranslateShowInverse
+						? '$unset'
+						: '$set';
+					Messages.update(
+						{ _id: message._id },
+						{ [action]: { autoTranslateShowInverse: true } },
+					);
 				},
 				condition({ msg, u }) {
-					return msg && msg.u && msg.u._id !== u._id && msg.translations && msg.translations.original;
+					return (
+						msg
+						&& msg.u
+						&& msg.u._id !== u._id
+						&& msg.translations
+						&& msg.translations.original
+					);
 				},
 				order: 90,
 			});

@@ -35,18 +35,23 @@ declare module '@rocket.chat/fuselage-ui-kit' {
 	};
 	export const UiKitComponent: FC<UiKitComponentProps>;
 
-	type BannerBlocks = IDividerBlock | ISectionBlock | IActionsBlock | IContextBlock | IInputBlock;
+	type BannerBlocks =
+		| IDividerBlock
+		| ISectionBlock
+		| IActionsBlock
+		| IContextBlock
+		| IInputBlock;
 
 	export const UiKitBanner: (
 		blocks: BannerBlocks[],
-		conditions?: { [param: string]: unknown },
+		conditions?: { [param: string]: unknown }
 	) => ReactChildren;
 	export const UiKitMessage: (
 		blocks: IBlock[],
-		conditions?: { [param: string]: unknown },
+		conditions?: { [param: string]: unknown }
 	) => ReactChildren;
 	export const UiKitModal: (
 		blocks: IBlock[],
-		conditions?: { [param: string]: unknown },
+		conditions?: { [param: string]: unknown }
 	) => ReactChildren;
 }

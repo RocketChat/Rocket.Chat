@@ -6,8 +6,13 @@ import { LivechatTrigger } from '../../../models';
 
 Meteor.methods({
 	'livechat:saveTrigger'(trigger) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTrigger' });
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'view-livechat-manager')
+		) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveTrigger',
+			});
 		}
 
 		check(trigger, {

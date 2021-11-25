@@ -7,7 +7,10 @@ import { FederationServers, Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
+import {
+	getSubscribedRoomsForUserWithDetails,
+	shouldRemoveOrChangeOwner,
+} from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
 
@@ -21,10 +24,14 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 	}
 
 	if (user.federation) {
-		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
+		const existingSubscriptions = Subscriptions.find({
+			'u._id': user._id,
+		}).count();
 
 		if (existingSubscriptions > 0) {
-			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
+			throw new Meteor.Error(
+				'FEDERATION_Error_user_is_federated_on_rooms',
+			);
 		}
 	}
 
@@ -51,7 +58,12 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 			case 'Unlink':
 				const rocketCat = Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				Messages.unlinkUserId(
+					userId,
+					rocketCat._id,
+					rocketCat.username,
+					nameAlias,
+				);
 				break;
 		}
 

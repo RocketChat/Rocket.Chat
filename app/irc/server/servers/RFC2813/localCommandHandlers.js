@@ -1,5 +1,10 @@
 function registerUser(parameters) {
-	const { name, profile: { irc: { nick, username } } } = parameters;
+	const {
+		name,
+		profile: {
+			irc: { nick, username },
+		},
+	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
@@ -12,7 +17,11 @@ function registerUser(parameters) {
 function joinChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
@@ -47,7 +56,11 @@ function joinedChannel(parameters, handler) {
 function leftChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
@@ -59,7 +72,11 @@ function leftChannel(parameters) {
 
 function sentMessage(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 		to,
 		message,
 	} = parameters;
@@ -78,7 +95,11 @@ function sentMessage(parameters) {
 
 function disconnected(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
@@ -87,4 +108,11 @@ function disconnected(parameters) {
 	});
 }
 
-export default { registerUser, joinChannel, joinedChannel, leftChannel, sentMessage, disconnected };
+export default {
+	registerUser,
+	joinChannel,
+	joinedChannel,
+	leftChannel,
+	sentMessage,
+	disconnected,
+};

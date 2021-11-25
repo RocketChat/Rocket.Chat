@@ -15,7 +15,10 @@ Meteor.methods({
 			});
 		}
 
-		if (hasPermission(Meteor.userId(), 'edit-other-user-active-status') !== true) {
+		if (
+			hasPermission(Meteor.userId(), 'edit-other-user-active-status')
+			!== true
+		) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setUserActiveStatus',
 			});

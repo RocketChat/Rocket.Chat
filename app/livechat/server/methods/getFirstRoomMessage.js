@@ -6,8 +6,13 @@ import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	'livechat:getFirstRoomMessage'({ rid }) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:getFirstRoomMessage' });
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'view-l-room')
+		) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:getFirstRoomMessage',
+			});
 		}
 
 		check(rid, String);

@@ -107,7 +107,10 @@ function ImportProgressPage() {
 				const progress = await getImportProgress();
 
 				if (!progress) {
-					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
+					dispatchToastMessage({
+						type: 'warning',
+						message: t('Importer_not_in_progress'),
+					});
 					prepareImportRoute.push();
 					return;
 				}

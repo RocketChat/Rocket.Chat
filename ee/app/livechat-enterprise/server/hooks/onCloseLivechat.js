@@ -16,4 +16,9 @@ const onCloseLivechat = (room) => {
 	return room;
 };
 
-callbacks.add('livechat.closeRoom', onCloseLivechat, callbacks.priority.HIGH, 'livechat-waiting-queue-monitor-close-room');
+callbacks.add(
+	'livechat.closeRoom',
+	onCloseLivechat,
+	callbacks.priority.HIGH,
+	'livechat-waiting-queue-monitor-close-room',
+);

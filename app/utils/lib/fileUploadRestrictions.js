@@ -9,7 +9,7 @@ if (Meteor.isClient) {
 }
 
 const fileUploadMediaWhiteList = function(customWhiteList) {
-	const mediaTypeWhiteList = customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
+	const mediaTypeWhiteList =		customWhiteList || settings.get('FileUpload_MediaTypeWhiteList');
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;

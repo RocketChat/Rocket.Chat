@@ -9,7 +9,6 @@ import { hasAllPermission } from '../../../authorization/client';
 import './messageBoxNotSubscribed.html';
 import { call } from '../../../../client/lib/utils/call';
 
-
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
 		return roomTypes.getNotSubscribedTpl(this.rid);
@@ -26,13 +25,17 @@ Template.messageBoxNotSubscribed.helpers({
 		return room && room.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
-		return (Meteor.userId() == null)
-			&& settings.get('Accounts_AllowAnonymousRead') === true;
+		return (
+			Meteor.userId() == null
+			&& settings.get('Accounts_AllowAnonymousRead') === true
+		);
 	},
 	isAnonymousWriteAllowed() {
-		return (Meteor.userId() == null)
+		return (
+			Meteor.userId() == null
 			&& settings.get('Accounts_AllowAnonymousRead') === true
-			&& settings.get('Accounts_AllowAnonymousWrite') === true;
+			&& settings.get('Accounts_AllowAnonymousWrite') === true
+		);
 	},
 });
 
@@ -46,7 +49,10 @@ Template.messageBoxNotSubscribed.events({
 
 		await call('joinRoom', this.rid, joinCode);
 
-		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
+		if (
+			hasAllPermission('preview-c-room') === false
+			&& RoomHistoryManager.getRoom(this.rid).loaded === 0
+		) {
 			RoomManager.getOpenedRoomByRid(this.rid).streamActive = false;
 			RoomManager.getOpenedRoomByRid(this.rid).ready = false;
 			RoomHistoryManager.getRoom(this.rid).loaded = null;

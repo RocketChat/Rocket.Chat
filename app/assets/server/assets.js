@@ -14,7 +14,6 @@ import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
 import { Settings } from '../../models/server';
 
-
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
 });
@@ -192,22 +191,41 @@ export const RocketChatAssets = new class {
 		}
 
 		const extension = mime.extension(contentType);
-		if (assets[asset].constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${ contentType }`, {
-				function: 'RocketChat.Assets.setAsset',
-				errorTitle: 'error-invalid-file-type',
-			});
+		if (
+			assets[asset].constraints.extensions.includes(extension) === false
+		) {
+			throw new Meteor.Error(
+				contentType,
+				`Invalid file type: ${ contentType }`,
+				{
+					function: 'RocketChat.Assets.setAsset',
+					errorTitle: 'error-invalid-file-type',
+				},
+			);
 		}
 
 		const file = Buffer.from(binaryContent, 'binary');
-		if (assets[asset].constraints.width || assets[asset].constraints.height) {
+		if (
+			assets[asset].constraints.width
+			|| assets[asset].constraints.height
+		) {
 			const dimensions = sizeOf(file);
-			if (assets[asset].constraints.width && assets[asset].constraints.width !== dimensions.width) {
-				throw new Meteor.Error('error-invalid-file-width', 'Invalid file width', {
-					function: 'Invalid file width',
-				});
+			if (
+				assets[asset].constraints.width
+				&& assets[asset].constraints.width !== dimensions.width
+			) {
+				throw new Meteor.Error(
+					'error-invalid-file-width',
+					'Invalid file width',
+					{
+						function: 'Invalid file width',
+					},
+				);
 			}
-			if (assets[asset].constraints.height && assets[asset].constraints.height !== dimensions.height) {
+			if (
+				assets[asset].constraints.height
+				&& assets[asset].constraints.height !== dimensions.height
+			) {
 				throw new Meteor.Error('error-invalid-file-height');
 			}
 		}
@@ -215,19 +233,25 @@ export const RocketChatAssets = new class {
 		const rs = RocketChatFile.bufferToStream(file);
 		RocketChatAssetsInstance.deleteFile(asset);
 
-		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on('end', Meteor.bindEnvironment(function() {
-			return Meteor.setTimeout(function() {
-				const key = `Assets_${ asset }`;
-				const value = {
-					url: `assets/${ asset }.${ extension }`,
-					defaultUrl: assets[asset].defaultUrl,
-				};
+		const ws = RocketChatAssetsInstance.createWriteStream(
+			asset,
+			contentType,
+		);
+		ws.on(
+			'end',
+			Meteor.bindEnvironment(function() {
+				return Meteor.setTimeout(function() {
+					const key = `Assets_${ asset }`;
+					const value = {
+						url: `assets/${ asset }.${ extension }`,
+						defaultUrl: assets[asset].defaultUrl,
+					};
 
-				Settings.updateValueById(key, value);
-				return RocketChatAssets.processAsset(key, value);
-			}, 200);
-		}));
+					Settings.updateValueById(key, value);
+					return RocketChatAssets.processAsset(key, value);
+				}, 200);
+			}),
+		);
 
 		rs.pipe(ws);
 	}
@@ -278,7 +302,10 @@ export const RocketChatAssets = new class {
 			return;
 		}
 
-		const hash = crypto.createHash('sha1').update(file.buffer).digest('hex');
+		const hash = crypto
+			.createHash('sha1')
+			.update(file.buffer)
+			.digest('hex');
 		const extension = settingValue.url.split('.').pop();
 
 		assetValue.cache = {
@@ -318,21 +345,28 @@ settingsRegistry.add('Assets_SvgFavicon_Enable', true, {
 function addAssetToSetting(asset, value) {
 	const key = `Assets_${ asset }`;
 
-	settingsRegistry.add(key, {
-		defaultUrl: value.defaultUrl,
-	}, {
-		type: 'asset',
-		group: 'Assets',
-		fileConstraints: value.constraints,
-		i18nLabel: value.label,
-		asset,
-		public: true,
-		wizard: value.wizard,
-	});
+	settingsRegistry.add(
+		key,
+		{
+			defaultUrl: value.defaultUrl,
+		},
+		{
+			type: 'asset',
+			group: 'Assets',
+			fileConstraints: value.constraints,
+			i18nLabel: value.label,
+			asset,
+			public: true,
+			wizard: value.wizard,
+		},
+	);
 
 	const currentValue = settings.get(key);
 
-	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
+	if (
+		typeof currentValue === 'object'
+		&& currentValue.defaultUrl !== assets[asset].defaultUrl
+	) {
 		currentValue.defaultUrl = assets[asset].defaultUrl;
 		Settings.updateValueById(key, currentValue);
 	}
@@ -343,7 +377,9 @@ for (const key of Object.keys(assets)) {
 	addAssetToSetting(key, value);
 }
 
-settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
+settings.watchByRegex(/^Assets_/, (key, value) =>
+	RocketChatAssets.processAsset(key, value),
+);
 
 Meteor.startup(function() {
 	return Meteor.setTimeout(function() {
@@ -355,7 +391,11 @@ Meteor.startup(function() {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
+WebAppHashing.calculateClientHash = function(
+	manifest,
+	includeFilter,
+	runtimeConfigOverride,
+) {
 	for (const key of Object.keys(assets)) {
 		const value = assets[key];
 		if (!value.cache && !value.defaultUrl) {
@@ -399,7 +439,12 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 		}
 	}
 
-	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
+	return calculateClientHash.call(
+		this,
+		manifest,
+		includeFilter,
+		runtimeConfigOverride,
+	);
 };
 
 Meteor.methods({
@@ -412,10 +457,14 @@ Meteor.methods({
 
 		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
 		if (!_hasPermission) {
-			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
-				method: 'refreshClients',
-				action: 'Managing_assets',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Managing assets not allowed',
+				{
+					method: 'refreshClients',
+					action: 'Managing_assets',
+				},
+			);
 		}
 
 		return RocketChatAssets.refreshClients();
@@ -430,10 +479,14 @@ Meteor.methods({
 
 		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
 		if (!_hasPermission) {
-			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
-				method: 'unsetAsset',
-				action: 'Managing_assets',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Managing assets not allowed',
+				{
+					method: 'unsetAsset',
+					action: 'Managing_assets',
+				},
+			);
 		}
 
 		return RocketChatAssets.unsetAsset(asset);
@@ -448,67 +501,96 @@ Meteor.methods({
 
 		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
 		if (!_hasPermission) {
-			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
-				method: 'setAsset',
-				action: 'Managing_assets',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Managing assets not allowed',
+				{
+					method: 'setAsset',
+					action: 'Managing_assets',
+				},
+			);
 		}
 
 		RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 
-WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res, next) {
-	const params = {
-		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
-	};
+WebApp.connectHandlers.use(
+	'/assets/',
+	Meteor.bindEnvironment(function(req, res, next) {
+		const params = {
+			asset: decodeURIComponent(
+				req.url.replace(/^\//, '').replace(/\?.*$/, ''),
+			).replace(/\.[^.]*$/, ''),
+		};
 
-	const file = assets[params.asset] && assets[params.asset].cache;
+		const file = assets[params.asset] && assets[params.asset].cache;
 
-	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
+		const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
-	if (assets[params.asset] && Array.isArray(assets[params.asset].constraints.extensions) && !assets[params.asset].constraints.extensions.includes(format)) {
-		res.writeHead(403);
-		return res.end();
-	}
-	if (!file) {
-		const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
-		if (defaultUrl) {
-			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
-			req.url = `/${ assetUrl }`;
-			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
-		} else {
-			res.writeHead(404);
-			res.end();
+		if (
+			assets[params.asset]
+			&& Array.isArray(assets[params.asset].constraints.extensions)
+			&& !assets[params.asset].constraints.extensions.includes(format)
+		) {
+			res.writeHead(403);
+			return res.end();
 		}
+		if (!file) {
+			const defaultUrl =				assets[params.asset] && assets[params.asset].defaultUrl;
+			if (defaultUrl) {
+				const assetUrl =					format && ['png', 'svg'].includes(format)
+					? defaultUrl.replace(/(svg|png)$/, format)
+					: defaultUrl;
+				req.url = `/${ assetUrl }`;
+				WebAppInternals.staticFilesMiddleware(
+					WebAppInternals.staticFilesByArch,
+					req,
+					res,
+					next,
+				);
+			} else {
+				res.writeHead(404);
+				res.end();
+			}
 
-		return;
-	}
-
-	const reqModifiedHeader = req.headers['if-modified-since'];
-	if (reqModifiedHeader) {
-		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
-			res.setHeader('Last-Modified', reqModifiedHeader);
-			res.writeHead(304);
-			res.end();
 			return;
 		}
-	}
 
-	res.setHeader('Cache-Control', 'public, max-age=0');
-	res.setHeader('Expires', '-1');
+		const reqModifiedHeader = req.headers['if-modified-since'];
+		if (reqModifiedHeader) {
+			if (
+				reqModifiedHeader
+				=== (file.uploadDate && file.uploadDate.toUTCString())
+			) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
+				res.end();
+				return;
+			}
+		}
 
-	if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
-		res.setHeader('Content-Type', `image/${ format }`);
-		sharp(file.content)
-			.toFormat(format)
-			.pipe(res);
-		return;
-	}
+		res.setHeader('Cache-Control', 'public, max-age=0');
+		res.setHeader('Expires', '-1');
 
-	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
-	res.setHeader('Content-Type', file.contentType);
-	res.setHeader('Content-Length', file.size);
-	res.writeHead(200);
-	res.end(file.content);
-}));
+		if (
+			format
+			&& format !== file.extension
+			&& ['png', 'jpg', 'jpeg'].includes(format)
+		) {
+			res.setHeader('Content-Type', `image/${ format }`);
+			sharp(file.content).toFormat(format).pipe(res);
+			return;
+		}
+
+		res.setHeader(
+			'Last-Modified',
+			(file.uploadDate && file.uploadDate.toUTCString())
+				|| new Date().toUTCString(),
+		);
+		res.setHeader('Content-Type', file.contentType);
+		res.setHeader('Content-Length', file.size);
+		res.writeHead(200);
+		res.end(file.content);
+	}),
+);

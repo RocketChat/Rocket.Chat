@@ -11,7 +11,10 @@ class LivechatPageVisited extends Base {
 		this.tryEnsureIndex({ ts: 1 });
 
 		// keep history for 1 month if the visitor does not register
-		this.tryEnsureIndex({ expireAt: 1 }, { sparse: 1, expireAfterSeconds: 0 });
+		this.tryEnsureIndex(
+			{ expireAt: 1 },
+			{ sparse: 1, expireAfterSeconds: 0 },
+		);
 	}
 
 	saveByToken(token, pageInfo) {
@@ -31,18 +34,22 @@ class LivechatPageVisited extends Base {
 	}
 
 	keepHistoryForToken(token) {
-		return this.update({
-			token,
-			expireAt: {
-				$exists: true,
+		return this.update(
+			{
+				token,
+				expireAt: {
+					$exists: true,
+				},
 			},
-		}, {
-			$unset: {
-				expireAt: 1,
+			{
+				$unset: {
+					expireAt: 1,
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 }
 export default new LivechatPageVisited();

@@ -25,6 +25,8 @@ export function getPino(name: string, level = 'warn'): P.Logger {
 		},
 		level,
 		timestamp: pino.stdTimeFunctions.isoTime,
-		...process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {},
+		...process.env.NODE_ENV !== 'production'
+			? { prettyPrint: { colorize: true } }
+			: {},
 	});
 }

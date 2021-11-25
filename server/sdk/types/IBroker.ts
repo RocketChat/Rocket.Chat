@@ -27,22 +27,46 @@ export type BaseMetricOptions = {
 	labelNames?: Array<string>;
 	unit?: string;
 	aggregator?: string;
-}
+};
 
 export interface IServiceMetrics {
 	register(opts: BaseMetricOptions): void;
 
 	hasMetric(name: string): boolean;
 
-	increment(name: string, labels?: Record<string, any>, value?: number, timestamp?: number): void;
-	decrement(name: string, labels?: Record<string, any>, value?: number, timestamp?: number): void;
-	set(name: string, value: any | null, labels?: Record<string, any>, timestamp?: number): void;
-	observe(name: string, value: number, labels?: Record<string, any>, timestamp?: number): void;
+	increment(
+		name: string,
+		labels?: Record<string, any>,
+		value?: number,
+		timestamp?: number
+	): void;
+	decrement(
+		name: string,
+		labels?: Record<string, any>,
+		value?: number,
+		timestamp?: number
+	): void;
+	set(
+		name: string,
+		value: any | null,
+		labels?: Record<string, any>,
+		timestamp?: number
+	): void;
+	observe(
+		name: string,
+		value: number,
+		labels?: Record<string, any>,
+		timestamp?: number
+	): void;
 
 	reset(name: string, labels?: Record<string, any>, timestamp?: number): void;
 	resetAll(name: string, timestamp?: number): void;
 
-	timer(name: string, labels?: Record<string, any>, timestamp?: number): () => number;
+	timer(
+		name: string,
+		labels?: Record<string, any>,
+		timestamp?: number
+	): () => number;
 }
 
 export interface IBroker {
@@ -51,7 +75,13 @@ export interface IBroker {
 	createService(service: ServiceClass): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
-	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
-	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
+	broadcast<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void>;
+	broadcastLocal<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
 }

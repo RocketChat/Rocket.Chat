@@ -1947,11 +1947,5 @@ export const emojisByCategory = {
 		'flag_um',
 		'united_nations',
 	],
-	modifier: [
-		'tone1',
-		'tone2',
-		'tone3',
-		'tone4',
-		'tone5',
-	],
+	modifier: ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
 };

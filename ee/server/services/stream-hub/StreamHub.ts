@@ -1,5 +1,8 @@
 import { getConnection } from '../mongo';
-import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import {
+	ServiceClass,
+	IServiceClass,
+} from '../../../../server/sdk/types/ServiceClass';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { MessagesRaw } from '../../../../app/models/server/raw/Messages';
 import { UsersRaw } from '../../../../app/models/server/raw/Users';
@@ -29,20 +32,62 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const UsersCol = db.collection('users');
 
 		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
-		const Settings = new SettingsRaw(db.collection('rocketchat_settings'), Trash);
+		const Settings = new SettingsRaw(
+			db.collection('rocketchat_settings'),
+			Trash,
+		);
 		const Users = new UsersRaw(UsersCol, Trash);
-		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, { preventSetUpdatedAt: true });
-		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), { Users }, Trash);
-		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
-		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);
-		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
-		const Permissions = new PermissionsRaw(db.collection('rocketchat_permissions'), Trash);
-		const Roles = new RolesRaw(db.collection('rocketchat_roles'), { Users, Subscriptions }, Trash);
-		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
-		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
-		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);
-		const Integrations = new IntegrationsRaw(db.collection('rocketchat_integrations'), Trash);
-		const EmailInbox = new EmailInboxRaw(db.collection('rocketchat_email_inbox'), Trash);
+		const UsersSessions = new UsersSessionsRaw(
+			db.collection('usersSessions'),
+			Trash,
+			{ preventSetUpdatedAt: true },
+		);
+		const Subscriptions = new SubscriptionsRaw(
+			db.collection('rocketchat_subscription'),
+			{ Users },
+			Trash,
+		);
+		const LivechatInquiry = new LivechatInquiryRaw(
+			db.collection('rocketchat_livechat_inquiry'),
+			Trash,
+		);
+		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(
+			db.collection('rocketchat_livechat_department_agents'),
+			Trash,
+		);
+		const Messages = new MessagesRaw(
+			db.collection('rocketchat_message'),
+			Trash,
+		);
+		const Permissions = new PermissionsRaw(
+			db.collection('rocketchat_permissions'),
+			Trash,
+		);
+		const Roles = new RolesRaw(
+			db.collection('rocketchat_roles'),
+			{ Users, Subscriptions },
+			Trash,
+		);
+		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(
+			db.collection('meteor_accounts_loginServiceConfiguration'),
+			Trash,
+		);
+		const InstanceStatus = new InstanceStatusRaw(
+			db.collection('instances'),
+			Trash,
+		);
+		const IntegrationHistory = new IntegrationHistoryRaw(
+			db.collection('rocketchat_integration_history'),
+			Trash,
+		);
+		const Integrations = new IntegrationsRaw(
+			db.collection('rocketchat_integrations'),
+			Trash,
+		);
+		const EmailInbox = new EmailInboxRaw(
+			db.collection('rocketchat_email_inbox'),
+			Trash,
+		);
 
 		const models = {
 			Messages,
@@ -78,17 +123,29 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 						const diff: Record<string, any> = {};
 
 						if (event.updateDescription.updatedFields) {
-							for (const key in event.updateDescription.updatedFields) {
-								if (event.updateDescription.updatedFields.hasOwnProperty(key)) {
-									diff[key] = event.updateDescription.updatedFields[key];
+							for (const key in event.updateDescription
+								.updatedFields) {
+								if (
+									event.updateDescription.updatedFields.hasOwnProperty(
+										key,
+									)
+								) {
+									diff[key] =										event.updateDescription.updatedFields[
+										key
+									];
 								}
 							}
 						}
 
 						const unset: Record<string, number> = {};
 						if (event.updateDescription.removedFields) {
-							for (const key in event.updateDescription.removedFields) {
-								if (event.updateDescription.removedFields.hasOwnProperty(key)) {
+							for (const key in event.updateDescription
+								.removedFields) {
+								if (
+									event.updateDescription.removedFields.hasOwnProperty(
+										key,
+									)
+								) {
 									diff[key] = undefined;
 									unset[key] = 1;
 								}

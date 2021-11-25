@@ -86,7 +86,12 @@ export const normalizers = {
 
 	// Fix Nextcloud provider
 	nextcloud(identity) {
-		if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+		if (
+			!identity.id
+			&& identity.ocs
+			&& identity.ocs.data
+			&& identity.ocs.data.id
+		) {
 			identity.id = identity.ocs.data.id;
 			identity.name = identity.ocs.data.displayname;
 			identity.email = identity.ocs.data.email;
@@ -95,8 +100,15 @@ export const normalizers = {
 
 	// Fix when authenticating from a meteor app with 'emails' field
 	meteor(identity) {
-		if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+		if (
+			!identity.email
+			&& identity.emails
+			&& Array.isArray(identity.emails)
+			&& identity.emails.length >= 1
+		) {
+			identity.email = identity.emails[0].address
+				? identity.emails[0].address
+				: undefined;
 		}
 	},
 };
@@ -110,14 +122,20 @@ export const renameInvalidProperties = (input) => {
 		return input;
 	}
 
-	return Object.entries(input).reduce((result, [name, value]) => ({
-		...result,
-		[name.replace(IDENTITY_PROPNAME_FILTER, '_')]: renameInvalidProperties(value),
-	}), {});
+	return Object.entries(input).reduce(
+		(result, [name, value]) => ({
+			...result,
+			[name.replace(IDENTITY_PROPNAME_FILTER, '_')]:
+				renameInvalidProperties(value),
+		}),
+		{},
+	);
 };
 
 export const getNestedValue = (propertyPath, source) =>
-	propertyPath.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
+	propertyPath
+		.split('.')
+		.reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
 
 // /^(.+)@/::email
 const REGEXP_FROM_FORMULA = /^\/((?!\/::).*)\/::(.+)/;
@@ -127,7 +145,9 @@ export const getRegexpMatch = (formula, data) => {
 		return getNestedValue(formula, data);
 	}
 	if (regexAndPath.length !== 3) {
-		throw new Error(`expected array of length 3, got ${ regexAndPath.length }`);
+		throw new Error(
+			`expected array of length 3, got ${ regexAndPath.length }`,
+		);
 	}
 
 	const [, regexString, path] = regexAndPath;
@@ -153,5 +173,7 @@ export const fromTemplate = (template, data) => {
 		return getNestedValue(template, data);
 	}
 
-	return template.replace(templateStringRegex, (fullMatch, match) => getRegexpMatch(match, data));
+	return template.replace(templateStringRegex, (fullMatch, match) =>
+		getRegexpMatch(match, data),
+	);
 };

@@ -1,14 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settingsRegistry, settings } from '../../../settings/server';
-import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
+import {
+	updateStatus,
+	updateEnabled,
+	isRegisteringOrEnabled,
+} from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
 import { FederationKeys } from '../../../models/server/raw';
-import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
+import {
+	STATUS_ENABLED,
+	STATUS_REGISTERING,
+	STATUS_ERROR_REGISTERING,
+	STATUS_DISABLED,
+} from '../constants';
 
 Meteor.startup(async function() {
 	const federationPublicKey = await FederationKeys.getPublicKeyString();
@@ -46,13 +55,16 @@ Meteor.startup(async function() {
 
 		this.add('FEDERATION_Discovery_Method', 'dns', {
 			type: 'select',
-			values: [{
-				key: 'dns',
-				i18nLabel: 'DNS',
-			}, {
-				key: 'hub',
-				i18nLabel: 'Hub',
-			}],
+			values: [
+				{
+					key: 'dns',
+					i18nLabel: 'DNS',
+				},
+				{
+					key: 'hub',
+					i18nLabel: 'Hub',
+				},
+			],
 			i18nLabel: 'FEDERATION_Discovery_Method',
 			i18nDescription: 'FEDERATION_Discovery_Method_Description',
 			public: true,
@@ -68,12 +80,19 @@ Meteor.startup(async function() {
 const updateSettings = async function(): Promise<void> {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub' && !Promise.await(isRegisteringOrEnabled())) {
+	if (
+		getFederationDiscoveryMethod() === 'hub'
+		&& !Promise.await(isRegisteringOrEnabled())
+	) {
 		// Register with hub
 		try {
 			await updateStatus(STATUS_REGISTERING);
 
-			await registerWithHub(getFederationDomain(), settings.get('Site_Url'), await FederationKeys.getPublicKeyString());
+			await registerWithHub(
+				getFederationDomain(),
+				settings.get('Site_Url'),
+				await FederationKeys.getPublicKeyString(),
+			);
 
 			await updateStatus(STATUS_ENABLED);
 		} catch (err) {
@@ -104,4 +123,7 @@ settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
 	value && updateSettings();
 });
 
-settings.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);
+settings.watchMultiple(
+	['FEDERATION_Discovery_Method', 'FEDERATION_Domain'],
+	updateSettings,
+);

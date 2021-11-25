@@ -32,7 +32,10 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -40,10 +43,17 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('moderator') === false) {
-			throw new Meteor.Error('error-user-not-moderator', 'User is not a moderator', {
-				method: 'removeRoomModerator',
-			});
+		if (
+			Array.isArray(subscription.roles) === false
+			|| subscription.roles.includes('moderator') === false
+		) {
+			throw new Meteor.Error(
+				'error-user-not-moderator',
+				'User is not a moderator',
+				{
+					method: 'removeRoomModerator',
+				},
+			);
 		}
 
 		Subscriptions.removeRoleById(subscription._id, 'moderator');
@@ -60,7 +70,9 @@ Meteor.methods({
 
 		const team = Promise.await(Team.getOneByMainRoomId(rid));
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['moderator']));
+			Promise.await(
+				Team.removeRolesFromMember(team._id, userId, ['moderator']),
+			);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {

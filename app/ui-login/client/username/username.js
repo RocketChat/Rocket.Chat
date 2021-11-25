@@ -17,9 +17,14 @@ Template.username.onCreated(function() {
 
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
-		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
+		if (
+			typeof Accounts_CustomFields === 'string'
+			&& Accounts_CustomFields.trim() !== ''
+		) {
 			try {
-				return this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
+				return this.customFields.set(
+					JSON.parse(settings.get('Accounts_CustomFields')),
+				);
 			} catch (error1) {
 				return console.error('Invalid JSON for Accounts_CustomFields');
 			}
@@ -45,12 +50,24 @@ Template.username.onCreated(function() {
 					validationObj[field] = t('Field_required');
 					return validationObj[field];
 				}
-				if ((customField.maxLength != null) && value.length > customField.maxLength) {
-					validationObj[field] = t('Max_length_is', customField.maxLength);
+				if (
+					customField.maxLength != null
+					&& value.length > customField.maxLength
+				) {
+					validationObj[field] = t(
+						'Max_length_is',
+						customField.maxLength,
+					);
 					return validationObj[field];
 				}
-				if ((customField.minLength != null) && value.length < customField.minLength) {
-					validationObj[field] = t('Min_length_is', customField.minLength);
+				if (
+					customField.minLength != null
+					&& value.length < customField.minLength
+				) {
+					validationObj[field] = t(
+						'Min_length_is',
+						customField.minLength,
+					);
 					return validationObj[field];
 				}
 			}
@@ -66,7 +83,9 @@ Template.username.onCreated(function() {
 		});
 
 		$('#login-card h2').removeClass('error');
-		$('#login-card input.error, #login-card select.error').removeClass('error');
+		$('#login-card input.error, #login-card select.error').removeClass(
+			'error',
+		);
 		$('#login-card .input-error').text('');
 		validateCustomFields(formObj, validationObj);
 		if (!_.isEmpty(validationObj)) {
@@ -74,8 +93,12 @@ Template.username.onCreated(function() {
 
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
-				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
-				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				$(
+					`#login-card input[name=${ key }], #login-card select[name=${ key }]`,
+				).addClass('error');
+				$(
+					`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`,
+				).text(value);
 			});
 
 			return false;
@@ -113,7 +136,9 @@ Template.username.events({
 
 	'blur .input-text input'(event) {
 		if (event.currentTarget.value === '') {
-			return $(event.currentTarget).parents('.input-text').removeClass('focus');
+			return $(event.currentTarget)
+				.parents('.input-text')
+				.removeClass('focus');
 		}
 	},
 	'reset #login-card'() {

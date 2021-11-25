@@ -11,8 +11,16 @@ const removeScheduledQueueCloseTime = (inquiry: any): void => {
 
 settings.watch('Livechat_max_queue_wait_time', function(value: number) {
 	if (!value || value < 0) {
-		callbacks.remove('livechat.afterTakeInquiry', 'livechat-after-inquiry-taken-remove-schedule');
+		callbacks.remove(
+			'livechat.afterTakeInquiry',
+			'livechat-after-inquiry-taken-remove-schedule',
+		);
 		return;
 	}
-	callbacks.add('livechat.afterTakeInquiry', removeScheduledQueueCloseTime, callbacks.priority.HIGH, 'livechat-after-inquiry-taken-remove-schedule');
+	callbacks.add(
+		'livechat.afterTakeInquiry',
+		removeScheduledQueueCloseTime,
+		callbacks.priority.HIGH,
+		'livechat-after-inquiry-taken-remove-schedule',
+	);
 });

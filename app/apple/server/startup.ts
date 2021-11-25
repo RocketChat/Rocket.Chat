@@ -4,10 +4,12 @@ import { settings, settingsRegistry } from '../../settings/server';
 
 settingsRegistry.addGroup('OAuth', function() {
 	this.section('Apple', function() {
-		this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
+		this.add('Accounts_OAuth_Apple', false, {
+			type: 'boolean',
+			public: true,
+		});
 	});
 });
-
 
 settings.watch('Accounts_OAuth_Apple', (enabled) => {
 	if (!enabled) {
@@ -16,13 +18,16 @@ settings.watch('Accounts_OAuth_Apple', (enabled) => {
 		});
 	}
 
-	ServiceConfiguration.configurations.upsert({
-		service: 'apple',
-	}, {
-		$set: {
-			// We'll hide this button on Web Client
-			showButton: false,
-			enabled: settings.get('Accounts_OAuth_Apple'),
+	ServiceConfiguration.configurations.upsert(
+		{
+			service: 'apple',
 		},
-	});
+		{
+			$set: {
+				// We'll hide this button on Web Client
+				showButton: false,
+				enabled: settings.get('Accounts_OAuth_Apple'),
+			},
+		},
+	);
 });

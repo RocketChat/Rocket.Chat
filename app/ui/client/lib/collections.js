@@ -6,7 +6,10 @@ import { CachedChatRoom, CachedChatSubscription } from '../../../models';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === true) {
+		if (
+			!Meteor.userId()
+			&& settings.get('Accounts_AllowAnonymousRead') === true
+		) {
 			CachedChatRoom.init();
 			CachedChatSubscription.ready.set(true);
 		}

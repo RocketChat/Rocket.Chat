@@ -10,7 +10,9 @@ userStatus.packages.customUserStatus = {
 export const deleteCustomUserStatus = function(customUserStatusData) {
 	delete userStatus.list[customUserStatusData._id];
 
-	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(customUserStatusData._id);
+	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(
+		customUserStatusData._id,
+	);
 	if (arrayIndex !== -1) {
 		userStatus.packages.customUserStatusData.list.splice(arrayIndex, 1);
 	}
@@ -24,7 +26,9 @@ export const updateCustomUserStatus = function(customUserStatusData) {
 		localizeName: false,
 	};
 
-	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(newUserStatus.id);
+	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(
+		newUserStatus.id,
+	);
 	if (arrayIndex === -1) {
 		userStatus.packages.customUserStatus.list.push(newUserStatus);
 	} else {

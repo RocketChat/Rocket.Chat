@@ -46,7 +46,10 @@ Meteor.methods({
 				if (msgTs) {
 					const currentTsDiff = moment().diff(msgTs, 'minutes');
 					if (currentTsDiff > blockEditInMinutes) {
-						dispatchToastMessage({ type: 'error', message: t('error-message-editing-blocked') });
+						dispatchToastMessage({
+							type: 'error',
+							message: t('error-message-editing-blocked'),
+						});
 						return false;
 					}
 				}

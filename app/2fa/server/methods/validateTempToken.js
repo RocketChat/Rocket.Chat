@@ -11,7 +11,11 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (!user.services || !user.services.totp || !user.services.totp.tempSecret) {
+		if (
+			!user.services
+			|| !user.services.totp
+			|| !user.services.totp.tempSecret
+		) {
 			throw new Meteor.Error('invalid-totp');
 		}
 
@@ -23,7 +27,11 @@ Meteor.methods({
 		if (verified) {
 			const { codes, hashedCodes } = TOTP.generateCodes();
 
-			Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
+			Users.enable2FAAndSetSecretAndCodesByUserId(
+				Meteor.userId(),
+				user.services.totp.tempSecret,
+				hashedCodes,
+			);
 			return { codes };
 		}
 	},

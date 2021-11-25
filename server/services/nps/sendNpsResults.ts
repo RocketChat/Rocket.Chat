@@ -9,9 +9,12 @@ import { SystemLogger } from '../../lib/logger/system';
 type NPSResultPayload = {
 	total: number;
 	votes: INpsVote[];
-}
+};
 
-export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
+export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(
+	npsId: string,
+	data: NPSResultPayload,
+) {
 	const token: string = getWorkspaceAccessToken();
 	if (!token) {
 		return false;

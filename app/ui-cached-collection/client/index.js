@@ -1,1 +1,4 @@
-export { CachedCollection, CachedCollectionManager } from './models/CachedCollection';
+export {
+	CachedCollection,
+	CachedCollectionManager,
+} from './models/CachedCollection';

@@ -30,6 +30,8 @@ Tracker.autorun(function() {
 		const secure = location.protocol === 'https:' ? '; secure' : '';
 
 		document.cookie = `rc_uid=${ escape(Meteor.userId()) }; path=/${ secure }`;
-		document.cookie = `rc_token=${ escape(Accounts._storedLoginToken()) }; path=/${ secure }`;
+		document.cookie = `rc_token=${ escape(
+			Accounts._storedLoginToken(),
+		) }; path=/${ secure }`;
 	}
 });

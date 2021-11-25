@@ -12,10 +12,17 @@ export const popover = {
 	open({ currentTarget, ...config }) {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
 		const data = {
-			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
+			targetRect:
+				currentTarget
+				&& currentTarget.getBoundingClientRect
+				&& currentTarget.getBoundingClientRect(),
 			...config,
 		};
-		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
+		this.renderedPopover = Blaze.renderWithData(
+			Template.popover,
+			data,
+			document.body,
+		);
 	},
 	close() {
 		if (!this.renderedPopover) {
@@ -52,22 +59,34 @@ Template.popover.onRendered(function() {
 	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
+		const direction =			typeof this.data.direction === 'function'
+			? this.data.direction()
+			: this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
-		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rtlDirection =			isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
 		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
-		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
+		const horizontalDirection = /left/.test(direction)
+			? 'left'
+			: rightDirection;
 
-		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
-		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+		const position =			typeof this.data.position === 'function'
+			? this.data.position()
+			: this.data.position;
+		const customCSSProperties =			typeof this.data.customCSSProperties === 'function'
+			? this.data.customCSSProperties()
+			: this.data.customCSSProperties;
 
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
-			y: this.data.targetRect[verticalDirection],
-		};
-		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
-		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
+		const mousePosition =			typeof this.data.mousePosition === 'function'
+			? this.data.mousePosition()
+			: this.data.mousePosition || {
+				x: this.data.targetRect[
+					horizontalDirection === 'left' ? 'right' : 'left'
+				],
+				y: this.data.targetRect[verticalDirection],
+				  };
+		const offsetWidth =			offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
+		const offsetHeight =			offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 
 		const leftDiff = window.innerWidth - originalWidth;
 
@@ -123,7 +142,7 @@ Template.popover.onRendered(function() {
 		if (realTop + popoverContent.offsetHeight > window.innerHeight) {
 			popoverContent.style.overflow = 'scroll';
 			popoverContent.style.bottom = 0;
-			popoverContent.className = 'rc-popover__content rc-popover__content-scroll';
+			popoverContent.className =				'rc-popover__content rc-popover__content-scroll';
 		}
 
 		if (activeElement) {
@@ -180,5 +199,7 @@ Template.popover.events({
 });
 
 Template.popover.helpers({
-	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent),
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(
+		navigator.userAgent,
+	),
 });

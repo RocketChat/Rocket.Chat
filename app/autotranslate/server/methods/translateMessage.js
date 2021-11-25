@@ -10,7 +10,11 @@ Meteor.methods({
 		}
 		const room = Rooms.findOneById(message && message.rid);
 		if (message && room) {
-			TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
+			TranslationProviderRegistry.translateMessage(
+				message,
+				room,
+				targetLanguage,
+			);
 		}
 	},
 });

@@ -20,9 +20,14 @@ Meteor.methods({
 		const currentUserData = Meteor.user();
 		const userId = currentUserData._id;
 
-		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
+		const lastOperation = await ExportOperations.findLastOperationByUser(
+			userId,
+			fullExport,
+		);
 		const requestDay = lastOperation ? lastOperation.createdAt : new Date();
-		const pendingOperationsBeforeMyRequestCount = await ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
+		const pendingOperationsBeforeMyRequestCount =			await ExportOperations.findAllPendingBeforeMyRequest(
+			requestDay,
+		).count();
 
 		if (lastOperation) {
 			const yesterday = new Date();
@@ -30,13 +35,16 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const file = lastOperation.fileId ? await UserDataFiles.findOneById(lastOperation.fileId) : await UserDataFiles.findLastFileByUser(userId);
+					const file = lastOperation.fileId
+						? await UserDataFiles.findOneById(lastOperation.fileId)
+						: await UserDataFiles.findLastFileByUser(userId);
 					if (file) {
 						return {
 							requested: false,
 							exportOperation: lastOperation,
 							url: DataExport.getPath(file._id),
-							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
+							pendingOperationsBeforeMyRequest:
+								pendingOperationsBeforeMyRequestCount,
 						};
 					}
 				}
@@ -45,7 +53,8 @@ Meteor.methods({
 					requested: false,
 					exportOperation: lastOperation,
 					url: null,
-					pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
+					pendingOperationsBeforeMyRequest:
+						pendingOperationsBeforeMyRequestCount,
 				};
 			}
 		}
@@ -87,7 +96,8 @@ Meteor.methods({
 			requested: true,
 			exportOperation,
 			url: null,
-			pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
+			pendingOperationsBeforeMyRequest:
+				pendingOperationsBeforeMyRequestCount,
 		};
 	},
 });

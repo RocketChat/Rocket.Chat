@@ -6,7 +6,12 @@ import { IInvite } from '../../../../definition/IInvite';
 type T = IInvite;
 
 export class InvitesRaw extends BaseRaw<T> {
-	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<T | null> {
+	findOneByUserRoomMaxUsesAndExpiration(
+		userId: string,
+		rid: string,
+		maxUses: number,
+		daysToExpire: number,
+	): Promise<T | null> {
 		return this.findOne({
 			rid,
 			userId,
@@ -18,10 +23,13 @@ export class InvitesRaw extends BaseRaw<T> {
 	}
 
 	increaseUsageById(_id: string, uses = 1): Promise<UpdateWriteOpResult> {
-		return this.updateOne({ _id }, {
-			$inc: {
-				uses,
+		return this.updateOne(
+			{ _id },
+			{
+				$inc: {
+					uses,
+				},
 			},
-		});
+		);
 	}
 }

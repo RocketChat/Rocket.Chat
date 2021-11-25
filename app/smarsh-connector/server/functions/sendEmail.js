@@ -16,8 +16,14 @@ smarsh.sendEmail = async (data) => {
 
 	for await (const fileId of data.files) {
 		const file = await Uploads.findOneById(fileId);
-		if (file.store === 'rocketchat_uploads' || file.store === 'fileSystem') {
-			const rs = UploadFS.getStore(file.store).getReadStream(fileId, file);
+		if (
+			file.store === 'rocketchat_uploads'
+			|| file.store === 'fileSystem'
+		) {
+			const rs = UploadFS.getStore(file.store).getReadStream(
+				fileId,
+				file,
+			);
 			attachments.push({
 				filename: file.name,
 				streamSource: rs,

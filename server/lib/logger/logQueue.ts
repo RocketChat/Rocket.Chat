@@ -27,8 +27,15 @@ export const logEntries = new EventEmitter();
 
 const { write } = process.stdout;
 
-function queueWrite(buffer: Uint8Array | string, cb?: (err?: Error) => void): boolean;
-function queueWrite(str: Uint8Array | string, encoding?: string, cb?: (err?: Error) => void): boolean;
+function queueWrite(
+	buffer: Uint8Array | string,
+	cb?: (err?: Error) => void
+): boolean;
+function queueWrite(
+	str: Uint8Array | string,
+	encoding?: string,
+	cb?: (err?: Error) => void
+): boolean;
 function queueWrite(...args: any): boolean {
 	write.apply(process.stdout, args);
 

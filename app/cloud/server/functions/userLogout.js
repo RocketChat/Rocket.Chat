@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function userLogout(userId) {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } =		retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
@@ -19,7 +19,12 @@ export function userLogout(userId) {
 
 	const user = Users.findOneById(userId);
 
-	if (user && user.services && user.services.cloud && user.services.cloud.refreshToken) {
+	if (
+		user
+		&& user.services
+		&& user.services.cloud
+		&& user.services.cloud.refreshToken
+	) {
 		try {
 			const client_id = settings.get('Cloud_Workspace_Client_Id');
 			if (!client_id) {
@@ -32,7 +37,9 @@ export function userLogout(userId) {
 			const { refreshToken } = user.services.cloud;
 
 			HTTP.post(`${ cloudUrl }/api/oauth/revoke`, {
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
 				params: {
 					client_id,
 					client_secret,
@@ -42,7 +49,9 @@ export function userLogout(userId) {
 			});
 		} catch (e) {
 			if (e.response && e.response.data && e.response.data.error) {
-				SystemLogger.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+				SystemLogger.error(
+					`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`,
+				);
 			} else {
 				SystemLogger.error(e);
 			}

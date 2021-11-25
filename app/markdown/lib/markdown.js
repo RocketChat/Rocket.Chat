@@ -40,7 +40,9 @@ class MarkdownClass {
 		}
 
 		const options = {
-			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			supportSchemesForLink: settings.get(
+				'Markdown_SupportSchemesForLink',
+			),
 			headers: settings.get('Markdown_Headers'),
 			rootUrl: Meteor.absoluteUrl(),
 			marked: {
@@ -53,7 +55,9 @@ class MarkdownClass {
 			},
 		};
 
-		const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+		const parse =			typeof parsers[parser] === 'function'
+			? parsers[parser]
+			: parsers.original;
 
 		return parse(message, options);
 	}
@@ -64,7 +68,9 @@ class MarkdownClass {
 		if (tokenList.length > 0) {
 			for (const { token, text, noHtml } of tokenList) {
 				if (message.html.indexOf(token) >= 0) {
-					message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
+					message.html = message.html.replace(token, () =>
+						(useHtml ? text : noHtml),
+					); // Uses lambda so doesn't need to escape $
 				} else {
 					missingTokens.push({ token, text, noHtml });
 				}
@@ -73,7 +79,10 @@ class MarkdownClass {
 
 		// If there are tokens that were missing from the string, but the last iteration replaced at least one token, then go again
 		// this is done because one of the tokens may have been hidden by another one
-		if (missingTokens.length > 0 && missingTokens.length < tokenList.length) {
+		if (
+			missingTokens.length > 0
+			&& missingTokens.length < tokenList.length
+		) {
 			this.mountTokensBackRecursively(message, missingTokens, useHtml);
 		}
 	}
@@ -92,21 +101,26 @@ class MarkdownClass {
 
 	filterMarkdownFromMessage(message) {
 		return parsers.filtered(message, {
-			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			supportSchemesForLink: settings.get(
+				'Markdown_SupportSchemesForLink',
+			),
 		});
 	}
 }
 
 export const Markdown = new MarkdownClass();
 
-export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
+export const filterMarkdown = (message) =>
+	Markdown.filterMarkdownFromMessage(message);
 
 export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
 	if (!parser || parser === 'disabled') {
 		return (message) => message;
 	}
 
-	const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+	const parse =		typeof parsers[parser] === 'function'
+		? parsers[parser]
+		: parsers.original;
 
 	return (message) => {
 		if (!message?.html?.trim()) {
@@ -117,6 +131,5 @@ export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
 	};
 };
 
-export const createMarkdownNotificationRenderer = (options) =>
-	(message) =>
-		parsers.filtered(message, options);
+export const createMarkdownNotificationRenderer = (options) => (message) =>
+	parsers.filtered(message, options);

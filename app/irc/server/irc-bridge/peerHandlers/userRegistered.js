@@ -34,13 +34,16 @@ export default async function handleUserRegistered(args) {
 		// ...otherwise, log the user in and update the information
 		this.log(`Logging in ${ args.username } with nick: ${ args.nick }`);
 
-		Meteor.users.update({ _id: user._id }, {
-			$set: {
-				status: 'online',
-				'profile.irc.nick': args.nick,
-				'profile.irc.username': args.username,
-				'profile.irc.hostname': args.hostname,
+		Meteor.users.update(
+			{ _id: user._id },
+			{
+				$set: {
+					status: 'online',
+					'profile.irc.nick': args.nick,
+					'profile.irc.username': args.username,
+					'profile.irc.hostname': args.hostname,
+				},
 			},
-		});
+		);
 	}
 }

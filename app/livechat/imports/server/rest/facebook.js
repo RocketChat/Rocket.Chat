@@ -42,7 +42,10 @@ API.v1.addRoute('livechat/facebook', {
 		}
 
 		// validate if request come from omni
-		const signature = crypto.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
+		const signature = crypto
+			.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret'))
+			.update(JSON.stringify(this.request.body))
+			.digest('hex');
 		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
 			return {
 				success: false,
@@ -62,7 +65,9 @@ API.v1.addRoute('livechat/facebook', {
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = LivechatRooms.findOpenByVisitorToken(
+				visitor.token,
+			).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {

@@ -25,7 +25,11 @@ class Search extends ServiceClass {
 
 		this.onEvent('watch.rooms', async ({ clientAction, room }) => {
 			if (clientAction === 'removed') {
-				searchEventService.promoteEvent('room.delete', room._id, undefined);
+				searchEventService.promoteEvent(
+					'room.delete',
+					room._id,
+					undefined,
+				);
 				return;
 			}
 

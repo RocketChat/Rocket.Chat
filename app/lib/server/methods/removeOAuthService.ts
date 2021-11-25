@@ -5,17 +5,20 @@ import { check } from 'meteor/check';
 import { hasPermission } from '../../../authorization/server';
 import { Settings } from '../../../models/server/raw';
 
-
 Meteor.methods({
 	async removeOAuthService(name) {
 		check(name, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'removeOAuthService' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'removeOAuthService',
+			});
 		}
 
 		if (hasPermission(Meteor.userId(), 'add-oauth-service') !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'removeOAuthService',
+			});
 		}
 
 		name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -27,13 +30,21 @@ Meteor.methods({
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_path`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-authorize_path`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-scope`),
-			Settings.removeById(`Accounts_OAuth_Custom-${ name }-access_token_param`),
+			Settings.removeById(
+				`Accounts_OAuth_Custom-${ name }-access_token_param`,
+			),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-token_sent_via`),
-			Settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_token_sent_via`),
+			Settings.removeById(
+				`Accounts_OAuth_Custom-${ name }-identity_token_sent_via`,
+			),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-id`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-secret`),
-			Settings.removeById(`Accounts_OAuth_Custom-${ name }-button_label_text`),
-			Settings.removeById(`Accounts_OAuth_Custom-${ name }-button_label_color`),
+			Settings.removeById(
+				`Accounts_OAuth_Custom-${ name }-button_label_text`,
+			),
+			Settings.removeById(
+				`Accounts_OAuth_Custom-${ name }-button_label_color`,
+			),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-button_color`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-key_field`),
@@ -49,7 +60,9 @@ Meteor.methods({
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-groups_claim`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-channels_admin`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-map_channels`),
-			Settings.removeById(`Accounts_OAuth_Custom-${ name }-groups_channel_map`),
+			Settings.removeById(
+				`Accounts_OAuth_Custom-${ name }-groups_channel_map`,
+			),
 		]);
 	},
 });

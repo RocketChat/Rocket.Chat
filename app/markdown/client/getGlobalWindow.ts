@@ -1,1 +1,2 @@
-export const getGlobalWindow = (): Omit<Window, 'self' | 'top' | 'window'> => window;
+export const getGlobalWindow = (): Omit<Window, 'self' | 'top' | 'window'> =>
+	window;

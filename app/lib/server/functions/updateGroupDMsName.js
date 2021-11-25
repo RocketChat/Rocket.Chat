@@ -1,6 +1,7 @@
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 
-const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
+const getFname = (members) =>
+	members.map(({ name, username }) => name || username).join(', ');
 const getName = (members) => members.map(({ username }) => username).join(',');
 
 function getUsersWhoAreInTheSameGroupDMsAs(user) {
@@ -13,10 +14,13 @@ function getUsersWhoAreInTheSameGroupDMsAs(user) {
 	const userIds = new Set();
 	const users = new Map();
 
-	rooms.forEach((room) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
+	rooms.forEach((room) =>
+		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)),
+	);
 
-	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } })
-		.forEach((user) => users.set(user._id, user));
+	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach(
+		(user) => users.set(user._id, user),
+	);
 
 	return users;
 }
@@ -37,19 +41,30 @@ export const updateGroupDMsName = (userThatChangedName) => {
 
 	users.set(userThatChangedName._id, userThatChangedName);
 
-	const rooms = Rooms.findGroupDMsByUids(userThatChangedName._id, { fields: { uids: 1 } });
+	const rooms = Rooms.findGroupDMsByUids(userThatChangedName._id, {
+		fields: { uids: 1 },
+	});
 
-	const getMembers = (uids) => uids.map((uid) => users.get(uid)).filter(Boolean);
+	const getMembers = (uids) =>
+		uids.map((uid) => users.get(uid)).filter(Boolean);
 
 	// loop rooms to update the subcriptions from them all
 	rooms.forEach((room) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
-		const subs = Subscriptions.findByRoomId(room._id, { fields: { _id: 1, 'u._id': 1 } });
+		const subs = Subscriptions.findByRoomId(room._id, {
+			fields: { _id: 1, 'u._id': 1 },
+		});
 		subs.forEach((sub) => {
-			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+			const otherMembers = sortedMembers.filter(
+				({ _id }) => _id !== sub.u._id,
+			);
+			Subscriptions.updateNameAndFnameById(
+				sub._id,
+				getName(otherMembers),
+				getFname(otherMembers),
+			);
 		});
 	});
 };

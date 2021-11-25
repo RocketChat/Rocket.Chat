@@ -22,7 +22,10 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
+	async getMostRecentAverageChatDurationTime(
+		numberMostRecentChats,
+		department,
+	) {
 		const aggregate = [
 			{
 				$match: {
@@ -33,24 +36,48 @@ export class RoomsRaw extends BaseRaw {
 			},
 			{ $sort: { closedAt: -1 } },
 			{ $limit: numberMostRecentChats },
-			{ $group: { _id: null, chats: { $sum: 1 }, sumChatDuration: { $sum: '$metrics.chatDuration' } } },
-			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
+			{
+				$group: {
+					_id: null,
+					chats: { $sum: 1 },
+					sumChatDuration: { $sum: '$metrics.chatDuration' },
+				},
+			},
+			{
+				$project: {
+					_id: '$_id',
+					avgChatDuration: {
+						$divide: ['$sumChatDuration', '$chats'],
+					},
+				},
+			},
 		];
 
 		const [statistic] = await this.col.aggregate(aggregate).toArray();
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameContainingAndTypes(
+		name,
+		types,
+		discussion = false,
+		teams = false,
+		showOnlyTeams = false,
+		options = {},
+	) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
+		const onlyTeamsQuery = showOnlyTeams
+			? { teamMain: { $exists: true } }
+			: {};
 
-		const teamCondition = teams ? {} : {
-			teamMain: {
-				$exists: false,
-			},
-		};
+		const teamCondition = teams
+			? {}
+			: {
+				teamMain: {
+					$exists: false,
+				},
+			  };
 
 		const query = {
 			t: {
@@ -70,14 +97,24 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
-		const teamCondition = teams ? {} : {
-			teamMain: {
-				$exists: false,
-			},
-		};
+	findByTypes(
+		types,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
+		options = {},
+	) {
+		const teamCondition = teams
+			? {}
+			: {
+				teamMain: {
+					$exists: false,
+				},
+			  };
 
-		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
+		const onlyTeamsCondition = onlyTeams
+			? { teamMain: { $exists: true } }
+			: {};
 
 		const query = {
 			t: {
@@ -90,16 +127,26 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByNameContaining(
+		name,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
+		options = {},
+	) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const teamCondition = teams ? {} : {
-			teamMain: {
-				$exists: false,
-			},
-		};
+		const teamCondition = teams
+			? {}
+			: {
+				teamMain: {
+					$exists: false,
+				},
+			  };
 
-		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
+		const onlyTeamsCondition = onlyTeams
+			? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] }
+			: {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -128,7 +175,13 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+	findByTeamIdContainingNameAndDefault(
+		teamId,
+		name,
+		teamDefault,
+		ids,
+		options = {},
+	) {
 		const query = {
 			teamId,
 			teamMain: {
@@ -164,18 +217,21 @@ export class RoomsRaw extends BaseRaw {
 			teamMain: {
 				$exists: false,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: sIds,
+					},
 				},
-				_id: {
-					$in: sIds,
-				},
-			}],
+			],
 		};
 
 		return this.find(query, options);
@@ -188,11 +244,14 @@ export class RoomsRaw extends BaseRaw {
 			t: {
 				$in: ['c', 'p'],
 			},
-			$or: [{
-				name: nameRegex,
-			}, {
-				fname: nameRegex,
-			}],
+			$or: [
+				{
+					name: nameRegex,
+				},
+				{
+					fname: nameRegex,
+				},
+			],
 		};
 
 		return this.find(query, options);
@@ -209,25 +268,33 @@ export class RoomsRaw extends BaseRaw {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: roomIds,
+					},
 				},
-				_id: {
-					$in: roomIds,
-				},
-			}],
+			],
 			prid: { $exists: false },
 		};
 
 		return this.find(query, options);
 	}
 
-	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
+		uid,
+		name,
+		groupsToAccept,
+		options,
+	) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
@@ -259,26 +326,49 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	unsetTeamById(rid, options = {}) {
-		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
+		return this.updateOne(
+			{ _id: rid },
+			{ $unset: { teamId: '', teamDefault: '' } },
+			options,
+		);
 	}
 
 	setTeamById(rid, teamId, teamDefault, options = {}) {
-		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+		return this.updateOne(
+			{ _id: rid },
+			{ $set: { teamId, teamDefault } },
+			options,
+		);
 	}
 
 	setTeamMainById(rid, teamId, options = {}) {
-		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
+		return this.updateOne(
+			{ _id: rid },
+			{ $set: { teamId, teamMain: true } },
+			options,
+		);
 	}
 
 	setTeamByIds(rids, teamId, options = {}) {
-		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
+		return this.updateMany(
+			{ _id: { $in: rids } },
+			{ $set: { teamId } },
+			options,
+		);
 	}
 
 	setTeamDefaultById(rid, teamDefault, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
+	findChannelsWithNumberOfMessagesBetweenDate({
+		start,
+		end,
+		startOfLastWeek,
+		endOfLastWeek,
+		onlyCount = false,
+		options = {},
+	}) {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -361,10 +451,20 @@ export class RoomsRaw extends BaseRaw {
 				},
 				messages: '$messages',
 				lastWeekMessages: '$lastWeekMessages',
-				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
+				diffFromLastWeek: {
+					$subtract: ['$messages', '$lastWeekMessages'],
+				},
 			},
 		};
-		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
+		const firstParams = [
+			lookup,
+			messagesProject,
+			messagesUnwind,
+			messagesGroup,
+			lastWeekMessagesUnwind,
+			lastWeekMessagesGroup,
+			presentationProject,
+		];
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params = [...firstParams, sort];
 

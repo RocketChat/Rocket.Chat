@@ -5,7 +5,13 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import {
+	RoomMemberActions,
+	RoomSettingsEnum,
+	UiTextContext,
+	RoomTypeRouteConfig,
+	RoomTypeConfig,
+} from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 let LivechatInquiry;
@@ -86,7 +92,9 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	allowMemberAction(room, action) {
-		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
+		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(
+			action,
+		);
 	}
 
 	getUiText(context) {
@@ -101,12 +109,18 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	readOnly(rid) {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
+		const room = ChatRoom.findOne(
+			{ _id: rid },
+			{ fields: { open: 1, servedBy: 1 } },
+		);
 		if (!room || !room.open) {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
+		const inquiry = LivechatInquiry.findOne(
+			{ rid },
+			{ fields: { status: 1 } },
+		);
 		if (inquiry && inquiry.status === 'queued') {
 			return true;
 		}

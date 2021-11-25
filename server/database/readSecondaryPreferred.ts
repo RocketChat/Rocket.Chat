@@ -1,16 +1,28 @@
 import { ReadPreference, Db, ReadPreferenceOrMode } from 'mongodb';
 
-export function readSecondaryPreferred(db: Db, tags: any[] = []): ReadPreferenceOrMode {
+export function readSecondaryPreferred(
+	db: Db,
+	tags: any[] = [],
+): ReadPreferenceOrMode {
 	const { readPreferenceTags, readPreference } = db.options;
 
 	if (tags.length) {
 		return new ReadPreference(ReadPreference.SECONDARY_PREFERRED, tags);
 	}
 	if (Array.isArray(readPreferenceTags) && readPreferenceTags.length) {
-		return new ReadPreference(ReadPreference.SECONDARY_PREFERRED, readPreferenceTags);
+		return new ReadPreference(
+			ReadPreference.SECONDARY_PREFERRED,
+			readPreferenceTags,
+		);
 	}
-	if (readPreference instanceof ReadPreference && readPreference.tags.length) {
-		return new ReadPreference(ReadPreference.SECONDARY_PREFERRED, readPreference.tags);
+	if (
+		readPreference instanceof ReadPreference
+		&& readPreference.tags.length
+	) {
+		return new ReadPreference(
+			ReadPreference.SECONDARY_PREFERRED,
+			readPreference.tags,
+		);
 	}
 
 	// For some reason the new ReadPreference definition requires the tags parameter even not been

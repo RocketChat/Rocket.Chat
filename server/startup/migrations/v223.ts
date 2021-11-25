@@ -6,6 +6,9 @@ const roleName = 'user';
 addMigration({
 	version: 223,
 	up() {
-		return Permissions.update({ _id: 'message-impersonate' }, { $addToSet: { roles: roleName } });
+		return Permissions.update(
+			{ _id: 'message-impersonate' },
+			{ $addToSet: { roles: roleName } },
+		);
 	},
 });

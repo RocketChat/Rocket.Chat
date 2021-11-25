@@ -7,15 +7,23 @@ import { original } from '../lib/parser/original/original';
 import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
 
-const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
+const wrapper = (text, tag) =>
+	`<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');
 const italicWrapper = (text) => wrapper(`<em>${ text }</em>`, '_');
 const strikeWrapper = (text) => wrapper(`<strike>${ text }</strike>`, '~');
 const headerWrapper = (text, level) => `<h${ level }>${ text }</h${ level }>`;
-const quoteWrapper = (text) => `<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
-const linkWrapped = (link, title) => `<a data-title="${ link }" href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
-const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${ text }</code></span>`, '`');
-const codeWrapper = (text, lang) => `<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
+const quoteWrapper = (text) =>
+	`<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
+const linkWrapped = (link, title) =>
+	`<a data-title="${ link }" href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
+const inlinecodeWrapper = (text) =>
+	wrapper(
+		`<span><code class="code-colors inline">${ text }</code></span>`,
+		'`',
+	);
+const codeWrapper = (text, lang) =>
+	`<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 
 const bold = {
 	'**': '**',
@@ -46,7 +54,9 @@ const bold = {
 	'Rocket cat says **Hello**': `Rocket cat says ${ boldWrapper('Hello') }`,
 	'He said **Hello** to her': `He said ${ boldWrapper('Hello') } to her`,
 	'He was a**nn**oyed': `He was a${ boldWrapper('nn') }oyed`,
-	'There are two o in f*oo*tball': `There are two o in f${ boldWrapper('oo') }tball`,
+	'There are two o in f*oo*tball': `There are two o in f${ boldWrapper(
+		'oo',
+	) }tball`,
 };
 
 const italic = {
@@ -187,57 +197,143 @@ const quote = {
 
 const link = {
 	'&lt;http://link|Text&gt;': escapeHTML('&lt;http://link|Text&gt;'),
-	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
-	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;': '&amp;lt;https://rocket.chat/|Rocket.Chat Site&amp;gt;',
-	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML('&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
+	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;',
+	),
+	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;',
+	),
+	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;':
+		'&amp;lt;https://rocket.chat/|Rocket.Chat Site&amp;gt;',
+	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;':
+		escapeHTML(
+			'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
+		),
 	'&lt;http://linkText&gt;': escapeHTML('&lt;http://linkText&gt;'),
-	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
-	'https://open.rocket.chat/|Open Site For Rocket.Chat': escapeHTML('https://open.rocket.chat/|Open Site For Rocket.Chat'),
-	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;htps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;tps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML('&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
+	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;',
+	),
+	'https://open.rocket.chat/|Open Site For Rocket.Chat': escapeHTML(
+		'https://open.rocket.chat/|Open Site For Rocket.Chat',
+	),
+	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;',
+	),
+	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML(
+		'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;',
+	),
+	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML(
+		'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;',
+	),
+	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML(
+		'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;',
+	),
+	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;',
+	),
+	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;':
+		escapeHTML(
+			'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
+		),
 
 	'<http://invalid link|Text>': escapeHTML('<http://invalid link|Text>'),
 	'<http://link|Text>': linkWrapped('http://link', 'Text'),
-	'<https://open.rocket.chat/|Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'<https://open.rocket.chat/ | Open Site For Rocket.Chat>': linkWrapped(encodeURI('https://open.rocket.chat/ '), ' Open Site For Rocket.Chat'),
-	'<https://rocket.chat/|Rocket.Chat Site>': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
-	'<https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
+	'<https://open.rocket.chat/|Open Site For Rocket.Chat>': linkWrapped(
+		'https://open.rocket.chat/',
+		'Open Site For Rocket.Chat',
+	),
+	'<https://open.rocket.chat/ | Open Site For Rocket.Chat>': linkWrapped(
+		encodeURI('https://open.rocket.chat/ '),
+		' Open Site For Rocket.Chat',
+	),
+	'<https://rocket.chat/|Rocket.Chat Site>': linkWrapped(
+		'https://rocket.chat/',
+		'Rocket.Chat Site',
+	),
+	'<https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>':
+		linkWrapped(
+			'https://rocket.chat/docs/developer-guides/testing/#testing',
+			'Testing Entry on Rocket.Chat Docs Site',
+		),
 	'<http://linkText>': escapeHTML('<http://linkText>'),
-	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': escapeHTML('<https:open.rocket.chat/ | Open Site For Rocket.Chat>'),
-	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<www.open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<htps://rocket.chat/|Rocket.Chat Site>'),
-	'<ttps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<ttps://rocket.chat/|Rocket.Chat Site>'),
-	'<tps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<tps://rocket.chat/|Rocket.Chat Site>'),
-	'<open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': escapeHTML('<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>'),
+	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': escapeHTML(
+		'<https:open.rocket.chat/ | Open Site For Rocket.Chat>',
+	),
+	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML(
+		'<www.open.rocket.chat/|Open Site For Rocket.Chat>',
+	),
+	'<htps://rocket.chat/|Rocket.Chat Site>': escapeHTML(
+		'<htps://rocket.chat/|Rocket.Chat Site>',
+	),
+	'<ttps://rocket.chat/|Rocket.Chat Site>': escapeHTML(
+		'<ttps://rocket.chat/|Rocket.Chat Site>',
+	),
+	'<tps://rocket.chat/|Rocket.Chat Site>': escapeHTML(
+		'<tps://rocket.chat/|Rocket.Chat Site>',
+	),
+	'<open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML(
+		'<open.rocket.chat/|Open Site For Rocket.Chat>',
+	),
+	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>':
+		escapeHTML(
+			'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>',
+		),
 
 	'[Text](http://invalid link)': '[Text](http://invalid link)',
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
-	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'[ Open Site For Rocket.Chat ](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', ' Open Site For Rocket.Chat '),
-	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
-	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
+	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped(
+		'https://open.rocket.chat/',
+		'Open Site For Rocket.Chat',
+	),
+	'[ Open Site For Rocket.Chat ](https://open.rocket.chat/)': linkWrapped(
+		'https://open.rocket.chat/',
+		' Open Site For Rocket.Chat ',
+	),
+	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped(
+		'https://rocket.chat/',
+		'Rocket.Chat Site',
+	),
+	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)':
+		linkWrapped(
+			'https://rocket.chat/docs/developer-guides/testing/#testing',
+			'Testing Entry on Rocket.Chat Docs Site',
+		),
 	'[](http://linkText)': '[](http://linkText)',
 	'[text]': '[text]',
-	'[Open Site For Rocket.Chat](https:open.rocket.chat/)': '[Open Site For Rocket.Chat](https:open.rocket.chat/)',
-	'[Open Site For Rocket.Chat](www.open.rocket.chat/)': '[Open Site For Rocket.Chat](www.open.rocket.chat/)',
-	'[Rocket.Chat Site](htps://rocket.chat/)': '[Rocket.Chat Site](htps://rocket.chat/)',
-	'[Rocket.Chat Site](ttps://rocket.chat/)': '[Rocket.Chat Site](ttps://rocket.chat/)',
-	'[Rocket.Chat Site](tps://rocket.chat/)': '[Rocket.Chat Site](tps://rocket.chat/)',
-	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
-	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
-	'[Text](http://link?param1=1&param2=2)': linkWrapped('http://link?param1=1&amp;param2=2', 'Text'),
-	'[Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)', 'Testing Double parentheses'),
-	'[Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla)': linkWrapped('https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla', 'Testing data after Double parentheses'),
+	'[Open Site For Rocket.Chat](https:open.rocket.chat/)':
+		'[Open Site For Rocket.Chat](https:open.rocket.chat/)',
+	'[Open Site For Rocket.Chat](www.open.rocket.chat/)':
+		'[Open Site For Rocket.Chat](www.open.rocket.chat/)',
+	'[Rocket.Chat Site](htps://rocket.chat/)':
+		'[Rocket.Chat Site](htps://rocket.chat/)',
+	'[Rocket.Chat Site](ttps://rocket.chat/)':
+		'[Rocket.Chat Site](ttps://rocket.chat/)',
+	'[Rocket.Chat Site](tps://rocket.chat/)':
+		'[Rocket.Chat Site](tps://rocket.chat/)',
+	'[Open Site For Rocket.Chat](open.rocket.chat/)':
+		'[Open Site For Rocket.Chat](open.rocket.chat/)',
+	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)':
+		'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
+	'[Text](http://link?param1=1&param2=2)': linkWrapped(
+		'http://link?param1=1&amp;param2=2',
+		'Text',
+	),
+	'[Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))':
+		linkWrapped(
+			'https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)',
+			'Testing Double parentheses',
+		),
+	'[Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla)':
+		linkWrapped(
+			'https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla',
+			'Testing data after Double parentheses',
+		),
 };
 
 Object.entries(link).forEach(([key, value]) => {
-	link[`before (test) ${ key } after (test)`] = `before (test) ${ value } after (test)`;
+	link[
+		`before (test) ${ key } after (test)`
+	] = `before (test) ${ value } after (test)`;
 });
 
 const inlinecode = {
@@ -251,25 +347,54 @@ const inlinecode = {
 };
 
 const code = {
-	'```code```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
+	'```code```': codeWrapper(
+		'<span class="hljs-keyword">code</span>',
+		'clean',
+	),
 	'```code': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
-	'```code\n': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
-	'```\ncode\n```': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
-	'```code\n```': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
-	'```\ncode```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
-	'```javascript\nvar a = \'log\';\nconsole.log(a);```': codeWrapper('<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);', 'javascript'),
-	'```*code*```': codeWrapper('<span class="hljs-emphasis">*code*</span>', 'markdown'),
-	'```**code**```': codeWrapper('<span class="hljs-strong">**code**</span>', 'markdown'),
-	'```__code__```': codeWrapper('<span class="hljs-strong">__code__</span>', 'markdown'),
+	'```code\n': codeWrapper(
+		'<span class="hljs-keyword">code</span>\n',
+		'clean',
+	),
+	'```\ncode\n```': codeWrapper(
+		'<span class="hljs-keyword">code</span>\n',
+		'clean',
+	),
+	'```code\n```': codeWrapper(
+		'<span class="hljs-keyword">code</span>\n',
+		'clean',
+	),
+	'```\ncode```': codeWrapper(
+		'<span class="hljs-keyword">code</span>',
+		'clean',
+	),
+	"```javascript\nvar a = 'log';\nconsole.log(a);```": codeWrapper(
+		'<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);',
+		'javascript',
+	),
+	'```*code*```': codeWrapper(
+		'<span class="hljs-emphasis">*code*</span>',
+		'markdown',
+	),
+	'```**code**```': codeWrapper(
+		'<span class="hljs-strong">**code**</span>',
+		'markdown',
+	),
+	'```__code__```': codeWrapper(
+		'<span class="hljs-strong">__code__</span>',
+		'markdown',
+	),
 };
 
 const nested = {
-	'> some quote\n`window.location.reload();`': `${ quoteWrapper(' some quote') }${ inlinecodeWrapper('window.location.reload();') }`,
+	'> some quote\n`window.location.reload();`': `${ quoteWrapper(
+		' some quote',
+	) }${ inlinecodeWrapper('window.location.reload();') }`,
 };
 
 /*
-* Markdown Filters
-*/
+ * Markdown Filters
+ */
 const boldFiltered = {
 	'*Hello*': 'Hello',
 	'**Hello**': 'Hello',
@@ -348,8 +473,10 @@ const quoteFiltered = {
 
 const linkFiltered = {
 	'[Text](http://link)': 'Text',
-	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': 'Open Site For Rocket.Chat',
-	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': ' Open Site For Rocket.Chat',
+	'[Open Site For Rocket.Chat](https://open.rocket.chat/)':
+		'Open Site For Rocket.Chat',
+	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )':
+		' Open Site For Rocket.Chat',
 	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site',
 	'<http://link|Text>': 'Text',
 	'<http://link|Text for test>': 'Text for test',
@@ -373,13 +500,18 @@ const blockcodeFiltered = {
 	'Here```code```lies': 'Herecodelies',
 };
 
-const defaultObjectTest = (result, object, objectKey) => expect(result.html).to.be.equal(object[objectKey]);
+const defaultObjectTest = (result, object, objectKey) =>
+	expect(result.html).to.be.equal(object[objectKey]);
 
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = parser === original ? { html: escapeHTML(objectKey) } : objectKey;
-			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : { html: parser(message) };
+			const message =				parser === original
+				? { html: escapeHTML(objectKey) }
+				: objectKey;
+			const result =				parser === original
+				? Markdown.mountTokensBack(parser(message))
+				: { html: parser(message) };
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -428,7 +560,8 @@ describe('Filtered', function() {
 
 	describe('LinkFilter', () => testObject(linkFiltered, filtered));
 
-	describe('inlinecodeFilter', () => testObject(inlinecodeFiltered, filtered));
+	describe('inlinecodeFilter', () =>
+		testObject(inlinecodeFiltered, filtered));
 
 	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });

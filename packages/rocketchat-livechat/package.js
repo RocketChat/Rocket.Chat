@@ -6,12 +6,8 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
-	use: [
-		'ecmascript',
-	],
-	sources: [
-		'plugin/build-livechat.js',
-	],
+	use: ['ecmascript'],
+	sources: ['plugin/build-livechat.js'],
 	npmDependencies: {
 		'uglify-js': '2.8.29',
 	},

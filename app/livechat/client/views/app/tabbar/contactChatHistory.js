@@ -8,7 +8,6 @@ import _ from 'underscore';
 
 import { t, APIClient } from '../../../../../utils/client';
 
-
 const HISTORY_LIMIT = 50;
 
 Template.contactChatHistory.helpers({
@@ -71,20 +70,26 @@ Template.contactChatHistory.onCreated(async function() {
 		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
-		let baseUrl = `livechat/visitors.searchChats/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ limit }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
+		let baseUrl = `livechat/visitors.searchChats/room/${
+			currentData.rid
+		}/visitor/${ this.visitorId.get() }?count=${ limit }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
 		if (searchTerm) {
 			baseUrl += `&searchText=${ searchTerm }`;
 		}
 
 		this.isLoading.set(true);
 		const { history, total } = await APIClient.v1.get(baseUrl);
-		this.history.set(offset === 0 ? history : this.history.get().concat(history));
+		this.history.set(
+			offset === 0 ? history : this.history.get().concat(history),
+		);
 		this.hasMore.set(total > this.history.get().length);
 		this.isLoading.set(false);
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ currentData.rid }`);
+		const { room } = await APIClient.v1.get(
+			`rooms.info?roomId=${ currentData.rid }`,
+		);
 		if (room?.v) {
 			this.visitorId.set(room.v._id);
 		}
@@ -105,10 +110,13 @@ Template.contactChatHistory.onRendered(function() {
 	});
 });
 
-
 Template.contactChatHistory.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
-		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
+		if (
+			e.target.scrollTop
+				>= e.target.scrollHeight - e.target.clientHeight - 10
+			&& instance.hasMore.get()
+		) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
@@ -116,7 +124,7 @@ Template.contactChatHistory.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { _id: rid, v: { name, username } = { }, closedAt } = this;
+		const { _id: rid, v: { name, username } = {}, closedAt } = this;
 
 		const closedAtLabel = t('Closed_At');
 		const closedDay = moment(closedAt).format('MMM D YYYY');

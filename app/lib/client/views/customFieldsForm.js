@@ -19,7 +19,10 @@ Template.customFieldsForm.helpers({
 
 		Object.keys(customFields).forEach((key) => {
 			const value = customFields[key];
-			if (value.hideFromForm === true && Template.instance().hideFromForm === true) {
+			if (
+				value.hideFromForm === true
+				&& Template.instance().hideFromForm === true
+			) {
 				return;
 			}
 			customFieldsArray.push({
@@ -35,7 +38,8 @@ Template.customFieldsForm.helpers({
 
 		if (typeof formData[field.fieldName] !== 'undefined') {
 			return formData[field.fieldName] === current;
-		} if (typeof field.defaultValue !== 'undefined') {
+		}
+		if (typeof field.defaultValue !== 'undefined') {
 			return field.defaultValue === current;
 		}
 	},
@@ -55,9 +59,14 @@ Template.customFieldsForm.onCreated(function() {
 
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
-		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
+		if (
+			typeof Accounts_CustomFields === 'string'
+			&& Accounts_CustomFields.trim() !== ''
+		) {
 			try {
-				this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
+				this.customFields.set(
+					JSON.parse(settings.get('Accounts_CustomFields')),
+				);
 			} catch (e) {
 				console.error('Invalid JSON for Accounts_CustomFields');
 			}

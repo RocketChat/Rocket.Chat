@@ -34,4 +34,6 @@ class BusinessHoursManager {
 	}
 }
 
-export const businessHourManager = new BusinessHoursManager(new SingleBusinessHourBehavior());
+export const businessHourManager = new BusinessHoursManager(
+	new SingleBusinessHourBehavior(),
+);

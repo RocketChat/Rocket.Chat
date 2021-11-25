@@ -19,7 +19,9 @@ describe('PasswordPolicyClass', () => {
 			expect(passwordPolice.forbidRepeatingCharacters).to.be.false;
 		});
 		it('should have forbidRepeatingCharactersCount = 3', () => {
-			expect(passwordPolice.forbidRepeatingCharactersCount).to.be.equal(3);
+			expect(passwordPolice.forbidRepeatingCharactersCount).to.be.equal(
+				3,
+			);
 		});
 		it('should have mustContainAtLeastOneLowercase = false', () => {
 			expect(passwordPolice.mustContainAtLeastOneLowercase).to.be.false;
@@ -31,15 +33,20 @@ describe('PasswordPolicyClass', () => {
 			expect(passwordPolice.mustContainAtLeastOneNumber).to.be.false;
 		});
 		it('should have mustContainAtLeastOneSpecialCharacter = false', () => {
-			expect(passwordPolice.mustContainAtLeastOneSpecialCharacter).to.be.false;
+			expect(passwordPolice.mustContainAtLeastOneSpecialCharacter).to.be
+				.false;
 		});
 
 		describe('Password tests with default options', () => {
 			it('should allow all passwords', () => {
-				const passwordPolice = new PasswordPolicyClass({ throwError: false });
+				const passwordPolice = new PasswordPolicyClass({
+					throwError: false,
+				});
 				expect(passwordPolice.validate()).to.be.equal(false);
 				expect(passwordPolice.validate('')).to.be.equal(false);
-				expect(passwordPolice.validate('            ')).to.be.equal(false);
+				expect(passwordPolice.validate('            ')).to.be.equal(
+					false,
+				);
 				expect(passwordPolice.validate('a')).to.be.equal(true);
 				expect(passwordPolice.validate('aaaaaaaaa')).to.be.equal(true);
 			});
@@ -233,7 +240,9 @@ describe('PasswordPolicyClass', () => {
 			expect(policy).to.not.be.undefined;
 			expect(policy.enabled).to.be.true;
 			expect(policy.policy.length).to.be.equal(8);
-			expect(policy.policy[0][0]).to.be.equal('get-password-policy-minLength');
+			expect(policy.policy[0][0]).to.be.equal(
+				'get-password-policy-minLength',
+			);
 			expect(policy.policy[0][1].minLength).to.be.equal(10);
 		});
 

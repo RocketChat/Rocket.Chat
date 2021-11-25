@@ -1,7 +1,13 @@
 import moment from 'moment';
 
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
-import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import {
+	ILivechatBusinessHour,
+	LivechatBusinessHourTypes,
+} from '../../../../definition/ILivechatBusinessHour';
+import {
+	IBusinessHourBehavior,
+	IBusinessHourType,
+} from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Users } from '../../../models/server/raw';
@@ -60,16 +66,26 @@ export class BusinessHourManager {
 		this.behavior = behavior;
 	}
 
-	async getBusinessHour(id?: string, type?: string): Promise<ILivechatBusinessHour | null> {
-		const businessHourType = this.getBusinessHourType(type as string || LivechatBusinessHourTypes.DEFAULT);
+	async getBusinessHour(
+		id?: string,
+		type?: string,
+	): Promise<ILivechatBusinessHour | null> {
+		const businessHourType = this.getBusinessHourType(
+			(type as string) || LivechatBusinessHourTypes.DEFAULT,
+		);
 		if (!businessHourType) {
 			return null;
 		}
 		return businessHourType.getBusinessHour(id);
 	}
 
-	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
-		const type = this.getBusinessHourType(businessHourData.type as string || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
+	async saveBusinessHour(
+		businessHourData: ILivechatBusinessHour,
+	): Promise<void> {
+		const type = this.getBusinessHourType(
+			(businessHourData.type as string)
+				|| LivechatBusinessHourTypes.DEFAULT,
+		) as IBusinessHourType;
 		const saved = await type.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
@@ -78,8 +94,13 @@ export class BusinessHourManager {
 		await this.createCronJobsForWorkHours();
 	}
 
-	async removeBusinessHourByIdAndType(id: string, type: string): Promise<void> {
-		const businessHourType = this.getBusinessHourType(type) as IBusinessHourType;
+	async removeBusinessHourByIdAndType(
+		id: string,
+		type: string,
+	): Promise<void> {
+		const businessHourType = this.getBusinessHourType(
+			type,
+		) as IBusinessHourType;
 		await businessHourType.removeBusinessHourById(id);
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
@@ -96,15 +117,39 @@ export class BusinessHourManager {
 	}
 
 	private setupCallbacks(): void {
-		callbacks.add('livechat.removeAgentDepartment', this.behavior.onRemoveAgentFromDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-remove-agent-department');
-		callbacks.add('livechat.afterRemoveDepartment', this.behavior.onRemoveDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-after-remove-department');
-		callbacks.add('livechat.saveAgentDepartment', this.behavior.onAddAgentToDepartment.bind(this), callbacks.priority.HIGH, 'business-hour-livechat-on-save-agent-department');
+		callbacks.add(
+			'livechat.removeAgentDepartment',
+			this.behavior.onRemoveAgentFromDepartment.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-remove-agent-department',
+		);
+		callbacks.add(
+			'livechat.afterRemoveDepartment',
+			this.behavior.onRemoveDepartment.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-after-remove-department',
+		);
+		callbacks.add(
+			'livechat.saveAgentDepartment',
+			this.behavior.onAddAgentToDepartment.bind(this),
+			callbacks.priority.HIGH,
+			'business-hour-livechat-on-save-agent-department',
+		);
 	}
 
 	private removeCallbacks(): void {
-		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
-		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
-		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');
+		callbacks.remove(
+			'livechat.removeAgentDepartment',
+			'business-hour-livechat-on-remove-agent-department',
+		);
+		callbacks.remove(
+			'livechat.afterRemoveDepartment',
+			'business-hour-livechat-after-remove-department',
+		);
+		callbacks.remove(
+			'livechat.saveAgentDepartment',
+			'business-hour-livechat-on-save-agent-department',
+		);
 	}
 
 	private async createCronJobsForWorkHours(): Promise<void> {
@@ -116,25 +161,47 @@ export class BusinessHourManager {
 		}
 
 		const { start, finish } = workHours;
-		start.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback));
-		finish.forEach(({ day, times }) => this.scheduleCronJob(times, day, 'close', this.closeWorkHoursCallback));
+		start.forEach(({ day, times }) =>
+			this.scheduleCronJob(times, day, 'open', this.openWorkHoursCallback),
+		);
+		finish.forEach(({ day, times }) =>
+			this.scheduleCronJob(
+				times,
+				day,
+				'close',
+				this.closeWorkHoursCallback,
+			),
+		);
 	}
 
-	private scheduleCronJob(items: string[], day: string, type: string, job: Function): void {
+	private scheduleCronJob(
+		items: string[],
+		day: string,
+		type: string,
+		job: Function,
+	): void {
 		items.forEach((hour) => {
 			const jobName = `${ day }/${ hour }/${ type }`;
 			const time = moment(hour, 'HH:mm');
-			const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
+			const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${
+				cronJobDayDict[day]
+			}`;
 			this.addToCache(jobName);
 			this.cronJobs.add(jobName, scheduleAt, job);
 		});
 	}
 
-	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
+	private async openWorkHoursCallback(
+		day: string,
+		hour: string,
+	): Promise<void> {
 		return this.behavior.openBusinessHoursByDayAndHour(day, hour);
 	}
 
-	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
+	private async closeWorkHoursCallback(
+		day: string,
+		hour: string,
+	): Promise<void> {
 		return this.behavior.closeBusinessHoursByDayAndHour(day, hour);
 	}
 

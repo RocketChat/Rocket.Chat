@@ -9,11 +9,15 @@ Meteor.methods({
 		check(rid, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getJoinCode' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'getJoinCode',
+			});
 		}
 
 		if (!hasPermission(Meteor.userId(), 'view-join-code')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'getJoinCode' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'getJoinCode',
+			});
 		}
 
 		const [room] = Rooms.findById(rid).fetch();

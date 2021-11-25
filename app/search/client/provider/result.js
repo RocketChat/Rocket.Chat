@@ -22,14 +22,18 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 
 			if (Session.get('openedRoom') === message.rid) {
@@ -55,13 +59,16 @@ Meteor.startup(function() {
 });
 
 Template.DefaultSearchResultTemplate.onRendered(function() {
-	const list = this.firstNode.parentNode.querySelector('.rocket-default-search-results');
+	const list = this.firstNode.parentNode.querySelector(
+		'.rocket-default-search-results',
+	);
 	this.autorun(() => {
 		const result = this.data.result.get();
 		if (result && this.hasMore.get()) {
 			Tracker.afterFlush(() => {
 				if (list.scrollHeight < list.offsetHeight) {
-					this.data.payload.limit = (this.data.payload.limit || this.pageSize) + this.pageSize;
+					this.data.payload.limit =						(this.data.payload.limit || this.pageSize)
+						+ this.pageSize;
 					this.data.search();
 				}
 			});
@@ -81,7 +88,13 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 
 	this.autorun(() => {
 		const result = this.data.result.get();
-		this.hasMore.set(!(result && result.message.docs.length < (this.data.payload.limit || this.pageSize)));
+		this.hasMore.set(
+			!(
+				result
+				&& result.message.docs.length
+					< (this.data.payload.limit || this.pageSize)
+			),
+		);
 	});
 });
 
@@ -94,8 +107,12 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.search();
 	},
 	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
-		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {
-			t.data.payload.limit = (t.data.payload.limit || t.pageSize) + t.pageSize;
+		if (
+			e.target.scrollTop
+				>= e.target.scrollHeight - e.target.clientHeight
+			&& t.hasMore.get()
+		) {
+			t.data.payload.limit =				(t.data.payload.limit || t.pageSize) + t.pageSize;
 			t.data.search();
 		}
 	}, 200),
@@ -117,10 +134,17 @@ Template.DefaultSearchResultTemplate.helpers({
 	messageParse(msg) {
 		const text = Template.instance().data.text.get();
 		msg.searchedText = text;
-		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
+		return {
+			customClass: 'search',
+			actionContext: 'search',
+			...msg,
+			groupable: false,
+		};
 	},
 	messageContext() {
-		const result = messageContext.call(this, { rid: Session.get('openedRoom') });
+		const result = messageContext.call(this, {
+			rid: Session.get('openedRoom'),
+		});
 		return {
 			...result,
 			settings: {

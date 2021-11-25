@@ -6,13 +6,20 @@ const mergeDeep = (target, source) => {
 	}
 
 	for (const key in source) {
-		if (source[key] === null && (target[key] === undefined || target[key] === null)) {
+		if (
+			source[key] === null
+			&& (target[key] === undefined || target[key] === null)
+		) {
 			target[key] = null;
 		} else if (source[key] instanceof Array) {
-			if (!target[key]) { target[key] = []; }
+			if (!target[key]) {
+				target[key] = [];
+			}
 			target[key] = target[key].concat(source[key]);
 		} else if (typeof source[key] === 'object') {
-			if (!target[key]) { target[key] = {}; }
+			if (!target[key]) {
+				target[key] = {};
+			}
 			mergeDeep(target[key], source[key]);
 		} else {
 			target[key] = source[key];
@@ -84,7 +91,11 @@ export const UAParserMobile = {
 			}
 
 			const props = this.props[key];
-			if (!props.list || !Array.isArray(props.list) || props.list.length === 0) {
+			if (
+				!props.list
+				|| !Array.isArray(props.list)
+				|| props.list.length === 0
+			) {
 				return;
 			}
 
@@ -92,7 +103,9 @@ export const UAParserMobile = {
 			splitProps.forEach((value, idx) => {
 				if (props.list.length > idx) {
 					const propName = props.list[idx];
-					subProps[propName] = props.get ? props.get(propName, value) : value;
+					subProps[propName] = props.get
+						? props.get(propName, value)
+						: value;
 				}
 			});
 
@@ -124,7 +137,7 @@ export const UAParserDesktop = {
 		const ua = new UAParser(uaString);
 		const uaParsed = ua.getResult();
 
-		const [, name, version] = uaString.match(/(Rocket\.Chat)\/(\d+(\.\d+)+)/) || [];
+		const [, name, version] =			uaString.match(/(Rocket\.Chat)\/(\d+(\.\d+)+)/) || [];
 
 		return {
 			device: {

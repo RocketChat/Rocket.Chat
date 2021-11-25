@@ -36,22 +36,32 @@ export async function sendMessagesToAdmins({
 	msgs?: Partial<IMessage>[] | Function;
 	banners?: Banner[] | Function;
 }): Promise<void> {
-	const fromUser = checkFrom ? await Users.findOneById(fromId, { projection: { _id: 1 } }) : true;
+	const fromUser = checkFrom
+		? await Users.findOneById(fromId, { projection: { _id: 1 } })
+		: true;
 
 	const users = await (await Roles.findUsersInRole('admin')).toArray();
 
 	for await (const adminUser of users) {
 		if (fromUser) {
 			try {
-				const { rid } = createDirectMessage([adminUser.username], fromId);
+				const { rid } = createDirectMessage(
+					[adminUser.username],
+					fromId,
+				);
 
-				getData<Partial<IMessage>>(msgs, adminUser)
-					.forEach((msg) => executeSendMessage(fromId, Object.assign({ rid }, msg)));
+				getData<Partial<IMessage>>(msgs, adminUser).forEach((msg) =>
+					executeSendMessage(fromId, Object.assign({ rid }, msg)),
+				);
 			} catch (error) {
 				SystemLogger.error(error);
 			}
 		}
 
-		await Promise.all(getData<Banner>(banners, adminUser).map((banner) => Users.addBannerById(adminUser._id, banner)));
+		await Promise.all(
+			getData<Banner>(banners, adminUser).map((banner) =>
+				Users.addBannerById(adminUser._id, banner),
+			),
+		);
 	}
 }

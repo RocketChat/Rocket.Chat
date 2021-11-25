@@ -9,7 +9,9 @@ Meteor.methods({
 		check(userData, Object);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'insertOrUpdateUser' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'insertOrUpdateUser',
+			});
 		}
 
 		return saveUser(Meteor.userId(), userData);

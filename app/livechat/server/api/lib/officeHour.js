@@ -7,6 +7,7 @@ export async function findLivechatOfficeHours({ userId }) {
 	}
 
 	return {
-		officeHours: (await LivechatBusinessHours.findOneDefaultBusinessHour()).workHours,
+		officeHours: (await LivechatBusinessHours.findOneDefaultBusinessHour())
+			.workHours,
 	};
 }

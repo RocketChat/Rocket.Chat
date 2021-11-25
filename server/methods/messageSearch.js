@@ -34,7 +34,9 @@ Meteor.methods({
 			if (!canAccessRoom({ _id: rid }, { _id: currentUserId })) {
 				return false;
 			}
-		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
+		} else if (
+			settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true
+		) {
 			return result;
 		}
 
@@ -82,7 +84,11 @@ Meteor.methods({
 		function filterBeforeDate(_, day, month, year) {
 			month--;
 			const beforeDate = new Date(year, month, day);
-			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
+			beforeDate.setHours(
+				beforeDate.getUTCHours()
+					+ beforeDate.getTimezoneOffset() / 60
+					+ currentUserTimezoneOffset,
+			);
 			query.ts = {
 				$lte: beforeDate,
 			};
@@ -93,7 +99,11 @@ Meteor.methods({
 			month--;
 			day++;
 			const afterDate = new Date(year, month, day);
-			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
+			afterDate.setUTCHours(
+				afterDate.getUTCHours()
+					+ afterDate.getTimezoneOffset() / 60
+					+ currentUserTimezoneOffset,
+			);
 			if (query.ts) {
 				query.ts.$gte = afterDate;
 			} else {
@@ -107,7 +117,11 @@ Meteor.methods({
 		function filterOnDate(_, day, month, year) {
 			month--;
 			const date = new Date(year, month, day);
-			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
+			date.setUTCHours(
+				date.getUTCHours()
+					+ date.getTimezoneOffset() / 60
+					+ currentUserTimezoneOffset,
+			);
 			const dayAfter = new Date(date);
 			dayAfter.setDate(dayAfter.getDate() + 1);
 			delete query.ts;
@@ -129,7 +143,10 @@ Meteor.methods({
 		}
 
 		function filterDescription(_, tag) {
-			query['attachments.description'] = new RegExp(escapeRegExp(tag), 'i');
+			query['attachments.description'] = new RegExp(
+				escapeRegExp(tag),
+				'i',
+			);
 			return '';
 		}
 
@@ -148,13 +165,16 @@ Meteor.methods({
 
 		// Query for senders
 		const from = [];
-		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
-			if (username === 'me' && !from.includes(currentUserName)) {
-				username = currentUserName;
-			}
-			from.push(username);
-			return '';
-		});
+		text = text.replace(
+			/from:([a-z0-9.-_]+)/gi,
+			function(match, username) {
+				if (username === 'me' && !from.includes(currentUserName)) {
+					username = currentUserName;
+				}
+				from.push(username);
+				return '';
+			},
+		);
 
 		if (from.length > 0) {
 			query['u.username'] = {
@@ -165,10 +185,13 @@ Meteor.methods({
 
 		// Query for senders
 		const mention = [];
-		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
-			mention.push(username);
-			return '';
-		});
+		text = text.replace(
+			/mention:([a-z0-9.-_]+)/gi,
+			function(match, username) {
+				mention.push(username);
+				return '';
+			},
+		);
 
 		if (mention.length > 0) {
 			query['mentions.username'] = {
@@ -195,11 +218,23 @@ Meteor.methods({
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
 		// if "on:" is set, "before:" and "after:" are ignored.
-		text = text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterBeforeDate);
-		text = text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterAfterDate);
-		text = text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterOnDate);
+		text = text.replace(
+			/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g,
+			filterBeforeDate,
+		);
+		text = text.replace(
+			/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g,
+			filterAfterDate,
+		);
+		text = text.replace(
+			/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g,
+			filterOnDate,
+		);
 		// Sort order
-		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, sortByTimestamp);
+		text = text.replace(
+			/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g,
+			sortByTimestamp,
+		);
 
 		// Query in message text
 		text = text.trim().replace(/\s\s/g, ' ');
@@ -251,10 +286,12 @@ Meteor.methods({
 				};
 			}
 
-			result.message.docs = Promise.await(Messages.find(query, {
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray());
+			result.message.docs = Promise.await(
+				Messages.find(query, {
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			);
 		}
 
 		return result;

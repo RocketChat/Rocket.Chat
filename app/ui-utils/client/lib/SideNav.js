@@ -28,7 +28,10 @@ export const SideNav = new class {
 			if (window.DISABLE_ANIMATION === true) {
 				this.flexNav.removeClass('animated-hidden');
 			} else {
-				setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
+				setTimeout(
+					() => this.flexNav.removeClass('animated-hidden'),
+					50,
+				);
 			}
 		}
 
@@ -46,11 +49,20 @@ export const SideNav = new class {
 	}
 
 	closeFlex(callback = null) {
-		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
+		const routesNamesForRooms = roomTypes
+			.getTypes()
+			.filter((i) => i.route)
+			.map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
-			const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
+			const subscription = Subscriptions.findOne({
+				rid: RoomManager.lastRid,
+			});
 			if (subscription) {
-				roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+				roomTypes.openRouteLink(
+					subscription.t,
+					subscription,
+					FlowRouter.current().queryParams,
+				);
 			} else {
 				FlowRouter.go('home');
 			}

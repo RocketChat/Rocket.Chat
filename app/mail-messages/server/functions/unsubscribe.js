@@ -5,7 +5,13 @@ export const unsubscribe = function(_id, createdAt) {
 	if (_id && createdAt) {
 		const affectedRows = Users.rocketMailUnsubscribe(_id, createdAt) === 1;
 
-		SystemLogger.debug('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
+		SystemLogger.debug(
+			'[Mailer:Unsubscribe]',
+			_id,
+			createdAt,
+			new Date(parseInt(createdAt)),
+			affectedRows,
+		);
 
 		return affectedRows;
 	}

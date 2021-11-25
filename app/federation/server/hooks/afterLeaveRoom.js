@@ -1,5 +1,9 @@
 import { FederationRoomEvents } from '../../../models/server';
-import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
+import {
+	getFederatedRoomData,
+	hasExternalDomain,
+	isLocalUser,
+} from '../functions/helpers';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -19,7 +23,9 @@ async function afterLeaveRoom(user, room) {
 
 	try {
 		// Get the domains after leave
-		const domainsAfterLeave = [...new Set(users.map((u) => u.federation.origin))];
+		const domainsAfterLeave = [
+			...new Set(users.map((u) => u.federation.origin)),
+		];
 
 		//
 		// Normalize the room's federation status
@@ -28,19 +34,29 @@ async function afterLeaveRoom(user, room) {
 		usersBeforeLeave.push(user);
 
 		// Get the users domains
-		const domainsBeforeLeft = [...new Set(usersBeforeLeave.map((u) => u.federation.origin))];
+		const domainsBeforeLeft = [
+			...new Set(usersBeforeLeave.map((u) => u.federation.origin)),
+		];
 
 		//
 		// Create the user left event
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(user);
 
-		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(localDomain, room._id, normalizedSourceUser, domainsAfterLeave);
+		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(
+			localDomain,
+			room._id,
+			normalizedSourceUser,
+			domainsAfterLeave,
+		);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeLeft, userLeftEvent);
 	} catch (err) {
-		clientLogger.error({ msg: 'afterLeaveRoom => Could not make user leave:', err });
+		clientLogger.error({
+			msg: 'afterLeaveRoom => Could not make user leave:',
+			err,
+		});
 	}
 
 	return user;
@@ -48,6 +64,7 @@ async function afterLeaveRoom(user, room) {
 
 export const definition = {
 	hook: 'afterLeaveRoom',
-	callback: (roomOwner, room) => Promise.await(afterLeaveRoom(roomOwner, room)),
+	callback: (roomOwner, room) =>
+		Promise.await(afterLeaveRoom(roomOwner, room)),
 	id: 'federation-after-leave-room',
 };

@@ -23,7 +23,9 @@ describe('validateSettings', () => {
 		expect(() => validateSetting('test', 'boolean', 'true')).to.throw();
 	});
 	it('should validate the type date', () => {
-		expect(() => validateSetting('test', 'date', new Date())).to.not.throw();
+		expect(() =>
+			validateSetting('test', 'date', new Date()),
+		).to.not.throw();
 	});
 	it('should throw an error expecting date receiving string', () => {
 		expect(() => validateSetting('test', 'date', '2019-01-01')).to.throw();

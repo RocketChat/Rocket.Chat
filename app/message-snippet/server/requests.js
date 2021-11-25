@@ -36,20 +36,26 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
-		const snippet = Messages.findOne(
-			{
-				_id: match[1],
-				snippeted: true,
-			},
-		);
-		const room = Rooms.findOne({ _id: snippet.rid, usernames: { $in: [user.username] } });
+		const snippet = Messages.findOne({
+			_id: match[1],
+			snippeted: true,
+		});
+		const room = Rooms.findOne({
+			_id: snippet.rid,
+			usernames: { $in: [user.username] },
+		});
 		if (room === undefined) {
 			res.writeHead(403);
 			res.end();
 			return false;
 		}
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(snippet.snippetName) }`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename*=UTF-8''${ encodeURIComponent(
+				snippet.snippetName,
+			) }`,
+		);
 		res.setHeader('Content-Type', 'application/octet-stream');
 
 		// Removing the ``` contained in the msg.

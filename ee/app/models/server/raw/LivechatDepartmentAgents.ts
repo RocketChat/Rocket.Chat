@@ -2,7 +2,10 @@ import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/ra
 import { overwriteClassOnLicense } from '../../../license/server';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
-	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
+	findAgentsByAgentIdAndBusinessHourId(
+		agentId: string,
+		businessHourId: string,
+	): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
 		};
@@ -20,9 +23,13 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const withBusinessHourId = { $match: { 'departments.businessHourId': businessHourId } };
+		const withBusinessHourId = {
+			$match: { 'departments.businessHourId': businessHourId },
+		};
 		const project = { $project: { departments: 0 } };
 		const model = this as unknown as LivechatDepartmentAgentsRaw;
-		return model.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
+		return model.col
+			.aggregate([match, lookup, unwind, withBusinessHourId, project])
+			.toArray();
 	},
 });

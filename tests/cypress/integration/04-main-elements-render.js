@@ -175,7 +175,11 @@ describe('[Main Elements Render]', function() {
 				});
 
 				it('it should show the room name', () => {
-					flexTab.channelSettingName.should('have.attr', 'title', 'general');
+					flexTab.channelSettingName.should(
+						'have.attr',
+						'title',
+						'general',
+					);
 				});
 			});
 

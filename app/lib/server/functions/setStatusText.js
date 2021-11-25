@@ -8,15 +8,21 @@ import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
 export const _setStatusTextPromise = async function(userId, statusText) {
-	if (!userId) { return false; }
+	if (!userId) {
+		return false;
+	}
 
 	statusText = s.trim(statusText).substr(0, 120);
 
 	const user = await UsersRaw.findOneById(userId);
 
-	if (!user) { return false; }
+	if (!user) {
+		return false;
+	}
 
-	if (user.statusText === statusText) { return true; }
+	if (user.statusText === statusText) {
+		return true;
+	}
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
@@ -57,9 +63,17 @@ export const _setStatusText = function(userId, statusText) {
 	return true;
 };
 
-export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
-	0() {
-		// Administrators have permission to change others status, so don't limit those
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+export const setStatusText = RateLimiter.limitFunction(
+	_setStatusText,
+	5,
+	60000,
+	{
+		0() {
+			// Administrators have permission to change others status, so don't limit those
+			return (
+				!Meteor.userId()
+				|| !hasPermission(Meteor.userId(), 'edit-other-user-info')
+			);
+		},
 	},
-});
+);

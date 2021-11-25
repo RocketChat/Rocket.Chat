@@ -28,14 +28,27 @@ export const streamLogger = logger.section('Stream');
 function _authorizeConnection(instance) {
 	authLogger.info(`Authorizing with ${ instance }`);
 
-	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function(err, ok) {
-		if (err != null) {
-			return authLogger.error({ msg: `broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err });
-		}
+	return connections[instance].call(
+		'broadcastAuth',
+		InstanceStatus.id(),
+		connections[instance].instanceId,
+		function(err, ok) {
+			if (err != null) {
+				return authLogger.error({
+					msg: `broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${
+						connections[instance].instanceId
+					}`,
+					err,
+				});
+			}
 
-		connections[instance].broadcastAuth = ok;
-		return authLogger.info({ msg: `broadcastAuth with ${ instance }`, ok });
-	});
+			connections[instance].broadcastAuth = ok;
+			return authLogger.info({
+				msg: `broadcastAuth with ${ instance }`,
+				ok,
+			});
+		},
+	);
 }
 
 function authorizeConnection(instance) {
@@ -67,17 +80,26 @@ function startMatrixBroadcast() {
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
-			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
+			if (
+				record.extraInformation.port === process.env.PORT
+				&& record.extraInformation.host === process.env.INSTANCE_IP
+			) {
 				authLogger.info({ msg: 'prevent self connect', instance });
 				return;
 			}
 
-			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+			if (
+				record.extraInformation.host === process.env.INSTANCE_IP
+				&& isDocker() === false
+			) {
 				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
 			}
 
 			if (connections[instance] && connections[instance].instanceRecord) {
-				if (connections[instance].instanceRecord._createdAt < record._createdAt) {
+				if (
+					connections[instance].instanceRecord._createdAt
+					< record._createdAt
+				) {
 					connections[instance].disconnect();
 					delete connections[instance];
 				} else {
@@ -112,7 +134,10 @@ function startMatrixBroadcast() {
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
-			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+			if (
+				record.extraInformation.host === process.env.INSTANCE_IP
+				&& isDocker() === false
+			) {
 				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
 			}
 
@@ -121,7 +146,10 @@ function startMatrixBroadcast() {
 				'extraInformation.port': record.extraInformation.port,
 			};
 
-			if (connections[instance] && !InstanceStatus.getCollection().findOne(query)) {
+			if (
+				connections[instance]
+				&& !InstanceStatus.getCollection().findOne(query)
+			) {
 				connLogger.info({ msg: 'disconnecting from', instance });
 				connections[instance].disconnect();
 				return delete connections[instance];
@@ -129,17 +157,19 @@ function startMatrixBroadcast() {
 		},
 	};
 
-	InstanceStatusRaw.find({
-		'extraInformation.port': {
-			$exists: true,
+	InstanceStatusRaw.find(
+		{
+			'extraInformation.port': {
+				$exists: true,
+			},
 		},
-	}, {
-		sort: {
-			_createdAt: -1,
+		{
+			sort: {
+				_createdAt: -1,
+			},
 		},
-	}).forEach(matrixBroadCastActions.added);
+	).forEach(matrixBroadCastActions.added);
 }
-
 
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
@@ -215,7 +245,7 @@ export function startStreamBroadcast() {
 		return startMatrixBroadcast();
 	});
 
-	function broadcast(streamName, eventName, args/* , userId*/) {
+	function broadcast(streamName, eventName, args /* , userId*/) {
 		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
 		const results = [];
 
@@ -223,43 +253,58 @@ export function startStreamBroadcast() {
 			const connection = connections[instance];
 
 			if (connection.status().connected === true) {
-				connection.call('stream', streamName, eventName, args, function(error, response) {
-					if (error) {
-						logger.error({ msg: 'Stream broadcast error', err: error });
-					}
+				connection.call(
+					'stream',
+					streamName,
+					eventName,
+					args,
+					function(error, response) {
+						if (error) {
+							logger.error({
+								msg: 'Stream broadcast error',
+								err: error,
+							});
+						}
 
-					switch (response) {
-						case 'self-not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`);
-							streamLogger.debug({
-								msg: 'self-not-authorized',
-								broadcastAuth: connection.broadcastAuth,
-								status: connection.status(),
-								eventName,
-								args,
-							});
-							return;
-						case 'not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`);
-							streamLogger.debug({
-								msg: 'not-authorized',
-								broadcastAuth: connection.broadcastAuth,
-								status: connection.status(),
-								eventName,
-								args,
-							});
-							return authorizeConnection(instance);
-						case 'stream-not-exists':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`);
-							streamLogger.debug({
-								msg: 'stream-not-exists',
-								broadcastAuth: connection.broadcastAuth,
-								status: connection.status(),
-								eventName,
-								args,
-							});
-					}
-				});
+						switch (response) {
+							case 'self-not-authorized':
+								streamLogger.error(
+									`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`,
+								);
+								streamLogger.debug({
+									msg: 'self-not-authorized',
+									broadcastAuth: connection.broadcastAuth,
+									status: connection.status(),
+									eventName,
+									args,
+								});
+								return;
+							case 'not-authorized':
+								streamLogger.error(
+									`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`,
+								);
+								streamLogger.debug({
+									msg: 'not-authorized',
+									broadcastAuth: connection.broadcastAuth,
+									status: connection.status(),
+									eventName,
+									args,
+								});
+								return authorizeConnection(instance);
+							case 'stream-not-exists':
+								streamLogger.error(
+									`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`,
+								);
+								streamLogger.debug({
+									msg: 'stream-not-exists',
+									broadcastAuth: connection.broadcastAuth,
+									status: connection.status(),
+									eventName,
+									args,
+								});
+						}
+					},
+				);
 			}
 		}
 		return results;
@@ -269,7 +314,9 @@ export function startStreamBroadcast() {
 
 	let TroubleshootDisableInstanceBroadcast;
 	settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
-		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		if (TroubleshootDisableInstanceBroadcast === value) {
+			return;
+		}
 		TroubleshootDisableInstanceBroadcast = value;
 
 		if (value) {
@@ -286,10 +333,7 @@ function getConnection(address) {
 		return;
 	}
 
-	const {
-		instanceRecord,
-		broadcastAuth,
-	} = conn;
+	const { instanceRecord, broadcastAuth } = conn;
 
 	return {
 		address,
@@ -315,7 +359,11 @@ Meteor.methods({
 			_id: remoteId,
 		};
 
-		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
+		if (
+			selfId === InstanceStatus.id()
+			&& remoteId !== InstanceStatus.id()
+			&& InstanceStatus.getCollection().findOne(query)
+		) {
 			this.connection.broadcastAuth = true;
 		}
 
@@ -345,9 +393,13 @@ Meteor.methods({
 
 	'instances/get'() {
 		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
-			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
-				method: 'instances/get',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'List instances is not allowed',
+				{
+					method: 'instances/get',
+				},
+			);
 		}
 		return Object.keys(connections).map(getConnection);
 	},

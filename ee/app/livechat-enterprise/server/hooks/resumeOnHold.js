@@ -21,7 +21,14 @@ const handleAfterSaveMessage = (message, { _id: rid }) => {
 	}
 
 	// message valid only if it is a livechat room
-	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+	if (
+		!(
+			typeof room.t !== 'undefined'
+			&& room.t === 'l'
+			&& room.v
+			&& room.v.token
+		)
+	) {
 		return message;
 	}
 
@@ -33,4 +40,9 @@ const handleAfterSaveMessage = (message, { _id: rid }) => {
 	return message;
 };
 
-callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-resume-on-hold');
+callbacks.add(
+	'afterSaveMessage',
+	handleAfterSaveMessage,
+	callbacks.priority.HIGH,
+	'livechat-resume-on-hold',
+);

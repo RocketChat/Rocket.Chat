@@ -8,7 +8,9 @@ import { handleError } from '../../../../client/lib/utils/handleError';
 
 const getExternalComponents = async (instance) => {
 	try {
-		const { externalComponents } = await APIClient.get('apps/externalComponents');
+		const { externalComponents } = await APIClient.get(
+			'apps/externalComponents',
+		);
 		instance.games.set(externalComponents);
 	} catch (e) {
 		handleError(e);
@@ -55,7 +57,10 @@ Template.GameCenter.helpers({
 			return;
 		}
 		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
+			) {
 				return instance.page.set(instance.page.get() + 1);
 			}
 		};

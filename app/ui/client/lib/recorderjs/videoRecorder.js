@@ -21,15 +21,24 @@ export const VideoRecorder = new class VideoRecorder {
 			cb && cb.call(this, false);
 		};
 
-		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+		const oldGetUserMedia =			navigator.getUserMedia
+			|| navigator.webkitGetUserMedia
+			|| navigator.mozGetUserMedia
 			|| navigator.msGetUserMedia;
 
 		if (navigator.mediaDevices) {
-			navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+			navigator.mediaDevices
+				.getUserMedia({ audio: true, video: true })
 				.then(handleSuccess, handleError);
 			return;
-		} if (oldGetUserMedia) {
-			oldGetUserMedia.call(navigator, { audio: true, video: true }, handleSuccess, handleError);
+		}
+		if (oldGetUserMedia) {
+			oldGetUserMedia.call(
+				navigator,
+				{ audio: true, video: true },
+				handleSuccess,
+				handleError,
+			);
 			return;
 		}
 
@@ -41,7 +50,9 @@ export const VideoRecorder = new class VideoRecorder {
 		if (this.stream == null) {
 			return;
 		}
-		this.mediaRecorder = new MediaRecorder(this.stream, { type: 'video/webm' });
+		this.mediaRecorder = new MediaRecorder(this.stream, {
+			type: 'video/webm',
+		});
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {

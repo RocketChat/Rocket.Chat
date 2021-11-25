@@ -16,5 +16,4 @@ const sendTab = function() {
 	browser.keys(Keys.TAB);
 };
 
-
 export { sendEnter, sendEscape, sendTab };

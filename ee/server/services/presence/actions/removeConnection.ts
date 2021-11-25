@@ -1,6 +1,9 @@
 import { getCollection, Collections } from '../../mongo';
 
-export async function removeConnection(uid: string, session: string): Promise<{uid: string; session: string}> {
+export async function removeConnection(
+	uid: string,
+	session: string,
+): Promise<{ uid: string; session: string }> {
 	const query = {
 		'connections.id': session,
 	};

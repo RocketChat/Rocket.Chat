@@ -11,7 +11,9 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 
 	if (room) {
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user));
+			Promise.await(
+				Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user),
+			);
 		} catch (error) {
 			if (error instanceof AppsEngineException) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -22,7 +24,13 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 
 		callbacks.run('beforeLeaveRoom', user, room);
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+			{
+				fields: { _id: 1 },
+			},
+		);
 
 		if (subscription) {
 			const removedUser = user;
@@ -51,7 +59,9 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 			// TODO: CACHE: maybe a queue?
 			callbacks.run('afterLeaveRoom', user, room);
 
-			Promise.await(Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user));
+			Promise.await(
+				Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user),
+			);
 		});
 	}
 };

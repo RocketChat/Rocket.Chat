@@ -1,9 +1,19 @@
 import { Serialized } from '../../../../definition/Serialized';
 
 export declare const APIClient: {
-	delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-	get<P, R = any>(endpoint: string, params?: void extends P ? void : Serialized<P>): Promise<Serialized<R>>;
-	post<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
+	delete<P, R = any>(
+		endpoint: string,
+		params?: Serialized<P>
+	): Promise<Serialized<R>>;
+	get<P, R = any>(
+		endpoint: string,
+		params?: void extends P ? void : Serialized<P>
+	): Promise<Serialized<R>>;
+	post<P, B, R = any>(
+		endpoint: string,
+		params?: Serialized<P>,
+		body?: B
+	): Promise<Serialized<R>>;
 	upload<P, B, R = any>(
 		endpoint: string,
 		params?: Serialized<P>,
@@ -22,15 +32,28 @@ export declare const APIClient: {
 		endpoint?: string,
 		params?: any,
 		body?: any,
-		headers?: Record<string,
-		string>,
+		headers?: Record<string, string>,
 		dataType?: string
 	): any;
 	v1: {
-		delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-		get<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-		post<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
-		put<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
+		delete<P, R = any>(
+			endpoint: string,
+			params?: Serialized<P>
+		): Promise<Serialized<R>>;
+		get<P, R = any>(
+			endpoint: string,
+			params?: Serialized<P>
+		): Promise<Serialized<R>>;
+		post<P, B, R = any>(
+			endpoint: string,
+			params?: Serialized<P>,
+			body?: B
+		): Promise<Serialized<R>>;
+		put<P, B, R = any>(
+			endpoint: string,
+			params?: Serialized<P>,
+			body?: B
+		): Promise<Serialized<R>>;
 		upload<P, B, R = any>(
 			endpoint: string,
 			params?: Serialized<P>,

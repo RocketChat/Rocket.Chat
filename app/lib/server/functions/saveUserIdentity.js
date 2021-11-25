@@ -1,6 +1,12 @@
 import { _setUsername } from './setUsername';
 import { setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
+import {
+	Messages,
+	Rooms,
+	Subscriptions,
+	LivechatDepartmentAgents,
+	Users,
+} from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -9,7 +15,11 @@ import { validateName } from './validateName';
  *
  * @param {object} changes changes to the user
  */
-export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) {
+export function saveUserIdentity({
+	_id,
+	name: rawName,
+	username: rawUsername,
+}) {
 	if (!_id) {
 		return false;
 	}
@@ -47,15 +57,26 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
 			Messages.findByMention(previousUsername).forEach(function(msg) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
-				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+				const updatedMsg = msg.msg.replace(
+					new RegExp(`@${ previousUsername }`, 'ig'),
+					`@${ username }`,
+				);
+				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(
+					msg._id,
+					previousUsername,
+					username,
+					updatedMsg,
+				);
 			});
 			Rooms.replaceUsername(previousUsername, username);
 			Rooms.replaceMutedUsername(previousUsername, username);
 			Rooms.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(
+				user._id,
+				username,
+			);
 
 			const fileStore = FileUpload.getStore('Avatars');
 			const file = fileStore.model.findOneByName(previousUsername);
@@ -67,7 +88,11 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		// update other references if either the name or username has changed
 		if (usernameChanged || nameChanged) {
 			// update name and fname of 1-on-1 direct messages
-			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+			Subscriptions.updateDirectNameAndFnameByName(
+				previousUsername,
+				rawUsername && username,
+				rawName && name,
+			);
 
 			// update name and fname of group direct messages
 			updateGroupDMsName(user);

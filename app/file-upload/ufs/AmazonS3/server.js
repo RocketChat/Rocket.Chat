@@ -21,12 +21,15 @@ export class AmazonS3Store extends UploadFS.Store {
 		// options.region,
 		// options.sslEnabled // optional
 
-		options = _.extend({
-			httpOptions: {
-				timeout: 6000,
-				agent: false,
+		options = _.extend(
+			{
+				httpOptions: {
+					timeout: 6000,
+					agent: false,
+				},
 			},
-		}, options);
+			options,
+		);
 
 		super(options);
 
@@ -34,9 +37,10 @@ export class AmazonS3Store extends UploadFS.Store {
 
 		const s3 = new S3(options.connection);
 
-		options.getPath = options.getPath || function(file) {
-			return file._id;
-		};
+		options.getPath =			options.getPath
+			|| function(file) {
+				return file._id;
+			};
 
 		this.getPath = function(file) {
 			if (file.AmazonS3) {
@@ -53,7 +57,9 @@ export class AmazonS3Store extends UploadFS.Store {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
-				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
+				ResponseContentDisposition: `${
+					forceDownload ? 'attachment' : 'inline'
+				}; filename="${ encodeURI(file.name) }"`,
 			};
 
 			return s3.getSignedUrl('getObject', params, callback);
@@ -126,7 +132,7 @@ export class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file/* , options*/) {
+		this.getWriteStream = function(fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
 			writeStream.length = file.size;
 
@@ -139,18 +145,20 @@ export class AmazonS3Store extends UploadFS.Store {
 				}
 			});
 
-			s3.putObject({
-				Key: this.getPath(file),
-				Body: writeStream,
-				ContentType: file.type,
+			s3.putObject(
+				{
+					Key: this.getPath(file),
+					Body: writeStream,
+					ContentType: file.type,
+				},
+				(error) => {
+					if (error) {
+						SystemLogger.error(error);
+					}
 
-			}, (error) => {
-				if (error) {
-					SystemLogger.error(error);
-				}
-
-				writeStream.emit('real_finish');
-			});
+					writeStream.emit('real_finish');
+				},
+			);
 
 			return writeStream;
 		};

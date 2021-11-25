@@ -14,23 +14,36 @@ Accounts.registerLoginHandler('totp', function(options) {
 	return Accounts._runLoginHandlers(this, options.totp.login);
 });
 
-callbacks.add('onValidateLogin', (login) => {
-	if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
+callbacks.add(
+	'onValidateLogin',
+	(login) => {
+		if (
+			login.type === 'resume'
+			|| login.type === 'proxy'
+			|| login.methodName === 'verifyEmail'
+		) {
+			return login;
+		}
+
+		const [loginArgs] = login.methodArguments;
+		// CAS login doesn't yet support 2FA.
+		if (loginArgs.cas) {
+			return login;
+		}
+
+		const { totp } = loginArgs;
+
+		checkCodeForUser({
+			user: login.user,
+			code: totp && totp.code,
+			options: { disablePasswordFallback: true },
+		});
+
 		return login;
-	}
-
-	const [loginArgs] = login.methodArguments;
-	// CAS login doesn't yet support 2FA.
-	if (loginArgs.cas) {
-		return login;
-	}
-
-	const { totp } = loginArgs;
-
-	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
-
-	return login;
-}, callbacks.priority.MEDIUM, '2fa');
+	},
+	callbacks.priority.MEDIUM,
+	'2fa',
+);
 
 const recreateError = (errorDoc) => {
 	let error;
@@ -49,7 +62,7 @@ const recreateError = (errorDoc) => {
 };
 
 OAuth._retrievePendingCredential = function(key, ...args) {
-	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : null;
+	const credentialSecret =		args.length > 0 && args[0] !== undefined ? args[0] : null;
 	check(key, String);
 
 	const pendingCredential = OAuth._pendingCredentials.findOne({
@@ -72,13 +85,16 @@ OAuth._retrievePendingCredential = function(key, ...args) {
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update({
-		_id: pendingCredential._id,
-	}, {
-		$set: {
-			createdAt: future,
+	OAuth._pendingCredentials.update(
+		{
+			_id: pendingCredential._id,
 		},
-	});
+		{
+			$set: {
+				createdAt: future,
+			},
+		},
+	);
 
 	return OAuth.openSecret(pendingCredential.credential);
 };

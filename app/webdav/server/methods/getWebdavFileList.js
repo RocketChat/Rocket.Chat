@@ -8,16 +8,29 @@ import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 Meteor.methods({
 	async getWebdavFileList(accountId, path) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'getWebdavFileList' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', {
+				method: 'getWebdavFileList',
+			});
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'getWebdavFileList' });
+			throw new Meteor.Error(
+				'error-not-allowed',
+				'WebDAV Integration Not Allowed',
+				{ method: 'getWebdavFileList' },
+			);
 		}
 
-		const account = await WebdavAccounts.findOneByIdAndUserId(accountId, Meteor.userId());
+		const account = await WebdavAccounts.findOneByIdAndUserId(
+			accountId,
+			Meteor.userId(),
+		);
 		if (!account) {
-			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'getWebdavFileList' });
+			throw new Meteor.Error(
+				'error-invalid-account',
+				'Invalid WebDAV Account',
+				{ method: 'getWebdavFileList' },
+			);
 		}
 
 		try {
@@ -26,7 +39,9 @@ Meteor.methods({
 			const data = await client.getDirectoryContents(path);
 			return { success: true, data };
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', { method: 'getWebdavFileList' });
+			throw new Meteor.Error('could-not-access-webdav', {
+				method: 'getWebdavFileList',
+			});
 		}
 	},
 });

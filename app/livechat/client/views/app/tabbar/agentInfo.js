@@ -13,13 +13,20 @@ import { t, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 
-const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
+const customFieldsTemplate = () =>
+	getCustomFormTemplate('livechatAgentInfoForm');
 
 Template.agentInfo.helpers({
 	canEdit() {
-		const availableDepartments = [...Template.instance().availableDepartments.get()];
+		const availableDepartments = [
+			...Template.instance().availableDepartments.get(),
+		];
 		const hasCustomFields = customFieldsTemplate() !== null;
-		return (availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) || hasCustomFields;
+		return (
+			(availableDepartments.length > 0
+				&& hasPermission('add-livechat-department-agents'))
+			|| hasCustomFields
+		);
 	},
 	uid() {
 		return Template.instance().agent.get()._id;
@@ -52,7 +59,9 @@ Template.agentInfo.helpers({
 
 	email() {
 		const agent = Template.instance().agent.get();
-		return agent && agent.emails && agent.emails[0] && agent.emails[0].address;
+		return (
+			agent && agent.emails && agent.emails[0] && agent.emails[0].address
+		);
 	},
 
 	agent() {
@@ -153,16 +162,24 @@ Template.agentInfo.onCreated(async function() {
 	this.tabBar = Template.currentData().tabBar;
 	this.onRemoveAgent = Template.currentData().onRemoveAgent;
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	const { departments } = await APIClient.v1.get(
+		'livechat/department?sort={"name": 1}',
+	);
 	this.departments.set(departments);
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
 	const loadAgentData = async (agentId) => {
 		this.ready.set(false);
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
+		const { user } = await APIClient.v1.get(
+			`livechat/users/agent/${ agentId }`,
+		);
+		const { departments } = await APIClient.v1.get(
+			`livechat/agents/${ agentId }/departments`,
+		);
 		this.agent.set(user);
-		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
+		this.agentDepartments.set(
+			(departments || []).map((department) => department.departmentId),
+		);
 		this.ready.set(true);
 	};
 

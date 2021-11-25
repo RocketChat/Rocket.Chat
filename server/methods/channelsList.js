@@ -56,16 +56,37 @@ Meteor.methods({
 		if (channelType !== 'private') {
 			if (hasPermission(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+					channels = channels.concat(
+						Rooms.findByTypeAndNameContaining(
+							'c',
+							filter,
+							options,
+						).fetch(),
+					);
 				} else {
-					channels = channels.concat(Rooms.findByType('c', options).fetch());
+					channels = channels.concat(
+						Rooms.findByType('c', options).fetch(),
+					);
 				}
 			} else if (hasPermission(userId, 'view-joined-room')) {
-				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, {
+					fields: { rid: 1 },
+				})
+					.fetch()
+					.map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+					channels = channels.concat(
+						Rooms.findByTypeInIdsAndNameContaining(
+							'c',
+							roomIds,
+							filter,
+							options,
+						).fetch(),
+					);
 				} else {
-					channels = channels.concat(Rooms.findByTypeInIds('c', roomIds, options).fetch());
+					channels = channels.concat(
+						Rooms.findByTypeInIds('c', roomIds, options).fetch(),
+					);
 				}
 			}
 		}
@@ -79,14 +100,29 @@ Meteor.methods({
 			});
 			const userPref = getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
-			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
+			const groupByType =				userPref !== undefined
+				? userPref
+				: settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, {
+					fields: { rid: 1 },
+				})
+					.fetch()
+					.map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+					channels = channels.concat(
+						Rooms.findByTypeInIdsAndNameContaining(
+							'p',
+							roomIds,
+							filter,
+							options,
+						).fetch(),
+					);
 				} else {
-					channels = channels.concat(Rooms.findByTypeInIds('p', roomIds, options).fetch());
+					channels = channels.concat(
+						Rooms.findByTypeInIds('p', roomIds, options).fetch(),
+					);
 				}
 			}
 		}

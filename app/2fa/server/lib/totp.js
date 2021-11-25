@@ -34,7 +34,9 @@ export const TOTP = {
 			return false;
 		}
 
-		const maxDelta = settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
+		const maxDelta = settings.get(
+			'Accounts_TwoFactorAuthentication_MaxDelta',
+		);
 		if (maxDelta) {
 			const verifiedDelta = speakeasy.totp.verifyDelta({
 				secret,

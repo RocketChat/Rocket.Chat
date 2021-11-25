@@ -6,7 +6,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 
 const isValidAppleJWT = (identityToken, header) => {
-	const applePublicKeys = HTTP.get('https://appleid.apple.com/auth/keys').data.keys;
+	const applePublicKeys = HTTP.get('https://appleid.apple.com/auth/keys').data
+		.keys;
 	const { kid } = header;
 
 	const key = applePublicKeys.find((k) => k.kid === kid);
@@ -38,7 +39,10 @@ export const handleIdentityToken = ({ identityToken, fullName, email }) => {
 	if (!isValidAppleJWT(identityToken, decodedToken.headerObj)) {
 		return {
 			type: 'apple',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'identityToken is a invalid JWT'),
+			error: new Meteor.Error(
+				Accounts.LoginCancelledError.numericError,
+				'identityToken is a invalid JWT',
+			),
 		};
 	}
 
@@ -54,7 +58,10 @@ export const handleIdentityToken = ({ identityToken, fullName, email }) => {
 	if (!iss) {
 		return {
 			type: 'apple',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token'),
+			error: new Meteor.Error(
+				Accounts.LoginCancelledError.numericError,
+				'Insufficient data in auth response token',
+			),
 		};
 	}
 

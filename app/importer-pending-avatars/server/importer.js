@@ -1,10 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	Base,
-	ProgressStep,
-	Selection,
-} from '../../importer/server';
+import { Base, ProgressStep, Selection } from '../../importer/server';
 import { Users } from '../../models';
 
 export class PendingAvatarImporter extends Base {
@@ -20,7 +16,10 @@ export class PendingAvatarImporter extends Base {
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': fileCount, messagesstatus: null });
+		this.updateRecord({
+			'count.messages': fileCount,
+			messagesstatus: null,
+		});
 		this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
@@ -48,10 +47,20 @@ export class PendingAvatarImporter extends Base {
 
 						Meteor.runAsUser(_id, () => {
 							try {
-								Meteor.call('setAvatarFromService', url, undefined, 'url');
-								Users.update({ _id }, { $unset: { _pendingAvatarUrl: '' } });
+								Meteor.call(
+									'setAvatarFromService',
+									url,
+									undefined,
+									'url',
+								);
+								Users.update(
+									{ _id },
+									{ $unset: { _pendingAvatarUrl: '' } },
+								);
 							} catch (error) {
-								this.logger.warn(`Failed to set ${ name }'s avatar from url ${ url }`);
+								this.logger.warn(
+									`Failed to set ${ name }'s avatar from url ${ url }`,
+								);
 							}
 						});
 					} finally {

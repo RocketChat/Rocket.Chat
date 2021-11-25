@@ -33,9 +33,18 @@ export class AppWebsocketReceiver extends Emitter {
 		});
 
 		this.streamer.on(AppEvents.COMMAND_ADDED, this.onCommandAddedOrUpdated);
-		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandAddedOrUpdated);
-		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemovedOrDisabled);
-		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandRemovedOrDisabled);
+		this.streamer.on(
+			AppEvents.COMMAND_UPDATED,
+			this.onCommandAddedOrUpdated,
+		);
+		this.streamer.on(
+			AppEvents.COMMAND_REMOVED,
+			this.onCommandRemovedOrDisabled,
+		);
+		this.streamer.on(
+			AppEvents.COMMAND_DISABLED,
+			this.onCommandRemovedOrDisabled,
+		);
 	}
 
 	registerListener(event, listener) {
@@ -50,9 +59,9 @@ export class AppWebsocketReceiver extends Emitter {
 		APIClient.v1.get('commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
-	}
+	};
 
 	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
-	}
+	};
 }

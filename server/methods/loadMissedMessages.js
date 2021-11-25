@@ -13,7 +13,9 @@ Meteor.methods({
 		const fromId = Meteor.userId();
 
 		if (!rid) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'getUsersOfRoom',
+			});
 		}
 
 		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
@@ -32,6 +34,10 @@ Meteor.methods({
 			};
 		}
 
-		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
+		return Messages.findVisibleByRoomIdAfterTimestamp(
+			rid,
+			start,
+			options,
+		).fetch();
 	},
 });

@@ -1,4 +1,7 @@
-import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import {
+	AppSourceStorage,
+	IAppStorageItem,
+} from '@rocket.chat/apps-engine/server/storage';
 
 import { AppFileSystemSourceStorage } from './AppFileSystemSourceStorage';
 import { AppGridFSSourceStorage } from './AppGridFSSourceStorage';

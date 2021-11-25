@@ -26,10 +26,10 @@ class MsAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'microsoft-translate';
-		this.apiEndPointUrl = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
-		this.apiDetectText = 'https://api.cognitive.microsofttranslator.com/detect?api-version=3.0';
-		this.apiGetLanguages = 'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
-		this.breakSentence = 'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
+		this.apiEndPointUrl =			'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
+		this.apiDetectText =			'https://api.cognitive.microsofttranslator.com/detect?api-version=3.0';
+		this.apiGetLanguages =			'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
+		this.breakSentence =			'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
 		// Get the service provide API key.
 		settings.watch('AutoTranslate_MicrosoftAPIKey', (value) => {
 			this.apiKey = value;
@@ -77,7 +77,9 @@ class MsAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target];
 		}
 		const languages = HTTP.get(this.apiGetLanguages);
-		this.supportedLanguages[target] = Object.keys(languages.data.translation).map((language) => ({
+		this.supportedLanguages[target] = Object.keys(
+			languages.data.translation,
+		).map((language) => ({
 			language,
 			name: languages.data.translation[language].name,
 		}));
@@ -96,7 +98,10 @@ class MsAutoTranslate extends AutoTranslate {
 		let translations = {};
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (
+				language.indexOf('-') !== -1
+				&& !_.findWhere(supportedLanguages, { language })
+			) {
 				language = language.substr(0, 2);
 			}
 			return language;
@@ -110,13 +115,25 @@ class MsAutoTranslate extends AutoTranslate {
 			data,
 		});
 
-		if (result.statusCode === 200 && result.data && result.data.length > 0) {
+		if (
+			result.statusCode === 200
+			&& result.data
+			&& result.data.length > 0
+		) {
 			// store translation only when the source and target language are different.
-			translations = Object.assign({}, ...targetLanguages.map((language) =>
-				({
-					[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-				}),
-			));
+			translations = Object.assign(
+				{},
+				...targetLanguages.map((language) => ({
+					[language]: result.data
+						.map(
+							(line) =>
+								line.translations.find(
+									(translation) => translation.to === language,
+								).text,
+						)
+						.join('\n'),
+				})),
+			);
 		}
 
 		return translations;
@@ -151,11 +168,19 @@ class MsAutoTranslate extends AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		try {
-			return this._translate([{
-				Text: attachment.description || attachment.text,
-			}], targetLanguages);
+			return this._translate(
+				[
+					{
+						Text: attachment.description || attachment.text,
+					},
+				],
+				targetLanguages,
+			);
 		} catch (e) {
-			msLogger.error({ err: e, msg: 'Error translating message attachment' });
+			msLogger.error({
+				err: e,
+				msg: 'Error translating message attachment',
+			});
 		}
 		return {};
 	}

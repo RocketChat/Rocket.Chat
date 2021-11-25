@@ -3,7 +3,10 @@ export class Utilities {
 		return key && `apps-${ appId }-${ key }`;
 	}
 
-	static curl({ method, params, auth, headers = {}, url, query, content }, opts = {}) {
+	static curl(
+		{ method, params, auth, headers = {}, url, query, content },
+		opts = {},
+	) {
 		const newLine = '\\\n   ';
 
 		const cmd = ['curl'];
@@ -30,7 +33,9 @@ export class Utilities {
 		}
 
 		if (typeof query === 'object') {
-			const queryString = Object.entries(query).map(([key, value]) => `${ key }=${ value }`).join('&');
+			const queryString = Object.entries(query)
+				.map(([key, value]) => `${ key }=${ value }`)
+				.join('&');
 			u += `?${ queryString }`;
 		}
 		cmd.push(u);

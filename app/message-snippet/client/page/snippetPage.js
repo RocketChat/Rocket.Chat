@@ -24,7 +24,9 @@ Template.snippetPage.helpers({
 	date() {
 		const snippet = Template.instance().message.get();
 		if (snippet !== undefined) {
-			return moment(snippet.ts).format(settings.get('Message_DateFormat'));
+			return moment(snippet.ts).format(
+				settings.get('Message_DateFormat'),
+			);
 		}
 	},
 	time() {
@@ -39,6 +41,8 @@ Template.snippetPage.onCreated(async function() {
 	const snippetId = FlowRouter.getParam('snippetId');
 	this.message = new ReactiveVar({});
 
-	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${ snippetId }`);
+	const { message } = await APIClient.v1.get(
+		`chat.getSnippetedMessageById?messageId=${ snippetId }`,
+	);
 	this.message.set(message);
 });

@@ -17,7 +17,12 @@ Template.invite.helpers({
 	},
 	ready() {
 		const instance = Template.instance();
-		return typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get();
+		return (
+			typeof instance.subscriptionsReady === 'function'
+			&& instance.subscriptionsReady()
+			&& instance.hashReady
+			&& instance.hashReady.get()
+		);
 	},
 });
 
@@ -27,24 +32,33 @@ Template.invite.onCreated(function() {
 
 	const token = FlowRouter.getParam('hash');
 
-	APIClient.v1.post('validateInviteToken', { token }).then((result) => {
-		this.hashReady.set(true);
+	APIClient.v1
+		.post('validateInviteToken', { token })
+		.then((result) => {
+			this.hashReady.set(true);
 
-		if (!result || !result.success) {
-			dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
+			if (!result || !result.success) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Failed_to_validate_invite_token'),
+				});
+				return this.inviteIsValid.set(false);
+			}
+
+			if (settings.get('Accounts_RegistrationForm') !== 'Disabled') {
+				Session.set('loginDefaultState', 'register');
+			} else {
+				Session.set('loginDefaultState', 'login');
+			}
+			return this.inviteIsValid.set(result.valid);
+		})
+		.catch(() => {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Failed_to_validate_invite_token'),
+			});
 			return this.inviteIsValid.set(false);
-		}
-
-		if (settings.get('Accounts_RegistrationForm') !== 'Disabled') {
-			Session.set('loginDefaultState', 'register');
-		} else {
-			Session.set('loginDefaultState', 'login');
-		}
-		return this.inviteIsValid.set(result.valid);
-	}).catch(() => {
-		dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
-		return this.inviteIsValid.set(false);
-	});
+		});
 
 	this.autorun((c) => {
 		if (!this.inviteIsValid.get()) {
@@ -54,20 +68,29 @@ Template.invite.onCreated(function() {
 		const user = Meteor.user();
 		if (user) {
 			c.stop();
-			APIClient.v1.post('useInviteToken', { token }).then((result) => {
-				if (!result || !result.room || !result.room.name) {
-					dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
-					return;
-				}
+			APIClient.v1
+				.post('useInviteToken', { token })
+				.then((result) => {
+					if (!result || !result.room || !result.room.name) {
+						dispatchToastMessage({
+							type: 'error',
+							message: t('Failed_to_activate_invite_token'),
+						});
+						return;
+					}
 
-				if (result.room.t === 'p') {
-					FlowRouter.go(`/group/${ result.room.name }`);
-				} else {
-					FlowRouter.go(`/channel/${ result.room.name }`);
-				}
-			}).catch(() => {
-				dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
-			});
+					if (result.room.t === 'p') {
+						FlowRouter.go(`/group/${ result.room.name }`);
+					} else {
+						FlowRouter.go(`/channel/${ result.room.name }`);
+					}
+				})
+				.catch(() => {
+					dispatchToastMessage({
+						type: 'error',
+						message: t('Failed_to_activate_invite_token'),
+					});
+				});
 		}
 	});
 });

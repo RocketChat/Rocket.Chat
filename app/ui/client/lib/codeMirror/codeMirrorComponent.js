@@ -11,7 +11,6 @@ Template.CodeMirror.onRendered(async function() {
 	await import('./codeMirror');
 	await import('codemirror/lib/codemirror.css');
 
-
 	const options = this.data.options || { lineNumbers: true };
 	const textarea = this.find('textarea');
 	const editor = CodeMirror.fromTextArea(textarea, options);
@@ -53,10 +52,11 @@ Template.CodeMirror.onRendered(async function() {
 	});
 });
 
-
 Template.CodeMirror.destroyed = function() {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];
-	this.$(`#${ this.data.id || 'code-mirror-textarea' }`).next('.CodeMirror').remove();
+	this.$(`#${ this.data.id || 'code-mirror-textarea' }`)
+		.next('.CodeMirror')
+		.remove();
 };
 
 Template.CodeMirror.helpers({

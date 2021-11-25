@@ -14,7 +14,9 @@ Meteor.methods({
 
 		const rids = [...new Set(msgs.map((m) => m.rid))];
 		if (!rids.every((_id) => canAccessRoom({ _id }, user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'getSingleMessage',
+			});
 		}
 
 		return msgs;

@@ -26,38 +26,64 @@ class VersionCompiler {
 				cpus: os.cpus().length,
 			};
 
-			exec('git log --pretty=format:\'%H%n%ad%n%an%n%s\' -n 1', function(err, result) {
-				if (err == null) {
-					result = result.split('\n');
-					output.commit = {
-						hash: result.shift(),
-						date: result.shift(),
-						author: result.shift(),
-						subject: result.join('\n'),
-					};
-				}
-
-				exec('git describe --abbrev=0 --tags', function(err, result) {
-					if (err == null && output.commit != null) {
-						output.commit.tag = result.replace('\n', '');
+			exec(
+				"git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1",
+				function(err, result) {
+					if (err == null) {
+						result = result.split('\n');
+						output.commit = {
+							hash: result.shift(),
+							date: result.shift(),
+							author: result.shift(),
+							subject: result.join('\n'),
+						};
 					}
-					exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
-						if (err == null && output.commit != null) {
-							output.commit.branch = result.replace('\n', '');
-						}
 
-						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/^[^0-9]/g, '');
+					exec(
+						'git describe --abbrev=0 --tags',
+						function(err, result) {
+							if (err == null && output.commit != null) {
+								output.commit.tag = result.replace('\n', '');
+							}
+							exec(
+								'git rev-parse --abbrev-ref HEAD',
+								function(err, result) {
+									if (err == null && output.commit != null) {
+										output.commit.branch = result.replace(
+											'\n',
+											'',
+										);
+									}
 
-						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
-						file.addJavaScript({
-							data: output,
-							path: `${ file.getPathInPackage() }.js`,
-						});
-						cb();
-					});
-				});
-			});
+									const pkg = JSON.parse(
+										fs.readFileSync(
+											path.join(
+												process.cwd(),
+												'package.json',
+											),
+											'utf8',
+										),
+									);
+									output.marketplaceApiVersion =										pkg.dependencies[
+										'@rocket.chat/apps-engine'
+									].replace(/^[^0-9]/g, '');
+
+									output = `exports.Info = ${ JSON.stringify(
+										output,
+										null,
+										4,
+									) };`;
+									file.addJavaScript({
+										data: output,
+										path: `${ file.getPathInPackage() }.js`,
+									});
+									cb();
+								},
+							);
+						},
+					);
+				},
+			);
 		};
 
 		async.each(files, processFile, future.resolver());
@@ -65,8 +91,11 @@ class VersionCompiler {
 	}
 }
 
-Plugin.registerCompiler({
-	extensions: ['info'],
-}, function() {
-	return new VersionCompiler();
-});
+Plugin.registerCompiler(
+	{
+		extensions: ['info'],
+	},
+	function() {
+		return new VersionCompiler();
+	},
+);

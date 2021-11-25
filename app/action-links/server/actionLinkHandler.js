@@ -6,7 +6,9 @@ import { actionLinks } from './lib/actionLinks';
 Meteor.methods({
 	actionLinkHandler(name, messageId) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'actionLinkHandler' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'actionLinkHandler',
+			});
 		}
 
 		const message = actionLinks.getMessage(name, messageId);

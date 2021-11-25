@@ -42,7 +42,9 @@ Template.ExternalFrameContainer.onCreated(async function() {
 	const keyStr = settings.get('Omnichannel_External_Frame_Encryption_JWK');
 
 	if (keyStr) {
-		return this.authToken.set(await encrypt(authToken, await getKeyFromString(keyStr)));
+		return this.authToken.set(
+			await encrypt(authToken, await getKeyFromString(keyStr)),
+		);
 	}
 
 	this.authToken.set(authToken);

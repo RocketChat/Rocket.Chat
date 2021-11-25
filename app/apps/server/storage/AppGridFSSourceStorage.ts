@@ -1,6 +1,9 @@
 import { MongoInternals } from 'meteor/mongo';
 import { GridFSBucket, GridFSBucketWriteStream, ObjectId } from 'mongodb';
-import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import {
+	AppSourceStorage,
+	IAppStorageItem,
+} from '@rocket.chat/apps-engine/server/storage';
 
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 
@@ -24,7 +27,8 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const filename = this.itemToFilename(item);
-			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(filename)
+			const writeStream: GridFSBucketWriteStream = this.bucket
+				.openUploadStream(filename)
 				.on('finish', () => resolve(this.idToPath(writeStream.id)))
 				.on('error', (error) => reject(error));
 
@@ -34,13 +38,16 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	public async fetch(item: IAppStorageItem): Promise<Buffer> {
-		return streamToBuffer(this.bucket.openDownloadStream(this.itemToObjectId(item)));
+		return streamToBuffer(
+			this.bucket.openDownloadStream(this.itemToObjectId(item)),
+		);
 	}
 
 	public async update(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const fileId = this.itemToFilename(item);
-			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(fileId)
+			const writeStream: GridFSBucketWriteStream = this.bucket
+				.openUploadStream(fileId)
 				.on('finish', () => {
 					resolve(this.idToPath(writeStream.id));
 					// An error in the following line would not cause the update process to fail
@@ -59,8 +66,12 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return new Promise((resolve, reject) => {
 			this.bucket.delete(this.itemToObjectId(item), (error) => {
 				if (error) {
-					if (error.message.includes('FileNotFound: no file with id')) {
-						console.warn(`This instance could not remove the ${ item.info.name } app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`);
+					if (
+						error.message.includes('FileNotFound: no file with id')
+					) {
+						console.warn(
+							`This instance could not remove the ${ item.info.name } app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`,
+						);
 						return resolve();
 					}
 

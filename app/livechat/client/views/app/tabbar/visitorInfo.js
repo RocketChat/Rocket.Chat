@@ -12,7 +12,11 @@ import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
 import { t, roomTypes } from '../../../../../utils';
-import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
+import {
+	hasRole,
+	hasPermission,
+	hasAtLeastOnePermission,
+} from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
@@ -85,7 +89,11 @@ Template.visitorInfo.helpers({
 
 		Object.keys(livechatData).forEach((key) => {
 			const field = _.findWhere(customFields, { _id: key });
-			if (field && field.visibility !== 'hidden' && field.scope === 'room') {
+			if (
+				field
+				&& field.visibility !== 'hidden'
+				&& field.scope === 'room'
+			) {
 				fields.push({ label: field.label, value: livechatData[key] });
 			}
 		});
@@ -95,7 +103,12 @@ Template.visitorInfo.helpers({
 
 	customVisitorFields() {
 		const customFields = Template.instance().customFields.get();
-		if (!hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields'])) {
+		if (
+			!hasAtLeastOnePermission([
+				'view-livechat-room-customfields',
+				'edit-livechat-room-customfields',
+			])
+		) {
 			return;
 		}
 		if (!customFields || customFields.length === 0) {
@@ -108,7 +121,11 @@ Template.visitorInfo.helpers({
 
 		Object.keys(livechatData).forEach((key) => {
 			const field = _.findWhere(customFields, { _id: key });
-			if (field && field.visibility !== 'hidden' && field.scope === 'visitor') {
+			if (
+				field
+				&& field.visibility !== 'hidden'
+				&& field.scope === 'visitor'
+			) {
 				fields.push({ label: field.label, value: livechatData[key] });
 			}
 		});
@@ -160,7 +177,12 @@ Template.visitorInfo.helpers({
 	roomOpen() {
 		const room = Template.instance().room.get();
 		const uid = Meteor.userId();
-		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
+		return (
+			room
+			&& room.open
+			&& ((room.servedBy && room.servedBy._id === uid)
+				|| hasRole(uid, 'livechat-manager'))
+		);
 	},
 
 	canReturnQueue() {
@@ -175,7 +197,12 @@ Template.visitorInfo.helpers({
 	},
 
 	canSeeButtons() {
-		if (hasAtLeastOnePermission(['close-others-livechat-room', 'transfer-livechat-guest'])) {
+		if (
+			hasAtLeastOnePermission([
+				'close-others-livechat-room',
+				'transfer-livechat-guest',
+			])
+		) {
 			return true;
 		}
 
@@ -209,7 +236,14 @@ Template.visitorInfo.helpers({
 
 	canPlaceChatOnHold() {
 		const room = Template.instance().room.get();
-		return room.open && !room.onHold && room.servedBy && room.lastMessage && !room.lastMessage?.token && settings.get('Livechat_allow_manual_on_hold');
+		return (
+			room.open
+			&& !room.onHold
+			&& room.servedBy
+			&& room.lastMessage
+			&& !room.lastMessage?.token
+			&& settings.get('Livechat_allow_manual_on_hold')
+		);
 	},
 
 	roomClosedDateTime() {
@@ -269,19 +303,25 @@ Template.visitorInfo.events({
 
 		if (!closingDialogRequired(instance.department.get())) {
 			const comment = TAPi18n.__('Chat_closed_by_agent');
-			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
-				}
+			return Meteor.call(
+				'livechat:closeRoom',
+				this.rid,
+				comment,
+				{ clientAction: true },
+				function(error /* , result*/) {
+					if (error) {
+						return handleError(error);
+					}
 
-				modal.open({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			});
+					modal.open({
+						title: t('Chat_closed'),
+						text: t('Chat_closed_successfully'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false,
+					});
+				},
+			);
 		}
 
 		modal.open({
@@ -300,23 +340,30 @@ Template.visitorInfo.events({
 	'click .return-inquiry'(event) {
 		event.preventDefault();
 
-		modal.open({
-			title: t('Would_you_like_to_return_the_inquiry'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Yes'),
-		}, () => {
-			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
-				if (error) {
-					handleError(error);
-				} else {
-					Session.set('openedRoom');
-					FlowRouter.go('/home');
-				}
-			});
-		});
+		modal.open(
+			{
+				title: t('Would_you_like_to_return_the_inquiry'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: t('Yes'),
+			},
+			() => {
+				Meteor.call(
+					'livechat:returnAsInquiry',
+					this.rid,
+					function(error /* , result*/) {
+						if (error) {
+							handleError(error);
+						} else {
+							Session.set('openedRoom');
+							FlowRouter.go('/home');
+						}
+					},
+				);
+			},
+		);
 	},
 
 	'click .forward-livechat'(event, instance) {
@@ -334,26 +381,33 @@ Template.visitorInfo.events({
 	'click .on-hold'(event) {
 		event.preventDefault();
 
-		modal.open({
-			title: t('Would_you_like_to_place_chat_on_hold'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Yes'),
-		},
-		async () => {
-			const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
-			if (success) {
-				modal.open({
-					title: t('Chat_On_Hold'),
-					text: t('Chat_On_Hold_Successfully'),
-					type: 'success',
-					timer: 1500,
-					showConfirmButton: false,
-				});
-			}
-		});
+		modal.open(
+			{
+				title: t('Would_you_like_to_place_chat_on_hold'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: t('Yes'),
+			},
+			async () => {
+				const { success } = await APIClient.v1.post(
+					'livechat/room.onHold',
+					{
+						roomId: this.rid,
+					},
+				);
+				if (success) {
+					modal.open({
+						title: t('Chat_On_Hold'),
+						text: t('Chat_On_Hold_Successfully'),
+						type: 'success',
+						timer: 1500,
+						showConfirmButton: false,
+					});
+				}
+			},
+		);
 	},
 });
 
@@ -369,7 +423,9 @@ Template.visitorInfo.onCreated(function() {
 	this.room = new ReactiveVar({});
 
 	this.updateVisitor = async (visitorId) => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+		const { visitor } = await APIClient.v1.get(
+			`livechat/visitors.info?visitorId=${ visitorId }`,
+		);
 		this.user.set(visitor);
 	};
 
@@ -407,7 +463,9 @@ Template.visitorInfo.onCreated(function() {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
+			const { department } = await APIClient.v1.get(
+				`livechat/department/${ this.departmentId.get() }?includeAgents=false`,
+			);
 			this.department.set(department);
 		}
 	});

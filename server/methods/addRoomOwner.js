@@ -32,18 +32,32 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomOwner',
-			});
+			throw new Meteor.Error(
+				'error-user-not-in-room',
+				'User is not in this room',
+				{
+					method: 'addRoomOwner',
+				},
+			);
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
-			throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
-				method: 'addRoomOwner',
-			});
+		if (
+			Array.isArray(subscription.roles) === true
+			&& subscription.roles.includes('owner') === true
+		) {
+			throw new Meteor.Error(
+				'error-user-already-owner',
+				'User is already an owner',
+				{
+					method: 'addRoomOwner',
+				},
+			);
 		}
 
 		Subscriptions.addRoleById(subscription._id, 'owner');

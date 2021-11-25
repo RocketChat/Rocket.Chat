@@ -39,8 +39,10 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-
-const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
+const handlePayloadUserInteraction = (
+	type,
+	{ /* appId,*/ triggerId, ...data },
+) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -71,7 +73,12 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE].includes(type)) {
+	if (
+		[
+			UIKitInteractionTypes.BANNER_UPDATE,
+			UIKitInteractionTypes.MODAL_UPDATE,
+		].includes(type)
+	) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -125,22 +132,33 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) => new Promise(async (resolve, reject) => {
-	const triggerId = generateTriggerId(appId);
+export const triggerAction = async ({
+	type,
+	actionId,
+	appId,
+	rid,
+	mid,
+	viewId,
+	container,
+	...rest
+}) =>
+	new Promise(async (resolve, reject) => {
+		const triggerId = generateTriggerId(appId);
 
-	const payload = rest.payload || rest;
+		const payload = rest.payload || rest;
 
-	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
+		setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
 
-	const { type: interactionType, ...data } = await APIClient.post(
-		`apps/ui.interaction/${ appId }`,
-		{ type, actionId, payload, container, mid, rid, triggerId, viewId },
-	);
+		const { type: interactionType, ...data } = await APIClient.post(
+			`apps/ui.interaction/${ appId }`,
+			{ type, actionId, payload, container, mid, rid, triggerId, viewId },
+		);
 
-	return resolve(handlePayloadUserInteraction(interactionType, data));
-});
+		return resolve(handlePayloadUserInteraction(interactionType, data));
+	});
 
-export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
+export const triggerBlockAction = (options) =>
+	triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
@@ -152,7 +170,11 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 	};
 
 	try {
-		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
+		const result = await triggerAction({
+			type: UIKitIncomingInteractionType.VIEW_SUBMIT,
+			viewId,
+			...options,
+		});
 		if (!result || UIKitInteractionTypes.MODAL_CLOSE === result) {
 			close();
 		}
@@ -164,7 +186,11 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 export const triggerCancel = async ({ view, ...options }) => {
 	const instance = instances.get(view.id);
 	try {
-		await triggerAction({ type: UIKitIncomingInteractionType.VIEW_CLOSED, view, ...options });
+		await triggerAction({
+			type: UIKitIncomingInteractionType.VIEW_CLOSED,
+			view,
+			...options,
+		});
 	} finally {
 		if (instance) {
 			instance.close();

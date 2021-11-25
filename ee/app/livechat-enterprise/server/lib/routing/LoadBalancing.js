@@ -2,10 +2,10 @@ import { RoutingManager } from '../../../../../../app/livechat/server/lib/Routin
 import { Users } from '../../../../../../app/models/server/raw';
 
 /* Load Balancing Queuing method:
-	*
-	* default method where the agent with the least number
-	* of open chats is paired with the incoming livechat
-*/
+ *
+ * default method where the agent with the least number
+ * of open chats is paired with the incoming livechat
+ */
 class LoadBalancing {
 	constructor() {
 		this.config = {
@@ -20,7 +20,10 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department, ignoreAgentId) {
-		const nextAgent = await Users.getNextLeastBusyAgent(department, ignoreAgentId);
+		const nextAgent = await Users.getNextLeastBusyAgent(
+			department,
+			ignoreAgentId,
+		);
 		if (!nextAgent) {
 			return;
 		}

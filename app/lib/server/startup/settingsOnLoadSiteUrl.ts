@@ -18,14 +18,20 @@ settings.watch<string>('Site_Url', function(value) {
 	}
 	(global as any).__meteor_runtime_config__.ROOT_URL = value;
 
-	if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
+	if (
+		Meteor.absoluteUrl.defaultOptions
+		&& Meteor.absoluteUrl.defaultOptions.rootUrl
+	) {
 		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
 	}
 
 	hostname = host.replace(/^https?:\/\//, '');
 	process.env.MOBILE_ROOT_URL = host;
 	process.env.MOBILE_DDP_URL = host;
-	if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
+	if (
+		typeof WebAppInternals !== 'undefined'
+		&& WebAppInternals.generateBoilerplate
+	) {
 		return WebAppInternals.generateBoilerplate();
 	}
 });

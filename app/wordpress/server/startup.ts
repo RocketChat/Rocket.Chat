@@ -32,11 +32,13 @@ settingsRegistry.addGroup('OAuth', function() {
 			values: [
 				{
 					key: 'wordpress-com',
-					i18nLabel: 'Accounts_OAuth_Wordpress_server_type_wordpress_com',
+					i18nLabel:
+						'Accounts_OAuth_Wordpress_server_type_wordpress_com',
 				},
 				{
 					key: 'wp-oauth-server',
-					i18nLabel: 'Accounts_OAuth_Wordpress_server_type_wp_oauth_server',
+					i18nLabel:
+						'Accounts_OAuth_Wordpress_server_type_wp_oauth_server',
 				},
 				{
 					key: 'custom',
@@ -46,13 +48,16 @@ settingsRegistry.addGroup('OAuth', function() {
 			i18nLabel: 'Server_Type',
 		});
 
-		const customOAuthQuery = [{
-			_id: 'Accounts_OAuth_Wordpress',
-			value: true,
-		}, {
-			_id: 'Accounts_OAuth_Wordpress_server_type',
-			value: 'custom',
-		}];
+		const customOAuthQuery = [
+			{
+				_id: 'Accounts_OAuth_Wordpress',
+				value: true,
+			},
+			{
+				_id: 'Accounts_OAuth_Wordpress_server_type',
+				value: 'custom',
+			},
+		];
 
 		this.add('Accounts_OAuth_Wordpress_identity_path', '', {
 			type: 'string',
@@ -79,10 +84,14 @@ settingsRegistry.addGroup('OAuth', function() {
 			enableQuery: customOAuthQuery,
 			public: true,
 		});
-		return this.add('Accounts_OAuth_Wordpress_callback_url', '_oauth/wordpress', {
-			type: 'relativeUrl',
-			readonly: true,
-			enableQuery,
-		});
+		return this.add(
+			'Accounts_OAuth_Wordpress_callback_url',
+			'_oauth/wordpress',
+			{
+				type: 'relativeUrl',
+				readonly: true,
+				enableQuery,
+			},
+		);
 	});
 });

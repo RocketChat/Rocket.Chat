@@ -26,10 +26,17 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.updatepath }`, options);
+			const response = HTTP.call(
+				'POST',
+				`${ this._options.baseurl }${ this._options.updatepath }`,
+				options,
+			);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
-				ChatpalLogger.debug({ msg: `indexed ${ docs.length } documents`, data: response.data });
+				ChatpalLogger.debug({
+					msg: `indexed ${ docs.length } documents`,
+					data: response.data,
+				});
 			} else {
 				throw new Error(response);
 			}
@@ -60,7 +67,11 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call('POST', this._options.baseurl + this._options.clearpath, options);
+			const response = HTTP.call(
+				'POST',
+				this._options.baseurl + this._options.clearpath,
+				options,
+			);
 
 			return response.statusCode >= 200 && response.statusCode < 300;
 		} catch (e) {
@@ -87,13 +98,24 @@ class Backend {
 
 		try {
 			if (callback) {
-				HTTP.call('POST', this._options.baseurl + this._options.searchpath, options, (err, result) => {
-					if (err) { return callback(err); }
+				HTTP.call(
+					'POST',
+					this._options.baseurl + this._options.searchpath,
+					options,
+					(err, result) => {
+						if (err) {
+							return callback(err);
+						}
 
-					callback(undefined, result.data);
-				});
+						callback(undefined, result.data);
+					},
+				);
 			} else {
-				const response = HTTP.call('POST', this._options.baseurl + this._options.searchpath, options);
+				const response = HTTP.call(
+					'POST',
+					this._options.baseurl + this._options.searchpath,
+					options,
+				);
 
 				if (response.statusCode >= 200 && response.statusCode < 300) {
 					return response.data;
@@ -112,15 +134,22 @@ class Backend {
 			...this._options.httpOptions,
 		};
 
-		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
-			if (err) { return callback(err); }
+		HTTP.call(
+			'POST',
+			this._options.baseurl + this._options.suggestionpath,
+			options,
+			(err, result) => {
+				if (err) {
+					return callback(err);
+				}
 
-			try {
-				callback(undefined, result.data.suggestion);
-			} catch (e) {
-				callback(e);
-			}
-		});
+				try {
+					callback(undefined, result.data.suggestion);
+				} catch (e) {
+					callback(e);
+				}
+			},
+		);
 	}
 
 	clear() {
@@ -137,7 +166,11 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call('POST', this._options.baseurl + this._options.clearpath, options);
+			const response = HTTP.call(
+				'POST',
+				this._options.baseurl + this._options.clearpath,
+				options,
+			);
 
 			return response.statusCode >= 200 && response.statusCode < 300;
 		} catch (e) {
@@ -159,7 +192,11 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call('GET', config.baseurl + config.pingpath, options);
+			const response = HTTP.call(
+				'GET',
+				config.baseurl + config.pingpath,
+				options,
+			);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
 				return response.data.stats;
@@ -190,7 +227,7 @@ class BatchIndexer {
 	}
 
 	flush() {
-		this._func(this._values, this._rest);// TODO if flush does not work
+		this._func(this._values, this._rest); // TODO if flush does not work
 		this._values = [];
 	}
 }
@@ -211,7 +248,10 @@ export default class Index {
 
 		this._options = options;
 
-		this._batchIndexer = new BatchIndexer(this._options.batchSize || 100, (values) => this._backend.index(values));
+		this._batchIndexer = new BatchIndexer(
+			this._options.batchSize || 100,
+			(values) => this._backend.index(values),
+		);
 
 		this._bootstrap(clear, date);
 	}
@@ -257,7 +297,8 @@ export default class Index {
 					user_name: doc.name,
 					user_email: doc.emails && doc.emails.map((e) => e.address),
 				};
-			default: throw new Error(`Cannot index type '${ type }'`);
+			default:
+				throw new Error(`Cannot index type '${ type }'`);
 		}
 	}
 
@@ -268,15 +309,28 @@ export default class Index {
 	 * @private
 	 */
 	_existsDataOlderThan(date) {
-		return Messages.model.find({ ts: { $lt: new Date(date) }, t: { $exists: false } }, { limit: 1 }).fetch().length > 0;
+		return (
+			Messages.model
+				.find(
+					{ ts: { $lt: new Date(date) }, t: { $exists: false } },
+					{ limit: 1 },
+				)
+				.fetch().length > 0
+		);
 	}
 
 	_doesRoomCountDiffer() {
-		return Rooms.find({ t: { $ne: 'd' } }).count() !== this._backend.count('room');
+		return (
+			Rooms.find({ t: { $ne: 'd' } }).count()
+			!== this._backend.count('room')
+		);
 	}
 
 	_doesUserCountDiffer() {
-		return Meteor.users.find({ active: true }).count() !== this._backend.count('user');
+		return (
+			Meteor.users.find({ active: true }).count()
+			!== this._backend.count('user')
+		);
 	}
 
 	/**
@@ -291,7 +345,9 @@ export default class Index {
 			this.indexDoc('user', user, false);
 		});
 
-		ChatpalLogger.info(`Users indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(
+			`Users indexed successfully (index-id: ${ this._id })`,
+		);
 	}
 
 	/**
@@ -307,22 +363,33 @@ export default class Index {
 			this.indexDoc('room', room, false);
 		});
 
-		ChatpalLogger.info(`Rooms indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(
+			`Rooms indexed successfully (index-id: ${ this._id })`,
+		);
 	}
 
 	_indexMessages(date, gap) {
 		const start = new Date(date - gap);
 		const end = new Date(date);
 
-		const cursor = Messages.model.find({ ts: { $gt: start, $lt: end }, t: { $exists: false } });
+		const cursor = Messages.model.find({
+			ts: { $gt: start, $lt: end },
+			t: { $exists: false },
+		});
 
-		ChatpalLogger.debug(`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`);
+		ChatpalLogger.debug(
+			`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`,
+		);
 
 		cursor.forEach((message) => {
 			this.indexDoc('message', message, false);
 		});
 
-		ChatpalLogger.info(`Messages between ${ start.toString() } and ${ end.toString() } indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(
+			`Messages between ${ start.toString() } and ${ end.toString() } indexed successfully (index-id: ${
+				this._id
+			})`,
+		);
 
 		return start.getTime();
 	}
@@ -332,7 +399,10 @@ export default class Index {
 
 		if (this._existsDataOlderThan(date) && !this._break) {
 			Meteor.setTimeout(() => {
-				date = this._indexMessages(date, (this._options.windowSize || 24) * 3600000);
+				date = this._indexMessages(
+					date,
+					(this._options.windowSize || 24) * 3600000,
+				);
 
 				this._run(date, resolve, reject);
 			}, this._options.timeout || 1000);
@@ -345,7 +415,11 @@ export default class Index {
 
 			resolve();
 		} else {
-			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
+			ChatpalLogger.info(
+				`No messages older than already indexed date ${ new Date(
+					date,
+				).toString() }`,
+			);
 
 			if (this._doesUserCountDiffer() && !this._break) {
 				this._indexUsers();
@@ -399,7 +473,9 @@ export default class Index {
 	indexDoc(type, doc, flush = true) {
 		this._batchIndexer.add(this._getIndexDocument(type, doc));
 
-		if (flush) { this._batchIndexer.flush(); }
+		if (flush) {
+			this._batchIndexer.flush();
+		}
 
 		return true;
 	}
@@ -409,23 +485,29 @@ export default class Index {
 	}
 
 	query(text, language, acl, type, start, rows, callback, params = {}) {
-		this._backend.query({
-			text,
-			language,
-			acl,
-			type,
-			start,
-			rows,
-			...params,
-		}, callback);
+		this._backend.query(
+			{
+				text,
+				language,
+				acl,
+				type,
+				start,
+				rows,
+				...params,
+			},
+			callback,
+		);
 	}
 
 	suggest(text, language, acl, type, callback) {
-		this._backend.suggest({
-			text,
-			language,
-			acl,
-			type,
-		}, callback);
+		this._backend.suggest(
+			{
+				text,
+				language,
+				acl,
+				type,
+			},
+			callback,
+		);
 	}
 }

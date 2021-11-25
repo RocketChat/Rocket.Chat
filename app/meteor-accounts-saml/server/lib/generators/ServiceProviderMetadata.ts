@@ -15,43 +15,67 @@ import { IMetadataVariables } from '../../definition/IMetadataVariables';
 */
 
 export class ServiceProviderMetadata {
-	public static generate(serviceProviderOptions: IServiceProviderOptions): string {
+	public static generate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		const data = this.getData(serviceProviderOptions);
-		return SAMLUtils.fillTemplateData(this.metadataTemplate(serviceProviderOptions), data);
+		return SAMLUtils.fillTemplateData(
+			this.metadataTemplate(serviceProviderOptions),
+			data,
+		);
 	}
 
-	private static certificateTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static certificateTagTemplate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		if (!serviceProviderOptions.privateKey) {
 			return '';
 		}
 
 		if (!serviceProviderOptions.privateCert) {
-			throw new Error('Missing certificate while generating metadata for decrypting service provider');
+			throw new Error(
+				'Missing certificate while generating metadata for decrypting service provider',
+			);
 		}
 
-		return serviceProviderOptions.metadataCertificateTemplate || defaultMetadataCertificateTemplate;
+		return (
+			serviceProviderOptions.metadataCertificateTemplate
+			|| defaultMetadataCertificateTemplate
+		);
 	}
 
-	private static metadataTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static metadataTemplate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		const data = {
 			certificateTag: this.certificateTagTemplate(serviceProviderOptions),
 		};
 
-		const template = serviceProviderOptions.metadataTemplate || defaultMetadataTemplate;
+		const template =			serviceProviderOptions.metadataTemplate || defaultMetadataTemplate;
 		return SAMLUtils.fillTemplateData(template, data);
 	}
 
-	private static getData(serviceProviderOptions: IServiceProviderOptions): IMetadataVariables {
+	private static getData(
+		serviceProviderOptions: IServiceProviderOptions,
+	): IMetadataVariables {
 		if (!serviceProviderOptions.callbackUrl) {
-			throw new Error('Unable to generate service provider metadata when callbackUrl option is not set');
+			throw new Error(
+				'Unable to generate service provider metadata when callbackUrl option is not set',
+			);
 		}
 
 		return {
 			issuer: serviceProviderOptions.issuer,
-			certificate: SAMLUtils.normalizeCert(serviceProviderOptions.privateCert),
-			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
+			certificate: SAMLUtils.normalizeCert(
+				serviceProviderOptions.privateCert,
+			),
+			identifierFormat:
+				serviceProviderOptions.identifierFormat
+				|| defaultIdentifierFormat,
 			callbackUrl: serviceProviderOptions.callbackUrl,
-			sloLocation: `${ Meteor.absoluteUrl() }_saml/logout/${ serviceProviderOptions.provider }/`,
+			sloLocation: `${ Meteor.absoluteUrl() }_saml/logout/${
+				serviceProviderOptions.provider
+			}/`,
 		};
 	}
 }

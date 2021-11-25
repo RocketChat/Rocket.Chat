@@ -56,7 +56,10 @@ export const onlineAgents = {
 			clearTimeout(this.queue.get(userId));
 		}
 
-		this.queue.set(userId, setTimeout(this.runAgentLeaveAction, actionTimeout, userId));
+		this.queue.set(
+			userId,
+			setTimeout(this.runAgentLeaveAction, actionTimeout, userId),
+		);
 	},
 
 	exists(userId: string): boolean {

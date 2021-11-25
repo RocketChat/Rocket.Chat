@@ -2,14 +2,20 @@ import { subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions } from '../../../models/server';
 
 export function shouldRemoveOrChangeOwner(subscribedRooms) {
-	return subscribedRooms
-		.some(({ shouldBeRemoved, shouldChangeOwner }) => shouldBeRemoved || shouldChangeOwner);
+	return subscribedRooms.some(
+		({ shouldBeRemoved, shouldChangeOwner }) =>
+			shouldBeRemoved || shouldChangeOwner,
+	);
 }
 
-export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = true, roomIds = []) {
+export function getSubscribedRoomsForUserWithDetails(
+	userId,
+	assignNewOwner = true,
+	roomIds = [],
+) {
 	const subscribedRooms = [];
 
-	const cursor = roomIds.length > 0
+	const cursor =		roomIds.length > 0
 		? Subscriptions.findByUserIdAndRoomIds(userId, roomIds)
 		: Subscriptions.findByUserIdExceptType(userId, 'd');
 
@@ -26,20 +32,28 @@ export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = tr
 
 		if (subscriptionHasRole(subscription, 'owner')) {
 			// Fetch the number of owners
-			const numOwners = Subscriptions.findByRoomIdAndRoles(subscription.rid, ['owner']).count();
+			const numOwners = Subscriptions.findByRoomIdAndRoles(
+				subscription.rid,
+				['owner'],
+			).count();
 			// If it's only one, then this user is the only owner.
 			roomData.userIsLastOwner = numOwners === 1;
 			if (numOwners === 1 && assignNewOwner) {
 				// Let's check how many subscribers the room has.
 				const options = { fields: { 'u._id': 1 }, sort: { ts: 1 } };
-				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
+				const subscribersCursor = Subscriptions.findByRoomId(
+					subscription.rid,
+					options,
+				);
 
 				subscribersCursor.forEach(({ u: { _id: uid } }) => {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
 					if (roomData.shouldChangeOwner || uid === userId) {
 						return;
 					}
-					const newOwner = Users.findOneActiveById(uid, { fields: { _id: 1 } });
+					const newOwner = Users.findOneActiveById(uid, {
+						fields: { _id: 1 },
+					});
 					if (!newOwner) {
 						return;
 					}
@@ -55,7 +69,7 @@ export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = tr
 			}
 		} else if (roomData.t !== 'c') {
 			// If the user is not an owner, remove the room if the user is the only subscriber
-			roomData.shouldBeRemoved = Subscriptions.findByRoomId(roomData.rid).count() === 1;
+			roomData.shouldBeRemoved =				Subscriptions.findByRoomId(roomData.rid).count() === 1;
 		}
 
 		subscribedRooms.push(roomData);

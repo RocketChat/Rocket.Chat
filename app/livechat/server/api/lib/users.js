@@ -7,7 +7,13 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
-		Object.assign(query, { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
+		Object.assign(query, {
+			$or: [
+				{ username: filterReg },
+				{ name: filterReg },
+				{ 'emails.address': filterReg },
+			],
+		});
 	}
 
 	const cursor = await Users.findUsersInRolesWithQuery(role, query, {
@@ -35,8 +41,17 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		total,
 	};
 }
-export async function findAgents({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasAllPermissionAsync(userId, ['view-l-room', 'transfer-livechat-guest'])) {
+export async function findAgents({
+	userId,
+	text,
+	pagination: { offset, count, sort },
+}) {
+	if (
+		!await hasAllPermissionAsync(userId, [
+			'view-l-room',
+			'transfer-livechat-guest',
+		])
+	) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -52,8 +67,17 @@ export async function findAgents({ userId, text, pagination: { offset, count, so
 	});
 }
 
-export async function findManagers({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasAllPermissionAsync(userId, ['view-livechat-manager', 'manage-livechat-agents'])) {
+export async function findManagers({
+	userId,
+	text,
+	pagination: { offset, count, sort },
+}) {
+	if (
+		!await hasAllPermissionAsync(userId, [
+			'view-livechat-manager',
+			'manage-livechat-agents',
+		])
+	) {
 		throw new Error('error-not-authorized');
 	}
 

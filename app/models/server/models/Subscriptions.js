@@ -159,7 +159,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	updateNotificationsPrefById(_id, notificationPref, notificationField, notificationPrefOrigin) {
+	updateNotificationsPrefById(
+		_id,
+		notificationPref,
+		notificationField,
+		notificationPrefOrigin,
+	) {
 		const query = {
 			_id,
 		};
@@ -298,13 +303,17 @@ export class Subscriptions extends Base {
 	}
 
 	resetUserE2EKey(userId) {
-		this.update({ 'u._id': userId }, {
-			$unset: {
-				E2EKey: '',
+		this.update(
+			{ 'u._id': userId },
+			{
+				$unset: {
+					E2EKey: '',
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 
 	findByUserIdWithoutE2E(userId, options) {
@@ -338,11 +347,16 @@ export class Subscriptions extends Base {
 
 		const subscriptions = this.find(query).fetch();
 
-		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
-				return subscription.u._id;
-			}
-		}));
+		const users = _.compact(
+			_.map(subscriptions, function(subscription) {
+				if (
+					typeof subscription.u !== 'undefined'
+					&& typeof subscription.u._id !== 'undefined'
+				) {
+					return subscription.u._id;
+				}
+			}),
+		);
 
 		return Users.find({ _id: { $in: users } }, options);
 	}
@@ -517,10 +531,7 @@ export class Subscriptions extends Base {
 	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {
 		const query = {
 			rid: roomId,
-			$or: [
-				{ 'u._id': { $in: userIds } },
-				{ emailNotifications: 'all' },
-			],
+			$or: [{ 'u._id': { $in: userIds } }, { emailNotifications: 'all' }],
 		};
 
 		return this.find(query);
@@ -550,19 +561,22 @@ export class Subscriptions extends Base {
 	}
 
 	getMinimumLastSeenByRoomId(rid) {
-		return this.db.findOne({
-			rid,
-			ls: {
-				$exists: true,
+		return this.db.findOne(
+			{
+				rid,
+				ls: {
+					$exists: true,
+				},
 			},
-		}, {
-			sort: {
-				ls: 1,
+			{
+				sort: {
+					ls: 1,
+				},
+				fields: {
+					ls: 1,
+				},
 			},
-			fields: {
-				ls: 1,
-			},
-		});
+		);
 	}
 
 	// UPDATE
@@ -581,7 +595,7 @@ export class Subscriptions extends Base {
 	}
 
 	unarchiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -692,7 +706,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -706,7 +720,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateDisplayNameByRoomId(roomId, fname) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -744,7 +758,7 @@ export class Subscriptions extends Base {
 	}
 
 	setUserUsernameByUserId(userId, username) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
@@ -810,7 +824,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incGroupMentionsAndUnreadForRoomIdExcludingUserId(roomId, userId, incGroup = 1, incUnread = 1) {
+	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
+		roomId,
+		userId,
+		incGroup = 1,
+		incUnread = 1,
+	) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -832,7 +851,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
+	incUserMentionsAndUnreadForRoomIdAndUserIds(
+		roomId,
+		userIds,
+		incUser = 1,
+		incUnread = 1,
+	) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -858,8 +882,7 @@ export class Subscriptions extends Base {
 		const query = {
 			_id,
 		};
-		const update = {
-		};
+		const update = {};
 		if (ignore) {
 			update.$addToSet = { ignored };
 		} else {
@@ -1012,7 +1035,7 @@ export class Subscriptions extends Base {
 	}
 
 	updateTypeByRoomId(roomId, type) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -1024,7 +1047,7 @@ export class Subscriptions extends Base {
 	}
 
 	addRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$addToSet: {
@@ -1036,7 +1059,7 @@ export class Subscriptions extends Base {
 	}
 
 	removeRoleById(_id, role) {
-		const query =			{ _id };
+		const query = { _id };
 
 		const update = {
 			$pull: {
@@ -1062,7 +1085,11 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	clearNotificationUserPreferences(userId, notificationField, notificationOriginField) {
+	clearNotificationUserPreferences(
+		userId,
+		notificationField,
+		notificationOriginField,
+	) {
 		const query = {
 			'u._id': userId,
 			[notificationOriginField]: 'user',
@@ -1078,7 +1105,12 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateNotificationUserPreferences(userId, userPref, notificationField, notificationOriginField) {
+	updateNotificationUserPreferences(
+		userId,
+		userPref,
+		notificationField,
+		notificationOriginField,
+	) {
 		const query = {
 			'u._id': userId,
 			[notificationOriginField]: {
@@ -1172,7 +1204,6 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
-
 	// REMOVE
 	removeByUserId(userId) {
 		const query = {
@@ -1200,7 +1231,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, -result);
 		}
 
 		Users.removeRoomByRoomId(roomId);
@@ -1217,7 +1248,7 @@ export class Subscriptions extends Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, -result);
 		}
 
 		Users.removeRoomByUserId(userId, roomId);
@@ -1248,21 +1279,30 @@ export class Subscriptions extends Base {
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid, { groupMention = false, userMention = false } = {}) {
+	addUnreadThreadByRoomIdAndUserIds(
+		rid,
+		users,
+		tmid,
+		{ groupMention = false, userMention = false } = {},
+	) {
 		if (!users) {
 			return;
 		}
 
-		return this.update({
-			'u._id': { $in: users },
-			rid,
-		}, {
-			$addToSet: {
-				tunread: tmid,
-				...groupMention && { tunreadGroup: tmid },
-				...userMention && { tunreadUser: tmid },
+		return this.update(
+			{
+				'u._id': { $in: users },
+				rid,
 			},
-		}, { multi: true });
+			{
+				$addToSet: {
+					tunread: tmid,
+					...groupMention && { tunreadGroup: tmid },
+					...userMention && { tunreadUser: tmid },
+				},
+			},
+			{ multi: true },
+		);
 	}
 
 	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert = false) {
@@ -1278,10 +1318,13 @@ export class Subscriptions extends Base {
 			update.$set = { alert: false };
 		}
 
-		return this.update({
-			'u._id': userId,
-			rid,
-		}, update);
+		return this.update(
+			{
+				'u._id': userId,
+				rid,
+			},
+			update,
+		);
 	}
 
 	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {

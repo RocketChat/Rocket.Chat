@@ -1,4 +1,7 @@
-import { addAction, QuickActionsEnum } from '../../../../../client/views/room/lib/QuickActions';
+import {
+	addAction,
+	QuickActionsEnum,
+} from '../../../../../client/views/room/lib/QuickActions';
 
 addAction(QuickActionsEnum.OnHoldChat, {
 	groups: ['live'],

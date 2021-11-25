@@ -16,7 +16,10 @@ export class LivechatDepartmentAgents extends Base {
 		this.tryEnsureIndex({ username: 1 });
 
 		const collectionObj = this.model.rawCollection();
-		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+		this.findAndModify = Meteor.wrapAsync(
+			collectionObj.findAndModify,
+			collectionObj,
+		);
 	}
 
 	findByDepartmentId(departmentId) {
@@ -32,17 +35,20 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	saveAgent(agent) {
-		return this.upsert({
-			agentId: agent.agentId,
-			departmentId: agent.departmentId,
-		}, {
-			$set: {
-				username: agent.username,
-				departmentEnabled: agent.departmentEnabled,
-				count: parseInt(agent.count),
-				order: parseInt(agent.order),
+		return this.upsert(
+			{
+				agentId: agent.agentId,
+				departmentId: agent.departmentId,
 			},
-		});
+			{
+				$set: {
+					username: agent.username,
+					departmentEnabled: agent.departmentEnabled,
+					count: parseInt(agent.count),
+					order: parseInt(agent.order),
+				},
+			},
+		);
 	}
 
 	removeByAgentId(agentId) {
@@ -64,12 +70,16 @@ export class LivechatDepartmentAgents extends Base {
 			return;
 		}
 
-		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = Users.findOnlineUserFromList(
+			_.pluck(agents, 'username'),
+		);
 
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = Promise.await(Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
+		const currentUnavailableAgents = Promise.await(
+			Users.getUnavailableAgents(departmentId, extraQuery),
+		).map((u) => u.username);
 
 		const query = {
 			departmentId,
@@ -93,7 +103,9 @@ export class LivechatDepartmentAgents extends Base {
 
 		const collectionObj = this.model.rawCollection();
 
-		const agent = Promise.await(collectionObj.findAndModify(query, sort, update));
+		const agent = Promise.await(
+			collectionObj.findAndModify(query, sort, update),
+		);
 		if (agent && agent.value) {
 			return {
 				agentId: agent.value.agentId,
@@ -103,7 +115,6 @@ export class LivechatDepartmentAgents extends Base {
 		return null;
 	}
 
-
 	checkOnlineForDepartment(departmentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
@@ -111,7 +122,9 @@ export class LivechatDepartmentAgents extends Base {
 			return false;
 		}
 
-		const onlineUser = Users.findOneOnlineAgentByUserList(_.pluck(agents, 'username'));
+		const onlineUser = Users.findOneOnlineAgentByUserList(
+			_.pluck(agents, 'username'),
+		);
 
 		return Boolean(onlineUser);
 	}
@@ -123,7 +136,9 @@ export class LivechatDepartmentAgents extends Base {
 			return;
 		}
 
-		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = Users.findOnlineUserFromList(
+			_.pluck(agents, 'username'),
+		);
 
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
@@ -230,9 +245,11 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	setDepartmentEnabledByDepartmentId(departmentId, departmentEnabled) {
-		return this.update({ departmentId },
+		return this.update(
+			{ departmentId },
 			{ $set: { departmentEnabled } },
-			{ multi: true });
+			{ multi: true },
+		);
 	}
 }
 export default new LivechatDepartmentAgents();

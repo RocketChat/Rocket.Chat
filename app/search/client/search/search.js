@@ -26,20 +26,33 @@ Template.RocketSearch.onCreated(function() {
 	});
 
 	const _search = () => {
-		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
+		const _p = Object.assign(
+			{},
+			this.scope.parentPayload,
+			this.scope.payload,
+		);
 
 		if (this.scope.text.get()) {
 			this.scope.searching.set(true);
 
-			Meteor.call('rocketchatSearch.search', this.scope.text.get(), { rid: Session.get('openedRoom'), uid: Meteor.userId() }, _p, (err, result) => {
-				if (err) {
-					dispatchToastMessage({ type: 'error', message: TAPi18n.__('Search_message_search_failed') });
-					this.scope.searching.set(false);
-				} else {
-					this.scope.searching.set(false);
-					this.scope.result.set(result);
-				}
-			});
+			Meteor.call(
+				'rocketchatSearch.search',
+				this.scope.text.get(),
+				{ rid: Session.get('openedRoom'), uid: Meteor.userId() },
+				_p,
+				(err, result) => {
+					if (err) {
+						dispatchToastMessage({
+							type: 'error',
+							message: TAPi18n.__('Search_message_search_failed'),
+						});
+						this.scope.searching.set(false);
+					} else {
+						this.scope.searching.set(false);
+						this.scope.result.set(result);
+					}
+				},
+			);
 		}
 	};
 
@@ -63,18 +76,29 @@ Template.RocketSearch.onCreated(function() {
 	this.suggest = (value) => {
 		this.suggestions.set();
 
-		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
+		const _p = Object.assign(
+			{},
+			this.scope.parentPayload,
+			this.scope.payload,
+		);
 
-		Meteor.call('rocketchatSearch.suggest', value, { rid: Session.get('openedRoom'), uid: Meteor.userId() }, this.scope.parentPayload, _p, (err, result) => {
-			if (err) {
-				// TODO what should happen
-			} else {
-				this.suggestionActive.set(undefined);
-				if (value !== this.scope.text.get()) {
-					this.suggestions.set(result);
+		Meteor.call(
+			'rocketchatSearch.suggest',
+			value,
+			{ rid: Session.get('openedRoom'), uid: Meteor.userId() },
+			this.scope.parentPayload,
+			_p,
+			(err, result) => {
+				if (err) {
+					// TODO what should happen
+				} else {
+					this.suggestionActive.set(undefined);
+					if (value !== this.scope.text.get()) {
+						this.suggestions.set(result);
+					}
 				}
-			}
-		});
+			},
+		);
 	};
 });
 
@@ -82,7 +106,7 @@ Template.RocketSearch.events = {
 	'keydown #message-search'(evt, t) {
 		if (evt.keyCode === 13) {
 			if (t.suggestionActive.get() !== undefined) {
-				const suggestion = t.suggestions.get()[t.suggestionActive.get()];
+				const suggestion =					t.suggestions.get()[t.suggestionActive.get()];
 				if (suggestion.action) {
 					const value = suggestion.action();
 					if (value) {
@@ -102,12 +126,21 @@ Template.RocketSearch.events = {
 		const suggestionActive = t.suggestionActive.get();
 
 		if (evt.keyCode === 40 && suggestions) {
-			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive < suggestions.length - 1 ? suggestionActive + 1 : 0);
+			t.suggestionActive.set(
+				suggestionActive !== undefined
+					&& suggestionActive < suggestions.length - 1
+					? suggestionActive + 1
+					: 0,
+			);
 			return;
 		}
 
 		if (evt.keyCode === 38 && suggestions) {
-			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive === 0 ? suggestions.length - 1 : suggestionActive - 1);
+			t.suggestionActive.set(
+				suggestionActive !== undefined && suggestionActive === 0
+					? suggestions.length - 1
+					: suggestionActive - 1,
+			);
 		}
 	},
 	'keyup #message-search': _.debounce(function(evt, t) {
@@ -167,9 +200,10 @@ Template.RocketSearch.helpers({
 		return Template.instance().suggestionActive.get();
 	},
 	suggestionSelected(index) {
-		return Template.instance().suggestionActive.get() === index ? 'active' : '';
+		return Template.instance().suggestionActive.get() === index
+			? 'active'
+			: '';
 	},
-
 });
 
 // add closer to suggestions
@@ -181,7 +215,9 @@ Template.RocketSearch.onRendered(function() {
 	});
 	Tracker.autorun((c) => {
 		if (this.isActive.get() === true) {
-			Tracker.afterFlush(() => { document.querySelector('#message-search').focus(); });
+			Tracker.afterFlush(() => {
+				document.querySelector('#message-search').focus();
+			});
 			c.stop();
 		}
 	});

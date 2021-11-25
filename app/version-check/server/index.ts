@@ -15,24 +15,27 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	SyncedCron.add({
 		name: jobName,
-		schedule: (parser: { text: (time: string) => string }) => parser.text('at 2:00 am'),
+		schedule: (parser: { text: (time: string) => string }) =>
+			parser.text('at 2:00 am'),
 		job() {
 			checkVersionUpdate();
 		},
 	});
 });
 
-
 Meteor.startup(() => {
 	Meteor.defer(() => {
-		if (settings.get('Register_Server') && settings.get('Update_EnableChecker')) {
+		if (
+			settings.get('Register_Server')
+			&& settings.get('Update_EnableChecker')
+		) {
 			checkVersionUpdate();
 		}
 	});
 });
 
 settings.watchMultiple(['Register_Server', 'Update_EnableChecker'], () => {
-	const checkForUpdates = settings.get('Register_Server') && settings.get('Update_EnableChecker');
+	const checkForUpdates =		settings.get('Register_Server') && settings.get('Update_EnableChecker');
 
 	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
 		return;

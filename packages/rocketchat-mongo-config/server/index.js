@@ -15,7 +15,7 @@ const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
 
 const { call } = HTTP;
 HTTP.call = function _call(method, url, options = {}, callback) {
-	const defaultTimeout = 'timeout' in options ? options : { ...options, timeout };
+	const defaultTimeout =		'timeout' in options ? options : { ...options, timeout };
 
 	return call.call(HTTP, method, url, defaultTimeout, callback);
 };
@@ -29,7 +29,9 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 
 const mongoConnectionOptions = {
 	// add retryWrites=false if not present in MONGO_URL
-	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
+	...!process.env.MONGO_URL.includes('retryWrites') && {
+		retryWrites: false,
+	},
 	// ignoreUndefined: false, // TODO evaluate adding this config
 };
 

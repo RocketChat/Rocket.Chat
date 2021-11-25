@@ -9,13 +9,14 @@ import { handleError } from '../../../../client/lib/utils/handleError';
 let modalStack = [];
 
 const createModal = (config = {}, fn, onCancel) => {
-	config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
+	config.confirmButtonText =		config.confirmButtonText
+		|| (config.type === 'error' ? t('Ok') : t('Send'));
 	config.cancelButtonText = config.cancelButtonText || t('Cancel');
-	config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
-	config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
-	config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
-	config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
-	config.closeOnEscape = config.closeOnEscape == null ? true : config.closeOnEscape;
+	config.closeOnConfirm =		config.closeOnConfirm == null ? true : config.closeOnConfirm;
+	config.showConfirmButton =		config.showConfirmButton == null ? true : config.showConfirmButton;
+	config.showFooter =		config.showConfirmButton === true || config.showCancelButton === true;
+	config.confirmOnEnter =		config.confirmOnEnter == null ? true : config.confirmOnEnter;
+	config.closeOnEscape =		config.closeOnEscape == null ? true : config.closeOnEscape;
 
 	if (config.type === 'input') {
 		config.input = true;
@@ -38,7 +39,11 @@ const createModal = (config = {}, fn, onCancel) => {
 				return;
 			}
 
-			renderedModal = Blaze.renderWithData(Template.rc_modal, instance, document.body);
+			renderedModal = Blaze.renderWithData(
+				Template.rc_modal,
+				instance,
+				document.body,
+			);
 
 			if (config.timer) {
 				timer = setTimeout(() => {
@@ -116,9 +121,17 @@ export const modal = {
 		const instance = createModal(config, fn, onCancel);
 
 		if (config.dontAskAgain) {
-			const dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
+			const dontAskAgainList = getUserPreference(
+				Meteor.userId(),
+				'dontAskAgainList',
+			);
 
-			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
+			if (
+				dontAskAgainList
+				&& dontAskAgainList.some(
+					(dontAsk) => dontAsk.action === config.dontAskAgain.action,
+				)
+			) {
 				instance.confirm(true);
 				return;
 			}
@@ -183,7 +196,6 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
-
 	showFooter() {
 		const { showCancelButton, showConfirmButton } = this;
 		return showCancelButton || showConfirmButton;
@@ -192,7 +204,10 @@ Template.rc_modal.helpers({
 		return !!this.action;
 	},
 	type() {
-		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
+		return (
+			this.type
+			&& `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`
+		);
 	},
 	modalIcon() {
 		switch (this.type) {
@@ -218,7 +233,8 @@ Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
-	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
+	this.data.closeOnEscape
+		&& document.addEventListener('keydown', modal.onKeyDown);
 });
 
 Template.rc_modal.onDestroyed(function() {
@@ -233,7 +249,8 @@ Template.rc_modal.events({
 		this.close();
 	},
 	'click .js-input-action'(e, instance) {
-		!this.inputAction || this.inputAction.call(instance.data.data, e, instance);
+		!this.inputAction
+			|| this.inputAction.call(instance.data.data, e, instance);
 		e.stopPropagation();
 	},
 	'click .js-close'(e) {
@@ -244,28 +261,40 @@ Template.rc_modal.events({
 	'click .js-confirm'(event, instance) {
 		event.stopPropagation();
 		const { dontAskAgain } = instance.data;
-		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
+		if (
+			dontAskAgain
+			&& document.getElementById('dont-ask-me-again').checked
+		) {
 			const dontAskAgainObject = {
 				action: dontAskAgain.action,
 				label: dontAskAgain.label,
 			};
 
-			let dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
+			let dontAskAgainList = getUserPreference(
+				Meteor.userId(),
+				'dontAskAgainList',
+			);
 			if (dontAskAgainList) {
 				dontAskAgainList.push(dontAskAgainObject);
 			} else {
 				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', { dontAskAgainList }, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-			});
+			Meteor.call(
+				'saveUserPreferences',
+				{ dontAskAgainList },
+				function(error) {
+					if (error) {
+						return handleError(error);
+					}
+				},
+			);
 		}
 
 		if (instance.data.input) {
-			this.confirm(document.getElementsByClassName('js-modal-input')[0].value);
+			this.confirm(
+				document.getElementsByClassName('js-modal-input')[0].value,
+			);
 			return;
 		}
 

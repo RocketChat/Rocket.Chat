@@ -27,7 +27,9 @@ Template.agentEdit.helpers({
 			return;
 		}
 
-		const availableDepartments = [...Template.instance().availableDepartments.get()];
+		const availableDepartments = [
+			...Template.instance().availableDepartments.get(),
+		];
 		return availableDepartments.length > 0;
 	},
 
@@ -38,7 +40,9 @@ Template.agentEdit.helpers({
 	},
 
 	hasAgentDepartments() {
-		const agentDepartments = [...Template.instance().agentDepartments.get()];
+		const agentDepartments = [
+			...Template.instance().agentDepartments.get(),
+		];
 		return agentDepartments.length > 0;
 	},
 
@@ -78,14 +82,20 @@ Template.agentEdit.events({
 		});
 
 		const agentDepartments = instance.agentDepartments.get();
-		Meteor.call('livechat:saveAgentInfo', _id, agentData, agentDepartments, (error) => {
-			if (error) {
-				return handleError(error);
-			}
+		Meteor.call(
+			'livechat:saveAgentInfo',
+			_id,
+			agentData,
+			agentDepartments,
+			(error) => {
+				if (error) {
+					return handleError(error);
+				}
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			return this.back && this.back(_id);
-		});
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				return this.back && this.back(_id);
+			},
+		);
 	},
 
 	'click .remove-department'(e, instance) {
@@ -96,9 +106,15 @@ Template.agentEdit.events({
 			return;
 		}
 
-		const { currentTarget: { dataset: { id } } } = e;
+		const {
+			currentTarget: {
+				dataset: { id },
+			},
+		} = e;
 		const agentDepartments = instance.agentDepartments.get();
-		instance.agentDepartments.set(agentDepartments.filter((el) => el !== id));
+		instance.agentDepartments.set(
+			agentDepartments.filter((el) => el !== id),
+		);
 	},
 
 	'click #addDepartment'(e, instance) {
@@ -129,7 +145,9 @@ Template.agentEdit.onCreated(async function() {
 	this.availableDepartments = new ReactiveVar([]);
 	this.back = Template.currentData().back;
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	const { departments } = await APIClient.v1.get(
+		'livechat/department?sort={"name": 1}',
+	);
 	this.departments.set(departments);
 	this.availableDepartments.set(departments.filter(({ enabled }) => enabled));
 
@@ -142,10 +160,16 @@ Template.agentEdit.onCreated(async function() {
 			return;
 		}
 
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
+		const { user } = await APIClient.v1.get(
+			`livechat/users/agent/${ agentId }`,
+		);
+		const { departments } = await APIClient.v1.get(
+			`livechat/agents/${ agentId }/departments`,
+		);
 		this.agent.set(user);
-		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
+		this.agentDepartments.set(
+			(departments || []).map((department) => department.departmentId),
+		);
 		this.ready.set(true);
 	});
 });

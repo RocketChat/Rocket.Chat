@@ -32,18 +32,32 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomModerator',
-			});
+			throw new Meteor.Error(
+				'error-user-not-in-room',
+				'User is not in this room',
+				{
+					method: 'addRoomModerator',
+				},
+			);
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
-			throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
-				method: 'addRoomModerator',
-			});
+		if (
+			Array.isArray(subscription.roles) === true
+			&& subscription.roles.includes('moderator') === true
+		) {
+			throw new Meteor.Error(
+				'error-user-already-moderator',
+				'User is already a moderator',
+				{
+					method: 'addRoomModerator',
+				},
+			);
 		}
 
 		Subscriptions.addRoleById(subscription._id, 'moderator');
@@ -60,7 +74,9 @@ Meteor.methods({
 
 		const team = Promise.await(Team.getOneByMainRoomId(rid));
 		if (team) {
-			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
+			Promise.await(
+				Team.addRolesToMember(team._id, userId, ['moderator']),
+			);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {

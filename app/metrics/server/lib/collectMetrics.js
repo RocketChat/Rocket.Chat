@@ -20,17 +20,22 @@ Facts.incrementServerFact = function(pkg, fact, increment) {
 };
 
 const setPrometheusData = async () => {
-	metrics.info.set({
-		version: Info.version,
-		unique_id: settings.get('uniqueID'),
-		site_url: settings.get('Site_Url'),
-	}, 1);
+	metrics.info.set(
+		{
+			version: Info.version,
+			unique_id: settings.get('uniqueID'),
+			site_url: settings.get('Site_Url'),
+		},
+		1,
+	);
 
 	const sessions = Array.from(Meteor.server.sessions.values());
 	const authenticatedSessions = sessions.filter((s) => s.userId);
 	metrics.ddpSessions.set(Meteor.server.sessions.size);
 	metrics.ddpAuthenticatedSessions.set(authenticatedSessions.length);
-	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length);
+	metrics.ddpConnectedUsers.set(
+		_.unique(authenticatedSessions.map((s) => s.userId)).length,
+	);
 
 	// Apps metrics
 	const { totalInstalled, totalActive, totalFailed } = getAppsStatistics();
@@ -39,7 +44,7 @@ const setPrometheusData = async () => {
 	metrics.totalAppsEnabled.set(totalActive || 0);
 	metrics.totalAppsFailed.set(totalFailed || 0);
 
-	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	const oplogQueue =		getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
 
 	const statistics = await Statistics.findLast();
@@ -159,7 +164,9 @@ const updatePrometheusConfig = async () => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+			client.register.getMetricsAsArray().forEach((metric) => {
+				metric.hashMap = {};
+			});
 		}, is.resetInterval);
 	}
 

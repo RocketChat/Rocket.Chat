@@ -1,6 +1,5 @@
 import { settingsRegistry } from '../../settings/server';
 
-
 settingsRegistry.addGroup('SMS', function() {
 	this.add('SMS_Enabled', false, {
 		type: 'boolean',
@@ -58,16 +57,20 @@ settingsRegistry.addGroup('SMS', function() {
 			i18nLabel: 'FileUpload_Enabled',
 			secret: true,
 		});
-		this.add('SMS_Twilio_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SMS_Service',
-				value: 'twilio',
+		this.add(
+			'SMS_Twilio_FileUpload_MediaTypeWhiteList',
+			'image/*,audio/*,video/*,text/*,application/pdf',
+			{
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'twilio',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
 			},
-			i18nLabel: 'FileUpload_MediaTypeWhiteList',
-			i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
-			secret: true,
-		});
+		);
 	});
 
 	this.section('Voxtelesys', function() {
@@ -80,15 +83,19 @@ settingsRegistry.addGroup('SMS', function() {
 			i18nLabel: 'Auth_Token',
 			secret: true,
 		});
-		this.add('SMS_Voxtelesys_URL', 'https://smsapi.voxtelesys.net/api/v1/sms', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SMS_Service',
-				value: 'voxtelesys',
+		this.add(
+			'SMS_Voxtelesys_URL',
+			'https://smsapi.voxtelesys.net/api/v1/sms',
+			{
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'voxtelesys',
+				},
+				i18nLabel: 'URL',
+				secret: true,
 			},
-			i18nLabel: 'URL',
-			secret: true,
-		});
+		);
 		this.add('SMS_Voxtelesys_FileUpload_Enabled', true, {
 			type: 'boolean',
 			enableQuery: {
@@ -98,16 +105,20 @@ settingsRegistry.addGroup('SMS', function() {
 			i18nLabel: 'FileUpload_Enabled',
 			secret: true,
 		});
-		this.add('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SMS_Service',
-				value: 'voxtelesys',
+		this.add(
+			'SMS_Voxtelesys_FileUpload_MediaTypeWhiteList',
+			'image/*,audio/*,video/*,text/*,application/pdf',
+			{
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'voxtelesys',
+				},
+				i18nLabel: 'FileUpload_MediaTypeWhiteList',
+				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+				secret: true,
 			},
-			i18nLabel: 'FileUpload_MediaTypeWhiteList',
-			i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
-			secret: true,
-		});
+		);
 	});
 
 	this.section('Mobex', function() {

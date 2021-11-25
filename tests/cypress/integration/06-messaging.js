@@ -4,7 +4,15 @@ import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
 import { targetUser, imgURL } from '../../data/interactions.js';
-import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
+import {
+	checkIfUserIsValid,
+	publicChannelCreated,
+	privateChannelCreated,
+	directMessageCreated,
+	setPublicChannelCreated,
+	setPrivateChannelCreated,
+	setDirectMessageCreated,
+} from '../../data/checks';
 import { updatePermission } from '../../data/permissions.helper';
 import { api, getCredentials, credentials, request } from '../../data/api-data';
 import { createUser, login } from '../../data/users.helper';
@@ -37,8 +45,7 @@ function messagingTest(currentTest) {
 	});
 
 	describe.skip('fileUpload:', () => {
-		after(() => {
-		});
+		after(() => {});
 		it('it should send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
@@ -86,7 +93,9 @@ function messagingTest(currentTest) {
 
 		it('it should show the file in the message', () => {
 			mainContent.lastMessageDesc.waitForVisible(10000);
-			mainContent.lastMessageDesc.getText().should.equal('File Description');
+			mainContent.lastMessageDesc
+				.getText()
+				.should.equal('File Description');
 		});
 	});
 }
@@ -117,14 +126,17 @@ function createDMUserAndPost(testChannel, done) {
 		createUser().then((createdUser) => {
 			testDMUsername = createdUser.username;
 
-			request.post(api('users.setActiveStatus'))
+			request
+				.post(api('users.setActiveStatus'))
 				.set(credentials)
 				.send({
 					activeStatus: true,
 					userId: createdUser._id,
-				}).then(() => {
+				})
+				.then(() => {
 					login(testDMUsername, password).then((userCredentials) => {
-						request.post(api('chat.postMessage'))
+						request
+							.post(api('chat.postMessage'))
 							.set(userCredentials)
 							.send({
 								channel: testChannel,
@@ -139,8 +151,14 @@ function createDMUserAndPost(testChannel, done) {
 
 function leaveTestDM() {
 	// Leave the existing DM
-	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView();
-	dmElement.closest('.sidebar-item').find('.sidebar-item__menu').invoke('show').click();
+	const dmElement = sideNav
+		.getChannelFromList(testDMUsername)
+		.scrollIntoView();
+	dmElement
+		.closest('.sidebar-item')
+		.find('.sidebar-item__menu')
+		.invoke('show')
+		.click();
 	sideNav.popOverHideOption.click();
 
 	Global.modal.should('be.visible');
@@ -204,59 +222,74 @@ function messageActionsTest(currentTest, testChannel) {
 					mainContent.messageReplyInDM.should('not.be.visible');
 				});
 			} else if (currentTest !== 'private') {
-				context('when the channel last message was posted by someone else', () => {
-					before((done) => {
-						revokeCreateDPermission().then(() => {
-							createDMUserAndPost(testChannel, done);
+				context(
+					'when the channel last message was posted by someone else',
+					() => {
+						before((done) => {
+							revokeCreateDPermission().then(() => {
+								createDMUserAndPost(testChannel, done);
+							});
 						});
-					});
 
-					it('it should not show the Reply to DM action', () => {
-						toggleOpenMessageActionMenu();
-
-						// We don't have the test DM user in a DM channel or have the `create-d` permission
-						mainContent.messageReplyInDM.should('not.be.visible');
-					});
-
-					context('when the user has permission to create DMs', () => {
-						before(() => grantCreateDPermission());
-						after(() => revokeCreateDPermission());
-
-						it('it should show the Reply to DM action', () => {
+						it('it should not show the Reply to DM action', () => {
 							toggleOpenMessageActionMenu();
 
-							mainContent.messageReplyInDM.should('be.visible');
-						});
-					});
-
-					context('when the user already has a created DM', () => {
-						// Grant Create DM permission, create a DM, then revoke the permission
-						before(() => grantCreateDPermission());
-
-						before(() => {
-							mainContent.popoverWrapper.click();
-							sideNav.spotlightSearchIcon.click();
-							sideNav.searchChannel(testDMUsername);
+							// We don't have the test DM user in a DM channel or have the `create-d` permission
+							mainContent.messageReplyInDM.should(
+								'not.be.visible',
+							);
 						});
 
-						before(() => revokeCreateDPermission());
+						context(
+							'when the user has permission to create DMs',
+							() => {
+								before(() => grantCreateDPermission());
+								after(() => revokeCreateDPermission());
 
-						before(() => {
-							sideNav.openChannel(testChannel);
-							mainContent.openMessageActionMenu();
-						});
+								it('it should show the Reply to DM action', () => {
+									toggleOpenMessageActionMenu();
 
-						after(() => {
-							mainContent.popoverWrapper.click();
-							leaveTestDM();
-							mainContent.openMessageActionMenu();
-						});
+									mainContent.messageReplyInDM.should(
+										'be.visible',
+									);
+								});
+							},
+						);
 
-						it('it should show the Reply to DM action', () => {
-							mainContent.messageReplyInDM.should('be.visible');
-						});
-					});
-				});
+						context(
+							'when the user already has a created DM',
+							() => {
+								// Grant Create DM permission, create a DM, then revoke the permission
+								before(() => grantCreateDPermission());
+
+								before(() => {
+									mainContent.popoverWrapper.click();
+									sideNav.spotlightSearchIcon.click();
+									sideNav.searchChannel(testDMUsername);
+								});
+
+								before(() => revokeCreateDPermission());
+
+								before(() => {
+									sideNav.openChannel(testChannel);
+									mainContent.openMessageActionMenu();
+								});
+
+								after(() => {
+									mainContent.popoverWrapper.click();
+									leaveTestDM();
+									mainContent.openMessageActionMenu();
+								});
+
+								it('it should show the Reply to DM action', () => {
+									mainContent.messageReplyInDM.should(
+										'be.visible',
+									);
+								});
+							},
+						);
+					},
+				);
 			}
 		});
 
@@ -274,7 +307,11 @@ function messageActionsTest(currentTest, testChannel) {
 				it('it should check if the message was replied', () => {
 					mainContent.beforeLastMessageQuote.then(($el) => {
 						const text = $el.data('id');
-						mainContent.lastMessageQuote.should('has.attr', 'data-tmid', text);
+						mainContent.lastMessageQuote.should(
+							'has.attr',
+							'data-tmid',
+							text,
+						);
 					});
 				});
 			});
@@ -304,7 +341,10 @@ function messageActionsTest(currentTest, testChannel) {
 				});
 
 				it('it should not show the deleted message', () => {
-					mainContent.lastMessage.should('not.contain', 'Message for Message Delete Tests');
+					mainContent.lastMessage.should(
+						'not.contain',
+						'Message for Message Delete Tests',
+					);
 				});
 			});
 
@@ -319,7 +359,9 @@ function messageActionsTest(currentTest, testChannel) {
 				it('it should quote the message', () => {
 					mainContent.selectAction('quote');
 					mainContent.sendBtn.click();
-					mainContent.waitForLastMessageTextAttachmentEqualsText(message);
+					mainContent.waitForLastMessageTextAttachmentEqualsText(
+						message,
+					);
 				});
 			});
 
@@ -350,7 +392,6 @@ function messageActionsTest(currentTest, testChannel) {
 					mainContent.sendMessage('Message for permalink Tests');
 					mainContent.openMessageActionMenu();
 				});
-
 
 				it('it should permalink the message', () => {
 					mainContent.selectAction('permalink');

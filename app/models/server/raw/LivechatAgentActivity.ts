@@ -5,7 +5,13 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatAgentActivity } from '../../../../definition/ILivechatAgentActivity';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
-	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {
+	findAllAverageAvailableServiceTime({
+		date,
+		departmentId,
+	}: {
+		date: Date;
+		departmentId: string;
+	}): Promise<ILivechatAgentActivity[]> {
 		const match = { $match: { date } };
 		const lookup = {
 			$lookup: {
@@ -28,7 +34,12 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 		};
 		const sumAvailableTimeWithCurrentTime = {
 			$sum: [
-				{ $divide: [{ $subtract: [new Date(), '$lastStartedAt'] }, 1000] },
+				{
+					$divide: [
+						{ $subtract: [new Date(), '$lastStartedAt'] },
+						1000,
+					],
+				},
 				'$availableTime',
 			],
 		};
@@ -37,9 +48,11 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 				_id: null,
 				allAvailableTimeInSeconds: {
 					$sum: {
-						$cond: [{ $ifNull: ['$lastStoppedAt', false] },
+						$cond: [
+							{ $ifNull: ['$lastStoppedAt', false] },
 							'$availableTime',
-							sumAvailableTimeWithCurrentTime],
+							sumAvailableTimeWithCurrentTime,
+						],
 					},
 				},
 				rooms: { $sum: 1 },
@@ -52,7 +65,12 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 						$cond: [
 							{ $eq: ['$rooms', 0] },
 							0,
-							{ $divide: ['$allAvailableTimeInSeconds', '$rooms'] },
+							{
+								$divide: [
+									'$allAvailableTimeInSeconds',
+									'$rooms',
+								],
+							},
 						],
 					},
 				},
@@ -120,7 +138,14 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 		};
 
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, lookup, unwind, group, project, sort] as object[];
+		const params = [
+			match,
+			lookup,
+			unwind,
+			group,
+			project,
+			sort,
+		] as object[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);

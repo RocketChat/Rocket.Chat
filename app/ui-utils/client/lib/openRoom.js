@@ -30,29 +30,40 @@ export const openRoom = async function(type, name, render = true) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
-		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
+		if (
+			(user && user.username == null)
+			|| (user == null
+				&& settings.get('Accounts_AllowAnonymousRead') === false)
+		) {
 			appLayout.render('main');
 			return;
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await call('getRoomByTypeAndName', type, name);
+			const room =				roomTypes.findRoom(type, name, user)
+				|| await call('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
-			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
+			if (room._id !== name && type === 'd') {
+				// Redirect old url using username to rid
 				RoomManager.close(type + name);
-				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+				return FlowRouter.go(
+					'direct',
+					{ rid: room._id },
+					FlowRouter.current().queryParams,
+				);
 			}
 
-
-			if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
+			if (
+				room._id === Session.get('openedRoom')
+				&& !FlowRouter.getQueryParam('msg')
+			) {
 				return;
 			}
 
 			RoomManager.open(type + name);
 
 			render && appLayout.render('main', { center: 'room' });
-
 
 			c.stop();
 
@@ -76,10 +87,14 @@ export const openRoom = async function(type, name, render = true) {
 				const messageId = FlowRouter.getQueryParam('msg');
 				const msg = { _id: messageId, rid: room._id };
 
-				const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
+				const message =					Messages.findOne({ _id: msg._id })
+					|| (await callWithErrorHandling('getMessages', [msg._id]))[0];
 
 				if (message && (message.tmid || message.tcount)) {
-					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+					return FlowRouter.setParams({
+						tab: 'thread',
+						context: message.tmid || message._id,
+					});
 				}
 
 				RoomHistoryManager.getSurroundingMessages(msg);
@@ -92,9 +107,16 @@ export const openRoom = async function(type, name, render = true) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
+				const result = await callWithErrorHandling(
+					'createDirectMessage',
+					...name.split(', '),
+				);
 				if (result) {
-					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+					return FlowRouter.go(
+						'direct',
+						{ rid: result.rid },
+						FlowRouter.current().queryParams,
+					);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });

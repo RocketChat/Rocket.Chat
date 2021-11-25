@@ -5,7 +5,9 @@ export async function markRoomAsRead(rid: string, uid: string): Promise<void> {
 	callbacks.run('beforeReadMessages', rid, uid);
 
 	const projection = { ls: 1, tunread: 1, alert: 1 };
-	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, { projection });
+	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid, {
+		projection,
+	});
 	if (!sub) {
 		throw new Error('error-invalid-subscription');
 	}

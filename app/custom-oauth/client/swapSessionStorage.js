@@ -9,7 +9,10 @@ if (navigator.userAgent.indexOf('Firefox') !== -1) {
 	const KEY_NAME = 'Swapped_Storage_Workaround';
 
 	OAuth.saveDataForRedirect = (loginService, credentialToken) => {
-		Meteor._localStorage.setItem(KEY_NAME, JSON.stringify({ loginService, credentialToken }));
+		Meteor._localStorage.setItem(
+			KEY_NAME,
+			JSON.stringify({ loginService, credentialToken }),
+		);
 		Reload._migrate(null, { immediateMigration: true });
 	};
 
@@ -22,7 +25,9 @@ if (navigator.userAgent.indexOf('Firefox') !== -1) {
 			migrationData = null;
 		}
 
-		if (! (migrationData && migrationData.credentialToken)) { return null; }
+		if (!(migrationData && migrationData.credentialToken)) {
+			return null;
+		}
 
 		const { credentialToken } = migrationData;
 		const key = OAuth._storageTokenPrefix + credentialToken;

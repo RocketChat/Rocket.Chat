@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
-import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
+import {
+	updatePredictedVisitorAbandonment,
+	updateQueueInactivityTimeout,
+} from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import './lib/query.helper';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
@@ -34,7 +37,9 @@ Meteor.startup(async function() {
 		if (!Object.keys(businessHours).includes(value)) {
 			return;
 		}
-		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
+		businessHourManager.registerBusinessHourBehavior(
+			businessHours[value as keyof typeof businessHours],
+		);
 		if (settings.get('Livechat_enable_business_hours')) {
 			businessHourManager.startManager();
 		}

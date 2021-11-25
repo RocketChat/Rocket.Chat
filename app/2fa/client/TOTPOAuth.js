@@ -16,8 +16,15 @@ import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod
 let lastCredentialToken = null;
 let lastCredentialSecret = null;
 
-Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, totpCode, credentialSecret = null) {
-	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
+Accounts.oauth.tryLoginAfterPopupClosed = function(
+	credentialToken,
+	callback,
+	totpCode,
+	credentialSecret = null,
+) {
+	credentialSecret =		credentialSecret
+		|| OAuth._retrieveCredentialSecret(credentialToken)
+		|| null;
 	const methodArgument = {
 		oauth: {
 			credentialToken,
@@ -36,22 +43,32 @@ Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, to
 
 	Accounts.callLoginMethod({
 		methodArguments: [methodArgument],
-		userCallback: callback && function(err) {
-			callback(convertError(err));
-		} });
+		userCallback:
+			callback
+			&& function(err) {
+				callback(convertError(err));
+			},
+	});
 };
 
-Accounts.oauth.credentialRequestCompleteHandler = function(callback, totpCode) {
+Accounts.oauth.credentialRequestCompleteHandler = function(
+	callback,
+	totpCode,
+) {
 	return function(credentialTokenOrError) {
 		if (credentialTokenOrError && credentialTokenOrError instanceof Error) {
 			callback && callback(credentialTokenOrError);
 		} else {
-			Accounts.oauth.tryLoginAfterPopupClosed(credentialTokenOrError, callback, totpCode);
+			Accounts.oauth.tryLoginAfterPopupClosed(
+				credentialTokenOrError,
+				callback,
+				totpCode,
+			);
 		}
 	};
 };
 
-const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callback) => {
+const createOAuthTotpLoginMethod =	(credentialProvider) => (options, code, callback) => {
 	// support a callback without options
 	if (!callback && typeof options === 'function') {
 		callback = options;
@@ -59,11 +76,19 @@ const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callb
 	}
 
 	if (lastCredentialToken && lastCredentialSecret) {
-		Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
+		Accounts.oauth.tryLoginAfterPopupClosed(
+			lastCredentialToken,
+			callback,
+			code,
+			lastCredentialSecret,
+		);
 	} else {
-		const provider = (credentialProvider && credentialProvider()) || this;
-		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
-		provider.requestCredential(options, credentialRequestCompleteCallback);
+		const provider =				(credentialProvider && credentialProvider()) || this;
+		const credentialRequestCompleteCallback =				Accounts.oauth.credentialRequestCompleteHandler(callback, code);
+		provider.requestCredential(
+			options,
+			credentialRequestCompleteCallback,
+		);
 	}
 
 	lastCredentialToken = null;
@@ -75,7 +100,12 @@ const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod();
 const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(() => Facebook);
 const { loginWithFacebook } = Meteor;
 Meteor.loginWithFacebook = function(options, cb) {
-	overrideLoginMethod(loginWithFacebook, [options], cb, loginWithFacebookAndTOTP);
+	overrideLoginMethod(
+		loginWithFacebook,
+		[options],
+		cb,
+		loginWithFacebookAndTOTP,
+	);
 };
 
 const loginWithGithubAndTOTP = createOAuthTotpLoginMethod(() => Github);
@@ -84,22 +114,39 @@ Meteor.loginWithGithub = function(options, cb) {
 	overrideLoginMethod(loginWithGithub, [options], cb, loginWithGithubAndTOTP);
 };
 
-const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(() => MeteorDeveloperAccounts);
+const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(
+	() => MeteorDeveloperAccounts,
+);
 const { loginWithMeteorDeveloperAccount } = Meteor;
 Meteor.loginWithMeteorDeveloperAccount = function(options, cb) {
-	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], cb, loginWithMeteorDeveloperAccountAndTOTP);
+	overrideLoginMethod(
+		loginWithMeteorDeveloperAccount,
+		[options],
+		cb,
+		loginWithMeteorDeveloperAccountAndTOTP,
+	);
 };
 
 const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(() => Twitter);
 const { loginWithTwitter } = Meteor;
 Meteor.loginWithTwitter = function(options, cb) {
-	overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
+	overrideLoginMethod(
+		loginWithTwitter,
+		[options],
+		cb,
+		loginWithTwitterAndTOTP,
+	);
 };
 
 const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(() => Linkedin);
 const { loginWithLinkedin } = Meteor;
 Meteor.loginWithLinkedin = function(options, cb) {
-	overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
+	overrideLoginMethod(
+		loginWithLinkedin,
+		[options],
+		cb,
+		loginWithLinkedinAndTOTP,
+	);
 };
 
 Accounts.onPageLoadLogin((loginAttempt) => {
@@ -120,7 +167,12 @@ Accounts.onPageLoadLogin((loginAttempt) => {
 		error: loginAttempt.error,
 		originalCallback: cb,
 		onCode: (code) => {
-			Accounts.oauth.tryLoginAfterPopupClosed(credentialToken, cb, code, credentialSecret);
+			Accounts.oauth.tryLoginAfterPopupClosed(
+				credentialToken,
+				cb,
+				code,
+				credentialSecret,
+			);
 		},
 	});
 });
@@ -134,6 +186,11 @@ CustomOAuth.prototype.configureLogin = function(...args) {
 	const oldMethod = Meteor[loginWithService];
 
 	Meteor[loginWithService] = function(options, cb) {
-		overrideLoginMethod(oldMethod, [options], cb, loginWithOAuthTokenAndTOTP);
+		overrideLoginMethod(
+			oldMethod,
+			[options],
+			cb,
+			loginWithOAuthTokenAndTOTP,
+		);
 	};
 };

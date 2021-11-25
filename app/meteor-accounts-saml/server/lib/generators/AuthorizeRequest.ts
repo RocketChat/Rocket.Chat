@@ -14,9 +14,14 @@ import { IAuthorizeRequestVariables } from '../../definition/IAuthorizeRequestVa
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button
 */
 export class AuthorizeRequest {
-	public static generate(serviceProviderOptions: IServiceProviderOptions): ISAMLRequest {
+	public static generate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): ISAMLRequest {
 		const data = this.getDataForNewRequest(serviceProviderOptions);
-		const request = SAMLUtils.fillTemplateData(this.authorizeRequestTemplate(serviceProviderOptions), data);
+		const request = SAMLUtils.fillTemplateData(
+			this.authorizeRequestTemplate(serviceProviderOptions),
+			data,
+		);
 
 		return {
 			request,
@@ -27,33 +32,51 @@ export class AuthorizeRequest {
 	// The AuthorizeRequest template is split into three parts
 	// This way, users don't need to change the template when all they want to do is remove the NameID Policy or the AuthnContext.
 	// This also ensures compatibility with providers that were configured before the templates existed.
-	private static authorizeRequestTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static authorizeRequestTemplate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		const data = {
-			identifierFormatTag: this.identifierFormatTagTemplate(serviceProviderOptions),
-			authnContextTag: this.authnContextTagTemplate(serviceProviderOptions),
+			identifierFormatTag: this.identifierFormatTagTemplate(
+				serviceProviderOptions,
+			),
+			authnContextTag: this.authnContextTagTemplate(
+				serviceProviderOptions,
+			),
 		};
 
-		const template = serviceProviderOptions.authRequestTemplate || defaultAuthRequestTemplate;
+		const template =			serviceProviderOptions.authRequestTemplate
+			|| defaultAuthRequestTemplate;
 		return SAMLUtils.fillTemplateData(template, data);
 	}
 
-	private static identifierFormatTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static identifierFormatTagTemplate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		if (!serviceProviderOptions.identifierFormat) {
 			return '';
 		}
 
-		return serviceProviderOptions.nameIDPolicyTemplate || defaultNameIDTemplate;
+		return (
+			serviceProviderOptions.nameIDPolicyTemplate || defaultNameIDTemplate
+		);
 	}
 
-	private static authnContextTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
+	private static authnContextTagTemplate(
+		serviceProviderOptions: IServiceProviderOptions,
+	): string {
 		if (!serviceProviderOptions.customAuthnContext) {
 			return '';
 		}
 
-		return serviceProviderOptions.authnContextTemplate || defaultAuthnContextTemplate;
+		return (
+			serviceProviderOptions.authnContextTemplate
+			|| defaultAuthnContextTemplate
+		);
 	}
 
-	private static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions): IAuthorizeRequestVariables {
+	private static getDataForNewRequest(
+		serviceProviderOptions: IServiceProviderOptions,
+	): IAuthorizeRequestVariables {
 		let id = `_${ SAMLUtils.generateUniqueID() }`;
 		const instant = SAMLUtils.generateInstant();
 
@@ -68,9 +91,14 @@ export class AuthorizeRequest {
 			callbackUrl: serviceProviderOptions.callbackUrl,
 			entryPoint: serviceProviderOptions.entryPoint,
 			issuer: serviceProviderOptions.issuer,
-			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
-			authnContextComparison: serviceProviderOptions.authnContextComparison || 'exact',
-			authnContext: serviceProviderOptions.customAuthnContext || defaultAuthnContext,
+			identifierFormat:
+				serviceProviderOptions.identifierFormat
+				|| defaultIdentifierFormat,
+			authnContextComparison:
+				serviceProviderOptions.authnContextComparison || 'exact',
+			authnContext:
+				serviceProviderOptions.customAuthnContext
+				|| defaultAuthnContext,
 		};
 	}
 }

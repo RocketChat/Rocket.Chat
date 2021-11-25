@@ -1,41 +1,71 @@
 import WebSocket from 'ws';
-import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
+import type {
+	DDPSubscription,
+	Connection,
+	TransformMessage,
+} from 'meteor/rocketchat:streamer';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Streamer, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import {
+	Streamer,
+	StreamerCentral,
+} from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [
-		name,
-		eventName,
-		args,
-	]);
+	api.broadcast('stream', [name, eventName, args]);
 });
 
 export class Stream extends Streamer {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
+	registerPublication(
+		name: string,
+		fn: (
+			eventName: string,
+			options: boolean | { useCollection?: boolean; args?: any }
+		) => void,
+	): void {
 		server.publish(name, fn);
 	}
 
-	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
+	registerMethod(
+		methods: Record<string, (eventName: string, ...args: any[]) => any>,
+	): void {
 		server.methods(methods);
 	}
 
-	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false {
-		return !isEmpty(fields) && server.serialize({
-			[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
-			[DDP_EVENTS.COLLECTION]: collection,
-			[DDP_EVENTS.ID]: id,
-			[DDP_EVENTS.FIELDS]: fields,
-		});
+	changedPayload(
+		collection: string,
+		id: string,
+		fields: Record<string, any>,
+	): string | false {
+		return (
+			!isEmpty(fields)
+			&& server.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.CHANGED,
+				[DDP_EVENTS.COLLECTION]: collection,
+				[DDP_EVENTS.ID]: id,
+				[DDP_EVENTS.FIELDS]: fields,
+			})
+		);
 	}
 
-	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], getMsg: string | TransformMessage): Promise<void> {
+	async sendToManySubscriptions(
+		subscriptions: Set<DDPSubscription>,
+		origin: Connection | undefined,
+		eventName: string,
+		args: any[],
+		getMsg: string | TransformMessage,
+	): Promise<void> {
 		if (typeof getMsg === 'function') {
-			return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
+			return super.sendToManySubscriptions(
+				subscriptions,
+				origin,
+				eventName,
+				args,
+				getMsg,
+			);
 		}
 
 		const options = {
@@ -47,19 +77,38 @@ export class Stream extends Streamer {
 		};
 
 		const data = {
-			meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
-			normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
+			meteor: [
+				Buffer.concat(
+					WebSocket.Sender.frame(
+						Buffer.from(`a${ JSON.stringify([getMsg]) }`),
+						options,
+					),
+				),
+			],
+			normal: [
+				Buffer.concat(
+					WebSocket.Sender.frame(Buffer.from(getMsg), options),
+				),
+			],
 		};
 
 		for await (const { subscription } of subscriptions) {
-			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
+			if (
+				this.retransmitToSelf === false
+				&& origin
+				&& origin === subscription.connection
+			) {
 				return;
 			}
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
 				await new Promise((resolve) => {
 					subscription.client.ws._sender.sendFrame(
-						data[subscription.client.meteorClient ? 'meteor' : 'normal'],
+						data[
+							subscription.client.meteorClient
+								? 'meteor'
+								: 'normal'
+						],
 						resolve,
 					);
 				});

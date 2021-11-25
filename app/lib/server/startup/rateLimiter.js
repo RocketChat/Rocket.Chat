@@ -10,10 +10,12 @@ import { Logger } from '../../../logger';
 const logger = new Logger('RateLimiter');
 
 // Get initial set of names already registered for rules
-const names = new Set(Object.values(DDPRateLimiter.printRules())
-	.map((rule) => rule._matchers)
-	.filter((match) => typeof match.name === 'string')
-	.map((match) => match.name));
+const names = new Set(
+	Object.values(DDPRateLimiter.printRules())
+		.map((rule) => rule._matchers)
+		.filter((match) => typeof match.name === 'string')
+		.map((match) => match.name),
+);
 
 // Override the addRule to save new names added after this point
 const { addRule } = DDPRateLimiter;
@@ -27,7 +29,9 @@ DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function(input) {
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth =		(session
+			&& session.connectionHandle
+			&& session.connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
 };
@@ -37,7 +41,9 @@ DDPRateLimiter._increment = function(input) {
 RateLimiter.prototype.check = function(input) {
 	// ==== BEGIN OVERRIDE ====
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth =		(session
+			&& session.connectionHandle
+			&& session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
 	const self = this;
@@ -63,7 +69,7 @@ RateLimiter.prototype.check = function(input) {
 		if (ruleResult.timeToNextReset < 0) {
 			// Reset all the counters since the rule has reset
 			rule.resetCounter();
-			ruleResult.timeSinceLastReset = new Date().getTime() - rule._lastResetTime;
+			ruleResult.timeSinceLastReset =				new Date().getTime() - rule._lastResetTime;
 			ruleResult.timeToNextReset = rule.options.intervalTime;
 			numInvocations = 0;
 		}
@@ -88,14 +94,18 @@ RateLimiter.prototype.check = function(input) {
 		} else {
 			// If this is an allowed attempt and we haven't failed on any of the
 			// other rules that match, update the reply field.
-			if (rule.options.numRequestsAllowed - numInvocations < reply.numInvocationsLeft && reply.allowed) {
+			if (
+				rule.options.numRequestsAllowed - numInvocations
+					< reply.numInvocationsLeft
+				&& reply.allowed
+			) {
 				reply.timeToReset = ruleResult.timeToNextReset;
-				reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
+				reply.numInvocationsLeft =					rule.options.numRequestsAllowed - numInvocations;
 			}
 
 			// ==== BEGIN OVERRIDE ====
 			callbackReply.timeToReset = ruleResult.timeToNextReset;
-			callbackReply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
+			callbackReply.numInvocationsLeft =				rule.options.numRequestsAllowed - numInvocations;
 			rule._executeCallback(callbackReply, input);
 			// ==== END OVERRIDE ====
 		}
@@ -103,8 +113,10 @@ RateLimiter.prototype.check = function(input) {
 	return reply;
 };
 
-const checkNameNonStream = (name) => name && !names.has(name) && !name.startsWith('stream-');
-const checkNameForStream = (name) => name && !names.has(name) && name.startsWith('stream-');
+const checkNameNonStream = (name) =>
+	name && !names.has(name) && !name.startsWith('stream-');
+const checkNameForStream = (name) =>
+	name && !names.has(name) && name.startsWith('stream-');
 
 const ruleIds = {};
 
@@ -119,9 +131,9 @@ const callback = (msg, name) => (reply, input) => {
 			name: input.name,
 			connection_id: input.connectionId,
 		});
-	// } else {
-	// 	console.log('DDP RATE LIMIT:', message);
-	// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
+		// } else {
+		// 	console.log('DDP RATE LIMIT:', message);
+		// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
 	}
 };
 
@@ -178,12 +190,16 @@ const configUserByMethod = _.debounce(() => {
 		name: checkNameNonStream,
 		userId: (userId) => userId != null,
 	});
-	reconfigureLimit('User_By_Method', {
-		broadcastAuth: false,
-		type: () => true,
-		name: checkNameForStream,
-		userId: (userId) => userId != null,
-	}, 4);
+	reconfigureLimit(
+		'User_By_Method',
+		{
+			broadcastAuth: false,
+			type: () => true,
+			name: checkNameForStream,
+			userId: (userId) => userId != null,
+		},
+		4,
+	);
 }, 1000);
 
 const configConnectionByMethod = _.debounce(() => {
@@ -193,18 +209,31 @@ const configConnectionByMethod = _.debounce(() => {
 		name: checkNameNonStream,
 		connectionId: () => true,
 	});
-	reconfigureLimit('Connection_By_Method', {
-		broadcastAuth: false,
-		type: () => true,
-		name: checkNameForStream,
-		connectionId: () => true,
-	}, 4);
+	reconfigureLimit(
+		'Connection_By_Method',
+		{
+			broadcastAuth: false,
+			type: () => true,
+			name: checkNameForStream,
+			connectionId: () => true,
+		},
+		4,
+	);
 }, 1000);
 
 if (!process.env.TEST_MODE) {
 	settings.watchByRegex(/^DDP_Rate_Limit_IP_.+/, configIP);
 	settings.watchByRegex(/^DDP_Rate_Limit_User_[^B].+/, configUser);
-	settings.watchByRegex(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);
-	settings.watchByRegex(/^DDP_Rate_Limit_User_By_Method_.+/, configUserByMethod);
-	settings.watchByRegex(/^DDP_Rate_Limit_Connection_By_Method_.+/, configConnectionByMethod);
+	settings.watchByRegex(
+		/^DDP_Rate_Limit_Connection_[^B].+/,
+		configConnection,
+	);
+	settings.watchByRegex(
+		/^DDP_Rate_Limit_User_By_Method_.+/,
+		configUserByMethod,
+	);
+	settings.watchByRegex(
+		/^DDP_Rate_Limit_Connection_By_Method_.+/,
+		configConnectionByMethod,
+	);
 }

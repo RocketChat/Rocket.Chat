@@ -44,24 +44,38 @@ export class LivechatDepartment extends Base {
 			_id = this.insert(record);
 		}
 		if (oldData && oldData.enabled !== data.enabled) {
-			LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+			LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(
+				_id,
+				data.enabled,
+			);
 		}
 		return _.extend(record, { _id });
 	}
 
 	saveDepartmentsByAgent(agent, departments = []) {
 		const { _id: agentId, username } = agent;
-		const savedDepartments = LivechatDepartmentAgents.findByAgentId(agentId).fetch().map((d) => d.departmentId);
+		const savedDepartments = LivechatDepartmentAgents.findByAgentId(agentId)
+			.fetch()
+			.map((d) => d.departmentId);
 
-		const incNumAgents = (_id, numAgents) => this.update(_id, { $inc: { numAgents } });
+		const incNumAgents = (_id, numAgents) =>
+			this.update(_id, { $inc: { numAgents } });
 		// remove other departments
 		_.difference(savedDepartments, departments).forEach((departmentId) => {
-			LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+			LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(
+				departmentId,
+				agentId,
+			);
 			incNumAgents(departmentId, -1);
 		});
 
 		departments.forEach((departmentId) => {
-			const { enabled: departmentEnabled } = this.findOneById(departmentId, { fields: { enabled: 1 } });
+			const { enabled: departmentEnabled } = this.findOneById(
+				departmentId,
+				{
+					fields: { enabled: 1 },
+				},
+			);
 			const saveResult = LivechatDepartmentAgents.saveAgent({
 				agentId,
 				departmentId,
@@ -102,11 +116,14 @@ export class LivechatDepartment extends Base {
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);

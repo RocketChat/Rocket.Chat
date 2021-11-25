@@ -48,7 +48,10 @@ const EndToEnd = (props) => {
 		try {
 			await e2e.changePassword(password);
 			reset();
-			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Encryption_key_saved_successfully'),
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

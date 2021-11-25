@@ -3,9 +3,15 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import preferencesMainContent from '../pageobjects/preferences-main-content.page';
 import admin from '../pageobjects/administration.page';
-import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
+import {
+	username,
+	password,
+	email,
+	adminUsername,
+	adminEmail,
+	adminPassword,
+} from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
-
 
 describe('[User Preferences]', () => {
 	describe('default', () => {
@@ -37,11 +43,15 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should show the email input', () => {
-				preferencesMainContent.emailTextInput.scrollIntoView().should('be.visible');
+				preferencesMainContent.emailTextInput
+					.scrollIntoView()
+					.should('be.visible');
 			});
 
 			it('it should show the password input', () => {
-				preferencesMainContent.passwordTextInput.scrollIntoView().should('be.visible');
+				preferencesMainContent.passwordTextInput
+					.scrollIntoView()
+					.should('be.visible');
 			});
 
 			it('it should show the submit button', () => {
@@ -55,15 +65,21 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should change the name field', () => {
-				preferencesMainContent.changeRealName(`EditedRealName${ username }`);
+				preferencesMainContent.changeRealName(
+					`EditedRealName${ username }`,
+				);
 			});
 
 			it('it should change the Username field', () => {
-				preferencesMainContent.changeUsername(`EditedUserName${ username }`);
+				preferencesMainContent.changeUsername(
+					`EditedUserName${ username }`,
+				);
 			});
 
 			it.skip('it should change the email field', () => {
-				preferencesMainContent.changeEmail(`EditedUserEmail${ username }@gmail.com`);
+				preferencesMainContent.changeEmail(
+					`EditedUserEmail${ username }@gmail.com`,
+				);
 			});
 
 			it.skip('it should put the password in the modal input', () => {
@@ -89,17 +105,25 @@ describe('[User Preferences]', () => {
 			});
 
 			it.skip('it should be that the name on the last message is the edited one', () => {
-				mainContent.waitForLastMessageUserEqualsText(`EditedUserName${ username }`);
-				mainContent.lastMessageUser.getText().should.equal(`EditedUserName${ username }`);
+				mainContent.waitForLastMessageUserEqualsText(
+					`EditedUserName${ username }`,
+				);
+				mainContent.lastMessageUser
+					.getText()
+					.should.equal(`EditedUserName${ username }`);
 			});
 
 			it.skip('it should be that the user name on the members flex tab is the edited one', () => {
 				mainContent.lastMessageUser.click();
-				flexTab.memberUserName.getText().should.equal(`EditedUserName${ username }`);
+				flexTab.memberUserName
+					.getText()
+					.should.equal(`EditedUserName${ username }`);
 			});
 
 			it.skip('it should that the real name on the members flex tab is the edited one', () => {
-				flexTab.memberRealName.getText().should.equal(`EditedRealName${ username }`);
+				flexTab.memberRealName
+					.getText()
+					.should.equal(`EditedRealName${ username }`);
 			});
 		});
 	});
@@ -134,11 +158,13 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should be that the name field is disabled', () => {
-				preferencesMainContent.realNameTextInputEnabled().should.be.false;
+				preferencesMainContent.realNameTextInputEnabled().should.be
+					.false;
 			});
 
 			it('it should be that the Username field is disabled', () => {
-				preferencesMainContent.userNameTextInputEnabled().should.be.false;
+				preferencesMainContent.userNameTextInputEnabled().should.be
+					.false;
 			});
 
 			it('it should close profile', () => {

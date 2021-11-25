@@ -15,7 +15,9 @@ const getUsername = ({ userId, username }) => {
 		query._id = userId;
 	}
 
-	const user = Meteor.users.findOne(query, { fields: { username: 1, avatarETag: 1 } });
+	const user = Meteor.users.findOne(query, {
+		fields: { username: 1, avatarETag: 1 },
+	});
 	if (!user) {
 		return {};
 	}
@@ -23,7 +25,8 @@ const getUsername = ({ userId, username }) => {
 	return user;
 };
 
-const getRoomETag = (rid) => Rooms.findOne({ _id: rid }, { fields: { avatarETag: 1 } });
+const getRoomETag = (rid) =>
+	Rooms.findOne({ _id: rid }, { fields: { avatarETag: 1 } });
 
 Template.avatar.helpers({
 	src() {

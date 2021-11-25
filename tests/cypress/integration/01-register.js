@@ -94,7 +94,9 @@ describe('[Register]', () => {
 			loginPage.passwordField.type('password');
 			loginPage.submit();
 			loginPage.confirmPasswordField.should('have.class', 'error');
-			loginPage.confirmPasswordInvalidText.get('text').should('not.be.empty');
+			loginPage.confirmPasswordInvalidText
+				.get('text')
+				.should('not.be.empty');
 		});
 
 		it('it should be valid if equal to password', () => {

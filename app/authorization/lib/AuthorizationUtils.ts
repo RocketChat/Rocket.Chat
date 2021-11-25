@@ -21,7 +21,10 @@ export const AuthorizationUtils = class {
 		}
 	}
 
-	static isPermissionRestrictedForRole(permissionId: string, roleId: string): boolean {
+	static isPermissionRestrictedForRole(
+		permissionId: string,
+		roleId: string,
+	): boolean {
 		if (!roleId || !permissionId) {
 			throw new Error('invalid-param');
 		}
@@ -38,7 +41,10 @@ export const AuthorizationUtils = class {
 		return !rules.has(permissionId);
 	}
 
-	static isPermissionRestrictedForRoleList(permissionId: string, roleList: string[]): boolean {
+	static isPermissionRestrictedForRoleList(
+		permissionId: string,
+		roleList: string[],
+	): boolean {
 		if (!roleList || !permissionId) {
 			throw new Error('invalid-param');
 		}

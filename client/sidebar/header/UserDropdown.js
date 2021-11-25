@@ -70,7 +70,11 @@ const UserDropdown = ({ user, onClose }) => {
 		e.preventDefault();
 		imperativeModal.open({
 			component: EditStatusModal,
-			props: { userStatus: status, userStatusText: statusText, onClose: imperativeModal.close },
+			props: {
+				userStatus: status,
+				userStatusText: statusText,
+				onClose: imperativeModal.close,
+			},
 		});
 		onClose();
 	});

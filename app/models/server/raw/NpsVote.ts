@@ -1,4 +1,11 @@
-import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
+import {
+	ObjectId,
+	Collection,
+	Cursor,
+	FindOneOptions,
+	UpdateWriteOpResult,
+	WithoutProjection,
+} from 'mongodb';
 
 import { INpsVote, INpsVoteStatus } from '../../../../definition/INps';
 import { BaseRaw } from './BaseRaw';
@@ -17,18 +24,22 @@ export class NpsVoteRaw extends BaseRaw<T> {
 		]);
 	}
 
-	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findNotSentByNpsId(
+		npsId: string,
+		options?: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const query = {
 			npsId,
 			status: INpsVoteStatus.NEW,
 		};
-		return this.col
-			.find(query, options)
-			.sort({ ts: 1 })
-			.limit(1000);
+		return this.col.find(query, options).sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findByNpsIdAndStatus(
+		npsId: string,
+		status: INpsVoteStatus,
+		options?: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const query = {
 			npsId,
 			status,
@@ -36,7 +47,10 @@ export class NpsVoteRaw extends BaseRaw<T> {
 		return this.col.find(query, options);
 	}
 
-	findByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findByNpsId(
+		npsId: string,
+		options?: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const query = {
 			npsId,
 		};
@@ -44,10 +58,7 @@ export class NpsVoteRaw extends BaseRaw<T> {
 	}
 
 	save(vote: Omit<T, '_id' | '_updatedAt'>): Promise<UpdateWriteOpResult> {
-		const {
-			npsId,
-			identifier,
-		} = vote;
+		const { npsId, identifier } = vote;
 
 		const query = {
 			npsId,

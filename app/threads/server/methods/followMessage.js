@@ -8,25 +8,35 @@ import { canAccessRoom } from '../../../authorization/server';
 import { follow } from '../functions';
 
 Meteor.methods({
-	'followMessage'({ mid }) {
+	followMessage({ mid }) {
 		check(mid, String);
 
 		const uid = Meteor.userId();
 		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'followMessage' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'followMessage',
+			});
 		}
 
 		if (mid && !settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
+			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+				method: 'followMessage',
+			});
 		}
 
-		const message = Messages.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
+		const message = Messages.findOneById(mid, {
+			fields: { rid: 1, tmid: 1 },
+		});
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'followMessage' });
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+				method: 'followMessage',
+			});
 		}
 
 		if (!canAccessRoom({ _id: message.rid }, { _id: uid })) {
-			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
+			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+				method: 'followMessage',
+			});
 		}
 
 		return follow({ tmid: message.tmid || message._id, uid });
@@ -34,5 +44,7 @@ Meteor.methods({
 });
 
 RateLimiter.limitMethod('followMessage', 5, 5000, {
-	userId() { return true; },
+	userId() {
+		return true;
+	},
 });

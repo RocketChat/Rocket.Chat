@@ -1,6 +1,5 @@
 import { HTTP } from 'meteor/http';
 
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
@@ -9,7 +8,7 @@ import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getWorkspaceAccessTokenWithScope(scope = '') {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } =		retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
 
@@ -44,7 +43,9 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`,
+			);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
@@ -58,7 +59,9 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 	}
 
 	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
+	expiresAt.setSeconds(
+		expiresAt.getSeconds() + authTokenResult.data.expires_in,
+	);
 
 	tokenResponse.expiresAt = expiresAt;
 	tokenResponse.token = authTokenResult.data.access_token;

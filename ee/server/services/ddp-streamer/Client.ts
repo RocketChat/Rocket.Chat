@@ -3,7 +3,12 @@ import { EventEmitter } from 'events';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
 
-import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
+import {
+	DDP_EVENTS,
+	WS_ERRORS,
+	WS_ERRORS_MESSAGES,
+	TIMEOUT,
+} from './constants';
 import { SERVER_ID } from './Server';
 import { server } from './configureServer';
 import { IPacket } from './types/IPacket';
@@ -30,10 +35,7 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	constructor(
-		public ws: WebSocket,
-		public meteorClient = false,
-	) {
+	constructor(public ws: WebSocket, public meteorClient = false) {
 		super();
 
 		this.connection = {
@@ -61,10 +63,16 @@ export class Client extends EventEmitter {
 
 		this.once('message', ({ msg }) => {
 			if (msg !== DDP_EVENTS.CONNECT) {
-				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
+				return this.ws.close(
+					WS_ERRORS.CLOSE_PROTOCOL_ERROR,
+					WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR,
+				);
 			}
 			return this.send(
-				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }),
+				server.serialize({
+					[DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED,
+					session: this.session,
+				}),
 			);
 		});
 
@@ -83,7 +91,9 @@ export class Client extends EventEmitter {
 	}
 
 	async callSubscribe(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.subscribe(this, packet)).catch();
+		this.chain = this.chain
+			.then(() => server.subscribe(this, packet))
+			.catch();
 	}
 
 	process(action: string, packet: IPacket): void {
@@ -127,11 +137,21 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(
+			server.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.PING,
+				...id && { [DDP_EVENTS.ID]: id },
+			}),
+		);
 	}
 
 	pong(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(
+			server.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.PONG,
+				...id && { [DDP_EVENTS.ID]: id },
+			}),
+		);
 	}
 
 	handleIdle = (): void => {
@@ -149,7 +169,11 @@ export class Client extends EventEmitter {
 			const packet = server.parse(payload);
 			this.emit('message', packet);
 			if (this.wait) {
-				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
+				return new Promise((resolve) =>
+					this.once(DDP_EVENTS.LOGGED, () =>
+						resolve(this.process(packet.msg, packet)),
+					),
+				);
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {

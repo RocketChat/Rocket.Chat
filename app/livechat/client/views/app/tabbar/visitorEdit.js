@@ -3,7 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../../../../utils';
-import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
+import {
+	hasAtLeastOnePermission,
+	hasPermission,
+	hasRole,
+} from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
@@ -11,15 +15,24 @@ import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 const CUSTOM_FIELDS_COUNT = 100;
 
-const getCustomFieldsByScope = (customFields = [], data = {}, filter, disabled) =>
+const getCustomFieldsByScope = (
+	customFields = [],
+	data = {},
+	filter,
+	disabled,
+) =>
 	customFields
-		.filter(({ visibility, scope }) => visibility !== 'hidden' && scope === filter)
+		.filter(
+			({ visibility, scope }) =>
+				visibility !== 'hidden' && scope === filter,
+		)
 		.map(({ _id: name, scope, label, ...extraData }) => {
 			const value = data[name] ? data[name] : '';
 			return { name, label, scope, value, disabled, ...extraData };
 		});
 
-const isCustomFieldDisabled = () => !hasPermission('edit-livechat-room-customfields');
+const isCustomFieldDisabled = () =>
+	!hasPermission('edit-livechat-room-customfields');
 
 Template.visitorEdit.helpers({
 	visitor() {
@@ -27,7 +40,10 @@ Template.visitorEdit.helpers({
 	},
 
 	canViewCustomFields() {
-		return hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+		return hasAtLeastOnePermission([
+			'view-livechat-room-customfields',
+			'edit-livechat-room-customfields',
+		]);
 	},
 
 	visitorCustomFields() {
@@ -39,7 +55,12 @@ Template.visitorEdit.helpers({
 		const visitor = Template.instance().visitor.get();
 		const { livechatData = {} } = visitor || {};
 
-		return getCustomFieldsByScope(customFields, livechatData, 'visitor', isCustomFieldDisabled());
+		return getCustomFieldsByScope(
+			customFields,
+			livechatData,
+			'visitor',
+			isCustomFieldDisabled(),
+		);
 	},
 
 	room() {
@@ -55,7 +76,12 @@ Template.visitorEdit.helpers({
 		const room = Template.instance().room.get();
 		const { livechatData = {} } = room || {};
 
-		return getCustomFieldsByScope(customFields, livechatData, 'room', isCustomFieldDisabled());
+		return getCustomFieldsByScope(
+			customFields,
+			livechatData,
+			'room',
+			isCustomFieldDisabled(),
+		);
 	},
 
 	email() {
@@ -86,7 +112,12 @@ Template.visitorEdit.helpers({
 	},
 
 	canRemoveTag(availableUserTags, tag) {
-		return hasRole(Meteor.userId(), ['admin', 'livechat-manager']) || (Array.isArray(availableUserTags) && (availableUserTags.length === 0 || availableUserTags.indexOf(tag) > -1));
+		return (
+			hasRole(Meteor.userId(), ['admin', 'livechat-manager'])
+			|| (Array.isArray(availableUserTags)
+				&& (availableUserTags.length === 0
+					|| availableUserTags.indexOf(tag) > -1))
+		);
 	},
 
 	isSmsIntegration() {
@@ -111,7 +142,9 @@ Template.visitorEdit.onCreated(async function() {
 	this.autorun(async () => {
 		const { visitorId } = Template.currentData();
 		if (visitorId) {
-			const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+			const { visitor } = await APIClient.v1.get(
+				`livechat/visitors.info?visitorId=${ visitorId }`,
+			);
 			this.visitor.set(visitor);
 		}
 	});
@@ -120,14 +153,18 @@ Template.visitorEdit.onCreated(async function() {
 
 	this.autorun(async () => {
 		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
-		const { customFields } = await APIClient.v1.get(`livechat/custom-fields?count=${ CUSTOM_FIELDS_COUNT }`);
+		const { customFields } = await APIClient.v1.get(
+			`livechat/custom-fields?count=${ CUSTOM_FIELDS_COUNT }`,
+		);
 		this.room.set(room);
 		this.tags.set((room && room.tags) || []);
 		this.customFields.set(customFields || []);
 	});
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
+	const { departments } = await APIClient.v1.get(
+		`livechat/agents/${ uid }/departments`,
+	);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
@@ -136,7 +173,12 @@ Template.visitorEdit.onCreated(async function() {
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const tags = this.availableTags.get() || [];
 		const availableTags = tags
-			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.indexOf(i) > -1)))
+			.filter(
+				({ departments }) =>
+					isAdmin
+					|| departments.length === 0
+					|| departments.some((i) => agentDepartments.indexOf(i) > -1),
+			)
 			.map(({ name }) => name);
 		this.availableUserTags.set(availableTags);
 	});
@@ -196,7 +238,11 @@ Template.visitorEdit.events({
 		const availableTags = t.availableTags.get();
 		const hasAvailableTags = availableTags && availableTags.length > 0;
 		const availableUserTags = t.availableUserTags.get();
-		if (!hasRole(Meteor.userId(), ['admin', 'livechat-manager']) && hasAvailableTags && (!availableUserTags || availableUserTags.indexOf(tag) === -1)) {
+		if (
+			!hasRole(Meteor.userId(), ['admin', 'livechat-manager'])
+			&& hasAvailableTags
+			&& (!availableUserTags || availableUserTags.indexOf(tag) === -1)
+		) {
 			return;
 		}
 		e.stopPropagation();

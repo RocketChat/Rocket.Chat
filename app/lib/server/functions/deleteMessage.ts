@@ -10,17 +10,27 @@ import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
-export const deleteMessage = async function(message: IMessage, user: IUser): Promise<void> {
+export const deleteMessage = async function(
+	message: IMessage,
+	user: IUser,
+): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
-	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
+	const showDeletedStatus =		settings.get('Message_ShowDeletedStatus') || isThread;
 	const bridges = Apps && Apps.isLoaded() && Apps.getBridges();
 
 	if (deletedMsg && bridges) {
-		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
+		const prevent = Promise.await(
+			bridges
+				.getListenerBridge()
+				.messageEvent('IPreMessageDeletePrevent', deletedMsg),
+		);
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
+			throw new Meteor.Error(
+				'error-app-prevented-deleting',
+				'A Rocket.Chat App prevented the message deleting.',
+			);
 		}
 	}
 
@@ -38,7 +48,11 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 		}
 
 		for await (const file of files) {
-			file?._id && await Uploads.update({ _id: file._id }, { $set: { _hidden: true } });
+			file?._id
+				&& await Uploads.update(
+					{ _id: file._id },
+					{ $set: { _hidden: true } },
+				);
 		}
 	} else {
 		if (!showDeletedStatus) {
@@ -50,7 +64,9 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 		});
 	}
 
-	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
+	const room = Rooms.findOneById(message.rid, {
+		fields: { lastMessage: 1, prid: 1, mid: 1 },
+	});
 	callbacks.run('afterDeleteMessage', deletedMsg, room);
 
 	// update last message
@@ -66,10 +82,14 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+		Notifications.notifyRoom(message.rid, 'deleteMessage', {
+			_id: message._id,
+		});
 	}
 
 	if (bridges) {
-		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
+		bridges
+			.getListenerBridge()
+			.messageEvent('IPostMessageDeleted', deletedMsg);
 	}
 };

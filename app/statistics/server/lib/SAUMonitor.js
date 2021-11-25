@@ -15,7 +15,10 @@ const getDateObj = (dateTime = new Date()) => ({
 	year: dateTime.getFullYear(),
 });
 
-const isSameDateObj = (oldest, newest) => oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
+const isSameDateObj = (oldest, newest) =>
+	oldest.year === newest.year
+	&& oldest.month === newest.month
+	&& oldest.day === newest.day;
 
 const logger = new Logger('SAUMonitor');
 
@@ -111,7 +114,10 @@ export class SAUMonitorClass {
 			// this._handleSession(connection, getDateObj());
 
 			connection.onClose(async () => {
-				await Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
+				await Sessions.closeByInstanceIdAndSessionId(
+					this._instanceId,
+					connection.id,
+				);
 			});
 		});
 	}
@@ -131,7 +137,13 @@ export class SAUMonitorClass {
 			const mostImportantRole = getMostImportantRole(roles);
 
 			const loginAt = new Date();
-			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
+			const params = {
+				userId,
+				roles,
+				mostImportantRole,
+				loginAt,
+				...getDateObj(),
+			};
 			await this._handleSession(info.connection, params);
 			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
@@ -144,7 +156,11 @@ export class SAUMonitorClass {
 			const sessionId = info.connection.id;
 			if (info.user) {
 				const userId = info.user._id;
-				await Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
+				await Sessions.logoutByInstanceIdAndSessionIdAndUserId(
+					this._instanceId,
+					sessionId,
+					userId,
+				);
 			}
 		});
 	}
@@ -164,24 +180,50 @@ export class SAUMonitorClass {
 		const currentDay = getDateObj(currentDateTime);
 
 		if (!isSameDateObj(this._today, currentDay)) {
-			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
-			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
+			const beforeDateTime = new Date(
+				this._today.year,
+				this._today.month - 1,
+				this._today.day,
+				23,
+				59,
+				59,
+				999,
+			);
+			const nextDateTime = new Date(
+				currentDay.year,
+				currentDay.month - 1,
+				currentDay.day,
+			);
 
 			const createSessions = async (objects, ids) => {
 				await Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
-					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
+					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds(
+						{ year, month, day },
+						this._instanceId,
+						ids,
+						{ lastActivityAt: beforeDateTime },
+					);
 				});
 			};
-			this._applyAllServerSessionsBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
+			this._applyAllServerSessionsBatch(createSessions, {
+				createdAt: nextDateTime,
+				lastActivityAt: nextDateTime,
+				...currentDay,
+			});
 			this._today = currentDay;
 			return;
 		}
 
 		// Otherwise, just update the lastActivityAt field
 		await this._applyAllServerSessionsIds(async (sessions) => {
-			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: currentDateTime });
+			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds(
+				{ year, month, day },
+				this._instanceId,
+				sessions,
+				{ lastActivityAt: currentDateTime },
+			);
 		});
 	}
 
@@ -190,7 +232,10 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const ip = connection.httpHeaders ? connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] : connection.clientAddress;
+		const ip = connection.httpHeaders
+			? connection.httpHeaders['x-real-ip']
+			  || connection.httpHeaders['x-forwarded-for']
+			: connection.clientAddress;
 		const host = connection.httpHeaders && connection.httpHeaders.host;
 		const info = {
 			type: 'session',
@@ -210,7 +255,13 @@ export class SAUMonitorClass {
 	}
 
 	_getUserAgentInfo(connection) {
-		if (!(connection && connection.httpHeaders && connection.httpHeaders['user-agent'])) {
+		if (
+			!(
+				connection
+				&& connection.httpHeaders
+				&& connection.httpHeaders['user-agent']
+			)
+		) {
 			return;
 		}
 
@@ -231,7 +282,9 @@ export class SAUMonitorClass {
 		};
 
 		const removeEmptyProps = (obj) => {
-			Object.keys(obj).forEach((p) => (!obj[p] || obj[p] === undefined) && delete obj[p]);
+			Object.keys(obj).forEach(
+				(p) => (!obj[p] || obj[p] === undefined) && delete obj[p],
+			);
 			return obj;
 		};
 
@@ -277,7 +330,9 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
+		const sessions = Object.values(Meteor.server.sessions).filter(
+			(session) => session.userId,
+		);
 		for await (const session of sessions) {
 			await callback(session.connectionHandle);
 		}
@@ -296,7 +351,9 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const sessionIds = Object.values(Meteor.server.sessions).filter((session) => session.userId).map((s) => s.id);
+		const sessionIds = Object.values(Meteor.server.sessions)
+			.filter((session) => session.userId)
+			.map((s) => s.id);
 		await this.recursive(callback, sessionIds);
 	}
 
@@ -307,7 +364,13 @@ export class SAUMonitorClass {
 		const session = Meteor.server.sessions.get(sessionId);
 		if (session) {
 			Object.keys(data).forEach((p) => {
-				session.connectionHandle = Object.assign({}, session.connectionHandle, { [p]: data[p] });
+				session.connectionHandle = Object.assign(
+					{},
+					session.connectionHandle,
+					{
+						[p]: data[p],
+					},
+				);
 			});
 		}
 	}
@@ -318,18 +381,27 @@ export class SAUMonitorClass {
 				return Promise.resolve();
 			}
 			const ids = [];
-			return Promise.all(arr.splice(0, limit).map((item) => {
-				ids.push(item.id);
-				return this._getConnectionInfo(item.connectionHandle, params);
-			})).then(async (data) => {
-				await callback(data, ids);
-				return batch(arr, limit);
-			}).catch((e) => {
-				logger.debug(`Error: ${ e.message }`);
-			});
+			return Promise.all(
+				arr.splice(0, limit).map((item) => {
+					ids.push(item.id);
+					return this._getConnectionInfo(
+						item.connectionHandle,
+						params,
+					);
+				}),
+			)
+				.then(async (data) => {
+					await callback(data, ids);
+					return batch(arr, limit);
+				})
+				.catch((e) => {
+					logger.debug(`Error: ${ e.message }`);
+				});
 		};
 
-		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
+		const sessions = Object.values(Meteor.server.sessions).filter(
+			(session) => session.userId,
+		);
 		batch(sessions, 500);
 	}
 
@@ -363,10 +435,16 @@ export class SAUMonitorClass {
 			day: { $lte: yesterday.day },
 		};
 
-		await aggregates.dailySessionsOfYesterday(Sessions.col, yesterday).forEach(async (record) => {
-			record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
-			await Sessions.updateOne({ _id: record._id }, { $set: record }, { upsert: true });
-		});
+		await aggregates
+			.dailySessionsOfYesterday(Sessions.col, yesterday)
+			.forEach(async (record) => {
+				record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
+				await Sessions.updateOne(
+					{ _id: record._id },
+					{ $set: record },
+					{ upsert: true },
+				);
+			});
 
 		await Sessions.updateMany(match, {
 			$set: {

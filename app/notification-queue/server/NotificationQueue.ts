@@ -1,6 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '../../../definition/INotification';
+import {
+	INotification,
+	INotificationItemPush,
+	INotificationItemEmail,
+	NotificationItem,
+} from '../../../definition/INotification';
 import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
@@ -22,7 +27,7 @@ class NotificationClass {
 
 	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds: {[key: string]: number} = {
+	private maxScheduleDelaySeconds: { [key: string]: number } = {
 		online: Number(NOTIFICATIONS_SCHEDULE_DELAY_ONLINE),
 		away: Number(NOTIFICATIONS_SCHEDULE_DELAY_AWAY),
 		offline: Number(NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE),
@@ -60,7 +65,9 @@ class NotificationClass {
 		}
 
 		// Once we start notifying the user we anticipate all the schedules
-		const flush = await NotificationQueue.clearScheduleByUserId(notification.uid);
+		const flush = await NotificationQueue.clearScheduleByUserId(
+			notification.uid,
+		);
 
 		// start worker again it queue flushed
 		if (flush.modifiedCount) {
@@ -112,12 +119,25 @@ class NotificationClass {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
-		const receiver = user || await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
-			projection: {
-				statusConnection: 1,
-			},
-		});
+	async scheduleItem({
+		uid,
+		rid,
+		mid,
+		items,
+		user,
+	}: {
+		uid: string;
+		rid: string;
+		mid: string;
+		items: NotificationItem[];
+		user?: Partial<IUser>;
+	}): Promise<void> {
+		const receiver =			user
+			|| await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
+				projection: {
+					statusConnection: 1,
+				},
+			});
 
 		if (!receiver) {
 			return;

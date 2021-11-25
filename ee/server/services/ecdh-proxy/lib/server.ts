@@ -34,13 +34,25 @@ async function getSession(clientPublicKey: string): Promise<ServerSession> {
 
 const getSessionCached = mem(getSession, { maxAge: 1000 });
 
-const _processRequest = async (session: ServerSession, requestData: Buffer): Promise<string> => session.decrypt(requestData);
-const _processResponse = async (session: ServerSession, responseData: Buffer): Promise<string> => session.encrypt(responseData);
+const _processRequest = async (
+	session: ServerSession,
+	requestData: Buffer,
+): Promise<string> => session.decrypt(requestData);
+const _processResponse = async (
+	session: ServerSession,
+	responseData: Buffer,
+): Promise<string> => session.encrypt(responseData);
 
 const proxyHostname = process.env.PROXY_HOST || 'localhost';
 const proxyPort = process.env.PROXY_PORT || 3000;
 
-const proxy = async function(req: Request, res: Response, session?: ServerSession, processRequest = _processRequest, processResponse = _processResponse): Promise<void> {
+const proxy = async function(
+	req: Request,
+	res: Response,
+	session?: ServerSession,
+	processRequest = _processRequest,
+	processResponse = _processResponse,
+): Promise<void> {
 	req.pause();
 	const options: RequestOptions = url.parse(req.originalUrl || '');
 	options.headers = req.headers;
@@ -146,10 +158,14 @@ wss.on('connection', async (ws, req) => {
 
 	const session = await getSessionCached(cookies.ecdhSession);
 
-	const proxy = new WebSocket(`ws://${ proxyHostname }:${ proxyPort }${ req.url }`/* , { agent: req.agent } */);
+	const proxy = new WebSocket(
+		`ws://${ proxyHostname }:${ proxyPort }${ req.url }`, /* , { agent: req.agent } */
+	);
 
 	ws.on('message', async (data: string) => {
-		const decrypted = JSON.stringify([await session.decrypt(data.replace('["', '').replace('"]', ''))]);
+		const decrypted = JSON.stringify([
+			await session.decrypt(data.replace('["', '').replace('"]', '')),
+		]);
 		proxy.send(decrypted);
 	});
 
@@ -191,7 +207,10 @@ app.use('/api/*', async (req, res) => {
 	}
 });
 
-const xhrDataRequestProcess: typeof _processRequest = async (session, requestData) => {
+const xhrDataRequestProcess: typeof _processRequest = async (
+	session,
+	requestData,
+) => {
 	const data: string[] = JSON.parse(requestData.toString());
 
 	for await (const [index, item] of data.entries()) {
@@ -201,7 +220,10 @@ const xhrDataRequestProcess: typeof _processRequest = async (session, requestDat
 	return JSON.stringify(data);
 };
 
-const xhrDataResponseProcess: typeof _processResponse = async (session, responseData) => {
+const xhrDataResponseProcess: typeof _processResponse = async (
+	session,
+	responseData,
+) => {
 	const data = responseData.toString().replace(/\n$/, '').split('\n');
 
 	for await (const [index, item] of data.entries()) {

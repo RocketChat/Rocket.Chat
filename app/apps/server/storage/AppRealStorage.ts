@@ -1,4 +1,7 @@
-import { AppMetadataStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import {
+	AppMetadataStorage,
+	IAppStorageItem,
+} from '@rocket.chat/apps-engine/server/storage';
 
 import { AppsModel } from '../../../models/server/models/apps-model';
 
@@ -15,7 +18,12 @@ export class AppRealStorage extends AppMetadataStorage {
 			let doc;
 
 			try {
-				doc = this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
+				doc = this.db.findOne({
+					$or: [
+						{ id: item.id },
+						{ 'info.nameSlug': item.info.nameSlug },
+					],
+				});
 			} catch (e) {
 				return reject(e);
 			}

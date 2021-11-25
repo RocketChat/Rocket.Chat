@@ -13,7 +13,9 @@ settings.watch('FileUpload_ProtectFiles', function(value) {
 Meteor.methods({
 	async getS3FileUrl(fileId) {
 		if (protectedFiles && !Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'sendFileMessage',
+			});
 		}
 		const file = await Uploads.findOneById(fileId);
 

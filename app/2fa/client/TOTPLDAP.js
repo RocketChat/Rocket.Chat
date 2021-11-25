@@ -11,7 +11,7 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 	const ldapPass = args.shift();
 
 	// Check if last argument is a function. if it is, pop it off and set callback to it
-	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
+	const callback =		typeof args[args.length - 1] === 'function' ? args.pop() : null;
 	// The last argument before the callback is the totp code
 	const code = args.pop();
 
@@ -27,12 +27,14 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 	};
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: loginRequest,
-				code,
+		methodArguments: [
+			{
+				totp: {
+					login: loginRequest,
+					code,
+				},
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -46,7 +48,13 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 const { loginWithLDAP } = Meteor;
 
 Meteor.loginWithLDAP = function(...args) {
-	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
+	const callback =		typeof args[args.length - 1] === 'function' ? args.pop() : null;
 
-	overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP, args[0]);
+	overrideLoginMethod(
+		loginWithLDAP,
+		args,
+		callback,
+		Meteor.loginWithLDAPAndTOTP,
+		args[0],
+	);
 };

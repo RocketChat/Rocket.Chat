@@ -47,8 +47,4 @@ onLicense('livechat-enterprise', () => {
 	});
 });
 
-export {
-	LivechatUnit,
-	LivechatTag,
-	LivechatUnitMonitors,
-};
+export { LivechatUnit, LivechatTag, LivechatUnitMonitors };

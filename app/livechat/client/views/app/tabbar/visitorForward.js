@@ -22,7 +22,14 @@ Template.visitorForward.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get()),
+						(part) => `<strong>${ part }</strong>`,
+					  )
+			}`;
 		};
 	},
 	agentConditions() {
@@ -40,7 +47,14 @@ Template.visitorForward.helpers({
 	departmentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get(), 'i'),
+						(part) => `<strong>${ part }</strong>`,
+					  )
+			}`;
 		};
 	},
 	onClickTagDepartment() {
@@ -53,8 +67,12 @@ Template.visitorForward.helpers({
 		return Template.instance().onSelectDepartments;
 	},
 	departmentConditions() {
-		const departmentForwardRestrictions = Template.instance().departmentForwardRestrictions.get();
-		return { enabled: true, numAgents: { $gt: 0 }, ...departmentForwardRestrictions };
+		const departmentForwardRestrictions =			Template.instance().departmentForwardRestrictions.get();
+		return {
+			enabled: true,
+			numAgents: { $gt: 0 },
+			...departmentForwardRestrictions,
+		};
 	},
 });
 
@@ -82,27 +100,36 @@ Template.visitorForward.onCreated(async function() {
 	};
 
 	this.onClickTagAgent = ({ username }) => {
-		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+		this.selectedAgents.set(
+			this.selectedAgents
+				.get()
+				.filter((user) => user.username !== username),
+		);
 	};
 
 	this.autorun(() => {
-		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
+		this.visitor.set(
+			Meteor.users.findOne({ _id: Template.currentData().visitorId }),
+		);
 	});
 
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
 		const { departmentId } = this.room.get();
 		if (departmentId) {
-			Meteor.call('livechat:getDepartmentForwardRestrictions', departmentId, (err, result) => {
-				this.departmentForwardRestrictions.set(result);
-			});
+			Meteor.call(
+				'livechat:getDepartmentForwardRestrictions',
+				departmentId,
+				(err, result) => {
+					this.departmentForwardRestrictions.set(result);
+				},
+			);
 		}
 	});
 
 	const { departments } = await APIClient.v1.get('livechat/department');
 	this.departments.set(departments);
 });
-
 
 Template.visitorForward.events({
 	'submit form'(event, instance) {

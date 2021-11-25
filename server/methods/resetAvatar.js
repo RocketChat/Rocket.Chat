@@ -14,9 +14,15 @@ Meteor.methods({
 				method: 'resetAvatar',
 			});
 		}
-		const canEditOtherUserAvatar = hasPermission(Meteor.userId(), 'edit-other-user-avatar');
+		const canEditOtherUserAvatar = hasPermission(
+			Meteor.userId(),
+			'edit-other-user-avatar',
+		);
 
-		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
+		if (
+			!settings.get('Accounts_AllowUserAvatarChange')
+			&& !canEditOtherUserAvatar
+		) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'resetAvatar',
 			});
@@ -31,27 +37,40 @@ Meteor.methods({
 				});
 			}
 
-			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
+			user = Users.findOneById(userId, {
+				fields: { _id: 1, username: 1 },
+			});
 		} else {
 			user = Meteor.user();
 		}
 
 		if (user == null) {
-			throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
-				method: 'resetAvatar',
-			});
+			throw new Meteor.Error(
+				'error-invalid-desired-user',
+				'Invalid desired user',
+				{
+					method: 'resetAvatar',
+				},
+			);
 		}
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		Users.unsetAvatarData(user._id);
-		api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
+		api.broadcast('user.avatarUpdate', {
+			username: user.username,
+			avatarETag: null,
+		});
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'resetAvatar',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'resetAvatar',
+		userId() {
+			return true;
+		},
 	},
-}, 1, 60000);
+	1,
+	60000,
+);

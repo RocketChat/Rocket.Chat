@@ -5,11 +5,18 @@ import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	async 'authorization:deleteRole'(roleName) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
-				method: 'authorization:deleteRole',
-				action: 'Accessing_permissions',
-			});
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'access-permissions')
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Accessing permissions is not allowed',
+				{
+					method: 'authorization:deleteRole',
+					action: 'Accessing_permissions',
+				},
+			);
 		}
 
 		const role = await Roles.findOne(roleName);
@@ -20,17 +27,25 @@ Meteor.methods({
 		}
 
 		if (role.protected) {
-			throw new Meteor.Error('error-delete-protected-role', 'Cannot delete a protected role', {
-				method: 'authorization:deleteRole',
-			});
+			throw new Meteor.Error(
+				'error-delete-protected-role',
+				'Cannot delete a protected role',
+				{
+					method: 'authorization:deleteRole',
+				},
+			);
 		}
 
-		const users = await(await Roles.findUsersInRole(roleName)).count();
+		const users = await (await Roles.findUsersInRole(roleName)).count();
 
 		if (users > 0) {
-			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use', {
-				method: 'authorization:deleteRole',
-			});
+			throw new Meteor.Error(
+				'error-role-in-use',
+				"Cannot delete role because it's in use",
+				{
+					method: 'authorization:deleteRole',
+				},
+			);
 		}
 
 		return Roles.removeById(role.name);

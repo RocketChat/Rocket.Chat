@@ -29,11 +29,15 @@ Meteor.startup(function() {
 		const accounts = WebdavAccounts.find();
 
 		if (accounts.count() === 0) {
-			return messageBox.actions.remove('WebDAV', /webdav-upload-/ig);
+			return messageBox.actions.remove('WebDAV', /webdav-upload-/gi);
 		}
 
 		accounts.forEach((account) => {
-			const name = account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+			const name =				account.name
+				|| `${ account.username }@${ account.server_url.replace(
+					/^https?\:\/\//i,
+					'',
+				) }`;
 			const title = t('Upload_From', {
 				name,
 			});

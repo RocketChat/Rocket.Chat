@@ -24,15 +24,23 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
-				method: 'deleteUser',
-			});
+			throw new Meteor.Error(
+				'error-invalid-user',
+				'Invalid user to delete',
+				{
+					method: 'deleteUser',
+				},
+			);
 		}
 
 		if (user.type === 'app') {
-			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
-				method: 'deleteUser',
-			});
+			throw new Meteor.Error(
+				'error-cannot-delete-app-user',
+				'Deleting app user is not allowed',
+				{
+					method: 'deleteUser',
+				},
+			);
 		}
 
 		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
@@ -40,10 +48,14 @@ Meteor.methods({
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
 		if (adminCount === 1 && userIsAdmin) {
-			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-				method: 'deleteUser',
-				action: 'Remove_last_admin',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Leaving the app without admins is not allowed',
+				{
+					method: 'deleteUser',
+					action: 'Remove_last_admin',
+				},
+			);
 		}
 
 		await deleteUser(userId, confirmRelinquish);

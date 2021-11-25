@@ -2,7 +2,11 @@ import { EmailInbox } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models';
 
-export async function findEmailInboxes({ userId, query = {}, pagination: { offset, count, sort } }) {
+export async function findEmailInboxes({
+	userId,
+	query = {},
+	pagination: { offset, count, sort },
+}) {
 	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
 		throw new Error('error-not-allowed');
 	}
@@ -32,12 +36,24 @@ export async function findOneEmailInbox({ userId, _id }) {
 }
 
 export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
-	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
+	const {
+		_id,
+		active,
+		name,
+		email,
+		description,
+		senderInfo,
+		department,
+		smtp,
+		imap,
+	} = emailInboxParams;
 
 	if (!_id) {
 		emailInboxParams._createdAt = new Date();
 		emailInboxParams._updatedAt = new Date();
-		emailInboxParams._createdBy = Users.findOne(userId, { fields: { username: 1 } });
+		emailInboxParams._createdBy = Users.findOne(userId, {
+			fields: { username: 1 },
+		});
 		return EmailInbox.insertOne(emailInboxParams);
 	}
 

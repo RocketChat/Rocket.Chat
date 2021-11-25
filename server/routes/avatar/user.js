@@ -11,10 +11,11 @@ import { settings } from '../../../app/settings/server';
 import { Users } from '../../../app/models/server';
 import { Avatars } from '../../../app/models/server/raw';
 
-
 // request /avatar/@name forces returning the svg
 export const userAvatar = Meteor.bindEnvironment(async function(req, res) {
-	const requestUsername = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
+	const requestUsername = decodeURIComponent(
+		req.url.substr(1).replace(/\?.*$/, ''),
+	);
 
 	if (!requestUsername) {
 		res.writeHead(404);
@@ -37,9 +38,13 @@ export const userAvatar = Meteor.bindEnvironment(async function(req, res) {
 
 	const file = await Avatars.findOneByName(requestUsername);
 	if (file) {
-		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+		res.setHeader('Content-Security-Policy', "default-src 'none'");
 
-		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+		if (
+			reqModifiedHeader
+			&& reqModifiedHeader
+				=== (file.uploadedAt && file.uploadedAt.toUTCString())
+		) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();

@@ -4,12 +4,29 @@ import _ from 'underscore';
 
 import { ImportData as ImportDataRaw } from '../../../models/server/raw';
 import { IImportUser } from '../../../../definition/IImportUser';
-import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
+import {
+	IImportMessage,
+	IImportMessageReaction,
+} from '../../../../definition/IImportMessage';
 import { IImportChannel } from '../../../../definition/IImportChannel';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
-import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
+import {
+	IImportUserRecord,
+	IImportChannelRecord,
+	IImportMessageRecord,
+} from '../../../../definition/IImportRecord';
+import {
+	Users,
+	Rooms,
+	Subscriptions,
+	ImportData,
+} from '../../../models/server';
+import {
+	generateUsernameSuggestion,
+	insertMessage,
+	saveUserIdentity,
+	addUserToDefaultChannels,
+} from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -80,7 +97,11 @@ export class ImportDataConverter {
 		this._logger = logger;
 	}
 
-	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
+	addUserToCache(
+		importId: string,
+		_id: string,
+		username: string | undefined,
+	): IUserIdentification {
 		const cache = {
 			_id,
 			username,
@@ -113,10 +134,18 @@ export class ImportDataConverter {
 			return;
 		}
 
-		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
+		this.addUserToCache(
+			userData.importIds[0],
+			userData._id,
+			userData.username,
+		);
 	}
 
-	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
+	protected addObject(
+		type: string,
+		data: Record<string, any>,
+		options: Record<string, any> = {},
+	): void {
 		ImportData.model.rawCollection().insert({
 			data,
 			dataType: type,
@@ -138,7 +167,10 @@ export class ImportDataConverter {
 		});
 	}
 
-	addUserImportId(updateData: Record<string, any>, userData: IImportUser): void {
+	addUserImportId(
+		updateData: Record<string, any>,
+		userData: IImportUser,
+	): void {
 		if (userData.importIds?.length) {
 			updateData.$addToSet = {
 				importIds: {
@@ -148,7 +180,11 @@ export class ImportDataConverter {
 		}
 	}
 
-	addUserEmails(updateData: Record<string, any>, userData: IImportUser, existingEmails: Array<IUserEmail>): void {
+	addUserEmails(
+		updateData: Record<string, any>,
+		userData: IImportUser,
+		existingEmails: Array<IUserEmail>,
+	): void {
 		if (!userData.emails?.length) {
 			return;
 		}
@@ -157,7 +193,9 @@ export class ImportDataConverter {
 		const newEmailList: Array<IUserEmail> = [];
 
 		for (const email of userData.emails) {
-			const verified = verifyEmails || existingEmails.find((ee) => ee.address === email)?.verified || false;
+			const verified =				verifyEmails
+				|| existingEmails.find((ee) => ee.address === email)?.verified
+				|| false;
 
 			newEmailList.push({
 				address: email,
@@ -168,7 +206,10 @@ export class ImportDataConverter {
 		updateData.$set.emails = newEmailList;
 	}
 
-	addUserServices(updateData: Record<string, any>, userData: IImportUser): void {
+	addUserServices(
+		updateData: Record<string, any>,
+		userData: IImportUser,
+	): void {
 		if (!userData.services) {
 			return;
 		}
@@ -190,19 +231,28 @@ export class ImportDataConverter {
 		}
 	}
 
-	addCustomFields(updateData: Record<string, any>, userData: IImportUser): void {
+	addCustomFields(
+		updateData: Record<string, any>,
+		userData: IImportUser,
+	): void {
 		if (!userData.customFields) {
 			return;
 		}
 
-		const subset = (source: Record<string, any>, currentPath: string): void => {
+		const subset = (
+			source: Record<string, any>,
+			currentPath: string,
+		): void => {
 			for (const key in source) {
 				if (!source.hasOwnProperty(key)) {
 					continue;
 				}
 
 				const keyPath = `${ currentPath }.${ key }`;
-				if (typeof source[key] === 'object' && !Array.isArray(source[key])) {
+				if (
+					typeof source[key] === 'object'
+					&& !Array.isArray(source[key])
+				) {
 					subset(source[key], keyPath);
 					continue;
 				}
@@ -234,7 +284,9 @@ export class ImportDataConverter {
 				...userData.statusText && { statusText: userData.statusText },
 				...userData.bio && { bio: userData.bio },
 				...userData.services?.ldap && { ldap: true },
-				...userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl },
+				...userData.avatarUrl && {
+					_pendingAvatarUrl: userData.avatarUrl,
+				},
 			},
 		};
 
@@ -255,25 +307,37 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username });
+			saveUserIdentity({
+				_id,
+				name: userData.name,
+				username: userData.username,
+			});
 		}
 
 		if (userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
+			this.addUserToCache(
+				userData.importIds[0],
+				existingUser._id,
+				existingUser.username,
+			);
 		}
 	}
 
 	insertUser(userData: IImportUser): IUser {
-		const password = `${ Date.now() }${ userData.name || '' }${ userData.emails.length ? userData.emails[0].toUpperCase() : '' }`;
-		const userId = userData.emails.length ? Accounts.createUser({
-			email: userData.emails[0],
-			password,
-		}) : Accounts.createUser({
-			username: userData.username,
-			password,
-			// @ts-ignore
-			joinDefaultChannelsSilenced: true,
-		});
+		const password = `${ Date.now() }${ userData.name || '' }${
+			userData.emails.length ? userData.emails[0].toUpperCase() : ''
+		}`;
+		const userId = userData.emails.length
+			? Accounts.createUser({
+				email: userData.emails[0],
+				password,
+			  })
+			: Accounts.createUser({
+				username: userData.username,
+				password,
+				// @ts-ignore
+				joinDefaultChannelsSilenced: true,
+			  });
 
 		const user = Users.findOneById(userId, {});
 		this.updateUser(user, userData);
@@ -301,7 +365,10 @@ export class ImportDataConverter {
 		}
 	}
 
-	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+	public convertUsers({
+		beforeImportFn,
+		afterImportFn,
+	}: IConversionCallbacks = {}): void {
 		const users = Promise.await(this.getUsersToImport());
 		users.forEach(({ data, _id }) => {
 			try {
@@ -340,7 +407,10 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				if (data.deleted && existingUser?.active) {
 					setUserActiveStatus(data._id, false, true);
-				} else if (data.deleted === false && existingUser?.active === false) {
+				} else if (
+					data.deleted === false
+					&& existingUser?.active === false
+				) {
 					setUserActiveStatus(data._id, true);
 				}
 
@@ -356,29 +426,37 @@ export class ImportDataConverter {
 
 	protected saveError(importId: string, error: Error): void {
 		this._logger.error(error);
-		ImportData.update({
-			_id: importId,
-		}, {
-			$push: {
-				errors: {
-					message: error.message,
-					stack: error.stack,
+		ImportData.update(
+			{
+				_id: importId,
+			},
+			{
+				$push: {
+					errors: {
+						message: error.message,
+						stack: error.stack,
+					},
 				},
 			},
-		});
+		);
 	}
 
 	protected skipRecord(_id: string): void {
-		ImportData.update({
-			_id,
-		}, {
-			$set: {
-				skipped: true,
+		ImportData.update(
+			{
+				_id,
 			},
-		});
+			{
+				$set: {
+					skipped: true,
+				},
+			},
+		);
 	}
 
-	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
+	convertMessageReactions(
+		importedReactions: Record<string, IImportMessageReaction>,
+	): undefined | IMessageReactions {
 		const reactions: IMessageReactions = {};
 
 		for (const name in importedReactions) {
@@ -424,7 +502,9 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	convertMessageMentions(message: IImportMessage): Array<IMentionedUser> | undefined {
+	convertMessageMentions(
+		message: IImportMessage,
+	): Array<IMentionedUser> | undefined {
 		const { mentions } = message;
 		if (!mentions) {
 			return undefined;
@@ -449,10 +529,15 @@ export class ImportDataConverter {
 				throw new Error('importer-message-mentioned-user-not-found');
 			}
 			if (!data.username) {
-				throw new Error('importer-message-mentioned-username-not-found');
+				throw new Error(
+					'importer-message-mentioned-username-not-found',
+				);
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\@${ importId }`, 'gi'), `@${ data.username }`);
+			message.msg = message.msg.replace(
+				new RegExp(`\@${ importId }`, 'gi'),
+				`@${ data.username }`,
+			);
 
 			result.push({
 				_id: data._id,
@@ -463,7 +548,9 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
+	convertMessageChannels(
+		message: IImportMessage,
+	): Array<IMentionedChannel> | undefined {
 		const { channels } = message;
 		if (!channels) {
 			return;
@@ -480,7 +567,10 @@ export class ImportDataConverter {
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\#${ importId }`, 'gi'), `#${ name }`);
+			message.msg = message.msg.replace(
+				new RegExp(`\#${ importId }`, 'gi'),
+				`#${ name }`,
+			);
 
 			result.push({
 				_id,
@@ -491,11 +581,16 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	protected async getMessagesToImport(): Promise<Array<IImportMessageRecord>> {
+	protected async getMessagesToImport(): Promise<
+	Array<IImportMessageRecord>
+	> {
 		return ImportDataRaw.getAllMessages().toArray();
 	}
 
-	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+	convertMessages({
+		beforeImportFn,
+		afterImportFn,
+	}: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
 		const messages = Promise.await(this.getMessagesToImport());
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
@@ -542,7 +637,9 @@ export class ImportDataConverter {
 					tcount: m.tcount,
 					replies: m.replies && this.convertMessageReplies(m.replies),
 					editedAt: m.editedAt,
-					editedBy: m.editedBy && (this.findImportedUser(m.editedBy) || undefined),
+					editedBy:
+						m.editedBy
+						&& (this.findImportedUser(m.editedBy) || undefined),
 					mentions,
 					channels,
 					_importFile: m._importFile,
@@ -558,13 +655,19 @@ export class ImportDataConverter {
 				}
 
 				if (m.reactions) {
-					msgObj.reactions = this.convertMessageReactions(m.reactions);
+					msgObj.reactions = this.convertMessageReactions(
+						m.reactions,
+					);
 				}
 
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					this._logger.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
+					this._logger.warn(
+						`Failed to import message with timestamp ${ String(
+							msgObj.ts,
+						) } to room ${ rid }`,
+					);
 					this._logger.error(e);
 				}
 
@@ -580,26 +683,42 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				this._logger.warn(`Failed to update last message of room ${ rid }`);
+				this._logger.warn(
+					`Failed to update last message of room ${ rid }`,
+				);
 				this._logger.error(e);
 			}
 		}
 	}
 
-	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
+	updateRoom(
+		room: IRoom,
+		roomData: IImportChannel,
+		startedByUserId: string,
+	): void {
 		roomData._id = room._id;
 
 		// eslint-disable-next-line no-extra-parens
-		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
+		if (
+			(roomData._id as string).toUpperCase() === 'GENERAL'
+			&& roomData.name !== room.name
+		) {
 			Meteor.runAsUser(startedByUserId, () => {
-				Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', roomData.name);
+				Meteor.call(
+					'saveRoomSettings',
+					'GENERAL',
+					'roomName',
+					roomData.name,
+				);
 			});
 		}
 
 		this.updateRoomId(room._id, roomData);
 	}
 
-	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+	public findDMForImportedUsers(
+		...users: Array<string>
+	): IImportChannel | undefined {
 		const record = ImportData.findDMForImportedUsers(...users);
 		if (record) {
 			return record.data;
@@ -696,7 +815,9 @@ export class ImportDataConverter {
 			return this._userDisplayNameCache.get(importId);
 		}
 
-		const user = importId === 'rocket.cat' ? Users.findOneById('rocket.cat', options) : Users.findOneByImportId(importId, options);
+		const user =			importId === 'rocket.cat'
+			? Users.findOneById('rocket.cat', options)
+			: Users.findOneByImportId(importId, options);
 		if (user) {
 			if (!this._userCache.has(importId)) {
 				this.addUserToCache(importId, user._id, user.username);
@@ -713,7 +834,10 @@ export class ImportDataConverter {
 			description: roomData.description,
 		};
 
-		const roomUpdate: {$set?: Record<string, any>; $addToSet?: Record<string, any>} = {};
+		const roomUpdate: {
+			$set?: Record<string, any>;
+			$addToSet?: Record<string, any>;
+		} = {};
 
 		if (Object.keys(set).length > 0) {
 			roomUpdate.$set = set;
@@ -732,7 +856,10 @@ export class ImportDataConverter {
 		}
 	}
 
-	getRoomCreatorId(roomData: IImportChannel, startedByUserId: string): string {
+	getRoomCreatorId(
+		roomData: IImportChannel,
+		startedByUserId: string,
+	): string {
 		if (roomData.u) {
 			const creatorId = this.findImportedUserId(roomData.u._id);
 			if (creatorId) {
@@ -761,11 +888,16 @@ export class ImportDataConverter {
 	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
 		// Find the rocketchatId of the user who created this channel
 		const creatorId = this.getRoomCreatorId(roomData, startedByUserId);
-		const members = this.convertImportedIdsToUsernames(roomData.users, roomData.t !== 'd' ? creatorId : undefined);
+		const members = this.convertImportedIdsToUsernames(
+			roomData.users,
+			roomData.t !== 'd' ? creatorId : undefined,
+		);
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				this._logger.warn(`One or more imported users not found: ${ roomData.users }`);
+				this._logger.warn(
+					`One or more imported users not found: ${ roomData.users }`,
+				);
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -773,14 +905,24 @@ export class ImportDataConverter {
 		// Create the channel
 		try {
 			Meteor.runAsUser(creatorId, () => {
-				const roomInfo = roomData.t === 'd'
+				const roomInfo =					roomData.t === 'd'
 					? Meteor.call('createDirectMessage', ...members)
-					: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+					: Meteor.call(
+						roomData.t === 'p'
+							? 'createPrivateGroup'
+							: 'createChannel',
+						roomData.name,
+						members,
+						  );
 
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
+			this._logger.warn({
+				msg: 'Failed to create new room',
+				name: roomData.name,
+				members,
+			});
 			this._logger.error(e);
 			throw e;
 		}
@@ -788,32 +930,39 @@ export class ImportDataConverter {
 		this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
-	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
-		return importedIds.map((user) => {
-			if (user === 'rocket.cat') {
-				return user;
-			}
-
-			if (this._userCache.has(user)) {
-				const cache = this._userCache.get(user);
-				if (cache) {
-					return cache.username;
-				}
-			}
-
-			const obj = Users.findOneByImportId(user, { fields: { _id: 1, username: 1 } });
-			if (obj) {
-				this.addUserToCache(user, obj._id, obj.username);
-
-				if (idToRemove && obj._id === idToRemove) {
-					return false;
+	convertImportedIdsToUsernames(
+		importedIds: Array<string>,
+		idToRemove: string | undefined = undefined,
+	): Array<string> {
+		return importedIds
+			.map((user) => {
+				if (user === 'rocket.cat') {
+					return user;
 				}
 
-				return obj.username;
-			}
+				if (this._userCache.has(user)) {
+					const cache = this._userCache.get(user);
+					if (cache) {
+						return cache.username;
+					}
+				}
 
-			return false;
-		}).filter((user) => user);
+				const obj = Users.findOneByImportId(user, {
+					fields: { _id: 1, username: 1 },
+				});
+				if (obj) {
+					this.addUserToCache(user, obj._id, obj.username);
+
+					if (idToRemove && obj._id === idToRemove) {
+						return false;
+					}
+
+					return obj.username;
+				}
+
+				return false;
+			})
+			.filter((user) => user);
 	}
 
 	findExistingRoom(data: IImportChannel): IRoom {
@@ -839,11 +988,16 @@ export class ImportDataConverter {
 		return Rooms.findOneByNonValidatedName(data.name, {});
 	}
 
-	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
+	protected async getChannelsToImport(): Promise<
+	Array<IImportChannelRecord>
+	> {
 		return ImportDataRaw.getAllChannels().toArray();
 	}
 
-	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+	convertChannels(
+		startedByUserId: string,
+		{ beforeImportFn, afterImportFn }: IConversionCallbacks = {},
+	): void {
 		const channels = Promise.await(this.getChannelsToImport());
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {
@@ -889,7 +1043,10 @@ export class ImportDataConverter {
 		Subscriptions.archiveByRoomId(rid);
 	}
 
-	convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): void {
+	convertData(
+		startedByUserId: string,
+		callbacks: IConversionCallbacks = {},
+	): void {
 		this.convertUsers(callbacks);
 		this.convertChannels(startedByUserId, callbacks);
 		this.convertMessages(callbacks);

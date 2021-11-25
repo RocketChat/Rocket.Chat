@@ -5,8 +5,14 @@ import { Users, Rooms } from '../../app/models/server';
 import { canAccessRoom } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 
-if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLowerCase())) {
-	console.warn('Method canAccessRoom is deprecated and will be removed after version 5.0');
+if (
+	['yes', 'true'].includes(
+		String(process.env.ALLOW_CANACCESSROOM_METHOD).toLowerCase(),
+	)
+) {
+	console.warn(
+		'Method canAccessRoom is deprecated and will be removed after version 5.0',
+	);
 	Meteor.methods({
 		canAccessRoom(rid, userId, extraData) {
 			check(rid, String);
@@ -22,9 +28,13 @@ if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLo
 				});
 
 				if (!user || !user.username) {
-					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'canAccessRoom',
-					});
+					throw new Meteor.Error(
+						'error-invalid-user',
+						'Invalid user',
+						{
+							method: 'canAccessRoom',
+						},
+					);
 				}
 			}
 
@@ -49,7 +59,10 @@ if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLo
 				return room;
 			}
 
-			if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
+			if (
+				!userId
+				&& settings.get('Accounts_AllowAnonymousRead') === false
+			) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 					method: 'canAccessRoom',
 				});

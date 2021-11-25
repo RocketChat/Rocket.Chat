@@ -1,7 +1,13 @@
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { api } from '../../../../server/sdk/api';
 import { ILicense } from '../../../../server/sdk/types/ILicense';
-import { hasLicense, isEnterprise, getModules, onValidateLicenses, onModule } from './license';
+import {
+	hasLicense,
+	isEnterprise,
+	getModules,
+	onValidateLicenses,
+	onModule,
+} from './license';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { Authorization } from '../../../../server/sdk';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';

@@ -4,7 +4,12 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Spotlight } from '../lib/spotlight';
 
 Meteor.methods({
-	spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false }, rid) {
+	spotlight(
+		text,
+		usernames = [],
+		type = { users: true, rooms: true, mentions: false },
+		rid,
+	) {
 		const spotlight = new Spotlight();
 		const { mentions } = type;
 
@@ -21,16 +26,28 @@ Meteor.methods({
 		const { userId } = this;
 
 		return {
-			users: type.users ? spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+			users: type.users
+				? spotlight.searchUsers({
+					userId,
+					rid,
+					text,
+					usernames,
+					mentions,
+				  })
+				: [],
 			rooms: type.rooms ? spotlight.searchRooms({ userId, text }) : [],
 		};
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'spotlight',
-	userId(/* userId*/) {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'spotlight',
+		userId(/* userId*/) {
+			return true;
+		},
 	},
-}, 100, 100000);
+	100,
+	100000,
+);

@@ -6,23 +6,28 @@ const denormalizeSubscription = (originalResource) => {
 
 	const [username, domain] = getNameAndDomain(resource.u.username);
 
-	resource.u.username = domain === getFederationDomain() ? username : resource.u.username;
+	resource.u.username =		domain === getFederationDomain() ? username : resource.u.username;
 
 	const [nameUsername, nameDomain] = getNameAndDomain(resource.name);
 
-	resource.name = nameDomain === getFederationDomain() ? nameUsername : resource.name;
+	resource.name =		nameDomain === getFederationDomain() ? nameUsername : resource.name;
 
 	return resource;
 };
 
-const denormalizeAllSubscriptions = (resources) => resources.map(denormalizeSubscription);
+const denormalizeAllSubscriptions = (resources) =>
+	resources.map(denormalizeSubscription);
 
 const normalizeSubscription = (originalResource) => {
 	const resource = { ...originalResource };
 
-	resource.u.username = !isFullyQualified(resource.u.username) ? `${ resource.u.username }@${ getFederationDomain() }` : resource.u.username;
+	resource.u.username = !isFullyQualified(resource.u.username)
+		? `${ resource.u.username }@${ getFederationDomain() }`
+		: resource.u.username;
 
-	resource.name = !isFullyQualified(resource.name) ? `${ resource.name }@${ getFederationDomain() }` : resource.name;
+	resource.name = !isFullyQualified(resource.name)
+		? `${ resource.name }@${ getFederationDomain() }`
+		: resource.name;
 
 	// Federation
 	resource.federation = resource.federation || {
@@ -32,7 +37,8 @@ const normalizeSubscription = (originalResource) => {
 	return resource;
 };
 
-const normalizeAllSubscriptions = (resources) => resources.map(normalizeSubscription);
+const normalizeAllSubscriptions = (resources) =>
+	resources.map(normalizeSubscription);
 
 export default {
 	denormalizeSubscription,

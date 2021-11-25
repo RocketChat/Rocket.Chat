@@ -4,18 +4,29 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
+import {
+	VideoRecorder,
+	fileUpload,
+	UserAction,
+	USER_ACTIVITIES,
+} from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
-		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recording.get()) {
+		if (
+			VideoRecorder.cameraStarted.get()
+			&& VideoRecorder.recording.get()
+		) {
 			return 'icon-stop';
 		}
 		return 'icon-circle';
 	},
 
 	okDisabled() {
-		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recordingAvailable.get()) {
+		if (
+			VideoRecorder.cameraStarted.get()
+			&& VideoRecorder.recordingAvailable.get()
+		) {
 			return '';
 		}
 		return 'disabled';
@@ -28,7 +39,6 @@ Template.vrecDialog.helpers({
 	time() {
 		return Template.instance().time.get();
 	},
-
 });
 
 const recordingInterval = new ReactiveVar(null);
@@ -40,7 +50,6 @@ const stopVideoRecording = (rid, tmid) => {
 	}
 	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 };
-
 
 Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
@@ -61,23 +70,49 @@ Template.vrecDialog.events({
 			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
-			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+			UserAction.performContinuously(
+				rid,
+				USER_ACTIVITIES.USER_RECORDING,
+				{
+					tmid,
+				},
+			);
 			t.time.set('00:00');
 			const startTime = new Date();
-			recordingInterval.set(setInterval(() => {
-				const now = new Date();
-				const distance = (now.getTime() - startTime.getTime()) / 1000;
-				const minutes = Math.floor(distance / 60);
-				const seconds = Math.floor(distance % 60);
-				t.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-			}, 1000));
+			recordingInterval.set(
+				setInterval(() => {
+					const now = new Date();
+					const distance =						(now.getTime() - startTime.getTime()) / 1000;
+					const minutes = Math.floor(distance / 60);
+					const seconds = Math.floor(distance % 60);
+					t.time.set(
+						`${ String(minutes).padStart(2, '0') }:${ String(
+							seconds,
+						).padStart(2, '0') }`,
+					);
+				}, 1000),
+			);
 		}
 	},
 
 	'click .vrec-dialog .ok'(e, instance) {
-		const [rid, tmid, input] = [instance.rid.get(), instance.tmid.get(), instance.input.get()];
+		const [rid, tmid, input] = [
+			instance.rid.get(),
+			instance.tmid.get(),
+			instance.input.get(),
+		];
 		const cb = (blob) => {
-			fileUpload([{ file: blob, type: 'video', name: `${ TAPi18n.__('Video record') }.webm` }], input, { rid, tmid });
+			fileUpload(
+				[
+					{
+						file: blob,
+						type: 'video',
+						name: `${ TAPi18n.__('Video record') }.webm`,
+					},
+				],
+				input,
+				{ rid, tmid },
+			);
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
@@ -109,13 +144,14 @@ Template.vrecDialog.onCreated(function() {
 				top = 10;
 			}
 			if (anchor === 'left') {
-				let right = window.innerWidth - (sourcePos.left + source.offsetWidth - 25);
+				let right =					window.innerWidth
+					- (sourcePos.left + source.offsetWidth - 25);
 				if (right < 0) {
 					right = 10;
 				}
 				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
 			}
-			let left = (sourcePos.left - this.width) + 100;
+			let left = sourcePos.left - this.width + 100;
 			if (left < 0) {
 				left = 10;
 			}

@@ -14,7 +14,10 @@ export const placeholders = {
 		if (data) {
 			str = str.replace(/\[name\]/g, data.name || '');
 			str = str.replace(/\[fname\]/g, s.strLeft(data.name, ' ') || '');
-			str = str.replace(/\[lname\]/g, s.strRightBack(data.name, ' ') || '');
+			str = str.replace(
+				/\[lname\]/g,
+				s.strRightBack(data.name, ' ') || '',
+			);
 			str = str.replace(/\[email\]/g, data.email || '');
 			str = str.replace(/\[password\]/g, data.password || '');
 			str = str.replace(/\[reason\]/g, data.reason || '');

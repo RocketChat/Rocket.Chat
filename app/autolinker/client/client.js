@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import Autolinker from 'autolinker';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-export const createAutolinkerMessageRenderer = ({ phone, ...config }) =>
+export const createAutolinkerMessageRenderer =	({ phone, ...config }) =>
 	(message) => {
 		if (!message.html?.trim()) {
 			return message;
@@ -12,7 +12,12 @@ export const createAutolinkerMessageRenderer = ({ phone, ...config }) =>
 		let msgParts;
 		let regexTokens;
 		if (message.tokens && message.tokens.length) {
-			regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => escapeRegExp(token)) })`, 'g');
+			regexTokens = new RegExp(
+				`(${ (message.tokens || []).map(({ token }) =>
+					escapeRegExp(token),
+				) })`,
+				'g',
+			);
 			msgParts = message.html.split(regexTokens);
 		} else {
 			msgParts = [message.html];
@@ -49,7 +54,9 @@ export const createAutolinkerMessageRenderer = ({ phone, ...config }) =>
 
 				muttableConfig.phone = phone;
 
-				return phone ? Autolinker.link(autolinkerMsg, muttableConfig) : autolinkerMsg;
+				return phone
+					? Autolinker.link(autolinkerMsg, muttableConfig)
+					: autolinkerMsg;
 			})
 			.join('');
 

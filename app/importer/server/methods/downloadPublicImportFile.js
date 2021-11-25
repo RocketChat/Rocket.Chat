@@ -26,16 +26,26 @@ Meteor.methods({
 		const userId = Meteor.userId();
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPublicImportFile' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'downloadPublicImportFile',
+			});
 		}
 
 		if (!hasPermission(userId, 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'downloadPublicImportFile' });
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Importing is not allowed',
+				{ method: 'downloadPublicImportFile' },
+			);
 		}
 
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'downloadPublicImportFile' });
+			throw new Meteor.Error(
+				'error-importer-not-defined',
+				`The importer (${ importerKey }) has no import class defined.`,
+				{ method: 'downloadPublicImportFile' },
+			);
 		}
 
 		const isUrl = fileUrl.startsWith('http');
@@ -43,7 +53,9 @@ Meteor.methods({
 		// Check if it's a valid url or path before creating a new import record
 		if (!isUrl) {
 			if (!fs.existsSync(fileUrl)) {
-				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });
+				throw new Meteor.Error('error-import-file-missing', fileUrl, {
+					method: 'downloadPublicImportFile',
+				});
 			}
 		}
 
@@ -58,15 +70,21 @@ Meteor.methods({
 		importer.instance.startFileUpload(newFileName);
 		importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
-		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
+		const writeStream =			RocketChatImportFileInstance.createWriteStream(newFileName);
 
-		writeStream.on('error', Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.ERROR);
-		}));
+		writeStream.on(
+			'error',
+			Meteor.bindEnvironment(() => {
+				importer.instance.updateProgress(ProgressStep.ERROR);
+			}),
+		);
 
-		writeStream.on('end', Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
-		}));
+		writeStream.on(
+			'end',
+			Meteor.bindEnvironment(() => {
+				importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			}),
+		);
 
 		if (isUrl) {
 			downloadHttpFile(fileUrl, writeStream);

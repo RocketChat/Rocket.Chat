@@ -3,7 +3,12 @@ import { Match } from 'meteor/check';
 
 import { Rooms, Messages } from '../../../models';
 
-export const saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) {
+export const saveRoomTopic = function(
+	rid,
+	roomTopic,
+	user,
+	sendMessage = true,
+) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomTopic',
@@ -12,7 +17,12 @@ export const saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) 
 
 	const update = Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', rid, roomTopic, user);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+			'room_changed_topic',
+			rid,
+			roomTopic,
+			user,
+		);
 	}
 	return update;
 };

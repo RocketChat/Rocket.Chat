@@ -34,14 +34,20 @@ function ImportHistoryPage() {
 				const { operation } = await getCurrentImportOperation();
 				setCurrentOperation(operation);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') });
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Failed_To_Load_Import_Operation'),
+				});
 			}
 
 			try {
 				const operations = await getLatestImportOperations();
 				setLatestOperations(operations);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') });
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Failed_To_Load_Import_History'),
+				});
 			}
 
 			setLoading(false);

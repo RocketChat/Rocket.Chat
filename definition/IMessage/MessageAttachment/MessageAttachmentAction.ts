@@ -11,7 +11,10 @@ type Action = {
 	image_url?: string;
 	is_webview?: true;
 	msg_in_chat_window?: true;
-	msg_processing_type?: 'sendMessage' | 'respondWithMessage' | 'respondWithQuotedMessage';
+	msg_processing_type?:
+	| 'sendMessage'
+	| 'respondWithMessage'
+	| 'respondWithQuotedMessage';
 };
 
 export type MessageAttachmentAction = {

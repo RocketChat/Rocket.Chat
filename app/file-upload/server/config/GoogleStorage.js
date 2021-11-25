@@ -24,7 +24,14 @@ const get = function(file, req, res) {
 		if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 
-			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+			return FileUpload.proxyFile(
+				file.name,
+				fileUrl,
+				forceDownload,
+				request,
+				req,
+				res,
+			);
 		}
 
 		return FileUpload.redirectToFile(fileUrl, req, res);
@@ -88,9 +95,21 @@ const configure = _.debounce(function() {
 		URLExpiryTimeSpan,
 	};
 
-	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUploads.name, config);
-	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageAvatars.name, config);
-	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUserDataFiles.name, config);
+	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore(
+		'GoogleStorage',
+		GoogleCloudStorageUploads.name,
+		config,
+	);
+	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore(
+		'GoogleStorage',
+		GoogleCloudStorageAvatars.name,
+		config,
+	);
+	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore(
+		'GoogleStorage',
+		GoogleCloudStorageUserDataFiles.name,
+		config,
+	);
 }, 500);
 
 settings.watchByRegex(/^FileUpload_GoogleStorage_/, configure);

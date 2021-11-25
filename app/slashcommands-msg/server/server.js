@@ -8,8 +8,8 @@ import { Users } from '../../models';
 import { api } from '../../../server/sdk/api';
 
 /*
-* Msg is a named function that will replace /msg commands
-*/
+ * Msg is a named function that will replace /msg commands
+ */
 
 function Msg(command, params, item) {
 	if (command !== 'msg' || !Match.test(params, String)) {
@@ -19,9 +19,18 @@ function Msg(command, params, item) {
 	const separator = trimmedParams.indexOf(' ');
 	const user = Meteor.users.findOne(Meteor.userId());
 	if (separator === -1) {
-		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language),
-		});
+		return api.broadcast(
+			'notify.ephemeralMessage',
+			Meteor.userId(),
+			item.rid,
+			{
+				msg: TAPi18n.__(
+					'Username_and_message_must_not_be_empty',
+					null,
+					user.language,
+				),
+			},
+		);
 	}
 	const message = trimmedParams.slice(separator + 1);
 	const targetUsernameOrig = trimmedParams.slice(0, separator);
@@ -29,10 +38,14 @@ function Msg(command, params, item) {
 	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Username_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [targetUsernameOrig],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Username_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [targetUsernameOrig],
+				},
+				user.language,
+			),
 		});
 		return;
 	}

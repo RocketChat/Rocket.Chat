@@ -9,7 +9,9 @@ Meteor.startup(function() {
 		const user = Meteor.user();
 
 		if (user && Object.keys(user.banners || {}).length > 0) {
-			const firstBanner = Object.values(user.banners).filter((b) => b.read !== true).sort((a, b) => b.priority - a.priority)[0];
+			const firstBanner = Object.values(user.banners)
+				.filter((b) => b.read !== true)
+				.sort((a, b) => b.priority - a.priority)[0];
 
 			if (!firstBanner) {
 				return;
@@ -20,7 +22,10 @@ Meteor.startup(function() {
 			banners.open({
 				id: firstBanner.id,
 				title: TAPi18n.__(firstBanner.title),
-				text: TAPi18n.__(firstBanner.text, ...firstBanner.textArguments),
+				text: TAPi18n.__(
+					firstBanner.text,
+					...firstBanner.textArguments,
+				),
 				modifiers: firstBanner.modifiers,
 				action() {
 					if (firstBanner.link) {

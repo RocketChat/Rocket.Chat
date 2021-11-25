@@ -7,7 +7,9 @@ import { startStreamBroadcast } from '../stream/streamBroadcast';
 
 Meteor.startup(function() {
 	const instance = {
-		host: process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost',
+		host: process.env.INSTANCE_IP
+			? String(process.env.INSTANCE_IP).trim()
+			: 'localhost',
 		port: String(process.env.PORT).trim(),
 		os: {
 			type: os.type(),

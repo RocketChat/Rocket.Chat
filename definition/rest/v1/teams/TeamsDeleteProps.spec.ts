@@ -64,7 +64,11 @@ describe('TeamsDeleteProps (definition/rest/v1)', () => {
 
 		it('should return false if teamId and rooms are provided but an extra property is provided', () => {
 			assert.isFalse(
-				isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: ['roomsToRemove'], extra: 'extra' }),
+				isTeamsDeleteProps({
+					teamId: 'teamId',
+					roomsToRemove: ['roomsToRemove'],
+					extra: 'extra',
+				}),
 			);
 		});
 	});

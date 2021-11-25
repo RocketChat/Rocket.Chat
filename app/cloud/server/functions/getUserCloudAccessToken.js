@@ -1,6 +1,5 @@
 import { HTTP } from 'meteor/http';
 
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
@@ -10,8 +9,13 @@ import { settings } from '../../../settings';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+export function getUserCloudAccessToken(
+	userId,
+	forceNew = false,
+	scope = '',
+	save = true,
+) {
+	const { connectToCloud, workspaceRegistered } =		retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
@@ -23,7 +27,13 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 
 	const user = Users.findOneById(userId);
 
-	if (!user || !user.services || !user.services.cloud || !user.services.cloud.accessToken || !user.services.cloud.refreshToken) {
+	if (
+		!user
+		|| !user.services
+		|| !user.services.cloud
+		|| !user.services.cloud.accessToken
+		|| !user.services.cloud.refreshToken
+	) {
 		return '';
 	}
 
@@ -64,7 +74,9 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`,
+			);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
@@ -83,7 +95,9 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 
 	if (save) {
 		const expiresAt = new Date();
-		expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
+		expiresAt.setSeconds(
+			expiresAt.getSeconds() + authTokenResult.data.expires_in,
+		);
 
 		Users.update(user._id, {
 			$set: {

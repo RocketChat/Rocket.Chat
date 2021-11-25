@@ -76,13 +76,16 @@ export interface ICreatedRoom extends IRoom {
 	rid: string;
 }
 
-export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
+export interface IDirectMessageRoom
+	extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
 	usernames: Array<Username>;
 }
 
-export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
+export const isDirectMessageRoom = (
+	room: Partial<IRoom>,
+): room is IDirectMessageRoom => room.t === 'd';
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',
@@ -93,7 +96,11 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
+export interface IOmnichannelRoom
+	extends Omit<
+	IRoom,
+	'default' | 'featured' | 'broadcast' | 'featured' | ''
+	> {
 	t: 'l';
 	v: {
 		_id?: string;
@@ -140,4 +147,6 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	crmData?: unknown;
 }
 
-export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+export const isOmnichannelRoom = (
+	room: IRoom,
+): room is IOmnichannelRoom & IRoom => room.t === 'l';

@@ -32,18 +32,32 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'removeRoomLeader',
-			});
+			throw new Meteor.Error(
+				'error-user-not-in-room',
+				'User is not in this room',
+				{
+					method: 'removeRoomLeader',
+				},
+			);
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === false) {
-			throw new Meteor.Error('error-user-not-leader', 'User is not a leader', {
-				method: 'removeRoomLeader',
-			});
+		if (
+			Array.isArray(subscription.roles) === true
+			&& subscription.roles.includes('leader') === false
+		) {
+			throw new Meteor.Error(
+				'error-user-not-leader',
+				'User is not a leader',
+				{
+					method: 'removeRoomLeader',
+				},
+			);
 		}
 
 		Subscriptions.removeRoleById(subscription._id, 'leader');
@@ -60,7 +74,9 @@ Meteor.methods({
 
 		const team = Promise.await(Team.getOneByMainRoomId(rid));
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['leader']));
+			Promise.await(
+				Team.removeRolesFromMember(team._id, userId, ['leader']),
+			);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {

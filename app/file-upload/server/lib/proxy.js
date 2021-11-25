@@ -27,7 +27,9 @@ WebApp.connectHandlers.stack.unshift({
 
 		// Remove store path
 		const parsedUrl = URL.parse(req.url);
-		const path = parsedUrl.pathname.substr(UploadFS.config.storesPath.length + 1);
+		const path = parsedUrl.pathname.substr(
+			UploadFS.config.storesPath.length + 1,
+		);
 
 		// Get store
 		const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
@@ -63,7 +65,9 @@ WebApp.connectHandlers.stack.unshift({
 		}
 
 		// Proxy to other instance
-		const instance = InstanceStatus.getCollection().findOne({ _id: file.instanceId });
+		const instance = InstanceStatus.getCollection().findOne({
+			_id: file.instanceId,
+		});
 
 		if (instance == null) {
 			res.writeHead(404);
@@ -71,11 +75,16 @@ WebApp.connectHandlers.stack.unshift({
 			return;
 		}
 
-		if (instance.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+		if (
+			instance.extraInformation.host === process.env.INSTANCE_IP
+			&& isDocker() === false
+		) {
 			instance.extraInformation.host = 'localhost';
 		}
 
-		logger.debug(`Wrong instance, proxing to ${ instance.extraInformation.host }:${ instance.extraInformation.port }`);
+		logger.debug(
+			`Wrong instance, proxing to ${ instance.extraInformation.host }:${ instance.extraInformation.port }`,
+		);
 
 		const options = {
 			hostname: instance.extraInformation.host,
@@ -84,7 +93,9 @@ WebApp.connectHandlers.stack.unshift({
 			method: 'POST',
 		};
 
-		logger.warn('UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload');
+		logger.warn(
+			'UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload',
+		);
 		const proxy = http.request(options, function(proxy_res) {
 			proxy_res.pipe(res, {
 				end: true,

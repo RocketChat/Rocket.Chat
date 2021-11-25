@@ -25,7 +25,9 @@ export const emoji = {
 					return;
 				}
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
-				return emoji.packages[correctPackage].renderPicker(emojiToRender);
+				return emoji.packages[correctPackage].renderPicker(
+					emojiToRender,
+				);
 			},
 		},
 	},

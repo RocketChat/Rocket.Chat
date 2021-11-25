@@ -10,7 +10,8 @@ const sort = function(a, b) {
 	return 0;
 };
 
-const iconHTML = (name) => `<div class="icon" title="${ name }"><svg><use href="#icon-${ name }"/></svg></div>`;
+const iconHTML = (name) =>
+	`<div class="icon" title="${ name }"><svg><use href="#icon-${ name }"/></svg></div>`;
 
 const header = `<html><body><style>
 	* {
@@ -52,8 +53,11 @@ const start = async () => {
 							return false;
 						}
 						return true;
-					}).forEach(async (file) => {
-						const name = file.replace('.svg', '').toLocaleLowerCase();
+					})
+					.forEach(async (file) => {
+						const name = file
+							.replace('.svg', '')
+							.toLocaleLowerCase();
 						console.log(name);
 						html.write(iconHTML(name));
 					});

@@ -74,7 +74,11 @@ API.v1.addAuthMethod(function() {
 	if (accessToken == null) {
 		return;
 	}
-	if ((accessToken.expires != null) && accessToken.expires !== 0 && accessToken.expires < new Date()) {
+	if (
+		accessToken.expires != null
+		&& accessToken.expires !== 0
+		&& accessToken.expires < new Date()
+	) {
 		return;
 	}
 	const user = Users.findOne(accessToken.userId);

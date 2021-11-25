@@ -48,7 +48,9 @@ export const useTeamsChannelList = (
 						...(ts && { ts: new Date(ts) }),
 						_updatedAt: new Date(_updatedAt),
 						...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
-						...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
+						...(webRtcCallStartTime && {
+							webRtcCallStartTime: new Date(webRtcCallStartTime),
+						}),
 						...room,
 					}),
 				),

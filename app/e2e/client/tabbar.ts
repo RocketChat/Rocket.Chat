@@ -10,10 +10,11 @@ import { e2e } from './rocketchat.e2e';
 
 addAction('e2e', ({ room }) => {
 	const e2eEnabled = useSetting('E2E_Enable');
-	const e2eReady = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
+	const e2eReady =		useReactiveValue(useCallback(() => e2e.isReady(), []))
+		|| room.encrypted;
 	const canToggleE2e = usePermission('toggle-room-e2e-encryption', room._id);
 	const canEditRoom = usePermission('edit-room', room._id);
-	const hasPermission = (room.t === 'd' || (canEditRoom && canToggleE2e)) && e2eReady;
+	const hasPermission =		(room.t === 'd' || (canEditRoom && canToggleE2e)) && e2eReady;
 
 	const toggleE2E = useMethod('saveRoomSettings');
 
@@ -23,12 +24,18 @@ addAction('e2e', ({ room }) => {
 
 	const enabledOnRoom = !!room.encrypted;
 
-	return useMemo(() => (e2eEnabled && hasPermission ? {
-		groups: ['direct', 'direct_multiple', 'group', 'team'],
-		id: 'e2e',
-		title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
-		icon: 'key',
-		order: 13,
-		action,
-	} : null), [action, e2eEnabled, enabledOnRoom, hasPermission]);
+	return useMemo(
+		() =>
+			(e2eEnabled && hasPermission
+				? {
+					groups: ['direct', 'direct_multiple', 'group', 'team'],
+					id: 'e2e',
+					title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
+					icon: 'key',
+					order: 13,
+					action,
+				  }
+				: null),
+		[action, e2eEnabled, enabledOnRoom, hasPermission],
+	);
 });

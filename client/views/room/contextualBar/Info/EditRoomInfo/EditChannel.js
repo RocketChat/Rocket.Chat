@@ -513,7 +513,9 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 										</Callout>
 										<Field>
 											<Field.Label>
-												{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}
+												{t('RetentionPolicyRoom_MaxAge', {
+													max: maxAgeDefault,
+												})}
 											</Field.Label>
 											<Field.Row>
 												<NumberInput

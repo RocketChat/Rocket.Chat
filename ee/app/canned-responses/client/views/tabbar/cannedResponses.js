@@ -12,7 +12,9 @@ import './cannedResponses.html';
 
 Template.cannedResponses.helpers({
 	cannedResponses() {
-		const searchText = Template.instance().searchText.get().toLocaleLowerCase();
+		const searchText = Template.instance()
+			.searchText.get()
+			.toLocaleLowerCase();
 
 		let query = {};
 
@@ -46,7 +48,9 @@ Template.cannedResponses.helpers({
 	},
 
 	isDetailScreen() {
-		return ['edit', 'new', 'view'].includes(Template.instance().action.get());
+		return ['edit', 'new', 'view'].includes(
+			Template.instance().action.get(),
+		);
 	},
 
 	isNewResponse() {
@@ -136,7 +140,10 @@ Template.cannedResponses.events({
 
 		const cannedResponse = CannedResponse.findOne({ _id });
 		if (!cannedResponse) {
-			dispatchToastMessage({ type: 'success', message: t('Invalid Canned Response') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Invalid Canned Response'),
+			});
 		}
 
 		instance.cannedResponse.set(cannedResponse);
@@ -156,7 +163,10 @@ Template.cannedResponses.events({
 				return handleError(error);
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Canned_Response_Removed'),
+			});
 			instance.action.set(null);
 		});
 	},
@@ -223,7 +233,10 @@ Template.cannedResponses.events({
 		const context = instance.context.get();
 		if (context === 'department') {
 			if (!instance.departmentId) {
-				dispatchToastMessage({ type: 'error', message: t('Invalid_Department') });
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Invalid_Department'),
+				});
 				return;
 			}
 
@@ -233,14 +246,19 @@ Template.cannedResponses.events({
 			responseData.scope = 'user';
 		}
 
-		Meteor.call('saveCannedResponse', _id, responseData, function(error/* , result*/) {
-			if (error) {
-				return handleError(error);
-			}
+		Meteor.call(
+			'saveCannedResponse',
+			_id,
+			responseData,
+			function(error /* , result*/) {
+				if (error) {
+					return handleError(error);
+				}
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			instance.action.set(null);
-		});
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				instance.action.set(null);
+			},
+		);
 	},
 
 	'keyup .js-search'(event, instance) {

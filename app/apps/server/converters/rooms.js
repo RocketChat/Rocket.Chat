@@ -1,6 +1,11 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { Rooms, Users, LivechatVisitors, LivechatDepartment } from '../../../models';
+import {
+	Rooms,
+	Users,
+	LivechatVisitors,
+	LivechatDepartment,
+} from '../../../models';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
@@ -46,7 +51,9 @@ export class AppRoomsConverter {
 
 		let departmentId;
 		if (room.department) {
-			const department = LivechatDepartment.findOneById(room.department.id);
+			const department = LivechatDepartment.findOneById(
+				room.department.id,
+			);
 			departmentId = department._id;
 		}
 
@@ -80,11 +87,22 @@ export class AppRoomsConverter {
 			closedBy,
 			members: room.members,
 			uids: room.userIds,
-			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
-			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
-			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
-			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
-			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
+			default:
+				typeof room.isDefault === 'undefined' ? false : room.isDefault,
+			ro:
+				typeof room.isReadOnly === 'undefined'
+					? false
+					: room.isReadOnly,
+			sysMes:
+				typeof room.displaySystemMessages === 'undefined'
+					? true
+					: room.displaySystemMessages,
+			waitingResponse:
+				typeof room.isWaitingResponse === 'undefined'
+					? undefined
+					: !!room.isWaitingResponse,
+			open:
+				typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
@@ -92,7 +110,10 @@ export class AppRoomsConverter {
 			lm: room.lastModifiedAt,
 			customFields: room.customFields,
 			livechatData: room.livechatData,
-			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
+			prid:
+				typeof room.parentRoom === 'undefined'
+					? undefined
+					: room.parentRoom.id,
 			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
 		};
 
@@ -155,7 +176,10 @@ export class AppRoomsConverter {
 
 				delete room.u;
 
-				return this.orch.getConverters().get('users').convertById(u._id);
+				return this.orch
+					.getConverters()
+					.get('users')
+					.convertById(u._id);
 			},
 			visitor: (room) => {
 				const { v } = room;
@@ -166,7 +190,10 @@ export class AppRoomsConverter {
 
 				delete room.v;
 
-				return this.orch.getConverters().get('visitors').convertById(v._id);
+				return this.orch
+					.getConverters()
+					.get('visitors')
+					.convertById(v._id);
 			},
 			department: (room) => {
 				const { departmentId } = room;
@@ -177,7 +204,10 @@ export class AppRoomsConverter {
 
 				delete room.departmentId;
 
-				return this.orch.getConverters().get('departments').convertById(departmentId);
+				return this.orch
+					.getConverters()
+					.get('departments')
+					.convertById(departmentId);
 			},
 			servedBy: (room) => {
 				const { servedBy } = room;
@@ -188,7 +218,10 @@ export class AppRoomsConverter {
 
 				delete room.servedBy;
 
-				return this.orch.getConverters().get('users').convertById(servedBy._id);
+				return this.orch
+					.getConverters()
+					.get('users')
+					.convertById(servedBy._id);
 			},
 			responseBy: (room) => {
 				const { responseBy } = room;
@@ -199,7 +232,10 @@ export class AppRoomsConverter {
 
 				delete room.responseBy;
 
-				return this.orch.getConverters().get('users').convertById(responseBy._id);
+				return this.orch
+					.getConverters()
+					.get('users')
+					.convertById(responseBy._id);
 			},
 			parentRoom: (room) => {
 				const { prid } = room;

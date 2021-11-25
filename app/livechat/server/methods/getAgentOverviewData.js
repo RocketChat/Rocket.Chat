@@ -18,7 +18,12 @@ Meteor.methods({
 			return;
 		}
 
-		const user = Users.findOneById(userId, { fields: { _id: 1, utcOffset: 1 } });
-		return Livechat.Analytics.getAgentOverviewData({ ...options, utcOffset: user?.utcOffset || 0 });
+		const user = Users.findOneById(userId, {
+			fields: { _id: 1, utcOffset: 1 },
+		});
+		return Livechat.Analytics.getAgentOverviewData({
+			...options,
+			utcOffset: user?.utcOffset || 0,
+		});
 	},
 });

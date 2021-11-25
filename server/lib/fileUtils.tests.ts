@@ -22,6 +22,8 @@ describe('File utils', () => {
 		expect(joinPath('../app/', 'something')).to.equal('../app/something');
 		expect(joinPath('../app/', '/something')).to.equal('../app/something');
 		expect(joinPath('/app', '/something')).to.equal('/app/something');
-		expect(joinPath('/app', '/../some/thing')).to.equal('/app/..-some-thing');
+		expect(joinPath('/app', '/../some/thing')).to.equal(
+			'/app/..-some-thing',
+		);
 	});
 });

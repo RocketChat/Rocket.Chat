@@ -26,11 +26,26 @@ export interface IServiceContext {
 
 export interface IServiceClass {
 	getName(): string;
-	onNodeConnected?({ node, reconnected }: {node: IBrokerNode; reconnected: boolean}): void;
-	onNodeUpdated?({ node }: {node: IBrokerNode }): void;
-	onNodeDisconnected?({ node, unexpected }: {node: IBrokerNode; unexpected: boolean}): Promise<void>;
+	onNodeConnected?({
+		node,
+		reconnected,
+	}: {
+		node: IBrokerNode;
+		reconnected: boolean;
+	}): void;
+	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
+	onNodeDisconnected?({
+		node,
+		unexpected,
+	}: {
+		node: IBrokerNode;
+		unexpected: boolean;
+	}): Promise<void>;
 
-	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
+	onEvent<T extends keyof EventSignatures>(
+		event: T,
+		handler: EventSignatures[T]
+	): void;
 
 	created?(): Promise<void>;
 	started?(): Promise<void>;
@@ -49,7 +64,9 @@ export abstract class ServiceClass implements IServiceClass {
 	}
 
 	getEvents(): Array<keyof EventSignatures> {
-		return this.events.eventNames() as unknown as Array<keyof EventSignatures>;
+		return this.events.eventNames() as unknown as Array<
+		keyof EventSignatures
+		>;
 	}
 
 	getName(): string {
@@ -64,11 +81,17 @@ export abstract class ServiceClass implements IServiceClass {
 		return asyncLocalStorage.getStore();
 	}
 
-	public onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
+	public onEvent<T extends keyof EventSignatures>(
+		event: T,
+		handler: EventSignatures[T],
+	): void {
 		this.events.on(event, handler);
 	}
 
-	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
+	public emit<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): void {
 		this.events.emit(event, ...args);
 	}
 }

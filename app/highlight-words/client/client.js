@@ -1,4 +1,8 @@
-import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
+import {
+	highlightWords,
+	getRegexHighlight,
+	getRegexHighlightUrl,
+} from './helper';
 
 export const createHighlightWordsMessageRenderer = ({ wordsToHighlight }) => {
 	const highlights = wordsToHighlight.map((highlight) => ({

@@ -12,7 +12,6 @@ settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-
 settingsRegistry.addGroup('Accounts', function() {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
@@ -135,7 +134,8 @@ settingsRegistry.addGroup('Accounts', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
-		this.add('Accounts_RequireNameForSignUp', true, { // TODO rename to Accounts_RequireFullName
+		this.add('Accounts_RequireNameForSignUp', true, {
+			// TODO rename to Accounts_RequireFullName
 			type: 'boolean',
 			public: true,
 		});
@@ -171,10 +171,14 @@ settingsRegistry.addGroup('Accounts', function() {
 		this.add('Accounts_BlockedUsernameList', '', {
 			type: 'string',
 		});
-		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
-			type: 'string',
-			hidden: true,
-		});
+		this.add(
+			'Accounts_SystemBlockedUsernameList',
+			'admin,administrator,system,user',
+			{
+				type: 'string',
+				hidden: true,
+			},
+		);
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
 		});
@@ -188,10 +192,12 @@ settingsRegistry.addGroup('Accounts', function() {
 				{
 					key: 'Public',
 					i18nLabel: 'Accounts_RegistrationForm_Public',
-				}, {
+				},
+				{
 					key: 'Disabled',
 					i18nLabel: 'Accounts_RegistrationForm_Disabled',
-				}, {
+				},
+				{
 					key: 'Secret URL',
 					i18nLabel: 'Accounts_RegistrationForm_Secret_URL',
 				},
@@ -207,28 +213,37 @@ settingsRegistry.addGroup('Accounts', function() {
 				{
 					key: 'direct',
 					i18nLabel: 'Accounts_Registration_InviteUrlType_Direct',
-				}, {
+				},
+				{
 					key: 'proxy',
 					i18nLabel: 'Accounts_Registration_InviteUrlType_Proxy',
 				},
 			],
 		});
 
-		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
-			type: 'string',
-			public: true,
-		});
+		this.add(
+			'Accounts_RegistrationForm_LinkReplacementText',
+			'New user registration is currently disabled',
+			{
+				type: 'string',
+				public: true,
+			},
+		);
 		this.add('Accounts_Registration_AuthenticationServices_Enabled', true, {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Accounts_Registration_AuthenticationServices_Default_Roles', 'user', {
-			type: 'string',
-			enableQuery: {
-				_id: 'Accounts_Registration_AuthenticationServices_Enabled',
-				value: true,
+		this.add(
+			'Accounts_Registration_AuthenticationServices_Default_Roles',
+			'user',
+			{
+				type: 'string',
+				enableQuery: {
+					_id: 'Accounts_Registration_AuthenticationServices_Enabled',
+					value: true,
+				},
 			},
-		});
+		);
 		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 			type: 'string',
 		});
@@ -254,30 +269,38 @@ settingsRegistry.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Idle_Time_Limit',
 		});
-		this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Notification_RequireInteraction',
-			i18nDescription: 'Notification_RequireInteraction_Description',
-		});
-		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_desktopNotificationRequireInteraction',
+			false,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notification_RequireInteraction',
+				i18nDescription: 'Notification_RequireInteraction_Description',
+			},
+		);
+		this.add(
+			'Accounts_Default_User_Preferences_desktopNotifications',
+			'all',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'all',
+						i18nLabel: 'All_messages',
+					},
+					{
+						key: 'mentions',
+						i18nLabel: 'Mentions',
+					},
+					{
+						key: 'nothing',
+						i18nLabel: 'Nothing',
+					},
+				],
+				public: true,
+			},
+		);
 		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
@@ -316,16 +339,24 @@ settingsRegistry.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Auto_Load_Images',
 		});
-		this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Save_Mobile_Bandwidth',
-		});
-		this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Collapse_Embedded_Media_By_Default',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_saveMobileBandwidth',
+			true,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Save_Mobile_Bandwidth',
+			},
+		);
+		this.add(
+			'Accounts_Default_User_Preferences_collapseMediaByDefault',
+			false,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Collapse_Embedded_Media_By_Default',
+			},
+		);
 		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
 			type: 'boolean',
 			public: true,
@@ -351,30 +382,38 @@ settingsRegistry.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
-			type: 'select',
-			values: [
-				{
-					key: 'extended',
-					i18nLabel: 'Extended',
-				},
-				{
-					key: 'medium',
-					i18nLabel: 'Medium',
-				},
-				{
-					key: 'condensed',
-					i18nLabel: 'Condensed',
-				},
-			],
-			public: true,
-			i18nLabel: 'Sidebar_list_mode',
-		});
-		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Display_Avatars_Sidebar',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_sidebarViewMode',
+			'medium',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'extended',
+						i18nLabel: 'Extended',
+					},
+					{
+						key: 'medium',
+						i18nLabel: 'Medium',
+					},
+					{
+						key: 'condensed',
+						i18nLabel: 'Condensed',
+					},
+				],
+				public: true,
+				i18nLabel: 'Sidebar_list_mode',
+			},
+		);
+		this.add(
+			'Accounts_Default_User_Preferences_sidebarDisplayAvatar',
+			true,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Display_Avatars_Sidebar',
+			},
+		);
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
@@ -382,33 +421,45 @@ settingsRegistry.addGroup('Accounts', function() {
 			i18nLabel: 'Unread_on_top',
 		});
 
-		this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
-			type: 'select',
-			values: [
-				{
-					key: 'activity',
-					i18nLabel: 'Activity',
-				},
-				{
-					key: 'alphabetical',
-					i18nLabel: 'Alphabetical',
-				},
-			],
-			public: true,
-			i18nLabel: 'Sort_By',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_sidebarSortby',
+			'activity',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'activity',
+						i18nLabel: 'Activity',
+					},
+					{
+						key: 'alphabetical',
+						i18nLabel: 'Alphabetical',
+					},
+				],
+				public: true,
+				i18nLabel: 'Sort_By',
+			},
+		);
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_showMessageInMainThread',
+			false,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Show_Message_In_Main_Thread',
+			},
+		);
 
-		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Group_favorites',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_sidebarShowFavorites',
+			true,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Group_favorites',
+			},
+		);
 
 		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',
@@ -448,70 +499,94 @@ settingsRegistry.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'MessageBox_view_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'nothing',
-					i18nLabel: 'Email_Notification_Mode_Disabled',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Email_Notification_Mode_All',
-				},
-			],
-			public: true,
-			i18nLabel: 'Email_Notification_Mode',
-		});
-		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
-			type: 'select',
-			values: [
-				{
-					key: 'none',
-					i18nLabel: 'None',
-				},
-				{
-					key: 'door',
-					i18nLabel: 'Default',
-				},
-			],
-			public: true,
-			i18nLabel: 'New_Room_Notification',
-		});
-		this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
-			type: 'select',
-			values: [
-				{
-					key: 'none',
-					i18nLabel: 'None',
-				},
-				{
-					key: 'chime',
-					i18nLabel: 'Default',
-				},
-			],
-			public: true,
-			i18nLabel: 'New_Message_Notification',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_emailNotificationMode',
+			'mentions',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'nothing',
+						i18nLabel: 'Email_Notification_Mode_Disabled',
+					},
+					{
+						key: 'mentions',
+						i18nLabel: 'Email_Notification_Mode_All',
+					},
+				],
+				public: true,
+				i18nLabel: 'Email_Notification_Mode',
+			},
+		);
+		this.add(
+			'Accounts_Default_User_Preferences_newRoomNotification',
+			'door',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'none',
+						i18nLabel: 'None',
+					},
+					{
+						key: 'door',
+						i18nLabel: 'Default',
+					},
+				],
+				public: true,
+				i18nLabel: 'New_Room_Notification',
+			},
+		);
+		this.add(
+			'Accounts_Default_User_Preferences_newMessageNotification',
+			'chime',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'none',
+						i18nLabel: 'None',
+					},
+					{
+						key: 'chime',
+						i18nLabel: 'Default',
+					},
+				],
+				public: true,
+				i18nLabel: 'New_Message_Notification',
+			},
+		);
 
-		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Mute_Focused_Conversations',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_muteFocusedConversations',
+			true,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Mute_Focused_Conversations',
+			},
+		);
 
-		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Notifications_Sound_Volume',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_notificationsSoundVolume',
+			100,
+			{
+				type: 'int',
+				public: true,
+				i18nLabel: 'Notifications_Sound_Volume',
+			},
+		);
 
-		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Enable_message_parser_early_adoption',
-			alert: 'Enable_message_parser_early_adoption_alert',
-		});
+		this.add(
+			'Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption',
+			false,
+			{
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Enable_message_parser_early_adoption',
+				alert: 'Enable_message_parser_early_adoption_alert',
+			},
+		);
 	});
 
 	this.section('Avatar', function() {
@@ -642,11 +717,15 @@ settingsRegistry.addGroup('OAuth', function() {
 			enableQuery,
 			secret: true,
 		});
-		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
-			type: 'relativeUrl',
-			readonly: true,
-			enableQuery,
-		});
+		return this.add(
+			'Accounts_OAuth_Facebook_callback_url',
+			'_oauth/facebook',
+			{
+				type: 'relativeUrl',
+				readonly: true,
+				enableQuery,
+			},
+		);
 	});
 	this.section('Google', function() {
 		const enableQuery = {
@@ -714,11 +793,15 @@ settingsRegistry.addGroup('OAuth', function() {
 			enableQuery,
 			secret: true,
 		});
-		return this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
-			type: 'relativeUrl',
-			readonly: true,
-			enableQuery,
-		});
+		return this.add(
+			'Accounts_OAuth_Linkedin_callback_url',
+			'_oauth/linkedin',
+			{
+				type: 'relativeUrl',
+				readonly: true,
+				enableQuery,
+			},
+		);
 	});
 	this.section('Meteor', function() {
 		const enableQuery = {
@@ -762,17 +845,25 @@ settingsRegistry.addGroup('OAuth', function() {
 			enableQuery,
 			secret: true,
 		});
-		return this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
-			type: 'relativeUrl',
-			readonly: true,
-			enableQuery,
-		});
+		return this.add(
+			'Accounts_OAuth_Twitter_callback_url',
+			'_oauth/twitter',
+			{
+				type: 'relativeUrl',
+				readonly: true,
+				enableQuery,
+			},
+		);
 	});
 	return this.section('Proxy', function() {
-		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
-			type: 'string',
-			public: true,
-		});
+		this.add(
+			'Accounts_OAuth_Proxy_host',
+			'https://oauth-proxy.rocket.chat',
+			{
+				type: 'string',
+				public: true,
+			},
+		);
 		return this.add('Accounts_OAuth_Proxy_services', '', {
 			type: 'string',
 			public: true,
@@ -789,10 +880,12 @@ settingsRegistry.addGroup('General', function() {
 			{
 				key: 'pending',
 				i18nLabel: 'Pending',
-			}, {
+			},
+			{
 				key: 'in_progress',
 				i18nLabel: 'In_progress',
-			}, {
+			},
+			{
 				key: 'completed',
 				i18nLabel: 'Completed',
 			},
@@ -800,11 +893,18 @@ settingsRegistry.addGroup('General', function() {
 	});
 
 	// eslint-disable-next-line @typescript-eslint/camelcase
-	this.add('Site_Url', typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null ? (global as any).__meteor_runtime_config__.ROOT_URL : null, {
-		type: 'string',
-		i18nDescription: 'Site_Url_Description',
-		public: true,
-	});
+	this.add(
+		'Site_Url',
+		typeof (global as any).__meteor_runtime_config__ !== 'undefined'
+			&& (global as any).__meteor_runtime_config__ !== null
+			? (global as any).__meteor_runtime_config__.ROOT_URL
+			: null,
+		{
+			type: 'string',
+			i18nDescription: 'Site_Url_Description',
+			public: true,
+		},
+	);
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
 		public: true,
@@ -860,13 +960,16 @@ settingsRegistry.addGroup('General', function() {
 			{
 				key: 'all_messages',
 				i18nLabel: 'All_messages',
-			}, {
+			},
+			{
 				key: 'user_mentions_only',
 				i18nLabel: 'User_mentions_only',
-			}, {
+			},
+			{
 				key: 'group_mentions_only',
 				i18nLabel: 'Group_mentions_only',
-			}, {
+			},
+			{
 				key: 'user_and_group_mentions_only',
 				i18nLabel: 'User_and_group_mentions_only',
 			},
@@ -879,7 +982,8 @@ settingsRegistry.addGroup('General', function() {
 			{
 				key: 'all_messages',
 				i18nLabel: 'All_messages',
-			}, {
+			},
+			{
 				key: 'mentions_only',
 				i18nLabel: 'Mentions_only',
 			},
@@ -943,25 +1047,32 @@ settingsRegistry.addGroup('General', function() {
 			{
 				key: 'no-referrer',
 				i18nLabel: 'No_Referrer',
-			}, {
+			},
+			{
 				key: 'no-referrer-when-downgrade',
 				i18nLabel: 'No_Referrer_When_Downgrade',
-			}, {
+			},
+			{
 				key: 'origin',
 				i18nLabel: 'Origin',
-			}, {
+			},
+			{
 				key: 'origin-when-cross-origin',
 				i18nLabel: 'Origin_When_Cross_Origin',
-			}, {
+			},
+			{
 				key: 'same-origin',
 				i18nLabel: 'Same_Origin',
-			}, {
+			},
+			{
 				key: 'strict-origin',
 				i18nLabel: 'Strict_Origin',
-			}, {
+			},
+			{
 				key: 'strict-origin-when-cross-origin',
 				i18nLabel: 'Strict_Origin_When_Cross_Origin',
-			}, {
+			},
+			{
 				key: 'unsafe-url',
 				i18nLabel: 'Unsafe_Url',
 			},
@@ -1052,16 +1163,20 @@ settingsRegistry.addGroup('General', function() {
 	this.section('Timezone', function() {
 		this.add('Default_Timezone_For_Reporting', 'server', {
 			type: 'select',
-			values: [{
-				key: 'server',
-				i18nLabel: 'Default_Server_Timezone',
-			}, {
-				key: 'custom',
-				i18nLabel: 'Default_Custom_Timezone',
-			}, {
-				key: 'user',
-				i18nLabel: 'Default_User_Timezone',
-			}],
+			values: [
+				{
+					key: 'server',
+					i18nLabel: 'Default_Server_Timezone',
+				},
+				{
+					key: 'custom',
+					i18nLabel: 'Default_Custom_Timezone',
+				},
+				{
+					key: 'user',
+					i18nLabel: 'Default_User_Timezone',
+				},
+			],
 		});
 		this.add('Default_Custom_Timezone', '', {
 			type: 'timezone',
@@ -1204,10 +1319,14 @@ settingsRegistry.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('API_Embed_UserAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36', {
-		type: 'string',
-		public: true,
-	});
+	this.add(
+		'API_Embed_UserAgent',
+		'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
+		{
+			type: 'string',
+			public: true,
+		},
+	);
 	this.add('API_EmbedCacheExpirationDays', 30, {
 		type: 'int',
 		public: false,
@@ -1222,10 +1341,14 @@ settingsRegistry.addGroup('Message', function() {
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
-	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
-		type: 'string',
-		i18nDescription: 'API_EmbedIgnoredHosts_Description',
-	});
+	this.add(
+		'API_EmbedIgnoredHosts',
+		'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16',
+		{
+			type: 'string',
+			i18nDescription: 'API_EmbedIgnoredHosts_Description',
+		},
+	);
 	this.add('API_EmbedSafePorts', '80, 443', {
 		type: 'string',
 	});
@@ -1249,7 +1372,6 @@ settingsRegistry.addGroup('Message', function() {
 		public: true,
 	});
 
-
 	this.add('Hide_System_Messages', [], {
 		type: 'multiSelect',
 		public: true,
@@ -1268,20 +1390,26 @@ settingsRegistry.addGroup('Message', function() {
 			{
 				key: 'Keep',
 				i18nLabel: 'Message_ErasureType_Keep',
-			}, {
+			},
+			{
 				key: 'Delete',
 				i18nLabel: 'Message_ErasureType_Delete',
-			}, {
+			},
+			{
 				key: 'Unlink',
 				i18nLabel: 'Message_ErasureType_Unlink',
 			},
 		],
 	});
 
-	this.add('Message_Code_highlight', 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim', {
-		type: 'string',
-		public: true,
-	});
+	this.add(
+		'Message_Code_highlight',
+		'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim',
+		{
+			type: 'string',
+			public: true,
+		},
+	);
 });
 
 settingsRegistry.addGroup('Meta', function() {
@@ -1316,8 +1444,17 @@ settingsRegistry.addGroup('Mobile', function() {
 		public: true,
 	});
 	this.section('Screen_Lock', function() {
-		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
-		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
+		this.add('Force_Screen_Lock', false, {
+			type: 'boolean',
+			i18nDescription: 'Force_Screen_Lock_description',
+			public: true,
+		});
+		this.add('Force_Screen_Lock_After', 1800, {
+			type: 'int',
+			i18nDescription: 'Force_Screen_Lock_After_description',
+			enableQuery: { _id: 'Force_Screen_Lock', value: true },
+			public: true,
+		});
 	});
 });
 
@@ -1325,7 +1462,8 @@ const pushEnabledWithoutGateway = [
 	{
 		_id: 'Push_enable',
 		value: true,
-	}, {
+	},
+	{
 		_id: 'Push_enable_gateway',
 		value: false,
 	},
@@ -1365,7 +1503,8 @@ settingsRegistry.addGroup('Push', function() {
 			{
 				_id: 'Push_enable',
 				value: true,
-			}, {
+			},
+			{
 				_id: 'Push_enable_gateway',
 				value: true,
 			},
@@ -1445,9 +1584,7 @@ settingsRegistry.addGroup('Push', function() {
 			type: 'boolean',
 			enterprise: true,
 			invalidValue: false,
-			modules: [
-				'push-privacy',
-			],
+			modules: ['push-privacy'],
 		});
 	});
 });
@@ -1462,41 +1599,65 @@ settingsRegistry.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			public: true,
-		});
-		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			public: true,
-		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.', {
-			type: 'string',
-			multiline: true,
-			public: true,
-		});
-		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			public: true,
-		});
-		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			public: true,
-		});
-		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
-			type: 'code',
-			code: 'text/html',
-			public: true,
-			i18nDescription: 'Layout_Sidenav_Footer_description',
-		});
+		this.add(
+			'Layout_Home_Body',
+			'<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				public: true,
+			},
+		);
+		this.add(
+			'Layout_Terms_of_Service',
+			'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				public: true,
+			},
+		);
+		this.add(
+			'Layout_Login_Terms',
+			'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
+			{
+				type: 'string',
+				multiline: true,
+				public: true,
+			},
+		);
+		this.add(
+			'Layout_Privacy_Policy',
+			'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				public: true,
+			},
+		);
+		this.add(
+			'Layout_Legal_Notice',
+			'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				public: true,
+			},
+		);
+		return this.add(
+			'Layout_Sidenav_Footer',
+			'<a href="/home"><img src="assets/logo.png" alt="Home" /></a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				public: true,
+				i18nDescription: 'Layout_Sidenav_Footer_description',
+			},
+		);
 	});
 	this.section('Custom_Scripts', function() {
 		this.add('Custom_Script_On_Logout', '//Add your script', {
@@ -1542,19 +1703,24 @@ settingsRegistry.addGroup('Layout', function() {
 			public: true,
 		});
 
-		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'Same_Style_For_Mentions',
-					i18nLabel: 'Same_Style_For_Mentions',
-				}, {
-					key: 'Different_Style_For_User_Mentions',
-					i18nLabel: 'Different_Style_For_User_Mentions',
-				},
-			],
-			public: true,
-		});
+		this.add(
+			'UI_Unread_Counter_Style',
+			'Different_Style_For_User_Mentions',
+			{
+				type: 'select',
+				values: [
+					{
+						key: 'Same_Style_For_Mentions',
+						i18nLabel: 'Same_Style_For_Mentions',
+					},
+					{
+						key: 'Different_Style_For_User_Mentions',
+						i18nLabel: 'Different_Style_For_User_Mentions',
+					},
+				],
+				public: true,
+			},
+		);
 		this.add('UI_Allow_room_names_with_special_chars', false, {
 			type: 'boolean',
 			public: true,
@@ -1573,10 +1739,12 @@ settingsRegistry.addGroup('Logs', function() {
 			{
 				key: '0',
 				i18nLabel: '0_Errors_Only',
-			}, {
+			},
+			{
 				key: '1',
 				i18nLabel: '1_Errors_and_Information',
-			}, {
+			},
+			{
 				key: '2',
 				i18nLabel: '2_Erros_Information_and_Debug',
 			},
@@ -2323,7 +2491,8 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 				},
 				{
 					key: 'macedoniaTheFormerYugoslavRepublicOf',
-					i18nLabel: 'Country_Macedonia_The_Former_Yugoslav_Republic_of',
+					i18nLabel:
+						'Country_Macedonia_The_Former_Yugoslav_Republic_of',
 				},
 				{
 					key: 'madagascar',
@@ -2611,7 +2780,8 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 				},
 				{
 					key: 'southGeorgiaAndTheSouthSandwichIslands',
-					i18nLabel: 'Country_South_Georgia_and_The_South_Sandwich_Islands',
+					i18nLabel:
+						'Country_South_Georgia_and_The_South_Sandwich_Islands',
 				},
 				{
 					key: 'spain',
@@ -2975,35 +3145,101 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 settingsRegistry.addGroup('Rate Limiter', function() {
 	this.section('DDP_Rate_Limiter', function() {
 		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
-		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
+			type: 'int',
+			enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true },
+		});
+		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, {
+			type: 'int',
+			enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true },
+		});
 
 		this.add('DDP_Rate_Limit_User_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
-		this.add('DDP_Rate_Limit_User_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, {
+			type: 'int',
+			enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true },
+		});
+		this.add('DDP_Rate_Limit_User_Interval_Time', 60000, {
+			type: 'int',
+			enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true },
+		});
 
-		this.add('DDP_Rate_Limit_Connection_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
-		this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_Enabled', true, {
+			type: 'boolean',
+		});
+		this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_Connection_Enabled',
+				value: true,
+			},
+		});
+		this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_Connection_Enabled',
+				value: true,
+			},
+		});
 
-		this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
-		this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, {
+			type: 'boolean',
+		});
+		this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_User_By_Method_Enabled',
+				value: true,
+			},
+		});
+		this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_User_By_Method_Enabled',
+				value: true,
+			},
+		});
 
-		this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, { type: 'boolean' });
-		this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
-		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, {
+			type: 'boolean',
+		});
+		this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_Connection_By_Method_Enabled',
+				value: true,
+			},
+		});
+		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, {
+			type: 'int',
+			enableQuery: {
+				_id: 'DDP_Rate_Limit_Connection_By_Method_Enabled',
+				value: true,
+			},
+		});
 	});
 
 	this.section('API_Rate_Limiter', function() {
 		this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
-		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
-		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
-		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('API_Enable_Rate_Limiter_Dev', true, {
+			type: 'boolean',
+			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
+		});
+		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, {
+			type: 'int',
+			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
+		});
+		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, {
+			type: 'int',
+			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
+		});
 	});
 
 	this.section('Feature_Limiting', function() {
-		this.add('Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('Rate_Limiter_Limit_RegisterUser', 1, {
+			type: 'int',
+			enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true },
+		});
 	});
 });
 

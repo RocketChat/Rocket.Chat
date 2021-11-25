@@ -1,9 +1,6 @@
-
 import { MongoClient, Db, Collection } from 'mongodb';
 
-const {
-	MONGO_URL = 'mongodb://localhost:27017/rocketchat',
-} = process.env;
+const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 
 const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 
@@ -33,7 +30,9 @@ export async function getConnection(poolSize = 5): Promise<Db> {
 	return db;
 }
 
-export async function getCollection<T>(name: Collections): Promise<Collection<T>> {
+export async function getCollection<T>(
+	name: Collections,
+): Promise<Collection<T>> {
 	await getConnection();
 	return db.collection<T>(name);
 }

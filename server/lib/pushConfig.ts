@@ -6,9 +6,9 @@ import { hasRole } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
-
 Meteor.methods({
-	'push_test'() {
+	// eslint-disable-next-line
+	push_test() {
 		const user = Meteor.user();
 
 		if (!user) {
@@ -30,27 +30,37 @@ Meteor.methods({
 		}
 
 		const query = {
-			$and: [{
-				userId: user._id,
-			}, {
-				$or: [{
-					'token.apn': {
-						$exists: true,
-					},
-				}, {
-					'token.gcm': {
-						$exists: true,
-					},
-				}],
-			}],
+			$and: [
+				{
+					userId: user._id,
+				},
+				{
+					$or: [
+						{
+							'token.apn': {
+								$exists: true,
+							},
+						},
+						{
+							'token.gcm': {
+								$exists: true,
+							},
+						},
+					],
+				},
+			],
 		};
 
 		const tokens = appTokensCollection.find(query).count();
 
 		if (tokens === 0) {
-			throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
-				method: 'push_test',
-			});
+			throw new Meteor.Error(
+				'error-no-tokens-for-this-user',
+				'There are no tokens for this user',
+				{
+					method: 'push_test',
+				},
+			);
 		}
 
 		Push.send({
@@ -58,7 +68,9 @@ Meteor.methods({
 			title: `@${ user.username }`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
+				text: `@${ user.username }:\n${ TAPi18n.__(
+					'This_is_a_push_test_messsage',
+				) }`,
 			},
 			sound: 'default',
 			userId: user._id,
@@ -75,21 +87,27 @@ settings.watch<boolean>('Push_enable', async function(enabled) {
 	if (!enabled) {
 		return;
 	}
-	const gateways = settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms')
+	const gateways =		settings.get('Push_enable_gateway')
+		&& settings.get('Register_Server')
+		&& settings.get('Cloud_Service_Agree_PrivacyTerms')
 		? settings.get<string>('Push_gateway').split('\n')
 		: undefined;
 
-	let apn: {
+	let apn:
+	| {
 		apiKey?: string;
 		passphrase: string;
 		key: string;
 		cert: string;
 		gateway?: string;
-	} | undefined;
-	let gcm: {
+		  }
+	| undefined;
+	let gcm:
+	| {
 		apiKey: string;
 		projectNumber: string;
-	} | undefined;
+		  }
+	| undefined;
 
 	if (!gateways) {
 		gcm = {
@@ -112,11 +130,21 @@ settings.watch<boolean>('Push_enable', async function(enabled) {
 			};
 		}
 
-		if (!apn.key || apn.key.trim() === '' || !apn.cert || apn.cert.trim() === '') {
+		if (
+			!apn.key
+			|| apn.key.trim() === ''
+			|| !apn.cert
+			|| apn.cert.trim() === ''
+		) {
 			apn = undefined;
 		}
 
-		if (!gcm.apiKey || gcm.apiKey.trim() === '' || !gcm.projectNumber || gcm.projectNumber.trim() === '') {
+		if (
+			!gcm.apiKey
+			|| gcm.apiKey.trim() === ''
+			|| !gcm.projectNumber
+			|| gcm.projectNumber.trim() === ''
+		) {
 			gcm = undefined;
 		}
 	}

@@ -3,8 +3,15 @@ import _ from 'underscore';
 
 import { SettingValue } from '../../../definition/ISetting';
 
-export type SettingComposedValue<T extends SettingValue = SettingValue> = {key: string; value: T};
-export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
+export type SettingComposedValue<T extends SettingValue = SettingValue> = {
+	key: string;
+	value: T;
+};
+export type SettingCallback = (
+	key: string,
+	value: SettingValue,
+	initialLoad?: boolean
+) => void;
 
 interface ISettingRegexCallbacks {
 	regex: RegExp;
@@ -17,15 +24,28 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
-	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback: SettingCallback): void;
+	public get<T extends SettingValue = SettingValue>(
+		_id: RegExp,
+		callback: SettingCallback
+	): void;
 
-	public get<T extends SettingValue = SettingValue>(_id: string, callback: SettingCallback): void;
+	public get<T extends SettingValue = SettingValue>(
+		_id: string,
+		callback: SettingCallback
+	): void;
 
-	public get<T extends SettingValue = SettingValue>(_id: RegExp): SettingComposedValue<T>[];
+	public get<T extends SettingValue = SettingValue>(
+		_id: RegExp
+	): SettingComposedValue<T>[];
 
-	public get<T extends SettingValue = SettingValue>(_id: string): T | undefined;
+	public get<T extends SettingValue = SettingValue>(
+		_id: string
+	): T | undefined;
 
-	public get<T extends SettingValue = SettingValue>(_id: string | RegExp, callback?: SettingCallback): T | undefined | SettingComposedValue<T>[] | void {
+	public get<T extends SettingValue = SettingValue>(
+		_id: string | RegExp,
+		callback?: SettingCallback,
+	): T | undefined | SettingComposedValue<T>[] | void {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
@@ -61,16 +81,19 @@ export class SettingsBase {
 		}
 
 		if (_.isRegExp(_id)) {
-			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue<T>[], key) => {
-				const value = Meteor.settings[key];
-				if (_id.test(key)) {
-					items.push({
-						key,
-						value,
-					});
-				}
-				return items;
-			}, []);
+			return Object.keys(Meteor.settings).reduce(
+				(items: SettingComposedValue<T>[], key) => {
+					const value = Meteor.settings[key];
+					if (_id.test(key)) {
+						items.push({
+							key,
+							value,
+						});
+					}
+					return items;
+				},
+				[],
+			);
 		}
 
 		return Meteor.settings && Meteor.settings[_id];
@@ -80,7 +103,10 @@ export class SettingsBase {
 		Meteor.call('saveSetting', _id, value, callback);
 	}
 
-	batchSet(settings: Array<{_id: string; value: SettingValue}>, callback: () => void): void {
+	batchSet(
+		settings: Array<{ _id: string; value: SettingValue }>,
+		callback: () => void,
+	): void {
 		Meteor.call('saveSettings', settings, callback);
 	}
 
@@ -88,18 +114,25 @@ export class SettingsBase {
 		['*', key].forEach((item) => {
 			const callbacks = this.callbacks.get(item);
 			if (callbacks) {
-				callbacks.forEach((callback) => callback(key, value, initialLoad));
+				callbacks.forEach((callback) =>
+					callback(key, value, initialLoad),
+				);
 			}
 		});
 		this.regexCallbacks.forEach((cbValue) => {
 			if (!cbValue?.regex.test(key)) {
 				return;
 			}
-			cbValue.callbacks.forEach((callback) => callback(key, value, initialLoad));
+			cbValue.callbacks.forEach((callback) =>
+				callback(key, value, initialLoad),
+			);
 		});
 	}
 
-	onload(key: string | string[] | RegExp | RegExp[], callback: SettingCallback): void {
+	onload(
+		key: string | string[] | RegExp | RegExp[],
+		callback: SettingCallback,
+	): void {
 		// if key is '*'
 		// 	for key, value in Meteor.settings
 		// 		callback key, value, false

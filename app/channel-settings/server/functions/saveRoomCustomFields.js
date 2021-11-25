@@ -10,9 +10,13 @@ export const saveRoomCustomFields = function(rid, roomCustomFields) {
 		});
 	}
 	if (!Match.test(roomCustomFields, Object)) {
-		throw new Meteor.Error('invalid-roomCustomFields-type', 'Invalid roomCustomFields type', {
-			function: 'RocketChat.saveRoomCustomFields',
-		});
+		throw new Meteor.Error(
+			'invalid-roomCustomFields-type',
+			'Invalid roomCustomFields type',
+			{
+				function: 'RocketChat.saveRoomCustomFields',
+			},
+		);
 	}
 	const ret = Rooms.setCustomFieldsById(rid, roomCustomFields);
 

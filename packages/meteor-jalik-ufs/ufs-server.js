@@ -51,7 +51,9 @@ if (Meteor.isServer) {
 				// Create the temp directory
 				mkdirp(path, { mode }, (err) => {
 					if (err) {
-						console.error(`ufs: cannot create temp directory at "${ path }" (${ err.message })`);
+						console.error(
+							`ufs: cannot create temp directory at "${ path }" (${ err.message })`,
+						);
 					} else {
 						console.log(`ufs: temp directory created at "${ path }"`);
 					}
@@ -59,7 +61,10 @@ if (Meteor.isServer) {
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err && console.error(`ufs: cannot set temp directory permissions ${ mode } (${ err.message })`);
+					err
+						&& console.error(
+							`ufs: cannot set temp directory permissions ${ mode } (${ err.message })`,
+						);
 				});
 			}
 		});
@@ -83,7 +88,9 @@ if (Meteor.isServer) {
 
 		// Remove store path
 		const parsedUrl = URL.parse(req.url);
-		const path = parsedUrl.pathname.substr(UploadFS.config.storesPath.length + 1);
+		const path = parsedUrl.pathname.substr(
+			UploadFS.config.storesPath.length + 1,
+		);
 
 		const allowCORS = () => {
 			// res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
@@ -93,7 +100,7 @@ if (Meteor.isServer) {
 		};
 
 		if (req.method === 'OPTIONS') {
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
 			const match = regExp.exec(path);
 
 			// Request is not valid
@@ -117,7 +124,7 @@ if (Meteor.isServer) {
 			next();
 		} else if (req.method === 'POST') {
 			// Get store
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
 			const match = regExp.exec(path);
 
 			// Request is not valid
@@ -155,7 +162,9 @@ if (Meteor.isServer) {
 
 			// Check if duplicate
 			const unique = function(hash) {
-				const originalId = store.getCollection().findOne({ hash, _id: { $ne: fileId } });
+				const originalId = store
+					.getCollection()
+					.findOne({ hash, _id: { $ne: fileId } });
 				return originalId ? originalId._id : false;
 			};
 
@@ -177,17 +186,27 @@ if (Meteor.isServer) {
 				res.writeHead(500);
 				res.end();
 			});
-			req.on('end', Meteor.bindEnvironment(() => {
-				// Update completed state without triggering hooks
-				fields.hash = spark.end();
-				fields.originalId = unique(fields.hash);
-				store.getCollection().direct.update({ _id: fileId }, { $set: fields });
-				ws.end();
-			}));
+			req.on(
+				'end',
+				Meteor.bindEnvironment(() => {
+					// Update completed state without triggering hooks
+					fields.hash = spark.end();
+					fields.originalId = unique(fields.hash);
+					store
+						.getCollection()
+						.direct.update({ _id: fileId }, { $set: fields });
+					ws.end();
+				}),
+			);
 			ws.on('error', (err) => {
-				console.error(`ufs: cannot write chunk of file "${ fileId }" (${ err.message })`);
+				console.error(
+					`ufs: cannot write chunk of file "${ fileId }" (${ err.message })`,
+				);
 				fs.unlink(tmpFile, (err) => {
-					err && console.error(`ufs: cannot delete temp file "${ tmpFile }" (${ err.message })`);
+					err
+						&& console.error(
+							`ufs: cannot delete temp file "${ tmpFile }" (${ err.message })`,
+						);
 				});
 				res.writeHead(500);
 				res.end();
@@ -198,7 +217,7 @@ if (Meteor.isServer) {
 			});
 		} else if (req.method === 'GET') {
 			// Get store, file Id and file name
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)(?:\/([^\/\?]+))?$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)(?:/([^/?]+))?$');
 			const match = regExp.exec(path);
 
 			// Avoid 504 Gateway timeout error
@@ -218,8 +237,14 @@ if (Meteor.isServer) {
 				return;
 			}
 
-			if (store.onRead !== null && store.onRead !== undefined && typeof store.onRead !== 'function') {
-				console.error(`ufs: Store.onRead is not a function in store "${ storeName }"`);
+			if (
+				store.onRead !== null
+				&& store.onRead !== undefined
+				&& typeof store.onRead !== 'function'
+			) {
+				console.error(
+					`ufs: Store.onRead is not a function in store "${ storeName }"`,
+				);
 				res.writeHead(500);
 				res.end();
 				return;
@@ -244,7 +269,9 @@ if (Meteor.isServer) {
 
 			d.run(() => {
 				// Check if the file can be accessed
-				if (store.onRead.call(store, fileId, file, req, res) !== false) {
+				if (
+					store.onRead.call(store, fileId, file, req, res) !== false
+				) {
 					const options = {};
 					let status = 200;
 
@@ -261,9 +288,9 @@ if (Meteor.isServer) {
 
 					// Add Last-Modified header
 					if (file.modifiedAt instanceof Date) {
-						headers['Last-Modified'] = file.modifiedAt.toUTCString();
+						headers['Last-Modified'] =							file.modifiedAt.toUTCString();
 					} else if (file.uploadedAt instanceof Date) {
-						headers['Last-Modified'] = file.uploadedAt.toUTCString();
+						headers['Last-Modified'] =							file.uploadedAt.toUTCString();
 					}
 
 					// Parse request headers
@@ -279,11 +306,17 @@ if (Meteor.isServer) {
 
 						// Compare file modification date
 						if (req.headers['if-modified-since']) {
-							const modifiedSince = new Date(req.headers['if-modified-since']);
+							const modifiedSince = new Date(
+								req.headers['if-modified-since'],
+							);
 
-							if ((file.modifiedAt instanceof Date && file.modifiedAt > modifiedSince)
-                // eslint-disable-next-line no-mixed-operators
-                || file.uploadedAt instanceof Date && file.uploadedAt > modifiedSince) {
+							if (
+								(file.modifiedAt instanceof Date
+									&& file.modifiedAt > modifiedSince)
+								// eslint-disable-next-line no-mixed-operators
+								|| (file.uploadedAt instanceof Date
+									&& file.uploadedAt > modifiedSince)
+							) {
 								res.writeHead(304); // Not Modified
 								res.end();
 								return;
@@ -310,14 +343,19 @@ if (Meteor.isServer) {
 								return;
 							}
 
-							const ranges = range.substr(unit.length).replace(/[^0-9\-,]/, '').split(',');
+							const ranges = range
+								.substr(unit.length)
+								.replace(/[^0-9\-,]/, '')
+								.split(',');
 
 							if (ranges.length > 1) {
 								// todo: support multipart ranges: https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
 							} else {
 								const r = ranges[0].split('-');
 								const start = parseInt(r[0], 10);
-								const end = r[1] ? parseInt(r[1], 10) : total - 1;
+								const end = r[1]
+									? parseInt(r[1], 10)
+									: total - 1;
 
 								// Range is not valid
 								if (start < 0 || end >= total || start > end) {
@@ -327,7 +365,9 @@ if (Meteor.isServer) {
 								}
 
 								// Update headers
-								headers['Content-Range'] = `bytes ${ start }-${ end }/${ total }`;
+								headers[
+									'Content-Range'
+								] = `bytes ${ start }-${ end }/${ total }`;
 								headers['Content-Length'] = end - start + 1;
 								options.start = start;
 								options.end = end;
@@ -342,14 +382,20 @@ if (Meteor.isServer) {
 					const rs = store.getReadStream(fileId, file, options);
 					const ws = new stream.PassThrough();
 
-					rs.on('error', Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}));
-					ws.on('error', Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}));
+					rs.on(
+						'error',
+						Meteor.bindEnvironment((err) => {
+							store.onReadError.call(store, err, fileId, file);
+							res.end();
+						}),
+					);
+					ws.on(
+						'error',
+						Meteor.bindEnvironment((err) => {
+							store.onReadError.call(store, err, fileId, file);
+							res.end();
+						}),
+					);
 					ws.on('close', () => {
 						// Close output stream at the end
 						ws.emit('end');
@@ -361,7 +407,11 @@ if (Meteor.isServer) {
 					// Parse request headers
 					if (typeof req.headers === 'object') {
 						// Compress data using if needed (ignore audio/video as they are already compressed)
-						if (typeof req.headers['accept-encoding'] === 'string' && !/^(audio|video)/.test(file.type)) {
+						if (
+							typeof req.headers['accept-encoding']
+								=== 'string'
+							&& !/^(audio|video)/.test(file.type)
+						) {
 							const accept = req.headers['accept-encoding'];
 
 							// Compress with gzip

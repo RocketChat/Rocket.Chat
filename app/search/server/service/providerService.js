@@ -18,7 +18,9 @@ class SearchProviderService {
 	 */
 	use(id) {
 		return new Promise((resolve, reject) => {
-			if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
+			if (!this.providers[id]) {
+				throw new Error(`provider ${ id } cannot be found`);
+			}
 
 			let reason = 'switch';
 
@@ -28,15 +30,18 @@ class SearchProviderService {
 				reason = 'update';
 			}
 
-			const stopProvider = () => new Promise((resolve, reject) => {
-				if (this.activeProvider) {
-					SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
+			const stopProvider = () =>
+				new Promise((resolve, reject) => {
+					if (this.activeProvider) {
+						SearchLogger.debug(
+							`Stopping provider '${ this.activeProvider.key }'`,
+						);
 
-					this.activeProvider.stop(resolve, reject);
-				} else {
-					resolve();
-				}
-			});
+						this.activeProvider.stop(resolve, reject);
+					} else {
+						resolve();
+					}
+				});
 
 			stopProvider().then(() => {
 				this.activeProvider = undefined;
@@ -77,13 +82,20 @@ class SearchProviderService {
 
 			self.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
-				values: Object.keys(providers).map((key) => ({ key, i18nLabel: providers[key].i18nLabel })),
+				values: Object.keys(providers).map((key) => ({
+					key,
+					i18nLabel: providers[key].i18nLabel,
+				})),
 				public: true,
 				i18nLabel: 'Search_Provider',
 			});
 
 			Object.keys(providers)
-				.filter((key) => providers[key].settings && providers[key].settings.length > 0)
+				.filter(
+					(key) =>
+						providers[key].settings
+						&& providers[key].settings.length > 0,
+				)
 				.forEach(function(key) {
 					self.section(providers[key].i18nLabel, function() {
 						providers[key].settings.forEach((setting) => {
@@ -99,20 +111,27 @@ class SearchProviderService {
 								value: key,
 							});
 
-							this.add(setting.id, setting.defaultValue, _options);
+							this.add(
+								setting.id,
+								setting.defaultValue,
+								_options,
+							);
 						});
 					});
 				});
 		});
 
 		// add listener to react on setting changes
-		const configProvider = _.debounce(Meteor.bindEnvironment(() => {
-			const providerId = settings.get('Search.Provider');
+		const configProvider = _.debounce(
+			Meteor.bindEnvironment(() => {
+				const providerId = settings.get('Search.Provider');
 
-			if (providerId) {
-				this.use(providerId);// TODO do something with success and errors
-			}
-		}), 1000);
+				if (providerId) {
+					this.use(providerId); // TODO do something with success and errors
+				}
+			}),
+			1000,
+		);
 
 		settings.watchByRegex(/^Search\./, configProvider);
 	}
@@ -135,7 +154,7 @@ Meteor.methods({
 	 */
 	'rocketchatSearch.search'(text, context, payload) {
 		return new Promise((resolve, reject) => {
-			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 			try {
 				if (!searchProviderService.activeProvider) {
@@ -144,13 +163,20 @@ Meteor.methods({
 
 				SearchLogger.debug({ msg: 'search', text, context, payload });
 
-				searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
-					if (error) {
-						reject(error);
-					} else {
-						resolve(validationService.validateSearchResult(data));
-					}
-				});
+				searchProviderService.activeProvider.search(
+					text,
+					context,
+					payload,
+					(error, data) => {
+						if (error) {
+							reject(error);
+						} else {
+							resolve(
+								validationService.validateSearchResult(data),
+							);
+						}
+					},
+				);
 			} catch (e) {
 				reject(e);
 			}
@@ -158,20 +184,27 @@ Meteor.methods({
 	},
 	'rocketchatSearch.suggest'(text, context, payload) {
 		return new Promise((resolve, reject) => {
-			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 			try {
-				if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
+				if (!searchProviderService.activeProvider) {
+					throw new Error('Provider currently not active');
+				}
 
 				SearchLogger.debug({ msg: 'suggest', text, context, payload });
 
-				searchProviderService.activeProvider.suggest(text, context, payload, (error, data) => {
-					if (error) {
-						reject(error);
-					} else {
-						resolve(data);
-					}
-				});
+				searchProviderService.activeProvider.suggest(
+					text,
+					context,
+					payload,
+					(error, data) => {
+						if (error) {
+							reject(error);
+						} else {
+							resolve(data);
+						}
+					},
+				);
 			} catch (e) {
 				reject(e);
 			}
@@ -182,16 +215,23 @@ Meteor.methods({
 	 * @returns {*}
 	 */
 	'rocketchatSearch.getProvider'() {
-		if (!searchProviderService.activeProvider) { return undefined; }
+		if (!searchProviderService.activeProvider) {
+			return undefined;
+		}
 
 		return {
 			key: searchProviderService.activeProvider.key,
 			description: searchProviderService.activeProvider.i18nDescription,
 			icon: searchProviderService.activeProvider.iconName,
 			resultTemplate: searchProviderService.activeProvider.resultTemplate,
-			supportsSuggestions: searchProviderService.activeProvider.supportsSuggestions,
-			suggestionItemTemplate: searchProviderService.activeProvider.suggestionItemTemplate,
-			settings: _.mapObject(searchProviderService.activeProvider.settingsAsMap, (setting) => setting.value),
+			supportsSuggestions:
+				searchProviderService.activeProvider.supportsSuggestions,
+			suggestionItemTemplate:
+				searchProviderService.activeProvider.suggestionItemTemplate,
+			settings: _.mapObject(
+				searchProviderService.activeProvider.settingsAsMap,
+				(setting) => setting.value,
+			),
 		};
 	},
 });

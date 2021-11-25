@@ -10,6 +10,9 @@ Meteor.methods({
 			return;
 		}
 
-		return hasRole(user._id, 'livechat-monitor') && LivechatUnit.findByMonitorId(user._id);
+		return (
+			hasRole(user._id, 'livechat-monitor')
+			&& LivechatUnit.findByMonitorId(user._id)
+		);
 	},
 });

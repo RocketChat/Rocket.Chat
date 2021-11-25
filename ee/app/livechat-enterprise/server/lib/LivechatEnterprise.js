@@ -2,13 +2,29 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users } from '../../../../../app/models';
-import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
+import {
+	LivechatInquiry,
+	OmnichannelQueue,
+} from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import {
+	LivechatRooms,
+	Subscriptions,
+	Messages,
+} from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
-import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
-import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
+import {
+	addUserRoles,
+	removeUserFromRoles,
+} from '../../../../../app/authorization/server';
+import {
+	processWaitingQueue,
+	removePriorityFromRooms,
+	updateInquiryQueuePriority,
+	updatePriorityInquiries,
+	updateRoomPriorityHistory,
+} from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
@@ -19,10 +35,14 @@ export const LivechatEnterprise = {
 	addMonitor(username) {
 		check(username, String);
 
-		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = Users.findOneByUsername(username, {
+			fields: { _id: 1, username: 1 },
+		});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addMonitor' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:addMonitor',
+			});
 		}
 
 		if (addUserRoles(user._id, 'livechat-monitor')) {
@@ -38,7 +58,9 @@ export const LivechatEnterprise = {
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeMonitor' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:removeMonitor',
+			});
 		}
 
 		if (removeUserFromRoles(user._id, 'livechat-monitor')) {
@@ -54,7 +76,9 @@ export const LivechatEnterprise = {
 		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!unit) {
-			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
+			throw new Meteor.Error('unit-not-found', 'Unit not found', {
+				method: 'livechat:removeUnit',
+			});
 		}
 
 		return LivechatUnit.removeById(_id);
@@ -89,13 +113,25 @@ export const LivechatEnterprise = {
 		if (_id) {
 			const unit = LivechatUnit.findOneById(_id);
 			if (!unit) {
-				throw new Meteor.Error('error-unit-not-found', 'Unit not found', { method: 'livechat:saveUnit' });
+				throw new Meteor.Error(
+					'error-unit-not-found',
+					'Unit not found',
+					{
+						method: 'livechat:saveUnit',
+					},
+				);
 			}
 
 			ancestors = unit.ancestors;
 		}
 
-		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
+		return LivechatUnit.createOrUpdateUnit(
+			_id,
+			unitData,
+			ancestors,
+			unitMonitors,
+			unitDepartments,
+		);
 	},
 
 	removeTag(_id) {
@@ -104,7 +140,9 @@ export const LivechatEnterprise = {
 		const tag = LivechatTag.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!tag) {
-			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
+			throw new Meteor.Error('tag-not-found', 'Tag not found', {
+				method: 'livechat:removeTag',
+			});
 		}
 
 		return LivechatTag.removeById(_id);
@@ -132,8 +170,14 @@ export const LivechatEnterprise = {
 			dueTimeInMinutes: String,
 		});
 
-		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
-		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		const oldPriority =			_id
+			&& LivechatPriority.findOneById(_id, {
+				fields: { dueTimeInMinutes: 1 },
+			});
+		const priority = LivechatPriority.createOrUpdatePriority(
+			_id,
+			priorityData,
+		);
 		if (!oldPriority) {
 			return priority;
 		}
@@ -151,10 +195,18 @@ export const LivechatEnterprise = {
 	removePriority(_id) {
 		check(_id, String);
 
-		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
+		const priority = LivechatPriority.findOneById(_id, {
+			fields: { _id: 1 },
+		});
 
 		if (!priority) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', { method: 'livechat:removePriority' });
+			throw new Meteor.Error(
+				'error-invalid-priority',
+				'Invalid priority',
+				{
+					method: 'livechat:removePriority',
+				},
+			);
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
@@ -169,7 +221,9 @@ export const LivechatEnterprise = {
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {
-		logger.debug(`Attempting to place room ${ room._id } on hold by user ${ onHoldBy?._id }`);
+		logger.debug(
+			`Attempting to place room ${ room._id } on hold by user ${ onHoldBy?._id }`,
+		);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${ roomId } invalid or already on hold. Skipping`);
@@ -178,7 +232,11 @@ export const LivechatEnterprise = {
 		LivechatRooms.setOnHold(roomId);
 		Subscriptions.setOnHold(roomId);
 
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
+		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(
+			roomId,
+			comment,
+			onHoldBy,
+		);
 		Meteor.defer(() => {
 			callbacks.run('livechat:afterOnHold', room);
 		});
@@ -226,7 +284,9 @@ const queueWorker = {
 	},
 	async getActiveQueues() {
 		// undefined = public queue(without department)
-		return [undefined].concat(await LivechatInquiry.getDistinctQueuedDepartments());
+		return [undefined].concat(
+			await LivechatInquiry.getDistinctQueuedDepartments(),
+		);
 	},
 	async nextQueue() {
 		if (!this.queues.length) {
@@ -243,7 +303,11 @@ const queueWorker = {
 		}
 
 		const queue = await this.nextQueue();
-		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ queueDelayTimeout }`);
+		queueLogger.debug(
+			`Executing queue ${
+				queue || 'Public'
+			} with timeout of ${ queueDelayTimeout }`,
+		);
 
 		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	},
@@ -253,7 +317,9 @@ const queueWorker = {
 		try {
 			if (await OmnichannelQueue.lockQueue()) {
 				await processWaitingQueue(queue);
-				queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
+				queueLogger.debug(
+					`Queue ${ queue || 'Public' } processed. Unlocking`,
+				);
 				await OmnichannelQueue.unlockQueue();
 			} else {
 				queueLogger.debug('Queue locked. Waiting');
@@ -269,7 +335,6 @@ const queueWorker = {
 	},
 };
 
-
 let omnichannelIsEnabled = false;
 function shouldQueueStart() {
 	if (!omnichannelIsEnabled) {
@@ -277,12 +342,14 @@ function shouldQueueStart() {
 		return;
 	}
 
-	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
-	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
-		routingSupportsAutoAssign
-			? 'Starting'
-			: 'Stopping'
-	} queue`);
+	const routingSupportsAutoAssign =		RoutingManager.getConfig().autoAssignAgent;
+	queueLogger.debug(
+		`Routing method ${
+			RoutingManager.methodName
+		} supports auto assignment: ${ routingSupportsAutoAssign }. ${
+			routingSupportsAutoAssign ? 'Starting' : 'Stopping'
+		} queue`,
+	);
 
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
 }
@@ -291,7 +358,9 @@ RoutingManager.startQueue = shouldQueueStart;
 
 settings.watch('Livechat_enabled', (enabled) => {
 	omnichannelIsEnabled = enabled;
-	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+	omnichannelIsEnabled && RoutingManager.isMethodSet()
+		? shouldQueueStart()
+		: queueWorker.stop();
 });
 
 settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {

@@ -69,7 +69,10 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Custom_Sound_Saved_Successfully'),
+			});
 			goToNew(result)();
 			onChange();
 		} catch (error) {

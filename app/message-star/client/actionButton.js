@@ -35,7 +35,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return !message.starred || !message.starred.find((star) => star._id === u._id);
+			return (
+				!message.starred
+				|| !message.starred.find((star) => star._id === u._id)
+			);
 		},
 		order: 9,
 		group: 'menu',
@@ -60,7 +63,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return message.starred && message.starred.find((star) => star._id === u._id);
+			return (
+				message.starred
+				&& message.starred.find((star) => star._id === u._id)
+			);
 		},
 		order: 9,
 		group: 'menu',
@@ -77,24 +83,33 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition({ msg, subscription, u }) {
-			if (subscription == null || !settings.get('Message_AllowStarring')) {
+			if (
+				subscription == null
+				|| !settings.get('Message_AllowStarring')
+			) {
 				return false;
 			}
 
-			return msg.starred && msg.starred.find((star) => star._id === u._id);
+			return (
+				msg.starred && msg.starred.find((star) => star._id === u._id)
+			);
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -110,14 +125,19 @@ Meteor.startup(function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			dispatchToastMessage({
+				type: 'success',
+				message: TAPi18n.__('Copied'),
+			});
 		},
 		condition({ msg, subscription, u }) {
 			if (subscription == null) {
 				return false;
 			}
 
-			return msg.starred && msg.starred.find((star) => star._id === u._id);
+			return (
+				msg.starred && msg.starred.find((star) => star._id === u._id)
+			);
 		},
 		order: 101,
 		group: 'menu',

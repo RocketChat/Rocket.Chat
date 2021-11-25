@@ -23,15 +23,15 @@ settings.watch<string>('Language', (value) => {
 });
 
 export const replacekey = (str: string, key: string, value = ''): string =>
-	str.replace(
-		new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
-		value,
-	);
+	str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
 
 export const translate = (str: string): string =>
 	replaceVariables(str, (_match, key) => TAPi18n.__(key, { lng }));
 
-export const replace = (str: string, data: { [key: string]: unknown } = {}): string => {
+export const replace = (
+	str: string,
+	data: { [key: string]: unknown } = {},
+): string => {
 	if (!str) {
 		return '';
 	}
@@ -43,20 +43,27 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 		Site_URL: settings.get<string>('Site_Url'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
-		...data.name ? {
-			fname: s.strLeft(String(data.name), ' '),
-			lname: s.strRightBack(String(data.name), ' '),
-		} : {},
+		...data.name
+			? {
+				fname: s.strLeft(String(data.name), ' '),
+				lname: s.strRightBack(String(data.name), ' '),
+			  }
+			: {},
 		...data,
 	};
 
-	return Object.entries(options)
-		.reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
+	return Object.entries(options).reduce(
+		(ret, [key, value]) => replacekey(ret, key, value),
+		translate(str),
+	);
 };
 
 const nonEscapeKeys = ['room_path'];
 
-export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {}): string => {
+export const replaceEscaped = (
+	str: string,
+	data: { [key: string]: unknown } = {},
+): string => {
 	const siteName = settings.get<string>('Site_Name');
 	const siteUrl = settings.get<string>('Site_Url');
 
@@ -65,16 +72,24 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
-		...Object.entries(data).reduce<{[key: string]: string}>((ret, [key, value]) => {
-			if (value !== undefined && value !== null) {
-				ret[key] = nonEscapeKeys.includes(key) ? String(value) : escapeHTML(String(value));
-			}
-			return ret;
-		}, {}),
+		...Object.entries(data).reduce<{ [key: string]: string }>(
+			(ret, [key, value]) => {
+				if (value !== undefined && value !== null) {
+					ret[key] = nonEscapeKeys.includes(key)
+						? String(value)
+						: escapeHTML(String(value));
+				}
+				return ret;
+			},
+			{},
+		),
 	});
 };
 
-export const wrap = (html: string, data: { [key: string]: unknown } = {}): string => {
+export const wrap = (
+	html: string,
+	data: { [key: string]: unknown } = {},
+): string => {
 	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);
 	}
@@ -90,7 +105,11 @@ export const inlinecss = (html: string): string => {
 	return css ? juice.inlineContent(html, css) : html;
 };
 
-export const getTemplate = (template: ISetting['_id'], fn: (html: string) => void, escape = true): void => {
+export const getTemplate = (
+	template: ISetting['_id'],
+	fn: (html: string) => void,
+	escape = true,
+): void => {
 	let html = '';
 
 	settings.watch<string>(template, (value) => {
@@ -103,7 +122,10 @@ export const getTemplate = (template: ISetting['_id'], fn: (html: string) => voi
 	});
 };
 
-export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string) => void): void => {
+export const getTemplateWrapped = (
+	template: ISetting['_id'],
+	fn: (html: string) => void,
+): void => {
 	let html = '';
 	const wrapInlineCSS = _.debounce(() => fn(wrap(inlinecss(html))), 100);
 
@@ -117,22 +139,33 @@ export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string)
 };
 
 settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
-	getTemplate('Email_Header', (value) => {
-		contentHeader = replace(value || '');
-		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	}, false);
+	getTemplate(
+		'Email_Header',
+		(value) => {
+			contentHeader = replace(value || '');
+			body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
+		},
+		false,
+	);
 
-	getTemplate('Email_Footer', (value) => {
-		contentFooter = replace(value || '');
-		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	}, false);
+	getTemplate(
+		'Email_Footer',
+		(value) => {
+			contentFooter = replace(value || '');
+			body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
+		},
+		false,
+	);
 
 	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 });
 
-export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
+export const rfcMailPatternWithName =	/^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
-export const checkAddressFormat = (adresses: string | string[]): boolean => ([] as string[]).concat(adresses).every((address) => rfcMailPatternWithName.test(address));
+export const checkAddressFormat = (adresses: string | string[]): boolean =>
+	([] as string[])
+		.concat(adresses)
+		.every((address) => rfcMailPatternWithName.test(address));
 
 export const sendNoWrap = ({
 	to,
@@ -163,7 +196,9 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
+	Meteor.defer(() =>
+		Email.send({ to, from, replyTo, subject, html, text, headers }),
+	);
 };
 
 export const send = ({
@@ -190,21 +225,29 @@ export const send = ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data))
+		text:
+			(text && replace(text, data))
 			|| (html && stripHtml(replace(html, data)).result)
 			|| undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
 
-export const checkAddressFormatAndThrow = (from: string, func: Function): asserts from => {
+export const checkAddressFormatAndThrow = (
+	from: string,
+	func: Function,
+): asserts from => {
 	if (checkAddressFormat(from)) {
 		return;
 	}
 
-	throw new Meteor.Error('error-invalid-from-address', 'Invalid from address', {
-		function: func,
-	});
+	throw new Meteor.Error(
+		'error-invalid-from-address',
+		'Invalid from address',
+		{
+			function: func,
+		},
+	);
 };
 
 export const getHeader = (): string | undefined => contentHeader;

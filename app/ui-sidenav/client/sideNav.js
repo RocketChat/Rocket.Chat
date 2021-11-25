@@ -63,11 +63,16 @@ Template.sideNav.events({
 	'mouseenter .sidebar-item__link'(e) {
 		const element = e.currentTarget;
 		setTimeout(() => {
-			const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
-			const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+			const ellipsedElement = element.querySelector(
+				'.sidebar-item__ellipsis',
+			);
+			const isTextEllipsed =				ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
 
 			if (isTextEllipsed) {
-				element.setAttribute('title', element.getAttribute('aria-label'));
+				element.setAttribute(
+					'title',
+					element.getAttribute('aria-label'),
+				);
 			} else {
 				element.removeAttribute('title');
 			}
@@ -76,10 +81,13 @@ Template.sideNav.events({
 });
 
 const redirectToDefaultChannelIfNeeded = () => {
-	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
+	const needToBeRedirect = () =>
+		['/', '/home'].includes(FlowRouter.current().path);
 
 	Tracker.autorun((c) => {
-		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+		const firstChannelAfterLogin = settings.get(
+			'First_Channel_After_Login',
+		);
 
 		if (!needToBeRedirect()) {
 			return c.stop();
@@ -89,7 +97,11 @@ const redirectToDefaultChannelIfNeeded = () => {
 			return c.stop();
 		}
 
-		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+		const room = roomTypes.findRoom(
+			'c',
+			firstChannelAfterLogin,
+			Meteor.userId(),
+		);
 
 		if (!room) {
 			return;
@@ -118,6 +130,8 @@ Template.sideNav.onCreated(function() {
 			},
 		});
 		const userPref = getUserPreference(user, 'sidebarGroupByType');
-		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
+		this.groupedByType.set(
+			userPref || settings.get('UI_Group_Channels_By_Type'),
+		);
 	});
 });

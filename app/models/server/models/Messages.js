@@ -30,7 +30,10 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
+		this.tryEnsureIndex(
+			{ rid: 1, tlm: -1 },
+			{ partialFilterExpression: { tcount: { $exists: true } } },
+		); // used for the List Threads
 		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
@@ -41,55 +44,93 @@ export class Messages extends Base {
 	}
 
 	keepHistoryForToken(token) {
-		return this.update({
-			'navigation.token': token,
-			expireAt: {
-				$exists: true,
+		return this.update(
+			{
+				'navigation.token': token,
+				expireAt: {
+					$exists: true,
+				},
 			},
-		}, {
-			$unset: {
-				expireAt: 1,
+			{
+				$unset: {
+					expireAt: 1,
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setRoomIdByToken(token, rid) {
-		return this.update({
-			'navigation.token': token,
-			rid: null,
-		}, {
-			$set: {
-				rid,
+		return this.update(
+			{
+				'navigation.token': token,
+				rid: null,
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$set: {
+					rid,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-archived',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-unarchived',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-set-read-only',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-removed-read-only',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-allowed-reacting',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'room-disallowed-reacting',
+			roomId,
+			'',
+			user,
+		);
 	}
 
 	unsetReactions(messageId) {
@@ -107,12 +148,35 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
+	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+		type,
+		roomId,
+		message,
+		user,
+		extraData,
+	) {
+		return this.createWithTypeRoomIdMessageAndUser(
+			type,
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
-	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
+	createRoomRenamedWithRoomIdRoomNameAndUser(
+		roomId,
+		roomName,
+		user,
+		extraData,
+	) {
+		return this.createWithTypeRoomIdMessageAndUser(
+			'r',
+			roomId,
+			roomName,
+			user,
+			extraData,
+		);
 	}
 
 	addTranslations(messageId, translations, providerName) {
@@ -124,32 +188,45 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
-	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+	addAttachmentTranslations = function(
+		messageId,
+		attachmentIndex,
+		translations,
+	) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] =				translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
-	}
+	};
 
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
 			'_importFile.id': importFileId,
 		};
 
-		return this.update(query, {
-			$set: {
-				'_importFile.rocketChatUrl': rocketChatUrl,
-				'_importFile.downloaded': true,
+		return this.update(
+			query,
+			{
+				$set: {
+					'_importFile.rocketChatUrl': rocketChatUrl,
+					'_importFile.downloaded': true,
+				},
+				$addToSet: {
+					attachments: attachment,
+				},
 			},
-			$addToSet: {
-				attachments: attachment,
-			},
-		}, { multi: true });
+			{ multi: true },
+		);
 	}
 
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+	countVisibleByRoomIdBetweenTimestampsInclusive(
+		roomId,
+		afterTimestamp,
+		beforeTimestamp,
+		options,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -179,7 +256,15 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], ignoreThreads = true, options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion = true,
+		ts,
+		users = [],
+		ignoreThreads = true,
+		options = {},
+	) {
 		const query = {
 			rid,
 			ts,
@@ -206,7 +291,13 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+	findDiscussionByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ts,
+		users = [],
+		options = {},
+	) {
 		const query = {
 			rid,
 			ts,
@@ -269,22 +360,30 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
+	findVisibleByRoomIdNotContainingTypes(
+		roomId,
+		types,
+		options,
+		showThreadMessages = true,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
 			},
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -341,7 +440,14 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+		roomId,
+		timestamp,
+		types,
+		options,
+		showThreadMessages = true,
+		inclusive = false,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -351,22 +457,33 @@ export class Messages extends Base {
 				[inclusive ? '$lte' : '$lt']: timestamp,
 			},
 			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
 			},
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true, inclusive = false) {
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId,
+		afterTimestamp,
+		beforeTimestamp,
+		types,
+		options,
+		showThreadMessages = true,
+		inclusive = false,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -377,15 +494,18 @@ export class Messages extends Base {
 				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
 			},
 			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
 			},
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -395,16 +515,17 @@ export class Messages extends Base {
 	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
 		const query = {
 			_hidden: { $ne: true },
-			$or: [{
-				ts: {
-					$gt: timestamp,
+			$or: [
+				{
+					ts: {
+						$gt: timestamp,
+					},
 				},
-			},
-			{
-				editedAt: {
-					$gt: timestamp,
+				{
+					editedAt: {
+						$gt: timestamp,
+					},
 				},
-			},
 			],
 		};
 
@@ -490,7 +611,9 @@ export class Messages extends Base {
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -508,10 +631,7 @@ export class Messages extends Base {
 			rid,
 			_hidden: { $ne: true },
 			t: { $exists: false },
-			$or: [
-				{ tmid: { $exists: false } },
-				{ tshow: true },
-			],
+			$or: [{ tmid: { $exists: false } }, { tshow: true }],
 		};
 
 		if (messageId) {
@@ -542,7 +662,9 @@ export class Messages extends Base {
 
 	// UPDATE
 	setHiddenById(_id, hidden) {
-		if (hidden == null) { hidden = true; }
+		if (hidden == null) {
+			hidden = true;
+		}
 		const query = { _id };
 
 		const update = {
@@ -582,8 +704,12 @@ export class Messages extends Base {
 	}
 
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
-		if (pinned == null) { pinned = true; }
-		if (pinnedAt == null) { pinnedAt = 0; }
+		if (pinned == null) {
+			pinned = true;
+		}
+		if (pinnedAt == null) {
+			pinnedAt = 0;
+		}
 		const query = { _id };
 
 		const update = {
@@ -597,9 +723,19 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		if (snippeted == null) { snippeted = true; }
-		if (snippetedAt == null) { snippetedAt = 0; }
+	setSnippetedByIdAndUserId(
+		message,
+		snippetName,
+		snippetedBy,
+		snippeted,
+		snippetedAt,
+	) {
+		if (snippeted == null) {
+			snippeted = true;
+		}
+		if (snippetedAt == null) {
+			snippetedAt = 0;
+		}
 		const query = { _id: message._id };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
@@ -653,7 +789,12 @@ export class Messages extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateUsernameAndMessageOfMentionByIdAndOldUsername(_id, oldUsername, newUsername, newMessage) {
+	updateUsernameAndMessageOfMentionByIdAndOldUsername(
+		_id,
+		oldUsername,
+		newUsername,
+		newMessage,
+	) {
 		const query = {
 			_id,
 			'mentions.username': oldUsername,
@@ -769,7 +910,12 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+	createNavigationHistoryWithRoomIdMessageAndUser(
+		roomId,
+		message,
+		user,
+		extraData,
+	) {
 		const type = 'livechat_navigation_history';
 		const record = {
 			t: type,
@@ -793,7 +939,12 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createTransferHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+	createTransferHistoryWithRoomIdMessageAndUser(
+		roomId,
+		message,
+		user,
+		extraData,
+	) {
 		const type = 'livechat_transfer_history';
 		const record = {
 			t: type,
@@ -816,7 +967,12 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createTranscriptHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+	createTranscriptHistoryWithRoomIdMessageAndUser(
+		roomId,
+		message,
+		user,
+		extraData,
+	) {
 		const type = 'livechat_transcript_history';
 		const record = {
 			t: type,
@@ -841,91 +997,199 @@ export class Messages extends Base {
 
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'uj',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserJoinTeamWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'ujt',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserJoinWithRoomIdAndUserDiscussion(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'ut',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserLeaveWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'ul',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserLeaveTeamWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'ult',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'ru',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'au',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createCommandWithRoomIdAndUser(command, roomId, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'command',
+			roomId,
+			command,
+			user,
+			extraData,
+		);
 	}
 
 	createUserMutedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user-muted', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'user-muted',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createUserUnmutedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user-unmuted', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'user-unmuted',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createNewModeratorWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-moderator', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'new-moderator',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createModeratorRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'moderator-removed',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-owner', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'new-owner',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createOwnerRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('owner-removed', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'owner-removed',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createNewLeaderWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-leader', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'new-leader',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createLeaderRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('leader-removed', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'leader-removed',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createSubscriptionRoleAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('subscription-role-added', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'subscription-role-added',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(
+			'subscription-role-removed',
+			roomId,
+			message,
+			user,
+			extraData,
+		);
 	}
 
 	// REMOVE
@@ -945,7 +1209,10 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
+	findThreadsByRoomIdPinnedTimestampAndUsers(
+		{ rid, pinned, ignoreDiscussion = true, ts, users = [] },
+		options,
+	) {
 		const query = {
 			rid,
 			ts,
@@ -968,7 +1235,15 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
+	removeByIdPinnedTimestampLimitAndUsers(
+		rid,
+		pinned,
+		ignoreDiscussion = true,
+		ts,
+		limit,
+		users = [],
+		ignoreThreads = true,
+	) {
 		const query = {
 			rid,
 			ts,
@@ -1048,27 +1323,34 @@ export class Messages extends Base {
 	}
 
 	setAsRead(rid, until) {
-		return this.update({
-			rid,
-			unread: true,
-			ts: { $lt: until },
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				rid,
+				unread: true,
+				ts: { $lt: until },
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setAsReadById(_id) {
-		return this.update({
-			_id,
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				_id,
 			},
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+		);
 	}
 
 	findUnreadMessagesByRoomAndDate(rid, after) {
@@ -1110,12 +1392,16 @@ export class Messages extends Base {
 			drid: rid,
 		};
 
-		return this.update(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.update(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		}, { multi: 1 });
+			{ multi: 1 },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////
@@ -1228,7 +1514,10 @@ export class Messages extends Base {
 	}
 
 	findThreadsByRoomId(rid, skip, limit) {
-		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
+		return this.find(
+			{ rid, tcount: { $exists: true } },
+			{ sort: { tlm: -1 }, skip, limit },
+		);
 	}
 
 	findAgentLastMessageByVisitorLastMessageTs(roomId, visitorLastMessageTs) {

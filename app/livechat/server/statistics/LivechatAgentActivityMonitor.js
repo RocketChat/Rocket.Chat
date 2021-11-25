@@ -13,8 +13,8 @@ const formatDate = (dateTime = new Date()) => ({
 export class LivechatAgentActivityMonitor {
 	constructor() {
 		this._started = false;
-		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
-		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
+		this._handleAgentStatusChanged =			this._handleAgentStatusChanged.bind(this);
+		this._handleUserStatusLivechatChanged =			this._handleUserStatusLivechatChanged.bind(this);
 		this._name = 'Livechat Agent Activity Monitor';
 	}
 
@@ -41,9 +41,17 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		this._startMonitoring();
-		Meteor.onConnection((connection) => this._handleMeteorConnection(connection));
-		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
-		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
+		Meteor.onConnection((connection) =>
+			this._handleMeteorConnection(connection),
+		);
+		callbacks.add(
+			'livechat.agentStatusChanged',
+			this._handleAgentStatusChanged,
+		);
+		callbacks.add(
+			'livechat.setUserStatusLivechat',
+			this._handleUserStatusLivechatChanged,
+		);
 		this._started = true;
 	}
 
@@ -58,7 +66,7 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_updateActiveSessions() {
-		const openLivechatAgentSessions = LivechatAgentActivity.findOpenSessions().fetch();
+		const openLivechatAgentSessions =			LivechatAgentActivity.findOpenSessions().fetch();
 		if (!openLivechatAgentSessions.length) {
 			return;
 		}
@@ -66,11 +74,31 @@ export class LivechatAgentActivityMonitor {
 		const startedAt = new Date(today.year(), today.month(), today.date());
 		for (const session of openLivechatAgentSessions) {
 			const startDate = moment(session.lastStartedAt);
-			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
-			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
-			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
+			const stoppedAt = new Date(
+				startDate.year(),
+				startDate.month(),
+				startDate.date(),
+				23,
+				59,
+				59,
+			);
+			const data = {
+				...formatDate(startDate.toDate()),
+				agentId: session.agentId,
+			};
+			const availableTime = moment(stoppedAt).diff(
+				moment(new Date(session.lastStartedAt)),
+				'seconds',
+			);
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: { startedAt: session.lastStartedAt, stoppedAt },
+			});
 			this._createOrUpdateSession(session.agentId, startedAt);
 		}
 	}
@@ -85,7 +113,11 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		const user = Users.findOneById(session.userId);
-		if (user && user.status !== 'offline' && user.statusLivechat === 'available') {
+		if (
+			user
+			&& user.status !== 'offline'
+			&& user.statusLivechat === 'available'
+		) {
 			this._createOrUpdateSession(user._id);
 		}
 		connection.onClose(() => {
@@ -131,7 +163,11 @@ export class LivechatAgentActivityMonitor {
 	}
 
 	_createOrUpdateSession(userId, lastStartedAt) {
-		const data = { ...formatDate(lastStartedAt), agentId: userId, lastStartedAt };
+		const data = {
+			...formatDate(lastStartedAt),
+			agentId: userId,
+			lastStartedAt,
+		};
 		LivechatAgentActivity.createOrUpdate(data);
 	}
 
@@ -140,9 +176,22 @@ export class LivechatAgentActivityMonitor {
 		const livechatSession = LivechatAgentActivity.findOne(data);
 		if (livechatSession) {
 			const stoppedAt = new Date();
-			const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt } });
+			const availableTime = moment(stoppedAt).diff(
+				moment(new Date(livechatSession.lastStartedAt)),
+				'seconds',
+			);
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: {
+					startedAt: livechatSession.lastStartedAt,
+					stoppedAt,
+				},
+			});
 		}
 	}
 }

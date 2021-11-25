@@ -199,7 +199,10 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			try {
 				const result = await changeActiveStatusRequest(activeStatusQuery);
 				if (result.success) {
-					dispatchToastMessage({ type: 'success', message: t(changeActiveStatusMessage) });
+					dispatchToastMessage({
+						type: 'success',
+						message: t(changeActiveStatusMessage),
+					});
 					onChange();
 				}
 			} catch (error) {

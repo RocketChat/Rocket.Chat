@@ -23,8 +23,13 @@ export class AppActivationBridge extends ActivationBridge {
 		await this.orch.getNotifier().appRemoved(app.getID());
 	}
 
-	protected async appStatusChanged(app: ProxiedApp, status: AppStatus): Promise<void> {
-		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
+	protected async appStatusChanged(
+		app: ProxiedApp,
+		status: AppStatus,
+	): Promise<void> {
+		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status)
+			? 'online'
+			: 'offline';
 
 		await Users.updateStatusByAppId(app.getID(), userStatus);
 

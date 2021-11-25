@@ -50,7 +50,11 @@ export class Spotlight {
 
 			return this.fetchRooms(
 				userId,
-				Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch(),
+				Rooms.findByNameAndTypeNotDefault(
+					regex,
+					'c',
+					roomOptions,
+				).fetch(),
 			);
 		}
 
@@ -103,7 +107,9 @@ export class Spotlight {
 
 		// Prevent the next query to get the same users
 		usernames.push(
-			...users.map((u) => u.username).filter((u) => !usernames.includes(u)),
+			...users
+				.map((u) => u.username)
+				.filter((u) => !usernames.includes(u)),
 		);
 	}
 
@@ -200,7 +206,9 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
+		const room = Rooms.findOneById(rid, {
+			fields: { _id: 1, t: 1, uids: 1 },
+		});
 
 		if (rid && !room) {
 			return users;

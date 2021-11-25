@@ -4,18 +4,20 @@ import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings/server';
 import { RocketChatAssets } from '../../assets/server';
 
-WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(function(req, res) {
-	const name = settings.get('Site_Name');
-	const startUrl = Meteor.absoluteUrl();
-	const description = settings.get('Blockstack_Auth_Description');
-	const iconUrl = RocketChatAssets.getURL('Assets_favicon_192');
+WebApp.connectHandlers.use(
+	'/_blockstack/manifest',
+	Meteor.bindEnvironment(function(req, res) {
+		const name = settings.get('Site_Name');
+		const startUrl = Meteor.absoluteUrl();
+		const description = settings.get('Blockstack_Auth_Description');
+		const iconUrl = RocketChatAssets.getURL('Assets_favicon_192');
 
-	res.writeHead(200, {
-		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': '*',
-	});
+		res.writeHead(200, {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*',
+		});
 
-	res.end(`{
+		res.end(`{
     "name": "${ name }",
     "start_url": "${ startUrl }",
     "description": "${ description }",
@@ -25,4 +27,5 @@ WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(funct
       "type": "image/png"
     }]
   }`);
-}));
+	}),
+);

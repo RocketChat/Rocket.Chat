@@ -15,19 +15,34 @@ const ESCAPE = 27;
 
 const emojiListByCategory = new ReactiveDict('emojiList');
 
-const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+const getEmojiElement = (emoji, image) =>
+	image
+	&& `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 
 const createEmojiList = (category, actualTone) => {
-	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
-			return;
-		}
+	const html =		Object.values(emoji.packages)
+		.map((emojiPackage) => {
+			if (
+				!emojiPackage.emojisByCategory
+					|| !emojiPackage.emojisByCategory[category]
+			) {
+				return;
+			}
 
-		return emojiPackage.emojisByCategory[category].map((current) => {
-			const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
-			return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
-		}).join('');
-	}).join('') || `<li>${ t('No_emojis_found') }</li>`;
+			return emojiPackage.emojisByCategory[category]
+				.map((current) => {
+					const tone =							actualTone > 0
+							&& emojiPackage.toneList.hasOwnProperty(current)
+						? `_tone${ actualTone }`
+						: '';
+					return getEmojiElement(
+						current,
+						emojiPackage.renderPicker(`:${ current }${ tone }:`),
+					);
+				})
+				.join('');
+		})
+		.join('') || `<li>${ t('No_emojis_found') }</li>`;
 
 	return html;
 };
@@ -40,7 +55,12 @@ const createPickerEmojis = (instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
 
-	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
+	categories.forEach((category) =>
+		emojiListByCategory.set(
+			category.key,
+			createEmojiList(category.key, actualTone),
+		),
+	);
 };
 
 function getEmojisBySearchTerm(searchTerm) {
@@ -50,7 +70,10 @@ function getEmojisBySearchTerm(searchTerm) {
 
 	EmojiPicker.currentCategory.set('');
 
-	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
+	const searchRegExp = new RegExp(
+		escapeRegExp(searchTerm.replace(/:/g, '')),
+		'i',
+	);
 
 	for (let current in emoji.list) {
 		if (!emoji.list.hasOwnProperty(current)) {
@@ -62,19 +85,34 @@ function getEmojisBySearchTerm(searchTerm) {
 			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
-			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
+			const alias =				shortnames[0] !== undefined
+				? shortnames[0].replace(/:/g, '')
+				: shortnames[0];
 
-			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+			if (
+				actualTone > 0
+				&& emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)
+			) {
 				tone = `_tone${ actualTone }`;
 			}
 
 			let emojiFound = false;
 
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || (searchValArray !== undefined && searchValArray.includes(searchTerm))) {
+				if (
+					emoji.packages[
+						emojiPackage
+					].emojisByCategory.hasOwnProperty(key)
+				) {
+					const contents =						emoji.packages[emojiPackage].emojisByCategory[key];
+					const searchValArray =						alias !== undefined
+						? alias.replace(/:/g, '').split('_')
+						: alias;
+					if (
+						contents.indexOf(current) !== -1
+						|| (searchValArray !== undefined
+							&& searchValArray.includes(searchTerm))
+					) {
 						emojiFound = true;
 						break;
 					}
@@ -82,7 +120,9 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = emoji.packages[emojiPackage].renderPicker(`:${ current }${ tone }:`);
+				const image = emoji.packages[emojiPackage].renderPicker(
+					`:${ current }${ tone }:`,
+				);
 				html += getEmojiElement(current, image);
 			}
 		}
@@ -100,8 +140,14 @@ Template.emojiPicker.helpers({
 		let emojisByCategory = [];
 		for (const emojiPackage in emoji.packages) {
 			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
-					emojisByCategory = emojisByCategory.concat(emoji.packages[emojiPackage].emojisByCategory[category]);
+				if (
+					emoji.packages[
+						emojiPackage
+					].emojisByCategory.hasOwnProperty(category)
+				) {
+					emojisByCategory = emojisByCategory.concat(
+						emoji.packages[emojiPackage].emojisByCategory[category],
+					);
 				}
 			}
 		}
@@ -111,7 +157,9 @@ Template.emojiPicker.helpers({
 		return Template.instance().currentSearchTerm.get().length > 0;
 	},
 	searchResults() {
-		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get());
+		return getEmojisBySearchTerm(
+			Template.instance().currentSearchTerm.get(),
+		);
 	},
 	emojiList(category) {
 		return emojiListByCategory.get(category);
@@ -201,9 +249,18 @@ Template.emojiPicker.events({
 		for (const emojiPackage in emoji.packages) {
 			if (emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
-					for (const _emoji in emoji.packages[emojiPackage].toneList) {
-						if (emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-							$(`.emoji-${ _emoji }`).html(emoji.packages[emojiPackage].render(`:${ _emoji }${ newTone }:`));
+					for (const _emoji in emoji.packages[emojiPackage]
+						.toneList) {
+						if (
+							emoji.packages[
+								emojiPackage
+							].toneList.hasOwnProperty(_emoji)
+						) {
+							$(`.emoji-${ _emoji }`).html(
+								emoji.packages[emojiPackage].render(
+									`:${ _emoji }${ newTone }:`,
+								),
+							);
 						}
 					}
 				}
@@ -225,7 +282,10 @@ Template.emojiPicker.events({
 
 		for (const emojiPackage in emoji.packages) {
 			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+				if (
+					actualTone > 0
+					&& emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)
+				) {
 					tone = `_tone${ actualTone }`;
 				}
 			}
@@ -239,7 +299,10 @@ Template.emojiPicker.events({
 
 		EmojiPicker.pickEmoji(_emoji + tone);
 	},
-	'keyup .js-emojipicker-search, change .js-emojipicker-search'(event, instance) {
+	'keyup .js-emojipicker-search, change .js-emojipicker-search'(
+		event,
+		instance,
+	) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -266,10 +329,19 @@ Template.emojiPicker.onCreated(function() {
 	for (const emojiPackage in emoji.packages) {
 		if (emoji.packages.hasOwnProperty(emojiPackage)) {
 			if (emoji.packages[emojiPackage].emojiCategories) {
-				if (typeof emoji.packages[emojiPackage].categoryIndex !== 'undefined') {
-					this.categoriesList.splice(emoji.packages[emojiPackage].categoryIndex, 0, ...emoji.packages[emojiPackage].emojiCategories);
+				if (
+					typeof emoji.packages[emojiPackage].categoryIndex
+					!== 'undefined'
+				) {
+					this.categoriesList.splice(
+						emoji.packages[emojiPackage].categoryIndex,
+						0,
+						...emoji.packages[emojiPackage].emojiCategories,
+					);
 				} else {
-					this.categoriesList = this.categoriesList.concat(emoji.packages[emojiPackage].emojiCategories);
+					this.categoriesList = this.categoriesList.concat(
+						emoji.packages[emojiPackage].emojiCategories,
+					);
 				}
 			}
 		}

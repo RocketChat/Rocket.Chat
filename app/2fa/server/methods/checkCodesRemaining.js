@@ -8,7 +8,11 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (!user.services || !user.services.totp || !user.services.totp.enabled) {
+		if (
+			!user.services
+			|| !user.services.totp
+			|| !user.services.totp.enabled
+		) {
 			throw new Meteor.Error('invalid-totp');
 		}
 

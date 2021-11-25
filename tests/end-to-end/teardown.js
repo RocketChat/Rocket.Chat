@@ -18,7 +18,8 @@ methods.forEach((method) => {
 afterEach(async function() {
 	if (this.currentTest.state === 'failed') {
 		console.log({
-			lastUrl, lastResponse: lastResponse.text,
+			lastUrl,
+			lastResponse: lastResponse.text,
 		});
 	}
 });

@@ -32,18 +32,32 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			user._id,
+		);
 
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomLeader',
-			});
+			throw new Meteor.Error(
+				'error-user-not-in-room',
+				'User is not in this room',
+				{
+					method: 'addRoomLeader',
+				},
+			);
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === true) {
-			throw new Meteor.Error('error-user-already-leader', 'User is already a leader', {
-				method: 'addRoomLeader',
-			});
+		if (
+			Array.isArray(subscription.roles) === true
+			&& subscription.roles.includes('leader') === true
+		) {
+			throw new Meteor.Error(
+				'error-user-already-leader',
+				'User is already a leader',
+				{
+					method: 'addRoomLeader',
+				},
+			);
 		}
 
 		Subscriptions.addRoleById(subscription._id, 'leader');

@@ -15,29 +15,47 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 
 function sortTable(data, sortBy, sortDirection) {
 	if (sortDirection === 'desc') {
-		if (sortBy === 'name') { data.sort((a, b) => b.basename.localeCompare(a.basename)); }
-		if (sortBy === 'size') { data.sort((a, b) => b.size - a.size); }
-		if (sortBy === 'date') { data.sort((a, b) => new Date(b.lastmod) - new Date(a.lastmod)); }
+		if (sortBy === 'name') {
+			data.sort((a, b) => b.basename.localeCompare(a.basename));
+		}
+		if (sortBy === 'size') {
+			data.sort((a, b) => b.size - a.size);
+		}
+		if (sortBy === 'date') {
+			data.sort((a, b) => new Date(b.lastmod) - new Date(a.lastmod));
+		}
 	} else {
-		if (sortBy === 'name') { data.sort((a, b) => a.basename.localeCompare(b.basename)); }
-		if (sortBy === 'size') { data.sort((a, b) => a.size - b.size); }
-		if (sortBy === 'date') { data.sort((a, b) => new Date(a.lastmod) - new Date(b.lastmod)); }
+		if (sortBy === 'name') {
+			data.sort((a, b) => a.basename.localeCompare(b.basename));
+		}
+		if (sortBy === 'size') {
+			data.sort((a, b) => a.size - b.size);
+		}
+		if (sortBy === 'date') {
+			data.sort((a, b) => new Date(a.lastmod) - new Date(b.lastmod));
+		}
 	}
 	return data;
 }
 
 async function showFilePreviews(accountId, nodes) {
-	if (!Array.isArray(nodes) || !nodes.length) { return; }
-	const promises = nodes.map((node, index) => {
-		if (node.type !== 'file') { return; }
-		return call('getWebdavFilePreview', accountId, node.filename)
-			.then((res) => {
-				const blob = new Blob([res.data], { type: 'image/png' });
-				const imgURL = URL.createObjectURL(blob);
-				nodes[index].preview = imgURL;
-			})
-			.catch((e) => e);
-	}).filter(Boolean);
+	if (!Array.isArray(nodes) || !nodes.length) {
+		return;
+	}
+	const promises = nodes
+		.map((node, index) => {
+			if (node.type !== 'file') {
+				return;
+			}
+			return call('getWebdavFilePreview', accountId, node.filename)
+				.then((res) => {
+					const blob = new Blob([res.data], { type: 'image/png' });
+					const imgURL = URL.createObjectURL(blob);
+					nodes[index].preview = imgURL;
+				})
+				.catch((e) => e);
+		})
+		.filter(Boolean);
 
 	return Promise.all(promises)
 		.then(() => nodes)
@@ -55,7 +73,11 @@ async function showWebdavFileList() {
 		webdavNodes: [],
 	});
 	try {
-		const response = await call('getWebdavFileList', accountId, directory).catch((err) => console.log(err));
+		const response = await call(
+			'getWebdavFileList',
+			accountId,
+			directory,
+		).catch((err) => console.log(err));
 		if (!response || !response.success) {
 			instance.isLoading.set(false);
 			modal.close();
@@ -67,7 +89,10 @@ async function showWebdavFileList() {
 		instance.searchText.set('');
 	} finally {
 		instance.isLoading.set(false);
-		const nodesWithPreviews = await showFilePreviews(accountId, unfilteredWebdavNodes);
+		const nodesWithPreviews = await showFilePreviews(
+			accountId,
+			unfilteredWebdavNodes,
+		);
 		if (Array.isArray(nodesWithPreviews) && nodesWithPreviews.length) {
 			instance.state.set({ unfilteredWebdavNodes: nodesWithPreviews });
 		}
@@ -91,14 +116,29 @@ Template.webdavFilePicker.helpers({
 		} else if (this.mime.match(/application\/pdf/)) {
 			icon = 'file-pdf';
 			type = 'pdf';
-		} else if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
+		} else if (
+			[
+				'application/vnd.oasis.opendocument.text',
+				'application/vnd.oasis.opendocument.presentation',
+			].includes(this.mime)
+		) {
 			icon = 'file-document';
 			type = 'document';
-		} else if (['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet',
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(this.mime)) {
+		} else if (
+			[
+				'application/vnd.ms-excel',
+				'application/vnd.oasis.opendocument.spreadsheet',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			].includes(this.mime)
+		) {
 			icon = 'file-sheets';
 			type = 'sheets';
-		} else if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
+		} else if (
+			[
+				'application/vnd.ms-powerpoint',
+				'application/vnd.oasis.opendocument.presentation',
+			].includes(this.mime)
+		) {
 			icon = 'file-sheets';
 			type = 'ppt';
 		}
@@ -127,9 +167,13 @@ Template.webdavFilePicker.helpers({
 		return `${ basename.slice(0, maxwidth - 10) }\u2026${ basename.slice(-7) }`;
 	},
 	getSize() {
-		if (this.type === 'directory') { return ''; }
+		if (this.type === 'directory') {
+			return '';
+		}
 		const bytes = this.size;
-		if (bytes === 0) { return '0 B'; }
+		if (bytes === 0) {
+			return '0 B';
+		}
 		const k = 1024;
 		const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -148,7 +192,9 @@ Template.webdavFilePicker.helpers({
 		const { sortDirection, sortBy } = Template.instance();
 		return function(type) {
 			if (sortBy.get() === type) {
-				sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
+				sortDirection.set(
+					sortDirection.get() === 'asc' ? 'desc' : 'asc',
+				);
 			} else {
 				sortBy.set(type);
 				sortDirection.set('asc');
@@ -156,7 +202,9 @@ Template.webdavFilePicker.helpers({
 		};
 	},
 	parentFolders() {
-		const currentFolder = Template.instance().state.get('webdavCurrentFolder');
+		const currentFolder = Template.instance().state.get(
+			'webdavCurrentFolder',
+		);
 		return currentFolder ? currentFolder.split('/').filter((s) => s) : [];
 	},
 	webdavNodes() {
@@ -207,7 +255,10 @@ Template.webdavFilePicker.events({
 			if (currentFolder[currentFolder.length - 1] === '/') {
 				currentFolder = currentFolder.slice(0, -1);
 			}
-			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf('/') + 1);
+			parentFolder = currentFolder.substr(
+				0,
+				currentFolder.lastIndexOf('/') + 1,
+			);
 		}
 		instance.state.set('webdavCurrentFolder', parentFolder);
 	},
@@ -234,11 +285,18 @@ Template.webdavFilePicker.events({
 		const { accountId } = instance.data;
 		instance.isLoading.set(true);
 		const file = this;
-		const response = await call('getFileFromWebdav', accountId, file).catch((error) => { console.log(error); });
+		const response = await call('getFileFromWebdav', accountId, file).catch(
+			(error) => {
+				console.log(error);
+			},
+		);
 		instance.isLoading.set(false);
 		if (!response || !response.success) {
 			modal.close();
-			return dispatchToastMessage({ type: 'error', message: t('Failed_to_get_webdav_file') });
+			return dispatchToastMessage({
+				type: 'error',
+				message: t('Failed_to_get_webdav_file'),
+			});
 		}
 		const blob = new Blob([response.data], { type: response.type });
 		// converting to file object
@@ -247,97 +305,114 @@ Template.webdavFilePicker.events({
 		const text = `
 			<div class='upload-preview-title'>
 				<div class="rc-input__wrapper">
-					<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
+					<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(
+		blob.name,
+	) }' placeholder='${ t('Upload_file_name') }'>
 				</div>
 				<div class="rc-input__wrapper">
-					<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+					<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t(
+		'Upload_file_description',
+	) }'>
 				</div>
 			</div>`;
-		return modal.open({
-			title: t('Upload_file_question'),
-			text,
-			showCancelButton: true,
-			closeOnConfirm: false,
-			closeOnCancel: false,
-			confirmButtonText: t('Send'),
-			cancelButtonText: t('Cancel'),
-			html: true,
-			onRendered: () => $('#file-name').focus(),
-		}, function(isConfirm) {
-			const record = {
-				name: document.getElementById('file-name').value || blob.name,
-				size: blob.size,
-				type: blob.type,
-				rid: roomId,
-				description: document.getElementById('file-description').value,
-			};
-			modal.close();
+		return modal.open(
+			{
+				title: t('Upload_file_question'),
+				text,
+				showCancelButton: true,
+				closeOnConfirm: false,
+				closeOnCancel: false,
+				confirmButtonText: t('Send'),
+				cancelButtonText: t('Cancel'),
+				html: true,
+				onRendered: () => $('#file-name').focus(),
+			},
+			function(isConfirm) {
+				const record = {
+					name:
+						document.getElementById('file-name').value || blob.name,
+					size: blob.size,
+					type: blob.type,
+					rid: roomId,
+					description:
+						document.getElementById('file-description').value,
+				};
+				modal.close();
 
-			if (!isConfirm) {
-				return;
-			}
-
-			const upload = fileUploadHandler('Uploads', record, blob);
-
-			let uploading = Session.get('uploading') || [];
-			uploading.push({
-				id: upload.id,
-				name: upload.getFileName(),
-				percentage: 0,
-			});
-
-			Session.set('uploading', uploading);
-
-			upload.onProgress = function(progress) {
-				uploading = Session.get('uploading');
-
-				const item = _.findWhere(uploading, { id: upload.id });
-				if (item != null) {
-					item.percentage = Math.round(progress * 100) || 0;
-					return Session.set('uploading', uploading);
+				if (!isConfirm) {
+					return;
 				}
-			};
 
-			upload.start(function(error, file, storage) {
-				if (error) {
-					let uploading = Session.get('uploading');
-					if (!Array.isArray(uploading)) {
-						uploading = [];
-					}
+				const upload = fileUploadHandler('Uploads', record, blob);
+
+				let uploading = Session.get('uploading') || [];
+				uploading.push({
+					id: upload.id,
+					name: upload.getFileName(),
+					percentage: 0,
+				});
+
+				Session.set('uploading', uploading);
+
+				upload.onProgress = function(progress) {
+					uploading = Session.get('uploading');
 
 					const item = _.findWhere(uploading, { id: upload.id });
+					if (item != null) {
+						item.percentage = Math.round(progress * 100) || 0;
+						return Session.set('uploading', uploading);
+					}
+				};
 
-					if (_.isObject(item)) {
-						item.error = error.message;
-						item.percentage = 0;
-					} else {
-						uploading.push({
-							error: error.error,
-							percentage: 0,
-						});
+				upload.start(function(error, file, storage) {
+					if (error) {
+						let uploading = Session.get('uploading');
+						if (!Array.isArray(uploading)) {
+							uploading = [];
+						}
+
+						const item = _.findWhere(uploading, { id: upload.id });
+
+						if (_.isObject(item)) {
+							item.error = error.message;
+							item.percentage = 0;
+						} else {
+							uploading.push({
+								error: error.error,
+								percentage: 0,
+							});
+						}
+
+						return Session.set('uploading', uploading);
 					}
 
-					return Session.set('uploading', uploading);
-				}
-
-				if (file) {
-					Meteor.call('sendFileMessage', roomId, storage, file, () => {
-						setTimeout(() => {
-							const uploading = Session.get('uploading');
-							if (uploading !== null) {
-								const item = _.findWhere(uploading, {
-									id: upload.id,
-								});
-								return Session.set('uploading', _.without(uploading, item));
-							}
-						}, 2000);
-					});
-				}
-			});
-		});
+					if (file) {
+						Meteor.call(
+							'sendFileMessage',
+							roomId,
+							storage,
+							file,
+							() => {
+								setTimeout(() => {
+									const uploading = Session.get('uploading');
+									if (uploading !== null) {
+										const item = _.findWhere(uploading, {
+											id: upload.id,
+										});
+										return Session.set(
+											'uploading',
+											_.without(uploading, item),
+										);
+									}
+								}, 2000);
+							},
+						);
+					}
+				});
+			},
+		);
 	},
 });
-
 
 Template.webdavFilePicker.onRendered(async function() {
 	this.autorun(() => {
@@ -346,7 +421,11 @@ Template.webdavFilePicker.onRendered(async function() {
 
 	this.autorun(() => {
 		const { sortDirection, sortBy } = Template.instance();
-		const data = sortTable(this.state.get('webdavNodes'), sortBy.get(), sortDirection.get());
+		const data = sortTable(
+			this.state.get('webdavNodes'),
+			sortBy.get(),
+			sortDirection.get(),
+		);
 		this.state.set('webdavNodes', data);
 	});
 
@@ -357,7 +436,9 @@ Template.webdavFilePicker.onRendered(async function() {
 		}
 		const input = this.searchText.get();
 		const regex = new RegExp(`\\b${ input }`, 'i');
-		const data = this.state.get('unfilteredWebdavNodes').filter(({ basename }) => basename.match(regex));
+		const data = this.state
+			.get('unfilteredWebdavNodes')
+			.filter(({ basename }) => basename.match(regex));
 		this.state.set('webdavNodes', data);
 	});
 });

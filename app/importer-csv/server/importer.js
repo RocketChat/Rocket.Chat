@@ -1,10 +1,6 @@
 import { Random } from 'meteor/random';
 
-import {
-	Base,
-	ProgressStep,
-	ImporterWebsocket,
-} from '../../importer/server';
+import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';
 
 export class CsvImporter extends Base {
@@ -29,7 +25,7 @@ export class CsvImporter extends Base {
 		const increaseProgressCount = () => {
 			try {
 				count++;
-				const rate = Math.floor(count * 1000 / totalEntries) / 10;
+				const rate = Math.floor((count * 1000) / totalEntries) / 10;
 				if (rate > oldRate) {
 					ImporterWebsocket.progressUpdated({ rate });
 					oldRate = rate;
@@ -66,14 +62,18 @@ export class CsvImporter extends Base {
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${ entry.entryName }`);
+				this.logger.debug(
+					`Ignoring the directory entry: ${ entry.entryName }`,
+				);
 				return increaseProgressCount();
 			}
 
 			// Parse the channels
 			if (entry.entryName.toLowerCase() === 'channels.csv') {
 				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-				const parsedChannels = this.csvParser(entry.getData().toString());
+				const parsedChannels = this.csvParser(
+					entry.getData().toString(),
+				);
 				channelsCount = parsedChannels.length;
 
 				for (const c of parsedChannels) {
@@ -81,12 +81,14 @@ export class CsvImporter extends Base {
 					const id = getRoomId(name);
 					const creator = c[1].trim();
 					const isPrivate = c[2].trim().toLowerCase() === 'private';
-					const members = c[3].trim().split(';').map((m) => m.trim()).filter((m) => m);
+					const members = c[3]
+						.trim()
+						.split(';')
+						.map((m) => m.trim())
+						.filter((m) => m);
 
 					this.converter.addChannel({
-						importIds: [
-							id,
-						],
+						importIds: [id],
 						u: {
 							_id: creator,
 						},
@@ -114,12 +116,8 @@ export class CsvImporter extends Base {
 					const name = u[2].trim();
 
 					this.converter.addUser({
-						importIds: [
-							username,
-						],
-						emails: [
-							email,
-						],
+						importIds: [username],
+						emails: [email],
 						username,
 						name,
 					});
@@ -143,7 +141,10 @@ export class CsvImporter extends Base {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${ entry.entryName } contains invalid syntax`, e);
+					this.logger.warn(
+						`The file ${ entry.entryName } contains invalid syntax`,
+						e,
+					);
 					return increaseProgressCount();
 				}
 
@@ -153,9 +154,19 @@ export class CsvImporter extends Base {
 
 				if (folderName.toLowerCase() === 'directmessages') {
 					isDirect = true;
-					data = msgs.map((m) => ({ username: m[0], ts: m[2], text: m[3], otherUsername: m[1], isDirect: true }));
+					data = msgs.map((m) => ({
+						username: m[0],
+						ts: m[2],
+						text: m[3],
+						otherUsername: m[1],
+						isDirect: true,
+					}));
 				} else {
-					data = msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] }));
+					data = msgs.map((m) => ({
+						username: m[0],
+						ts: m[1],
+						text: m[2],
+					}));
 				}
 
 				messagesCount += data.length;
@@ -165,13 +176,13 @@ export class CsvImporter extends Base {
 
 				if (isDirect) {
 					for (const msg of data) {
-						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
+						const sourceId = [msg.username, msg.otherUsername]
+							.sort()
+							.join('/');
 
 						if (!dmRooms.has(sourceId)) {
 							this.converter.addChannel({
-								importIds: [
-									sourceId,
-								],
+								importIds: [sourceId],
 								users: [msg.username, msg.otherUsername],
 								t: 'd',
 							});
@@ -210,7 +221,10 @@ export class CsvImporter extends Base {
 					}
 				}
 
-				super.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
+				super.updateRecord({
+					'count.messages': messagesCount,
+					messagesstatus: null,
+				});
 				return increaseProgressCount();
 			}
 
@@ -237,7 +251,9 @@ export class CsvImporter extends Base {
 
 		// Ensure we have at least a single user, channel, or message
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
-			this.logger.error('No users, channels, or messages found in the import file.');
+			this.logger.error(
+				'No users, channels, or messages found in the import file.',
+			);
 			super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}

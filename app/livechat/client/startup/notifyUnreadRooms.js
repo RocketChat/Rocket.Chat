@@ -10,12 +10,20 @@ let audio = null;
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
+		if (
+			!settings.get(
+				'Livechat_continuous_sound_notification_new_livechat_room',
+			)
+		) {
 			audio && audio.pause();
 			return;
 		}
 
-		const subs = Subscriptions.find({ t: 'l', ls: { $exists: 0 }, open: true }).count();
+		const subs = Subscriptions.find({
+			t: 'l',
+			ls: { $exists: 0 },
+			open: true,
+		}).count();
 		if (subs === 0) {
 			audio && audio.pause();
 			return;
@@ -27,7 +35,10 @@ Meteor.startup(() => {
 			},
 		});
 
-		const newRoomNotification = getUserPreference(user, 'newRoomNotification');
+		const newRoomNotification = getUserPreference(
+			user,
+			'newRoomNotification',
+		);
 
 		audio = CustomSounds.play(newRoomNotification, { loop: true });
 	});

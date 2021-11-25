@@ -9,24 +9,47 @@ import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
 	async 'authorization:addUserToRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
-				method: 'authorization:addUserToRole',
-				action: 'Accessing_permissions',
-			});
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'access-permissions')
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Accessing permissions is not allowed',
+				{
+					method: 'authorization:addUserToRole',
+					action: 'Accessing_permissions',
+				},
+			);
 		}
 
-		if (!roleName || !_.isString(roleName) || !username || !_.isString(username)) {
-			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-				method: 'authorization:addUserToRole',
-			});
+		if (
+			!roleName
+			|| !_.isString(roleName)
+			|| !username
+			|| !_.isString(username)
+		) {
+			throw new Meteor.Error(
+				'error-invalid-arguments',
+				'Invalid arguments',
+				{
+					method: 'authorization:addUserToRole',
+				},
+			);
 		}
 
-		if (roleName === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
-				method: 'authorization:addUserToRole',
-				action: 'Assign_admin',
-			});
+		if (
+			roleName === 'admin'
+			&& !hasPermission(Meteor.userId(), 'assign-admin-role')
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Assigning admin is not allowed',
+				{
+					method: 'authorization:addUserToRole',
+					action: 'Assign_admin',
+				},
+			);
 		}
 
 		const user = Users.findOneByUsernameIgnoringCase(username, {
@@ -42,10 +65,17 @@ Meteor.methods({
 		}
 
 		// verify if user can be added to given scope
-		if (scope && !await Roles.canAddUserToRole(user._id, roleName, scope)) {
-			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
-				method: 'authorization:addUserToRole',
-			});
+		if (
+			scope
+			&& !await Roles.canAddUserToRole(user._id, roleName, scope)
+		) {
+			throw new Meteor.Error(
+				'error-invalid-user',
+				'User is not part of given room',
+				{
+					method: 'authorization:addUserToRole',
+				},
+			);
 		}
 
 		const add = await Roles.addUserRoles(user._id, [roleName], scope);

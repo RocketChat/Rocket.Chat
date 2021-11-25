@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../data/api-data.js';
 
 describe('push token', function() {
 	this.retries(0);
@@ -9,7 +14,8 @@ describe('push token', function() {
 
 	describe('POST [/push.token]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -19,7 +25,8 @@ describe('push token', function() {
 		});
 
 		it('should fail if missing type', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					value: 'token',
@@ -28,13 +35,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-type-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if missing value', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					type: 'gcm',
@@ -43,13 +54,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-token-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if missing appName', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					type: 'gcm',
@@ -58,13 +73,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-appName-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-appName-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if type param is unknown', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					type: 'unknownPlatform',
@@ -72,13 +91,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-type-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if token param is empty', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					type: 'gcm',
@@ -88,13 +111,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-token-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should add a token if valid', (done) => {
-			request.post(api('push.token'))
+			request
+				.post(api('push.token'))
 				.set(credentials)
 				.send({
 					type: 'gcm',
@@ -104,7 +131,9 @@ describe('push token', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('result').and.to.be.an('object');
+					expect(res.body)
+						.to.have.property('result')
+						.and.to.be.an('object');
 				})
 				.end(done);
 		});
@@ -112,7 +141,8 @@ describe('push token', function() {
 
 	describe('DELETE [/push.token]', () => {
 		it('should fail if not logged in', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.send({
 					token: 'token',
 				})
@@ -125,19 +155,24 @@ describe('push token', function() {
 		});
 
 		it('should fail if missing token key', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.set(credentials)
 				.send({})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-token-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if token is empty', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.set(credentials)
 				.send({
 					token: '',
@@ -145,13 +180,17 @@ describe('push token', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-token-param-not-valid',
+					);
 				})
 				.end(done);
 		});
 
 		it('should fail if token is invalid', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.set(credentials)
 				.send({
 					token: '123',
@@ -164,7 +203,8 @@ describe('push token', function() {
 		});
 
 		it('should delete a token if valid', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.set(credentials)
 				.send({
 					token: 'token',
@@ -177,7 +217,8 @@ describe('push token', function() {
 		});
 
 		it('should fail if token is already deleted', (done) => {
-			request.delete(api('push.token'))
+			request
+				.delete(api('push.token'))
 				.set(credentials)
 				.send({
 					token: 'token',

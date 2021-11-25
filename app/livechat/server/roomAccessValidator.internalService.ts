@@ -5,12 +5,18 @@ import { api } from '../../../server/sdk/api';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 
-class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivechat {
+class AuthorizationLivechat
+	extends ServiceClass
+	implements IAuthorizationLivechat {
 	protected name = 'authorization-livechat';
 
 	protected internal = true;
 
-	async canAccessRoom(room: Partial<IRoom>, user: Partial<IUser>, extraData?: object): Promise<boolean> {
+	async canAccessRoom(
+		room: Partial<IRoom>,
+		user: Partial<IUser>,
+		extraData?: object,
+	): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user, extraData)) {
 				return true;

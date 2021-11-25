@@ -7,7 +7,7 @@ addMigration({
 		const oldNamesValidationSetting = await Settings.findOneById(
 			'UTF8_Names_Validation',
 		);
-		const oldNamesValidationSettingValue = oldNamesValidationSetting?.value || '[0-9a-zA-Z-_.]+';
+		const oldNamesValidationSettingValue =			oldNamesValidationSetting?.value || '[0-9a-zA-Z-_.]+';
 
 		Settings.update(
 			{
@@ -31,7 +31,8 @@ addMigration({
 				$set: {
 					value: oldNamesValidationSettingValue,
 				},
-			}, {
+			},
+			{
 				upsert: true,
 			},
 		);

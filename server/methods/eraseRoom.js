@@ -32,16 +32,25 @@ Meteor.methods({
 		}
 
 		if (Apps && Apps.isLoaded()) {
-			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+			const prevent = Promise.await(
+				Apps.getBridges()
+					.getListenerBridge()
+					.roomEvent('IPreRoomDeletePrevent', room),
+			);
 			if (prevent) {
-				throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
+				throw new Meteor.Error(
+					'error-app-prevented-deleting',
+					'A Rocket.Chat App prevented the room erasing.',
+				);
 			}
 		}
 
 		const result = deleteRoom(rid);
 
 		if (Apps && Apps.isLoaded()) {
-			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
+			Apps.getBridges()
+				.getListenerBridge()
+				.roomEvent('IPostRoomDeleted', room);
 		}
 
 		return result;

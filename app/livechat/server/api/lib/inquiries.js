@@ -1,10 +1,21 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
+import {
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatInquiry,
+} from '../../../../models/server/raw';
 import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 
 const agentDepartments = async (userId) => {
-	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
-	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
+	const agentDepartments = (
+		await LivechatDepartmentAgents.findByAgentId(userId).toArray()
+	).map(({ departmentId }) => departmentId);
+	return (
+		await LivechatDepartment.find({
+			_id: { $in: agentDepartments },
+			enabled: true,
+		}).toArray()
+	).map(({ _id }) => _id);
 };
 
 const applyDepartmentRestrictions = async (userId, filterDepartment) => {
@@ -13,7 +24,11 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	}
 
 	const allowedDepartments = await agentDepartments(userId);
-	if (allowedDepartments && Array.isArray(allowedDepartments) && allowedDepartments.length > 0) {
+	if (
+		allowedDepartments
+		&& Array.isArray(allowedDepartments)
+		&& allowedDepartments.length > 0
+	) {
 		if (!filterDepartment) {
 			return { $in: allowedDepartments };
 		}
@@ -28,12 +43,20 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	return { $exists: false };
 };
 
-export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
+export async function findInquiries({
+	userId,
+	department: filterDepartment,
+	status,
+	pagination: { offset, count, sort },
+}) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
-	const department = await applyDepartmentRestrictions(userId, filterDepartment);
+	const department = await applyDepartmentRestrictions(
+		userId,
+		filterDepartment,
+	);
 
 	const options = {
 		limit: count,

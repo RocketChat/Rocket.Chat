@@ -19,7 +19,9 @@ Meteor.startup(function() {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
 	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
-		if (TroubleshootDisableWorkspaceSync === value) { return; }
+		if (TroubleshootDisableWorkspaceSync === value) {
+			return;
+		}
 		TroubleshootDisableWorkspaceSync = value;
 
 		if (value) {
@@ -40,19 +42,36 @@ Meteor.startup(function() {
 
 	const { workspaceRegistered } = retrieveRegistrationStatus();
 
-	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
+	if (
+		process.env.REG_TOKEN
+		&& process.env.REG_TOKEN !== ''
+		&& !workspaceRegistered
+	) {
 		try {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
 			if (!connectWorkspace(process.env.REG_TOKEN)) {
-				throw new Error('Couldn\'t register with token.  Please make sure token is valid or hasn\'t already been used');
+				throw new Error(
+					"Couldn't register with token.  Please make sure token is valid or hasn't already been used",
+				);
 			}
 
-			console.log('Successfully registered with token provided by REG_TOKEN!');
+			console.log(
+				'Successfully registered with token provided by REG_TOKEN!',
+			);
 		} catch (e) {
-			SystemLogger.error('An error occured registering with token.', e.message);
+			SystemLogger.error(
+				'An error occured registering with token.',
+				e.message,
+			);
 		}
 	}
 });
 
-export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };
+export {
+	getWorkspaceAccessToken,
+	getWorkspaceAccessTokenWithScope,
+	getWorkspaceLicense,
+	getWorkspaceKey,
+	getUserCloudAccessToken,
+};

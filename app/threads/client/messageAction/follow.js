@@ -22,13 +22,20 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile', 'threads'],
 			async action() {
 				const { msg } = messageArgs(this);
-				callWithErrorHandling('followMessage', { mid: msg._id }).then(() =>
-					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_followed_this_message') }),
+				callWithErrorHandling('followMessage', { mid: msg._id }).then(
+					() =>
+						dispatchToastMessage({
+							type: 'success',
+							message: TAPi18n.__('You_followed_this_message'),
+						}),
 				);
 			},
 			condition({ msg: { _id, tmid, replies = [] }, u, room }, context) {
 				if (tmid || context) {
-					const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
+					const parentMessage = Messages.findOne(
+						{ _id: tmid || _id },
+						{ fields: { replies: 1 } },
+					);
 					if (parentMessage) {
 						replies = parentMessage.replies || [];
 					}

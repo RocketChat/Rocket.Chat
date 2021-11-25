@@ -17,22 +17,36 @@ const projection = {
 export async function updateUserPresence(uid: string): Promise<void> {
 	const query = { _id: uid };
 
-	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
+	const UserSession = await getCollection<IUserSession>(
+		Collections.UserSession,
+	);
 	const User = await getCollection<IUser>(Collections.User);
 
 	const user = await User.findOne<IUser>(query, projection);
-	if (!user) { return; }
+	if (!user) {
+		return;
+	}
 
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const userSessions = await UserSession.findOne(query) || {
+		connections: [],
+	};
 	const { statusDefault = UserStatus.OFFLINE } = user;
-	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
+	const { status, statusConnection } = processPresenceAndStatus(
+		userSessions.connections,
+		statusDefault,
+	);
 	const result = await User.updateOne(query, {
 		$set: { status, statusConnection },
 	});
 
 	if (result.modifiedCount > 0) {
 		api.broadcast('presence.status', {
-			user: { _id: uid, username: user.username, status, statusText: user.statusText },
+			user: {
+				_id: uid,
+				username: user.username,
+				status,
+				statusText: user.statusText,
+			},
 		});
 	}
 }

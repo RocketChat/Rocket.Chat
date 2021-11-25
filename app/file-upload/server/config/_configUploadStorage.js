@@ -16,7 +16,9 @@ const configStore = _.debounce(() => {
 		SystemLogger.info(`Setting default file store to ${ store }`);
 		UploadFS.getStores().Avatars = UploadFS.getStore(`${ store }:Avatars`);
 		UploadFS.getStores().Uploads = UploadFS.getStore(`${ store }:Uploads`);
-		UploadFS.getStores().UserDataFiles = UploadFS.getStore(`${ store }:UserDataFiles`);
+		UploadFS.getStores().UserDataFiles = UploadFS.getStore(
+			`${ store }:UserDataFiles`,
+		);
 	}
 }, 1000);
 

@@ -17,13 +17,22 @@ import './main.html';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
-
-callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
+callbacks.add(
+	'afterLogoutCleanUp',
+	() => fireGlobalEvent('Custom_Script_On_Logout'),
+	callbacks.priority.LOW,
+	'custom-script-on-logout',
+);
 
 Template.main.helpers({
-	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
+	removeSidenav: () =>
+		isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
-		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
+		if (
+			!!Meteor.userId()
+			|| (settings.get('Accounts_AllowAnonymousRead') === true
+				&& Session.get('forceLogin') !== true)
+		) {
 			document.documentElement.classList.add('noscroll');
 			document.documentElement.classList.remove('scroll');
 			return true;
@@ -44,7 +53,8 @@ Template.main.helpers({
 	subsReady: () => {
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
-		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
+		const ready =			!Meteor.userId()
+			|| (isSyncReady.get() && subscriptionsReady && settingsReady);
 
 		CachedCollectionManager.syncEnabled = ready;
 		mainReady.set(ready);
@@ -53,8 +63,11 @@ Template.main.helpers({
 	},
 	hasUsername: () => {
 		const uid = Meteor.userId();
-		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
+		const user =			uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
+		return (
+			(user && user.username)
+			|| (!uid && settings.get('Accounts_AllowAnonymousRead'))
+		);
 	},
 	requirePasswordChange: () => {
 		const user = Meteor.user();
@@ -64,12 +77,22 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
+		if (
+			!user
+			|| (user.services.totp !== undefined && user.services.totp.enabled)
+			|| (user.services.email2fa !== undefined
+				&& user.services.email2fa.enabled)
+		) {
 			return false;
 		}
-		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
+		const is2faEnabled = settings.get(
+			'Accounts_TwoFactorAuthentication_Enabled',
+		);
 
-		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		const mandatoryRole = Roles.findOne({
+			_id: { $in: user.roles },
+			mandatory2fa: true,
+		});
 		return mandatoryRole !== undefined && is2faEnabled;
 	},
 	CustomScriptLoggedOut: () => {
@@ -96,13 +119,15 @@ Template.main.onCreated(function() {
 
 Template.main.onRendered(function() {
 	// iOS prevent click if elements matches hover
-	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchend', 'a', (e) => {
-		if (!e.target.matches(':hover')) {
-			return;
-		}
+	isIOsDevice
+		&& window.matchMedia('(hover: none)').matches
+		&& $(document.body).on('touchend', 'a', (e) => {
+			if (!e.target.matches(':hover')) {
+				return;
+			}
 
-		e.target.click();
-	});
+			e.target.click();
+		});
 
 	Tracker.autorun(function() {
 		const userId = Meteor.userId();

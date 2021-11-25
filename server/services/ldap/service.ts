@@ -6,7 +6,10 @@ import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
 export class LDAPService extends ServiceClass implements ILDAPService {
 	protected name = 'ldap';
 
-	async loginRequest(username: string, password: string): Promise<LDAPLoginResult> {
+	async loginRequest(
+		username: string,
+		password: string,
+	): Promise<LDAPLoginResult> {
 		return LDAPManager.login(username, password);
 	}
 

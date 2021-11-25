@@ -12,7 +12,9 @@ const QUEUE_COUNT = 50;
 
 Template.livechatQueue.helpers({
 	departments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true);
+		return Template.instance()
+			.departments.get()
+			.filter((department) => department.enabled === true);
 	},
 	onSelectAgents() {
 		return Template.instance().onSelectAgents;
@@ -20,7 +22,14 @@ Template.livechatQueue.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get()),
+						(part) => `<strong>${ part }</strong>`,
+					  )
+			}`;
 		};
 	},
 	selectedAgents() {
@@ -36,8 +45,14 @@ Template.livechatQueue.helpers({
 		return Template.instance().isLoading.get();
 	},
 	hasPermission() {
-		const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
+		const user = Users.findOne(Meteor.userId(), {
+			fields: { statusLivechat: 1 },
+		});
+		return (
+			hasPermission(Meteor.userId(), 'view-livechat-queue')
+			|| (user.statusLivechat === 'available'
+				&& settings.get('Livechat_show_queue_list_link'))
+		);
 	},
 	hasMore() {
 		const instance = Template.instance();
@@ -95,7 +110,11 @@ Template.livechatQueue.onCreated(async function() {
 	};
 
 	this.onClickTagAgent = ({ username }) => {
-		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+		this.selectedAgents.set(
+			this.selectedAgents
+				.get()
+				.filter((user) => user.username !== username),
+		);
 	};
 
 	this.autorun(async () => {
@@ -109,12 +128,16 @@ Template.livechatQueue.onCreated(async function() {
 		if (filter.department) {
 			query += `&departmentId=${ filter.department }`;
 		}
-		const { queue, total } = await APIClient.v1.get(`livechat/queue?${ query }&count=${ QUEUE_COUNT }&offset=${ offset }`);
+		const { queue, total } = await APIClient.v1.get(
+			`livechat/queue?${ query }&count=${ QUEUE_COUNT }&offset=${ offset }`,
+		);
 		this.total.set(total);
 		this.queue.set(this.queue.get().concat(queue));
 		this.isLoading.set(false);
 	});
 
-	const { departments } = await APIClient.v1.get('livechat/department?sort={"name": 1}');
+	const { departments } = await APIClient.v1.get(
+		'livechat/department?sort={"name": 1}',
+	);
 	this.departments.set(departments);
 });

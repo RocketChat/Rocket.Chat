@@ -7,57 +7,65 @@ import { CustomOAuth } from '../../../custom-oauth';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Meteor.startup(function() {
-	return ServiceConfiguration.configurations.find({
-		custom: true,
-	}).observe({
-		added(record) {
-			return new CustomOAuth(record.service, {
-				serverURL: record.serverURL,
-				authorizePath: record.authorizePath,
-				scope: record.scope,
-			});
-		},
-	});
+	return ServiceConfiguration.configurations
+		.find({
+			custom: true,
+		})
+		.observe({
+			added(record) {
+				return new CustomOAuth(record.service, {
+					serverURL: record.serverURL,
+					authorizePath: record.authorizePath,
+					scope: record.scope,
+				});
+			},
+		});
 });
 
 Template.loginServices.helpers({
 	loginService() {
-		return ServiceConfiguration.configurations.find({
-			showButton: { $ne: false },
-		}, {
-			sort: {
-				service: 1,
-			},
-		}).fetch().map(function(service) {
-			let icon;
-			let displayName;
-			switch (service.service) {
-				case 'meteor-developer':
-					displayName = 'Meteor';
-					icon = 'meteor';
-					break;
-				case 'github':
-					displayName = 'GitHub';
-					icon = 'github-circled';
-					break;
-				case 'gitlab':
-					displayName = 'GitLab';
-					icon = service.service;
-					break;
-				case 'wordpress':
-					displayName = 'WordPress';
-					icon = service.service;
-					break;
-				default:
-					displayName = capitalize(String(service.service || ''));
-					icon = service.service;
-			}
-			return {
-				service,
-				displayName,
-				icon,
-			};
-		});
+		return ServiceConfiguration.configurations
+			.find(
+				{
+					showButton: { $ne: false },
+				},
+				{
+					sort: {
+						service: 1,
+					},
+				},
+			)
+			.fetch()
+			.map(function(service) {
+				let icon;
+				let displayName;
+				switch (service.service) {
+					case 'meteor-developer':
+						displayName = 'Meteor';
+						icon = 'meteor';
+						break;
+					case 'github':
+						displayName = 'GitHub';
+						icon = 'github-circled';
+						break;
+					case 'gitlab':
+						displayName = 'GitLab';
+						icon = service.service;
+						break;
+					case 'wordpress':
+						displayName = 'WordPress';
+						icon = service.service;
+						break;
+					default:
+						displayName = capitalize(String(service.service || ''));
+						icon = service.service;
+				}
+				return {
+					service,
+					displayName,
+					icon,
+				};
+			});
 	},
 });
 
@@ -76,7 +84,10 @@ Template.loginServices.events({
 		loadingIcon.removeClass('hidden');
 		serviceIcon.addClass('hidden');
 
-		const loginWithService = `loginWith${ loginMethods[this.service.service] || capitalize(String(this.service.service || '')) }`;
+		const loginWithService = `loginWith${
+			loginMethods[this.service.service]
+			|| capitalize(String(this.service.service || ''))
+		}`;
 		const serviceConfig = this.service.clientConfig || {};
 		return Meteor[loginWithService](serviceConfig, function(error) {
 			loadingIcon.addClass('hidden');
@@ -84,9 +95,15 @@ Template.loginServices.events({
 			if (error) {
 				console.log(JSON.stringify(error));
 				if (error.reason) {
-					dispatchToastMessage({ type: 'error', message: error.reason });
+					dispatchToastMessage({
+						type: 'error',
+						message: error.reason,
+					});
 				} else {
-					dispatchToastMessage({ type: 'error', message: error.message });
+					dispatchToastMessage({
+						type: 'error',
+						message: error.message,
+					});
 				}
 			}
 		});

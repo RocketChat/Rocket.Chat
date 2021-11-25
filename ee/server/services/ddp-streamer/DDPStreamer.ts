@@ -15,7 +15,7 @@ import { DDP_EVENTS } from './constants';
 
 const {
 	PORT: port = 4000,
-// 	PROMETHEUS_PORT = 9100,
+	// 	PROMETHEUS_PORT = 9100,
 } = process.env;
 
 const proxy = function(req: IncomingMessage, res: ServerResponse): void {
@@ -43,7 +43,10 @@ const proxy = function(req: IncomingMessage, res: ServerResponse): void {
 const httpServer = http.createServer((req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
-	if (process.env.NODE_ENV !== 'production' && !/^\/sockjs\/info\?cb=/.test(req.url || '')) {
+	if (
+		process.env.NODE_ENV !== 'production'
+		&& !/^\/sockjs\/info\?cb=/.test(req.url || '')
+	) {
 		return proxy(req, res);
 
 		// res.writeHead(404);
@@ -52,7 +55,9 @@ const httpServer = http.createServer((req, res) => {
 
 	res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-	res.end('{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}');
+	res.end(
+		'{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}',
+	);
 });
 
 httpServer.listen(port);
@@ -96,24 +101,30 @@ export class DDPStreamer extends ServiceClass {
 			return stream && stream.emitWithoutBroadcast(eventName, ...args);
 		});
 
-		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-			if (clientAction === 'removed') {
-				events.emit('meteor.loginServiceConfiguration', 'removed', {
-					_id: id,
-				});
-				return;
-			}
+		this.onEvent(
+			'watch.loginServiceConfiguration',
+			({ clientAction, id, data }) => {
+				if (clientAction === 'removed') {
+					events.emit('meteor.loginServiceConfiguration', 'removed', {
+						_id: id,
+					});
+					return;
+				}
 
-			events.emit(
-				'meteor.loginServiceConfiguration',
-				clientAction === 'inserted' ? 'added' : 'changed',
-				data,
-			);
-		});
+				events.emit(
+					'meteor.loginServiceConfiguration',
+					clientAction === 'inserted' ? 'added' : 'changed',
+					data,
+				);
+			},
+		);
 
-		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
-			events.emit('meteor.autoUpdateClientVersionChanged', record);
-		});
+		this.onEvent(
+			'meteor.autoUpdateClientVersionChanged',
+			({ record }): void => {
+				events.emit('meteor.autoUpdateClientVersionChanged', record);
+			},
+		);
 	}
 
 	async created(): Promise<void> {

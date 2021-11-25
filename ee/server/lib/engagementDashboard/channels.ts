@@ -4,7 +4,11 @@ import { Rooms } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive } from './date';
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 
-export const findAllChannelsWithNumberOfMessages = async ({ start, end, options = {} }: {
+export const findAllChannelsWithNumberOfMessages = async ({
+	start,
+	end,
+	options = {},
+}: {
 	start: Date;
 	end: Date;
 	options: {
@@ -29,7 +33,9 @@ export const findAllChannelsWithNumberOfMessages = async ({ start, end, options 
 }> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
 	const endOfLastWeek = moment(start).subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
+	const startOfLastWeek = moment(endOfLastWeek)
+		.subtract(daysBetweenDates, 'days')
+		.toDate();
 
 	const channels = await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
 		start: convertDateToInt(start),
@@ -39,13 +45,15 @@ export const findAllChannelsWithNumberOfMessages = async ({ start, end, options 
 		options,
 	}).toArray();
 
-	const total = (await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
-		start: convertDateToInt(start),
-		end: convertDateToInt(end),
-		startOfLastWeek: convertDateToInt(startOfLastWeek),
-		endOfLastWeek: convertDateToInt(endOfLastWeek),
-		onlyCount: true,
-	}).toArray())[0]?.total ?? 0;
+	const total =		(
+			await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
+				start: convertDateToInt(start),
+				end: convertDateToInt(end),
+				startOfLastWeek: convertDateToInt(startOfLastWeek),
+				endOfLastWeek: convertDateToInt(endOfLastWeek),
+				onlyCount: true,
+			}).toArray()
+		)[0]?.total ?? 0;
 
 	return {
 		channels,

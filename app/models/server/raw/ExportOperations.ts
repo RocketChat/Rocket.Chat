@@ -9,7 +9,7 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [
 		{ key: { userId: 1 } },
 		{ key: { status: 1 } },
-	]
+	];
 
 	findOnePending(): Promise<T | null> {
 		const query = {
@@ -28,7 +28,10 @@ export class ExportOperationsRaw extends BaseRaw<T> {
 		return result.insertedId;
 	}
 
-	findLastOperationByUser(userId: string, fullExport = false): Promise<T | null> {
+	findLastOperationByUser(
+		userId: string,
+		fullExport = false,
+	): Promise<T | null> {
 		const query = {
 			userId,
 			fullExport,

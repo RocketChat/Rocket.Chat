@@ -1,7 +1,10 @@
 import { promises as fs } from 'fs';
 import { join, normalize } from 'path';
 
-import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import {
+	AppSourceStorage,
+	IAppStorageItem,
+} from '@rocket.chat/apps-engine/server/storage';
 
 export class AppFileSystemSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'fs:/';
@@ -14,7 +17,9 @@ export class AppFileSystemSourceStorage extends AppSourceStorage {
 
 	public checkPath(): void {
 		if (!this.path) {
-			throw new Error('Invalid path configured for file system App storage');
+			throw new Error(
+				'Invalid path configured for file system App storage',
+			);
 		}
 	}
 

@@ -7,20 +7,35 @@ import { hasPermission } from '../../authorization';
 
 function Topic(command, params, item) {
 	if (command === 'topic') {
-		if ((Meteor.isClient && hasPermission('edit-room', item.rid)) || (Meteor.isServer && hasPermission(Meteor.userId(), 'edit-room', item.rid))) {
-			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err) => {
-				if (err) {
-					if (Meteor.isClient) {
-						const { handleError } = require('../../../client/lib/utils/handleError');
-						return handleError(err);
+		if (
+			(Meteor.isClient && hasPermission('edit-room', item.rid))
+			|| (Meteor.isServer
+				&& hasPermission(Meteor.userId(), 'edit-room', item.rid))
+		) {
+			Meteor.call(
+				'saveRoomSettings',
+				item.rid,
+				'roomTopic',
+				params,
+				(err) => {
+					if (err) {
+						if (Meteor.isClient) {
+							const {
+								handleError,
+							} = require('../../../client/lib/utils/handleError');
+							return handleError(err);
+						}
+						throw err;
 					}
-					throw err;
-				}
 
-				if (Meteor.isClient) {
-					callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
-				}
-			});
+					if (Meteor.isClient) {
+						callbacks.run(
+							'roomTopicChanged',
+							ChatRoom.findOne(item.rid),
+						);
+					}
+				},
+			);
 		}
 	}
 }

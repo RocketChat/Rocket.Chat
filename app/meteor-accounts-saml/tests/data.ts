@@ -13,8 +13,10 @@ export const serviceProviderOptions = {
 	signatureValidationType: 'All',
 	identifierFormat: 'email',
 	nameIDPolicyTemplate: '<NameID IdentifierFormat="__identifierFormat__"/>',
-	authnContextTemplate: '<authnContext Comparison="__authnContextComparison__">__authnContext__</authnContext>',
-	authRequestTemplate: '<authRequest>__identifierFormatTag__ __authnContextTag__ </authRequest>',
+	authnContextTemplate:
+		'<authnContext Comparison="__authnContextComparison__">__authnContext__</authnContext>',
+	authRequestTemplate:
+		'<authRequest>__identifierFormatTag__ __authnContextTag__ </authRequest>',
 	logoutResponseTemplate: '[logout-response-template]',
 	logoutRequestTemplate: '[logout-request-template]',
 	metadataCertificateTemplate: '',
@@ -80,7 +82,6 @@ export const invalidLogoutResponse = `<samlp:LogoutResponse xmlns:samlp="urn:oas
 	<saml:Issuer>[IssuerName]</saml:Issuer>
 </samlp:LogoutResponse>`;
 
-
 const samlResponseStatus = `<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
 	</samlp:Status>`;
@@ -113,7 +114,7 @@ const samlResponseAssertion = `<saml:Assertion ID="_cad47813d7242e43b4730b5c7bfd
 		</saml:AttributeStatement>
 	</saml:Assertion>`;
 
-const samlResponseHeader = '<samlp:Response Destination="http://localhost:3000/_saml/validate/test-sp" ID="_f58e6bce78eac527058e0e4c0230aa4765831a5437" InResponseTo="[INRESPONSETO]" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">';
+const samlResponseHeader =	'<samlp:Response Destination="http://localhost:3000/_saml/validate/test-sp" ID="_f58e6bce78eac527058e0e4c0230aa4765831a5437" InResponseTo="[INRESPONSETO]" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">';
 const samlResponseFooter = '</samlp:Response>';
 const samlResponseIssuer = '<saml:Issuer>[ISSUER]</saml:Issuer>';
 

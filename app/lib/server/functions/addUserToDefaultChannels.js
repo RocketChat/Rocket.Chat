@@ -3,7 +3,9 @@ import { callbacks } from '../../../callbacks';
 
 export const addUserToDefaultChannels = function(user, silenced) {
 	callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
+	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
+		fields: { usernames: 0 },
+	}).fetch();
 	defaultRooms.forEach((room) => {
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
 			// Add a subscription to this user

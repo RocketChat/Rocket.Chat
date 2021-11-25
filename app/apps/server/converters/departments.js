@@ -29,7 +29,8 @@ export class AppDepartmentsConverter {
 			offlineMessageChannelName: 'offlineMessageChannelName',
 			requestTagBeforeClosingChat: 'requestTagBeforeClosingChat',
 			chatClosingTags: 'chatClosingTags',
-			abandonedRoomsCloseCustomMessage: 'abandonedRoomsCloseCustomMessage',
+			abandonedRoomsCloseCustomMessage:
+				'abandonedRoomsCloseCustomMessage',
 			waitingQueueMessage: 'waitingQueueMessage',
 			departmentsAllowedToForward: 'departmentsAllowedToForward',
 			showOnRegistration: 'showOnRegistration',
@@ -56,7 +57,8 @@ export class AppDepartmentsConverter {
 			offlineMessageChannelName: department.offlineMessageChannelName,
 			requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
 			chatClosingTags: department.chatClosingTags,
-			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
+			abandonedRoomsCloseCustomMessage:
+				department.abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage: department.waitingQueueMessage,
 			departmentsAllowedToForward: department.departmentsAllowedToForward,
 		};

@@ -6,8 +6,13 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:removeAllClosedRooms'(departmentIds) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'remove-closed-livechat-rooms')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeAllClosedRoom' });
+		if (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'remove-closed-livechat-rooms')
+		) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:removeAllClosedRoom',
+			});
 		}
 
 		let count = 0;

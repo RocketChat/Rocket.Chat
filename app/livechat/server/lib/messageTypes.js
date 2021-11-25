@@ -7,11 +7,18 @@ import { Messages, LivechatRooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Livechat } from './Livechat';
 
-actionLinks.register('denyLivechatCall', function(message/* , params*/) {
+actionLinks.register('denyLivechatCall', function(message /* , params*/) {
 	const user = Meteor.user();
 
-	Messages.createWithTypeRoomIdMessageAndUser('command', message.rid, 'endCall', user);
-	Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+	Messages.createWithTypeRoomIdMessageAndUser(
+		'command',
+		message.rid,
+		'endCall',
+		user,
+	);
+	Notifications.notifyRoom(message.rid, 'deleteMessage', {
+		_id: message._id,
+	});
 
 	const language = user.language || settings.get('Language') || 'en';
 

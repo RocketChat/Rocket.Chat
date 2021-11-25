@@ -11,21 +11,35 @@ Meteor.methods({
 		check(rid, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'archiveRoom',
+			});
 		}
 
 		const room = Rooms.findOneById(rid);
 
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'archiveRoom',
+			});
 		}
 
-		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
-			throw new Meteor.Error('error-direct-message-room', `rooms type: ${ room.t } can not be archived`, { method: 'archiveRoom' });
+		if (
+			!roomTypes
+				.getConfig(room.t)
+				.allowMemberAction(room, RoomMemberActions.ARCHIVE)
+		) {
+			throw new Meteor.Error(
+				'error-direct-message-room',
+				`rooms type: ${ room.t } can not be archived`,
+				{ method: 'archiveRoom' },
+			);
 		}
 
 		if (!hasPermission(Meteor.userId(), 'archive-room', room._id)) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'archiveRoom',
+			});
 		}
 
 		return archiveRoom(rid);

@@ -45,13 +45,19 @@ describe('TeamsAddMemberProps (definition/rest/v1)', () => {
 
 		it('should return true if members with role is provided and teamId is provided', () => {
 			assert.isTrue(
-				isTeamsAddMembersProps({ members: [{ userId: '123', roles: ['123'] }], teamId: '123' }),
+				isTeamsAddMembersProps({
+					members: [{ userId: '123', roles: ['123'] }],
+					teamId: '123',
+				}),
 			);
 		});
 
 		it('should return true if members with role is provided and teamName is provided', () => {
 			assert.isTrue(
-				isTeamsAddMembersProps({ members: [{ userId: '123', roles: ['123'] }], teamName: '123' }),
+				isTeamsAddMembersProps({
+					members: [{ userId: '123', roles: ['123'] }],
+					teamName: '123',
+				}),
 			);
 		});
 

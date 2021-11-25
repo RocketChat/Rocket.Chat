@@ -4,7 +4,13 @@ import { Messages, LivechatRooms, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
+	'livechat:registerGuest'({
+		token,
+		name,
+		email,
+		department,
+		customFields,
+	} = {}) {
 		const userId = Livechat.registerGuest.call(this, {
 			token,
 			name,
@@ -39,7 +45,12 @@ Meteor.methods({
 
 				if (!customField.scope || customField.scope !== 'room') {
 					const { key, value, overwrite } = customField;
-					LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+					LivechatVisitors.updateLivechatDataByToken(
+						token,
+						key,
+						value,
+						overwrite,
+					);
 				}
 			});
 		}

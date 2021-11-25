@@ -9,7 +9,11 @@ interface IResponse extends IPaginatedResponse {
 	businessHours: ILivechatBusinessHour[];
 }
 
-export async function findBusinessHours(userId: string, { offset, count, sort }: IPagination, name?: string): Promise<IResponse> {
+export async function findBusinessHours(
+	userId: string,
+	{ offset, count, sort }: IPagination,
+	name?: string,
+): Promise<IResponse> {
 	if (!await hasPermissionAsync(userId, 'view-livechat-business-hours')) {
 		throw new Error('error-not-authorized');
 	}

@@ -6,7 +6,9 @@ import { federationSearchUsers } from '../handler';
 
 export function searchUsers(query) {
 	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'searchUsers' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'searchUsers',
+		});
 	}
 
 	const users = federationSearchUsers(query);

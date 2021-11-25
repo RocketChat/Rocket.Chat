@@ -9,10 +9,14 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 
-export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
+export const uploadFileWithMessage = async (
+	rid,
+	tmid,
+	{ description, fileName, msg, file },
+) => {
 	const data = new FormData();
-	description	&& data.append('description', description);
-	msg	&& data.append('msg', msg);
+	description && data.append('description', description);
+	msg && data.append('msg', msg);
 	tmid && data.append('tmid', tmid);
 	data.append('file', file.file, fileName);
 
@@ -27,29 +31,40 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 	uploads.push(upload);
 	Session.set('uploading', uploads);
 
-	const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
-		progress(progress) {
-			const uploads = Session.get('uploading') || [];
+	const { xhr, promise } = APIClient.upload(
+		`v1/rooms.upload/${ rid }`,
+		{},
+		data,
+		{
+			progress(progress) {
+				const uploads = Session.get('uploading') || [];
 
-			if (progress === 100) {
-				return;
-			}
-			uploads.filter((u) => u.id === upload.id).forEach((u) => {
-				u.percentage = Math.round(progress) || 0;
-			});
-			Session.set('uploading', uploads);
+				if (progress === 100) {
+					return;
+				}
+				uploads
+					.filter((u) => u.id === upload.id)
+					.forEach((u) => {
+						u.percentage = Math.round(progress) || 0;
+					});
+				Session.set('uploading', uploads);
+			},
+			error(error) {
+				const uploads = Session.get('uploading') || [];
+				uploads
+					.filter((u) => u.id === upload.id)
+					.forEach((u) => {
+						u.error = error.message;
+						u.percentage = 0;
+					});
+				Session.set('uploading', uploads);
+			},
 		},
-		error(error) {
-			const uploads = Session.get('uploading') || [];
-			uploads.filter((u) => u.id === upload.id).forEach((u) => {
-				u.error = error.message;
-				u.percentage = 0;
-			});
-			Session.set('uploading', uploads);
-		},
-	});
+	);
 	if (Session.get('uploading').length) {
-		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, {
+			tmid,
+		});
 	}
 
 	Tracker.autorun((computation) => {
@@ -63,13 +78,19 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		xhr.abort();
 
 		const uploads = Session.get('uploading') || {};
-		Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		Session.set(
+			'uploading',
+			uploads.filter((u) => u.id !== upload.id),
+		);
 	});
 
 	try {
 		await promise;
 		const uploads = Session.get('uploading') || [];
-		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		const remainingUploads = Session.set(
+			'uploading',
+			uploads.filter((u) => u.id !== upload.id),
+		);
 
 		if (!Session.get('uploading').length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
@@ -77,10 +98,15 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		return remainingUploads;
 	} catch (error) {
 		const uploads = Session.get('uploading') || [];
-		uploads.filter((u) => u.id === upload.id).forEach((u) => {
-			u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-			u.percentage = 0;
-		});
+		uploads
+			.filter((u) => u.id === upload.id)
+			.forEach((u) => {
+				u.error =					(error.xhr
+						&& error.xhr.responseJSON
+						&& error.xhr.responseJSON.error)
+					|| error.message;
+				u.percentage = 0;
+			});
 		if (!uploads.length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
@@ -131,7 +157,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				invalidContentType: file.file.type && !fileUploadIsValidContentType(file.file.type),
+				invalidContentType:
+					file.file.type
+					&& !fileUploadIsValidContentType(file.file.type),
 			},
 		});
 	};

@@ -4,11 +4,7 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 
-import {
-	Base,
-	ProgressStep,
-} from '../../importer/server';
-
+import { Base, ProgressStep } from '../../importer/server';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {
@@ -39,12 +35,12 @@ export class HipChatEnterpriseImporter extends Base {
 		for (const u of file) {
 			const newUser = {
 				emails: [],
-				importIds: [
-					String(u.User.id),
-				],
+				importIds: [String(u.User.id)],
 				username: u.User.mention_name,
 				name: u.User.name,
-				avatarUrl: u.User.avatar && `data:image/png;base64,${ u.User.avatar.replace(/\n/g, '') }`,
+				avatarUrl:
+					u.User.avatar
+					&& `data:image/png;base64,${ u.User.avatar.replace(/\n/g, '') }`,
 				bio: u.User.title || undefined,
 				deleted: u.User.is_deleted,
 				type: 'user',
@@ -71,9 +67,7 @@ export class HipChatEnterpriseImporter extends Base {
 				u: {
 					_id: r.Room.owner,
 				},
-				importIds: [
-					String(r.Room.id),
-				],
+				importIds: [String(r.Room.id)],
 				name: r.Room.name,
 				users: r.Room.members,
 				t: r.Room.privacy === 'private' ? 'p' : 'c',
@@ -110,16 +104,19 @@ export class HipChatEnterpriseImporter extends Base {
 			const users = [senderId, receiverId].sort();
 
 			if (!dmRooms[receiverId]) {
-				dmRooms[receiverId] = this.converter.findDMForImportedUsers(senderId, receiverId);
+				dmRooms[receiverId] = this.converter.findDMForImportedUsers(
+					senderId,
+					receiverId,
+				);
 
 				if (!dmRooms[receiverId]) {
 					const room = {
-						importIds: [
-							users.join(''),
-						],
+						importIds: [users.join('')],
 						users,
 						t: 'd',
-						ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
+						ts: new Date(
+							m.PrivateUserMessage.timestamp.split(' ')[0],
+						),
 					};
 					this.converter.addChannel(room);
 					dmRooms[receiverId] = room;
@@ -127,7 +124,11 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			const rid = dmRooms[receiverId].importIds[0];
-			const newMessage = this.convertImportedMessage(m.PrivateUserMessage, rid, 'private');
+			const newMessage = this.convertImportedMessage(
+				m.PrivateUserMessage,
+				rid,
+				'private',
+			);
 			count++;
 			this.converter.addMessage(newMessage);
 		}
@@ -183,7 +184,9 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		if (importedMessage.attachment?.url) {
-			const fileId = `${ importedMessage.id }-${ importedMessage.attachment.name || 'attachment' }`;
+			const fileId = `${ importedMessage.id }-${
+				importedMessage.attachment.name || 'attachment'
+			}`;
 
 			newMessage._importFile = {
 				downloadUrl: importedMessage.attachment.url,
@@ -207,18 +210,30 @@ export class HipChatEnterpriseImporter extends Base {
 
 		for (const m of file) {
 			if (m.UserMessage) {
-				const newMessage = this.convertImportedMessage(m.UserMessage, rid, 'user');
+				const newMessage = this.convertImportedMessage(
+					m.UserMessage,
+					rid,
+					'user',
+				);
 				this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.NotificationMessage) {
-				const newMessage = this.convertImportedMessage(m.NotificationMessage, rid, 'notif');
+				const newMessage = this.convertImportedMessage(
+					m.NotificationMessage,
+					rid,
+					'notif',
+				);
 				newMessage.u._id = 'rocket.cat';
 				newMessage.alias = m.NotificationMessage.sender;
 
 				this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.TopicRoomMessage) {
-				const newMessage = this.convertImportedMessage(m.TopicRoomMessage, rid, 'topic');
+				const newMessage = this.convertImportedMessage(
+					m.TopicRoomMessage,
+					rid,
+					'topic',
+				);
 				newMessage.t = 'room_changed_topic';
 
 				this.converter.addMessage(newMessage);
@@ -228,7 +243,10 @@ export class HipChatEnterpriseImporter extends Base {
 			} else if (m.GuestAccessMessage) {
 				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
-				this.logger.error('HipChat Enterprise importer isn\'t configured to handle this message:', m);
+				this.logger.error(
+					"HipChat Enterprise importer isn't configured to handle this message:",
+					m,
+				);
 			}
 		}
 
@@ -249,7 +267,9 @@ export class HipChatEnterpriseImporter extends Base {
 			case 'rooms':
 				return this.prepareRoomMessagesFile(file, id);
 			default:
-				this.logger.error(`HipChat Enterprise importer isn't configured to handle "${ type }" files (${ info.dir }).`);
+				this.logger.error(
+					`HipChat Enterprise importer isn't configured to handle "${ type }" files (${ info.dir }).`,
+				);
 				return 0;
 		}
 	}
@@ -274,7 +294,9 @@ export class HipChatEnterpriseImporter extends Base {
 			case 'metadata.json':
 				break;
 			default:
-				this.logger.error(`HipChat Enterprise importer doesn't know what to do with the file "${ fileName }"`);
+				this.logger.error(
+					`HipChat Enterprise importer doesn't know what to do with the file "${ fileName }"`,
+				);
 				break;
 		}
 
@@ -291,48 +313,70 @@ export class HipChatEnterpriseImporter extends Base {
 		let messageCount = 0;
 
 		const promise = new Promise((resolve, reject) => {
-			this.extract.on('entry', Meteor.bindEnvironment((header, stream, next) => {
-				this.logger.debug(`new entry from import file: ${ header.name }`);
-				if (!header.name.endsWith('.json')) {
+			this.extract.on(
+				'entry',
+				Meteor.bindEnvironment((header, stream, next) => {
+					this.logger.debug(
+						`new entry from import file: ${ header.name }`,
+					);
+					if (!header.name.endsWith('.json')) {
+						stream.resume();
+						return next();
+					}
+
+					const info = this.path.parse(header.name);
+					let pos = 0;
+					let data = Buffer.allocUnsafe(header.size);
+
+					stream.on(
+						'data',
+						Meteor.bindEnvironment((chunk) => {
+							data.fill(chunk, pos, pos + chunk.length);
+							pos += chunk.length;
+						}),
+					);
+
+					stream.on(
+						'end',
+						Meteor.bindEnvironment(async () => {
+							this.logger.info(
+								`Processing the file: ${ header.name }`,
+							);
+							const newMessageCount = await this.prepareFile(
+								info,
+								data,
+								header.name,
+							);
+
+							messageCount += newMessageCount;
+							super.updateRecord({
+								'count.messages': messageCount,
+							});
+							super.addCountToTotal(newMessageCount);
+
+							data = undefined;
+
+							this.logger.debug('next import entry');
+							next();
+						}),
+					);
+
+					stream.on('error', () => next());
 					stream.resume();
-					return next();
-				}
-
-				const info = this.path.parse(header.name);
-				let pos = 0;
-				let data = Buffer.allocUnsafe(header.size);
-
-				stream.on('data', Meteor.bindEnvironment((chunk) => {
-					data.fill(chunk, pos, pos + chunk.length);
-					pos += chunk.length;
-				}));
-
-				stream.on('end', Meteor.bindEnvironment(async () => {
-					this.logger.info(`Processing the file: ${ header.name }`);
-					const newMessageCount = await this.prepareFile(info, data, header.name);
-
-					messageCount += newMessageCount;
-					super.updateRecord({ 'count.messages': messageCount });
-					super.addCountToTotal(newMessageCount);
-
-					data = undefined;
-
-					this.logger.debug('next import entry');
-					next();
-				}));
-
-				stream.on('error', () => next());
-				stream.resume();
-			}));
+				}),
+			);
 
 			this.extract.on('error', (err) => {
 				this.logger.error('extract error:', err);
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
-			this.extract.on('finish', Meteor.bindEnvironment(() => {
-				resolve();
-			}));
+			this.extract.on(
+				'finish',
+				Meteor.bindEnvironment(() => {
+					resolve();
+				}),
+			);
 
 			const rs = fs.createReadStream(fullFilePath);
 			const gunzip = this.zlib.createGunzip();

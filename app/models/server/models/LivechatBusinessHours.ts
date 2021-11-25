@@ -2,10 +2,21 @@ import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 
 import { Base } from './_Base';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
+import {
+	ILivechatBusinessHour,
+	LivechatBusinessHourTypes,
+} from '../../../../definition/ILivechatBusinessHour';
 
 export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
-	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+	const days = [
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+		'Sunday',
+	];
 	const closedDays = ['Saturday', 'Sunday'];
 	return {
 		_id: new ObjectId().toHexString(),
@@ -18,22 +29,34 @@ export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 			start: {
 				time: '08:00',
 				utc: {
-					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ day }:08:00`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm')
+						.utc()
+						.format('dddd'),
+					time: moment(`${ day }:08:00`, 'dddd:HH:mm')
+						.utc()
+						.format('HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm').format('dddd'),
+					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm').format(
+						'dddd',
+					),
 					time: moment(`${ day }:08:00`, 'dddd:HH:mm').format('HH:mm'),
 				},
 			},
 			finish: {
 				time: '20:00',
 				utc: {
-					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ day }:20:00`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm')
+						.utc()
+						.format('dddd'),
+					time: moment(`${ day }:20:00`, 'dddd:HH:mm')
+						.utc()
+						.format('HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm').format('dddd'),
+					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm').format(
+						'dddd',
+					),
 					time: moment(`${ day }:20:00`, 'dddd:HH:mm').format('HH:mm'),
 				},
 			},

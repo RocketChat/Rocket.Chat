@@ -16,5 +16,7 @@ Tracker.autorun(async () => {
 	}
 	const { accounts } = await APIClient.v1.get('webdav.getMyAccounts');
 	accounts.forEach((account) => WebdavAccounts.insert(account));
-	Notifications.onUser('webdav', ({ type, account }) => events[type](account));
+	Notifications.onUser('webdav', ({ type, account }) =>
+		events[type](account),
+	);
 });

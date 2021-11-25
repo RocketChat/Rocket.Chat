@@ -10,7 +10,10 @@ Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
-		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
+		if (
+			!Meteor.userId()
+			&& settings.get('Accounts_AllowAnonymousRead') === false
+		) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadHistory',
 			});
@@ -34,10 +37,24 @@ Meteor.methods({
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = hasPermission(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+		if (
+			room.t === 'c'
+			&& !canAnonymous
+			&& !canPreview
+			&& !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, {
+				fields: { _id: 1 },
+			})
+		) {
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromId, rid, end, limit, ls, showThreadMessages });
+		return loadMessageHistory({
+			userId: fromId,
+			rid,
+			end,
+			limit,
+			ls,
+			showThreadMessages,
+		});
 	},
 });

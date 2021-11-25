@@ -16,11 +16,23 @@ export function saveRegistrationData({
 		Settings.updateValueById('Cloud_Workspace_Id', workspaceId),
 		Settings.updateValueById('Cloud_Workspace_Name', client_name),
 		Settings.updateValueById('Cloud_Workspace_Client_Id', client_id),
-		Settings.updateValueById('Cloud_Workspace_Client_Secret', client_secret),
-		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', client_secret_expires_at),
+		Settings.updateValueById(
+			'Cloud_Workspace_Client_Secret',
+			client_secret,
+		),
+		Settings.updateValueById(
+			'Cloud_Workspace_Client_Secret_Expires_At',
+			client_secret_expires_at,
+		),
 		Settings.updateValueById('Cloud_Workspace_PublicKey', publicKey),
-		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', registration_client_uri),
-		Settings.updateValueById('Cloud_Workspace_License', licenseData.license || ''),
+		Settings.updateValueById(
+			'Cloud_Workspace_Registration_Client_Uri',
+			registration_client_uri,
+		),
+		Settings.updateValueById(
+			'Cloud_Workspace_License',
+			licenseData.license || '',
+		),
 	]).then((...results) => {
 		callbacks.run('workspaceLicenseChanged', licenseData.license);
 		return results;

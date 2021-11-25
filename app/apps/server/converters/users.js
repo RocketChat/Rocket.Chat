@@ -1,4 +1,7 @@
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+import {
+	UserStatusConnection,
+	UserType,
+} from '@rocket.chat/apps-engine/definition/users';
 
 import { Users } from '../../../models';
 
@@ -25,7 +28,11 @@ export class AppUsersConverter {
 		}
 
 		const type = this._convertUserTypeToEnum(user.type);
-		const statusConnection = this._convertStatusConnectionToEnum(user.username, user._id, user.statusConnection);
+		const statusConnection = this._convertStatusConnectionToEnum(
+			user.username,
+			user._id,
+			user.statusConnection,
+		);
 
 		return {
 			id: user._id,
@@ -81,7 +88,9 @@ export class AppUsersConverter {
 			case undefined:
 				return UserType.UNKNOWN;
 			default:
-				console.warn(`A new user type has been added that the Apps don't know about? "${ type }"`);
+				console.warn(
+					`A new user type has been added that the Apps don't know about? "${ type }"`,
+				);
 				return type.toUpperCase();
 		}
 	}
@@ -100,8 +109,12 @@ export class AppUsersConverter {
 				// This is needed for Livechat guests and Rocket.Cat user.
 				return UserStatusConnection.UNDEFINED;
 			default:
-				console.warn(`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);
-				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
+				console.warn(
+					`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`,
+				);
+				return !status
+					? UserStatusConnection.OFFLINE
+					: status.toUpperCase();
 		}
 	}
 }

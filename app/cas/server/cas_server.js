@@ -35,7 +35,8 @@ const casTicket = function(req, token, callback) {
 	const ticketId = parsedUrl.query.ticket;
 	const baseUrl = settings.get('CAS_base_url');
 	const cas_version = parseFloat(settings.get('CAS_version'));
-	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const appUrl =		Meteor.absoluteUrl().replace(/\/$/, '')
+		+ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${ baseUrl }`);
 
 	const cas = new CAS({
@@ -44,25 +45,28 @@ const casTicket = function(req, token, callback) {
 		service: `${ appUrl }/_cas/${ token }`,
 	});
 
-	cas.validate(ticketId, Meteor.bindEnvironment(async function(err, status, username, details) {
-		if (err) {
-			logger.error(`error when trying to validate: ${ err.message }`);
-		} else if (status) {
-			logger.info(`Validated user: ${ username }`);
-			const user_info = { username };
+	cas.validate(
+		ticketId,
+		Meteor.bindEnvironment(async function(err, status, username, details) {
+			if (err) {
+				logger.error(`error when trying to validate: ${ err.message }`);
+			} else if (status) {
+				logger.info(`Validated user: ${ username }`);
+				const user_info = { username };
 
-			// CAS 2.0 attributes handling
-			if (details && details.attributes) {
-				_.extend(user_info, { attributes: details.attributes });
+				// CAS 2.0 attributes handling
+				if (details && details.attributes) {
+					_.extend(user_info, { attributes: details.attributes });
+				}
+				await CredentialTokens.create(token, user_info);
+			} else {
+				logger.error(`Unable to validate ticket: ${ ticketId }`);
 			}
-			await CredentialTokens.create(token, user_info);
-		} else {
-			logger.error(`Unable to validate ticket: ${ ticketId }`);
-		}
-		// logger.debug("Received response: " + JSON.stringify(details, null , 4));
+			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 
-		callback();
-	}));
+			callback();
+		}),
+	);
 };
 
 const middleware = function(req, res, next) {
@@ -116,18 +120,26 @@ Accounts.registerLoginHandler(function(options) {
 	}
 
 	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = Promise.await(CredentialTokens.findOneNotExpiredById(options.cas.credentialToken));
+	const credentials = Promise.await(
+		CredentialTokens.findOneNotExpiredById(options.cas.credentialToken),
+	);
 	if (credentials === undefined) {
-		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
-			'no matching login attempt found');
+		throw new Meteor.Error(
+			Accounts.LoginCancelledError.numericError,
+			'no matching login attempt found',
+		);
 	}
 
 	const result = credentials.userInfo;
-	const syncUserDataFieldMap = settings.get('CAS_Sync_User_Data_FieldMap').trim();
+	const syncUserDataFieldMap = settings
+		.get('CAS_Sync_User_Data_FieldMap')
+		.trim();
 	const cas_version = parseFloat(settings.get('CAS_version'));
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 	const trustUsername = settings.get('CAS_trust_username');
-	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+	const verified = settings.get(
+		'Accounts_Verify_Email_For_External_Accounts',
+	);
 	const userCreationEnabled = settings.get('CAS_Creation_User_Enabled');
 
 	// We have these
@@ -164,14 +176,21 @@ Accounts.registerLoginHandler(function(options) {
 			if (_.isString(source)) {
 				let replacedValue = source;
 				_.each(ext_attrs, function(value, ext_name) {
-					replacedValue = replacedValue.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
+					replacedValue = replacedValue.replace(
+						`%${ ext_name }%`,
+						ext_attrs[ext_name],
+					);
 				});
 
 				if (source !== replacedValue) {
 					int_attrs[int_name] = replacedValue;
-					logger.debug(`Sourced internal attribute: ${ int_name } = ${ replacedValue }`);
+					logger.debug(
+						`Sourced internal attribute: ${ int_name } = ${ replacedValue }`,
+					);
 				} else {
-					logger.debug(`Sourced internal attribute: ${ int_name } skipped.`);
+					logger.debug(
+						`Sourced internal attribute: ${ int_name } skipped.`,
+					);
 				}
 			}
 		});
@@ -180,7 +199,9 @@ Accounts.registerLoginHandler(function(options) {
 	// Search existing user by its external service id
 	logger.debug(`Looking up user by id: ${ result.username }`);
 	// First, look for a user that has logged in from CAS with this username before
-	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	let user = Meteor.users.findOne({
+		'services.cas.external_id': result.username,
+	});
 	if (!user) {
 		// If that user was not found, check if there's any Rocket.Chat user with that username
 		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
@@ -190,13 +211,17 @@ Accounts.registerLoginHandler(function(options) {
 			user = Meteor.users.findOne({ username });
 			if (user) {
 				// Update the user's external_id to reflect this new username.
-				Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+				Meteor.users.update(user, {
+					$set: { 'services.cas.external_id': result.username },
+				});
 			}
 		}
 	}
 
 	if (user) {
-		logger.debug(`Using existing user for '${ result.username }' with id: ${ user._id }`);
+		logger.debug(
+			`Using existing user for '${ result.username }' with id: ${ user._id }`,
+		);
 		if (sync_enabled) {
 			logger.debug('Syncing user attributes');
 			// Update name
@@ -206,7 +231,9 @@ Accounts.registerLoginHandler(function(options) {
 
 			// Update email
 			if (int_attrs.email) {
-				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
+				Meteor.users.update(user, {
+					$set: { emails: [{ address: int_attrs.email, verified }] },
+				});
 			}
 		}
 	} else if (userCreationEnabled) {
@@ -247,12 +274,16 @@ Accounts.registerLoginHandler(function(options) {
 		}
 
 		// Create the user
-		logger.debug(`User "${ result.username }" does not exist yet, creating it`);
+		logger.debug(
+			`User "${ result.username }" does not exist yet, creating it`,
+		);
 		const userId = Accounts.insertUserDoc({}, newUser);
 
 		// Fetch and use it
 		user = Meteor.users.findOne(userId);
-		logger.debug(`Created new user for '${ result.username }' with id: ${ user._id }`);
+		logger.debug(
+			`Created new user for '${ result.username }' with id: ${ user._id }`,
+		);
 		// logger.debug(JSON.stringify(user, undefined, 4));
 
 		logger.debug(`Joining user to attribute channels: ${ int_attrs.rooms }`);
@@ -268,9 +299,13 @@ Accounts.registerLoginHandler(function(options) {
 		}
 	} else {
 		// Should fail as no user exist and can't be created
-		logger.debug(`User "${ result.username }" does not exist yet, will fail as no user creation is enabled`);
-		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
-			'no matching user account found');
+		logger.debug(
+			`User "${ result.username }" does not exist yet, will fail as no user creation is enabled`,
+		);
+		throw new Meteor.Error(
+			Accounts.LoginCancelledError.numericError,
+			'no matching user account found',
+		);
 	}
 
 	return { userId: user._id };

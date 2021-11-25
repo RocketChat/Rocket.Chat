@@ -10,21 +10,29 @@ export const server = new Server();
 
 export const events = new EventEmitter();
 
-const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfiguration';
+const loginServiceConfigurationCollection =	'meteor_accounts_loginServiceConfiguration';
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();
 
-MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
+MeteorService.getLoginServiceConfiguration().then((records = []) =>
+	records.forEach((record) => loginServices.set(record._id, record)),
+);
 
 server.publish(loginServiceConfigurationPublication, async function() {
-	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
+	loginServices.forEach((record) =>
+		this.added(loginServiceConfigurationCollection, record._id, record),
+	);
 
 	const fn = (action: string, record: any): void => {
 		switch (action) {
 			case 'added':
 			case 'changed':
 				loginServices.set(record._id, record);
-				this[action](loginServiceConfigurationCollection, record._id, record);
+				this[action](
+					loginServiceConfigurationCollection,
+					record._id,
+					record,
+				);
 				break;
 			case 'removed':
 				loginServices.delete(record._id);
@@ -49,7 +57,9 @@ MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
 server.publish(autoUpdateCollection, function() {
-	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
+	autoUpdateRecords.forEach((record) =>
+		this.added(autoUpdateCollection, record._id, record),
+	);
 
 	const fn = (record: any): void => {
 		autoUpdateRecords.set(record._id, record);
@@ -66,7 +76,15 @@ server.publish(autoUpdateCollection, function() {
 });
 
 server.methods({
-	async login({ resume, user, password }: {resume: string; user: {username: string}; password: string}) {
+	async login({
+		resume,
+		user,
+		password,
+	}: {
+		resume: string;
+		user: { username: string };
+		password: string;
+	}) {
 		const result = await Account.login({ resume, user, password });
 		if (!result) {
 			throw new Error('login error');
@@ -88,7 +106,10 @@ server.methods({
 	},
 	async logout() {
 		if (this.userToken && this.userId) {
-			await Account.logout({ userId: this.userId, token: this.userToken });
+			await Account.logout({
+				userId: this.userId,
+				token: this.userToken,
+			});
 		}
 
 		// TODO: run the handles on monolith to track SAU correctly
@@ -125,7 +146,7 @@ server.methods({
 		}
 		return Presence.setConnectionStatus(userId, UserStatus.AWAY, session);
 	},
-	'setUserStatus'(status, statusText) {
+	setUserStatus(status, statusText) {
 		const { userId } = this;
 		if (!userId) {
 			return;

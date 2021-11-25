@@ -4,11 +4,17 @@ declare module 'meteor/accounts-base' {
 
 		function _getLoginToken(connectionId: string): string | undefined;
 
-		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
+		function insertUserDoc(
+			options: Record<string, any>,
+			user: Record<string, any>
+		): string;
 
-		function _generateStampedLoginToken(): {token: string; when: Date};
+		function _generateStampedLoginToken(): { token: string; when: Date };
 
-		function _runLoginHandlers(methodInvocation: Function, loginRequest: Record<string, any>): Record<string, any> | undefined;
+		function _runLoginHandlers(
+			methodInvocation: Function,
+			loginRequest: Record<string, any>
+		): Record<string, any> | undefined;
 
 		export class ConfigError extends Error {}
 

@@ -11,7 +11,10 @@ export const LoginPresence = {
 		if (!LoginPresence.awayTime) {
 			return;
 		}
-		this.timer = setTimeout(LoginPresence.disconnect, LoginPresence.awayTime);
+		this.timer = setTimeout(
+			LoginPresence.disconnect,
+			LoginPresence.awayTime,
+		);
 	},
 	stopTimer() {
 		clearTimeout(this.timer);
@@ -19,7 +22,10 @@ export const LoginPresence = {
 	disconnect() {
 		const status = Meteor.status();
 		if (status && status.status !== 'offline') {
-			if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') !== true) {
+			if (
+				!Meteor.userId()
+				&& settings.get('Accounts_AllowAnonymousRead') !== true
+			) {
 				Meteor.disconnect();
 			}
 		}

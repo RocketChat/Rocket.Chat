@@ -4,7 +4,10 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { findGuest } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
+import {
+	findLivechatCustomFields,
+	findCustomFieldById,
+} from '../lib/customFields';
 
 API.v1.addRoute('livechat/custom.field', {
 	post() {
@@ -59,43 +62,61 @@ API.v1.addRoute('livechat/custom.fields', {
 				return API.v1.failure();
 			}
 
-			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
+			return {
+				Key: customField.key,
+				value: customField.value,
+				overwrite: customField.overwrite,
+			};
 		});
 
 		return API.v1.success({ fields });
 	},
 });
 
-API.v1.addRoute('livechat/custom-fields', { authRequired: true }, {
-	get() {
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-		const { text } = this.queryParams;
+API.v1.addRoute(
+	'livechat/custom-fields',
+	{ authRequired: true },
+	{
+		get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
+			const { text } = this.queryParams;
 
-		const customFields = Promise.await(findLivechatCustomFields({
-			userId: this.userId,
-			text,
-			pagination: {
-				offset,
-				count,
-				sort,
-			},
-		}));
+			const customFields = Promise.await(
+				findLivechatCustomFields({
+					userId: this.userId,
+					text,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
+			);
 
-		return API.v1.success(customFields);
+			return API.v1.success(customFields);
+		},
 	},
-});
+);
 
+API.v1.addRoute(
+	'livechat/custom-fields/:_id',
+	{ authRequired: true },
+	{
+		get() {
+			check(this.urlParams, {
+				_id: String,
+			});
+			const { customField } = Promise.await(
+				findCustomFieldById({
+					userId: this.userId,
+					customFieldId: this.urlParams._id,
+				}),
+			);
 
-API.v1.addRoute('livechat/custom-fields/:_id', { authRequired: true }, {
-	get() {
-		check(this.urlParams, {
-			_id: String,
-		});
-		const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
-
-		return API.v1.success({
-			customField,
-		});
+			return API.v1.success({
+				customField,
+			});
+		},
 	},
-});
+);

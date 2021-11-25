@@ -1,7 +1,12 @@
 import moment from 'moment';
 
 import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
-import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
+import {
+	convertDateToInt,
+	diffBetweenDaysInclusive,
+	getTotalOfWeekItems,
+	convertIntToDate,
+} from './date';
 import { IUser } from '../../../../definition/IUser';
 
 export const handleUserCreated = (user: IUser): IUser => {
@@ -9,14 +14,18 @@ export const handleUserCreated = (user: IUser): IUser => {
 		return user;
 	}
 
-	Promise.await(Analytics.saveUserData({
-		date: convertDateToInt(user.createdAt),
-	}));
+	Promise.await(
+		Analytics.saveUserData({
+			date: convertDateToInt(user.createdAt),
+		}),
+	);
 
 	return user;
 };
 
-export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> => {
+export const fillFirstDaysOfUsersIfNeeded = async (
+	date: Date,
+): Promise<void> => {
 	const usersFromAnalytics = await Analytics.findByTypeBeforeDate({
 		type: 'users',
 		date: convertDateToInt(date),
@@ -27,14 +36,22 @@ export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> =>
 			start: startOfPeriod,
 			end: date,
 		});
-		users.forEach((user) => Analytics.insertOne({
-			...user,
-			date: parseInt(user.date),
-		}));
+		users.forEach((user) =>
+			Analytics.insertOne({
+				...user,
+				date: parseInt(user.date),
+			}),
+		);
 	}
 };
 
-export const findWeeklyUsersRegisteredData = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findWeeklyUsersRegisteredData = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	days: { day: Date; users: number }[];
 	period: {
 		count: number;
@@ -47,9 +64,14 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }: { start: Dat
 }> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
 	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
+	const startOfLastWeek = moment(endOfLastWeek)
+		.clone()
+		.subtract(daysBetweenDates, 'days')
+		.toDate();
 	const today = convertDateToInt(end);
-	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
+	const yesterday = convertDateToInt(
+		moment(end).clone().subtract(1, 'days').toDate(),
+	);
 	const currentPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
@@ -60,12 +82,20 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }: { start: Dat
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
-	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
-	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
+	const yesterdayUsers =		(currentPeriodUsers.find((item) => item._id === yesterday) || {})
+		.users || 0;
+	const todayUsers =		(currentPeriodUsers.find((item) => item._id === today) || {}).users
+		|| 0;
+	const currentPeriodTotalUsers = getTotalOfWeekItems(
+		currentPeriodUsers,
+		'users',
+	);
 	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');
 	return {
-		days: currentPeriodUsers.map((day) => ({ day: convertIntToDate(day._id), users: day.users })),
+		days: currentPeriodUsers.map((day) => ({
+			day: convertIntToDate(day._id),
+			users: day.users,
+		})),
 		period: {
 			count: currentPeriodTotalUsers,
 			variation: currentPeriodTotalUsers - lastPeriodTotalUsers,
@@ -77,7 +107,9 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }: { start: Dat
 	};
 };
 
-const createDestructuredDate = (input: moment.MomentInput): {
+const createDestructuredDate = (
+	input: moment.MomentInput,
+): {
 	year: number;
 	month: number;
 	day: number;
@@ -91,7 +123,13 @@ const createDestructuredDate = (input: moment.MomentInput): {
 	};
 };
 
-export const findActiveUsersMonthlyData = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findActiveUsersMonthlyData = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	month: {
 		day: number;
 		month: number;
@@ -106,7 +144,11 @@ export const findActiveUsersMonthlyData = async ({ start, end }: { start: Date; 
 	}),
 });
 
-export const findBusiestsChatsInADayByHours = async ({ start }: { start: Date }): Promise<{
+export const findBusiestsChatsInADayByHours = async ({
+	start,
+}: {
+	start: Date;
+}): Promise<{
 	hours: {
 		hour: number;
 		users: number;
@@ -119,7 +161,11 @@ export const findBusiestsChatsInADayByHours = async ({ start }: { start: Date })
 	}),
 });
 
-export const findBusiestsChatsWithinAWeek = async ({ start }: { start: Date }): Promise<{
+export const findBusiestsChatsWithinAWeek = async ({
+	start,
+}: {
+	start: Date;
+}): Promise<{
 	month: {
 		day: number;
 		month: number;
@@ -133,7 +179,13 @@ export const findBusiestsChatsWithinAWeek = async ({ start }: { start: Date }): 
 	}),
 });
 
-export const findUserSessionsByHourWithinAWeek = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findUserSessionsByHourWithinAWeek = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	week: {
 		hour: number;
 		day: number;

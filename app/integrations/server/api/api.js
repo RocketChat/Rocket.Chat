@@ -51,20 +51,30 @@ function buildSandbox(store = {}) {
 			}
 		},
 	};
-	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => { sandbox[k] = Models[k]; });
-	return { store, sandbox	};
+	Object.keys(Models)
+		.filter((k) => !k.startsWith('_'))
+		.forEach((k) => {
+			sandbox[k] = Models[k];
+		});
+	return { store, sandbox };
 }
 
 function getIntegrationScript(integration) {
 	const compiledScript = compiledScripts[integration._id];
-	if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
+	if (
+		compiledScript
+		&& +compiledScript._updatedAt === +integration._updatedAt
+	) {
 		return compiledScript.script;
 	}
 
 	const script = integration.scriptCompiled;
 	const { sandbox, store } = buildSandbox();
 	try {
-		incomingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
+		incomingLogger.info({
+			msg: 'Will evaluate script of Trigger',
+			name: integration.name,
+		});
 		incomingLogger.debug(script);
 
 		const vmScript = vm.createScript(script, 'script.js');
@@ -79,12 +89,20 @@ function getIntegrationScript(integration) {
 			return compiledScripts[integration._id].script;
 		}
 	} catch (err) {
-		incomingLogger.error({ msg: 'Error evaluating Script in Trigger', name: integration.name, script, err });
+		incomingLogger.error({
+			msg: 'Error evaluating Script in Trigger',
+			name: integration.name,
+			script,
+			err,
+		});
 		throw API.v1.failure('error-evaluating-script');
 	}
 
 	if (!sandbox.Script) {
-		incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
+		incomingLogger.error({
+			msg: 'Class "Script" not in Trigger',
+			name: integration.name,
+		});
 		throw API.v1.failure('class-script-not-found');
 	}
 }
@@ -99,7 +117,10 @@ function createIntegration(options, user) {
 				if (options.data == null) {
 					options.data = {};
 				}
-				if ((options.data.channel_name != null) && options.data.channel_name.indexOf('#') === -1) {
+				if (
+					options.data.channel_name != null
+					&& options.data.channel_name.indexOf('#') === -1
+				) {
 					options.data.channel_name = `#${ options.data.channel_name }`;
 				}
 				return Meteor.call('addOutgoingIntegration', {
@@ -130,19 +151,29 @@ function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug(options);
 
-	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
+	const integrationToRemove = Promise.await(
+		Integrations.findOneByUrl(options.target_url),
+	);
 	if (!integrationToRemove) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
+	Meteor.runAsUser(user._id, () =>
+		Meteor.call('deleteOutgoingIntegration', integrationToRemove._id),
+	);
 
 	return API.v1.success();
 }
 
 function executeIntegrationRest() {
-	incomingLogger.info({ msg: 'Post integration:', name: this.integration.name });
-	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
+	incomingLogger.info({
+		msg: 'Post integration:',
+		name: this.integration.name,
+	});
+	incomingLogger.debug({
+		urlParams: this.urlParams,
+		bodyParams: this.bodyParams,
+	});
 
 	if (this.integration.enabled !== true) {
 		return {
@@ -158,7 +189,11 @@ function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
+	if (
+		this.integration.scriptEnabled
+		&& this.integration.scriptCompiled
+		&& this.integration.scriptCompiled.trim() !== ''
+	) {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);
@@ -192,11 +227,15 @@ function executeIntegrationRest() {
 		};
 
 		try {
-			const { sandbox } = buildSandbox(compiledScripts[this.integration._id].store);
+			const { sandbox } = buildSandbox(
+				compiledScripts[this.integration._id].store,
+			);
 			sandbox.script = script;
 			sandbox.request = request;
 
-			const result = Future.fromPromise(vm.runInNewContext(`
+			const result = Future.fromPromise(
+				vm.runInNewContext(
+					`
 				new Promise((resolve, reject) => {
 					Fiber(() => {
 						scriptTimeout(reject);
@@ -207,14 +246,22 @@ function executeIntegrationRest() {
 						}
 					}).run();
 				}).catch((error) => { throw new Error(error); });
-			`, sandbox, {
-				timeout: 3000,
-			})).wait();
+			`,
+					sandbox,
+					{
+						timeout: 3000,
+					},
+				),
+			).wait();
 
 			if (!result) {
-				incomingLogger.debug({ msg: 'Process Incoming Request result of Trigger has no data', name: this.integration.name });
+				incomingLogger.debug({
+					msg: 'Process Incoming Request result of Trigger has no data',
+					name: this.integration.name,
+				});
 				return API.v1.success();
-			} if (result && result.error) {
+			}
+			if (result && result.error) {
 				return API.v1.failure(result.error);
 			}
 
@@ -224,16 +271,28 @@ function executeIntegrationRest() {
 				this.user = result.user;
 			}
 
-			incomingLogger.debug({ msg: 'Process Incoming Request result of Trigger', name: this.integration.name, result: this.bodyParams });
+			incomingLogger.debug({
+				msg: 'Process Incoming Request result of Trigger',
+				name: this.integration.name,
+				result: this.bodyParams,
+			});
 		} catch (err) {
-			incomingLogger.error({ msg: 'Error running Script in Trigger', name: this.integration.name, script: this.integration.scriptCompiled, err });
+			incomingLogger.error({
+				msg: 'Error running Script in Trigger',
+				name: this.integration.name,
+				script: this.integration.scriptCompiled,
+				err,
+			});
 			return API.v1.failure('error-running-script');
 		}
 	}
 
 	// TODO: Turn this into an option on the integrations - no body means a success
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
-	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
+	if (
+		!this.bodyParams
+		|| (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)
+	) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();
 	}
@@ -241,13 +300,20 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = processWebhookMessage(
+			this.bodyParams,
+			this.user,
+			defaultValues,
+		);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
 
 		if (this.scriptResponse) {
-			incomingLogger.debug({ msg: 'response', response: this.scriptResponse });
+			incomingLogger.debug({
+				msg: 'response',
+				response: this.scriptResponse,
+			});
 		}
 
 		return API.v1.success(this.scriptResponse);
@@ -278,7 +344,8 @@ function integrationSampleRest() {
 				user_name: 'rocket.cat',
 				text: 'Sample text 1',
 				trigger_word: 'Sample',
-			}, {
+			},
+			{
 				token: Random.id(24),
 				channel_id: Random.id(),
 				channel_name: 'general',
@@ -287,7 +354,8 @@ function integrationSampleRest() {
 				user_name: 'rocket.cat',
 				text: 'Sample text 2',
 				trigger_word: 'Sample',
-			}, {
+			},
+			{
 				token: Random.id(24),
 				channel_id: Random.id(),
 				channel_name: 'general',
@@ -315,12 +383,23 @@ class WebHookAPI extends APIClass {
 	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
 	shouldAddRateLimitToRoute(options) {
 		const { rateLimiterOptions } = options;
-		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+		return (
+			(typeof rateLimiterOptions === 'object'
+				|| rateLimiterOptions === undefined)
+			&& !process.env.TEST_MODE
+			&& Boolean(
+				defaultRateLimiterOptions.numRequestsAllowed
+					&& defaultRateLimiterOptions.intervalTimeInMS,
+			)
+		);
 	}
 
 	shouldVerifyRateLimit(/* route */) {
-		return settings.get('API_Enable_Rate_Limiter') === true
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true);
+		return (
+			settings.get('API_Enable_Rate_Limiter') === true
+			&& (process.env.NODE_ENV !== 'development'
+				|| settings.get('API_Enable_Rate_Limiter_Dev') === true)
+		);
 	}
 
 	/*
@@ -348,7 +427,12 @@ class WebHookAPI extends APIClass {
 		const integrationForRateLimitMatch = objectForRateLimitMatch;
 		integrationForRateLimitMatch.route = nameRoute;
 
-		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
+		super.enforceRateLimit(
+			integrationForRateLimitMatch,
+			request,
+			response,
+			userId,
+		);
 	}
 }
 
@@ -358,8 +442,14 @@ const Api = new WebHookAPI({
 	auth: {
 		user() {
 			const payloadKeys = Object.keys(this.bodyParams);
-			const payloadIsWrapped = (this.bodyParams && this.bodyParams.payload) && payloadKeys.length === 1;
-			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
+			const payloadIsWrapped =				this.bodyParams
+				&& this.bodyParams.payload
+				&& payloadKeys.length === 1;
+			if (
+				payloadIsWrapped
+				&& this.request.headers['content-type']
+					=== 'application/x-www-form-urlencoded'
+			) {
 				try {
 					this.bodyParams = JSON.parse(this.bodyParams.payload);
 				} catch ({ message }) {
@@ -375,13 +465,17 @@ const Api = new WebHookAPI({
 				}
 			}
 
-			this.integration = Promise.await(Integrations.findOne({
-				_id: this.request.params.integrationId,
-				token: decodeURIComponent(this.request.params.token),
-			}));
+			this.integration = Promise.await(
+				Integrations.findOne({
+					_id: this.request.params.integrationId,
+					token: decodeURIComponent(this.request.params.token),
+				}),
+			);
 
 			if (!this.integration) {
-				incomingLogger.info(`Invalid integration id ${ this.request.params.integrationId } or token ${ this.request.params.token }`);
+				incomingLogger.info(
+					`Invalid integration id ${ this.request.params.integrationId } or token ${ this.request.params.token }`,
+				);
 
 				return {
 					error: {
@@ -403,44 +497,84 @@ const Api = new WebHookAPI({
 	},
 });
 
-Api.addRoute(':integrationId/:userId/:token', { authRequired: true }, {
-	post: executeIntegrationRest,
-	get: executeIntegrationRest,
-});
+Api.addRoute(
+	':integrationId/:userId/:token',
+	{ authRequired: true },
+	{
+		post: executeIntegrationRest,
+		get: executeIntegrationRest,
+	},
+);
 
-Api.addRoute(':integrationId/:token', { authRequired: true }, {
-	post: executeIntegrationRest,
-	get: executeIntegrationRest,
-});
+Api.addRoute(
+	':integrationId/:token',
+	{ authRequired: true },
+	{
+		post: executeIntegrationRest,
+		get: executeIntegrationRest,
+	},
+);
 
-Api.addRoute('sample/:integrationId/:userId/:token', { authRequired: true }, {
-	get: integrationSampleRest,
-});
+Api.addRoute(
+	'sample/:integrationId/:userId/:token',
+	{ authRequired: true },
+	{
+		get: integrationSampleRest,
+	},
+);
 
-Api.addRoute('sample/:integrationId/:token', { authRequired: true }, {
-	get: integrationSampleRest,
-});
+Api.addRoute(
+	'sample/:integrationId/:token',
+	{ authRequired: true },
+	{
+		get: integrationSampleRest,
+	},
+);
 
-Api.addRoute('info/:integrationId/:userId/:token', { authRequired: true }, {
-	get: integrationInfoRest,
-});
+Api.addRoute(
+	'info/:integrationId/:userId/:token',
+	{ authRequired: true },
+	{
+		get: integrationInfoRest,
+	},
+);
 
-Api.addRoute('info/:integrationId/:token', { authRequired: true }, {
-	get: integrationInfoRest,
-});
+Api.addRoute(
+	'info/:integrationId/:token',
+	{ authRequired: true },
+	{
+		get: integrationInfoRest,
+	},
+);
 
-Api.addRoute('add/:integrationId/:userId/:token', { authRequired: true }, {
-	post: addIntegrationRest,
-});
+Api.addRoute(
+	'add/:integrationId/:userId/:token',
+	{ authRequired: true },
+	{
+		post: addIntegrationRest,
+	},
+);
 
-Api.addRoute('add/:integrationId/:token', { authRequired: true }, {
-	post: addIntegrationRest,
-});
+Api.addRoute(
+	'add/:integrationId/:token',
+	{ authRequired: true },
+	{
+		post: addIntegrationRest,
+	},
+);
 
-Api.addRoute('remove/:integrationId/:userId/:token', { authRequired: true }, {
-	post: removeIntegrationRest,
-});
+Api.addRoute(
+	'remove/:integrationId/:userId/:token',
+	{ authRequired: true },
+	{
+		post: removeIntegrationRest,
+	},
+);
 
-Api.addRoute('remove/:integrationId/:token', { authRequired: true }, {
-	post: removeIntegrationRest,
-});
+Api.addRoute(
+	'remove/:integrationId/:token',
+	{ authRequired: true },
+	{
+		post: removeIntegrationRest,
+	},
+);

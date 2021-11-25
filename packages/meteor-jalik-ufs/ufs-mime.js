@@ -27,7 +27,6 @@
  * MIME types and extensions
  */
 export const MIME = {
-
 	// application
 	'7z': 'application/x-7z-compressed',
 	arc: 'application/octet-stream',

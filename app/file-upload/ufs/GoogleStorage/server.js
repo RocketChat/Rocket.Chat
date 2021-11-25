@@ -17,9 +17,10 @@ export class GoogleStorageStore extends UploadFS.Store {
 		const gcs = new Storage(options.connection);
 		this.bucket = gcs.bucket(options.bucket);
 
-		options.getPath = options.getPath || function(file) {
-			return file._id;
-		};
+		options.getPath =			options.getPath
+			|| function(file) {
+				return file._id;
+			};
 
 		this.getPath = function(file) {
 			if (file.GoogleStorage) {
@@ -97,7 +98,9 @@ export class GoogleStorageStore extends UploadFS.Store {
 				config.end = options.end;
 			}
 
-			return this.bucket.file(this.getPath(file)).createReadStream(config);
+			return this.bucket
+				.file(this.getPath(file))
+				.createReadStream(config);
 		};
 
 		/**
@@ -107,7 +110,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file/* , options*/) {
+		this.getWriteStream = function(fileId, file /* , options*/) {
 			return this.bucket.file(this.getPath(file)).createWriteStream({
 				gzip: false,
 				metadata: {

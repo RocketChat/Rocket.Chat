@@ -9,11 +9,22 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
 Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
+	getChannelHistory({
+		rid,
+		latest,
+		oldest,
+		inclusive,
+		offset = 0,
+		count = 20,
+		unreads,
+		showThreadMessages = true,
+	}) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'getChannelHistory',
+			});
 		}
 
 		const fromUserId = Meteor.userId();
@@ -27,7 +38,13 @@ Meteor.methods({
 		}
 
 		// Make sure they can access the room
-		if (room.t === 'c' && !hasPermission(fromUserId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })) {
+		if (
+			room.t === 'c'
+			&& !hasPermission(fromUserId, 'preview-c-room')
+			&& !Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, {
+				fields: { _id: 1 },
+			})
+		) {
 			return false;
 		}
 
@@ -38,7 +55,9 @@ Meteor.methods({
 
 		// Verify oldest is a date if it exists
 		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
-			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
+			throw new Meteor.Error('error-invalid-date', 'Invalid date', {
+				method: 'getChannelHistory',
+			});
 		}
 
 		const hiddenMessageTypes = getHiddenSystemMessages(room);
@@ -56,8 +75,23 @@ Meteor.methods({
 		}
 
 		const records = _.isUndefined(oldest)
-			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch()
-			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, oldest, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch();
+			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+				rid,
+				latest,
+				hiddenMessageTypes,
+				options,
+				showThreadMessages,
+				inclusive,
+			  ).fetch()
+			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				oldest,
+				latest,
+				hiddenMessageTypes,
+				options,
+				showThreadMessages,
+				inclusive,
+			  ).fetch();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -68,7 +102,7 @@ Meteor.methods({
 			if (!_.isUndefined(oldest)) {
 				const firstMsg = messages[messages.length - 1];
 				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
-					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+					const unreadMessages =						Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,
 						firstMsg.ts,

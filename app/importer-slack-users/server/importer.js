@@ -53,12 +53,20 @@ export class SlackUsersImporter extends Base {
 					break;
 			}
 
-			this.userMap.set(id, new SelectionUser(id, username, email, isDeleted, isBot, true));
+			this.userMap.set(
+				id,
+				new SelectionUser(id, username, email, isDeleted, isBot, true),
+			);
 		});
 
 		const userArray = Array.from(this.userMap.values());
 
-		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: userArray });
+		const usersId = this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'users',
+			users: userArray,
+		});
 		this.users = this.collection.findOne(usersId);
 		super.updateRecord({ 'count.users': this.userMap.size });
 		super.addCountToTotal(this.userMap.size);
@@ -69,21 +77,32 @@ export class SlackUsersImporter extends Base {
 			return super.getProgress();
 		}
 
-		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'admins', admins: this.admins });
+		this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'admins',
+			admins: this.admins,
+		});
 
 		super.updateProgress(ProgressStep.USER_SELECTION);
 		return new Selection(this.name, userArray, [], 0);
 	}
 
 	startImport(importSelection) {
-		const admins = this.collection.findOne({ import: this.importRecord._id, type: 'admins' });
+		const admins = this.collection.findOne({
+			import: this.importRecord._id,
+			type: 'admins',
+		});
 		if (admins) {
 			this.admins = admins.admins || [];
 		} else {
 			this.admins = [];
 		}
 
-		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		this.users = RawImports.findOne({
+			import: this.importRecord._id,
+			type: 'users',
+		});
 		// Recreate the userMap from the collection data
 		this.userMap = new Map();
 		for (const user of this.users.users) {
@@ -107,7 +126,10 @@ export class SlackUsersImporter extends Base {
 
 			this.userMap.set(user.user_id, u);
 		}
-		this.collection.update({ _id: this.users._id }, { $set: { users: Array.from(this.userMap.values()) } });
+		this.collection.update(
+			{ _id: this.users._id },
+			{ $set: { users: Array.from(this.userMap.values()) } },
+		);
 
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
@@ -120,29 +142,44 @@ export class SlackUsersImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = Users.findOneByEmailAddress(u.email) || Users.findOneByUsernameIgnoringCase(u.username);
+						const existantUser =							Users.findOneByEmailAddress(u.email)
+							|| Users.findOneByUsernameIgnoringCase(u.username);
 
 						let userId;
 						if (existantUser) {
 							// since we have an existing user, let's try a few things
 							userId = existantUser._id;
 							u.rocketId = existantUser._id;
-							Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.user_id } });
+							Users.update(
+								{ _id: u.rocketId },
+								{ $addToSet: { importIds: u.user_id } },
+							);
 
 							Users.setEmail(existantUser._id, u.email);
 							Users.setEmailVerified(existantUser._id, u.email);
 						} else {
-							userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
+							userId = Accounts.createUser({
+								username: u.username + Random.id(),
+								password:
+									Date.now() + u.name + u.email.toUpperCase(),
+							});
 
 							if (!userId) {
-								console.warn('An error happened while creating a user.');
+								console.warn(
+									'An error happened while creating a user.',
+								);
 								return;
 							}
 
 							Meteor.runAsUser(userId, () => {
-								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
+								Meteor.call('setUsername', u.username, {
+									joinDefaultChannelsSilenced: true,
+								});
 								Users.setName(userId, u.name);
-								Users.update({ _id: userId }, { $addToSet: { importIds: u.user_id } });
+								Users.update(
+									{ _id: userId },
+									{ $addToSet: { importIds: u.user_id } },
+								);
 								Users.setEmail(userId, u.email);
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;
@@ -165,7 +202,9 @@ export class SlackUsersImporter extends Base {
 			}
 
 			const timeTook = Date.now() - started;
-			this.logger.log(`Slack Users Import took ${ timeTook } milliseconds.`);
+			this.logger.log(
+				`Slack Users Import took ${ timeTook } milliseconds.`,
+			);
 		});
 
 		return super.getProgress();

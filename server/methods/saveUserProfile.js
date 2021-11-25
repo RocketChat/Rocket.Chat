@@ -36,12 +36,18 @@ function saveUserProfile(settings, customFields) {
 	const user = Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
-		if (!saveUserIdentity({
-			_id: this.userId,
-			name: settings.realname,
-			username: settings.username,
-		})) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUserProfile' });
+		if (
+			!saveUserIdentity({
+				_id: this.userId,
+				name: settings.realname,
+				username: settings.username,
+			})
+		) {
+			throw new Meteor.Error(
+				'error-could-not-save-identity',
+				'Could not save user identity',
+				{ method: 'saveUserProfile' },
+			);
 		}
 	}
 
@@ -63,7 +69,10 @@ function saveUserProfile(settings, customFields) {
 	}
 
 	if (settings.nickname != null) {
-		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+		if (
+			typeof settings.nickname !== 'string'
+			|| settings.nickname.length > 120
+		) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
@@ -75,21 +84,39 @@ function saveUserProfile(settings, customFields) {
 		Meteor.call('setEmail', settings.email);
 	}
 
-	const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
+	const canChangePasswordForOAuth = rcSettings.get(
+		'Accounts_AllowPasswordChangeForOAuthUsers',
+	);
 	if (canChangePasswordForOAuth || user.services?.password) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+		if (
+			settings.newPassword
+			&& rcSettings.get('Accounts_AllowPasswordChange') === true
+		) {
 			// don't let user change to same password
 			if (compareUserPassword(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-					method: 'saveUserProfile',
-				});
+				throw new Meteor.Error(
+					'error-password-same-as-current',
+					'Entered password same as current password',
+					{
+						method: 'saveUserProfile',
+					},
+				);
 			}
 
-			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
-					method: 'saveUserProfile',
-				});
+			if (
+				user.services?.passwordHistory
+				&& !compareUserPasswordHistory(user, {
+					plain: settings.newPassword,
+				})
+			) {
+				throw new Meteor.Error(
+					'error-password-in-history',
+					'Entered password has been previously used',
+					{
+						method: 'saveUserProfile',
+					},
+				);
 			}
 
 			passwordPolicy.validate(settings.newPassword);
@@ -98,7 +125,10 @@ function saveUserProfile(settings, customFields) {
 				logout: false,
 			});
 
-			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
+			Users.addPasswordToHistory(
+				this.userId,
+				user.services?.password.bcrypt,
+			);
 
 			try {
 				Meteor.call('removeOtherTokens');
@@ -127,7 +157,12 @@ Meteor.methods({
 		check(customFields, Match.Maybe(Object));
 
 		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+			return saveUserProfileWithTwoFactor.call(
+				this,
+				settings,
+				customFields,
+				...args,
+			);
 		}
 
 		return saveUserProfile.call(this, settings, customFields);

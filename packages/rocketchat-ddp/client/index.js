@@ -6,5 +6,4 @@ ClientStream.prototype.allowConnection = function() {
 	ClientStream.prototype._launchConnection = _launchConnection;
 };
 
-ClientStream.prototype._launchConnection = function() {
-};
+ClientStream.prototype._launchConnection = function() {};

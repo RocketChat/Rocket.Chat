@@ -18,9 +18,17 @@ const appRolePermissions = [
 addMigration({
 	version: 174,
 	up() {
-		return Permissions.update({ _id: { $in: appRolePermissions } }, { $addToSet: { roles: 'app' } }, { multi: true });
+		return Permissions.update(
+			{ _id: { $in: appRolePermissions } },
+			{ $addToSet: { roles: 'app' } },
+			{ multi: true },
+		);
 	},
 	down() {
-		return Permissions.update({ _id: { $in: appRolePermissions } }, { $pull: { roles: 'app' } }, { multi: true });
+		return Permissions.update(
+			{ _id: { $in: appRolePermissions } },
+			{ $pull: { roles: 'app' } },
+			{ multi: true },
+		);
 	},
 });

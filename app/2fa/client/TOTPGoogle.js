@@ -24,14 +24,16 @@ const loginWithGoogleAndTOTP = function(options, code, callback) {
 	// accounts-base/accounts_server.js still checks server-side that the server
 	// has the proper email address after the OAuth conversation.
 
-
 	if (typeof Accounts._options.restrictCreationByEmailDomain === 'string') {
 		options = _.extend({}, options || {});
-		options.loginUrlParameters = _.extend({}, options.loginUrlParameters || {});
-		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
+		options.loginUrlParameters = _.extend(
+			{},
+			options.loginUrlParameters || {},
+		);
+		options.loginUrlParameters.hd =			Accounts._options.restrictCreationByEmailDomain;
 	}
 
-	const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
+	const credentialRequestCompleteCallback =		Accounts.oauth.credentialRequestCompleteHandler(callback, code);
 	Google.requestCredential(options, credentialRequestCompleteCallback);
 };
 

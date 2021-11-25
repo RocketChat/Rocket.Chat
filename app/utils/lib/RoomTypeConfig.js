@@ -48,11 +48,17 @@ export const UiTextContext = {
 
 export class RoomTypeRouteConfig {
 	constructor({ name, path }) {
-		if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length === 0)) {
+		if (
+			typeof name !== 'undefined'
+			&& (typeof name !== 'string' || name.length === 0)
+		) {
 			throw new Error('The name must be a string.');
 		}
 
-		if (typeof path !== 'undefined' && (typeof path !== 'string' || path.length === 0)) {
+		if (
+			typeof path !== 'undefined'
+			&& (typeof path !== 'string' || path.length === 0)
+		) {
 			throw new Error('The path must be a string.');
 		}
 
@@ -86,20 +92,34 @@ export class RoomTypeConfig {
 			throw new Error('The order must be a number.');
 		}
 
-		if (typeof icon !== 'undefined' && (typeof icon !== 'string' || icon.length === 0)) {
+		if (
+			typeof icon !== 'undefined'
+			&& (typeof icon !== 'string' || icon.length === 0)
+		) {
 			throw new Error('The icon must be a string.');
 		}
 
-		if (typeof header !== 'undefined' && (typeof header !== 'string' || header.length === 0)) {
+		if (
+			typeof header !== 'undefined'
+			&& (typeof header !== 'string' || header.length === 0)
+		) {
 			throw new Error('The header must be a string.');
 		}
 
-		if (typeof label !== 'undefined' && (typeof label !== 'string' || label.length === 0)) {
+		if (
+			typeof label !== 'undefined'
+			&& (typeof label !== 'string' || label.length === 0)
+		) {
 			throw new Error('The label must be a string.');
 		}
 
-		if (typeof route !== 'undefined' && !(route instanceof RoomTypeRouteConfig)) {
-			throw new Error('Room\'s route is not a valid route configuration. Must be an instance of "RoomTypeRouteConfig".');
+		if (
+			typeof route !== 'undefined'
+			&& !(route instanceof RoomTypeRouteConfig)
+		) {
+			throw new Error(
+				'Room\'s route is not a valid route configuration. Must be an instance of "RoomTypeRouteConfig".',
+			);
 		}
 
 		this._identifier = identifier;
@@ -185,7 +205,9 @@ export class RoomTypeConfig {
 
 	canBeCreated(hasPermission) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
-			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
+			throw new Error(
+				'You MUST provide the "hasPermission" to canBeCreated function',
+			);
 		}
 		return Meteor.isServer
 			? hasPermission(Meteor.userId(), `create-${ this._identifier }`)
@@ -194,7 +216,9 @@ export class RoomTypeConfig {
 
 	canBeDeleted(hasPermission, room) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
-			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
+			throw new Error(
+				'You MUST provide the "hasPermission" to canBeDeleted function',
+			);
 		}
 		return Meteor.isServer
 			? hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id)
@@ -270,7 +294,9 @@ export class RoomTypeConfig {
 
 		const title = `#${ this.roomName(room) }`;
 
-		const text = `${ settings.get('UI_Use_Real_Name') ? user.name : user.username }: ${ notificationMessage }`;
+		const text = `${
+			settings.get('UI_Use_Real_Name') ? user.name : user.username
+		}: ${ notificationMessage }`;
 
 		return { title, text };
 	}

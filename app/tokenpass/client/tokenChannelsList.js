@@ -7,7 +7,11 @@ import { Subscriptions } from '../../models';
 
 Template.tokenChannelsList.helpers({
 	rooms() {
-		return Template.instance().tokenpassRooms.get().filter((room) => Subscriptions.find({ rid: room._id }).count() === 0);
+		return Template.instance()
+			.tokenpassRooms.get()
+			.filter(
+				(room) => Subscriptions.find({ rid: room._id }).count() === 0,
+			);
 	},
 });
 

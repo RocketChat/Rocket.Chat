@@ -3,10 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { checkCodeForUser, ITwoFactorOptions } from './code/index';
 import { IMethodThisType } from '../../../definition/IMethodThisType';
 
-export function twoFactorRequired(fn: Function, options: ITwoFactorOptions): Function {
+export function twoFactorRequired(
+	fn: Function,
+	options: ITwoFactorOptions,
+): Function {
 	return function(this: IMethodThisType, ...args: any[]): any {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'twoFactorRequired',
+			});
 		}
 
 		// get two factor options from last item of args and remove it
@@ -28,7 +33,11 @@ export function twoFactorRequired(fn: Function, options: ITwoFactorOptions): Fun
 		}
 
 		if (!this.twoFactorChecked) {
-			checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
+			checkCodeForUser({
+				user: this.userId,
+				connection: this.connection || undefined,
+				options,
+			});
 		}
 
 		return fn.apply(this, args);

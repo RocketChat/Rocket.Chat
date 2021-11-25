@@ -296,7 +296,11 @@ export default function IncomingWebhookForm({
 								<Field.Row>
 									<Box fontScale='p1' withRichContent flexGrow={1}>
 										<pre>
-											<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
+											<code
+												dangerouslySetInnerHTML={{
+													__html: hilightedExampleJson,
+												}}
+											></code>
 										</pre>
 									</Box>
 								</Field.Row>

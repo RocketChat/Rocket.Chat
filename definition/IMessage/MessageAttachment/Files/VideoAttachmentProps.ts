@@ -1,4 +1,3 @@
-
 import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { FileAttachmentProps } from './FileAttachmentProps';
 import { FileProp } from './FileProp';
@@ -12,4 +11,5 @@ export type VideoAttachmentProps = {
 
 export const isFileVideoAttachment = (
 	attachment: FileAttachmentProps,
-): attachment is VideoAttachmentProps & { type: 'file' } => 'video_url' in attachment;
+): attachment is VideoAttachmentProps & { type: 'file' } =>
+	'video_url' in attachment;

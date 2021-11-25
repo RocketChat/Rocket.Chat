@@ -18,7 +18,11 @@ export const SMS = {
 		if (!this.services[name]) {
 			throw new Meteor.Error('error-sms-service-not-configured');
 		}
-		return new this.services[name](this.accountSid, this.authToken, this.fromNumber);
+		return new this.services[name](
+			this.accountSid,
+			this.authToken,
+			this.fromNumber,
+		);
 	},
 };
 

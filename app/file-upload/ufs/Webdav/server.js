@@ -18,7 +18,11 @@ export class WebdavStore extends UploadFS.Store {
 		const client = new WebdavClientAdapter(server, { username, password });
 
 		options.getPath = function(file) {
-			if (options.uploadFolderPath[options.uploadFolderPath.length - 1] !== '/') {
+			if (
+				options.uploadFolderPath[
+					options.uploadFolderPath.length - 1
+				] !== '/'
+			) {
 				options.uploadFolderPath += '/';
 			}
 			return options.uploadFolderPath + file._id;
@@ -28,7 +32,9 @@ export class WebdavStore extends UploadFS.Store {
 			if (err.message.toLowerCase() === 'not found') {
 				client.createDirectory(options.uploadFolderPath);
 			} else if (err.message.toLowerCase() === 'unauthorized') {
-				console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');
+				console.warn(
+					'File upload is unauthorized to connect on Webdav, please verify your credentials',
+				);
 			}
 		});
 
@@ -71,9 +77,12 @@ export class WebdavStore extends UploadFS.Store {
 		 */
 		this.delete = function(fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
-			client.deleteFile(this.getPath(file)).then((data) => {
-				callback && callback(null, data);
-			}).catch(SystemLogger.error);
+			client
+				.deleteFile(this.getPath(file))
+				.then((data) => {
+					callback && callback(null, data);
+				})
+				.catch(SystemLogger.error);
 		};
 
 		/**
@@ -111,7 +120,10 @@ export class WebdavStore extends UploadFS.Store {
 				if (event === 'finish') {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);
-						writeStream.removeListener('newListener', newListenerCallback);
+						writeStream.removeListener(
+							'newListener',
+							newListenerCallback,
+						);
 						writeStream.on(event, function() {
 							setTimeout(listener, 500);
 						});

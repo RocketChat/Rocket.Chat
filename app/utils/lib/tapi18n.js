@@ -13,6 +13,17 @@ export const t = function(key, ...replaces) {
 };
 
 export const isRtl = (lang) => {
-	const language = lang || Meteor._localStorage.getItem('userLanguage') || 'en-US';
-	return ['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi'].includes(language.split('-').shift().toLowerCase());
+	const language =		lang || Meteor._localStorage.getItem('userLanguage') || 'en-US';
+	return [
+		'ar',
+		'dv',
+		'fa',
+		'he',
+		'ku',
+		'ps',
+		'sd',
+		'ug',
+		'ur',
+		'yi',
+	].includes(language.split('-').shift().toLowerCase());
 };

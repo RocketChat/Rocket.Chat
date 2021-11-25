@@ -3,7 +3,13 @@ import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
 
-export const sendGCM = function({ userTokens, notification, _replaceToken, _removeToken, options }) {
+export const sendGCM = function({
+	userTokens,
+	notification,
+	_replaceToken,
+	_removeToken,
+	options,
+}) {
 	if (typeof notification.gcm === 'object') {
 		notification = Object.assign({}, notification, notification.gcm);
 	}
@@ -22,7 +28,9 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	logger.debug('sendGCM', userTokens, notification);
 
 	// Allow user to set payload
-	const data = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
+	const data = notification.payload
+		? { ejson: EJSON.stringify(notification.payload) }
+		: {};
 
 	data.title = notification.title;
 	data.message = notification.text;
@@ -35,7 +43,9 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	if (notification.android_channel_id != null) {
 		data.android_channel_id = notification.android_channel_id;
 	} else {
-		logger.debug('For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info');
+		logger.debug(
+			'For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info',
+		);
 	}
 
 	// Set extra details
@@ -106,7 +116,10 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 		if (result.canonical_ids === 1 && userToken) {
 			// This is an old device, token is replaced
 			try {
-				_replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });
+				_replaceToken(
+					{ gcm: userToken },
+					{ gcm: result.results[0].registration_id },
+				);
 			} catch (err) {
 				logger.error({ msg: 'Error replacing token', err });
 			}

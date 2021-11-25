@@ -13,12 +13,14 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 	};
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: loginRequest,
-				code,
+		methodArguments: [
+			{
+				totp: {
+					login: loginRequest,
+					code,
+				},
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -32,5 +34,10 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 const { loginWithCrowd } = Meteor;
 
 Meteor.loginWithCrowd = function(username, password, callback) {
-	overrideLoginMethod(loginWithCrowd, [username, password], callback, Meteor.loginWithCrowdAndTOTP);
+	overrideLoginMethod(
+		loginWithCrowd,
+		[username, password],
+		callback,
+		Meteor.loginWithCrowdAndTOTP,
+	);
 };

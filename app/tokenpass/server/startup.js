@@ -15,17 +15,35 @@ settingsRegistry.addGroup('OAuth', function() {
 		};
 
 		this.add('Accounts_OAuth_Tokenpass', false, { type: 'boolean' });
-		this.add('API_Tokenpass_URL', '', { type: 'string', public: true, enableQuery, i18nDescription: 'API_Tokenpass_URL_Description' });
-		this.add('Accounts_OAuth_Tokenpass_id', '', { type: 'string', enableQuery });
-		this.add('Accounts_OAuth_Tokenpass_secret', '', { type: 'string', enableQuery });
-		this.add('Accounts_OAuth_Tokenpass_callback_url', '_oauth/tokenpass', { type: 'relativeUrl', readonly: true, force: true, enableQuery });
+		this.add('API_Tokenpass_URL', '', {
+			type: 'string',
+			public: true,
+			enableQuery,
+			i18nDescription: 'API_Tokenpass_URL_Description',
+		});
+		this.add('Accounts_OAuth_Tokenpass_id', '', {
+			type: 'string',
+			enableQuery,
+		});
+		this.add('Accounts_OAuth_Tokenpass_secret', '', {
+			type: 'string',
+			enableQuery,
+		});
+		this.add('Accounts_OAuth_Tokenpass_callback_url', '_oauth/tokenpass', {
+			type: 'relativeUrl',
+			readonly: true,
+			force: true,
+			enableQuery,
+		});
 	});
 });
 
 Meteor.startup(function() {
 	callbacks.add('beforeJoinRoom', function(user, room) {
 		if (room.tokenpass && !validateTokenAccess(user, room)) {
-			throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
+			throw new Meteor.Error('error-not-allowed', 'Token required', {
+				method: 'joinRoom',
+			});
 		}
 
 		return user;

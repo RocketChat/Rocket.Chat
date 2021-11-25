@@ -22,7 +22,9 @@ Template.InvitePlayers.helpers({
 	selectedUsers() {
 		const myUsername = Meteor.user().username;
 		const { message } = this;
-		const users = Template.instance().selectedUsers.get().map((e) => e);
+		const users = Template.instance()
+			.selectedUsers.get()
+			.map((e) => e);
 		if (message) {
 			users.unshift(message.u);
 		}
@@ -55,13 +57,27 @@ Template.InvitePlayers.helpers({
 	roomModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `#${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get(), 'i'),
+						(part) => `<strong>${ part }</strong>`,
+					  )
+			}`;
 		};
 	},
 	userModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${
+				f.length === 0
+					? text
+					: text.replace(
+						new RegExp(filter.get(), 'i'),
+						(part) => `<strong>${ part }</strong>`,
+					  )
+			}`;
 		};
 	},
 	nameSuggestion() {
@@ -73,12 +89,20 @@ Template.InvitePlayers.events({
 	async 'submit #invite-players, click .js-invite-players'(e, instance) {
 		e.preventDefault();
 
-		const { data: { name } } = instance;
-		const users = instance.selectedUsers.get().map(({ username }) => username);
+		const {
+			data: { name },
+		} = instance;
+		const users = instance.selectedUsers
+			.get()
+			.map(({ username }) => username);
 		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
 
 		try {
-			const result = await callWithErrorHandling('createPrivateGroup', privateGroupName, users);
+			const result = await callWithErrorHandling(
+				'createPrivateGroup',
+				privateGroupName,
+				users,
+			);
 
 			roomTypes.openRouteLink(result.t, result);
 
@@ -94,7 +118,9 @@ Template.InvitePlayers.events({
 				callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
 					rid: result.rid,
-					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', { name }),
+					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', {
+						name,
+					}),
 				});
 
 				c.stop();
@@ -119,7 +145,11 @@ Template.InvitePlayers.onCreated(function() {
 		}
 	};
 	this.onClickTagUser = ({ username }) => {
-		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
+		this.selectedUsers.set(
+			this.selectedUsers
+				.get()
+				.filter((user) => user.username !== username),
+		);
 	};
 	this.deleteLastItemUser = () => {
 		const arr = this.selectedUsers.get();
@@ -137,7 +167,7 @@ Template.SearchInvitePlayers.helpers({
 	},
 	config() {
 		const { filter } = Template.instance();
-		const { noMatchTemplate, templateItem, modifier } = Template.instance().data;
+		const { noMatchTemplate, templateItem, modifier } =			Template.instance().data;
 		return {
 			filter: filter.get(),
 			template_item: templateItem,
@@ -159,7 +189,10 @@ Template.SearchInvitePlayers.events({
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
-		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		document.activeElement === input
+			&& e
+			&& /input/i.test(e.type)
+			&& (input.selectionEnd = position + input.value.length - length);
 		t.filter.set(input.value);
 	},
 	'click .rc-popup-list__item'(e, t) {
@@ -170,7 +203,10 @@ Template.SearchInvitePlayers.events({
 		const KEYCODE_DELETE = 46;
 
 		t.ac.onKeyDown(e);
-		if ([KEYCODE_BACKSPACE, KEYCODE_DELETE].includes(e.keyCode) && e.target.value === '') {
+		if (
+			[KEYCODE_BACKSPACE, KEYCODE_DELETE].includes(e.keyCode)
+			&& e.target.value === ''
+		) {
 			const { deleteLastItem } = t;
 			return deleteLastItem && deleteLastItem();
 		}
@@ -202,29 +238,35 @@ Template.SearchInvitePlayers.onCreated(function() {
 	this.onClickTag = this.data.onClickTag;
 	this.deleteLastItem = this.data.deleteLastItem;
 
-	const { collection, endpoint, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
-	this.ac = new AutoComplete(
-		{
-			selector: {
-				anchor: '.rc-input__label',
-				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list',
+	const {
+		collection,
+		endpoint,
+		field,
+		sort,
+		onSelect,
+		selector = (match) => ({ term: match }),
+	} = this.data;
+	this.ac = new AutoComplete({
+		selector: {
+			anchor: '.rc-input__label',
+			item: '.rc-popup-list__item',
+			container: '.rc-popup-list__list',
+		},
+		onSelect,
+		position: 'fixed',
+		limit: 10,
+		inputDelay: 300,
+		rules: [
+			{
+				collection,
+				endpoint,
+				field,
+				matchAll: true,
+				doNotChangeWidth: false,
+				selector,
+				sort,
 			},
-			onSelect,
-			position: 'fixed',
-			limit: 10,
-			inputDelay: 300,
-			rules: [
-				{
-					collection,
-					endpoint,
-					field,
-					matchAll: true,
-					doNotChangeWidth: false,
-					selector,
-					sort,
-				},
-			],
-		});
+		],
+	});
 	this.ac.tmplInst = this;
 });

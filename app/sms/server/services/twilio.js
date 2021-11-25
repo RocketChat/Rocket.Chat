@@ -11,16 +11,19 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
-	msg,
-});
+const notifyAgent = (userId, rid, msg) =>
+	api.broadcast('notify.ephemeralMessage', userId, rid, {
+		msg,
+	});
 
 class Twilio {
 	constructor() {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');
 		this.fileUploadEnabled = settings.get('SMS_Twilio_FileUpload_Enabled');
-		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
+		this.mediaTypeWhiteList = settings.get(
+			'SMS_Twilio_FileUpload_MediaTypeWhiteList',
+		);
 	}
 
 	parse(data) {
@@ -81,7 +84,11 @@ class Twilio {
 		let mediaUrl;
 		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
-			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
+			const {
+				rid,
+				userId,
+				fileUpload: { size, type, publicFilePath },
+			} = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || defaultLanguage;
 
@@ -93,7 +100,12 @@ class Twilio {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
+			} else if (
+				!fileUploadIsValidContentType(
+					type,
+					this.fileUploadMediaTypeWhiteList,
+				)
+			) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 

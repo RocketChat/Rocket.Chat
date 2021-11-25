@@ -30,12 +30,15 @@ class ErrorHandler {
 	}
 
 	registerHandlers() {
-		process.on('uncaughtException', Meteor.bindEnvironment((error) => {
-			if (!this.reporting) {
-				return;
-			}
-			this.trackError(error.message, error.stack);
-		}));
+		process.on(
+			'uncaughtException',
+			Meteor.bindEnvironment((error) => {
+				if (!this.reporting) {
+					return;
+				}
+				this.trackError(error.message, error.stack);
+			}),
+		);
 
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
@@ -50,7 +53,9 @@ class ErrorHandler {
 
 	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		const room = Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
+		const room = Rooms.findOneByName(roomName, {
+			fields: { _id: 1, t: 1 },
+		});
 		if (!room || (room.t !== 'c' && room.t !== 'p')) {
 			return;
 		}

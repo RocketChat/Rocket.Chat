@@ -35,12 +35,12 @@ export const AccountBox = (function() {
 	}
 
 	/*
-	* @param newOption:
-	*   name: Button label
-	*   icon: Button icon
-	*   class: Class of the item
-	*   permissions: Which permissions a user should have (all of them) to see this item
-	*/
+	 * @param newOption:
+	 *   name: Button label
+	 *   icon: Button icon
+	 *   class: Class of the item
+	 *   permissions: Which permissions a user should have (all of them) to see this item
+	 */
 	function addItem(newItem) {
 		return Tracker.nonreactive(function() {
 			const actual = items.get();
@@ -49,7 +49,7 @@ export const AccountBox = (function() {
 		});
 	}
 	function checkCondition(item) {
-		return (item.condition == null) || item.condition();
+		return item.condition == null || item.condition();
 	}
 	function getItems() {
 		return _.filter(items.get(), function(item) {
@@ -62,7 +62,9 @@ export const AccountBox = (function() {
 		if (router == null) {
 			router = FlowRouter;
 		}
-		const container = newRoute.customContainer ? 'pageCustomContainer' : 'pageContainer';
+		const container = newRoute.customContainer
+			? 'pageCustomContainer'
+			: 'pageContainer';
 		const routeConfig = {
 			center: container,
 			pageTemplate: newRoute.pageTemplate,

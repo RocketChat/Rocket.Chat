@@ -28,7 +28,9 @@ export class SAMLServiceProvider {
 
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
-			throw new Error('SAMLServiceProvider instantiated without an options object');
+			throw new Error(
+				'SAMLServiceProvider instantiated without an options object',
+			);
 		}
 
 		this.serviceProviderOptions = serviceProviderOptions;
@@ -43,22 +45,50 @@ export class SAMLServiceProvider {
 	}
 
 	public generateAuthorizeRequest(): string {
-		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions);
+		const identifiedRequest = AuthorizeRequest.generate(
+			this.serviceProviderOptions,
+		);
 		return identifiedRequest.request;
 	}
 
-	public generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): ILogoutResponse {
-		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
+	public generateLogoutResponse({
+		nameID,
+		sessionIndex,
+		inResponseToId,
+	}: {
+		nameID: string;
+		sessionIndex: string;
+		inResponseToId: string;
+	}): ILogoutResponse {
+		return LogoutResponse.generate(
+			this.serviceProviderOptions,
+			nameID,
+			sessionIndex,
+			inResponseToId,
+		);
 	}
 
-	public generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): ISAMLRequest {
-		return LogoutRequest.generate(this.serviceProviderOptions, nameID, sessionIndex);
+	public generateLogoutRequest({
+		nameID,
+		sessionIndex,
+	}: {
+		nameID: string;
+		sessionIndex: string;
+	}): ISAMLRequest {
+		return LogoutRequest.generate(
+			this.serviceProviderOptions,
+			nameID,
+			sessionIndex,
+		);
 	}
 
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
+	public logoutResponseToUrl(
+		response: string,
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -83,8 +113,10 @@ export class SAMLServiceProvider {
 				};
 
 				if (this.serviceProviderOptions.privateCert) {
-					samlResponse.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-					samlResponse.Signature = this.signRequest(querystring.stringify(samlResponse));
+					samlResponse.SigAlg =						'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+					samlResponse.Signature = this.signRequest(
+						querystring.stringify(samlResponse),
+					);
 				}
 
 				target += querystring.stringify(samlResponse);
@@ -99,7 +131,11 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
+	public requestToUrl(
+		request: string,
+		operation: string,
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		zlib.deflateRaw(request, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -136,8 +172,10 @@ export class SAMLServiceProvider {
 				};
 
 				if (this.serviceProviderOptions.privateCert) {
-					samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-					samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
+					samlRequest.SigAlg =						'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+					samlRequest.Signature = this.signRequest(
+						querystring.stringify(samlRequest),
+					);
 				}
 
 				target += querystring.stringify(samlRequest);
@@ -155,7 +193,9 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
+	public getAuthorizeUrl(
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
@@ -163,25 +203,46 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
-			const parser = new LogoutRequestParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+	public validateLogoutRequest(
+		samlRequest: string,
+		callback: ILogoutRequestValidateCallback,
+	): void {
+		SAMLUtils.inflateXml(
+			samlRequest,
+			(xml: string) => {
+				const parser = new LogoutRequestParser(
+					this.serviceProviderOptions,
+				);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
-	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
-		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
-			const parser = new LogoutResponseParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+	public validateLogoutResponse(
+		samlResponse: string,
+		callback: ILogoutResponseValidateCallback,
+	): void {
+		SAMLUtils.inflateXml(
+			samlResponse,
+			(xml: string) => {
+				const parser = new LogoutResponseParser(
+					this.serviceProviderOptions,
+				);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
-	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
+	public validateResponse(
+		samlResponse: string,
+		callback: IResponseValidateCallback,
+	): void {
 		const xml = Buffer.from(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);

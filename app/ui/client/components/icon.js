@@ -5,7 +5,6 @@ import { baseURI } from '../../../../client/lib/baseURI';
 
 import './icon.html';
 
-
 const baseUrlFix = () => `${ baseURI }${ FlowRouter.current().path.substring(1) }`;
 
 const isMozillaFirefoxBelowVersion = (upperVersion) => {
@@ -18,7 +17,8 @@ const isGoogleChromeBelowVersion = (upperVersion) => {
 	return parseInt(version, 10) < upperVersion;
 };
 
-const isBaseUrlFixNeeded = () => isMozillaFirefoxBelowVersion(55) || isGoogleChromeBelowVersion(55);
+const isBaseUrlFixNeeded = () =>
+	isMozillaFirefoxBelowVersion(55) || isGoogleChromeBelowVersion(55);
 
 Template.icon.helpers({
 	baseUrl: isBaseUrlFixNeeded() ? baseUrlFix : undefined,

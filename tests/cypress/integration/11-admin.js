@@ -44,7 +44,10 @@ describe('[Administration]', () => {
 
 			it('the first title should be Runtime Environment', () => {
 				admin.infoRuntimeTableTitle.scrollIntoView();
-				admin.infoRuntimeTableTitle.should('contain', 'Runtime Environment');
+				admin.infoRuntimeTableTitle.should(
+					'contain',
+					'Runtime Environment',
+				);
 			});
 
 			it('it should show the Runtime Environment table', () => {
@@ -53,7 +56,10 @@ describe('[Administration]', () => {
 
 			it('the first title should be Build Environment', () => {
 				admin.infoBuildTableTitle.scrollIntoView();
-				admin.infoBuildTableTitle.should('contain', 'Build Environment');
+				admin.infoBuildTableTitle.should(
+					'contain',
+					'Build Environment',
+				);
 			});
 
 			it('it should show the Build Environment table', () => {
@@ -154,11 +160,11 @@ describe('[Administration]', () => {
 					switch (checkbox) {
 						case 1:
 							admin.roomsChannelsCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 2:
 							admin.roomsDirectCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 3:
 							admin.roomsPrivateCheckbox.click();
@@ -195,9 +201,8 @@ describe('[Administration]', () => {
 				admin.usersFilter.should('be.visible');
 			});
 
-
 			it('it should show rocket.cat', () => {
-			// it cant find the user if there is too many users
+				// it cant find the user if there is too many users
 				admin.usersRocketCat.should('be.visible');
 			});
 
@@ -239,17 +244,24 @@ describe('[Administration]', () => {
 					before(() => {
 						flexTab.usersSendInvitationTab.waitForVisible(5000);
 						flexTab.usersSendInvitationTab.click();
-						flexTab.usersSendInvitationTextArea.waitForVisible(5000);
+						flexTab.usersSendInvitationTextArea.waitForVisible(
+							5000,
+						);
 					});
 
 					after(() => {
 						flexTab.usersSendInvitationTab.waitForVisible(5000);
 						flexTab.usersSendInvitationTab.click();
-						flexTab.usersSendInvitationTextArea.waitForVisible(5000, true);
+						flexTab.usersSendInvitationTextArea.waitForVisible(
+							5000,
+							true,
+						);
 					});
 
 					it('it should show the send invitation text area', () => {
-						flexTab.usersSendInvitationTextArea.should('be.visible');
+						flexTab.usersSendInvitationTextArea.should(
+							'be.visible',
+						);
 					});
 
 					it('it should show the cancel button', () => {
@@ -287,7 +299,9 @@ describe('[Administration]', () => {
 					});
 
 					it('it should show the verified checkbox', () => {
-						flexTab.usersAddUserVerifiedCheckbox.should('be.visible');
+						flexTab.usersAddUserVerifiedCheckbox.should(
+							'be.visible',
+						);
 					});
 
 					it('it should show the password field', () => {
@@ -299,7 +313,9 @@ describe('[Administration]', () => {
 					});
 
 					it('it should show the require password change button', () => {
-						flexTab.usersAddUserChangePasswordCheckbox.should('be.visible');
+						flexTab.usersAddUserChangePasswordCheckbox.should(
+							'be.visible',
+						);
 					});
 
 					it('it should show the role dropdown', () => {
@@ -313,11 +329,15 @@ describe('[Administration]', () => {
 					});
 
 					it('it should show the join default channel checkbox', () => {
-						flexTab.usersAddUserDefaultChannelCheckbox.should('be.visible');
+						flexTab.usersAddUserDefaultChannelCheckbox.should(
+							'be.visible',
+						);
 					});
 
 					it('it should show the send welcome checkbox', () => {
-						flexTab.usersAddUserWelcomeEmailCheckbox.should('be.visible');
+						flexTab.usersAddUserWelcomeEmailCheckbox.should(
+							'be.visible',
+						);
 					});
 
 					it('it should show the save button', () => {
@@ -410,7 +430,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalSiteUrlReset.scrollIntoView().should('be.visible');
+					admin.generalSiteUrlReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -430,7 +452,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalSiteNameReset.scrollIntoView().should('be.visible');
+					admin.generalSiteNameReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -450,7 +474,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalLanguageReset.scrollIntoView().should('be.visible');
+					admin.generalLanguageReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -482,7 +508,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalFavoriteRoomReset.scrollIntoView().should('be.visible');
+					admin.generalFavoriteRoomReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -498,7 +526,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalOpenFirstChannelReset.scrollIntoView().should('be.visible');
+					admin.generalOpenFirstChannelReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -514,7 +544,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalCdnPrefixReset.scrollIntoView().should('be.visible');
+					admin.generalCdnPrefixReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -530,7 +562,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalForceSSLReset.scrollIntoView().should('be.visible');
+					admin.generalForceSSLReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -546,7 +580,9 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the reset button', () => {
-					admin.generalGoogleTagIdReset.scrollIntoView().should('be.visible');
+					admin.generalGoogleTagIdReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should click the reset button', () => {
@@ -562,7 +598,9 @@ describe('[Administration]', () => {
 				});
 
 				it.skip('it should show the reset button', () => {
-					admin.generalBugsnagKeyReset.scrollIntoView().should('be.visible');
+					admin.generalBugsnagKeyReset
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it.skip('it should click the reset button', () => {
@@ -572,7 +610,9 @@ describe('[Administration]', () => {
 
 			describe('iframe:', () => {
 				before(() => {
-					admin.generalSectionIframeIntegration.find('[aria-expanded="false"]').click();
+					admin.generalSectionIframeIntegration
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalIframeSend.parent().scrollIntoView();
 				});
 
@@ -595,18 +635,24 @@ describe('[Administration]', () => {
 
 			describe('notifications:', () => {
 				before(() => {
-					admin.generalSectionNotifications.find('[aria-expanded="false"]').click();
+					admin.generalSectionNotifications
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalNotificationsMaxRoomMembers.scrollIntoView();
 				});
 
 				it('it should show the max room members field', () => {
-					admin.generalNotificationsMaxRoomMembers.should('be.visible');
+					admin.generalNotificationsMaxRoomMembers.should(
+						'be.visible',
+					);
 				});
 			});
 
 			describe('rest api:', () => {
 				before(() => {
-					admin.generalSectionRestApi.find('[aria-expanded="false"]').click();
+					admin.generalSectionRestApi
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalRestApiUserLimit.scrollIntoView();
 				});
 
@@ -617,7 +663,9 @@ describe('[Administration]', () => {
 
 			describe('reporting:', () => {
 				before(() => {
-					admin.generalSectionReporting.find('[aria-expanded="false"]').click();
+					admin.generalSectionReporting
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalReporting.parent().scrollIntoView();
 				});
 
@@ -628,7 +676,9 @@ describe('[Administration]', () => {
 
 			describe('stream cast:', () => {
 				before(() => {
-					admin.generalSectionStreamCast.find('[aria-expanded="false"]').click();
+					admin.generalSectionStreamCast
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalStreamCastAdress.scrollIntoView();
 				});
 
@@ -639,7 +689,9 @@ describe('[Administration]', () => {
 
 			describe('utf8:', () => {
 				before(() => {
-					admin.generalSectionUTF8.find('[aria-expanded="false"]').click();
+					admin.generalSectionUTF8
+						.find('[aria-expanded="false"]')
+						.click();
 					admin.generalUTF8Regex.scrollIntoView();
 				});
 
@@ -666,7 +718,9 @@ describe('[Administration]', () => {
 
 			describe('default user preferences', () => {
 				before(() => {
-					admin.accountsSectionDefaultUserPreferences.find('[aria-expanded="false"]').click();
+					admin.accountsSectionDefaultUserPreferences
+						.find('[aria-expanded="false"]')
+						.click();
 				});
 
 				it('it should show the enable auto away field', () => {
@@ -693,7 +747,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the desktop audio notifications field value should be all', () => {
-					admin.accountsDesktopNotifications.should('have.value', 'all');
+					admin.accountsDesktopNotifications.should(
+						'have.value',
+						'all',
+					);
 				});
 
 				it('it should show the mobile notifications select field', () => {
@@ -702,7 +759,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the mobile notifications field value should be all', () => {
-					admin.accountsMobileNotifications.should('have.value', 'all');
+					admin.accountsMobileNotifications.should(
+						'have.value',
+						'all',
+					);
 				});
 
 				it('it should show the unread tray icon alert field', () => {
@@ -725,7 +785,9 @@ describe('[Administration]', () => {
 
 				it('it should show the convert ascii to emoji field', () => {
 					admin.accountsConvertAsciiEmoji.parent().scrollIntoView();
-					admin.accountsConvertAsciiEmoji.parent().should('be.visible');
+					admin.accountsConvertAsciiEmoji
+						.parent()
+						.should('be.visible');
 				});
 
 				it('the convert ascii to emoji field value should be true', () => {
@@ -743,7 +805,9 @@ describe('[Administration]', () => {
 
 				it('it should show the save mobile bandwidth field', () => {
 					admin.accountsSaveMobileBandwidth.parent().scrollIntoView();
-					admin.accountsSaveMobileBandwidth.parent().should('be.visible');
+					admin.accountsSaveMobileBandwidth
+						.parent()
+						.should('be.visible');
 				});
 
 				it('the save mobile bandwidth field value should be true', () => {
@@ -751,12 +815,18 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the collapse embedded media by default field', () => {
-					admin.accountsCollapseMediaByDefault.parent().scrollIntoView();
-					admin.accountsCollapseMediaByDefault.parent().should('be.visible');
+					admin.accountsCollapseMediaByDefault
+						.parent()
+						.scrollIntoView();
+					admin.accountsCollapseMediaByDefault
+						.parent()
+						.should('be.visible');
 				});
 
 				it('the collapse embedded media by default field value should be false', () => {
-					admin.accountsCollapseMediaByDefault.should('not.be.checked');
+					admin.accountsCollapseMediaByDefault.should(
+						'not.be.checked',
+					);
 				});
 
 				it('it should show the hide usernames field', () => {
@@ -819,7 +889,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the offline email notification field value should be all', () => {
-					admin.accountsEmailNotificationMode.should('have.value', 'mentions');
+					admin.accountsEmailNotificationMode.should(
+						'have.value',
+						'mentions',
+					);
 				});
 
 				it('it should show the new room notification field', () => {
@@ -828,7 +901,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the new room notification field value should be door', () => {
-					admin.accountsNewRoomNotification.should('have.value', 'door');
+					admin.accountsNewRoomNotification.should(
+						'have.value',
+						'door',
+					);
 				});
 
 				it('it should show the new message notification field', () => {
@@ -837,7 +913,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the new message notification field value should be chime', () => {
-					admin.accountsNewMessageNotification.should('have.value', 'chime');
+					admin.accountsNewMessageNotification.should(
+						'have.value',
+						'chime',
+					);
 				});
 
 				it('it should show the notification sound volume field', () => {
@@ -846,7 +925,10 @@ describe('[Administration]', () => {
 				});
 
 				it('the notification sound volume field value should be 100', () => {
-					admin.accountsNotificationsSoundVolume.should('have.value', '100');
+					admin.accountsNotificationsSoundVolume.should(
+						'have.value',
+						'100',
+					);
 				});
 			});
 		});

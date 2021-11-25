@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server/functions/settings';
-import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
+import {
+	isEnterprise,
+	hasLicense,
+	onValidateLicenses,
+} from '../../license/server/license';
 import SettingsModel from '../../../../app/models/server/models/Settings';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
 import { use } from '../../../../app/settings/server/Middleware';
@@ -55,7 +59,6 @@ function updateSettings(): void {
 
 	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
-
 
 Meteor.startup(() => {
 	updateSettings();

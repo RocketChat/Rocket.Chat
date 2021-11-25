@@ -15,10 +15,17 @@ export class AppRoomBridge extends RoomBridge {
 		super();
 	}
 
-	protected async create(room: IRoom, members: Array<string>, appId: string): Promise<string> {
+	protected async create(
+		room: IRoom,
+		members: Array<string>,
+		appId: string,
+	): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a new room.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = this.orch
+			.getConverters()
+			?.get('rooms')
+			.convertAppRoom(room);
 		let method: string;
 
 		switch (room.type) {
@@ -32,7 +39,9 @@ export class AppRoomBridge extends RoomBridge {
 				method = 'createDirectMessage';
 				break;
 			default:
-				throw new Error('Only channels, private groups and direct messages can be created.');
+				throw new Error(
+					'Only channels, private groups and direct messages can be created.',
+				);
 		}
 
 		let rid = '';
@@ -46,7 +55,14 @@ export class AppRoomBridge extends RoomBridge {
 			if (room.type === RoomType.DIRECT_MESSAGE) {
 				info = Meteor.call(method, ...members);
 			} else {
-				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
+				info = Meteor.call(
+					method,
+					rcRoom.name,
+					members,
+					rcRoom.ro,
+					rcRoom.customFields,
+					extraData,
+				);
 			}
 			rid = info.rid;
 		});
@@ -55,19 +71,28 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
-		this.orch.debugLog(`The App ${ appId } is getting the roomById: "${ roomId }"`);
+		this.orch.debugLog(
+			`The App ${ appId } is getting the roomById: "${ roomId }"`,
+		);
 
 		return this.orch.getConverters()?.get('rooms').convertById(roomId);
 	}
 
 	protected async getByName(roomName: string, appId: string): Promise<IRoom> {
-		this.orch.debugLog(`The App ${ appId } is getting the roomByName: "${ roomName }"`);
+		this.orch.debugLog(
+			`The App ${ appId } is getting the roomByName: "${ roomName }"`,
+		);
 
 		return this.orch.getConverters()?.get('rooms').convertByName(roomName);
 	}
 
-	protected async getCreatorById(roomId: string, appId: string): Promise<IUser | undefined> {
-		this.orch.debugLog(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
+	protected async getCreatorById(
+		roomId: string,
+		appId: string,
+	): Promise<IUser | undefined> {
+		this.orch.debugLog(
+			`The App ${ appId } is getting the room's creator by id: "${ roomId }"`,
+		);
 
 		const room = Rooms.findOneById(roomId);
 
@@ -78,8 +103,13 @@ export class AppRoomBridge extends RoomBridge {
 		return this.orch.getConverters()?.get('users').convertById(room.u._id);
 	}
 
-	protected async getCreatorByName(roomName: string, appId: string): Promise<IUser | undefined> {
-		this.orch.debugLog(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
+	protected async getCreatorByName(
+		roomName: string,
+		appId: string,
+	): Promise<IUser | undefined> {
+		this.orch.debugLog(
+			`The App ${ appId } is getting the room's creator by name: "${ roomName }"`,
+		);
 
 		const room = Rooms.findOneByName(roomName, {});
 
@@ -90,22 +120,44 @@ export class AppRoomBridge extends RoomBridge {
 		return this.orch.getConverters()?.get('users').convertById(room.u._id);
 	}
 
-	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
-		this.orch.debugLog(`The App ${ appId } is getting the room's members by room id: "${ roomId }"`);
+	protected async getMembers(
+		roomId: string,
+		appId: string,
+	): Promise<Array<IUser>> {
+		this.orch.debugLog(
+			`The App ${ appId } is getting the room's members by room id: "${ roomId }"`,
+		);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return subscriptions.map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u && sub.u._id));
+		return subscriptions.map((sub: ISubscription) =>
+			this.orch
+				.getConverters()
+				?.get('users')
+				.convertById(sub.u && sub.u._id),
+		);
 	}
 
-	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
-		this.orch.debugLog(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
-		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames, {});
+	protected async getDirectByUsernames(
+		usernames: Array<string>,
+		appId: string,
+	): Promise<IRoom | undefined> {
+		this.orch.debugLog(
+			`The App ${ appId } is getting direct room by usernames: "${ usernames }"`,
+		);
+		const room = await Rooms.findDirectRoomContainingAllUsernames(
+			usernames,
+			{},
+		);
 		if (!room) {
 			return undefined;
 		}
 		return this.orch.getConverters()?.get('rooms').convertRoom(room);
 	}
 
-	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
+	protected async update(
+		room: IRoom,
+		members: Array<string> = [],
+		appId: string,
+	): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is updating a room.`);
 
 		if (!room.id || !Rooms.findOneById(room.id)) {
@@ -132,19 +184,35 @@ export class AppRoomBridge extends RoomBridge {
 		Rooms.removeById(roomId);
 	}
 
-	protected async createDiscussion(room: IRoom, parentMessage: IMessage | undefined = undefined,
-		reply: string | undefined = '', members: Array<string> = [], appId: string): Promise<string> {
-		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
+	protected async createDiscussion(
+		room: IRoom,
+		parentMessage: IMessage | undefined = undefined,
+		reply: string | undefined = '',
+		members: Array<string> = [],
+		appId: string,
+	): Promise<string> {
+		this.orch.debugLog(
+			`The App ${ appId } is creating a new discussion.`,
+			room,
+		);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = this.orch
+			.getConverters()
+			?.get('rooms')
+			.convertAppRoom(room);
 
 		let rcMessage;
 		if (parentMessage) {
-			rcMessage = this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
+			rcMessage = this.orch
+				.getConverters()
+				?.get('messages')
+				.convertAppMessage(parentMessage);
 		}
 
 		if (!rcRoom.prid || !Rooms.findOneById(rcRoom.prid)) {
-			throw new Error('There must be a parent room to create a discussion.');
+			throw new Error(
+				'There must be a parent room to create a discussion.',
+			);
 		}
 
 		const discussion = {

@@ -12,7 +12,10 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const room = Rooms.findOneById(rid);
 
 	const roomConfig = roomTypes.getConfig(room.t);
-	if (!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) && !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)) {
+	if (
+		!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN)
+		&& !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)
+	) {
 		return;
 	}
 
@@ -23,7 +26,9 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 	}
 
 	try {
-		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
+		Promise.await(
+			Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter),
+		);
 	} catch (error) {
 		if (error instanceof AppsEngineException) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -40,13 +45,20 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	Promise.await(
+		Apps.triggerEvent(
+			AppEvents.IPreRoomUserJoined,
+			room,
+			user,
+			inviter,
+		).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
-	}));
+			throw error;
+		}),
+	);
 
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
@@ -67,9 +79,13 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 				},
 			});
 		} else if (room.prid) {
-			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, {
+				ts: now,
+			});
 		} else if (room.teamMain) {
-			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, { ts: now });
+			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, {
+				ts: now,
+			});
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}
@@ -83,7 +99,12 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 			// Keep the current event
 			callbacks.run('afterJoinRoom', user, room);
 
-			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
+			Apps.triggerEvent(
+				AppEvents.IPostRoomUserJoined,
+				room,
+				user,
+				inviter,
+			);
 		});
 	}
 

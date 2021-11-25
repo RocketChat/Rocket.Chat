@@ -25,9 +25,13 @@ Meteor.methods({
 		const userCursor = Users.find(userFilter);
 		const usersCount = userCursor.count();
 		if (usersCount > settings.get('API_User_Limit')) {
-			throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
-				method: 'addAllToRoom',
-			});
+			throw new Meteor.Error(
+				'error-user-limit-exceeded',
+				'User Limit Exceeded',
+				{
+					method: 'addAllToRoom',
+				},
+			);
 		}
 
 		const room = Rooms.findOneById(rid);
@@ -40,7 +44,10 @@ Meteor.methods({
 		const users = userCursor.fetch();
 		const now = new Date();
 		users.forEach(function(user) {
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(
+				rid,
+				user._id,
+			);
 			if (subscription != null) {
 				return;
 			}

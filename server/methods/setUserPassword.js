@@ -27,9 +27,13 @@ Meteor.methods({
 		}
 
 		if (compareUserPassword(user, { plain: password })) {
-			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-				method: 'setUserPassword',
-			});
+			throw new Meteor.Error(
+				'error-password-same-as-current',
+				'Entered password same as current password',
+				{
+					method: 'setUserPassword',
+				},
+			);
 		}
 
 		passwordPolicy.validate(password);

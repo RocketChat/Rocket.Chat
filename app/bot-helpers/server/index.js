@@ -28,15 +28,21 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = Users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = Users.find(this.queries.users, {
+			fields: this.userFields,
+		});
+		this._onlineUsers = Users.find(
+			{ $and: [this.queries.users, this.queries.online] },
+			{ fields: this.userFields },
+		);
 	}
 
 	// request methods or props as arguments to Meteor.call
 	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
-		} if (typeof this[prop] === 'function') {
+		}
+		if (typeof this[prop] === 'function') {
 			return this[prop](...params);
 		}
 		return this[prop];
@@ -77,7 +83,10 @@ class BotHelpers {
 
 	// generic error whenever property access insufficient to fill request
 	requestError() {
-		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', { method: 'botRequest', action: 'bot_request' });
+		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', {
+			method: 'botRequest',
+			action: 'bot_request',
+		});
 	}
 
 	// "public" properties accessed by getters
@@ -131,19 +140,29 @@ class BotHelpers {
 	}
 
 	get allIDs() {
-		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+		if (
+			!this.userFields.hasOwnProperty('_id')
+			|| !this.userFields.hasOwnProperty('username')
+		) {
 			this.requestError();
 			return false;
 		}
-		return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
+		return this._allUsers
+			.fetch()
+			.map((user) => ({ id: user._id, name: user.username }));
 	}
 
 	get onlineIDs() {
-		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+		if (
+			!this.userFields.hasOwnProperty('_id')
+			|| !this.userFields.hasOwnProperty('username')
+		) {
 			this.requestError();
 			return false;
 		}
-		return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
+		return this._onlineUsers
+			.fetch()
+			.map((user) => ({ id: user._id, name: user.username }));
 	}
 }
 
@@ -161,6 +180,8 @@ Meteor.methods({
 		if (userID && hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
 		}
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'botRequest',
+		});
 	},
 });

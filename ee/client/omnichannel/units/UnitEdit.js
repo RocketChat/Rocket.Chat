@@ -145,7 +145,9 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 
 	const handleSave = useMutableCallback(async () => {
 		const unitData = { name, visibility };
-		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
+		const departmentsData = departments.map((department) => ({
+			departmentId: department.value,
+		}));
 		const monitorsData = monitors.map((monitor) => ({
 			monitorId: monitor.value,
 			username: monitor.label,

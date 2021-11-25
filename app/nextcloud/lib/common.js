@@ -20,17 +20,20 @@ const config = {
 
 const Nextcloud = new CustomOAuth('nextcloud', config);
 
-const fillServerURL = _.debounce(Meteor.bindEnvironment(() => {
-	const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL');
-	if (!nextcloudURL) {
-		if (nextcloudURL === undefined) {
-			return fillServerURL();
+const fillServerURL = _.debounce(
+	Meteor.bindEnvironment(() => {
+		const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL');
+		if (!nextcloudURL) {
+			if (nextcloudURL === undefined) {
+				return fillServerURL();
+			}
+			return;
 		}
-		return;
-	}
-	config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
-	return Nextcloud.configure(config);
-}), Meteor.isServer ? 1000 : 100);
+		config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
+		return Nextcloud.configure(config);
+	}),
+	Meteor.isServer ? 1000 : 100,
+);
 
 Meteor.startup(function() {
 	if (Meteor.isServer) {

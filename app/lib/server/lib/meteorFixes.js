@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-const timeoutQuery = parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
+const timeoutQuery =	parseInt(process.env.OBSERVERS_CHECK_TIMEOUT) || 2 * 60 * 1000;
 const interval = parseInt(process.env.OBSERVERS_CHECK_INTERVAL) || 60 * 1000;
 const debug = Boolean(process.env.OBSERVERS_CHECK_DEBUG);
 
@@ -32,18 +32,24 @@ Meteor.setInterval(() => {
 	const driver = MongoInternals.defaultRemoteCollectionDriver();
 
 	Object.entries(driver.mongo._observeMultiplexers)
-		.filter(([, { _observeDriver }]) => _observeDriver._phase === 'QUERYING' && timeoutQuery < now - _observeDriver._phaseStartTime)
+		.filter(
+			([, { _observeDriver }]) =>
+				_observeDriver._phase === 'QUERYING'
+				&& timeoutQuery < now - _observeDriver._phaseStartTime,
+		)
 		.forEach(([observeKey, { _observeDriver }]) => {
 			console.error('TIMEOUT QUERY OPERATION', {
 				observeKey,
-				writesToCommitWhenWeReachSteadyLength: _observeDriver._writesToCommitWhenWeReachSteady.length,
-				cursorDescription: JSON.stringify(_observeDriver._cursorDescription),
+				writesToCommitWhenWeReachSteadyLength:
+					_observeDriver._writesToCommitWhenWeReachSteady.length,
+				cursorDescription: JSON.stringify(
+					_observeDriver._cursorDescription,
+				),
 			});
 			_observeDriver._registerPhaseChange('STEADY');
 			_observeDriver._needToPollQuery();
 		});
 }, interval);
-
 
 /**
  * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
@@ -64,11 +70,18 @@ process.on('unhandledRejection', (error) => {
 	console.error(error);
 	console.error('---------------------------------');
 	console.error('Errors like this can cause oplog processing errors.');
-	console.error('Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process');
-	console.error('Future node.js versions will automatically exit the process');
+	console.error(
+		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
+	);
+	console.error(
+		'Future node.js versions will automatically exit the process',
+	);
 	console.error('=================================');
 
-	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+	if (
+		process.env.NODE_ENV === 'development'
+		|| process.env.EXIT_UNHANDLEDPROMISEREJECTION
+	) {
 		process.exit(1);
 	}
 });

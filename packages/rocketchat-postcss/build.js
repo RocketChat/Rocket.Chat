@@ -27,11 +27,15 @@ const loadPostcssConfig = async () => {
 	}
 };
 
-const isImportFile = ({ _source: { url } }) => /\.import\.css$/.test(url) || /(?:^|\/)imports\//.test(url);
+const isImportFile = ({ _source: { url } }) =>
+	/\.import\.css$/.test(url) || /(?:^|\/)imports\//.test(url);
 
 const isInExcludedPackages = (pathInBundle) =>
-	postcssConfigExcludedPackages.some((packageName) =>
-		pathInBundle.indexOf(`packages/${ packageName.replace(':', '_') }/`) > -1);
+	postcssConfigExcludedPackages.some(
+		(packageName) =>
+			pathInBundle.indexOf(`packages/${ packageName.replace(':', '_') }/`)
+			> -1,
+	);
 
 const handleFileError = (file, error) => {
 	if (error.name === 'CssSyntaxError') {
@@ -59,30 +63,40 @@ const getAbstractSyntaxTree = async (file) => {
 	const filename = file.getPathInBundle();
 
 	if (isInExcludedPackages(filename)) {
-		return Object.assign(CssTools.parseCss(file.getContentsAsString(), {
-			source: filename,
-			position: true,
-		}), { filename });
+		return Object.assign(
+			CssTools.parseCss(file.getContentsAsString(), {
+				source: filename,
+				position: true,
+			}),
+			{ filename },
+		);
 	}
 
 	try {
-		const postcssResult = await postcss(postcssConfigPlugins)
-			.process(file.getContentsAsString(), {
+		const postcssResult = await postcss(postcssConfigPlugins).process(
+			file.getContentsAsString(),
+			{
 				from: process.cwd() + file._source.url,
 				parser: postcssConfigParser,
-			});
+			},
+		);
 
 		postcssResult.warnings().forEach((warn) => {
 			process.stderr.write(warn.toString());
 		});
 
-		return Object.assign(CssTools.parseCss(postcssResult.css, {
-			source: filename,
-			position: true,
-		}), { filename });
+		return Object.assign(
+			CssTools.parseCss(postcssResult.css, {
+				source: filename,
+				position: true,
+			}),
+			{ filename },
+		);
 	} catch (error) {
 		if (error.name === 'CssSyntaxError') {
-			error.message = `${ error.message }\n\nCss Syntax Error.\n\n${ error.message }${ error.showSourceCode() }`;
+			error.message = `${ error.message }\n\nCss Syntax Error.\n\n${
+				error.message
+			}${ error.showSourceCode() }`;
 		}
 
 		handleFileError(file, error);
@@ -115,12 +129,17 @@ const mergeCssFiles = async (files) => {
 		};
 	}
 
-	const mapFilenameToFile = files.reduce((obj, file) => ({
-		...obj,
-		[file.getPathInBundle()]: file,
-	}), {});
+	const mapFilenameToFile = files.reduce(
+		(obj, file) => ({
+			...obj,
+			[file.getPathInBundle()]: file,
+		}),
+		{},
+	);
 
-	map.sourcesContent = map.sources.map((filename) => mapFilenameToFile[filename].getContentsAsString());
+	map.sourcesContent = map.sources.map((filename) =>
+		mapFilenameToFile[filename].getContentsAsString(),
+	);
 
 	// yes, this await is needed
 	const consumer = await new SourceMapConsumer(map);
@@ -129,9 +148,13 @@ const mergeCssFiles = async (files) => {
 
 	consumer.destroy();
 
-	files.filter((file) => file.getSourceMap())
+	files
+		.filter((file) => file.getSourceMap())
 		.forEach((file) => {
-			newMap.applySourceMap(new SourceMapConsumer(file.getSourceMap()), file.getPathInBundle());
+			newMap.applySourceMap(
+				new SourceMapConsumer(file.getSourceMap()),
+				file.getPathInBundle(),
+			);
 		});
 
 	return {

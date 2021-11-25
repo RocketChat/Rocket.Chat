@@ -3,9 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models';
 
-const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
+const orig_updateOrCreateUserFromExternalService =	Accounts.updateOrCreateUserFromExternalService;
 
-Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceData = {}, ...args /* , options*/) {
+Accounts.updateOrCreateUserFromExternalService = function(
+	serviceName,
+	serviceData = {},
+	...args /* , options*/
+) {
 	const services = [
 		'facebook',
 		'github',
@@ -16,13 +20,22 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		'twitter',
 	];
 
-	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
-		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
+	if (
+		services.includes(serviceName) === false
+		&& serviceData._OAuthCustom !== true
+	) {
+		return orig_updateOrCreateUserFromExternalService.apply(this, [
+			serviceName,
+			serviceData,
+			...args,
+		]);
 	}
 
 	if (serviceName === 'meteor-developer') {
 		if (Array.isArray(serviceData.emails)) {
-			const primaryEmail = serviceData.emails.sort((a) => a.primary !== true).filter((item) => item.verified === true)[0];
+			const primaryEmail = serviceData.emails
+				.sort((a) => a.primary !== true)
+				.filter((item) => item.verified === true)[0];
 			serviceData.email = primaryEmail && primaryEmail.address;
 		}
 	}
@@ -39,8 +52,15 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 				verified: true,
 			};
 
-			if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
-				Users.resetPasswordAndSetRequirePasswordChange(user._id, true, 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password');
+			if (
+				user.services?.password
+				&& !_.findWhere(user.emails, findQuery)
+			) {
+				Users.resetPasswordAndSetRequirePasswordChange(
+					user._id,
+					true,
+					'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
+				);
 			}
 
 			Users.setServiceId(user._id, serviceName, serviceData.id);
@@ -48,5 +68,9 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		}
 	}
 
-	return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
+	return orig_updateOrCreateUserFromExternalService.apply(this, [
+		serviceName,
+		serviceData,
+		...args,
+	]);
 };

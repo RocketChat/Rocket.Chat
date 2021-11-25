@@ -15,7 +15,9 @@ Meteor.methods({
 		}
 
 		if (!canAccessRoom({ _id: msg.rid }, { _id: Meteor.userId() })) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'getSingleMessage',
+			});
 		}
 
 		return msg;

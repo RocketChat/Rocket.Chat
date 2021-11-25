@@ -8,10 +8,17 @@ if (process.env.NODE_ENV !== 'production') {
 
 type LogColors = 'white' | 'blue' | 'green' | 'magenta' | 'red';
 
-export function showBox(title: string, message: string, color?: LogColors): void {
+export function showBox(
+	title: string,
+	message: string,
+	color?: LogColors,
+): void {
 	const msgLines = message.split('\n');
 
-	const len = Math.max.apply(null, msgLines.map((line) => line.length));
+	const len = Math.max.apply(
+		null,
+		msgLines.map((line) => line.length),
+	);
 
 	const topLine = `+--${ s.pad('', len, '-') }--+`;
 	const separator = `|  ${ s.pad('', len, '') }  |`;
@@ -25,8 +32,12 @@ export function showBox(title: string, message: string, color?: LogColors): void
 	}
 	lines.push(separator);
 
-	[...lines, ...msgLines.map((line) => `|  ${ s.rpad(line, len) }  |`), separator, topLine]
-		.forEach((line) => console.log(color ? colors[color](line) : line));
+	[
+		...lines,
+		...msgLines.map((line) => `|  ${ s.rpad(line, len) }  |`),
+		separator,
+		topLine,
+	].forEach((line) => console.log(color ? colors[color](line) : line));
 }
 
 export function showErrorBox(title: string, message: string): void {

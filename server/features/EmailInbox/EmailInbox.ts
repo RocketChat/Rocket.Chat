@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
+import {
+	EmailInbox,
+	EmailMessageHistory,
+} from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';
@@ -13,7 +16,7 @@ export type Inbox = {
 	imap: IMAPInterceptor;
 	smtp: Mail;
 	config: IEmailInbox;
-}
+};
 
 export const inboxes = new Map<string, Inbox>();
 
@@ -30,38 +33,53 @@ export async function configureEmailInboxes(): Promise<void> {
 	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
-		logger.info(`Setting up email interceptor for ${ emailInboxRecord.email }`);
+		logger.info(
+			`Setting up email interceptor for ${ emailInboxRecord.email }`,
+		);
 
-		const imap = new IMAPInterceptor({
-			password: emailInboxRecord.imap.password,
-			user: emailInboxRecord.imap.username,
-			host: emailInboxRecord.imap.server,
-			port: emailInboxRecord.imap.port,
-			tls: emailInboxRecord.imap.secure,
-			tlsOptions: {
-				rejectUnauthorized: false,
+		const imap = new IMAPInterceptor(
+			{
+				password: emailInboxRecord.imap.password,
+				user: emailInboxRecord.imap.username,
+				host: emailInboxRecord.imap.server,
+				port: emailInboxRecord.imap.port,
+				tls: emailInboxRecord.imap.secure,
+				tlsOptions: {
+					rejectUnauthorized: false,
+				},
+				// debug: (...args: any[]): void => logger.debug(args),
 			},
-			// debug: (...args: any[]): void => logger.debug(args),
-		}, {
-			deleteAfterRead: false,
-			filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
-			rejectBeforeTS: emailInboxRecord._updatedAt,
-			markSeen: true,
-		});
+			{
+				deleteAfterRead: false,
+				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
+				rejectBeforeTS: emailInboxRecord._updatedAt,
+				markSeen: true,
+			},
+		);
 
-		imap.on('email', Meteor.bindEnvironment(async (email) => {
-			if (!email.messageId) {
-				return;
-			}
+		imap.on(
+			'email',
+			Meteor.bindEnvironment(async (email) => {
+				if (!email.messageId) {
+					return;
+				}
 
-			try {
-				await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
-				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-			} catch (e: any) {
-				// In case the email message history has been received by other instance..
-				logger.error(e);
-			}
-		}));
+				try {
+					await EmailMessageHistory.create({
+						_id: email.messageId,
+						email: emailInboxRecord.email,
+					});
+					onEmailReceived(
+						email,
+						emailInboxRecord.email,
+						emailInboxRecord.department,
+					);
+				} catch (e: any) {
+					// In case the email message history has been received by other instance..
+					logger.error(e);
+				}
+			}),
+		);
 
 		imap.start();
 
@@ -75,7 +93,11 @@ export async function configureEmailInboxes(): Promise<void> {
 			},
 		});
 
-		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
+		inboxes.set(emailInboxRecord.email, {
+			imap,
+			smtp,
+			config: emailInboxRecord,
+		});
 	}
 
 	logger.info(`Configured a total of ${ inboxes.size } inboxes`);

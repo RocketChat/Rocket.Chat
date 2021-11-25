@@ -13,7 +13,9 @@ export const EmojiEvents = {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg: { rid, _id: mid, private: isPrivate } } = messageArgs(data);
+		const {
+			msg: { rid, _id: mid, private: isPrivate },
+		} = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
@@ -42,15 +44,25 @@ export const EmojiEvents = {
 		event.preventDefault();
 
 		const data = Blaze.getData(event.currentTarget);
-		const { msg: { _id: mid } } = messageArgs(data);
-		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid, () => {
-			tooltip.hide();
-		});
+		const {
+			msg: { _id: mid },
+		} = messageArgs(data);
+		Meteor.call(
+			'setReaction',
+			$(event.currentTarget).attr('data-emoji'),
+			mid,
+			() => {
+				tooltip.hide();
+			},
+		);
 	},
 
 	'mouseenter .reactions > li:not(.add-reaction)'(event) {
 		event.stopPropagation();
-		tooltip.showElement($(event.currentTarget).find('.people').get(0), event.currentTarget);
+		tooltip.showElement(
+			$(event.currentTarget).find('.people').get(0),
+			event.currentTarget,
+		);
 	},
 
 	'mouseleave .reactions > li:not(.add-reaction)'(event) {
@@ -64,15 +76,13 @@ Meteor.startup(function() {
 		id: 'reaction-message',
 		icon: 'add-reaction',
 		label: 'Add_Reaction',
-		context: [
-			'message',
-			'message-mobile',
-			'threads',
-		],
+		context: ['message', 'message-mobile', 'threads'],
 		action(event) {
 			event.stopPropagation();
 			const { msg } = messageArgs(this);
-			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
+			EmojiPicker.open(event.currentTarget, (emoji) =>
+				Meteor.call('setReaction', `:${ emoji }:`, msg._id),
+			);
 		},
 		condition({ msg: message, u: user, room, subscription }) {
 			if (!room) {
@@ -87,7 +97,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
+			if (
+				roomTypes.readOnly(room._id, user._id)
+				&& !room.reactWhenReadOnly
+			) {
 				return false;
 			}
 			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);

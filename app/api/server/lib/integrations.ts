@@ -3,8 +3,11 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { IIntegration } from '../../../../definition/IIntegration';
 import { IUser } from '../../../../definition/IUser';
 
-const hasIntegrationsPermission = async (userId: string, integration: IIntegration): Promise<boolean> => {
-	const type = integration.type === 'webhook-incoming' ? 'incoming' : 'outgoing';
+const hasIntegrationsPermission = async (
+	userId: string,
+	integration: IIntegration,
+): Promise<boolean> => {
+	const type =		integration.type === 'webhook-incoming' ? 'incoming' : 'outgoing';
 
 	if (await hasPermissionAsync(userId, `manage-${ type }-integrations`)) {
 		return true;
@@ -26,7 +29,10 @@ export const findOneIntegration = async ({
 	integrationId: string;
 	createdBy: IUser;
 }): Promise<IIntegration> => {
-	const integration = await Integrations.findOneByIdAndCreatedByIfExists({ _id: integrationId, createdBy });
+	const integration = await Integrations.findOneByIdAndCreatedByIfExists({
+		_id: integrationId,
+		createdBy,
+	});
 	if (!integration) {
 		throw new Error('The integration does not exists.');
 	}

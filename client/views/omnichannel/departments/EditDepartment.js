@@ -70,7 +70,10 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds || undefined,
 		waitingQueueMessage: department?.waitingQueueMessage || '',
 		departmentsAllowedToForward:
-			allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
+			allowedToForwardData?.departments?.map((dep) => ({
+				label: dep.name,
+				value: dep._id,
+			})) || [],
 	});
 	const {
 		handleName,

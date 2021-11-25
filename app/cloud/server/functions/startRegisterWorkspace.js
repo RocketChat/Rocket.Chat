@@ -8,7 +8,7 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function startRegisterWorkspace(resend = false) {
-	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
+	const { workspaceRegistered, connectToCloud } =		retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
 		await syncWorkspace(true);
 
@@ -23,12 +23,17 @@ export async function startRegisterWorkspace(resend = false) {
 
 	let result;
 	try {
-		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace?resend=${ resend }`, {
-			data: regInfo,
-		});
+		result = HTTP.post(
+			`${ cloudUrl }/api/v2/register/workspace?resend=${ resend }`,
+			{
+				data: regInfo,
+			},
+		);
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`,
+			);
 		} else {
 			SystemLogger.error(e);
 		}

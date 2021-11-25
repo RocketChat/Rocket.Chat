@@ -14,7 +14,10 @@ export const validateCustomFields = function(fields) {
 	try {
 		customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields'));
 	} catch (e) {
-		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
+		throw new Meteor.Error(
+			'error-invalid-customfield-json',
+			'Invalid JSON for Custom Fields',
+		);
 	}
 
 	const customFields = {};
@@ -26,19 +29,42 @@ export const validateCustomFields = function(fields) {
 		const fieldValue = s.trim(fields[fieldName]);
 
 		if (field.required && fieldValue === '') {
-			throw new Meteor.Error('error-user-registration-custom-field', `Field ${ fieldName } is required`, { method: 'registerUser' });
+			throw new Meteor.Error(
+				'error-user-registration-custom-field',
+				`Field ${ fieldName } is required`,
+				{ method: 'registerUser' },
+			);
 		}
 
-		if (field.type === 'select' && field.options.indexOf(fields[fieldName]) === -1) {
-			throw new Meteor.Error('error-user-registration-custom-field', `Value for field ${ fieldName } is invalid`, { method: 'registerUser' });
+		if (
+			field.type === 'select'
+			&& field.options.indexOf(fields[fieldName]) === -1
+		) {
+			throw new Meteor.Error(
+				'error-user-registration-custom-field',
+				`Value for field ${ fieldName } is invalid`,
+				{ method: 'registerUser' },
+			);
 		}
 
 		if (field.maxLength && fieldValue.length > field.maxLength) {
-			throw new Meteor.Error('error-user-registration-custom-field', `Max length of field ${ fieldName } ${ field.maxLength }`, { method: 'registerUser' });
+			throw new Meteor.Error(
+				'error-user-registration-custom-field',
+				`Max length of field ${ fieldName } ${ field.maxLength }`,
+				{ method: 'registerUser' },
+			);
 		}
 
-		if (field.minLength && fieldValue.length > 0 && fieldValue.length < field.minLength) {
-			throw new Meteor.Error('error-user-registration-custom-field', `Min length of field ${ fieldName } ${ field.minLength }`, { method: 'registerUser' });
+		if (
+			field.minLength
+			&& fieldValue.length > 0
+			&& fieldValue.length < field.minLength
+		) {
+			throw new Meteor.Error(
+				'error-user-registration-custom-field',
+				`Min length of field ${ fieldName } ${ field.minLength }`,
+				{ method: 'registerUser' },
+			);
 		}
 	});
 };

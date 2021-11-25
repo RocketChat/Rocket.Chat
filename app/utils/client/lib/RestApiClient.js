@@ -38,13 +38,20 @@ export const APIClient = {
 			params = {};
 		}
 
-		return APIClient._jqueryFormDataCall(endpoint, params, formData, xhrOptions);
+		return APIClient._jqueryFormDataCall(
+			endpoint,
+			params,
+			formData,
+			xhrOptions,
+		);
 	},
 
 	getCredentials() {
 		return {
 			'X-User-Id': Meteor._localStorage.getItem(Accounts.USER_ID_KEY),
-			'X-Auth-Token': Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY),
+			'X-Auth-Token': Meteor._localStorage.getItem(
+				Accounts.LOGIN_TOKEN_KEY,
+			),
 		};
 	},
 
@@ -55,7 +62,9 @@ export const APIClient = {
 				query += query === '' ? '?' : '&';
 
 				if (Array.isArray(params[key])) {
-					const encodedParams = params[key].map((value) => encodeURIComponent(value));
+					const encodedParams = params[key].map((value) =>
+						encodeURIComponent(value),
+					);
 					const joinedArray = encodedParams.join(`&${ key }[]=`);
 					query += `${ key }[]=${ joinedArray }`;
 				} else {
@@ -74,10 +83,13 @@ export const APIClient = {
 			jQuery.ajax({
 				method,
 				url: `${ baseURI }api/${ endpoint }${ query }`,
-				headers: Object.assign({
-					'Content-Type': 'application/json',
-					...APIClient.getCredentials(),
-				}, headers),
+				headers: Object.assign(
+					{
+						'Content-Type': 'application/json',
+						...APIClient.getCredentials(),
+					},
+					headers,
+				),
 				data: JSON.stringify(body),
 				dataType,
 				success: function _rlGetSuccess(result) {
@@ -100,26 +112,40 @@ export const APIClient = {
 		});
 	},
 
-	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
-		const ret = { };
+	_jqueryFormDataCall(
+		endpoint,
+		params,
+		formData,
+		{ progress = () => {}, error = () => {} } = {},
+	) {
+		const ret = {};
 
 		const query = APIClient._generateQueryFromParams(params);
 
 		if (!(formData instanceof FormData)) {
-			throw new Error('The formData parameter MUST be an instance of the FormData class.');
+			throw new Error(
+				'The formData parameter MUST be an instance of the FormData class.',
+			);
 		}
 
-		ret.promise = new Promise(function _jqueryFormDataPromise(resolve, reject) {
+		ret.promise = new Promise(function _jqueryFormDataPromise(
+			resolve,
+			reject,
+		) {
 			ret.xhr = jQuery.ajax({
 				xhr() {
 					const xhr = new window.XMLHttpRequest();
 
-					xhr.upload.addEventListener('progress', function(evt) {
-						if (evt.lengthComputable) {
-							const percentComplete = evt.loaded / evt.total;
-							progress(percentComplete * 100);
-						}
-					}, false);
+					xhr.upload.addEventListener(
+						'progress',
+						function(evt) {
+							if (evt.lengthComputable) {
+								const percentComplete = evt.loaded / evt.total;
+								progress(percentComplete * 100);
+							}
+						},
+						false,
+					);
 
 					xhr.upload.addEventListener('error', error, false);
 
@@ -157,7 +183,9 @@ export const APIClient = {
 				const headers = params[params.length - 1];
 				headers['x-2fa-code'] = code;
 				headers['x-2fa-method'] = method;
-				APIClient._jqueryCall(...params).then(resolve).catch(reject);
+				APIClient._jqueryCall(...params)
+					.then(resolve)
+					.catch(reject);
 			},
 		});
 	},

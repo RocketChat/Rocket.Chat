@@ -12,14 +12,18 @@ export const Message = {
 		if (messageType) {
 			if (messageType.render) {
 				return messageType.render(msg);
-			} if (messageType.template) {
+			}
+			if (messageType.template) {
 				// Render message
 				return;
-			} if (messageType.message) {
+			}
+			if (messageType.message) {
 				if (!language) {
 					language = Meteor._localStorage.getItem('userLanguage');
 				}
-				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
+				const data =					(typeof messageType.data === 'function'
+						&& messageType.data(msg))
+					|| {};
 				return TAPi18n.__(messageType.message, data, language);
 			}
 		}

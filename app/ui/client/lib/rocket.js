@@ -26,7 +26,7 @@ export const Login = (function() {
 			});
 		}
 	}
-	return { check, onClick, onBlur	};
+	return { check, onClick, onBlur };
 }());
 
 export const Button = (function() {
@@ -34,7 +34,10 @@ export const Button = (function() {
 	const loading = function(el) {
 		const next = el.attr('data-loading-text');
 		const html = el.find('span').html();
-		el.addClass('-progress').attr('data-def-text', html).find('span').html(next);
+		el.addClass('-progress')
+			.attr('data-def-text', html)
+			.find('span')
+			.html(next);
 		time = setTimeout(() => el.addClass('going'), 1);
 		return time;
 	};
@@ -42,10 +45,14 @@ export const Button = (function() {
 		return el.addClass('done');
 	};
 	const reset = function(el) {
-		if (time) { clearTimeout(time); }
+		if (time) {
+			clearTimeout(time);
+		}
 		const $el = $(el);
 		const html = $el.attr('data-def-text');
-		if (html) { $el.find('span').html(html); }
+		if (html) {
+			$el.find('span').html(html);
+		}
 		return $el.removeClass('-progress going done');
 	};
 	return { done, loading, reset };

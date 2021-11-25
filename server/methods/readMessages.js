@@ -19,7 +19,9 @@ Meteor.methods({
 		const user = Meteor.user();
 		const room = Rooms.findOneById(rid);
 		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'readMessages',
+			});
 		}
 
 		Promise.await(markRoomAsRead(rid, userId));

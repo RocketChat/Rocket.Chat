@@ -2,7 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models/server';
+import {
+	LivechatRooms,
+	LivechatVisitors,
+	LivechatDepartment,
+	LivechatTrigger,
+} from '../../../../models/server';
 import { EmojiCustom } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
@@ -13,13 +18,30 @@ export function online(department) {
 }
 
 export function findTriggers() {
-	return LivechatTrigger.findEnabled().fetch().map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
+	return LivechatTrigger.findEnabled()
+		.fetch()
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
 
 export function findDepartments() {
 	return LivechatDepartment.findEnabledWithAgents({
-		_id: 1, name: 1, showOnRegistration: 1, showOnOfflineForm: 1,
-	}).fetch().map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({ _id, name, showOnRegistration, showOnOfflineForm }));
+		_id: 1,
+		name: 1,
+		showOnRegistration: 1,
+		showOnOfflineForm: 1,
+	})
+		.fetch()
+		.map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+			_id,
+			name,
+			showOnRegistration,
+			showOnOfflineForm,
+		}));
 }
 
 export function findGuest(token) {
@@ -61,7 +83,13 @@ export function findOpenRoom(token, departmentId) {
 		},
 	};
 
-	const rooms = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId
+		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(
+			token,
+			departmentId,
+			options,
+		  ).fetch()
+		: LivechatRooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
@@ -99,20 +127,30 @@ export async function settings() {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
 			registrationForm: initSettings.Livechat_registration_form,
-			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
-			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
-			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
+			allowSwitchingDepartments:
+				initSettings.Livechat_allow_switching_departments,
+			nameFieldRegistrationForm:
+				initSettings.Livechat_name_field_registration_form,
+			emailFieldRegistrationForm:
+				initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
-			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true,
-			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
+			videoCall:
+				initSettings.Omnichannel_call_provider === 'Jitsi'
+				&& initSettings.Jitsi_Enabled === true,
+			fileUpload:
+				initSettings.Livechat_fileupload_enabled
+				&& initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
-			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
+			forceAcceptDataProcessingConsent:
+				initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
-			limitTextLength: initSettings.Livechat_enable_message_character_limit
-			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			limitTextLength:
+				initSettings.Livechat_enable_message_character_limit
+				&& (initSettings.Livechat_message_character_limit
+					|| initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -121,27 +159,56 @@ export async function settings() {
 			offlineColor: initSettings.Livechat_offline_title_color,
 			actionLinks: {
 				webrtc: [
-					{ actionLinksAlignment: 'flex-start', i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall' },
-					{ i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall', danger: true },
+					{
+						actionLinksAlignment: 'flex-start',
+						i18nLabel: 'Join_call',
+						label: TAPi18n.__('Join_call'),
+						method_id: 'joinLivechatWebRTCCall',
+					},
+					{
+						i18nLabel: 'End_call',
+						label: TAPi18n.__('End_call'),
+						method_id: 'endLivechatWebRTCCall',
+						danger: true,
+					},
 				],
 				jitsi: [
-					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall' },
-					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall' },
+					{
+						icon: 'icon-videocam',
+						i18nLabel: 'Accept',
+						method_id: 'createLivechatCall',
+					},
+					{
+						icon: 'icon-cancel',
+						i18nLabel: 'Decline',
+						method_id: 'denyLivechatCall',
+					},
 				],
 			},
 		},
 		messages: {
 			offlineMessage: initSettings.Livechat_offline_message,
-			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
-			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
-			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
-			conversationFinishedText: initSettings.Livechat_conversation_finished_text,
+			offlineSuccessMessage:
+				initSettings.Livechat_offline_success_message,
+			offlineUnavailableMessage:
+				initSettings.Livechat_offline_form_unavailable,
+			conversationFinishedMessage:
+				initSettings.Livechat_conversation_finished_message,
+			conversationFinishedText:
+				initSettings.Livechat_conversation_finished_text,
 			transcriptMessage: initSettings.Livechat_transcript_message,
-			registrationFormMessage: initSettings.Livechat_registration_form_message,
-			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,
+			registrationFormMessage:
+				initSettings.Livechat_registration_form_message,
+			dataProcessingConsentText:
+				initSettings.Livechat_data_processing_consent_text,
 		},
 		survey: {
-			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],
+			items: [
+				'satisfaction',
+				'agentKnowledge',
+				'agentResposiveness',
+				'agentFriendliness',
+			],
 			values: ['1', '2', '3', '4', '5'],
 		},
 		triggers,

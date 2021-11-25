@@ -7,7 +7,9 @@ import { getUserByUsername } from '../handler';
 
 export async function addUser(query) {
 	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUser' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'addUser',
+		});
 	}
 
 	const user = await getUserByUsername(query);

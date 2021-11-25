@@ -4,9 +4,15 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
-import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, RoomMemberActions } from '../../../utils';
+import {
+	getUserPreference,
+	RoomSettingsEnum,
+	RoomTypeConfig,
+	RoomTypeRouteConfig,
+	UiTextContext,
+	RoomMemberActions,
+} from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
-
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -63,7 +69,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		const groupByType = getUserPreference(
+			Meteor.userId(),
+			'sidebarGroupByType',
+		);
 		return groupByType && hasPermission('view-p-room');
 	}
 
@@ -72,14 +81,19 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	canAddUser(room) {
-		return hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
+		return hasAtLeastOnePermission(
+			['add-user-to-any-p-room', 'add-user-to-joined-room'],
+			room._id,
+		);
 	}
 
 	canSendMessage(roomId) {
 		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
+		return (
+			ChatSubscription.find({
+				rid: roomId,
+			}).count() > 0
+		);
 	}
 
 	allowRoomSettingChange(room, setting) {
@@ -125,7 +139,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ roomId: roomData._id, cache: roomData.avatarETag });
+		return getAvatarURL({
+			roomId: roomData._id,
+			cache: roomData.avatarETag,
+		});
 	}
 
 	includeInDashboard() {

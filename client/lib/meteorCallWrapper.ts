@@ -51,7 +51,9 @@ function wrapMeteorDDPCalls(): void {
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
+					const parsedMessage = DDPCommon.parseDDP(_message) as {
+						result?: { token?: string };
+					};
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}

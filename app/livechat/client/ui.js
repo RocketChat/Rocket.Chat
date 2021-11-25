@@ -18,7 +18,9 @@ AccountBox.addItem({
 	icon: 'headset',
 	href: '/omnichannel/current',
 	sideNav: 'omnichannelFlex',
-	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
+	condition: () =>
+		settings.get('Livechat_enabled')
+		&& hasAllPermission('view-livechat-manager'),
 });
 
 MessageTypes.registerType({

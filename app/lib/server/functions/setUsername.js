@@ -9,7 +9,11 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
-import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
+import {
+	checkUsernameAvailability,
+	setUserAvatar,
+	getAvatarSuggestionForUser,
+} from '.';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const _setUsername = function(userId, u, fullUser) {
@@ -19,7 +23,9 @@ export const _setUsername = function(userId, u, fullUser) {
 	}
 	let nameValidation;
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+		nameValidation = new RegExp(
+			`^${ settings.get('UTF8_User_Names_Validation') }$`,
+		);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -33,14 +39,22 @@ export const _setUsername = function(userId, u, fullUser) {
 	}
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
-	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
+	if (
+		!previousUsername
+		|| !(username.toLowerCase() === previousUsername.toLowerCase())
+	) {
 		if (!checkUsernameAvailability(username)) {
 			return false;
 		}
 	}
 	// If first time setting username, send Enrollment Email
 	try {
-		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+		if (
+			!previousUsername
+			&& user.emails
+			&& user.emails.length > 0
+			&& settings.get('Accounts_Enrollment_Email')
+		) {
 			Meteor.defer(() => {
 				Accounts.sendEnrollmentEmail(user._id);
 			});
@@ -51,13 +65,21 @@ export const _setUsername = function(userId, u, fullUser) {
 	// Set new username*
 	Users.setUsername(user._id, username);
 	user.username = username;
-	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
+	if (
+		!previousUsername
+		&& settings.get('Accounts_SetDefaultAvatar') === true
+	) {
 		const avatarSuggestions = getAvatarSuggestionForUser(user);
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
-				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
+				setUserAvatar(
+					user,
+					avatarData.blob,
+					avatarData.contentType,
+					service,
+				);
 				gravatar = null;
 				return true;
 			}
@@ -65,7 +87,12 @@ export const _setUsername = function(userId, u, fullUser) {
 			return false;
 		});
 		if (gravatar != null) {
-			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
+			setUserAvatar(
+				user,
+				gravatar.blob,
+				gravatar.contentType,
+				'gravatar',
+			);
 		}
 	}
 
@@ -88,6 +115,9 @@ export const _setUsername = function(userId, u, fullUser) {
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	0() {
-		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+		return (
+			!Meteor.userId()
+			|| !hasPermission(Meteor.userId(), 'edit-other-user-info')
+		);
 	},
 });

@@ -28,9 +28,13 @@ Meteor.methods({
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
 		if (!validEmails || validEmails.length === 0) {
-			throw new Meteor.Error('error-email-send-failed', 'No valid email addresses', {
-				method: 'sendInvitationEmail',
-			});
+			throw new Meteor.Error(
+				'error-email-send-failed',
+				'No valid email addresses',
+				{
+					method: 'sendInvitationEmail',
+				},
+			);
 		}
 
 		const subject = settings.get('Invitation_Subject');
@@ -47,10 +51,14 @@ Meteor.methods({
 					},
 				});
 			} catch ({ message }) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {
-					method: 'sendInvitationEmail',
-					message,
-				});
+				throw new Meteor.Error(
+					'error-email-send-failed',
+					`Error trying to send email: ${ message }`,
+					{
+						method: 'sendInvitationEmail',
+						message,
+					},
+				);
 			}
 		});
 	},

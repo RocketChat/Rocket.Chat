@@ -24,7 +24,10 @@ export const StreamerCentral = new StreamerCentralClass();
 export abstract class Streamer extends EventEmitter implements IStreamer {
 	public subscriptions = new Set<DDPSubscription>();
 
-	protected subscriptionsByEventName = new Map<string, Set<DDPSubscription>>();
+	protected subscriptionsByEventName = new Map<
+	string,
+	Set<DDPSubscription>
+	>();
 
 	public retransmit = true;
 
@@ -40,7 +43,10 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 	constructor(
 		public name: string,
-		{ retransmit = true, retransmitToSelf = false }: {retransmit?: boolean; retransmitToSelf?: boolean } = { },
+		{
+			retransmit = true,
+			retransmitToSelf = false,
+		}: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
 	) {
 		super();
 
@@ -68,7 +74,10 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 	}
 
 	private allow(rules: IRules, name: string) {
-		return (eventName: string | boolean | Rule, fn?: string | boolean | Rule): void => {
+		return (
+			eventName: string | boolean | Rule,
+			fn?: string | boolean | Rule,
+		): void => {
 			if (fn === undefined) {
 				fn = eventName;
 				eventName = '__all__';
@@ -83,7 +92,10 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 				return;
 			}
 
-			if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
+			if (
+				typeof fn === 'string'
+				&& ['all', 'none', 'logged'].indexOf(fn) === -1
+			) {
 				SystemLogger.error(`${ name } shortcut '${ fn }' is invalid`);
 			}
 
@@ -109,20 +121,33 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		};
 	}
 
-	allowRead(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void {
+	allowRead(
+		eventName: string | boolean | Rule,
+		fn?: Rule | 'all' | 'none' | 'logged',
+	): void {
 		this.allow(this._allowRead, 'allowRead')(eventName, fn);
 	}
 
-	allowWrite(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void {
+	allowWrite(
+		eventName: string | boolean | Rule,
+		fn?: Rule | 'all' | 'none' | 'logged',
+	): void {
 		this.allow(this._allowWrite, 'allowWrite')(eventName, fn);
 	}
 
-	allowEmit(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void {
+	allowEmit(
+		eventName: string | boolean | Rule,
+		fn?: Rule | 'all' | 'none' | 'logged',
+	): void {
 		this.allow(this._allowEmit, 'allowEmit')(eventName, fn);
 	}
 
 	private isAllowed(rules: IRules) {
-		return async (scope: IPublication, eventName: string, args: any): Promise<boolean | object> => {
+		return async (
+			scope: IPublication,
+			eventName: string,
+			args: any,
+		): Promise<boolean | object> => {
 			if (rules[eventName]) {
 				return rules[eventName].call(scope, eventName, ...args);
 			}
@@ -131,22 +156,34 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		};
 	}
 
-	async isReadAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
+	async isReadAllowed(
+		scope: IPublication,
+		eventName: string,
+		args: any,
+	): Promise<boolean | object> {
 		return this.isAllowed(this._allowRead)(scope, eventName, args);
 	}
 
-	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
+	async isEmitAllowed(
+		scope: IPublication,
+		eventName: string,
+		...args: any[]
+	): Promise<boolean | object> {
 		return this.isAllowed(this._allowEmit)(scope, eventName, args);
 	}
 
-	async isWriteAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
+	async isWriteAllowed(
+		scope: IPublication,
+		eventName: string,
+		args: any,
+	): Promise<boolean | object> {
 		return this.isAllowed(this._allowWrite)(scope, eventName, args);
 	}
 
 	addSubscription(subscription: DDPSubscription, eventName: string): void {
 		this.subscriptions.add(subscription);
 
-		const subByEventName = this.subscriptionsByEventName.get(eventName) || new Set();
+		const subByEventName =			this.subscriptionsByEventName.get(eventName) || new Set();
 		subByEventName.add(subscription);
 
 		this.subscriptionsByEventName.set(eventName, subByEventName);
@@ -161,7 +198,11 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 	}
 
-	async _publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+	async _publish(
+		publication: IPublication,
+		eventName: string,
+		options: boolean | { useCollection?: boolean; args?: any } = false,
+	): Promise<void> {
 		let useCollection;
 		let args = [];
 
@@ -211,16 +252,31 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		super.emit('_afterPublish', this, publication, eventName, options);
 	}
 
-	abstract registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => Promise<void>): void;
+	abstract registerPublication(
+		name: string,
+		fn: (
+			eventName: string,
+			options: boolean | { useCollection?: boolean; args?: any }
+		) => Promise<void>
+	): void;
 
 	iniPublication(): void {
 		const _publish = this._publish.bind(this);
-		this.registerPublication(this.subscriptionName, async function(this: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}) {
-			return _publish(this, eventName, options);
-		});
+		this.registerPublication(
+			this.subscriptionName,
+			async function(
+				this: IPublication,
+				eventName: string,
+				options: boolean | { useCollection?: boolean; args?: any },
+			) {
+				return _publish(this, eventName, options);
+			},
+		);
 	}
 
-	abstract registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void;
+	abstract registerMethod(
+		methods: Record<string, (eventName: string, ...args: any[]) => any>
+	): void;
 
 	initMethod(): void {
 		const isWriteAllowed = this.isWriteAllowed.bind(this);
@@ -228,8 +284,15 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		const _emit = this._emit.bind(this);
 		const { retransmit } = this;
 
-		const method: Record<string, (eventName: string, ...args: any[]) => any> = {
-			async [this.subscriptionName](this: IPublication, eventName, ...args): Promise<void> {
+		const method: Record<
+		string,
+		(eventName: string, ...args: any[]) => any
+		> = {
+			async [this.subscriptionName](
+				this: IPublication,
+				eventName,
+				...args
+			): Promise<void> {
 				if (await isWriteAllowed(this, eventName, args) !== true) {
 					return;
 				}
@@ -249,9 +312,19 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 	}
 
-	abstract changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
+	abstract changedPayload(
+		collection: string,
+		id: string,
+		fields: Record<string, any>
+	): string | false;
 
-	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
+	_emit(
+		eventName: string,
+		args: any[],
+		origin: Connection | undefined,
+		broadcast: boolean,
+		transform?: TransformMessage,
+	): boolean {
 		if (broadcast === true) {
 			StreamerCentral.emit('broadcast', this.name, eventName, args);
 		}
@@ -262,7 +335,13 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		if (transform) {
-			this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
+			this.sendToManySubscriptions(
+				subscriptions,
+				origin,
+				eventName,
+				args,
+				transform,
+			);
 
 			return true;
 		}
@@ -276,20 +355,42 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			return false;
 		}
 
-		this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
+		this.sendToManySubscriptions(
+			subscriptions,
+			origin,
+			eventName,
+			args,
+			msg,
+		);
 
 		return true;
 	}
 
-	async sendToManySubscriptions(subscriptions: Set<DDPSubscription>, origin: Connection | undefined, eventName: string, args: any[], getMsg: string | TransformMessage): Promise<void> {
+	async sendToManySubscriptions(
+		subscriptions: Set<DDPSubscription>,
+		origin: Connection | undefined,
+		eventName: string,
+		args: any[],
+		getMsg: string | TransformMessage,
+	): Promise<void> {
 		subscriptions.forEach(async (subscription) => {
-			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
+			if (
+				this.retransmitToSelf === false
+				&& origin
+				&& origin === subscription.subscription.connection
+			) {
 				return;
 			}
 
-			const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+			const allowed = await this.isEmitAllowed(
+				subscription.subscription,
+				eventName,
+				...args,
+			);
 			if (allowed) {
-				const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
+				const msg =					typeof getMsg === 'string'
+					? getMsg
+					: getMsg(this, subscription, eventName, args, allowed);
 				if (msg) {
 					subscription.subscription._session.socket?.send(msg);
 				}

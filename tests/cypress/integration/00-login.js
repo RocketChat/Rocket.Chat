@@ -53,14 +53,18 @@ describe('[Login]', () => {
 		describe('email / username: ', () => {
 			it('it should be required', () => {
 				loginPage.emailOrUsernameField.should('have.class', 'error');
-				loginPage.emailOrUsernameInvalidText.get('text').should('not.be.empty');
+				loginPage.emailOrUsernameInvalidText
+					.get('text')
+					.should('not.be.empty');
 			});
 		});
 
 		describe('password: ', () => {
 			it('it should be required', () => {
 				loginPage.passwordField.should('have.class', 'error');
-				loginPage.passwordInvalidText.get('text').should('not.be.empty');
+				loginPage.passwordInvalidText
+					.get('text')
+					.should('not.be.empty');
 			});
 		});
 	});
@@ -138,7 +142,9 @@ describe('[Setup Wizard]', () => {
 		});
 
 		it('it should click agree to privacy policy and check if true', () => {
-			setupWizard.serviceTermsAndPrivacyPolicyLabel.scrollIntoView().click();
+			setupWizard.serviceTermsAndPrivacyPolicyLabel
+				.scrollIntoView()
+				.click();
 			setupWizard.serviceTermsAndPrivacyPolicy.should('be.checked');
 		});
 

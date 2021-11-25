@@ -16,7 +16,9 @@ export const generateJWT = (payload, secret) => {
 
 	const header = JSON.stringify(HEADER);
 
-	return jws.JWS.sign(HEADER.alg, header, JSON.stringify(tokenPayload), { rstr: secret });
+	return jws.JWS.sign(HEADER.alg, header, JSON.stringify(tokenPayload), {
+		rstr: secret,
+	});
 };
 
 export const isValidJWT = (jwt, secret) => {

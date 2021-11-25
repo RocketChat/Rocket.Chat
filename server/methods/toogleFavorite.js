@@ -14,14 +14,22 @@ Meteor.methods({
 			});
 		}
 
-		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(
+			rid,
+			Meteor.userId(),
+		);
 		if (!userSubscription) {
-			throw new Meteor.Error('error-invalid-subscription',
+			throw new Meteor.Error(
+				'error-invalid-subscription',
 				'You must be part of a room to favorite it',
 				{ method: 'toggleFavorite' },
 			);
 		}
 
-		return Subscriptions.setFavoriteByRoomIdAndUserId(rid, Meteor.userId(), f);
+		return Subscriptions.setFavoriteByRoomIdAndUserId(
+			rid,
+			Meteor.userId(),
+			f,
+		);
 	},
 });

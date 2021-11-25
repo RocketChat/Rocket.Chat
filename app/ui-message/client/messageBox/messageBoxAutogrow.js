@@ -1,11 +1,16 @@
 import _ from 'underscore';
 
-const replaceWhitespaces = (whitespaces) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
+const replaceWhitespaces = (whitespaces) =>
+	`${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
 
 export const setupAutogrow = (textarea, shadow, callback) => {
 	const width = textarea.clientWidth;
 	const height = textarea.clientHeight;
-	const { font, lineHeight, maxHeight: maxHeightPx } = window.getComputedStyle(textarea);
+	const {
+		font,
+		lineHeight,
+		maxHeight: maxHeightPx,
+	} = window.getComputedStyle(textarea);
 
 	shadow.style.position = 'fixed';
 	shadow.style.top = '-10000px';
@@ -30,11 +35,16 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 		const isTextLengthOutdated = textLenght && textLenght < text.length;
 		const wasWidthChanged = width !== lastWidth;
 
-		if (isMaximumHeightReached && isTextLengthOutdated && !wasWidthChanged) {
+		if (
+			isMaximumHeightReached
+			&& isTextLengthOutdated
+			&& !wasWidthChanged
+		) {
 			return true;
 		}
 
-		const shadowText = text.replace(/&/g, '&amp;')
+		const shadowText = text
+			.replace(/&/g, '&amp;')
 			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
 			.replace(/\n$/, '<br/>&nbsp;')

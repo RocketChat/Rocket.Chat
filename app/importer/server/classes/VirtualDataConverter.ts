@@ -1,6 +1,13 @@
 import { Random } from 'meteor/random';
 
-import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord, IImportRecord, IImportRecordType, IImportData } from '../../../../definition/IImportRecord';
+import type {
+	IImportUserRecord,
+	IImportChannelRecord,
+	IImportMessageRecord,
+	IImportRecord,
+	IImportRecordType,
+	IImportData,
+} from '../../../../definition/IImportRecord';
 import { IImportChannel } from '../../../../definition/IImportChannel';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
@@ -39,7 +46,9 @@ export class VirtualDataConverter extends ImportDataConverter {
 		this.clearVirtualData();
 	}
 
-	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+	public findDMForImportedUsers(
+		...users: Array<string>
+	): IImportChannel | undefined {
 		if (!this.useVirtual) {
 			return super.findDMForImportedUsers(...users);
 		}
@@ -48,7 +57,11 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	protected addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
+	protected addObject(
+		type: IImportRecordType,
+		data: IImportData,
+		options: Record<string, any> = {},
+	): void {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
 		}
@@ -138,7 +151,11 @@ export class VirtualDataConverter extends ImportDataConverter {
 	}
 
 	private getVirtualRecordById(id: string): IImportRecord | undefined {
-		for (const store of [this._userRecords, this._channelRecords, this._messageRecords]) {
+		for (const store of [
+			this._userRecords,
+			this._channelRecords,
+			this._messageRecords,
+		]) {
 			for (const record of store) {
 				if (record._id === id) {
 					return record;

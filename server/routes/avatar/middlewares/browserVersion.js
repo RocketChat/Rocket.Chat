@@ -9,7 +9,12 @@ return WebApp.connectHandlers.use(function(req, res, next) {
 	}
 
 	const result = parser(req.headers['user-agent']);
-	if (req.cookies.browser_version_check !== 'force' && (!result || result.browser.name !== 'IE' || parseInt(result.browser.version) >= 11)) {
+	if (
+		req.cookies.browser_version_check !== 'force'
+		&& (!result
+			|| result.browser.name !== 'IE'
+			|| parseInt(result.browser.version) >= 11)
+	) {
 		return next();
 	}
 

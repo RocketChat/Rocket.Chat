@@ -15,7 +15,7 @@ export async function buildWorkspaceRegistrationData() {
 
 	const firstUser = Users.getOldest({ name: 1, emails: 1 });
 	const contactName = firstUser && firstUser.name;
-	let contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
+	let contactEmail =		firstUser && firstUser.emails && firstUser.emails[0].address;
 
 	if (settings.get('Organization_Email')) {
 		contactEmail = settings.get('Organization_Email');
@@ -31,7 +31,14 @@ export async function buildWorkspaceRegistrationData() {
 
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
+	const {
+		organizationType,
+		industry,
+		size: orgSize,
+		country,
+		language,
+		serverType: workspaceType,
+	} = stats.wizard;
 	const seats = Users.getActiveLocalUserCount();
 
 	return {

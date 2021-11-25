@@ -35,25 +35,35 @@ Meteor.methods({
 				});
 			}
 
-			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
+			user = Users.findOneById(userId, {
+				fields: { _id: 1, username: 1 },
+			});
 		} else {
 			user = Meteor.user();
 		}
 
 		if (user == null) {
-			throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
-				method: 'setAvatarFromService',
-			});
+			throw new Meteor.Error(
+				'error-invalid-desired-user',
+				'Invalid desired user',
+				{
+					method: 'setAvatarFromService',
+				},
+			);
 		}
 
 		return setUserAvatar(user, dataURI, contentType, service);
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'setAvatarFromService',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'setAvatarFromService',
+		userId() {
+			return true;
+		},
 	},
-}, 1, 5000);
+	1,
+	5000,
+);

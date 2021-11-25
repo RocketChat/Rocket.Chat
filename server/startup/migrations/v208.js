@@ -2,7 +2,10 @@ import { addMigration } from '../../lib/migrations';
 import { Users, Sessions } from '../../../app/models/server/raw';
 
 async function migrateSessions() {
-	const cursor = Users.find({ roles: 'anonymous' }, { projection: { _id: 1 } });
+	const cursor = Users.find(
+		{ roles: 'anonymous' },
+		{ projection: { _id: 1 } },
+	);
 	if (!cursor) {
 		return;
 	}
@@ -14,13 +17,16 @@ async function migrateSessions() {
 
 	const userIds = users.map(({ _id }) => _id);
 
-	await Sessions.updateMany({
-		userId: { $in: userIds },
-	}, {
-		$set: {
-			roles: ['anonymous'],
+	await Sessions.updateMany(
+		{
+			userId: { $in: userIds },
 		},
-	});
+		{
+			$set: {
+				roles: ['anonymous'],
+			},
+		},
+	);
 }
 
 addMigration({

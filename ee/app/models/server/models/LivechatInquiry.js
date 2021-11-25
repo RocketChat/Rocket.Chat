@@ -1,7 +1,10 @@
 import { LivechatInquiry } from '../../../../../app/models/server/models/LivechatInquiry';
 
-LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, data = {}) {
-	const { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt } = data;
+LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(
+	rid,
+	data = {},
+) {
+	const { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt } =		data;
 
 	return this.update(
 		{ rid },

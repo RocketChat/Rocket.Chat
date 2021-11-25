@@ -41,7 +41,10 @@ export default function NewOutgoingWebhook({
 	const t = useTranslation();
 	const router = useRoute('admin-integrations');
 
-	const { values: formValues, handlers: formHandlers } = useForm({ ...data, token: useUniqueId() });
+	const { values: formValues, handlers: formHandlers } = useForm({
+		...data,
+		token: useUniqueId(),
+	});
 
 	const { urls, triggerWords } = formValues;
 

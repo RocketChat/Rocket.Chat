@@ -11,21 +11,41 @@ function Status(command, params, item) {
 		Meteor.call('setUserStatus', null, params, (err) => {
 			if (err) {
 				if (Meteor.isClient) {
-					const { handleError } = require('../../../client/lib/utils/handleError');
+					const {
+						handleError,
+					} = require('../../../client/lib/utils/handleError');
 					return handleError(err);
 				}
 
 				if (err.error === 'error-not-allowed') {
-					api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-						msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
-					});
+					api.broadcast(
+						'notify.ephemeralMessage',
+						Meteor.userId(),
+						item.rid,
+						{
+							msg: TAPi18n.__(
+								'StatusMessage_Change_Disabled',
+								null,
+								user.language,
+							),
+						},
+					);
 				}
 
 				throw err;
 			} else {
-				api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-					msg: TAPi18n.__('StatusMessage_Changed_Successfully', null, user.language),
-				});
+				api.broadcast(
+					'notify.ephemeralMessage',
+					Meteor.userId(),
+					item.rid,
+					{
+						msg: TAPi18n.__(
+							'StatusMessage_Changed_Successfully',
+							null,
+							user.language,
+						),
+					},
+				);
 			}
 		});
 	}

@@ -12,16 +12,21 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
-	msg,
-});
+const notifyAgent = (userId, rid, msg) =>
+	api.broadcast('notify.ephemeralMessage', userId, rid, {
+		msg,
+	});
 
 class Voxtelesys {
 	constructor() {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');
-		this.fileUploadEnabled = settings.get('SMS_Voxtelesys_FileUpload_Enabled');
-		this.mediaTypeWhiteList = settings.get('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList');
+		this.fileUploadEnabled = settings.get(
+			'SMS_Voxtelesys_FileUpload_Enabled',
+		);
+		this.mediaTypeWhiteList = settings.get(
+			'SMS_Voxtelesys_FileUpload_MediaTypeWhiteList',
+		);
 	}
 
 	parse(data) {
@@ -47,7 +52,9 @@ class Voxtelesys {
 			};
 
 			const mediaUrl = data.media[mediaIndex];
-			const contentType = mime.lookup(new URL(data.media[mediaIndex]).pathname);
+			const contentType = mime.lookup(
+				new URL(data.media[mediaIndex]).pathname,
+			);
 
 			media.url = mediaUrl;
 			media.contentType = contentType;
@@ -62,7 +69,11 @@ class Voxtelesys {
 		let media;
 		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
-			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
+			const {
+				rid,
+				userId,
+				fileUpload: { size, type, publicFilePath },
+			} = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || defaultLanguage;
 
@@ -74,7 +85,12 @@ class Voxtelesys {
 					size: filesize(MAX_FILE_SIZE),
 					lng,
 				});
-			} else if (!fileUploadIsValidContentType(type, this.fileUploadMediaTypeWhiteList)) {
+			} else if (
+				!fileUploadIsValidContentType(
+					type,
+					this.fileUploadMediaTypeWhiteList,
+				)
+			) {
 				reason = TAPi18n.__('File_type_is_not_accepted', { lng });
 			}
 
@@ -99,9 +115,15 @@ class Voxtelesys {
 		};
 
 		try {
-			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
+			HTTP.call(
+				'POST',
+				this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms',
+				options,
+			);
 		} catch (error) {
-			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
+			SystemLogger.error(
+				`Error connecting to Voxtelesys SMS API: ${ error }`,
+			);
 		}
 	}
 

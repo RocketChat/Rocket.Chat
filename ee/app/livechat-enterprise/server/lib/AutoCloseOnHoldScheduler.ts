@@ -20,7 +20,9 @@ class AutoCloseOnHoldSchedulerClass {
 		}
 
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: (
+				MongoInternals.defaultRemoteCollectionDriver().mongo as any
+			).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
 		});
@@ -29,7 +31,11 @@ class AutoCloseOnHoldSchedulerClass {
 		this.running = true;
 	}
 
-	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
+	public async scheduleRoom(
+		roomId: string,
+		timeout: number,
+		comment: string,
+	): Promise<void> {
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
@@ -38,7 +44,6 @@ class AutoCloseOnHoldSchedulerClass {
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		await this.scheduler.schedule(when, jobName, { roomId, comment });
 	}
-
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
 		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;

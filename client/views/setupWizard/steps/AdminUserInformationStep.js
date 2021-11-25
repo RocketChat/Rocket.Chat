@@ -106,7 +106,10 @@ function AdminUserInformationStep({ step, title, active }) {
 				email,
 				password,
 				onRegistrationEmailSent: () => {
-					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+					dispatchToastMessage({
+						type: 'success',
+						message: t('We_have_sent_registration_email'),
+					});
 				},
 			});
 		} catch (error) {

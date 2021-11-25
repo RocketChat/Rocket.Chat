@@ -12,7 +12,9 @@ class MessageBoxActions {
 			this.actions[group] = [];
 		}
 
-		const actionExists = this.actions[group].find((action) => action.label === label);
+		const actionExists = this.actions[group].find(
+			(action) => action.label === label,
+		);
 
 		if (actionExists) {
 			return;
@@ -26,14 +28,18 @@ class MessageBoxActions {
 			return false;
 		}
 
-		this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id));
+		this.actions[group] = this.actions[group].filter(
+			(action) => !expression.test(action.id),
+		);
 		return this.actions[group];
 	}
 
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
-				const actions = this.actions[key].filter((action) => !action.condition || action.condition());
+				const actions = this.actions[key].filter(
+					(action) => !action.condition || action.condition(),
+				);
 				if (actions.length) {
 					ret[key] = actions;
 				}
@@ -41,7 +47,9 @@ class MessageBoxActions {
 			}, {});
 		}
 
-		return this.actions[group].filter((action) => !action.condition || action.condition());
+		return this.actions[group].filter(
+			(action) => !action.condition || action.condition(),
+		);
 	}
 
 	getById(id) {

@@ -3,18 +3,22 @@ import EJSON from 'ejson';
 
 import { asyncLocalStorage, License } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
-import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
+import {
+	IBroker,
+	IBrokerNode,
+	IServiceMetrics,
+} from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
-const events: {[k: string]: string} = {
+const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
 	onNodeUpdated: '$node.updated',
 	onNodeDisconnected: '$node.disconnected',
 };
 
-const lifecycle: {[k: string]: string} = {
+const lifecycle: { [k: string]: string } = {
 	created: 'created',
 	started: 'started',
 	stopped: 'stopped',
@@ -28,7 +32,7 @@ const {
 } = process.env;
 
 const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
-const waitForServicesWhitelistTimeout = parseInt(WAIT_FOR_SERVICES_WHITELIST_TIMEOUT, 10) || 600000;
+const waitForServicesWhitelistTimeout =	parseInt(WAIT_FOR_SERVICES_WHITELIST_TIMEOUT, 10) || 600000;
 
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
@@ -42,13 +46,19 @@ class NetworkBroker implements IBroker {
 	private whitelist = {
 		events: ['license.module', 'watch.settings'],
 		actions: ['license.hasLicense'],
-	}
+	};
 
 	// whether only internal services are allowed to be registered
-	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
+	private internalOnly = ['true', 'yes'].includes(
+		INTERNAL_SERVICES_ONLY.toLowerCase(),
+	);
 
 	// list of allowed services to run - has precedence over `internalOnly`
-	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(',').map((i) => i.trim()).filter((i) => i));
+	private allowedList = new Set<string>(
+		SERVICES_ALLOWED?.split(',')
+			.map((i) => i.trim())
+			.filter((i) => i),
+	);
 
 	metrics: IServiceMetrics;
 
@@ -88,8 +98,13 @@ class NetworkBroker implements IBroker {
 			return context.ctx.call(method, data);
 		}
 
-		const services: {name: string}[] = await this.broker.call('$node.services', { onlyAvailable: true });
-		if (!services.find((service) => service.name === method.split('.')[0])) {
+		const services: { name: string }[] = await this.broker.call(
+			'$node.services',
+			{ onlyAvailable: true },
+		);
+		if (
+			!services.find((service) => service.name === method.split('.')[0])
+		) {
 			return new Error('method-not-available');
 		}
 		return this.broker.call(method, data);
@@ -103,7 +118,12 @@ class NetworkBroker implements IBroker {
 		}
 
 		try {
-			await this.broker.waitForServices(method.split('.')[0], this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout);
+			await this.broker.waitForServices(
+				method.split('.')[0],
+				this.isActionWhitelisted(method)
+					? waitForServicesWhitelistTimeout
+					: waitForServicesTimeout,
+			);
 		} catch (err) {
 			console.error(err);
 		}
@@ -135,7 +155,9 @@ class NetworkBroker implements IBroker {
 		instance.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability') {
 				// Should we believe on the event only? Could it be a call from the CE version?
-				this.allowed = valid ? License.hasLicense('scalability') : Promise.resolve(false);
+				this.allowed = valid
+					? License.hasLicense('scalability')
+					: Promise.resolve(false);
 				// console.log('on license.module', { allowed: this.allowed });
 			}
 		});
@@ -143,14 +165,23 @@ class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
+			events: instance
+				.getEvents()
+				.reduce<Record<string, Function>>((map, eventName) => {
 				if (this.isEventWhitelisted(eventName)) {
-					map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): void => instance.emit(eventName, ...data);
+					map[eventName] = (
+						data: Parameters<EventSignatures[typeof eventName]>,
+					): void => instance.emit(eventName, ...data);
 					return map;
 				}
 
-				map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): any => {
-					this.allowed.then((allowed) => allowed && instance.emit(eventName, ...data));
+				map[eventName] = (
+					data: Parameters<EventSignatures[typeof eventName]>,
+				): any => {
+					this.allowed.then(
+						(allowed) =>
+							allowed && instance.emit(eventName, ...data),
+					);
 				};
 
 				return map;
@@ -161,7 +192,9 @@ class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+		const methods =			instance.constructor?.name === 'Object'
+			? Object.getOwnPropertyNames(instance)
+			: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
@@ -175,39 +208,56 @@ class NetworkBroker implements IBroker {
 			}
 
 			if (lifecycle[method]) {
-				service[method] = (): void => asyncLocalStorage.run({
-					id: '',
-					nodeID: this.broker.nodeID,
-					requestID: null,
-					broker: this,
-				}, i[method].bind(i));
+				service[method] = (): void =>
+					asyncLocalStorage.run(
+						{
+							id: '',
+							nodeID: this.broker.nodeID,
+							requestID: null,
+							broker: this,
+						},
+						i[method].bind(i),
+					);
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> => asyncLocalStorage.run({
-				id: ctx.id,
-				nodeID: ctx.nodeID,
-				requestID: ctx.requestID,
-				broker: this,
-				ctx,
-			}, async (): Promise<any> => {
-				if (this.isActionWhitelisted(`${ name }.${ method }`) || await this.allowed) {
-					return i[method](...ctx.params);
-				}
-			});
+			service.actions[method] = async (ctx: Context<[]>): Promise<any> =>
+				asyncLocalStorage.run(
+					{
+						id: ctx.id,
+						nodeID: ctx.nodeID,
+						requestID: ctx.requestID,
+						broker: this,
+						ctx,
+					},
+					async (): Promise<any> => {
+						if (
+							this.isActionWhitelisted(`${ name }.${ method }`)
+							|| await this.allowed
+						) {
+							return i[method](...ctx.params);
+						}
+					},
+				);
 		}
 
 		this.broker.createService(service);
 	}
 
-	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+	async broadcast<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
 		if (!(this.isEventWhitelisted(event) || await this.allowed)) {
 			return this.localBroker.broadcast(event, ...args);
 		}
 		return this.broker.broadcast(event, args);
 	}
 
-	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+	async broadcastLocal<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
 		this.broker.broadcastLocal(event, args);
 	}
 
@@ -217,7 +267,10 @@ class NetworkBroker implements IBroker {
 
 	private isServiceAllowed(instance: ServiceClass): boolean {
 		// check if the service is in the list of allowed services if the list is not empty
-		if (this.allowedList.size > 0 && !this.allowedList.has(instance.getName())) {
+		if (
+			this.allowedList.size > 0
+			&& !this.allowedList.has(instance.getName())
+		) {
 			return false;
 		}
 
@@ -271,16 +324,19 @@ const {
 if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 	const network = new ServiceBroker({
 		// TODO: Reevaluate, without this setting it was preventing the process to stop
-		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
+		skipProcessEventRegistration:
+			SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 		transporter: TRANSPORTER,
 		metrics: {
 			enabled: MS_METRICS === 'true',
-			reporter: [{
-				type: 'Prometheus',
-				options: {
-					port: MS_METRICS_PORT,
+			reporter: [
+				{
+					type: 'Prometheus',
+					options: {
+						port: MS_METRICS_PORT,
+					},
 				},
-			}],
+			],
 		},
 		cacher: CACHE,
 		serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,

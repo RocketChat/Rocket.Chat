@@ -23,14 +23,18 @@ const handleEntries = function(entries) {
 
 const featureExists = !!window.IntersectionObserver;
 
-const observer = featureExists && new IntersectionObserver(handleEntries, options);
+const observer =	featureExists && new IntersectionObserver(handleEntries, options);
 
 Tracker.autorun(() => {
 	// Only clear statuses on disconnect, prevent process it on reconnect again
 	const isConnected = Meteor.status().connected;
 	if (!Meteor.userId() || !isConnected) {
 		Presence.reset();
-		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
+		return Meteor.users.update(
+			{ status: { $exists: true } },
+			{ $unset: { status: true } },
+			{ multi: true },
+		);
 	}
 
 	Presence.restart();
@@ -42,7 +46,6 @@ Tracker.autorun(() => {
 		}
 		return;
 	}
-
 
 	Accounts.onLogout(() => {
 		Presence.reset();

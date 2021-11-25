@@ -50,7 +50,9 @@ export class AppVisitorsConverter {
 			token: visitor.token,
 			phone: visitor.phone,
 			livechatData: visitor.livechatData,
-			...visitor.visitorEmails && { visitorEmails: visitor.visitorEmails },
+			...visitor.visitorEmails && {
+				visitorEmails: visitor.visitorEmails,
+			},
 			...visitor.department && { department: visitor.department },
 		};
 

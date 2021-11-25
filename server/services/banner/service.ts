@@ -6,7 +6,11 @@ import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
-import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
+import {
+	BannerPlatform,
+	IBanner,
+	IBannerDismiss,
+} from '../../../definition/IBanner';
 import { api } from '../../sdk/api';
 import { IUser } from '../../../definition/IUser';
 import { Optional } from '../../../definition/utils';
@@ -24,7 +28,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 		super();
 
 		this.Banners = new BannersRaw(db.collection('rocketchat_banner'));
-		this.BannersDismiss = new BannersDismissRaw(db.collection('rocketchat_banner_dismiss'));
+		this.BannersDismiss = new BannersDismissRaw(
+			db.collection('rocketchat_banner_dismiss'),
+		);
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
@@ -41,9 +47,16 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		const { _id, ...banner } = result;
 
-		const snapshot = await this.create({ ...banner, snapshot: _id, active: false }); // create a snapshot
+		const snapshot = await this.create({
+			...banner,
+			snapshot: _id,
+			active: false,
+		}); // create a snapshot
 
-		await this.BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
+		await this.BannersDismiss.updateMany(
+			{ bannerId },
+			{ $set: { bannerId: snapshot._id } },
+		);
 		return true;
 	}
 
@@ -68,16 +81,31 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return banner;
 	}
 
-	async getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
-		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
+	async getBannersForUser(
+		userId: string,
+		platform: BannerPlatform,
+		bannerId?: string,
+	): Promise<IBanner[]> {
+		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(
+			userId,
+			{
+				projection: { roles: 1 },
+			},
+		);
 
 		const { roles } = user || { roles: [] };
 
-		const banners = await this.Banners.findActiveByRoleOrId(roles, platform, bannerId).toArray();
+		const banners = await this.Banners.findActiveByRoleOrId(
+			roles,
+			platform,
+			bannerId,
+		).toArray();
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+		const result = await this.BannersDismiss.findByUserIdAndBannerId<
+		Pick<IBannerDismiss, 'bannerId'>
+		>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 
@@ -94,7 +122,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 			throw new Error('Banner not found');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, { projection: { username: 1 } });
+		const user = await this.Users.findOneById<
+		Pick<IUser, 'username' | '_id'>
+		>(userId, { projection: { username: 1 } });
 		if (!user) {
 			throw new Error('User not found');
 		}
@@ -129,7 +159,10 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return false;
 	}
 
-	async enable(bannerId: string, doc: Partial<Omit<IBanner, '_id'>> = {}): Promise<boolean> {
+	async enable(
+		bannerId: string,
+		doc: Partial<Omit<IBanner, '_id'>> = {},
+	): Promise<boolean> {
 		const result = await this.Banners.findOneById(bannerId);
 
 		if (!result) {

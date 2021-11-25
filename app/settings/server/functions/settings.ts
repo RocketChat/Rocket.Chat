@@ -3,7 +3,6 @@ import { CachedSettings } from '../CachedSettings';
 import { SettingsRegistry } from '../SettingsRegistry';
 import { ISetting } from '../../../../definition/ISetting';
 
-
 export const settings = new CachedSettings();
 SettingsModel.find().forEach((record: ISetting) => {
 	settings.set(record);
@@ -11,4 +10,7 @@ SettingsModel.find().forEach((record: ISetting) => {
 
 settings.initilized();
 
-export const settingsRegistry = new SettingsRegistry({ store: settings, model: SettingsModel });
+export const settingsRegistry = new SettingsRegistry({
+	store: settings,
+	model: SettingsModel,
+});

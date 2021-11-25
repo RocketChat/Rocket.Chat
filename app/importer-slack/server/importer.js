@@ -1,10 +1,6 @@
 import _ from 'underscore';
 
-import {
-	Base,
-	ProgressStep,
-	ImporterWebsocket,
-} from '../../importer/server';
+import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
@@ -24,7 +20,9 @@ export class SlackImporter extends Base {
 
 	prepareChannelsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+		const data = JSON.parse(entry.getData().toString()).filter(
+			(channel) => channel.creator != null,
+		);
 
 		this.logger.debug(`loaded ${ data.length } channels.`);
 
@@ -36,15 +34,15 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [
-					channel.id,
-				],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: 'c',
 				topic: channel.topic?.value || undefined,
 				description: channel.purpose?.value || undefined,
-				ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				ts: channel.created
+					? new Date(channel.created * 1000)
+					: undefined,
 				archived: channel.is_archived,
 			});
 		}
@@ -54,7 +52,9 @@ export class SlackImporter extends Base {
 
 	prepareGroupsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+		const data = JSON.parse(entry.getData().toString()).filter(
+			(channel) => channel.creator != null,
+		);
 
 		this.logger.debug(`loaded ${ data.length } groups.`);
 
@@ -65,15 +65,15 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [
-					channel.id,
-				],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: 'p',
 				topic: channel.topic?.value || undefined,
 				description: channel.purpose?.value || undefined,
-				ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				ts: channel.created
+					? new Date(channel.created * 1000)
+					: undefined,
 				archived: channel.is_archived,
 			});
 		}
@@ -83,7 +83,9 @@ export class SlackImporter extends Base {
 
 	prepareMpimpsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+		const data = JSON.parse(entry.getData().toString()).filter(
+			(channel) => channel.creator != null,
+		);
 
 		this.logger.debug(`loaded ${ data.length } mpims.`);
 
@@ -96,15 +98,15 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [
-					channel.id,
-				],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: channel.members.length > maxUsers ? 'p' : 'd',
 				topic: channel.topic?.value || undefined,
 				description: channel.purpose?.value || undefined,
-				ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				ts: channel.created
+					? new Date(channel.created * 1000)
+					: undefined,
 				archived: channel.is_archived,
 			});
 		}
@@ -121,12 +123,12 @@ export class SlackImporter extends Base {
 		this.addCountToTotal(data.length);
 		for (const channel of data) {
 			this.converter.addChannel({
-				importIds: [
-					channel.id,
-				],
+				importIds: [channel.id],
 				users: this._replaceSlackUserIds(channel.members),
 				t: 'd',
-				ts: channel.created ? new Date(channel.created * 1000) : undefined,
+				ts: channel.created
+					? new Date(channel.created * 1000)
+					: undefined,
 			});
 		}
 
@@ -143,17 +145,15 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.users': data.length });
 		this.addCountToTotal(data.length);
 
-
 		for (const user of data) {
 			const newUser = {
 				emails: [],
-				importIds: [
-					user.id,
-				],
+				importIds: [user.id],
 				username: user.name,
 				name: user.profile.real_name,
-				utcOffset: user.tz_offset && (user.tz_offset / 3600),
-				avatarUrl: user.profile.image_original || user.profile.image_512,
+				utcOffset: user.tz_offset && user.tz_offset / 3600,
+				avatarUrl:
+					user.profile.image_original || user.profile.image_512,
 				deleted: user.deleted,
 				statusText: user.profile.status_text || undefined,
 				bio: user.profile.title || undefined,
@@ -190,7 +190,7 @@ export class SlackImporter extends Base {
 		const increaseProgress = () => {
 			try {
 				count++;
-				const rate = Math.floor(count * 1000 / totalEntries) / 10;
+				const rate = Math.floor((count * 1000) / totalEntries) / 10;
 				if (rate > oldRate) {
 					ImporterWebsocket.progressUpdated({ rate });
 					oldRate = rate;
@@ -244,12 +244,25 @@ export class SlackImporter extends Base {
 
 			zip.forEach((entry) => {
 				try {
-					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
+					if (
+						entry.entryName.includes('__MACOSX')
+						|| entry.entryName.includes('.DS_Store')
+					) {
 						count++;
-						return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
+						return this.logger.debug(
+							`Ignoring the file: ${ entry.entryName }`,
+						);
 					}
 
-					if (['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(entry.entryName)) {
+					if (
+						[
+							'channels.json',
+							'groups.json',
+							'mpims.json',
+							'dms.json',
+							'users.json',
+						].includes(entry.entryName)
+					) {
 						return;
 					}
 
@@ -261,24 +274,41 @@ export class SlackImporter extends Base {
 
 						try {
 							// Insert the messages records
-							if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-								super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+							if (
+								this.progress.step
+								!== ProgressStep.PREPARING_MESSAGES
+							) {
+								super.updateProgress(
+									ProgressStep.PREPARING_MESSAGES,
+								);
 							}
 
-							const tempMessages = JSON.parse(entry.getData().toString());
+							const tempMessages = JSON.parse(
+								entry.getData().toString(),
+							);
 							messagesCount += tempMessages.length;
-							this.updateRecord({ messagesstatus: `${ channel }/${ date }` });
+							this.updateRecord({
+								messagesstatus: `${ channel }/${ date }`,
+							});
 							this.addCountToTotal(tempMessages.length);
 
-							const slackChannelId = ImportData.findChannelImportIdByNameOrImportId(channel);
+							const slackChannelId =								ImportData.findChannelImportIdByNameOrImportId(
+								channel,
+							);
 
 							if (slackChannelId) {
 								for (const message of tempMessages) {
-									this.prepareMessageObject(message, missedTypes, slackChannelId);
+									this.prepareMessageObject(
+										message,
+										missedTypes,
+										slackChannelId,
+									);
 								}
 							}
 						} catch (error) {
-							this.logger.warn(`${ entry.entryName } is not a valid JSON file! Unable to import it.`);
+							this.logger.warn(
+								`${ entry.entryName } is not a valid JSON file! Unable to import it.`,
+							);
 						}
 					}
 				} catch (e) {
@@ -297,7 +327,10 @@ export class SlackImporter extends Base {
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
-		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
+		this.updateRecord({
+			'count.messages': messagesCount,
+			messagesstatus: null,
+		});
 	}
 
 	parseMentions(newMessage) {
@@ -307,7 +340,10 @@ export class SlackImporter extends Base {
 			me: () => 'me',
 		});
 
-		const users = mentionsParser.getUserMentions(newMessage.msg).filter((u) => u).map((uid) => this._replaceSlackUserId(uid.slice(1, uid.length)));
+		const users = mentionsParser
+			.getUserMentions(newMessage.msg)
+			.filter((u) => u)
+			.map((uid) => this._replaceSlackUserId(uid.slice(1, uid.length)));
 		if (users.length) {
 			if (!newMessage.mentions) {
 				newMessage.mentions = [];
@@ -315,7 +351,10 @@ export class SlackImporter extends Base {
 			newMessage.mentions.push(...users);
 		}
 
-		const channels = mentionsParser.getChannelMentions(newMessage.msg).filter((c) => c).map((name) => name.slice(1, name.length));
+		const channels = mentionsParser
+			.getChannelMentions(newMessage.msg)
+			.filter((c) => c)
+			.map((name) => name.slice(1, name.length));
 		if (channels.length) {
 			if (!newMessage.channels) {
 				newMessage.channels = [];
@@ -325,7 +364,11 @@ export class SlackImporter extends Base {
 	}
 
 	processMessageSubType(message, slackChannelId, newMessage, missedTypes) {
-		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
+		const ignoreTypes = {
+			bot_add: true,
+			file_comment: true,
+			file_mention: true,
+		};
 
 		switch (message.subtype) {
 			case 'channel_join':
@@ -362,29 +405,42 @@ export class SlackImporter extends Base {
 						newMessage.attachments = [];
 					}
 					newMessage.attachments.push({
-						text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
+						text: this.convertSlackMessageToRocketChat(
+							message.attachments[0].text,
+						),
 						author_name: message.attachments[0].author_subname,
-						author_icon: getUserAvatarURL(message.attachments[0].author_subname),
+						author_icon: getUserAvatarURL(
+							message.attachments[0].author_subname,
+						),
 					});
 					newMessage.t = 'message_pinned';
 				}
 				break;
 			case 'file_share':
 				if (message.file?.url_private_download) {
-					const fileId = this.makeSlackMessageId(slackChannelId, message.ts, 'share');
+					const fileId = this.makeSlackMessageId(
+						slackChannelId,
+						message.ts,
+						'share',
+					);
 					const fileMessage = {
 						_id: fileId,
 						rid: newMessage.rid,
 						ts: newMessage.ts,
 						msg: message.file.url_private_download || '',
-						_importFile: this.convertSlackFileToPendingFile(message.file),
+						_importFile: this.convertSlackFileToPendingFile(
+							message.file,
+						),
 						u: {
 							_id: newMessage.u._id,
 						},
 					};
 
-					if (message.thread_ts && (message.thread_ts !== message.ts)) {
-						fileMessage.tmid = this.makeSlackMessageId(slackChannelId, message.thread_ts);
+					if (message.thread_ts && message.thread_ts !== message.ts) {
+						fileMessage.tmid = this.makeSlackMessageId(
+							slackChannelId,
+							message.thread_ts,
+						);
 					}
 
 					this.converter.addMessage(fileMessage, this._useUpsert);
@@ -392,7 +448,10 @@ export class SlackImporter extends Base {
 				break;
 
 			default:
-				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
+				if (
+					!missedTypes[message.subtype]
+					&& !ignoreTypes[message.subtype]
+				) {
 					missedTypes[message.subtype] = message;
 				}
 				break;
@@ -441,7 +500,11 @@ export class SlackImporter extends Base {
 				message.files.forEach((file) => {
 					fileIndex++;
 
-					const fileId = this.makeSlackMessageId(slackChannelId, message.ts, fileIndex);
+					const fileId = this.makeSlackMessageId(
+						slackChannelId,
+						message.ts,
+						fileIndex,
+					);
 					const fileMessage = {
 						_id: fileId,
 						rid: slackChannelId,
@@ -453,23 +516,35 @@ export class SlackImporter extends Base {
 						},
 					};
 
-					if (message.thread_ts && (message.thread_ts !== message.ts)) {
-						fileMessage.tmid = this.makeSlackMessageId(slackChannelId, message.thread_ts);
+					if (message.thread_ts && message.thread_ts !== message.ts) {
+						fileMessage.tmid = this.makeSlackMessageId(
+							slackChannelId,
+							message.thread_ts,
+						);
 					}
 
 					this.converter.addMessage(fileMessage, this._useUpsert);
 				});
 			}
 
-			const regularTypes = [
-				'me_message',
-				'thread_broadcast',
-			];
+			const regularTypes = ['me_message', 'thread_broadcast'];
 
-			const isBotMessage = message.subtype && ['bot_message', 'slackbot_response'].includes(message.subtype);
+			const isBotMessage =				message.subtype
+				&& ['bot_message', 'slackbot_response'].includes(message.subtype);
 
-			if (message.subtype && !regularTypes.includes(message.subtype) && !isBotMessage) {
-				if (this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
+			if (
+				message.subtype
+				&& !regularTypes.includes(message.subtype)
+				&& !isBotMessage
+			) {
+				if (
+					this.processMessageSubType(
+						message,
+						slackChannelId,
+						newMessage,
+						missedTypes,
+					)
+				) {
 					this.converter.addMessage(newMessage, this._useUpsert);
 				}
 			} else {
@@ -499,32 +574,47 @@ export class SlackImporter extends Base {
 						} else if (message.replies) {
 							const replies = new Set();
 							message.repĺies.forEach((item) => {
-								replies.add(this._replaceSlackUserId(item.user));
+								replies.add(
+									this._replaceSlackUserId(item.user),
+								);
 							});
 
 							if (replies.length) {
 								newMessage.replies = Array.from(replies);
 							}
 						} else {
-							this.logger.warn(`Failed to import the parent comment, message: ${ newMessage._id }. Missing replies/reply_users field`);
+							this.logger.warn(
+								`Failed to import the parent comment, message: ${ newMessage._id }. Missing replies/reply_users field`,
+							);
 						}
 
 						newMessage.tcount = message.reply_count;
-						newMessage.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
+						newMessage.tlm = new Date(
+							parseInt(message.latest_reply.split('.')[0]) * 1000,
+						);
 					} else {
-						newMessage.tmid = this.makeSlackMessageId(slackChannelId, message.thread_ts);
+						newMessage.tmid = this.makeSlackMessageId(
+							slackChannelId,
+							message.thread_ts,
+						);
 					}
 				}
 
 				if (message.edited) {
-					newMessage.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+					newMessage.editedAt = new Date(
+						parseInt(message.edited.ts.split('.')[0]) * 1000,
+					);
 					if (message.edited.user) {
-						newMessage.editedBy = this._replaceSlackUserId(message.edited.user);
+						newMessage.editedBy = this._replaceSlackUserId(
+							message.edited.user,
+						);
 					}
 				}
 
 				if (message.attachments) {
-					newMessage.attachments = this.convertMessageAttachments(message.attachments);
+					newMessage.attachments = this.convertMessageAttachments(
+						message.attachments,
+					);
 				}
 
 				if (message.icons && message.icons.emoji) {
@@ -562,7 +652,10 @@ export class SlackImporter extends Base {
 			message = message.replace(/:piggy:/g, ':pig:');
 			message = message.replace(/:uk:/g, ':gb:');
 			message = message.replace(/<(http[s]?:[^>|]*)>/g, '$1');
-			message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
+			message = message.replace(
+				/<(http[s]?:[^|]*)\|([^>]*)>/g,
+				'[$2]($1)',
+			);
 			message = message.replace(/<#([^|]*)\|([^>]*)>/g, '#$2');
 			message = message.replace(/<@([^|]*)\|([^>]*)>/g, '@$1');
 			message = message.replace(/<@([^|>]*)>/g, '@$1');

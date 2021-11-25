@@ -3,7 +3,11 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
-import { checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated } from '../../data/checks';
+import {
+	checkIfUserIsValid,
+	publicChannelCreated,
+	setPublicChannelCreated,
+} from '../../data/checks';
 import { publicChannelName } from '../../data/channel.js';
 import { targetUser } from '../../data/interactions.js';
 
@@ -48,7 +52,10 @@ describe('[Channel]', () => {
 				});
 
 				it('it should go to the user created channel', () => {
-					mainContent.channelTitle.should('contain', publicChannelName);
+					mainContent.channelTitle.should(
+						'contain',
+						publicChannelName,
+					);
 				});
 			});
 		});
@@ -59,7 +66,10 @@ describe('[Channel]', () => {
 			});
 			describe('rocket.cat:', () => {
 				it('it should show the rocket cat in the direct messages list', () => {
-					sideNav.getChannelFromList('rocket.cat').scrollIntoView().should('be.visible');
+					sideNav
+						.getChannelFromList('rocket.cat')
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should go to the rocket cat direct message', () => {
@@ -69,7 +79,10 @@ describe('[Channel]', () => {
 
 			describe('general:', () => {
 				it('it should show the general in the channel list', () => {
-					sideNav.getChannelFromList('general').scrollIntoView().should('be.visible');
+					sideNav
+						.getChannelFromList('general')
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should go to the general channel', () => {
@@ -79,7 +92,10 @@ describe('[Channel]', () => {
 
 			describe('user created channel:', () => {
 				it('it should show the user created channel in the channel list', () => {
-					sideNav.getChannelFromList(publicChannelName).scrollIntoView().should('be.visible');
+					sideNav
+						.getChannelFromList(publicChannelName)
+						.scrollIntoView()
+						.should('be.visible');
 				});
 
 				it('it should go to the user created channel', () => {
@@ -131,7 +147,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the old name', () => {
-					flexTab.firstSetting.getText().should.equal(publicChannelName);
+					flexTab.firstSetting
+						.getText()
+						.should.equal(publicChannelName);
 				});
 
 				it('it should click the edit name', () => {
@@ -139,7 +157,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should edit the name input', () => {
-					flexTab.editNameTextInput.type(`NAME-EDITED-${ publicChannelName }`);
+					flexTab.editNameTextInput.type(
+						`NAME-EDITED-${ publicChannelName }`,
+					);
 				});
 
 				it('it should save the name', () => {
@@ -147,8 +167,12 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the new name', () => {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
-					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
+					const channelName = sideNav.getChannelFromList(
+						`NAME-EDITED-${ publicChannelName }`,
+					);
+					channelName
+						.getText()
+						.should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
 
@@ -177,7 +201,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the new topic', () => {
-					flexTab.secondSetting.getText().should.equal('TOPIC EDITED');
+					flexTab.secondSetting
+						.getText()
+						.should.equal('TOPIC EDITED');
 				});
 			});
 
@@ -198,7 +224,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should edit the announcement input', () => {
-					flexTab.editAnnouncementTextInput.type('ANNOUNCEMENT EDITED');
+					flexTab.editAnnouncementTextInput.type(
+						'ANNOUNCEMENT EDITED',
+					);
 				});
 
 				it('it should save the announcement', () => {
@@ -206,7 +234,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the new announcement', () => {
-					flexTab.thirdSetting.getText().should.equal('ANNOUNCEMENT EDITED');
+					flexTab.thirdSetting
+						.getText()
+						.should.equal('ANNOUNCEMENT EDITED');
 				});
 			});
 
@@ -235,7 +265,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the new description', () => {
-					flexTab.fourthSetting.getText().should.equal('DESCRIPTION EDITED');
+					flexTab.fourthSetting
+						.getText()
+						.should.equal('DESCRIPTION EDITED');
 				});
 			});
 		});
@@ -285,7 +317,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the target username in owner add message', () => {
-					mainContent.lastMessage.getText().should.have.string(targetUser);
+					mainContent.lastMessage
+						.getText()
+						.should.have.string(targetUser);
 				});
 			});
 
@@ -319,14 +353,18 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the target username in moderator add message', () => {
-					mainContent.lastMessage.getText().should.have.string(targetUser);
+					mainContent.lastMessage
+						.getText()
+						.should.have.string(targetUser);
 				});
 			});
 
 			// no channel quit at the moment
 			describe.skip('channel quit and enter', () => {
 				it('it should leave the channel', () => {
-					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
+					const channel = sideNav.getChannelFromList(
+						`NAME-EDITED-${ publicChannelName }`,
+					);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.click();
@@ -342,7 +380,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should not show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('not.be.visible');
+					sideNav
+						.getChannelFromList(`NAME-EDITED-${ publicChannelName }`)
+						.should('not.be.visible');
 				});
 
 				it('it should search and enter the channel with the spotlight', () => {
@@ -351,7 +391,9 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('be.visible');
+					sideNav
+						.getChannelFromList(`NAME-EDITED-${ publicChannelName }`)
+						.should('be.visible');
 				});
 			});
 		});

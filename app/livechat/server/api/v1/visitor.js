@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
+import {
+	LivechatRooms,
+	LivechatVisitors,
+	LivechatCustomField,
+} from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -35,7 +39,9 @@ API.v1.addRoute('livechat/visitor', {
 				guest.phone = { number: this.bodyParams.visitor.phone };
 			}
 
-			guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+			guest.connectionData = normalizeHttpHeaderData(
+				this.request.headers,
+			);
 			const visitorId = Livechat.registerGuest(guest);
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
@@ -47,12 +53,22 @@ API.v1.addRoute('livechat/visitor', {
 
 			if (customFields && customFields instanceof Array) {
 				customFields.forEach((field) => {
-					const customField = LivechatCustomField.findOneById(field.key);
+					const customField = LivechatCustomField.findOneById(
+						field.key,
+					);
 					if (!customField) {
 						return;
 					}
 					const { key, value, overwrite } = field;
-					if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
+					if (
+						customField.scope === 'visitor'
+						&& !LivechatVisitors.updateLivechatDataByToken(
+							token,
+							key,
+							value,
+							overwrite,
+						)
+					) {
 						return API.v1.failure();
 					}
 				});
@@ -73,7 +89,9 @@ API.v1.addRoute('livechat/visitor/:token', {
 				token: String,
 			});
 
-			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
+			const visitor = LivechatVisitors.getVisitorByToken(
+				this.urlParams.token,
+			);
 			return API.v1.success({ visitor });
 		} catch (e) {
 			return API.v1.failure(e.error);
@@ -85,7 +103,9 @@ API.v1.addRoute('livechat/visitor/:token', {
 				token: String,
 			});
 
-			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
+			const visitor = LivechatVisitors.getVisitorByToken(
+				this.urlParams.token,
+			);
 			if (!visitor) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -108,25 +128,32 @@ API.v1.addRoute('livechat/visitor/:token', {
 	},
 });
 
-API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
-	get() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
-			return API.v1.unauthorized();
-		}
+API.v1.addRoute(
+	'livechat/visitor/:token/room',
+	{ authRequired: true },
+	{
+		get() {
+			if (!hasPermission(this.userId, 'view-livechat-manager')) {
+				return API.v1.unauthorized();
+			}
 
-		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
-			fields: {
-				name: 1,
-				t: 1,
-				cl: 1,
-				u: 1,
-				usernames: 1,
-				servedBy: 1,
-			},
-		}).fetch();
-		return API.v1.success({ rooms });
+			const rooms = LivechatRooms.findOpenByVisitorToken(
+				this.urlParams.token,
+				{
+					fields: {
+						name: 1,
+						t: 1,
+						cl: 1,
+						u: 1,
+						usernames: 1,
+						servedBy: 1,
+					},
+				},
+			).fetch();
+			return API.v1.success({ rooms });
+		},
 	},
-});
+);
 
 API.v1.addRoute('livechat/visitor.callStatus', {
 	post() {

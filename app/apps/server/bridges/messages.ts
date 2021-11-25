@@ -1,4 +1,7 @@
-import { ITypingDescriptor, MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
+import {
+	ITypingDescriptor,
+	MessageBridge,
+} from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
@@ -20,40 +23,66 @@ export class AppMessageBridge extends MessageBridge {
 	protected async create(message: IMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
-		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedMessage = this.orch
+			.getConverters()
+			?.get('messages')
+			.convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = executeSendMessage(
+			convertedMessage.u._id,
+			convertedMessage,
+		);
 
 		return sentMessage._id;
 	}
 
-	protected async getById(messageId: string, appId: string): Promise<IMessage> {
-		this.orch.debugLog(`The App ${ appId } is getting the message: "${ messageId }"`);
+	protected async getById(
+		messageId: string,
+		appId: string,
+	): Promise<IMessage> {
+		this.orch.debugLog(
+			`The App ${ appId } is getting the message: "${ messageId }"`,
+		);
 
-		return this.orch.getConverters()?.get('messages').convertById(messageId);
+		return this.orch
+			.getConverters()
+			?.get('messages')
+			.convertById(messageId);
 	}
 
 	protected async update(message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
 
 		if (!message.editor) {
-			throw new Error('Invalid editor assigned to the message for the update.');
+			throw new Error(
+				'Invalid editor assigned to the message for the update.',
+			);
 		}
 
 		if (!message.id || !Messages.findOneById(message.id)) {
 			throw new Error('A message must exist to update.');
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = this.orch
+			.getConverters()
+			?.get('messages')
+			.convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
 		updateMessage(msg, editor);
 	}
 
-	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
+	protected async notifyUser(
+		user: IUser,
+		message: IMessage,
+		appId: string,
+	): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is notifying a user.`);
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = this.orch
+			.getConverters()
+			?.get('messages')
+			.convertAppMessage(message);
 
 		if (!msg) {
 			return;
@@ -64,16 +93,25 @@ export class AppMessageBridge extends MessageBridge {
 		});
 	}
 
-	protected async notifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
+	protected async notifyRoom(
+		room: IRoom,
+		message: IMessage,
+		appId: string,
+	): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is notifying a room's users.`);
 
 		if (!room || !room.id) {
 			return;
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = this.orch
+			.getConverters()
+			?.get('messages')
+			.convertAppMessage(message);
 
-		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
+		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, {
+			fields: { 'u._id': 1 },
+		})
 			.fetch()
 			.map((s: ISubscription) => s.u._id);
 
@@ -86,7 +124,12 @@ export class AppMessageBridge extends MessageBridge {
 			);
 	}
 
-	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
+	protected async typing({
+		scope,
+		id,
+		username,
+		isTyping,
+	}: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
 				notifications.notifyRoom(id, 'typing', username, isTyping);

@@ -7,15 +7,17 @@ import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod
 
 Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: {
-					saml: true,
-					credentialToken,
+		methodArguments: [
+			{
+				totp: {
+					login: {
+						saml: true,
+						credentialToken,
+					},
+					code,
 				},
-				code,
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -29,5 +31,10 @@ Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 const { loginWithSamlToken } = Meteor;
 
 Meteor.loginWithSamlToken = function(options, callback) {
-	overrideLoginMethod(loginWithSamlToken, [options], callback, Meteor.loginWithSamlTokenAndTOTP);
+	overrideLoginMethod(
+		loginWithSamlToken,
+		[options],
+		callback,
+		Meteor.loginWithSamlTokenAndTOTP,
+	);
 };

@@ -20,7 +20,9 @@ Template.visitorInfoCustomForm.onCreated(function() {
 		let priority;
 
 		if (priorityId) {
-			priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ priorityId }`);
+			priority = await APIClient.v1.get(
+				`livechat/priorities.getOne?priorityId=${ priorityId }`,
+			);
 		}
 
 		this.priority.set(priority);

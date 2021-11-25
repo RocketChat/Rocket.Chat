@@ -1,7 +1,7 @@
 /*
-* Mentions is a named function that will process Mentions
-* @param {Object} message - The message object
-*/
+ * Mentions is a named function that will process Mentions
+ * @param {Object} message - The message object
+ */
 import { MentionsParser } from '../lib/MentionsParser';
 
 export default class MentionsServer extends MentionsParser {
@@ -13,7 +13,7 @@ export default class MentionsServer extends MentionsParser {
 		this.getUsers = args.getUsers;
 		this.getUser = args.getUser;
 		this.getTotalChannelMembers = args.getTotalChannelMembers;
-		this.onMaxRoomMembersExceeded = args.onMaxRoomMembersExceeded || (() => {});
+		this.onMaxRoomMembersExceeded =			args.onMaxRoomMembersExceeded || (() => {});
 	}
 
 	set getUsers(m) {
@@ -21,7 +21,9 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	get getUsers() {
-		return typeof this._getUsers === 'function' ? this._getUsers : () => this._getUsers;
+		return typeof this._getUsers === 'function'
+			? this._getUsers
+			: () => this._getUsers;
 	}
 
 	set getChannels(m) {
@@ -29,7 +31,9 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	get getChannels() {
-		return typeof this._getChannels === 'function' ? this._getChannels : () => this._getChannels;
+		return typeof this._getChannels === 'function'
+			? this._getChannels
+			: () => this._getChannels;
 	}
 
 	set getChannel(m) {
@@ -37,7 +41,9 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	get getChannel() {
-		return typeof this._getChannel === 'function' ? this._getChannel : () => this._getChannel;
+		return typeof this._getChannel === 'function'
+			? this._getChannel
+			: () => this._getChannel;
 	}
 
 	set messageMaxAll(m) {
@@ -45,7 +51,9 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	get messageMaxAll() {
-		return typeof this._messageMaxAll === 'function' ? this._messageMaxAll() : this._messageMaxAll;
+		return typeof this._messageMaxAll === 'function'
+			? this._messageMaxAll()
+			: this._messageMaxAll;
 	}
 
 	getUsersByMentions({ msg, rid, u: sender }) {
@@ -58,7 +66,10 @@ export default class MentionsServer extends MentionsParser {
 			if (mention !== 'all' && mention !== 'here') {
 				return userMentions.push(mention);
 			}
-			if (this.messageMaxAll > 0 && this.getTotalChannelMembers(rid) > this.messageMaxAll) {
+			if (
+				this.messageMaxAll > 0
+				&& this.getTotalChannelMembers(rid) > this.messageMaxAll
+			) {
 				return this.onMaxRoomMembersExceeded({ sender, rid });
 			}
 			mentionsAll.push({

@@ -28,8 +28,16 @@ export const DataExport = {
 			return !!Users.findOneByIdAndLoginToken(rc_uid, rc_token, options);
 		}
 
-		if (headers['x-user-id'] && headers['x-auth-token'] && headers['x-user-id'] === userId) {
-			return !!Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token'], options);
+		if (
+			headers['x-user-id']
+			&& headers['x-auth-token']
+			&& headers['x-user-id'] === userId
+		) {
+			return !!Users.findOneByIdAndLoginToken(
+				headers['x-user-id'],
+				headers['x-auth-token'],
+				options,
+			);
 		}
 
 		return false;
@@ -47,8 +55,10 @@ export const DataExport = {
 		let errorHtml = Assets.getText('errors/error_template.html');
 		errorHtml = errorHtml.replace('$ERROR_TYPE$', errorType);
 		errorHtml = errorHtml.replace('$ERROR_DESCRIPTION$', errorDescription);
-		errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
+		errorHtml = errorHtml.replace(
+			'$SERVER_URL$',
+			getURL('/', { full: true, cdn: false }),
+		);
 		return errorHtml;
 	},
-
 };

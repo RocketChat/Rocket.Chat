@@ -1,6 +1,5 @@
 import { HTTP } from 'meteor/http';
 
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Settings } from '../../../models';
@@ -39,7 +38,9 @@ export function connectWorkspace(token) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`,
+			);
 		} else {
 			SystemLogger.error(e);
 		}

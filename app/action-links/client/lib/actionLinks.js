@@ -12,12 +12,16 @@ export const actionLinks = {
 	getMessage(name, messageId) {
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				function: 'actionLinks.getMessage',
+			});
 		}
 
 		const message = Messages.findOne({ _id: messageId });
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { function: 'actionLinks.getMessage' });
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+				function: 'actionLinks.getMessage',
+			});
 		}
 
 		const subscription = Subscriptions.findOne({
@@ -25,11 +29,17 @@ export const actionLinks = {
 			'u._id': userId,
 		});
 		if (!subscription) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				function: 'actionLinks.getMessage',
+			});
 		}
 
 		if (!message.actionLinks || !message.actionLinks[name]) {
-			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link', { function: 'actionLinks.getMessage' });
+			throw new Meteor.Error(
+				'error-invalid-actionlink',
+				'Invalid action link',
+				{ function: 'actionLinks.getMessage' },
+			);
 		}
 
 		return message;
@@ -41,9 +51,17 @@ export const actionLinks = {
 
 		let ranClient = false;
 
-		if (actionLinks && actionLinks.actions && actionLinks.actions[actionLink.method_id]) {
+		if (
+			actionLinks
+			&& actionLinks.actions
+			&& actionLinks.actions[actionLink.method_id]
+		) {
 			// run just on client side
-			actionLinks.actions[actionLink.method_id](message, actionLink.params, instance);
+			actionLinks.actions[actionLink.method_id](
+				message,
+				actionLink.params,
+				instance,
+			);
 
 			ranClient = true;
 		}

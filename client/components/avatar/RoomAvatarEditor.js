@@ -36,7 +36,9 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 	return (
 		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
 			<RoomAvatar
-				{...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })}
+				{...(roomAvatar !== undefined && {
+					url: roomAvatar === null ? defaultUrl : roomAvatar,
+				})}
 				room={room}
 				size='x332'
 			/>

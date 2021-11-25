@@ -1,5 +1,8 @@
 export interface ILogoutRequestValidateCallback {
-	(err: string | object | null, data?: Record<string, string | null> | null): void;
+	(
+		err: string | object | null,
+		data?: Record<string, string | null> | null
+	): void;
 }
 
 export interface ILogoutResponseValidateCallback {
@@ -7,5 +10,9 @@ export interface ILogoutResponseValidateCallback {
 }
 
 export interface IResponseValidateCallback {
-	(err: string | object | null, profile?: Record<string, any> | null, loggedOut?: boolean): void;
+	(
+		err: string | object | null,
+		profile?: Record<string, any> | null,
+		loggedOut?: boolean
+	): void;
 }

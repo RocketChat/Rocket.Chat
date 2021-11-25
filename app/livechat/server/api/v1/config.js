@@ -2,7 +2,12 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
-import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
+import {
+	settings,
+	findOpenRoom,
+	getExtraConfigInfo,
+	findAgent,
+} from '../lib/livechat';
 
 API.v1.addRoute('livechat/config', {
 	get() {
@@ -24,10 +29,19 @@ API.v1.addRoute('livechat/config', {
 			const guest = token && Livechat.findGuest(token);
 
 			const room = guest && findOpenRoom(token);
-			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
+			const agent =				guest && room && room.servedBy && findAgent(room.servedBy._id);
 
 			const extra = Promise.await(getExtraConfigInfo(room));
-			return API.v1.success({ config: { ...config, online: status, guest, room, agent, ...extra } });
+			return API.v1.success({
+				config: {
+					...config,
+					online: status,
+					guest,
+					room,
+					agent,
+					...extra,
+				},
+			});
 		} catch (e) {
 			return API.v1.failure(e);
 		}

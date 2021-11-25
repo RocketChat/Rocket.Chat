@@ -10,7 +10,15 @@ export class SelectionUser {
 	 * @param {boolean} do_import whether we are going to import this user or not
 	 * @param {boolean} is_email_taken whether there's an existing user with the same email
 	 */
-	constructor(user_id, username, email, is_deleted, is_bot, do_import, is_email_taken = false) {
+	constructor(
+		user_id,
+		username,
+		email,
+		is_deleted,
+		is_bot,
+		do_import,
+		is_email_taken = false,
+	) {
 		this.user_id = user_id;
 		this.username = username;
 		this.email = email;

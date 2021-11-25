@@ -31,8 +31,13 @@ export class AppInternalBridge extends InternalBridge {
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {
-		const publicKeySetting = await Settings.findOneById('Cloud_Workspace_PublicKey');
+		const publicKeySetting = await Settings.findOneById(
+			'Cloud_Workspace_PublicKey',
+		);
 
-		return this.orch.getConverters()?.get('settings').convertToApp(publicKeySetting);
+		return this.orch
+			.getConverters()
+			?.get('settings')
+			.convertToApp(publicKeySetting);
 	}
 }

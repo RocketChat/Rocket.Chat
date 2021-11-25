@@ -6,7 +6,10 @@ import _ from 'underscore';
 
 const AccessTokenServices = {};
 
-export const registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
+export const registerAccessTokenService = function(
+	serviceName,
+	handleAccessTokenRequest,
+) {
 	AccessTokenServices[serviceName] = {
 		serviceName,
 		handleAccessTokenRequest,
@@ -20,19 +23,28 @@ Accounts.registerLoginHandler(function(options) {
 		return undefined; // don't handle
 	}
 
-	check(options, Match.ObjectIncluding({
-		serviceName: String,
-	}));
+	check(
+		options,
+		Match.ObjectIncluding({
+			serviceName: String,
+		}),
+	);
 
 	const service = AccessTokenServices[options.serviceName];
 
 	// Skip everything if there's no service set by the oauth middleware
 	if (!service) {
-		throw new Error(`Unexpected AccessToken service ${ options.serviceName }`);
+		throw new Error(
+			`Unexpected AccessToken service ${ options.serviceName }`,
+		);
 	}
 
 	// Make sure we're configured
-	if (!ServiceConfiguration.configurations.findOne({ service: options.serviceName })) {
+	if (
+		!ServiceConfiguration.configurations.findOne({
+			service: options.serviceName,
+		})
+	) {
 		throw new ServiceConfiguration.ConfigError();
 	}
 
@@ -51,5 +63,9 @@ Accounts.registerLoginHandler(function(options) {
 
 	const oauthResult = service.handleAccessTokenRequest(options);
 
-	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
+	return Accounts.updateOrCreateUserFromExternalService(
+		service.serviceName,
+		oauthResult.serviceData,
+		oauthResult.options,
+	);
 });

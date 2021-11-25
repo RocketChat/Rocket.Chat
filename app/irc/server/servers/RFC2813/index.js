@@ -57,7 +57,9 @@ class RFC2813 {
 	 * Connect
 	 */
 	register() {
-		this.log(`Connecting to @${ this.config.server.host }:${ this.config.server.port }`);
+		this.log(
+			`Connecting to @${ this.config.server.host }:${ this.config.server.port }`,
+		);
 
 		if (!this.socket) {
 			this.setupSocket();
@@ -143,16 +145,21 @@ class RFC2813 {
 		this.receiveBuffer = Buffer.from('');
 
 		lines.forEach((line) => {
-			if (line.length && !line.startsWith('\a')) {
+			if (line.length && !line.startsWith('a')) {
 				const parsedMessage = parseMessage(line);
 
 				if (peerCommandHandlers[parsedMessage.command]) {
 					this.log(`Handling peer message: ${ line }`);
 
-					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
+					const command = peerCommandHandlers[
+						parsedMessage.command
+					].call(this, parsedMessage);
 
 					if (command) {
-						this.log({ msg: 'Emitting peer command to local', command });
+						this.log({
+							msg: 'Emitting peer command to local',
+							command,
+						});
 						this.emit('peerCommand', command);
 					}
 				} else {

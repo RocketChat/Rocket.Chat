@@ -2,7 +2,6 @@ import { LivechatRooms, LivechatVisitors } from '../../models';
 import { roomTypes } from '../../utils';
 import LivechatRoomType from '../lib/LivechatRoomType';
 
-
 class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {
 		return LivechatVisitors.findOneById(senderId);
@@ -24,7 +23,11 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	}
 
 	canAccessUploadedFile({ rc_token, rc_rid } = {}) {
-		return rc_token && rc_rid && LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token);
+		return (
+			rc_token
+			&& rc_rid
+			&& LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token)
+		);
 	}
 
 	getReadReceiptsExtraData(message) {

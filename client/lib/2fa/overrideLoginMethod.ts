@@ -35,7 +35,10 @@ export const overrideLoginMethod = <A extends unknown[]>(
 			onCode: (code: string) => {
 				loginMethodTOTP?.call(null, ...loginArgs, code, (error: unknown) => {
 					if (isTotpInvalidError(error)) {
-						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+						dispatchToastMessage({
+							type: 'error',
+							message: t('Invalid_two_factor_code'),
+						});
 						callback(null);
 						return;
 					}

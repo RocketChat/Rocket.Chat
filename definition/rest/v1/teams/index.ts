@@ -122,7 +122,9 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => { teamInfo: Partial<ITeam> };
+		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => {
+			teamInfo: Partial<ITeam>;
+		};
 	};
 
 	'teams.autocomplete': {

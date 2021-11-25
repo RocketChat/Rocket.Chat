@@ -21,23 +21,31 @@ Template.body.onRendered(function() {
 
 	$(document.body).on('keydown', function(e) {
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
+		if (
+			e.keyCode === 27
+			&& (e.shiftKey === true || e.ctrlKey === true)
+			&& unread != null
+			&& unread !== ''
+		) {
 			e.preventDefault();
 			e.stopPropagation();
 
 			const handleClearUnreadAllMessages = () => {
-				const subscriptions = ChatSubscription.find({
-					open: true,
-				}, {
-					fields: {
-						unread: 1,
-						alert: 1,
-						rid: 1,
-						t: 1,
-						name: 1,
-						ls: 1,
+				const subscriptions = ChatSubscription.find(
+					{
+						open: true,
 					},
-				});
+					{
+						fields: {
+							unread: 1,
+							alert: 1,
+							rid: 1,
+							t: 1,
+							name: 1,
+							ls: 1,
+						},
+					},
+				);
 
 				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
@@ -51,7 +59,9 @@ Template.body.onRendered(function() {
 			imperativeModal.open({
 				component: GenericModal,
 				props: {
-					children: t('Are_you_sure_you_want_to_clear_all_unread_messages'),
+					children: t(
+						'Are_you_sure_you_want_to_clear_all_unread_messages',
+					),
 					variant: 'warning',
 					title: t('Clear_all_unreads_question'),
 					confirmText: t('Yes_clear_all'),
@@ -86,7 +96,8 @@ Template.body.onRendered(function() {
 			return;
 		}
 
-		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		const inputMessage =			chatMessages[RoomManager.openedRoom]
+			&& chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;
 		}
@@ -95,8 +106,13 @@ Template.body.onRendered(function() {
 
 	const handleMessageLinkClick = (event) => {
 		const link = event.currentTarget;
-		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
+		if (
+			link.origin === s.rtrim(Meteor.absoluteUrl(), '/')
+			&& /msg=([a-zA-Z0-9]+)/.test(link.search)
+		) {
+			fireGlobalEvent('click-message-link', {
+				link: link.pathname + link.search,
+			});
 		}
 	};
 

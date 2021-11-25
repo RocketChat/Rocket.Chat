@@ -1,20 +1,30 @@
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 
-function getCustomOAuthServices(): Record<string, {
+function getCustomOAuthServices(): Record<
+string,
+{
 	enabled: boolean;
 	mergeRoles: boolean;
 	users: number;
-}> {
-	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(Object.entries(customOauth).map(([key, value]) => {
-		const name = key.replace('Accounts_OAuth_Custom-', '');
-		return [name, {
-			enabled: Boolean(value),
-			mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${ name }-merge_roles`),
-			users: Users.countActiveUsersByService(name),
-		}];
-	}));
+}
+> {
+	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
+	return Object.fromEntries(
+		Object.entries(customOauth).map(([key, value]) => {
+			const name = key.replace('Accounts_OAuth_Custom-', '');
+			return [
+				name,
+				{
+					enabled: Boolean(value),
+					mergeRoles: settings.get<boolean>(
+						`Accounts_OAuth_Custom-${ name }-merge_roles`,
+					),
+					users: Users.countActiveUsersByService(name),
+				},
+			];
+		}),
+	);
 }
 
 export function getServicesStatistics(): Record<string, unknown> {
@@ -26,7 +36,9 @@ export function getServicesStatistics(): Record<string, unknown> {
 			encryption: settings.get('LDAP_Encryption'),
 			mergeUsers: settings.get('LDAP_Merge_Existing_Users'),
 			syncRoles: settings.get('LDAP_Sync_User_Data_Roles'),
-			syncRolesAutoRemove: settings.get('LDAP_Sync_User_Data_Roles_AutoRemove'),
+			syncRolesAutoRemove: settings.get(
+				'LDAP_Sync_User_Data_Roles_AutoRemove',
+			),
 			syncData: settings.get('LDAP_Sync_Custom_Fields'),
 			syncChannels: settings.get('LDAP_Sync_User_Data_Channels'),
 			syncAvatar: settings.get('LDAP_Sync_User_Avatar'),
@@ -35,7 +47,9 @@ export function getServicesStatistics(): Record<string, unknown> {
 				enabled: settings.get('LDAP_Background_Sync'),
 				interval: settings.get('LDAP_Background_Sync_Interval'),
 				newUsers: settings.get('LDAP_Background_Sync_Import_New_Users'),
-				existingUsers: settings.get('LDAP_Background_Sync_Keep_Existant_Users_Updated'),
+				existingUsers: settings.get(
+					'LDAP_Background_Sync_Keep_Existant_Users_Updated',
+				),
 			},
 			ee: {
 				syncActiveState: settings.get('LDAP_Sync_User_Active_State'),
@@ -46,9 +60,15 @@ export function getServicesStatistics(): Record<string, unknown> {
 		saml: {
 			enabled: settings.get('SAML_Custom_Default'),
 			users: Users.countActiveUsersByService('saml'),
-			signatureValidationType: settings.get('SAML_Custom_Default_signature_validation_type'),
-			generateUsername: settings.get('SAML_Custom_Default_generate_username'),
-			updateSubscriptionsOnLogin: settings.get('SAML_Custom_Default_channels_update'),
+			signatureValidationType: settings.get(
+				'SAML_Custom_Default_signature_validation_type',
+			),
+			generateUsername: settings.get(
+				'SAML_Custom_Default_generate_username',
+			),
+			updateSubscriptionsOnLogin: settings.get(
+				'SAML_Custom_Default_channels_update',
+			),
 			syncRoles: settings.get('SAML_Custom_Default_role_attribute_sync'),
 		},
 		cas: {

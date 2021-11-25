@@ -28,7 +28,12 @@ export class IframeLogin {
 				return c.stop();
 			}
 
-			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod) {
+			if (
+				this.enabled === true
+				&& this.iframeUrl
+				&& this.apiUrl
+				&& this.apiMethod
+			) {
 				c.stop();
 				if (!Accounts._storedLoginToken()) {
 					this.tryLogin(() => {});
@@ -65,7 +70,11 @@ export class IframeLogin {
 
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
 			console.log(error, result);
-			if (result && result.data && (result.data.token || result.data.loginToken)) {
+			if (
+				result
+				&& result.data
+				&& (result.data.token || result.data.loginToken)
+			) {
 				this.loginWithToken(result.data, (error, result) => {
 					if (error) {
 						this.reactiveIframeUrl.set(iframeUrl);
@@ -99,10 +108,12 @@ export class IframeLogin {
 		}
 
 		Accounts.callLoginMethod({
-			methodArguments: [{
-				iframe: true,
-				token: tokenData.token,
-			}],
+			methodArguments: [
+				{
+					iframe: true,
+					token: tokenData.token,
+				},
+			],
 			userCallback: callback,
 		});
 	}

@@ -15,20 +15,32 @@ Meteor.methods({
 			});
 		}
 
-		if ((description == null) || description.trim() === '') {
-			throw new Meteor.Error('error-invalid-description', 'Invalid description', {
-				method: 'reportMessage',
-			});
+		if (description == null || description.trim() === '') {
+			throw new Meteor.Error(
+				'error-invalid-description',
+				'Invalid description',
+				{
+					method: 'reportMessage',
+				},
+			);
 		}
 
 		const message = Messages.findOneById(messageId);
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
-				method: 'reportMessage',
-			});
+			throw new Meteor.Error(
+				'error-invalid-message_id',
+				'Invalid message id',
+				{
+					method: 'reportMessage',
+				},
+			);
 		}
 
-		await Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
+		await Reports.createWithMessageDescriptionAndUserId(
+			message,
+			description,
+			Meteor.userId(),
+		);
 
 		return true;
 	},

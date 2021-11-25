@@ -1,5 +1,9 @@
 import { FederationRoomEvents } from '../../../models/server';
-import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
+import {
+	getFederatedRoomData,
+	hasExternalDomain,
+	isLocalUser,
+} from '../functions/helpers';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -21,7 +25,9 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	try {
 		// Get the domains after removal
-		const domainsAfterRemoval = [...new Set(users.map((u) => u.federation.origin))];
+		const domainsAfterRemoval = [
+			...new Set(users.map((u) => u.federation.origin)),
+		];
 
 		//
 		// Normalize the room's federation status
@@ -30,19 +36,29 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		usersBeforeRemoval.push(removedUser);
 
 		// Get the users domains
-		const domainsBeforeRemoval = [...new Set(usersBeforeRemoval.map((u) => u.federation.origin))];
+		const domainsBeforeRemoval = [
+			...new Set(usersBeforeRemoval.map((u) => u.federation.origin)),
+		];
 
 		//
 		// Create the user remove event
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(removedUser);
 
-		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(localDomain, room._id, normalizedSourceUser, domainsAfterRemoval);
+		const removeUserEvent =			await FederationRoomEvents.createRemoveUserEvent(
+			localDomain,
+			room._id,
+			normalizedSourceUser,
+			domainsAfterRemoval,
+		);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		clientLogger.error({ msg: 'afterRemoveFromRoom => Could not remove user:', err });
+		clientLogger.error({
+			msg: 'afterRemoveFromRoom => Could not remove user:',
+			err,
+		});
 	}
 
 	return involvedUsers;
@@ -50,6 +66,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterRemoveFromRoom',
-	callback: (roomOwner, room) => Promise.await(afterRemoveFromRoom(roomOwner, room)),
+	callback: (roomOwner, room) =>
+		Promise.await(afterRemoveFromRoom(roomOwner, room)),
 	id: 'federation-after-remove-from-room',
 };

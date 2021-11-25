@@ -13,7 +13,10 @@ Meteor.methods({
 
 		const secret = TOTP.generateSecret();
 
-		Users.disable2FAAndSetTempSecretByUserId(Meteor.userId(), secret.base32);
+		Users.disable2FAAndSetTempSecretByUserId(
+			Meteor.userId(),
+			secret.base32,
+		);
 
 		return {
 			secret: secret.base32,

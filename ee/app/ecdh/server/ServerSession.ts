@@ -14,11 +14,13 @@ export class ServerSession extends Session {
 			process.exit(1);
 		}
 
-		const serverKeypair = await sodium.crypto_kx_seed_keypair(staticSeed + clientPublic);
+		const serverKeypair = await sodium.crypto_kx_seed_keypair(
+			staticSeed + clientPublic,
+		);
 		this.secretKey = await sodium.crypto_box_secretkey(serverKeypair);
 		this.publicKey = await sodium.crypto_box_publickey(serverKeypair);
 
-		const [decryptKey, encryptKey] = await sodium.crypto_kx_server_session_keys(
+		const [decryptKey, encryptKey] =			await sodium.crypto_kx_server_session_keys(
 			this.publicKey,
 			this.secretKey,
 			this.publicKeyFromString(clientPublic),

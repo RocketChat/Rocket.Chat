@@ -1,4 +1,11 @@
-import { Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
+import {
+	Collection,
+	Cursor,
+	FindOneOptions,
+	UpdateWriteOpResult,
+	WithoutProjection,
+	InsertOneWriteOpResult,
+} from 'mongodb';
 
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
@@ -21,7 +28,9 @@ export class BannersRaw extends BaseRaw<T> {
 	}
 
 	create(doc: IBanner): Promise<InsertOneWriteOpResult<IBanner>> {
-		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
+		const invalidPlatform = doc.platform?.some(
+			(platform) => !Object.values(BannerPlatform).includes(platform)
+		);
 		if (invalidPlatform) {
 			throw new Error('Invalid platform');
 		}
@@ -40,7 +49,12 @@ export class BannersRaw extends BaseRaw<T> {
 		});
 	}
 
-	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findActiveByRoleOrId(
+		roles: string[],
+		platform: BannerPlatform,
+		bannerId?: string,
+		options?: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const today = new Date();
 
 		const query = {
@@ -49,16 +63,16 @@ export class BannersRaw extends BaseRaw<T> {
 			startAt: { $lte: today },
 			expireAt: { $gte: today },
 			active: { $ne: false },
-			$or: [
-				{ roles: { $in: roles } },
-				{ roles: { $exists: false } },
-			],
+			$or: [{ roles: { $in: roles } }, { roles: { $exists: false } }],
 		};
 
 		return this.col.find(query, options);
 	}
 
 	disable(bannerId: string): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
+		return this.col.updateOne(
+			{ _id: bannerId, active: { $ne: false } },
+			{ $set: { active: false, inactivedAt: new Date() } },
+		);
 	}
 }

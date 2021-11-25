@@ -27,8 +27,14 @@ export function checkIfUserIsValid(username, email, password) {
 					if (error && error.error === 403) {
 						Meteor.logout(() => {
 							loginPage.gotToRegister();
-							loginPage.registerNewUser({ username, email, password });
-							cy.get('form#login-card input#username').should('be.visible');
+							loginPage.registerNewUser({
+								username,
+								email,
+								password,
+							});
+							cy.get('form#login-card input#username').should(
+								'be.visible',
+							);
 							cy.get('#login-card button.login').click();
 							resolve();
 						});

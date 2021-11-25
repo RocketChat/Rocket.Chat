@@ -29,5 +29,5 @@ export function memoizeDebounce<F extends(...args: any[]) => any>(
 		debounceMemo(...args).flush();
 	};
 
-	return (wrappedFunction as unknown) as IMemoizeDebouncedFunction<F>;
+	return wrappedFunction as unknown as IMemoizeDebouncedFunction<F>;
 }

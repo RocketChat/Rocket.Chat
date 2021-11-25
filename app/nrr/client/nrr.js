@@ -21,8 +21,12 @@ const toHTMLWithDataNonReactive = function(content, data) {
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {
-		Object.entries(data.hash).forEach(([, value]) => makeCursorReactive(value));
-		return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data.hash));
+		Object.entries(data.hash).forEach(([, value]) =>
+			makeCursorReactive(value),
+		);
+		return Tracker.nonreactive(() =>
+			Blaze.toHTMLWithData(content, data.hash),
+		);
 	}
 	return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data));
 };
@@ -34,7 +38,9 @@ const renderNonReactive = function(templateName, data) {
 
 	return Tracker.nonreactive(() => {
 		console.warn('Nrr template is deprecated');
-		const view = new Blaze.View('nrr', () => HTML.Raw(toHTMLWithDataNonReactive(Template[templateName], data)));
+		const view = new Blaze.View('nrr', () =>
+			HTML.Raw(toHTMLWithDataNonReactive(Template[templateName], data)),
+		);
 
 		view.onViewReady(() => {
 			const { onViewReady } = Template[templateName];

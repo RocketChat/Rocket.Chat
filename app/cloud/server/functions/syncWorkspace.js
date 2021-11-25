@@ -11,14 +11,16 @@ import { NPS, Banner } from '../../../../server/sdk';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function syncWorkspace(reconnectCheck = false) {
-	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
+	const { workspaceRegistered, connectToCloud } =		retrieveRegistrationStatus();
 	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
 
 	const info = await buildWorkspaceRegistrationData();
 
-	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
+	const workspaceUrl = settings.get(
+		'Cloud_Workspace_Registration_Client_Uri',
+	);
 
 	let result;
 	try {
@@ -39,7 +41,9 @@ export async function syncWorkspace(reconnectCheck = false) {
 		getWorkspaceLicense();
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`,
+			);
 		} else {
 			SystemLogger.error(e);
 		}
@@ -57,10 +61,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	}
 
 	if (data.nps) {
-		const {
-			id: npsId,
-			expireAt,
-		} = data.nps;
+		const { id: npsId, expireAt } = data.nps;
 
 		const startAt = new Date(data.nps.startAt);
 
@@ -72,7 +73,11 @@ export async function syncWorkspace(reconnectCheck = false) {
 
 		const now = new Date();
 
-		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
+		if (
+			startAt.getFullYear() === now.getFullYear()
+			&& startAt.getMonth() === now.getMonth()
+			&& startAt.getDate() === now.getDate()
+		) {
 			getAndCreateNpsSurvey(npsId);
 		}
 	}
@@ -80,11 +85,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	// add banners
 	if (data.banners) {
 		for await (const banner of data.banners) {
-			const {
-				createdAt,
-				expireAt,
-				startAt,
-			} = banner;
+			const { createdAt, expireAt, startAt } = banner;
 
 			await Banner.create({
 				...banner,

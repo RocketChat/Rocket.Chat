@@ -40,7 +40,6 @@ export interface ISubscription extends IRocketChatRecord {
 	E2EKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
-
 	fname?: unknown;
 
 	code?: unknown;
@@ -64,6 +63,7 @@ export interface IOmnichannelSubscription extends ISubscription {
 	department?: string; // TODO REMOVE/DEPRECATE no need keeo in both room and subscription
 }
 
-export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
+export interface ISubscriptionDirectMessage
+	extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }

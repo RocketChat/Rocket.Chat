@@ -17,7 +17,11 @@ export function getFileRange(file, req) {
 	if (!range) {
 		return;
 	}
-	if (range.start > file.size || range.stop <= range.start || range.stop > file.size) {
+	if (
+		range.start > file.size
+		|| range.stop <= range.start
+		|| range.stop > file.size
+	) {
 		return { outOfRange: true };
 	}
 
@@ -42,7 +46,10 @@ export const setRangeHeaders = function(range, file, res) {
 		return;
 	}
 
-	res.setHeader('Content-Range', `bytes ${ range.start }-${ range.stop }/${ file.size }`);
+	res.setHeader(
+		'Content-Range',
+		`bytes ${ range.start }-${ range.stop }/${ file.size }`,
+	);
 	res.removeHeader('Content-Length');
 	res.setHeader('Content-Length', range.stop - range.start + 1);
 	res.statusCode = 206;

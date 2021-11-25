@@ -69,10 +69,16 @@ const TwoFactorTOTP = (props) => {
 				const result = await disableTotpFn(authCode);
 
 				if (!result) {
-					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+					return dispatchToastMessage({
+						type: 'error',
+						message: t('Invalid_two_factor_code'),
+					});
 				}
 
-				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Two-factor_authentication_disabled'),
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -87,7 +93,10 @@ const TwoFactorTOTP = (props) => {
 			const result = await verifyCodeFn(authCode);
 
 			if (!result) {
-				return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+				return dispatchToastMessage({
+					type: 'error',
+					message: t('Invalid_two_factor_code'),
+				});
 			}
 			setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 		} catch (error) {
@@ -101,7 +110,10 @@ const TwoFactorTOTP = (props) => {
 				const result = await regenerateCodesFn(authCode);
 
 				if (!result) {
-					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+					return dispatchToastMessage({
+						type: 'error',
+						message: t('Invalid_two_factor_code'),
+					});
 				}
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 			} catch (error) {

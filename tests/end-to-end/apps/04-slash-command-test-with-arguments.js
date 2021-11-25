@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 
-import { getCredentials, request, credentials, api } from '../../data/api-data.js';
+import {
+	getCredentials,
+	request,
+	credentials,
+	api,
+} from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 
 describe('Apps - Slash Command "test-with-arguments"', function() {
@@ -15,7 +20,8 @@ describe('Apps - Slash Command "test-with-arguments"', function() {
 	describe('[Slash command "test-with-arguments"]', () => {
 		const params = 'argument';
 		it('should execute the slash command successfully', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.send({
 					roomId: 'GENERAL',
 					command: 'test-with-arguments',
@@ -30,7 +36,8 @@ describe('Apps - Slash Command "test-with-arguments"', function() {
 		});
 		it('should have sent the message correctly', (done) => {
 			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${ params }"`;
-			request.get(api('chat.search'))
+			request
+				.get(api('chat.search'))
 				.query({
 					roomId: 'GENERAL',
 					searchText,
@@ -38,7 +45,9 @@ describe('Apps - Slash Command "test-with-arguments"', function() {
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					const message = res.body.messages.find((message) => message.msg === searchText);
+					const message = res.body.messages.find(
+						(message) => message.msg === searchText,
+					);
 					expect(message).to.not.be.equal(undefined);
 				})
 				.end(done);

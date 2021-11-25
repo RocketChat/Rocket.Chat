@@ -53,11 +53,14 @@ settings.watch('Accounts_CustomFields', (value) => {
 			customFields[`customFields.${ key }`] = 1;
 		});
 	} catch (e) {
-		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
+		logger.warn(
+			`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`,
+		);
 	}
 });
 
-const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : publicCustomFields);
+const getCustomFields = (canViewAllInfo) =>
+	(canViewAllInfo ? customFields : publicCustomFields);
 
 const getFields = (canViewAllInfo) => ({
 	...defaultFields,
@@ -78,17 +81,24 @@ const removePasswordInfo = (user) => {
 	return user;
 };
 
-export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
+export function getFullUserDataByIdOrUsername({
+	userId,
+	filterId,
+	filterUsername,
+}) {
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
 	const myself = userId === filterId || filterUsername === caller.username;
-	const canViewAllInfo = myself || hasPermission(userId, 'view-full-other-user-info');
+	const canViewAllInfo =		myself || hasPermission(userId, 'view-full-other-user-info');
 
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
 	};
-	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	const user = Users.findOneByIdOrUsername(
+		filterId || filterUsername,
+		options,
+	);
 	if (!user) {
 		return null;
 	}

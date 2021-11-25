@@ -23,7 +23,10 @@ const DepartmentAutoComplete = (props) => {
 	const options = useMemo(
 		() =>
 			(data &&
-				data.items.map((department) => ({ value: department._id, label: department.name }))) ||
+				data.items.map((department) => ({
+					value: department._id,
+					label: department.name,
+				}))) ||
 			[],
 		[data],
 	);

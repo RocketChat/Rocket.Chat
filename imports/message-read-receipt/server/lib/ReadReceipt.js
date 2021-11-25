@@ -1,7 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
+import {
+	Subscriptions,
+	Messages,
+	Rooms,
+	Users,
+	LivechatVisitors,
+} from '../../../../app/models/server';
 import { ReadReceipts } from '../../../../app/models/server/raw';
 import { settings } from '../../../../app/settings/server';
 import { roomTypes } from '../../../../app/utils/server';
@@ -12,23 +18,27 @@ const list = {};
 const debounceByRoomId = function(fn) {
 	return function(roomId, ...args) {
 		clearTimeout(list[roomId]);
-		list[roomId] = setTimeout(() => { fn.call(this, roomId, ...args); }, 2000);
+		list[roomId] = setTimeout(() => {
+			fn.call(this, roomId, ...args);
+		}, 2000);
 	};
 };
 
-const updateMessages = debounceByRoomId(Meteor.bindEnvironment(({ _id, lm }) => {
-	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-	const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
-	if (!firstSubscription) {
-		return;
-	}
+const updateMessages = debounceByRoomId(
+	Meteor.bindEnvironment(({ _id, lm }) => {
+		// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
+		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
+		if (!firstSubscription) {
+			return;
+		}
 
-	Messages.setAsRead(_id, firstSubscription.ls);
+		Messages.setAsRead(_id, firstSubscription.ls);
 
-	if (lm <= firstSubscription.ls) {
-		Rooms.setLastMessageAsRead(_id);
-	}
-}));
+		if (lm <= firstSubscription.ls) {
+			Rooms.setLastMessageAsRead(_id);
+		}
+	}),
+);
 
 export const ReadReceipt = {
 	markMessagesAsRead(roomId, userId, userLastSeen) {
@@ -44,7 +54,11 @@ export const ReadReceipt = {
 		}
 
 		if (userLastSeen) {
-			this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+			this.storeReadReceipts(
+				Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen),
+				roomId,
+				userId,
+			);
 		}
 
 		updateMessages(room);
@@ -56,15 +70,26 @@ export const ReadReceipt = {
 		}
 
 		// this will usually happens if the message sender is the only one on the room
-		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(roomId);
-		if (firstSubscription && message.unread && message.ts < firstSubscription.ls) {
+		const firstSubscription =			Subscriptions.getMinimumLastSeenByRoomId(roomId);
+		if (
+			firstSubscription
+			&& message.unread
+			&& message.ts < firstSubscription.ls
+		) {
 			Messages.setAsReadById(message._id, firstSubscription.ls);
 		}
 
 		const room = Rooms.findOneById(roomId, { fields: { t: 1 } });
-		const extraData = roomTypes.getConfig(room.t).getReadReceiptsExtraData(message);
+		const extraData = roomTypes
+			.getConfig(room.t)
+			.getReadReceiptsExtraData(message);
 
-		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
+		this.storeReadReceipts(
+			[{ _id: message._id }],
+			roomId,
+			userId,
+			extraData,
+		);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {
@@ -92,13 +117,19 @@ export const ReadReceipt = {
 	},
 
 	async getReceipts(message) {
-		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
+		const receipts = await ReadReceipts.findByMessageId(
+			message._id,
+		).toArray();
 
 		return receipts.map((receipt) => ({
 			...receipt,
 			user: receipt.token
-				? LivechatVisitors.getVisitorByToken(receipt.token, { fields: { username: 1, name: 1 } })
-				: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+				? LivechatVisitors.getVisitorByToken(receipt.token, {
+					fields: { username: 1, name: 1 },
+				  })
+				: Users.findOneById(receipt.userId, {
+					fields: { username: 1, name: 1 },
+				  }),
 		}));
 	},
 };

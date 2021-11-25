@@ -1,6 +1,13 @@
 import { assert } from 'chai';
 
-import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
+import {
+	adminUsername,
+	adminEmail,
+	adminPassword,
+	username,
+	email,
+	password,
+} from '../../data/user.js';
 import admin from '../pageobjects/administration.page';
 import { checkIfUserIsValid } from '../../data/checks';
 import sideNav from '../pageobjects/side-nav.page';
@@ -36,7 +43,9 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			if (!admin.rolesManageSettingsPermissions.isSelected()) {
 				admin.rolesManageSettingsPermissions.click();
 			}
-			admin.rolesManageSettingsPermissions.isSelected().should.equal(true);
+			admin.rolesManageSettingsPermissions
+				.isSelected()
+				.should.equal(true);
 			done();
 		});
 
@@ -91,7 +100,10 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		it('New settings value visible for admin as well', function(done) {
 			admin.layoutLink.click();
 			admin.layoutButtonExpandContent.click();
-			assert(admin.generalLayoutTitle.getValue() === newTitle, 'Title setting value not changed properly');
+			assert(
+				admin.generalLayoutTitle.getValue() === newTitle,
+				'Title setting value not changed properly',
+			);
 			browser.pause(2000);
 			admin.buttonSave.click();
 			done();
@@ -101,7 +113,9 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			admin.permissionsLink.click();
 
 			admin.rolesManageSettingsPermissions.click();
-			admin.rolesManageSettingsPermissions.isSelected().should.equal(false);
+			admin.rolesManageSettingsPermissions
+				.isSelected()
+				.should.equal(false);
 
 			admin.rolesSettingsTab.click();
 			admin.rolesSettingsFindInput.type('Layout');

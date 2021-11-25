@@ -3,9 +3,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import './collapseArrow.html';
 
-export const createCollapseable = (template, getInicialFromInstance = () => false) => {
+export const createCollapseable = (
+	template,
+	getInicialFromInstance = () => false,
+) => {
 	template.onCreated(function() {
-		this.collapsedMedia = new ReactiveVar(getInicialFromInstance(Template.instance()));
+		this.collapsedMedia = new ReactiveVar(
+			getInicialFromInstance(Template.instance()),
+		);
 	});
 	template.helpers({
 		collapsed() {

@@ -14,7 +14,11 @@ export const popout = {
 	y: 0,
 	open(config = {}, fn) {
 		this.close();
-		this.context = Blaze.renderWithData(Template.popout, config, document.body);
+		this.context = Blaze.renderWithData(
+			Template.popout,
+			config,
+			document.body,
+		);
 		this.fn = fn;
 		this.config = config;
 		this.onCloseCallback = config.onCloseCallback || null;
@@ -68,7 +72,9 @@ export const popout = {
 			const popoutElement = document.querySelector('.rc-popout-wrapper');
 			const positionTop = e.clientY - popout.y;
 			const positionLeft = e.clientX - popout.x;
-			popoutElement.style.left = `${ positionLeft >= 0 ? positionLeft : 0 }px`;
+			popoutElement.style.left = `${
+				positionLeft >= 0 ? positionLeft : 0
+			}px`;
 			popoutElement.style.top = `${ positionTop >= 0 ? positionTop : 0 }px`;
 		}
 	},
@@ -103,7 +109,6 @@ Template.popout.onRendered(function() {
 	Template.instance().isAudioOnly.set(popout.isAudioOnly);
 	Template.instance().showVideoControls.set(popout.showVideoControls);
 	Template.instance().showStreamControls.set(popout.showStreamControls);
-
 
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -155,7 +160,7 @@ Template.popout.events({
 	},
 	'dragstart .rc-popout-wrapper'(event) {
 		const e = event.originalEvent || event;
-		const url = (this.data && this.data.streamingSource) || '.rc-popout-wrapper';
+		const url =			(this.data && this.data.streamingSource) || '.rc-popout-wrapper';
 		popout.x = e.offsetX;
 		popout.y = e.offsetY;
 		e.dataTransfer.setData('application/x-moz-node', e.currentTarget);
@@ -168,10 +173,14 @@ Template.popout.events({
 	'click .rc-popout__controls--record'(e, i) {
 		e.preventDefault();
 		if (i.streamStatus.get() === 'ready') {
-			document.querySelector('.streaming-popup').dispatchEvent(new Event('startStreaming'));
+			document
+				.querySelector('.streaming-popup')
+				.dispatchEvent(new Event('startStreaming'));
 			i.streamStatus.set('starting');
 		} else if (i.streamStatus.get() === 'broadcasting') {
-			document.querySelector('.streaming-popup').dispatchEvent(new Event('stopStreaming'));
+			document
+				.querySelector('.streaming-popup')
+				.dispatchEvent(new Event('stopStreaming'));
 			i.streamStatus.set('finished');
 			setTimeout(() => popout && popout.close(), 2000);
 		}
@@ -209,4 +218,9 @@ Template.popout.events({
 	},
 });
 
-callbacks.add('afterLogoutCleanUp', () => popout.close(), callbacks.priority.MEDIUM, 'popout-close-after-logout-cleanup');
+callbacks.add(
+	'afterLogoutCleanUp',
+	() => popout.close(),
+	callbacks.priority.MEDIUM,
+	'popout-close-after-logout-cleanup',
+);

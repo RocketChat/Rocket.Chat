@@ -1,24 +1,30 @@
 import { addMigration } from '../../lib/migrations';
 import { Subscriptions, Messages } from '../../../app/models/server/raw';
 
-
 async function migrate() {
-	const subs = await Subscriptions.find({
-		$or: [{
-			'tunread.0': { $exists: true },
-		}, {
-			'tunreadUser.0': { $exists: true },
-		}, {
-			'tunreadGroup.0': { $exists: true },
-		}],
-	}, {
-		projection: {
-			_id: 0,
-			tunread: 1,
-			tunreadUser: 1,
-			tunreadGroup: 1,
+	const subs = await Subscriptions.find(
+		{
+			$or: [
+				{
+					'tunread.0': { $exists: true },
+				},
+				{
+					'tunreadUser.0': { $exists: true },
+				},
+				{
+					'tunreadGroup.0': { $exists: true },
+				},
+			],
 		},
-	}).toArray();
+		{
+			projection: {
+				_id: 0,
+				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
+			},
+		},
+	).toArray();
 
 	// Get unique thread ids
 	const tunreads = new Set();
@@ -37,21 +43,28 @@ async function migrate() {
 
 	const inexistentThreadsArr = [...inexistentThreads];
 
-	await Subscriptions.update({
-		$or: [{
-			tunread: { $in: inexistentThreadsArr },
-		}, {
-			tunreadUser: { $in: inexistentThreadsArr },
-		}, {
-			tunreadGroup: { $in: inexistentThreadsArr },
-		}],
-	}, {
-		$pullAll: {
-			tunread: inexistentThreadsArr,
-			tunreadUser: inexistentThreadsArr,
-			tunreadGroup: inexistentThreadsArr,
+	await Subscriptions.update(
+		{
+			$or: [
+				{
+					tunread: { $in: inexistentThreadsArr },
+				},
+				{
+					tunreadUser: { $in: inexistentThreadsArr },
+				},
+				{
+					tunreadGroup: { $in: inexistentThreadsArr },
+				},
+			],
 		},
-	});
+		{
+			$pullAll: {
+				tunread: inexistentThreadsArr,
+				tunreadUser: inexistentThreadsArr,
+				tunreadGroup: inexistentThreadsArr,
+			},
+		},
+	);
 }
 
 addMigration({

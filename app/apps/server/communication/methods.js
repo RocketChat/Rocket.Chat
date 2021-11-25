@@ -40,7 +40,11 @@ export class AppMethods {
 	}
 
 	isLoaded() {
-		return typeof this._orch !== 'undefined' && this._orch.isEnabled() && this._orch.isLoaded();
+		return (
+			typeof this._orch !== 'undefined'
+			&& this._orch.isEnabled()
+			&& this._orch.isLoaded()
+		);
 	}
 
 	_addMethods() {
@@ -57,15 +61,23 @@ export class AppMethods {
 
 			'apps/go-enable': twoFactorRequired(function _appsGoEnable() {
 				if (!Meteor.userId()) {
-					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'apps/go-enable',
-					});
+					throw new Meteor.Error(
+						'error-invalid-user',
+						'Invalid user',
+						{
+							method: 'apps/go-enable',
+						},
+					);
 				}
 
 				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
-					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-						method: 'apps/go-enable',
-					});
+					throw new Meteor.Error(
+						'error-action-not-allowed',
+						'Not allowed',
+						{
+							method: 'apps/go-enable',
+						},
+					);
 				}
 
 				settings.set('Apps_Framework_enabled', true);
@@ -75,15 +87,23 @@ export class AppMethods {
 
 			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
 				if (!Meteor.userId()) {
-					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'apps/go-enable',
-					});
+					throw new Meteor.Error(
+						'error-invalid-user',
+						'Invalid user',
+						{
+							method: 'apps/go-enable',
+						},
+					);
 				}
 
 				if (!hasPermission(Meteor.userId(), 'manage-apps')) {
-					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-						method: 'apps/go-enable',
-					});
+					throw new Meteor.Error(
+						'error-action-not-allowed',
+						'Not allowed',
+						{
+							method: 'apps/go-enable',
+						},
+					);
 				}
 
 				settings.set('Apps_Framework_enabled', false);

@@ -16,7 +16,9 @@ function sendToRDStation(room) {
 		return room;
 	}
 
-	const email = Array.isArray(livechatData.visitor.email) ? livechatData.visitor.email[0].address : livechatData.visitor.email;
+	const email = Array.isArray(livechatData.visitor.email)
+		? livechatData.visitor.email[0].address
+		: livechatData.visitor.email;
 
 	const options = {
 		headers: {
@@ -30,7 +32,7 @@ function sendToRDStation(room) {
 		},
 	};
 
-	options.data.nome = livechatData.visitor.name || livechatData.visitor.username;
+	options.data.nome =		livechatData.visitor.name || livechatData.visitor.username;
 
 	if (livechatData.visitor.phone) {
 		options.data.telefone = livechatData.visitor.phone;
@@ -49,7 +51,11 @@ function sendToRDStation(room) {
 	});
 
 	try {
-		HTTP.call('POST', 'https://www.rdstation.com.br/api/1.3/conversions', options);
+		HTTP.call(
+			'POST',
+			'https://www.rdstation.com.br/api/1.3/conversions',
+			options,
+		);
 	} catch (e) {
 		SystemLogger.error('Error sending lead to RD Station ->', e);
 	}
@@ -57,6 +63,16 @@ function sendToRDStation(room) {
 	return room;
 }
 
-callbacks.add('livechat.closeRoom', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-close-room');
+callbacks.add(
+	'livechat.closeRoom',
+	sendToRDStation,
+	callbacks.priority.MEDIUM,
+	'livechat-rd-station-close-room',
+);
 
-callbacks.add('livechat.saveInfo', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-save-info');
+callbacks.add(
+	'livechat.saveInfo',
+	sendToRDStation,
+	callbacks.priority.MEDIUM,
+	'livechat-rd-station-save-info',
+);

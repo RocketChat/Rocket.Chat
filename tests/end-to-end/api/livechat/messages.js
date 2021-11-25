@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../../data/api-data.js';
 import { updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - messages', function() {
@@ -14,7 +19,8 @@ describe('LIVECHAT - messages', function() {
 
 	describe('livechat/messages.external', () => {
 		it('should return an array of messages', (done) => {
-			request.get(api('livechat/messages.external/roomId'))
+			request
+				.get(api('livechat/messages.external/roomId'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

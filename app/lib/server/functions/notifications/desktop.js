@@ -20,7 +20,9 @@ export function notifyDesktopUser({
 	duration,
 	notificationMessage,
 }) {
-	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+	const { title, text } = roomTypes
+		.getConfig(room.t)
+		.getNotificationDetails(room, user, notificationMessage);
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	Notifications.notifyUser(userId, 'notification', {
@@ -55,22 +57,49 @@ export function shouldNotifyDesktop({
 	roomType,
 	isThread,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+	if (
+		disableAllMessageNotifications
+		&& desktopNotifications == null
+		&& !isHighlighted
+		&& !hasMentionToUser
+		&& !hasReplyToThread
+	) {
 		return false;
 	}
 
-	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
+	if (
+		statusConnection === 'offline'
+		|| status === 'busy'
+		|| desktopNotifications === 'nothing'
+	) {
 		return false;
 	}
 
 	if (!desktopNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
+		if (
+			settings.get(
+				'Accounts_Default_User_Preferences_desktopNotifications',
+			) === 'all'
+			&& (!isThread || hasReplyToThread)
+		) {
 			return true;
 		}
-		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
+		if (
+			settings.get(
+				'Accounts_Default_User_Preferences_desktopNotifications',
+			) === 'nothing'
+		) {
 			return false;
 		}
 	}
 
-	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+	return (
+		(roomType === 'd'
+			|| (!disableAllMessageNotifications
+				&& (hasMentionToAll || hasMentionToHere))
+			|| isHighlighted
+			|| desktopNotifications === 'all'
+			|| hasMentionToUser)
+		&& (!isThread || hasReplyToThread)
+	);
 }

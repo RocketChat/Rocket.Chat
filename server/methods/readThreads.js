@@ -11,7 +11,9 @@ Meteor.methods({
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', {
+				method: 'getThreadMessages',
+			});
 		}
 
 		const thread = Messages.findOneById(tmid);
@@ -23,7 +25,9 @@ Meteor.methods({
 		const room = Rooms.findOneById(thread.rid);
 
 		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'getThreadMessages',
+			});
 		}
 
 		return readThread({ userId: user._id, rid: thread.rid, tmid });

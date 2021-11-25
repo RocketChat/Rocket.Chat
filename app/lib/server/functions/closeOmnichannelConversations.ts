@@ -8,10 +8,15 @@ import { Livechat } from '../../../livechat/server/lib/Livechat';
 type SubscribedRooms = {
 	rid: string;
 	t: string;
-}
+};
 
-export const closeOmnichannelConversations = (user: IUser, subscribedRooms: SubscribedRooms[]): void => {
-	const roomsInfo = LivechatRooms.findByIds(subscribedRooms.map(({ rid }) => rid));
+export const closeOmnichannelConversations = (
+	user: IUser,
+	subscribedRooms: SubscribedRooms[],
+): void => {
+	const roomsInfo = LivechatRooms.findByIds(
+		subscribedRooms.map(({ rid }) => rid),
+	);
 	const language = settings.get<string>('Language') || 'en';
 	const comment = TAPi18n.__('Agent_deactivated', { lng: language });
 	roomsInfo.forEach((room: any) => {

@@ -27,7 +27,9 @@ Template.channelSettings__tokenpass.helpers({
 		return Template.instance().requireAll.get() ? 'checked' : '';
 	},
 	requiredLabel() {
-		return Template.instance().requireAll.get() ? t('Require_all_tokens') : t('Require_any_token');
+		return Template.instance().requireAll.get()
+			? t('Require_all_tokens')
+			: t('Require_any_token');
 	},
 	requiredDisabled() {
 		return !Template.instance().editing.get() ? 'disabled' : '';
@@ -62,10 +64,14 @@ Template.channelSettings__tokenpass.events({
 		e.preventDefault();
 		const instance = Template.instance();
 		const { balance, token, list } = instance;
-		list.set([...list.get().filter((t) => t.token !== token), { token: token.get(), balance: balance.get() }]);
+		list.set([
+			...list.get().filter((t) => t.token !== token),
+			{ token: token.get(), balance: balance.get() },
+		]);
 
-
-		[...i.findAll('input')].forEach((el) => { el.value = ''; });
+		[...i.findAll('input')].forEach((el) => {
+			el.value = '';
+		});
 		return balance.set('') && token.set('');
 	},
 	'click .js-remove'(e, instance) {
@@ -85,17 +91,30 @@ Template.channelSettings__tokenpass.events({
 			tokens: i.list.get(),
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'tokenpass', tokenpass, function(err) {
-			if (err) {
-				return handleError(err);
-			}
-			i.editing.set(false);
-			i.token.set('');
-			i.balance.set('');
-			i.initial = tokenpass;
-			[...i.findAll('input')].forEach((el) => { el.value = ''; });
-			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Room_tokenpass_config_changed_successfully') });
-		});
+		Meteor.call(
+			'saveRoomSettings',
+			this.rid,
+			'tokenpass',
+			tokenpass,
+			function(err) {
+				if (err) {
+					return handleError(err);
+				}
+				i.editing.set(false);
+				i.token.set('');
+				i.balance.set('');
+				i.initial = tokenpass;
+				[...i.findAll('input')].forEach((el) => {
+					el.value = '';
+				});
+				return dispatchToastMessage({
+					type: 'success',
+					message: TAPi18n.__(
+						'Room_tokenpass_config_changed_successfully',
+					),
+				});
+			},
+		);
 	},
 	'click .js-cancel'(e, i) {
 		e.preventDefault();
@@ -103,7 +122,9 @@ Template.channelSettings__tokenpass.events({
 		i.list.set(i.initial.tokens);
 		i.token.set('');
 		i.balance.set('');
-		[...i.findAll('input')].forEach((el) => { el.value = ''; });
+		[...i.findAll('input')].forEach((el) => {
+			el.value = '';
+		});
 	},
 	'change [name=requireAllTokens]'(e, instance) {
 		instance.requireAll.set(e.currentTarget.checked);

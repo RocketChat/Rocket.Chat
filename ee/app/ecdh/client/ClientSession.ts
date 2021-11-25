@@ -14,7 +14,7 @@ export class ClientSession extends Session {
 	async setServerKey(serverPublic: string): Promise<void> {
 		const sodium = await this.sodium();
 
-		const [decryptKey, encryptKey] = await sodium.crypto_kx_client_session_keys(
+		const [decryptKey, encryptKey] =			await sodium.crypto_kx_client_session_keys(
 			this.publicKey,
 			this.secretKey,
 			this.publicKeyFromString(serverPublic),

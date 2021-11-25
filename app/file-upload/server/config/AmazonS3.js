@@ -24,7 +24,14 @@ const get = function(file, req, res) {
 		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 
-			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
+			return FileUpload.proxyFile(
+				file.name,
+				fileUrl,
+				forceDownload,
+				request,
+				req,
+				res,
+			);
 		}
 
 		return FileUpload.redirectToFile(fileUrl, req, res);
@@ -104,9 +111,21 @@ const configure = _.debounce(function() {
 		config.connection.endpoint = BucketURL;
 	}
 
-	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
-	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);
-	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
+	AmazonS3Uploads.store = FileUpload.configureUploadsStore(
+		'AmazonS3',
+		AmazonS3Uploads.name,
+		config,
+	);
+	AmazonS3Avatars.store = FileUpload.configureUploadsStore(
+		'AmazonS3',
+		AmazonS3Avatars.name,
+		config,
+	);
+	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore(
+		'AmazonS3',
+		AmazonS3UserDataFiles.name,
+		config,
+	);
 }, 500);
 
 settings.watchByRegex(/^FileUpload_S3_/, configure);

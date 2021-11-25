@@ -1,11 +1,15 @@
 import { Template } from 'meteor/templating';
 import './messageBoxReplyPreview.html';
 
-
 Template.messageBoxReplyPreview.helpers({
 	attachments() {
 		const { replyMessageData } = this;
-		return [{ text: replyMessageData.msg, author_name: replyMessageData.u.username }];
+		return [
+			{
+				text: replyMessageData.msg,
+				author_name: replyMessageData.u.username,
+			},
+		];
 	},
 });
 

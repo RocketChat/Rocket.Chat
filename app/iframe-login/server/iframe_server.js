@@ -21,7 +21,6 @@ Accounts.registerLoginHandler('iframe', function(result) {
 	}
 });
 
-
 Meteor.methods({
 	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
 		return OAuth.retrieveCredential(credentialToken, credentialSecret);

@@ -6,14 +6,17 @@ import { LivechatRooms, LivechatVisitors } from '../../../models';
 import { FileUpload } from '../../../file-upload/server';
 
 Meteor.methods({
-	async 'sendFileLivechatMessage'(roomId, visitorToken, file, msgData = {}) {
+	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
 			return false;
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
+		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(
+			roomId,
+			visitorToken,
+		);
 
 		if (!room) {
 			return false;
@@ -27,7 +30,9 @@ Meteor.methods({
 			msg: Match.Optional(String),
 		});
 
-		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+		const fileUrl = FileUpload.getPath(
+			`${ file._id }/${ encodeURI(file.name) }`,
+		);
 
 		const attachment = {
 			title: file.name,
@@ -44,7 +49,9 @@ Meteor.methods({
 			if (file.identify && file.identify.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
-			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			attachment.image_preview = await FileUpload.resizeImagePreview(
+				file,
+			);
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
 			attachment.audio_type = file.type;
@@ -55,20 +62,23 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const msg = Object.assign({
-			_id: Random.id(),
-			rid: roomId,
-			ts: new Date(),
-			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type,
+		const msg = Object.assign(
+			{
+				_id: Random.id(),
+				rid: roomId,
+				ts: new Date(),
+				msg: '',
+				file: {
+					_id: file._id,
+					name: file.name,
+					type: file.type,
+				},
+				groupable: false,
+				attachments: [attachment],
+				token: visitorToken,
 			},
-			groupable: false,
-			attachments: [attachment],
-			token: visitorToken,
-		}, msgData);
+			msgData,
+		);
 
 		return Meteor.call('sendMessageLivechat', msg);
 	},

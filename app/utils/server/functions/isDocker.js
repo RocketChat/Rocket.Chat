@@ -11,7 +11,10 @@ function hasDockerEnv() {
 
 function hasDockerCGroup() {
 	try {
-		return fs.readFileSync('/proc/self/cgroup', 'utf8').indexOf('docker') !== -1;
+		return (
+			fs.readFileSync('/proc/self/cgroup', 'utf8').indexOf('docker')
+			!== -1
+		);
 	} catch (err) {
 		return false;
 	}

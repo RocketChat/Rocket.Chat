@@ -62,7 +62,10 @@ function EditSound({ close, onChange, data, ...props }) {
 					reader.onloadend = () => {
 						try {
 							uploadCustomSound(reader.result, sound.type, soundData);
-							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+							return dispatchToastMessage({
+								type: 'success',
+								message: t('File_uploaded'),
+							});
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
 						}

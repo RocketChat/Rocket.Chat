@@ -64,24 +64,27 @@ settingsRegistry.addGroup('Analytics', function addSettings() {
 		});
 	});
 
-	this.section('Analytics_features_enabled', function addFeaturesEnabledSettings() {
-		this.add('Analytics_features_messages', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Messages',
-			i18nDescription: 'Analytics_features_messages_Description',
-		});
-		this.add('Analytics_features_rooms', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Rooms',
-			i18nDescription: 'Analytics_features_rooms_Description',
-		});
-		this.add('Analytics_features_users', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Users',
-			i18nDescription: 'Analytics_features_users_Description',
-		});
-	});
+	this.section(
+		'Analytics_features_enabled',
+		function addFeaturesEnabledSettings() {
+			this.add('Analytics_features_messages', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Messages',
+				i18nDescription: 'Analytics_features_messages_Description',
+			});
+			this.add('Analytics_features_rooms', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Rooms',
+				i18nDescription: 'Analytics_features_rooms_Description',
+			});
+			this.add('Analytics_features_users', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Users',
+				i18nDescription: 'Analytics_features_users_Description',
+			});
+		},
+	);
 });

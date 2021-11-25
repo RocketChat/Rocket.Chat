@@ -24,7 +24,8 @@ function getCursorPosition(input) {
 	}
 	if (input.selectionStart != null) {
 		return input.selectionStart;
-	} if (document.selection != null) {
+	}
+	if (document.selection != null) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -40,7 +41,8 @@ function setCursorPosition(input, caretPos) {
 	if (input.selectionStart != null) {
 		input.focus();
 		return input.setSelectionRange(caretPos, caretPos);
-	} if (document.selection != null) {
+	}
+	if (document.selection != null) {
 		const range = input.createTextRange();
 		range.move('character', caretPos);
 		return range.select();
@@ -68,20 +70,35 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(
+			template.data.matchSelectorRegex,
+			new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`),
+		);
 	} else {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(
+			template.data.matchSelectorRegex,
+			new RegExp(`(?:^)${ template.trigger }[^\\s]*$`),
+		);
 	}
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${ template.trigger }([^\\s]*)$`));
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${ template.trigger }[^\\s]*$`));
+	template.selectorRegex = val(
+		template.data.selectorRegex,
+		new RegExp(`${ template.trigger }([^\\s]*)$`),
+	);
+	template.replaceRegex = val(
+		template.data.replaceRegex,
+		new RegExp(`${ template.trigger }[^\\s]*$`),
+	);
 	template.getValue = val(template.data.getValue, function(_id) {
 		return _id;
 	});
 	template.up = () => {
 		const current = template.find('.popup-item.selected');
-		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
+		const previous =			$(current).prev('.popup-item')[0]
+			|| template.find('.popup-item:last-child');
 		if (previous != null) {
-			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+			current.className = current.className
+				.replace(/\sselected/, '')
+				.replace('sidebar-item__popup-active', '');
 			previous.className += ' selected sidebar-item__popup-active';
 			previous.scrollIntoView(false);
 			return template.value.set(previous.getAttribute('data-id'));
@@ -89,9 +106,11 @@ Template.messagePopup.onCreated(function() {
 	};
 	template.down = () => {
 		const current = template.find('.popup-item.selected');
-		const next = $(current).next('.popup-item')[0] || template.find('.popup-item');
+		const next =			$(current).next('.popup-item')[0] || template.find('.popup-item');
 		if (next && next.classList.contains('popup-item')) {
-			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+			current.className = current.className
+				.replace(/\sselected/, '')
+				.replace('sidebar-item__popup-active', '');
 			next.className += ' selected sidebar-item__popup-active';
 			next.scrollIntoView(false);
 			return template.value.set(next.getAttribute('data-id'));
@@ -112,7 +131,10 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.onInputKeydown = (event) => {
-		if (template.open.curValue !== true || template.hasData.curValue !== true) {
+		if (
+			template.open.curValue !== true
+			|| template.hasData.curValue !== true
+		) {
 			return;
 		}
 		if (event.which === keys.ENTER || event.which === keys.TAB) {
@@ -147,13 +169,20 @@ Template.messagePopup.onCreated(function() {
 	}, template.textFilterDelay);
 
 	template.onInputKeyup = (event) => {
-		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
+		if (
+			template.closeOnEsc === true
+			&& template.open.curValue === true
+			&& event.which === keys.ESC
+		) {
 			template.open.set(false);
 			event.preventDefault();
 			event.stopPropagation();
 			return;
 		}
-		const value = template.input.value.substr(0, getCursorPosition(template.input));
+		const value = template.input.value.substr(
+			0,
+			getCursorPosition(template.input),
+		);
 
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex)[1]);
@@ -175,7 +204,10 @@ Template.messagePopup.onCreated(function() {
 		if (template.open.curValue === true) {
 			return;
 		}
-		const value = template.input.value.substr(0, getCursorPosition(template.input));
+		const value = template.input.value.substr(
+			0,
+			getCursorPosition(template.input),
+		);
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex)[1]);
 			template.open.set(true);
@@ -204,11 +236,19 @@ Template.messagePopup.onCreated(function() {
 		const caret = getCursorPosition(template.input);
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
-		const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue);
+		const getValue = this.getValue(
+			template.value.curValue,
+			template.data.collection,
+			template.records.get(),
+			firstPartValue,
+		);
 		if (!getValue) {
 			return;
 		}
-		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix);
+		firstPartValue = firstPartValue.replace(
+			template.selectorRegex,
+			template.prefix + getValue + template.suffix,
+		);
 		template.input.value = firstPartValue + lastPartValue;
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
@@ -223,7 +263,11 @@ Template.messagePopup.onCreated(function() {
 					return template.verifySelection();
 				});
 			};
-			const result = template.data.getFilter(template.data.collection, filter, filterCallback);
+			const result = template.data.getFilter(
+				template.data.collection,
+				filter,
+				filterCallback,
+			);
 			if (result != null) {
 				return filterCallback(result);
 			}
@@ -233,7 +277,7 @@ Template.messagePopup.onCreated(function() {
 
 Template.messagePopup.onRendered(function() {
 	if (this.data.getInput != null) {
-		this.input = typeof this.data.getInput === 'function' && this.data.getInput();
+		this.input =			typeof this.data.getInput === 'function' && this.data.getInput();
 	} else if (this.data.input) {
 		this.input = this.parentTemplate().find(this.data.input);
 	}
@@ -277,7 +321,9 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		const current = template.find('.popup-item.selected');
 		if (current != null) {
-			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+			current.className = current.className
+				.replace(/\sselected/, '')
+				.replace('sidebar-item__popup-active', '');
 		}
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);
@@ -289,7 +335,9 @@ Template.messagePopup.events({
 	'mouseup .popup-item, touchend .popup-item'(e) {
 		e.stopPropagation();
 		const template = Template.instance();
-		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
+		const wasMenuIconClicked = e.target.classList.contains(
+			'sidebar-item__menu-icon',
+		);
 		template.clickingItem = false;
 		if (!wasMenuIconClicked) {
 			template.value.set(this._id);
@@ -301,7 +349,12 @@ Template.messagePopup.events({
 
 Template.messagePopup.helpers({
 	isOpen() {
-		return Template.instance().open.get() && ((Template.instance().hasData.get() || (Template.instance().data.emptyTemplate != null)) || !Template.instance().parentTemplate(1).subscriptionsReady());
+		return (
+			Template.instance().open.get()
+			&& (Template.instance().hasData.get()
+				|| Template.instance().data.emptyTemplate != null
+				|| !Template.instance().parentTemplate(1).subscriptionsReady())
+		);
 	},
 	data() {
 		const template = Template.instance();

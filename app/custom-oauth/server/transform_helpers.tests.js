@@ -8,7 +8,6 @@ import {
 	getRegexpMatch,
 } from './transform_helpers';
 
-
 const data = {
 	id: '123456',
 	'invalid.property': true,
@@ -18,21 +17,26 @@ const data = {
 		value: 'baz',
 		'another.invalid.prop': true,
 	},
-	list: [{
-		'invalid.property': 'in-array',
-	}],
+	list: [
+		{
+			'invalid.property': 'in-array',
+		},
+	],
 };
 
 describe('fromTemplate', () => {
-	const normalizedData = Object.values(normalizers).reduce((normalizedData, normalizer) => {
-		const result = { ...normalizedData };
-		normalizer({ ...result });
+	const normalizedData = Object.values(normalizers).reduce(
+		(normalizedData, normalizer) => {
+			const result = { ...normalizedData };
+			normalizer({ ...result });
 
-		return result;
-	}, data);
+			return result;
+		},
+		data,
+	);
 
 	it('returns match from regexp on top-level properties', () => {
-		const template = '{{/^foo@bar\.(.+)/::email}}';
+		const template = '{{/^foo@bar.(.+)/::email}}';
 		const expected = 'com';
 		const result = fromTemplate(template, normalizedData);
 		expect(result).to.equal(expected);
@@ -68,7 +72,7 @@ describe('fromTemplate', () => {
 	});
 
 	it('returns composed string from multiple template chunks with static parts', () => {
-		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar\.(.+)/::email}}-from-template';
+		const template =			'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar.(.+)/::email}}-from-template';
 		const expected = 'composed-foo-at-baz-dot-com-from-template';
 		const result = fromTemplate(template, normalizedData);
 		expect(result).to.equal(expected);
@@ -100,11 +104,15 @@ describe('renameInvalidProperties', () => {
 		expect(result.invalid_property).to.equal(data['invalid.property']);
 
 		expect(result.nested['invalid.property']).to.be.undefined;
-		expect(result.nested.invalid_property).to.equal(data.nested['invalid.property']);
+		expect(result.nested.invalid_property).to.equal(
+			data.nested['invalid.property'],
+		);
 
 		result.list.forEach((item, idx) => {
 			expect(item['invalid.property']).to.be.undefined;
-			expect(item.invalid_property).to.equal(data.list[idx]['invalid.property']);
+			expect(item.invalid_property).to.equal(
+				data.list[idx]['invalid.property'],
+			);
 		});
 	});
 });
@@ -115,6 +123,8 @@ describe('getNestedValue', () => {
 	});
 
 	it('returns nested object property', () => {
-		expect(getNestedValue('nested.value', data)).to.equal(data.nested.value);
+		expect(getNestedValue('nested.value', data)).to.equal(
+			data.nested.value,
+		);
 	});
 });

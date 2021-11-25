@@ -3,7 +3,14 @@ import { Session } from 'meteor/session';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
+import {
+	getUserPreference,
+	RoomTypeConfig,
+	RoomTypeRouteConfig,
+	RoomSettingsEnum,
+	RoomMemberActions,
+	UiTextContext,
+} from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -37,7 +44,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		});
 	}
 
-
 	getIcon(roomData) {
 		if (this.isGroupChat(roomData)) {
 			return 'balloon';
@@ -52,10 +58,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 		const query = {
 			t: 'd',
-			$or: [
-				{ name: identifier },
-				{ rid: identifier },
-			],
+			$or: [{ name: identifier }, { rid: identifier }],
 		};
 
 		const subscription = Subscriptions.findOne(query);
@@ -68,7 +71,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		// this function can receive different types of data
 		// if it doesn't have fname and name properties, should be a Room object
 		// so, need to find the related subscription
-		const subscription = roomData && (roomData.fname || roomData.name)
+		const subscription =			roomData && (roomData.fname || roomData.name)
 			? roomData
 			: Subscriptions.findOne({ rid: roomData._id });
 
@@ -85,14 +88,23 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	secondaryRoomName(roomData) {
 		if (settings.get('UI_Use_Real_Name')) {
-			const subscription = Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+			const subscription = Subscriptions.findOne(
+				{ rid: roomData._id },
+				{ fields: { name: 1 } },
+			);
 			return subscription && subscription.name;
 		}
 	}
 
 	condition() {
-		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const groupByType = getUserPreference(
+			Meteor.userId(),
+			'sidebarGroupByType',
+		);
+		return (
+			groupByType
+			&& hasAtLeastOnePermission(['view-d-room', 'view-joined-room'])
+		);
 	}
 
 	getUserStatus(roomId) {
@@ -175,12 +187,17 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		if (this.isGroupChat(room)) {
 			return {
 				title: this.roomName(room),
-				text: `${ (settings.get('UI_Use_Real_Name') && user.name) || user.username }: ${ notificationMessage }`,
+				text: `${
+					(settings.get('UI_Use_Real_Name') && user.name)
+					|| user.username
+				}: ${ notificationMessage }`,
 			};
 		}
 
 		return {
-			title: (settings.get('UI_Use_Real_Name') && user.name) || user.username,
+			title:
+				(settings.get('UI_Use_Real_Name') && user.name)
+				|| user.username,
 			text: notificationMessage,
 		};
 	}
@@ -196,14 +213,26 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		}
 
 		if (this.isGroupChat(roomData)) {
-			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
+			return getAvatarURL({
+				username: roomData.uids.length + roomData.usernames.join(),
+			});
 		}
 
-		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+		const sub =			subData
+			|| Subscriptions.findOne(
+				{ rid: roomData._id },
+				{ fields: { name: 1 } },
+			);
 
 		if (sub && sub.name) {
-			const user = Meteor.users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
-			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+			const user = Meteor.users.findOne(
+				{ username: sub.name },
+				{ fields: { username: 1, avatarETag: 1 } },
+			);
+			return getUserAvatarURL(
+				user?.username || sub.name,
+				user?.avatarETag,
+			);
 		}
 
 		if (roomData) {

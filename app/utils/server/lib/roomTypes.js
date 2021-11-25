@@ -10,7 +10,10 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	 * @param {function} callback function that will return the publish's data
 	 */
 	setPublish(roomType, callback) {
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].publish != null) {
+		if (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].publish != null
+		) {
 			throw new Meteor.Error(
 				'route-publish-exists',
 				'Publish for the given type already exists',
@@ -23,7 +26,10 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	}
 
 	setRoomFind(roomType, callback) {
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].roomFind != null) {
+		if (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].roomFind != null
+		) {
 			throw new Meteor.Error(
 				'room-find-exists',
 				'Room find for the given type already exists',

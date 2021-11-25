@@ -7,26 +7,13 @@ import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { setupAutogrow } from './messageBoxAutogrow';
-import {
-	formattingButtons,
-	applyFormatting,
-} from './messageBoxFormatting';
+import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import {
-	fileUpload,
-	KonchatNotification,
-} from '../../../ui';
-import {
-	messageBox,
-	popover,
-} from '../../../ui-utils';
-import {
-	t,
-	roomTypes,
-	getUserPreference,
-} from '../../../utils/client';
+import { fileUpload, KonchatNotification } from '../../../ui';
+import { messageBox, popover } from '../../../ui-utils';
+import { t, roomTypes, getUserPreference } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './userActionIndicator.ts';
@@ -68,7 +55,10 @@ Template.messageBox.onCreated(function() {
 		} else if (input.selectionStart || input.selectionStart === 0) {
 			const newPosition = input.selectionStart + 1;
 			const before = input.value.substring(0, input.selectionStart);
-			const after = input.value.substring(input.selectionEnd, input.value.length);
+			const after = input.value.substring(
+				input.selectionEnd,
+				input.value.length,
+			);
 			input.value = `${ before }\n${ after }`;
 			input.selectionStart = newPosition;
 			input.selectionEnd = newPosition;
@@ -82,7 +72,6 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
-
 	this.send = (event) => {
 		const { input } = this;
 
@@ -90,7 +79,10 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
+		const {
+			autogrow,
+			data: { rid, tmid, onSend, tshow },
+		} = this;
 		const { value } = input;
 		this.set('');
 
@@ -132,8 +124,8 @@ Template.messageBox.onRendered(function() {
 			});
 		}
 
-		const isBlocked = room && room.t === 'd' && subscription && subscription.blocked;
-		const isBlocker = room && room.t === 'd' && subscription && subscription.blocker;
+		const isBlocked =			room && room.t === 'd' && subscription && subscription.blocked;
+		const isBlocker =			room && room.t === 'd' && subscription && subscription.blocker;
 		const isBlockedOrBlocker = isBlocked || isBlocker;
 
 		const mustJoinWithCode = !subscription && room.joinCodeRequired;
@@ -207,7 +199,7 @@ Template.messageBox.helpers({
 			return true;
 		}
 
-		const isBlockedOrBlocker = Template.instance().state.get('isBlockedOrBlocker');
+		const isBlockedOrBlocker =			Template.instance().state.get('isBlockedOrBlocker');
 
 		if (isBlockedOrBlocker) {
 			return false;
@@ -217,8 +209,12 @@ Template.messageBox.helpers({
 			return false;
 		}
 
-		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+		const isReadOnly = roomTypes.readOnly(
+			rid,
+			Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }),
+		);
+		const isArchived =			roomTypes.archived(rid)
+			|| (subscription && subscription.t === 'd' && subscription.archived);
 
 		return !isReadOnly && !isArchived;
 	},
@@ -235,7 +231,9 @@ Template.messageBox.helpers({
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	maxMessageLength() {
-		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
+		return settings.get('Message_AllowConvertLongMessagesToAttachment')
+			? null
+			: settings.get('Message_MaxAllowedSize');
 	},
 	isSendIconVisible() {
 		return Template.instance().isSendIconVisible.get();
@@ -250,11 +248,15 @@ Template.messageBox.helpers({
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
-		return Object.values(actionGroups)
-			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
+		return Object.values(actionGroups).reduce(
+			(actions, actionGroup) => [...actions, ...actionGroup],
+			[],
+		);
 	},
 	formattingButtons() {
-		return formattingButtons.filter(({ condition }) => !condition || condition());
+		return formattingButtons.filter(
+			({ condition }) => !condition || condition(),
+		);
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
@@ -271,7 +273,7 @@ Template.messageBox.helpers({
 
 const handleFormattingShortcut = (event, instance) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+	const isCmdOrCtrlPressed =		(isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
 	if (!isCmdOrCtrlPressed) {
 		return false;
@@ -279,7 +281,7 @@ const handleFormattingShortcut = (event, instance) => {
 
 	const key = event.key.toLowerCase();
 
-	const { pattern } = formattingButtons
+	const { pattern } =		formattingButtons
 		.filter(({ condition }) => !condition || condition())
 		.find(({ command }) => command === key) || {};
 
@@ -297,21 +299,23 @@ let sendOnEnterActive;
 
 Tracker.autorun(() => {
 	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
+	sendOnEnterActive =		sendOnEnter == null
+		|| sendOnEnter === 'normal'
 		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 });
 
 const handleSubmit = (event, instance) => {
 	const { which: keyCode } = event;
 
-	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+	const isSubmitKey =		keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
 	if (!isSubmitKey) {
 		return false;
 	}
 
-	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
-	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
+	const withModifier =		event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+	const isSending =		(sendOnEnterActive && !withModifier)
+		|| (!sendOnEnterActive && withModifier);
 
 	if (isSending) {
 		instance.send(event);
@@ -354,8 +358,15 @@ Template.messageBox.events({
 			const textAreaTxt = input.value;
 
 			input.focus();
-			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
+			if (
+				!document.execCommand
+				|| !document.execCommand('insertText', false, emojiValue)
+			) {
+				instance.set(
+					textAreaTxt.substring(0, caretPos)
+						+ emojiValue
+						+ textAreaTxt.substring(caretPos),
+				);
 				input.focus();
 			}
 
@@ -367,7 +378,8 @@ Template.messageBox.events({
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
 	'keydown .js-input-message'(event, instance) {
-		const isEventHandled = handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
+		const isEventHandled =			handleFormattingShortcut(event, instance)
+			|| handleSubmit(event, instance);
 
 		if (isEventHandled) {
 			event.preventDefault();
@@ -394,15 +406,24 @@ Template.messageBox.events({
 
 		const items = [...event.originalEvent.clipboardData.items];
 
-		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+		if (
+			items.some(
+				({ kind, type }) => kind === 'string' && type === 'text/plain',
+			)
+		) {
 			return;
 		}
 
 		const files = items
-			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
+			.filter(
+				(item) =>
+					item.kind === 'file' && item.type.indexOf('image/') !== -1,
+			)
 			.map((item) => ({
 				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
+				name: `Clipboard - ${ moment().format(
+					settings.get('Message_TimeAndDateFormat'),
+				) }`,
 			}))
 			.filter(({ file }) => file !== null);
 
@@ -473,7 +494,8 @@ Template.messageBox.events({
 			],
 			offsetVertical: 10,
 			direction: 'top-inverted',
-			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
+			currentTarget:
+				event.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this.rid,
 				tmid: this.tmid,
@@ -505,7 +527,7 @@ Template.messageBox.events({
 		event.stopPropagation();
 
 		const { id } = event.currentTarget.dataset;
-		const { pattern } = formattingButtons
+		const { pattern } =			formattingButtons
 			.filter(({ condition }) => !condition || condition())
 			.find(({ label }) => label === id) || {};
 

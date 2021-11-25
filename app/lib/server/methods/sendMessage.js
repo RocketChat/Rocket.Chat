@@ -16,9 +16,13 @@ import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
-		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
-			method: 'sendMessage',
-		});
+		throw new Meteor.Error(
+			'invalid-params',
+			'tshow provided but missing tmid',
+			{
+				method: 'sendMessage',
+			},
+		);
 	}
 
 	if (message.tmid && !settings.get('Threads_enabled')) {
@@ -30,11 +34,15 @@ export function executeSendMessage(uid, message) {
 	if (message.ts) {
 		const tsDiff = Math.abs(moment(message.ts).diff());
 		if (tsDiff > 60000) {
-			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-				method: 'sendMessage',
-				message_ts: message.ts,
-				server_ts: new Date().getTime(),
-			});
+			throw new Meteor.Error(
+				'error-message-ts-out-of-sync',
+				'Message timestamp is out of sync',
+				{
+					method: 'sendMessage',
+					message_ts: message.ts,
+					server_ts: new Date().getTime(),
+				},
+			);
 		} else if (tsDiff > 10000) {
 			message.ts = new Date();
 		}
@@ -43,12 +51,21 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.msg) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(
+			message.msg,
+		);
 
-		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage',
-			});
+		if (
+			messageProperties.length(adjustedMessage)
+			> settings.get('Message_MaxAllowedSize')
+		) {
+			throw new Meteor.Error(
+				'error-message-size-exceeded',
+				'Message size exceeds Message_MaxAllowedSize',
+				{
+					method: 'sendMessage',
+				},
+			);
 		}
 	}
 
@@ -69,18 +86,22 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (!rid) {
-		throw new Error('The \'rid\' property on the message object is missing.');
+		throw new Error("The 'rid' property on the message object is missing.");
 	}
 
 	try {
-		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		const room = canSendMessage(rid, {
+			uid,
+			username: user.username,
+			type: user.type,
+		});
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
 	} catch (error) {
 		SystemLogger.error('Error sending message:', error);
 
-		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
+		const errorMessage =			typeof error === 'string' ? error : error.error || error.message;
 		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
@@ -108,9 +129,13 @@ Meteor.methods({
 			return executeSendMessage(uid, message);
 		} catch (error) {
 			if ((error.error || error.message) === 'error-not-allowed') {
-				throw new Meteor.Error(error.error || error.message, error.reason, {
-					method: 'sendMessage',
-				});
+				throw new Meteor.Error(
+					error.error || error.message,
+					error.reason,
+					{
+						method: 'sendMessage',
+					},
+				);
 			}
 		}
 	},

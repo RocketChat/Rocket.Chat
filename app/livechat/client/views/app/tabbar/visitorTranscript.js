@@ -29,10 +29,14 @@ const validateTranscriptData = (instance) => {
 	}
 
 	const visitor = instance.visitor.get();
-	const { visitorEmails: { 0: visitorEmail } } = visitor;
+	const {
+		visitorEmails: { 0: visitorEmail },
+	} = visitor;
 
 	if (email !== visitorEmail.address) {
-		instance.errorMessage.set(t('Livechat_visitor_email_and_transcript_email_do_not_match'));
+		instance.errorMessage.set(
+			t('Livechat_visitor_email_and_transcript_email_do_not_match'),
+		);
 		return false;
 	}
 
@@ -61,7 +65,10 @@ Template.visitorTranscript.helpers({
 			return room.transcriptRequest.subject;
 		}
 
-		return t('Transcript_of_your_livechat_conversation') || (room && roomTypes.getRoomName(room.t, room));
+		return (
+			t('Transcript_of_your_livechat_conversation')
+			|| (room && roomTypes.getRoomName(room.t, room))
+		);
 	},
 	errorEmail() {
 		const instance = Template.instance();
@@ -96,14 +103,24 @@ Template.visitorTranscript.events({
 		const visitor = instance.visitor.get();
 		const { token } = visitor;
 
-		Meteor.call('livechat:sendTranscript', token, rid, email, subject, (err) => {
-			if (err != null) {
-				return handleError(err);
-			}
+		Meteor.call(
+			'livechat:sendTranscript',
+			token,
+			rid,
+			email,
+			subject,
+			(err) => {
+				if (err != null) {
+					return handleError(err);
+				}
 
-			dispatchToastMessage({ type: 'success', message: t('Your_email_has_been_queued_for_sending') });
-			this.save();
-		});
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Your_email_has_been_queued_for_sending'),
+				});
+				this.save();
+			},
+		);
 	},
 
 	'click .request'(e, instance) {
@@ -119,14 +136,23 @@ Template.visitorTranscript.events({
 		const room = instance.room.get();
 		const { _id: rid } = room;
 
-		Meteor.call('livechat:requestTranscript', rid, email, subject, (err) => {
-			if (err != null) {
-				return handleError(err);
-			}
+		Meteor.call(
+			'livechat:requestTranscript',
+			rid,
+			email,
+			subject,
+			(err) => {
+				if (err != null) {
+					return handleError(err);
+				}
 
-			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_has_been_requested') });
-			this.save();
-		});
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Livechat_transcript_has_been_requested'),
+				});
+				this.save();
+			},
+		);
 	},
 
 	'click .discard'(e, instance) {
@@ -140,7 +166,10 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_request_has_been_canceled') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Livechat_transcript_request_has_been_canceled'),
+			});
 			this.save();
 		});
 	},
@@ -157,16 +186,24 @@ Template.visitorTranscript.onCreated(async function() {
 	this.infoMessage = new ReactiveVar('');
 
 	this.autorun(async () => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ Template.currentData().visitorId }`);
+		const { visitor } = await APIClient.v1.get(
+			`livechat/visitors.info?visitorId=${
+				Template.currentData().visitorId
+			}`,
+		);
 		this.visitor.set(visitor);
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ Template.currentData().roomId }`);
+		const { room } = await APIClient.v1.get(
+			`rooms.info?roomId=${ Template.currentData().roomId }`,
+		);
 		this.room.set(room);
 
 		if (room?.transcriptRequest) {
-			this.infoMessage.set(t('Livechat_transcript_already_requested_warning'));
+			this.infoMessage.set(
+				t('Livechat_transcript_already_requested_warning'),
+			);
 		}
 	});
 });

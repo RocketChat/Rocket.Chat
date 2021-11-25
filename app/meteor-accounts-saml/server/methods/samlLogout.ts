@@ -8,7 +8,9 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 /**
  * Fetch SAML provider configs for given 'provider'.
  */
-function getSamlServiceProviderOptions(provider: string): IServiceProviderOptions {
+function getSamlServiceProviderOptions(
+	provider: string,
+): IServiceProviderOptions {
 	if (!provider) {
 		throw new Meteor.Error('no-saml-provider', 'SAML internal error', {
 			method: 'getSamlServiceProviderOptions',
@@ -28,19 +30,27 @@ Meteor.methods({
 	samlLogout(provider: string) {
 		// Make sure the user is logged in before we initiate SAML Logout
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'samlLogout' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'samlLogout',
+			});
 		}
 		const providerConfig = getSamlServiceProviderOptions(provider);
 
 		SAMLUtils.log({ msg: 'Logout request', providerConfig });
 		// This query should respect upcoming array of SAML logins
-		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
+		const user = Users.getSAMLByIdAndSAMLProvider(
+			Meteor.userId(),
+			provider,
+		);
 		if (!user || !user.services || !user.services.saml) {
 			return;
 		}
 
 		const { nameID, idpSession } = user.services.saml;
-		SAMLUtils.log({ msg: `NameID for user ${ Meteor.userId() } found`, nameID });
+		SAMLUtils.log({
+			msg: `NameID for user ${ Meteor.userId() } found`,
+			nameID,
+		});
 
 		const _saml = new SAMLServiceProvider(providerConfig);
 

@@ -1,3 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-export const integrationHistoryStreamer = new Meteor.Streamer('integrationHistory');
+export const integrationHistoryStreamer = new Meteor.Streamer(
+	'integrationHistory',
+);

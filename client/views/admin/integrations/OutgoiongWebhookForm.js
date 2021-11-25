@@ -183,7 +183,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 											}}
 										/>
 										<Field.Hint
-											dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }}
+											dangerouslySetInnerHTML={{
+												__html: t('Integrations_for_all_channels'),
+											}}
 										/>
 									</Field>
 								),
@@ -327,7 +329,11 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 										/>
 									</Field.Row>
 									<Field.Hint>{t('You_can_use_an_emoji_as_avatar')}</Field.Hint>
-									<Field.Hint dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
+									<Field.Hint
+										dangerouslySetInnerHTML={{
+											__html: t('Example_s', ':ghost:'),
+										}}
+									/>
 								</Field>
 							),
 							[emoji, handleEmoji, t],
@@ -384,7 +390,11 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Row>
 										<Box fontScale='p1' withRichContent flexGrow={1}>
 											<pre>
-												<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
+												<code
+													dangerouslySetInnerHTML={{
+														__html: hilightedExampleJson,
+													}}
+												></code>
 											</pre>
 										</Box>
 									</Field.Row>
@@ -433,7 +443,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 											/>
 										</Field.Row>
 										<Field.Hint
-											dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }}
+											dangerouslySetInnerHTML={{
+												__html: t('Integration_Retry_Delay_Description'),
+											}}
 										/>
 									</Field>
 								),

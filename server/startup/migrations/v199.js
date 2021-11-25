@@ -9,15 +9,23 @@ const batchSize = 5000;
 async function migrateUserRecords(total, current) {
 	console.log(`Migrating ${ current }/${ total }`);
 
-	const items = await Users.find({ __rooms: { $exists: false } }, { projection: { _id: 1 } }).limit(batchSize).toArray();
+	const items = await Users.find(
+		{ __rooms: { $exists: false } },
+		{ projection: { _id: 1 } },
+	)
+		.limit(batchSize)
+		.toArray();
 
 	const actions = [];
 
 	for await (const user of items) {
-		const rooms = await Subscriptions.find({
-			'u._id': user._id,
-			t: { $nin: ['d', 'l'] },
-		}, { projection: { rid: 1 } }).toArray();
+		const rooms = await Subscriptions.find(
+			{
+				'u._id': user._id,
+				t: { $nin: ['d', 'l'] },
+			},
+			{ projection: { rid: 1 } },
+		).toArray();
 
 		actions.push({
 			updateOne: {
@@ -49,10 +57,15 @@ addMigration({
 	up() {
 		const fut = new Future();
 
-		console.log('Changing schema of User records, this may take a long time ...');
+		console.log(
+			'Changing schema of User records, this may take a long time ...',
+		);
 
 		Meteor.setTimeout(async () => {
-			const users = Users.find({ __rooms: { $exists: false } }, { projection: { _id: 1 } });
+			const users = Users.find(
+				{ __rooms: { $exists: false } },
+				{ projection: { _id: 1 } },
+			);
 			const total = await users.count();
 			await users.close();
 

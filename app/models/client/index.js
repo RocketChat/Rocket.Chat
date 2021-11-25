@@ -18,7 +18,10 @@ import { ChatMessage } from './models/ChatMessage';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
-import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import {
+	AuthzCachedCollection,
+	ChatPermissions,
+} from './models/ChatPermissions';
 import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';

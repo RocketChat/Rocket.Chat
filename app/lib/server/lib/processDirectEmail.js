@@ -27,7 +27,10 @@ export const processDirectEmail = function(email) {
 			message.ts = new Date();
 		}
 
-		if (message.msg && message.msg.length > settings.get('Message_MaxAllowedSize')) {
+		if (
+			message.msg
+			&& message.msg.length > settings.get('Message_MaxAllowedSize')
+		) {
 			return false;
 		}
 
@@ -62,7 +65,10 @@ export const processDirectEmail = function(email) {
 		}
 
 		// check mention
-		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1 && room.t !== 'd') {
+		if (
+			message.msg.indexOf(`@${ prevMessage.u.username }`) === -1
+			&& room.t !== 'd'
+		) {
 			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
 		}
 
@@ -78,7 +84,10 @@ export const processDirectEmail = function(email) {
 		// add reply message link
 		message.msg = prevMessageLink + message.msg;
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(
+			message.rid,
+			user._id,
+		);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			// room is blocked
 			return false;
@@ -108,12 +117,18 @@ export const processDirectEmail = function(email) {
 	email.body = reply.parse_reply(email.body);
 
 	// if 'To' email format is "Name <username@domain>"
-	if (email.headers.to.indexOf('<') >= 0 && email.headers.to.indexOf('>') >= 0) {
+	if (
+		email.headers.to.indexOf('<') >= 0
+		&& email.headers.to.indexOf('>') >= 0
+	) {
 		email.headers.to = email.headers.to.split('<')[1].split('>')[0];
 	}
 
 	// if 'From' email format is "Name <username@domain>"
-	if (email.headers.from.indexOf('<') >= 0 && email.headers.from.indexOf('>') >= 0) {
+	if (
+		email.headers.from.indexOf('<') >= 0
+		&& email.headers.from.indexOf('>') >= 0
+	) {
 		email.headers.from = email.headers.from.split('<')[1].split('>')[0];
 	}
 

@@ -11,7 +11,9 @@ export class FederationKeysRaw extends BaseRaw<T> {
 	async getKey(type: T['type']): Promise<string | null> {
 		const keyResource = await this.findOne({ type });
 
-		if (!keyResource) { return null; }
+		if (!keyResource) {
+			return null;
+		}
 
 		return keyResource.key;
 	}
@@ -20,7 +22,10 @@ export class FederationKeysRaw extends BaseRaw<T> {
 		return new NodeRSA(keyData, `pkcs8-${ type }-pem`);
 	}
 
-	async generateKeys(): Promise<{ privateKey: '' | NodeRSA | null; publicKey: '' | NodeRSA | null }> {
+	async generateKeys(): Promise<{
+		privateKey: '' | NodeRSA | null;
+		publicKey: '' | NodeRSA | null;
+	}> {
 		const key = new NodeRSA({ b: 512 });
 
 		key.generateKeyPair();
