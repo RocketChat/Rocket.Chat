@@ -60,8 +60,8 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 	}
 
 	const handleChange = (): void => {
-		onChange && onChange();
-		reload && reload();
+		onChange?.();
+		reload?.();
 	};
 
 	return <EditCustomUserStatus data={data.statuses[0]} onChange={handleChange} {...props} />;

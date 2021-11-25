@@ -42,8 +42,8 @@ const CurrentChatsPage: FC<{
 			<GenericTable
 				header={header}
 				renderRow={renderRow}
-				results={data && data.rooms}
-				total={data && data.total}
+				results={data?.rooms}
+				total={data?.total}
 				setParams={setParams}
 				params={params}
 				reload={reload}

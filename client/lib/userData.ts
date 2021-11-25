@@ -58,7 +58,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		return;
 	}
 
-	cancel && cancel();
+	cancel?.();
 
 	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
 		switch (data.type) {
