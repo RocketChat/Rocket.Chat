@@ -20,6 +20,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
@@ -47,6 +48,7 @@ function EditRoom({ room, onChange, onReload }) {
 	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
 	const [
@@ -152,6 +154,7 @@ function EditRoom({ room, onChange, onReload }) {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
+			dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
 			onCancel();
 			setDeleted(true);
 			onReload();
