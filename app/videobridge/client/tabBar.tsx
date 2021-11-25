@@ -22,7 +22,7 @@ addAction('bbb_video', ({ room }) => {
 	const enabledTeams = useSetting('bigbluebutton_enable_teams');
 
 	const groups = useStableArray([
-		enabledDirect && 'direct',
+		enabledDirect && 'direct', 'direct_multiple',
 		enabledGroup && 'group',
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
@@ -53,11 +53,13 @@ addAction('video', ({ room }) => {
 
 	const enabledChannel = useSetting('Jitsi_Enable_Channels');
 	const enabledTeams = useSetting('Jitsi_Enable_Teams');
+	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
 	const groups = useStableArray([
 		'direct',
+		'direct_multiple',
 		'group',
-		'live',
+		enabledLiveChat && 'live',
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
 	].filter(Boolean) as ToolboxActionConfig['groups']);

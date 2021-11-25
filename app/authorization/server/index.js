@@ -21,7 +21,6 @@ import './methods/removeRoleFromPermission';
 import './methods/removeUserFromRole';
 import './methods/saveRole';
 import './streamer/permissions';
-import './startup';
 
 export {
 	getRoles,

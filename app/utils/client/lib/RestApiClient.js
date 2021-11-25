@@ -1,13 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import jQuery from 'jquery';
 
-import { baseURI } from './baseuri';
-import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
-
-export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
-	acc += `${ label }[]=${ item }&`;
-	return acc;
-}, '');
+import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
+import { baseURI } from '../../../../client/lib/baseURI';
 
 export const APIClient = {
 	delete(endpoint, params) {
@@ -25,6 +21,15 @@ export const APIClient = {
 		}
 
 		return APIClient._jqueryCall('POST', endpoint, params, body);
+	},
+
+	put(endpoint, params, body) {
+		if (!body) {
+			body = params;
+			params = {};
+		}
+
+		return APIClient._jqueryCall('PUT', endpoint, params, body);
 	},
 
 	upload(endpoint, params, formData, xhrOptions) {
@@ -50,10 +55,11 @@ export const APIClient = {
 				query += query === '' ? '?' : '&';
 
 				if (Array.isArray(params[key])) {
-					const joinedArray = params[key].join(`&${ key }[]=`);
+					const encodedParams = params[key].map((value) => encodeURIComponent(value));
+					const joinedArray = encodedParams.join(`&${ key }[]=`);
 					query += `${ key }[]=${ joinedArray }`;
 				} else {
-					query += `${ key }=${ params[key] }`;
+					query += `${ key }=${ encodeURIComponent(params[key]) }`;
 				}
 			});
 		}
@@ -171,6 +177,10 @@ export const APIClient = {
 
 		upload(endpoint, params, formData) {
 			return APIClient.upload(`v1/${ endpoint }`, params, formData);
+		},
+
+		put(endpoint, params, body) {
+			return APIClient.put(`v1/${ endpoint }`, params, body);
 		},
 	},
 };

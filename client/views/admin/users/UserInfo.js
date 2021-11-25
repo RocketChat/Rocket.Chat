@@ -6,24 +6,26 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import { UserStatus } from '../../../components/UserStatus';
+import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
+import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, ...props }) {
+export function UserInfoWithData({ uid, username, onReload, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
+	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const {
 		value: data,
 		phase: state,
 		error,
-		reload,
+		reload: reloadUserInfo,
 	} = useEndpointData(
 		'users.info',
 		useMemo(
@@ -32,10 +34,14 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		),
 	);
 
-	const onChange = useMutableCallback(() => reload());
+	const onChange = useMutableCallback(() => {
+		onReload();
+		reloadUserInfo();
+	});
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
+
 		const {
 			name,
 			username,
@@ -47,12 +53,15 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			lastLogin,
 			nickname,
 		} = user;
+
 		return {
 			name,
 			username,
 			lastLogin,
 			showRealNames,
-			roles: roles.map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles:
+				roles &&
+				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			phone: user.phone,
 			utcOffset,
@@ -69,7 +78,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			customStatus: statusText,
 			nickname,
 		};
-	}, [approveManuallyUsers, data, showRealNames]);
+	}, [approveManuallyUsers, data, showRealNames, getRoles]);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (

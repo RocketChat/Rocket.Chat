@@ -2,9 +2,8 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -120,7 +119,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-const createFileSystemStore = _.debounce(function() {
+settings.watch('FileUpload_FileSystemPath', function() {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
@@ -131,6 +130,4 @@ const createFileSystemStore = _.debounce(function() {
 
 	// DEPRECATED backwards compatibililty (remove)
 	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
-}, 500);
-
-settings.get('FileUpload_FileSystemPath', createFileSystemStore);
+});

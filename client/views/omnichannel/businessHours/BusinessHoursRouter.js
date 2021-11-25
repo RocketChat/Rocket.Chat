@@ -21,15 +21,15 @@ const BusinessHoursRouter = () => {
 	const router = useRoute('omnichannel-businessHours');
 
 	useEffect(() => {
-		if (isSingleBH && (context !== 'edit' || type !== 'default')) {
+		if (isSingleBH) {
 			router.push({
 				context: 'edit',
 				type: 'default',
 			});
 		}
-	}, [context, isSingleBH, router, type]);
+	}, [isSingleBH, router]);
 
-	if ((context === 'edit' && type) || (isSingleBH && (context !== 'edit' || type !== 'default'))) {
+	if (context === 'edit' || isSingleBH) {
 		return type ? <EditBusinessHoursPage type={type} id={id} /> : null;
 	}
 

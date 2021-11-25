@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { getConfig } from '../../../app/ui-utils/client/config';
 import { IUser } from '../../../definition/IUser';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../lib/lists/RecordList';
+import { getConfig } from '../../lib/utils/getConfig';
 
 type MembersListOptions = {
 	rid: string;

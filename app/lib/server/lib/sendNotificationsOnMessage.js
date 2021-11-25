@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
@@ -10,7 +10,6 @@ import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replac
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
-import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 
@@ -74,28 +73,10 @@ export const sendNotification = async ({
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
 	const {
-		audioNotifications,
 		desktopNotifications,
 		mobilePushNotifications,
 		emailNotifications,
 	} = subscription;
-
-	// busy users don't receive audio notification
-	if (shouldNotifyAudio({
-		disableAllMessageNotifications,
-		status: receiver.status,
-		statusConnection: receiver.statusConnection,
-		audioNotifications,
-		hasMentionToAll,
-		hasMentionToHere,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
-		notifyAudioUser(subscription.u._id, message, room);
-	}
 
 	// busy users don't receive desktop notification
 	if (shouldNotifyDesktop({
@@ -191,7 +172,6 @@ export const sendNotification = async ({
 
 const project = {
 	$project: {
-		audioNotifications: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
@@ -413,7 +393,7 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 	if (TroubleshootDisableNotifications === value) { return; }
 	TroubleshootDisableNotifications = value;
 

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -13,18 +12,38 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
+
+const logger = new Logger('RoutingManager');
 
 export const RoutingManager = {
 	methodName: null,
 	methods: {},
 
-	setMethodName(name) {
-		this.methodName = name;
+	startQueue() { // todo: move to eventemitter or middleware
+		// queue shouldn't start on CE
+	},
+
+	isMethodSet() {
+		return !!this.methodName;
+	},
+
+	setMethodNameAndStartQueue(name) {
+		logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
+		if (!this.methods[name]) {
+			logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
+			this.methodName = 'Manual_Selection';
+		} else {
+			this.methodName = name;
+		}
+
+		this.startQueue();
 	},
 
 	registerMethod(name, Method) {
+		logger.debug(`Registering new routing method with name ${ name }`);
 		this.methods[name] = new Method();
 	},
 
@@ -40,19 +59,25 @@ export const RoutingManager = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
+		logger.debug(`Getting next available agent with method ${ this.methodName }`);
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
+		logger.debug(`Attempting to delegate inquiry ${ inquiry._id }`);
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${ inquiry._id }`);
 			agent = await this.getNextAgent(department);
+			logger.debug(`Routing method returned agent ${ agent && agent.agentId } for inquiry ${ inquiry._id }`);
 		}
 
 		if (!agent) {
+			logger.debug(`No agents available. Unable to delegate inquiry ${ inquiry._id }`);
 			return LivechatRooms.findOneById(rid);
 		}
 
+		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent.agentId }`);
 		return this.takeInquiry(inquiry, agent, options);
 	},
 
@@ -62,8 +87,11 @@ export const RoutingManager = {
 			username: String,
 		}));
 
+		logger.debug(`Assigning agent ${ agent.agentId } to inquiry ${ inquiry._id }`);
+
 		const { rid, name, v, department } = inquiry;
 		if (!createLivechatSubscription(rid, name, v, agent, department)) {
+			logger.debug(`Cannot assign agent to inquiry ${ inquiry._id }: Cannot create subscription`);
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
@@ -75,6 +103,7 @@ export const RoutingManager = {
 
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
+		logger.debug(`Agent ${ agent.agentId } assigned to inquriy ${ inquiry._id }. Instances notified`);
 
 		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
@@ -84,11 +113,14 @@ export const RoutingManager = {
 		const { rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 
+		logger.debug(`Removing assignations of inquiry ${ inquiry._id }`);
 		if (!room || !room.open) {
+			logger.debug(`Cannot unassign agent from inquiry ${ inquiry._id }: Room already closed`);
 			return false;
 		}
 
 		if (departmentId && departmentId !== department) {
+			logger.debug(`Switching department for inquiry ${ inquiry._id } [Current: ${ department } | Next: ${ departmentId }]`);
 			updateChatDepartment({
 				rid,
 				newDepartmentId: departmentId,
@@ -101,6 +133,7 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
+			logger.debug(`Unassigning current agent for inquiry ${ inquiry._id }`);
 			LivechatRooms.removeAgentByRoomId(rid);
 			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
@@ -122,27 +155,34 @@ export const RoutingManager = {
 			status: String,
 		}));
 
+		logger.debug(`Attempting to take Inquiry ${ inquiry._id } [Agent ${ agent.agentId }] `);
+
 		const { _id, rid } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 		if (!room || !room.open) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Room is closed`);
 			return room;
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Already taken by agent ${ room.servedBy._id }`);
 			return room;
 		}
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Precondition failed for agent`);
 			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 		}
 
 		if (room.onHold) {
+			logger.debug(`Room ${ room._id } is on hold. Remove current assignments before routing`);
 			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
 		LivechatInquiry.takeInquiry(_id);
 		const inq = this.assignAgent(inquiry, agent);
+		logger.debug(`Inquiry ${ inquiry._id } taken by agent ${ agent.agentId }`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
@@ -150,23 +190,31 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		logger.debug(`Transfering room ${ room._id } by ${ transferData.transferredBy._id }`);
 		if (transferData.departmentId) {
+			logger.debug(`Transfering room ${ room._id } to department ${ transferData.departmentId }`);
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
 		if (transferData.userId) {
+			logger.debug(`Transfering room ${ room._id } to user ${ transferData.userId }`);
 			return forwardRoomToAgent(room, transferData);
 		}
 
+		logger.debug(`Unable to transfer room ${ room._id }: No target provided`);
 		return false;
 	},
 
 	delegateAgent(agent, inquiry) {
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', { agent, department: inquiry?.department });
+		logger.debug(`Delegating Inquiry ${ inquiry._id }`);
+		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, { department: inquiry?.department });
+
 		if (defaultAgent) {
+			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent.username }`);
 			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 		}
 
+		logger.debug(`Queueing inquiry ${ inquiry._id }`);
 		dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
 	},
@@ -183,7 +231,3 @@ export const RoutingManager = {
 		});
 	},
 };
-
-settings.get('Livechat_Routing_Method', function(key, value) {
-	RoutingManager.setMethodName(value);
-});

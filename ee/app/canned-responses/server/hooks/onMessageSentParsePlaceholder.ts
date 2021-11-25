@@ -1,7 +1,8 @@
 import get from 'lodash.get';
 
+import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../app/callbacks/server';
-import { Users, LivechatVisitors } from '../../../../../app/models/server';
+import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
 import { IMessage } from '../../../../../definition/IMessage';
 import { IOmnichannelRoom, isOmnichannelRoom } from '../../../../../definition/IRoom';
 
@@ -28,7 +29,14 @@ const placeholderFields = {
 	},
 };
 
-callbacks.add('beforeSaveMessage', (message: IMessage, room: IOmnichannelRoom): any => {
+const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
+
+const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any => {
+	if (!message.msg || message.msg === '') {
+		return message;
+	}
+
+	room = room?._id ? room : Rooms.findOneById(message.rid);
 	if (!isOmnichannelRoom(room)) {
 		return message;
 	}
@@ -44,11 +52,20 @@ callbacks.add('beforeSaveMessage', (message: IMessage, room: IOmnichannelRoom): 
 		const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
 		const from = placeholderConfig.from === 'agent' ? agent : visitor;
 		const data = get(from, placeholderConfig.dataKey, '');
-		messageText = messageText.replace(templateKey, data);
+		messageText = replaceAll(messageText, templateKey, data);
 
 		return messageText;
 	});
 
 	message.msg = messageText;
 	return message;
-}, callbacks.priority.LOW, 'canned-responses-replace-placeholders');
+};
+
+settings.watch('Canned_Responses_Enable', function(value) {
+	if (!value) {
+		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
+		return;
+	}
+
+	callbacks.add('beforeSaveMessage', handleBeforeSaveMessage, callbacks.priority.MEDIUM, 'canned-responses-replace-placeholders');
+});

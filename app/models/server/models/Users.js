@@ -9,12 +9,19 @@ import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
-	status: {
-		$exists: true,
-		$ne: 'offline',
-	},
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	$or: [{
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		roles: {
+			$ne: 'bot',
+		},
+	}, {
+		roles: 'bot',
+	}],
 	...extraFilters,
 	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
 });
@@ -47,6 +54,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -189,9 +199,6 @@ export class Users extends Base {
 
 		const query = queryStatusAgentOnline(extraFilters);
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -203,7 +210,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -213,76 +220,8 @@ export class Users extends Base {
 		return null;
 	}
 
-	// get next agent ignoring the ones reached the max amount of active chats
-	getUnavailableAgents(departmentId, customFilter) {
-		const col = this.model.rawCollection();
-		// if department is provided, remove the agents that are not from the selected department
-		const departmentFilter = departmentId ? [{
-			$lookup: {
-				from: 'rocketchat_livechat_department_agent',
-				let: { departmentId: '$departmentId', agentId: '$agentId' },
-				pipeline: [{
-					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
-				}, {
-					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
-				}],
-				as: 'department',
-			},
-		}, {
-			$match: { department: { $size: 1 } },
-		}] : [];
-
-		return col.aggregate([
-			{
-				$match: {
-					status: { $exists: true, $ne: 'offline' },
-					statusLivechat: 'available',
-					roles: 'livechat-agent',
-				},
-			},
-			...departmentFilter,
-			{
-				$lookup: {
-					from: 'rocketchat_subscription',
-					localField: '_id',
-					foreignField: 'u._id',
-					as: 'subs',
-				},
-			},
-			{
-				$project: {
-					agentId: '$_id',
-					'livechat.maxNumberSimultaneousChat': 1,
-					username: 1,
-					lastAssignTime: 1,
-					lastRoutingTime: 1,
-					'queueInfo.chats': {
-						$size: {
-							$filter: {
-								input: '$subs',
-								as: 'sub',
-								cond: {
-									$and: [
-										{ $eq: ['$$sub.t', 'l'] },
-										{ $eq: ['$$sub.open', true] },
-										{ $ne: ['$$sub.onHold', true] },
-									],
-								},
-							},
-						},
-					},
-				},
-			},
-			...customFilter ? [customFilter] : [],
-			{
-				$sort: {
-					'queueInfo.chats': 1,
-					lastAssignTime: 1,
-					lastRoutingTime: 1,
-					username: 1,
-				},
-			},
-		]).toArray();
+	getUnavailableAgents() {
+		return [];
 	}
 
 
@@ -294,9 +233,6 @@ export class Users extends Base {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -308,7 +244,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -326,6 +262,7 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+				livechatStatusSystemModified: false,
 			},
 		};
 
@@ -425,7 +362,6 @@ export class Users extends Base {
 			},
 		};
 		const affectedRows = this.update(query, update);
-		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
 		return affectedRows;
 	}
 
@@ -629,6 +565,17 @@ export class Users extends Base {
 
 		const query = {
 			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
 		};
 
 		return this.find(query, options);
@@ -943,12 +890,6 @@ export class Users extends Base {
 				$in: ['user', 'bot'],
 			},
 		};
-
-		return this.find(query, options);
-	}
-
-	findLDAPUsers(options) {
-		const query = { ldap: true };
 
 		return this.find(query, options);
 	}
@@ -1495,23 +1436,6 @@ export class Users extends Base {
 		return this.find(query).count() !== 0;
 	}
 
-	addBannerById(_id, banner) {
-		const query = {
-			_id,
-			[`banners.${ banner.id }.read`]: {
-				$ne: true,
-			},
-		};
-
-		const update = {
-			$set: {
-				[`banners.${ banner.id }`]: banner,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setBannerReadById(_id, bannerId) {
 		const update = {
 			$set: {
@@ -1526,16 +1450,6 @@ export class Users extends Base {
 		const update = {
 			$unset: {
 				[`banners.${ banner.id }`]: true,
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
-	removeResumeService(_id) {
-		const update = {
-			$unset: {
-				'services.resume': '',
 			},
 		};
 
@@ -1683,6 +1597,14 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	updateCustomFieldsById(userId, customFields) {
+		return this.update(userId, {
+			$set: {
+				customFields,
+			},
+		});
 	}
 }
 

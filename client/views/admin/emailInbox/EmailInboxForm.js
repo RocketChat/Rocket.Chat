@@ -13,16 +13,16 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../app/utils/client';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 
 const initialValues = {
@@ -127,9 +127,9 @@ function EmailInboxForm({ id, data }) {
 
 	const close = useCallback(() => router.push({}), [router]);
 
-	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
-	const deleteAction = useEndpointAction('DELETE', `email-inbox/${id}`);
-	const emailAlreadyExistsAction = useEndpointAction('GET', `email-inbox.search?email=${email}`);
+	const saveEmailInbox = useEndpoint('POST', 'email-inbox');
+	const deleteAction = useEndpoint('DELETE', `email-inbox/${id}`);
+	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
 
 	useComponentDidUpdate(() => {
 		setEmailError(!isEmail(email) ? t('Validate_email_address') : null);

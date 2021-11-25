@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false }) => {
+const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false, displayColors = false, tooltipCallbacks = {} }) => {
 	const config = {
 		layout: {
 			padding: {
@@ -17,7 +17,8 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 		tooltips: {
 			enabled: true,
 			mode: 'point',
-			displayColors: false, // hide color box
+			displayColors,
+			...tooltipCallbacks,
 		},
 		scales: {
 			xAxes: [{
@@ -81,7 +82,7 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 };
 
 
-const doughnutChartConfiguration = (title) => ({
+const doughnutChartConfiguration = (title, tooltipCallbacks = {}) => ({
 	layout: {
 		padding: {
 			top: 0,
@@ -104,6 +105,7 @@ const doughnutChartConfiguration = (title) => ({
 		enabled: true,
 		mode: 'point',
 		displayColors: false, // hide color box
+		...tooltipCallbacks,
 	},
 	// animation: {
 	// 	duration: 0 // general animation time
@@ -192,9 +194,9 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
 				data: dataPoints,		// data points corresponding to data labels, x-axis points
 				backgroundColor: [
 					'#2de0a5',
-					'#ffd21f',
-					'#f5455c',
 					'#cbced1',
+					'#f5455c',
+					'#ffd21f',
 				],
 				borderWidth: 0,
 			}],

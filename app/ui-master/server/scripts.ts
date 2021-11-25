@@ -1,5 +1,3 @@
-import { debounce } from 'underscore';
-
 import { settings } from '../../settings/server';
 import { addScript } from './inject';
 
@@ -37,7 +35,7 @@ window.addEventListener('load', function() {
 });
 ` : '' }`;
 
-settings.get(/(API_Use_REST_For_DDP_Calls|Custom_Script_Logged_Out|Custom_Script_Logged_In|Custom_Script_On_Logout|Accounts_ForgetUserSessionOnWindowClose|ECDH_Enabled)/, debounce(() => {
+settings.watchMultiple(['API_Use_REST_For_DDP_Calls', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose', 'ECDH_Enabled'], () => {
 	const content = getContent();
 	addScript('scripts', content);
-}, 1000));
+});

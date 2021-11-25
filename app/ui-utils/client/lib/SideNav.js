@@ -84,23 +84,6 @@ export const SideNav = new class {
 		return AccountBox.toggle();
 	}
 
-	focusInput() {
-		const sideNavDivs = Array.from(this.sideNav[0].children).filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
-		let highestZidx = 0;
-		let highestZidxElem;
-		sideNavDivs.forEach((el) => {
-			const zIndex = Number(window.getComputedStyle(el).zIndex);
-			if (zIndex > highestZidx) {
-				highestZidx = zIndex;
-				highestZidxElem = el;
-			}
-		});
-		setTimeout(() => {
-			const ref = highestZidxElem && highestZidxElem.querySelector('input');
-			return ref && ref.focus();
-		}, 200);
-	}
-
 	validate() {
 		const invalid = [];
 		this.sideNav.find('input.required').each(function() {
@@ -125,7 +108,6 @@ export const SideNav = new class {
 			return;
 		}
 		this.toggleFlex(1, callback);
-		return this.focusInput();
 	}
 
 	init() {

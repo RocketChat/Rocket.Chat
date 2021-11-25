@@ -93,7 +93,6 @@ const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {
 										<Tag disabled>{current}</Tag>
 									</Box>
 								))}
-								;
 							</Box>
 						)}
 					</Box>

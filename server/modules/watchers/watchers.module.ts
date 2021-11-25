@@ -16,7 +16,7 @@ import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInqui
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
 import { ISetting, SettingValue } from '../../../definition/ISetting';
-import { IInquiry } from '../../../definition/IInquiry';
+import { ILivechatInquiryRecord } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
 import { subscriptionFields, roomFields } from './publishFields';
@@ -34,6 +34,7 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
+import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -80,9 +81,6 @@ const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolea
 
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
-
-const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
-	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
@@ -192,7 +190,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	});
 
-	if (startMonitor) {
+	if (isPresenceMonitorEnabled()) {
 		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
 			switch (clientAction) {
 				case 'inserted':
@@ -211,15 +209,15 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	}
 
-	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
+	watch<ILivechatInquiryRecord>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				data = data ?? await LivechatInquiry.findOneById(id);
+				data = data ?? await LivechatInquiry.findOneById(id) ?? undefined;
 				break;
 
 			case 'removed':
-				data = await LivechatInquiry.trashFindOneById(id);
+				data = await LivechatInquiry.trashFindOneById(id) ?? undefined;
 				break;
 		}
 
@@ -366,13 +364,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<IIntegration>(Integrations, async ({ clientAction, id, data }) => {
+	watch<IIntegration>(Integrations, async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
 			return;
 		}
 
-		data = data ?? await Integrations.findOneById(id);
+		const data = eventData ?? await Integrations.findOneById(id);
 		if (!data) {
 			return;
 		}

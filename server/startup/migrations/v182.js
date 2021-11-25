@@ -1,9 +1,9 @@
-import { Migrations } from '../../../app/migrations';
-import { Analytics } from '../../../app/models/server';
+import { addMigration } from '../../lib/migrations';
+import { Analytics } from '../../../app/models/server/raw';
 
-Migrations.add({
+addMigration({
 	version: 182,
 	up() {
-		Analytics.remove({});
+		Analytics.deleteMany({});
 	},
 });

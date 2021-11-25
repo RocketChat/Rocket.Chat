@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { Users } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 
@@ -10,7 +10,7 @@ Meteor.startup(() => {
 		const uid = Meteor.userId();
 		const options = {
 			me: uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username,
-			pattern: settings.get('UTF8_Names_Validation'),
+			pattern: settings.get('UTF8_User_Names_Validation'),
 			useRealName: settings.get('UI_Use_Real_Name'),
 		};
 

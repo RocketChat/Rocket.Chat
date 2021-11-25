@@ -1,7 +1,7 @@
 // If the count query param is higher than the "API_Upper_Count_Limit" setting, then we limit that
 // If the count query param isn't defined, then we set it to the "API_Default_Count" setting
 // If the count is zero, then that means unlimited and is only allowed if the setting "API_Allow_Infinite_Count" is true
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
@@ -10,7 +10,7 @@ API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
 	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
 	let count = defaultCount;
 
-	// Ensure count is an appropiate amount
+	// Ensure count is an appropriate amount
 	if (typeof this.queryParams.count !== 'undefined') {
 		count = parseInt(this.queryParams.count);
 	} else {

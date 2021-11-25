@@ -18,7 +18,7 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
-	reload?: any;
+	reload?: () => void;
 }>;
 
 const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
@@ -31,6 +31,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Open')],
+		['onhold', t('On_Hold_Chats')],
 	];
 	const customFieldsOptions: [string, string][] = useMemo(
 		() =>
@@ -107,10 +108,10 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		const onDeleteAll = async (): Promise<void> => {
 			try {
 				await removeClosedChats();
-				reload();
+				reload && reload();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: (error as Error).message });
 			}
 			setModal(null);
 		};

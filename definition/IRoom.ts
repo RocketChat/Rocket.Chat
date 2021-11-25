@@ -3,6 +3,7 @@ import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
 type RoomType = 'c' | 'd' | 'p' | 'l';
+type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -33,6 +34,11 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus?: CallStatus;
+	webRtcCallStartTime?: Date;
+	servedBy?: {
+		_id: string;
+	};
 
 	streamingOptions?: {
 		id?: string;
@@ -62,6 +68,13 @@ export interface IRoom extends IRocketChatRecord {
 
 	sysMes?: string[];
 	muted?: string[];
+
+	usernames?: string[];
+	ts?: Date;
+}
+
+export interface ICreatedRoom extends IRoom {
+	rid: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
@@ -70,6 +83,16 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
+export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
+
+export enum OmnichannelSourceType {
+	WIDGET = 'widget',
+	EMAIL = 'email',
+	SMS = 'sms',
+	APP = 'app',
+	API = 'api',
+	OTHER = 'other', // catch-all source type
+}
 
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
 	t: 'l';
@@ -78,12 +101,31 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 	};
+	email?: {
+		// Data used when the room is created from an email, via email Integration.
+		inbox: string;
+		thread: string;
+		replyTo: string;
+		subject: string;
+	};
+	source: {
+		// The source, or client, which created the Omnichannel room
+		type: OmnichannelSourceType;
+		// An optional identification of external sources, such as an App
+		id?: string;
+		// A human readable alias that goes with the ID, for post analytical purposes
+		alias?: string;
+	};
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		ts: Date;
+		username: IUser['username'];
 	};
 	onHold?: boolean;
 	departmentId?: string;
+
+	lastMessage?: IMessage & { token?: string };
 
 	tags: any;
 	closedAt: any;
@@ -92,6 +134,11 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	responseBy: any;
 	priorityId: any;
 	livechatData: any;
+	queuedAt?: Date;
+
+	ts: Date;
+	label?: string;
+	crmData?: unknown;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

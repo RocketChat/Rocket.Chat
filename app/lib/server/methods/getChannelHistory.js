@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../authorization/server';
-import { Subscriptions, Messages } from '../../../models/server';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { Subscriptions, Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -17,8 +17,12 @@ Meteor.methods({
 		}
 
 		const fromUserId = Meteor.userId();
-		const room = Meteor.call('canAccessRoom', rid, fromUserId);
+		const room = Rooms.findOneById(rid);
 		if (!room) {
+			return false;
+		}
+
+		if (!canAccessRoom(room, { _id: fromUserId })) {
 			return false;
 		}
 

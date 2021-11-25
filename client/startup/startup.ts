@@ -7,15 +7,14 @@ import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { hasPermission } from '../../app/authorization/client';
-import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils/client';
+import { register } from '../../app/markdown/lib/hljs';
+import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
 import { synchronizeUserData } from '../lib/userData';
-
-hljs.initHighlightingOnLoad();
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 if (window.DISABLE_ANIMATION) {
 	toastr.options.timeOut = 1;
@@ -98,5 +97,13 @@ Meteor.startup(() => {
 				}
 			},
 		);
+	});
+});
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const code = settings.get('Message_Code_highlight') as string | undefined;
+		code?.split(',').forEach((language: string) => {
+			language.trim() && register(language.trim());
+		});
 	});
 });

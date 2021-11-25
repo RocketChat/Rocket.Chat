@@ -45,9 +45,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		this.Permissions = db.collection('rocketchat_permissions');
 
 		this.Users = new UsersRaw(db.collection('users'));
-		this.Roles = new RolesRaw(db.collection('rocketchat_roles'));
 
-		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
+		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), {
+			Users: this.Users,
+		});
+
+		this.Roles = new RolesRaw(db.collection('rocketchat_roles'), {
+			Users: this.Users,
+			Subscriptions,
+		});
+
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 		TeamMembers = new TeamMemberRaw(db.collection('rocketchat_team_member'));
@@ -98,7 +105,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private getPublicRoles = mem(async (): Promise<string[]> => {
-		const roles = await this.Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
+		const roles = await this.Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: true, $ne: '' } }, { projection: { _id: 1 } }).toArray();
 
 		return roles.map(({ _id }) => _id);
 	}, { maxAge: 10000 });

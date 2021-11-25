@@ -10,15 +10,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
+import { t, roomTypes, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
@@ -30,23 +28,12 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-
-
-export const openProfileTab = (e, tabBar, username) => {
-	e.stopPropagation();
-
-	if (Layout.isEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username });
-		e.preventDefault();
-		return;
-	}
-
-	tabBar.openUserInfo(username);
-};
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -272,7 +259,7 @@ Template.roomOld.helpers({
 	messageboxData() {
 		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
@@ -974,15 +961,12 @@ Meteor.startup(() => {
 		if (webrtc) {
 			this.autorun(() => {
 				const remoteItems = webrtc.remoteItems.get();
-				if (remoteItems && remoteItems.length > 0) {
-					this.tabBar.open('members-list');
-				}
-
-				if (webrtc.localUrl.get()) {
-					this.tabBar.open('members-list');
+				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
+					return this.tabBar.openUserInfo();
 				}
 			});
 		}
+
 		callbacks.add('streamNewMessage', (msg) => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 				return;

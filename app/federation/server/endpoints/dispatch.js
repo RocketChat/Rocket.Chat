@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import {
-	FederationRoomEvents, FederationServers,
+	FederationRoomEvents,
 	Messages,
 	Rooms,
 	Subscriptions,
 	Users,
 } from '../../../models/server';
+import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { Notifications } from '../../../notifications/server';
@@ -135,12 +135,12 @@ const eventHandlers = {
 					federationAltered = true;
 				}
 			} catch (ex) {
-				logger.server.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
+				serverLogger.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
 			}
 
 			// Refresh the servers list
 			if (federationAltered) {
-				FederationServers.refreshServers();
+				await FederationServers.refreshServers();
 
 				// Update the room's federation property
 				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
@@ -164,7 +164,7 @@ const eventHandlers = {
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -187,7 +187,7 @@ const eventHandlers = {
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -227,7 +227,7 @@ const eventHandlers = {
 
 					const { federation: { origin } } = denormalizedMessage;
 
-					const { upload, buffer } = getUpload(origin, denormalizedMessage.file._id);
+					const { upload, buffer } = await getUpload(origin, denormalizedMessage.file._id);
 
 					const oldUploadId = upload._id;
 
@@ -240,7 +240,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+					fileStore.insertSync(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
@@ -268,7 +268,7 @@ const eventHandlers = {
 					notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
 				} catch (err) {
-					logger.server.debug(`Error on creating message: ${ message._id }`);
+					serverLogger.debug(`Error on creating message: ${ message._id }`);
 				}
 			}
 		}
@@ -445,7 +445,7 @@ const eventHandlers = {
 };
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } }, {
-	async post() {
+	post() {
 		if (!isFederationEnabled()) {
 			return API.v1.failure('Federation not enabled');
 		}
@@ -455,7 +455,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 		let payload;
 
 		try {
-			payload = decryptIfNeeded(this.request, this.bodyParams);
+			payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
 		} catch (err) {
 			return API.v1.failure('Could not decrypt payload');
 		}
@@ -464,7 +464,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 		// Convert from EJSON
 		const { events } = EJSON.fromJSONValue(payload);
 
-		logger.server.debug(`federation.events.dispatch => events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+		serverLogger.debug({ msg: 'federation.events.dispatch', events });
 
 		// Loop over received events
 		for (const event of events) {
@@ -473,20 +473,20 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 			let eventResult;
 
 			if (eventHandlers[event.type]) {
-				eventResult = await eventHandlers[event.type](event);
+				eventResult = Promise.await(eventHandlers[event.type](event));
 			}
 
 			// If there was an error handling the event, take action
 			if (!eventResult || !eventResult.success) {
 				try {
-					logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
+					serverLogger.debug({ msg: 'federation.events.dispatch => Event has missing parents', event });
 
-					requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
+					Promise.await(requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds));
 
 					// And stop handling the events
 					break;
 				} catch (err) {
-					logger.server.error(() => `dispatch => event=${ JSON.stringify(event, null, 2) } eventResult=${ JSON.stringify(eventResult, null, 2) } error=${ err.toString() } ${ err.stack }`);
+					serverLogger.error({ msg: 'dispatch', event, eventResult, err });
 
 					throw err;
 				}

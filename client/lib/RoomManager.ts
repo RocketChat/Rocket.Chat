@@ -2,11 +2,11 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { getConfig } from '../../app/ui-utils/client/config';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -132,7 +132,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 	}
 })();
 
-const subscribeVistedRooms: Subscription<IRoom['_id'][]> = {
+const subscribeVisitedRooms: Subscription<IRoom['_id'][]> = {
 	getCurrentValue: () => RoomManager.visitedRooms(),
 	subscribe(callback) {
 		return RoomManager.on('changed', callback);
@@ -166,7 +166,7 @@ export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T>
 	return state;
 };
 
-export const useVisitedRooms = (): IRoom['_id'][] => useSubscription(subscribeVistedRooms);
+export const useVisitedRooms = (): IRoom['_id'][] => useSubscription(subscribeVisitedRooms);
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSubscription(subscribeOpenedRoom);
 

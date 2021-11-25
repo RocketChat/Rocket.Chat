@@ -22,7 +22,7 @@ Meteor.startup(() => {
 			credentialSecret: escape(options.credentialSecret),
 			storagePrefix: escape(OAuth._storageTokenPrefix),
 			redirectUrl: escape(options.redirectUrl),
-			isCordova: !! options.isCordova,
+			isCordova: Boolean(options.isCordova),
 		};
 
 		let template;

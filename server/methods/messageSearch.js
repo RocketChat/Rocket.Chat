@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { canAccessRoom } from '../../app/authorization/server';
 import { Subscriptions } from '../../app/models/server';
 import { Messages } from '../../app/models/server/raw';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
@@ -30,8 +31,8 @@ Meteor.methods({
 
 		// Don't process anything else if the user can't access the room
 		if (rid) {
-			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
-				return result;
+			if (!canAccessRoom({ _id: rid }, { _id: currentUserId })) {
+				return false;
 			}
 		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
 			return result;

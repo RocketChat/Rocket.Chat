@@ -1,4 +1,7 @@
+import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { FollowMessageMethod } from './methods/followMessage';
+import { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
@@ -58,6 +61,7 @@ export type ServerMethods = {
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
+	'license:getModules': () => string[];
 	'license:getTags': (...args: any[]) => any;
 	'livechat:addMonitor': (...args: any[]) => any;
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
@@ -121,6 +125,7 @@ export type ServerMethods = {
 	'setAvatarFromService': (...args: any[]) => any;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
+	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;
@@ -132,6 +137,8 @@ export type ServerMethods = {
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
+	'getRoomById': (rid: IRoom['_id']) => IRoom;
+	'getReadReceipts': GetReadReceiptsMethod;
 };
 
 export type ServerMethodName = keyof ServerMethods;

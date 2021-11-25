@@ -35,7 +35,7 @@ function wrapMeteorDDPCalls(): void {
 		);
 
 		const restParams = {
-			message: DDPCommon.stringifyDDP(message),
+			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
 		const processResult = (_message: any): void => {
@@ -51,7 +51,7 @@ function wrapMeteorDDPCalls(): void {
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message);
+					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}

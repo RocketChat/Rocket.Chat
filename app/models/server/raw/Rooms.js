@@ -27,10 +27,8 @@ export class RoomsRaw extends BaseRaw {
 			{
 				$match: {
 					t: 'l',
-					closedAt: { $exists: true },
-					metrics: { $exists: true },
-					'metrics.chatDuration': { $exists: true },
 					...department && { departmentId: department },
+					closedAt: { $exists: true },
 				},
 			},
 			{ $sort: { closedAt: -1 } },
@@ -177,6 +175,23 @@ export class RoomsRaw extends BaseRaw {
 				_id: {
 					$in: sIds,
 				},
+			}],
+		};
+
+		return this.find(query, options);
+	}
+
+	findRoomsByNameOrFnameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			$or: [{
+				name: nameRegex,
+			}, {
+				fname: nameRegex,
 			}],
 		};
 
@@ -352,18 +367,20 @@ export class RoomsRaw extends BaseRaw {
 		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params = [...firstParams, sort];
+
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
 		}
+
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
+
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
 	findOneByName(name, options = {}) {
@@ -398,5 +415,24 @@ export class RoomsRaw extends BaseRaw {
 
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
+	}
+
+	allRoomSourcesCount() {
+		return this.col.aggregate([
+			{
+				$match: {
+					source: {
+						$exists: true,
+					},
+					t: 'l',
+				},
+			},
+			{
+				$group: {
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+		]);
 	}
 }
