@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 
 import { OmichannelRoutingConfig, Inquiries } from '../../definition/OmichannelRoutingConfig';
 import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
-import { SimpleVoipUser } from '../components/voip/SimpleVoipUser';
+import { VoIPUser } from '../components/voip/VoIPUser';
 
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;
@@ -11,9 +11,15 @@ export type OmnichannelContextValue = {
 	voipCallAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
-	registrationConfig?: IRegistrationInfo;
-	voipUser?: SimpleVoipUser;
-};
+} & (
+	| {
+			registrationConfig: IRegistrationInfo;
+			voipUser: VoIPUser;
+	  }
+	| {
+			voipUser: undefined;
+	  }
+);
 
 export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	inquiries: { enabled: false },
@@ -21,25 +27,36 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	agentAvailable: false,
 	voipCallAvailable: false,
 	showOmnichannelQueueLink: false,
+	voipUser: undefined,
 });
 
 export const useOmnichannel = (): OmnichannelContextValue => useContext(OmnichannelContext);
 export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;
 export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined =>
 	useOmnichannel().routeConfig;
-export const useIsVoipLibReady = (): boolean | undefined => useOmnichannel().voipUser?.isReady();
-export const useVoipUser = (): SimpleVoipUser | undefined => {
+
+export const useVoipUser = (): VoIPUser | undefined => {
 	const { voipUser } = useOmnichannel();
-	if (useOmnichannel().voipUser?.isReady()) {
-		return voipUser;
-	}
+	return voipUser;
 };
 
-export const useRegistrationInfo = (): IRegistrationInfo | undefined => {
-	const { registrationConfig: extensionConfig } = useOmnichannel();
-	if (useOmnichannel().voipUser?.isReady()) {
-		return extensionConfig;
+export const useIsVoipLibReady = (): boolean => {
+	const { voipUser } = useOmnichannel();
+
+	if (!voipUser) {
+		throw new Error('useRegistrationInfo should be used in a safe scope here voipUser exists');
 	}
+
+	return Boolean(voipUser.isReady());
+};
+
+export const useRegistrationInfo = (): IRegistrationInfo => {
+	const context = useOmnichannel();
+
+	if (!context.voipUser) {
+		throw new Error('useRegistrationInfo should be used in a safe scope here voipUser exists');
+	}
+	return context.registrationConfig;
 };
 
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
