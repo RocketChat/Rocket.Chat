@@ -9,7 +9,8 @@ import { IRoom } from '../../definition/IRoom';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
 import { ClientLogger } from '../../lib/ClientLogger';
 import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
-import { CallType, SimpleVoipUser } from '../components/voip/SimpleVoipUser';
+import { SimpleVoipUser } from '../components/voip/SimpleVoipUser';
+import { VoIPUser } from '../components/voip/VoIPUser';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useMethod } from '../contexts/ServerContext';
@@ -23,6 +24,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	agentAvailable: false,
 	voipCallAvailable: false,
 	showOmnichannelQueueLink: false,
+	voipUser: undefined,
 };
 
 const OmnichannelProvider: FC = ({ children }) => {
@@ -47,7 +49,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const [extensionConfig, setExtensionConfig] = useState<IRegistrationInfo | undefined>(undefined);
 
-	const [voipUser, setVoipUser] = useState<SimpleVoipUser | undefined>(undefined);
+	const [voipUser, setVoipUser] = useState<VoIPUser | undefined>(undefined);
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -58,16 +60,17 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 		const initVoipLib = async (): Promise<void> => {
 			/* Init extension */
-			let extensionConfigLocal = undefined;
-			let voipUser: SimpleVoipUser;
 			const extension = '80000';
 			try {
 				if (extensionConfig) {
 					return;
 				}
-				extensionConfigLocal = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
-					extension,
-				})) as unknown as IRegistrationInfo;
+				const extensionConfigLocal = (await APIClient.v1.get(
+					'connector.extension.getRegistrationInfo',
+					{
+						extension,
+					},
+				)) as unknown as IRegistrationInfo; // TODO use endpointdata
 				const iceServers: Array<object> = [];
 				if (iceServersSetting && iceServersSetting.trim() !== '') {
 					const serversListStr = iceServersSetting.replace(/\s/g, '');
@@ -86,16 +89,16 @@ const OmnichannelProvider: FC = ({ children }) => {
 					});
 				}
 				loggerRef.current.debug(JSON.stringify(iceServers));
-				voipUser = new SimpleVoipUser(
-					extensionConfigLocal.extensionDetails.extension,
-					extensionConfigLocal.extensionDetails.password,
-					extensionConfigLocal.host,
-					extensionConfigLocal.callServerConfig.websocketPath,
-					iceServers,
-					CallType.AUDIO_VIDEO,
+				setVoipUser(
+					await SimpleVoipUser.create(
+						extensionConfigLocal.extensionDetails.extension,
+						extensionConfigLocal.extensionDetails.password,
+						extensionConfigLocal.host,
+						extensionConfigLocal.callServerConfig.websocketPath,
+						iceServers,
+						'video',
+					),
 				);
-				await voipUser.initUserAgent();
-				setVoipUser(voipUser);
 				setExtensionConfig(extensionConfigLocal);
 			} catch (error) {
 				loggerRef.current.error(`initVoipLib() error in initialising ${error}`);
@@ -115,7 +118,10 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 		if (voipCallAvailable) {
 			initVoipLib();
+			return;
 		}
+		setVoipUser(undefined);
+		setExtensionConfig(undefined);
 	}, [
 		accessible,
 		extensionConfig,

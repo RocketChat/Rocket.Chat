@@ -1,22 +1,20 @@
-import { IConnectionDelegate } from './IConnectionDelegate';
-
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface VoIPUserConfiguration {
 	/**
 	 * Authorization username.
 	 * @defaultValue `""`
 	 */
-	authUserName?: string;
+	authUserName: string;
 	/**
 	 * Authorization password.
 	 * @defaultValue `""`
 	 */
-	authPassword?: string;
+	authPassword: string;
 	/**
 	 * SIP Registrar address.
 	 * @defaultValue `""`
 	 */
-	sipRegistrarHostnameOrIP?: string;
+	sipRegistrarHostnameOrIP: string;
 	/**
 	 * SIP WebSocket Path
 	 * @defaultValue `""`
@@ -31,12 +29,12 @@ export interface VoIPUserConfiguration {
 	 * ConnectionDelegate
 	 * @defaultValue null
 	 */
-	connectionDelegate?: IConnectionDelegate;
+	// connectionDelegate?: IConnectionDelegate;
 	/**
 	 * ICE Server Array
 	 * @defaultValue undefined
 	 */
-	iceServers?: Array<object>;
+	iceServers: Array<object>;
 }
 
 export interface IMediaStreamRenderer {
