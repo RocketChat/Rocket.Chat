@@ -1,13 +1,13 @@
 import { useContext, useMemo } from 'react';
 
+import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { App } from '../types';
 
-// TODO: memoize app list if props don't change
 export const useFilteredApps = ({
-	filterFunction = () => true,
+	filterFunction = (): boolean => true,
 	text,
 	sortDirection,
 	current,
@@ -20,17 +20,16 @@ export const useFilteredApps = ({
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
-}): AsyncState<{ items: App[]; total: number; count: number }> => {
-	const { apps } = useContext(AppsContext);
+}): AsyncState<{ items: App[] } & PaginatedResult> => {
+	const result = useContext(AppsContext);
 
-	return useMemo(() => {
-		if (!Array.isArray(apps) || apps.length === 0) {
-			return { phase: AsyncStatePhase.LOADING, error: undefined };
+	const value = useMemo(() => {
+		if (result.value === undefined) {
+			return undefined;
 		}
+		const apps = result.value.apps.filter(filterFunction);
 
-		const result = apps.filter(filterFunction);
-
-		const filtered = result
+		const filtered = apps
 			.filter((app) => filterAppByCategories(app, categories))
 			.filter(({ name }) => name.toLowerCase().indexOf(text.toLowerCase()) > -1);
 
@@ -39,14 +38,28 @@ export const useFilteredApps = ({
 		}
 
 		const total = filtered.length;
-		const start = current > total ? 0 : current;
+		const offset = current > total ? 0 : current;
 		const end = current + itemsPerPage;
-		const slice = filtered.slice(start, end);
+		const slice = filtered.slice(offset, end);
 
+		return { items: slice, offset, total: apps.length, count: slice.length };
+	}, [categories, current, filterFunction, itemsPerPage, result.value, sortDirection, text]);
+
+	if (result.phase === AsyncStatePhase.RESOLVED) {
+		if (!value) {
+			throw new Error('useFilteredApps - Unexpected state');
+		}
 		return {
-			phase: AsyncStatePhase.RESOLVED,
-			error: undefined,
-			value: { items: slice, total: result.length, count: slice.length },
+			...result,
+			value,
 		};
-	}, [apps, categories, current, filterFunction, itemsPerPage, sortDirection, text]);
+	}
+	if (result.phase === AsyncStatePhase.UPDATING) {
+		throw new Error('useFilteredApps - Unexpected state');
+	}
+
+	return {
+		...result,
+		value: undefined,
+	};
 };

@@ -88,11 +88,16 @@ const AppsTable: FC<{
 							{onMediumBreakpoint && (
 								<GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>
 							)}
+							{isMarketplace && <GenericTableHeaderCell>{t('Price')}</GenericTableHeaderCell>}
+
 							<GenericTableHeaderCell width='x160'>{t('Status')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
 							{appsResult.phase === AsyncStatePhase.LOADING && (
-								<GenericTableLoadingTable headerCells={onMediumBreakpoint ? 3 : 2} />
+								<GenericTableLoadingTable
+									// eslint-disable-next-line no-nested-ternary
+									headerCells={onMediumBreakpoint ? (isMarketplace ? 4 : 3) : 2}
+								/>
 							)}
 							{appsResult.phase === AsyncStatePhase.RESOLVED &&
 								appsResult.value.items.map((app) => (
