@@ -60,11 +60,11 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 		const initVoipLib = async (): Promise<void> => {
 			/* Init extension */
-			const extension = '80000';
 			try {
 				if (extensionConfig) {
 					return;
 				}
+				const extension = '80000';
 				const extensionConfigLocal = (await APIClient.v1.get(
 					'connector.extension.getRegistrationInfo',
 					{

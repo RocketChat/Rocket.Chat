@@ -9,10 +9,16 @@ export interface IVoipExtensionBase {
 	name: string;
 	state: EndpointState;
 }
+
+export const isIVoipExtensionBase = (obj: any): obj is IVoipExtensionBase => obj && typeof obj.name === 'string' && typeof obj.state === 'string';
+
 export interface IVoipExtensionConfig extends IVoipExtensionBase{
 	authType: string;
 	password: string;
 }
+
+
+export const isIVoipExtensionConfig = (obj: any): obj is IVoipExtensionConfig => obj.name !== undefined && obj.state !== undefined && obj.authType !== undefined && obj.password !== undefined;
 
 export interface IQueueMembershipDetails {
 	extension: string;
@@ -20,6 +26,7 @@ export interface IQueueMembershipDetails {
 	callWaitingCount: number;
 }
 
+export const isIQueueMembershipDetails = (obj: any): obj is IQueueMembershipDetails => obj && typeof obj.extension === 'string' && typeof obj.queueCount === 'number' && typeof obj.callWaitingCount === 'number';
 export interface IExtensionDetails {
 	extension: string;
 	password: string;
@@ -27,8 +34,11 @@ export interface IExtensionDetails {
 	state: string;
 }
 
+export const isIExtensionDetails = (prop: any): prop is IExtensionDetails => prop.extension !== undefined && prop.password !== undefined && prop.authtype !== undefined && prop.state !== undefined;
 export interface IRegistrationInfo {
 	host: string;
 	callServerConfig: ICallServerConfigData;
 	extensionDetails: IExtensionDetails;
 }
+
+export const IRegistrationInfo = (prop: any): prop is IRegistrationInfo => prop.hasOwnProperty('host') && prop.hasOwnProperty('callServerConfig') && prop.hasOwnProperty('extensionDetails');

@@ -4,12 +4,12 @@ import { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { VoipServerConfigurationRaw } from '../../../app/models/server/raw/VoipServerConfiguration';
-import { ServerType, IVoipServerConfig, ICallServerConfigData } from '../../../definition/IVoipServerConfig';
+import { ServerType, IVoipServerConfig, isICallServerConfigData } from '../../../definition/IVoipServerConfig';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
-import { IExtensionDetails, IQueueMembershipDetails, IRegistrationInfo } from '../../../definition/IVoipExtension';
+import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 
 export class VoipService extends ServiceClass implements IVoipService {
@@ -99,7 +99,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}
 
-	async getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult> {
+	async getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
 		const membershipDetails: IQueueMembershipDetails = {
 			queueCount: 0,
 			callWaitingCount: 0,
@@ -143,35 +143,42 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return this.commandHandler.executeCommand(Commands.extension_list, undefined);
 	}
 
-	async getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult> {
+	async getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
 		return this.commandHandler.executeCommand(
 			Commands.extension_info,
 			requestParams);
 	}
 
-	async getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult> {
-		const config: IVoipServerConfig = Promise.await(
-			this.getServerConfigData(ServerType.CALL_SERVER),
-		) as unknown as IVoipServerConfig;
+	async getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
+		const config = await this.getServerConfigData(ServerType.CALL_SERVER);
 
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
-			return Promise.reject('Not found');
+			throw new Error('Not found');
 		}
 
-		const endpointDetails = Promise.await(this.commandHandler.executeCommand(
+		const endpointDetails = await this.commandHandler.executeCommand(
 			Commands.extension_info,
 			requestParams,
-		)) as IVoipConnectorResult;
-		const callServerConfig: ICallServerConfigData = config.configData as ICallServerConfigData;
-		const extensionDetails: IExtensionDetails = endpointDetails.result as unknown as IExtensionDetails;
+		);
+		if (!isIExtensionDetails(endpointDetails.result)) { // TODO The result and the assertion doenst match amol please check
+			throw new Error('getRegistrationInfo Invalid endpointDetails response');
+		}
+		if (!isICallServerConfigData(config.configData)) {
+			throw new Error('getRegistrationInfo Invalid configData response');
+		}
+
+		const callServerConfig = config.configData;
+
+		const extensionDetails = endpointDetails.result;
+
 		const extensionRegistrationInfo: IRegistrationInfo = {
 			host: config.host,
 			callServerConfig,
 			extensionDetails,
 		};
-		return Promise.resolve({
+		return {
 			result: extensionRegistrationInfo,
-		});
+		};
 	}
 }
