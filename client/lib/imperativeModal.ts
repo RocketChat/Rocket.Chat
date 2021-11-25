@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { ComponentType } from 'react';
-import { Subscription, Unsubscribe } from 'use-subscription';
 
 type BlazeModalOptions = {
 	confirmButtonText?: string;
@@ -51,19 +50,9 @@ type ReactModalDescriptor<Props extends {} = {}> = {
 
 type ModalDescriptor = BlazeModalDescriptor | ReactModalDescriptor | null;
 
-class ImperativeModalSubscription
-	extends Emitter<{ update: void }>
-	implements Subscription<ModalDescriptor>
-{
-	private descriptor: ModalDescriptor = null;
-
-	getCurrentValue = (): ModalDescriptor => this.descriptor;
-
-	subscribe = (callback: () => void): Unsubscribe => this.on('update', callback);
-
+class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {
 	setCurrentValue(descriptor: ModalDescriptor): void {
-		this.descriptor = descriptor;
-		this.emit('update');
+		this.emit('update', descriptor);
 	}
 
 	open: {
@@ -78,4 +67,4 @@ class ImperativeModalSubscription
 	};
 }
 
-export const imperativeModal = new ImperativeModalSubscription();
+export const imperativeModal = new ImperativeModalEmmiter();
