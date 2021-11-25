@@ -125,8 +125,7 @@
           "argsIgnorePattern": "^_",
           "ignoreRestSiblings": true
         }],
-        "anti-trojan-source/no-bidi": "error",
-        "no-mixed-spaces-and-tabs": ["error", "smart-tabs"]
+        "anti-trojan-source/no-bidi": "error"
       },
       "env": {
         "browser": true,
