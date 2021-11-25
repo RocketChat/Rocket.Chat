@@ -1,11 +1,11 @@
 import moment from 'moment';
 
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
-import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Users } from '../../../models/server/raw';
+import { ICronJobs } from '../../../../definition/ICronJobs';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,

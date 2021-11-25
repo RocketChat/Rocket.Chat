@@ -139,7 +139,7 @@ settingsRegistry.addGroup('Video Conference', function() {
 			public: true,
 		});
 
-		this.add('Jitsi_Open_New_Window', false, {
+		this.add('Jitsi_Open_New_Window', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',

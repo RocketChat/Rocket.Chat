@@ -75,6 +75,7 @@ const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) =>
 			.every((key) => isEqual(a[key as keyof ISetting], b[key as keyof ISetting]));
 
 const compareSettings = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'packageValue', 'processEnvValue', '_updatedAt']);
+
 export class SettingsRegistry {
 	private model: typeof SettingsModel;
 
@@ -108,7 +109,15 @@ export class SettingsRegistry {
 			this._sorter[sorterKey] = this._sorter[sorterKey] ?? -1;
 		}
 
-		const settingFromCode = getSettingDefaults({ _id, type: 'string', section, value, sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]++), group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
+		const settingFromCode = getSettingDefaults({
+			_id,
+			type: 'string',
+			value,
+			sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]++),
+			group,
+			section,
+			...options,
+		}, blockedSettings, hiddenSettings, wizardRequiredSettings);
 
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
@@ -117,6 +126,7 @@ export class SettingsRegistry {
 
 		const settingStored = this.store.getSetting(_id);
 		const settingOverwritten = overwriteSetting(settingFromCode);
+
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
@@ -129,7 +139,16 @@ export class SettingsRegistry {
 
 		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
 			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
-			this.model.upsert({ _id }, { $set: { ...settingOverwrittenProps } });
+
+			const overwrittenKeys = Object.keys(settingOverwritten);
+			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
+
+			this.model.upsert({ _id }, {
+				$set: { ...settingOverwrittenProps },
+				...removedKeys.length && {
+					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
+				},
+			});
 			return;
 		}
 

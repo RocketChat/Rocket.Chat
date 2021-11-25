@@ -1,10 +1,10 @@
+import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server';
 
 addMigration({
 	version: 234,
 	up() {
-		Settings.remove({
+		return Settings.deleteMany({
 			_id: {
 				$in: [
 					'GoogleVision_Enable',

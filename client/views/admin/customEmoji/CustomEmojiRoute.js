@@ -1,6 +1,5 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
@@ -8,7 +7,6 @@ import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
@@ -20,38 +18,10 @@ function CustomEmojiRoute() {
 	const canManageEmoji = usePermission('manage-emoji');
 
 	const t = useTranslation();
-
-	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
-	const [sort, setSort] = useState(() => ['name', 'asc']);
-
-	const { text, itemsPerPage, current } = useDebouncedValue(params, 500);
-	const [column, direction] = useDebouncedValue(sort, 500);
-	const query = useMemo(
-		() => ({
-			query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[text, itemsPerPage, current, column, direction],
-	);
-
-	const { value: data, reload } = useEndpointData('emoji-custom.all', query);
-
 	const handleItemClick = (_id) => () => {
 		route.push({
 			context: 'edit',
 			id: _id,
-		});
-	};
-
-	const handleHeaderClick = (id) => {
-		setSort(([sortBy, sortDirection]) => {
-			if (sortBy === id) {
-				return [id, sortDirection === 'asc' ? 'desc' : 'asc'];
-			}
-
-			return [id, 'asc'];
 		});
 	};
 
@@ -63,8 +33,10 @@ function CustomEmojiRoute() {
 		route.push({});
 	};
 
+	const reload = useRef(() => null);
+
 	const handleChange = useCallback(() => {
-		reload();
+		reload.current();
 	}, [reload]);
 
 	if (!canManageEmoji) {
@@ -80,14 +52,7 @@ function CustomEmojiRoute() {
 					</Button>
 				</Page.Header>
 				<Page.Content>
-					<CustomEmoji
-						setParams={setParams}
-						params={params}
-						onHeaderClick={handleHeaderClick}
-						data={data}
-						onClick={handleItemClick}
-						sort={sort}
-					/>
+					<CustomEmoji reload={reload} onClick={handleItemClick} />
 				</Page.Content>
 			</Page>
 			{context && (
