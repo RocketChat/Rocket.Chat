@@ -1,10 +1,10 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useState, useCallback, useRef } from 'react';
+import React, { memo, ReactElement, useState, useRef, useEffect, useMemo } from 'react';
 
 import { ClientLogger } from '../../../lib/ClientLogger';
+import { usePermission } from '../../contexts/AuthorizationContext';
 import { useLayout } from '../../contexts/LayoutContext';
-
 import {
 	useIsVoipLibReady,
 	useVoipUser,
@@ -13,16 +13,17 @@ import {
 	useOmnichannelAgentAvailable,
 	useOmnichannelVoipCallAvailable,
 } from '../../contexts/OmnichannelContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
+	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const voipCallAvailable = useState(useOmnichannelVoipCallAvailable());
 	const [registered, setRegistered] = useState(false);
 	const voipLibIsReady = useIsVoipLibReady();
@@ -33,7 +34,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const queueLink = useOmnichannelQueueLink();
 
 	const { sidebar } = useLayout();
-	const directoryRoute = useRoute('omnichannel-directory')
+	const directoryRoute = useRoute('omnichannel-directory');
 
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
@@ -61,53 +62,83 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		}
 	});
 
-	const onUnregistrationError = useCallback((): void => {
-		loggerRef.current?.error('onUnregistrationError');
-		voipLib.off('unregistrationerror', onUnregistrationError);
-	}, [voipLib]);
-
-	const onUnregistered = useCallback((): void => {
-		loggerRef.current?.debug('unRegistered');
-		setRegistered(!registered);
-		voipLib.off('unregistered', onUnregistered);
-		voipLib.off('registrationerror', onUnregistrationError);
-	}, [onUnregistrationError, registered, voipLib]);
-
-	const onRegistrationError = useCallback((): void => {
-		loggerRef.current?.error('onRegistrationError');
-		voipLib.off('registrationerror', onRegistrationError);
-	}, [voipLib]);
-
-	const onRegistered = useCallback((): void => {
-		loggerRef.current?.debug('onRegistered');
-		setRegistered(!registered);
-		voipLib.off('registered', onRegistered);
-		voipLib.off('registrationerror', onRegistrationError);
-	}, [onRegistrationError, registered, voipLib]);
-
-	const handleVoipCallStatusChange = useCallback(() => {
-		// TODO: backend set voip call status
-		if (voipLibIsReady && voipCallAvailable) {
-			if (!registered) {
-				voipLib.on('registered', onRegistered);
-				voipLib.on('registrationerror', onRegistrationError);
-				voipLib.register();
-			} else {
-				voipLib.on('unregistered', onUnregistered);
-				voipLib.on('unregistrationerror', onUnregistrationError);
-				voipLib.unregister;
-			}
-		}
-	}, [
-		voipLibIsReady,
-		voipCallAvailable,
-		registered,
-		voipLib,
-		onRegistered,
-		onRegistrationError,
-		onUnregistered,
+	const {
 		onUnregistrationError,
-	]);
+		onUnregistered,
+		onRegistrationError,
+		onRegistered,
+		handleVoipCallStatusChange,
+	} = useMemo(() => {
+		if (!voipLib) {
+			return {
+				onUnregistrationError: () => undefined,
+				onUnregistered: () => undefined,
+				onRegistrationError: () => undefined,
+				onRegistered: () => undefined,
+				handleVoipCallStatusChange: () => undefined,
+			};
+		}
+
+		const onUnregistrationError = (): void => {
+			loggerRef.current?.error('onUnregistrationError');
+			voipLib.off('unregistrationerror', onUnregistrationError);
+		};
+
+		const onUnregistered = (): void => {
+			loggerRef.current?.debug('unRegistered');
+			setRegistered(!registered);
+			voipLib.off('unregistered', onUnregistered);
+			voipLib.off('registrationerror', onUnregistrationError);
+		};
+
+		const onRegistrationError = (): void => {
+			loggerRef.current?.error('onRegistrationError');
+			voipLib.off('registrationerror', onRegistrationError);
+		};
+
+		const onRegistered = (): void => {
+			loggerRef.current?.debug('onRegistered');
+			setRegistered(!registered);
+			voipLib.off('registered', onRegistered);
+			voipLib.off('registrationerror', onRegistrationError);
+		};
+
+		const handleVoipCallStatusChange = (): void => {
+			// TODO: backend set voip call status
+			if (voipLibIsReady && voipCallAvailable) {
+				if (registered) {
+					voipLib.unregister();
+					return;
+				}
+				voipLib.register();
+			}
+		};
+
+		return {
+			onUnregistrationError,
+			onUnregistered,
+			onRegistrationError,
+			onRegistered,
+			handleVoipCallStatusChange,
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!voipLib) {
+			return;
+		}
+		voipLib.on('registered', onRegistered);
+		voipLib.on('registrationerror', onRegistrationError);
+		voipLib.on('unregistered', onUnregistered);
+		voipLib.on('unregistrationerror', onUnregistrationError);
+
+		return (): void => {
+			voipLib.off('registered', onRegistered);
+			voipLib.off('registrationerror', onRegistrationError);
+			voipLib.off('unregistered', onUnregistered);
+			voipLib.off('unregistrationerror', onUnregistrationError);
+		};
+	}, [onRegistered, onRegistrationError, onUnregistered, onUnregistrationError, voipLib]);
 
 	const handleDirectory = useMutableCallback(() => {
 		sidebar.toggle();
@@ -123,9 +154,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				)}
 				<Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} />
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission(['view-omnichannel-contact-center']) && (
-					<Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory}/>
-				)}
+				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

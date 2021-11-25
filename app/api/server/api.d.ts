@@ -33,6 +33,14 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 		);
 };
 
+type NotFoundResult = {
+	statusCode: 404;
+	body: {
+		success: false;
+		error: string;
+	};
+};
+
 type UnauthorizedResult<T> = {
 	statusCode: 403;
 	body: {
@@ -98,7 +106,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 export type ResultFor<
 	TMethod extends Method,
 	TPathPattern extends PathPattern
-> = SuccessResult<OperationResult<TMethod, TPathPattern>> | FailureResult<unknown, unknown, unknown, unknown> | UnauthorizedResult<unknown>;
+> = SuccessResult<OperationResult<TMethod, TPathPattern>> | FailureResult<unknown, unknown, unknown, unknown> | UnauthorizedResult<unknown> | NotFoundResult;
 
 type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
@@ -162,6 +170,8 @@ declare class APIClass<TBasePath extends string = '/'> {
 	failure<T>(result: T): FailureResult<T>;
 
 	failure(): FailureResult<void>;
+
+	notFound(msg?: string): NotFoundResult;
 
 	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 

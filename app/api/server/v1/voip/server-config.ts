@@ -68,7 +68,7 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 		return API.v1.success({ ...config });
 	},
 	// NOTE: you can use this POST endpoint for both create and update operation
-	post() {
+	async post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			host: String,
 			serverName: String,
@@ -82,7 +82,7 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 
 		const { host, websocketPort, websocketPath, serverName } = this.bodyParams;
 
-		Promise.await(Voip.addServerConfigData({
+		await Voip.addServerConfigData({
 			type: ServerType.CALL_SERVER,
 			host,
 			name: serverName,
@@ -91,7 +91,7 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 				websocketPort,
 				websocketPath,
 			} as ICallServerConfigData,
-		}));
+		});
 
 		return API.v1.success();
 	},
