@@ -712,7 +712,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	getExtension(userId, options) {
+	getVoipExtensionByUserId(userId, options) {
 		const query = {
 			_id: userId,
 			extension: { $exists: true },

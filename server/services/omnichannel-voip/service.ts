@@ -3,19 +3,10 @@ import _ from 'underscore';
 
 import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IVoipExtensionBase } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
 import { IAgentExtensionMap, IOmnichannelVoipServiceResult } from '../../../definition/ILivechatVoipServiceResult';
-/**
- * Note (Amol) :
- * Why cant we get the direct access to the model here and have to work with
- * raw model? This is still a server code. So ideally it should have access to the model
- * like the REST apis have.
- *
- * Check this during the code review and after code review is done, delete this comment.
- */
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IUser } from '../../../definition/IUser';
 
@@ -52,7 +43,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	}
 
 	async getAvailableExtensions(): Promise<IOmnichannelVoipServiceResult> {
-		const allExtensions = await Voip.getExtensionList() as IVoipConnectorResult;
+		const allExtensions = await Voip.getExtensionList();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 		});

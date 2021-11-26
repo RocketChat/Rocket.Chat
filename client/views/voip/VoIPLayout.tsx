@@ -135,9 +135,9 @@ const VoIPLayout: FC = () => {
 		}
 
 		try {
-			logger.info('Executing POST omnichannel.agent.extension');
+			logger.info('Executing POST omnichannel/agent/extension');
 			const userIdentity = await APIClient.v1.post(
-				'omnichannel.agent.extension',
+				'omnichannel/agent/extension',
 				{},
 				{
 					username: 'amol.associate',
@@ -150,8 +150,8 @@ const VoIPLayout: FC = () => {
 		}
 
 		try {
-			logger.info('Executing GET omnichannel.agent.extension');
-			const extension = await APIClient.v1.get('omnichannel.agent.extension', {
+			logger.info('Executing GET omnichannel/agent/extension');
+			const extension = await APIClient.v1.get('omnichannel/agent/extension', {
 				username: 'amol.associate',
 			});
 			logger.info('list = ', JSON.stringify(extension));
@@ -160,8 +160,8 @@ const VoIPLayout: FC = () => {
 		}
 		/*
 		try {
-			logger.info('Executing delete omnichannel.agent.extension');
-			const result = await APIClient.v1.delete('omnichannel.agent.extension', {
+			logger.info('Executing delete omnichannel/agent/extension');
+			const result = await APIClient.v1.delete('omnichannel/agent/extension', {
 				username: 'amol.associate',
 			});
 			logger.info('list = ', JSON.stringify(result));
@@ -171,9 +171,9 @@ const VoIPLayout: FC = () => {
 		// Set it again for verifying methods below
 
 		try {
-			logger.info('Executing POST omnichannel.agent.extension');
+			logger.info('Executing POST omnichannel/agent/extension');
 			const userIdentity = await APIClient.v1.post(
-				'omnichannel.agent.extension',
+				'omnichannel/agent/extension',
 				{},
 				{
 					username: 'amol.associate1',
@@ -186,16 +186,16 @@ const VoIPLayout: FC = () => {
 		}
 		*/
 		try {
-			logger.info('Executing GET omnichannel.extension.free');
-			const extension = await APIClient.v1.get('omnichannel.extension.free');
+			logger.info('Executing GET omnichannel/extension?type=free');
+			const extension = await APIClient.v1.get('omnichannel/extension?type=free');
 			logger.info('list = ', JSON.stringify(extension));
 		} catch (error) {
 			logger.error(`error ${error} in API agent.extension`);
 		}
 
 		try {
-			logger.info('Executing GET omnichannel.extension.allocated');
-			const extension = await APIClient.v1.get('omnichannel.extension.allocated');
+			logger.info('Executing GET omnichannel/extension?type=allocated');
+			const extension = await APIClient.v1.get('omnichannel/extension?type=allocated');
 			logger.info('list = ', JSON.stringify(extension));
 		} catch (error) {
 			logger.error(`error ${error} in API agent.extension`);
