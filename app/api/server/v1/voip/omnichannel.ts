@@ -20,7 +20,7 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 		if (!user) {
 			return API.v1.notFound('User not found');
 		}
-		const extension = Promise.await(Users.getExtension(user._id, {
+		const extension = Promise.await(Users.getVoipExtensionByUserId(user._id, {
 			projection: {
 				_id: 1,
 				username: 1,
