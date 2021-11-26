@@ -53,7 +53,10 @@ export type VoIpCallerInfo =
 	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)
 
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
-	state: IState;
+	state: IState = {
+		isReady: false,
+		enableVideo: false 
+	};
 
 	private session: Session | undefined;
 
