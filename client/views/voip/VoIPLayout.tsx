@@ -1,4 +1,4 @@
-import { ToggleSwitch } from '@rocket.chat/fuselage';
+import { ToggleSwitch, Field, FieldGroup, TextInput, Box } from '@rocket.chat/fuselage';
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo, FormEvent } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -95,15 +95,8 @@ const VoIPLayout: FC<{
 	}, [errorCallback, logger, registerCallback, unregisterCallback, voipUser]);
 
 	return (
-		<div
-			style={{
-				marginLeft: '3%',
-				marginTop: '3%',
-				scrollBehavior: 'initial',
-				overflowY: 'scroll',
-			}}
-		>
-			<div>
+		<Box width='70%' m='auto'>
+			<FieldGroup>
 				{enableVideo ? (
 					<video
 						id='remote_media'
@@ -118,114 +111,84 @@ const VoIPLayout: FC<{
 					></audio>
 				)}
 
-				<div className='rcx-box rcx-box--full rcx-css-25ncok'>
-					<div className='rcx-box rcx-box--full'>Enable Video</div>
+				<Field>
+					<Field.Label>Enable Video</Field.Label>
 					<ToggleSwitch defaultChecked onChange={onChange} disabled={!registered} />
-				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
+				</Field>
+				<Field>
 					{state.state === 'IN_CALL' && (
-						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
+						<Field.Label>
 							Call from {state.callerInfo.callerName}
-						</label>
+						</Field.Label>
 					)}
 
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
+					<Field.Label>
 						SIP User Name
-					</label>
-					<span className='rcx-box rcx-box--full rcx-field__row'>
-						<input
-							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
-							type='text'
-							size={1}
+					</Field.Label>
+					<Field>
+						<TextInput
+							value={extensionConfig?.extensionDetails.extension}
 							disabled={Boolean(extensionConfig?.extensionDetails.extension)}
 						/>
-					</span>
-				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
+					</Field>
+				</Field>
+				<Field>
+					<Field.Label>
 						SIP Password
-					</label>
-					<span className='rcx-box rcx-box--full rcx-field__row'>
-						<input
-							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
-							type='text'
-							size={1}
-							disabled={Boolean(extensionConfig?.extensionDetails.password)}
-						/>
-					</span>
-				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
+					</Field.Label>
+					<TextInput
+						value={extensionConfig?.extensionDetails.password}
+						disabled={Boolean(extensionConfig?.extensionDetails.password)}
+					/>
+				</Field>
+				<Field>
+					<Field.Label>
 						SIP Registrar
-					</label>
-					<span className='rcx-box rcx-box--full rcx-field__row'>
-						<input
-							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
-							type='text'
-							size={1}
-							disabled={Boolean(extensionConfig?.host)}
-						/>
-					</span>
-				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
+					</Field.Label>
+					<TextInput
+						value={extensionConfig?.host}
+						disabled={Boolean(extensionConfig?.host)}
+					/>
+				</Field>
+				<Field>
+					<Field.Label>
 						SIP WebSocket URI
-					</label>
-					<span className='rcx-box rcx-box--full rcx-field__row'>
-						<input
-							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
-							type='text'
-							size={1}
+					</Field.Label>
+					<Field>
+						<TextInput
+							value={extensionConfig?.callServerConfig.websocketPath}
 							disabled={Boolean(extensionConfig?.callServerConfig.websocketPath)}
 						/>
-					</span>
-				</div>
-			</div>
-			<div style={{ marginTop: '20px', marginBottom: '30px' }}>
+					</Field>
+				</Field>
+			</FieldGroup>
+			<FieldGroup style={{ marginTop: '20px', marginBottom: '30px' }}>
 				{state.state === 'OFFER_RECEIVED' && (
-					<button
-						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
-						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+					<ActionButton
 						id='accept_call'
 						onClick={onAcceptCall}
 					>
 						Accept Call
-					</button>
+					</ActionButton>
 				)}
 				{state.state === 'OFFER_RECEIVED' && (
-					<button
-						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
-						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+					<ActionButton
 						id='reject_call'
 						onClick={onRejectCall}
 					>
 						Reject Call
-					</button>
+					</ActionButton>
 				)}
 				{state.state === 'IN_CALL' && (
-					<button
-						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
-						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+					<ActionButton
 						id='end_call'
 						onClick={onEndCall}
 					>
 						End Call
-					</button>
+					</ActionButton>
 				)}
-			</div>
-		</div>
+			</FieldGroup>
+		</Box>
 	);
 };
 export default VoIPLayout;
