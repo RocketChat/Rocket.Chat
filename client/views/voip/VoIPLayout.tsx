@@ -1,4 +1,11 @@
-import { ToggleSwitch, Field, FieldGroup, TextInput, Box } from '@rocket.chat/fuselage';
+import {
+	ToggleSwitch,
+	Field,
+	FieldGroup,
+	TextInput,
+	Box,
+	ActionButton,
+} from '@rocket.chat/fuselage';
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo, FormEvent } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -117,14 +124,10 @@ const VoIPLayout: FC<{
 				</Field>
 				<Field>
 					{state.state === 'IN_CALL' && (
-						<Field.Label>
-							Call from {state.callerInfo.callerName}
-						</Field.Label>
+						<Field.Label>Call from {state.callerInfo.callerName}</Field.Label>
 					)}
 
-					<Field.Label>
-						SIP User Name
-					</Field.Label>
+					<Field.Label>SIP User Name</Field.Label>
 					<Field>
 						<TextInput
 							value={extensionConfig?.extensionDetails.extension}
@@ -133,27 +136,18 @@ const VoIPLayout: FC<{
 					</Field>
 				</Field>
 				<Field>
-					<Field.Label>
-						SIP Password
-					</Field.Label>
+					<Field.Label>SIP Password</Field.Label>
 					<TextInput
 						value={extensionConfig?.extensionDetails.password}
 						disabled={Boolean(extensionConfig?.extensionDetails.password)}
 					/>
 				</Field>
 				<Field>
-					<Field.Label>
-						SIP Registrar
-					</Field.Label>
-					<TextInput
-						value={extensionConfig?.host}
-						disabled={Boolean(extensionConfig?.host)}
-					/>
+					<Field.Label>SIP Registrar</Field.Label>
+					<TextInput value={extensionConfig?.host} disabled={Boolean(extensionConfig?.host)} />
 				</Field>
 				<Field>
-					<Field.Label>
-						SIP WebSocket URI
-					</Field.Label>
+					<Field.Label>SIP WebSocket URI</Field.Label>
 					<Field>
 						<TextInput
 							value={extensionConfig?.callServerConfig.websocketPath}
@@ -164,26 +158,17 @@ const VoIPLayout: FC<{
 			</FieldGroup>
 			<FieldGroup style={{ marginTop: '20px', marginBottom: '30px' }}>
 				{state.state === 'OFFER_RECEIVED' && (
-					<ActionButton
-						id='accept_call'
-						onClick={onAcceptCall}
-					>
+					<ActionButton icon='phone' id='accept_call' onClick={onAcceptCall}>
 						Accept Call
 					</ActionButton>
 				)}
 				{state.state === 'OFFER_RECEIVED' && (
-					<ActionButton
-						id='reject_call'
-						onClick={onRejectCall}
-					>
+					<ActionButton icon='phone-off' id='reject_call' onClick={onRejectCall}>
 						Reject Call
 					</ActionButton>
 				)}
 				{state.state === 'IN_CALL' && (
-					<ActionButton
-						id='end_call'
-						onClick={onEndCall}
-					>
+					<ActionButton icon='phone-off' id='end_call' onClick={onEndCall}>
 						End Call
 					</ActionButton>
 				)}

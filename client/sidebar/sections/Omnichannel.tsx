@@ -72,11 +72,11 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	} = useMemo(() => {
 		if (!voipLib) {
 			return {
-				onUnregistrationError: () => undefined,
-				onUnregistered: () => undefined,
-				onRegistrationError: () => undefined,
-				onRegistered: () => undefined,
-				handleVoipCallStatusChange: () => undefined,
+				onUnregistrationError: (): void => undefined,
+				onUnregistered: (): void => undefined,
+				onRegistrationError: (): void => undefined,
+				onRegistered: (): void => undefined,
+				handleVoipCallStatusChange: (): void => undefined,
 			};
 		}
 

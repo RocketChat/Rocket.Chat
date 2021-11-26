@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+// import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
 // Get the connector version and type
 API.v1.addRoute('connector.getVersion', { authRequired: true }, {
@@ -19,7 +19,7 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
 	async get() {
 		const list = await Voip.getExtensionList();
 		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
-		this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
+		// this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
 		return API.v1.success({ extensions: result });
 	},
 });
@@ -34,7 +34,7 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 			extension: String,
 		}));
 		const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
-		this.logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
+		// this.logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });
@@ -50,7 +50,7 @@ API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true 
 		}));
 		console.log('API = connector.extension.getRegistrationDetails', this.requestParams());
 		const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-		this.logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
+		// this.logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });
