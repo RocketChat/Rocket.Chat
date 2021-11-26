@@ -72,6 +72,7 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		total,
 	};
 }
+
 export async function searchChats({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
@@ -111,7 +112,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	const { exceptions = [], conditions = {} } = selector;
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			name: 1,
 			username: 1,

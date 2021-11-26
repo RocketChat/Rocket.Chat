@@ -1,11 +1,11 @@
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
-import { IRocketChatRecord } from '../IRocketChatRecord';
-import { IUser } from '../IUser';
-import { ChannelName, RoomID } from '../IRoom';
-import { MessageAttachment } from './MessageAttachment/MessageAttachment';
-import { FileProp } from './MessageAttachment/Files/FileProp';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
+import type { ChannelName, RoomID } from '../IRoom';
+import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
+import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
@@ -48,6 +48,7 @@ export interface IMessage extends IRocketChatRecord {
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	blocks?: MessageSurfaceLayout;
+	alias?: string;
 	md?: ReturnType<typeof parser>;
 
 	_hidden?: boolean;
@@ -73,3 +74,13 @@ export interface IMessage extends IRocketChatRecord {
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 }
+
+export type IMessageInbox = IMessage & {
+	// email inbox fields
+	email?: {
+		references?: string[];
+		messageId?: string;
+	};
+}
+
+export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;

@@ -1,8 +1,9 @@
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IAnalyticsService } from '../../sdk/types/IAnalyticsService';
 import { AnalyticsRaw } from '../../../app/models/server/raw/Analytics';
+import { IAnalyticsSeatRequest } from '../../../definition/IAnalytic';
 
 export class AnalyticsService extends ServiceClass implements IAnalyticsService {
 	protected name = 'analytics';
@@ -19,8 +20,8 @@ export class AnalyticsService extends ServiceClass implements IAnalyticsService 
 	}
 
 	async getSeatRequestCount(): Promise<number> {
-		const result = await this.Analytics.findOne({ type: 'seat-request' });
-		return result ? result.count : 0;
+		const result = await this.Analytics.findOne<IAnalyticsSeatRequest>({ type: 'seat-request' }, {});
+		return result?.count ? result.count : 0;
 	}
 
 	async resetSeatRequestCount(): Promise<void> {

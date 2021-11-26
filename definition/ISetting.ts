@@ -57,7 +57,7 @@ export interface ISettingBase {
 	wizard?: {
 		step: number;
 		order: number;
-	};
+	} | null;
 	persistent?: boolean; // todo: remove
 	readonly?: boolean; // todo: remove
 	alert?: string; // todo: check if this is still used
@@ -97,12 +97,21 @@ export interface ISettingCode extends ISettingBase {
 
 export interface ISettingAction extends ISettingBase {
 	type: 'action';
+	value: string;
 	actionText?: string;
 }
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: AssetValue;
 }
+
+export interface ISettingDate extends ISettingBase {
+	type: 'date';
+	value: Date;
+}
+
+export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
+
 
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 

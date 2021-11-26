@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models/server';
+import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 const logger = new Logger('WebDAV_Upload');
@@ -18,7 +18,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'uploadFileToWebdav' });
 		}
 
-		const account = WebdavAccounts.findOne({ _id: accountId });
+		const account = await WebdavAccounts.findOneById(accountId);
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
 		}

@@ -6,8 +6,9 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Settings, Users } from '../../models/server';
+import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { Settings } from '../../models/server/raw';
 
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
@@ -27,7 +28,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 	const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
 	const link = '/admin/apps';
 
-	sendMessagesToAdmins({
+	Promise.await(sendMessagesToAdmins({
 		msgs: ({ adminUser }) => ({ msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(rocketCatMessage, adminUser.language) }` }),
 		banners: ({ adminUser }) => {
 			Users.removeBannerById(adminUser._id, { id });
@@ -41,7 +42,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 				link,
 			}];
 		},
-	});
+	}));
 
 	return apps;
 });
@@ -59,19 +60,19 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdmi
 
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
-	sendMessagesToAdmins({
+	Promise.await(sendMessagesToAdmins({
 		msgs: ({ adminUser }) => ({ msg: `${ TAPi18n.__(rocketCatMessage, adminUser.language) }` }),
-	});
+	}));
 });
 
 export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
-	const token = getWorkspaceAccessToken();
+	const token = Promise.await(getWorkspaceAccessToken());
 	const baseUrl = Apps.getMarketplaceUrl();
-	const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+	const workspaceIdSetting = Promise.await(Settings.getValueById('Cloud_Workspace_Id'));
 
 	const currentSeats = Users.getActiveLocalUserCount();
 
-	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps?seats=${ currentSeats }`;
+	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting }/apps?seats=${ currentSeats }`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${ token }`,
