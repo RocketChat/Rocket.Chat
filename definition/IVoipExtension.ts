@@ -17,7 +17,6 @@ export interface IVoipExtensionConfig extends IVoipExtensionBase{
 	password: string;
 }
 
-
 export const isIVoipExtensionConfig = (obj: any): obj is IVoipExtensionConfig => obj.name !== undefined && obj.state !== undefined && obj.authType !== undefined && obj.password !== undefined;
 
 export interface IQueueMembershipDetails {
