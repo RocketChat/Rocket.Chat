@@ -142,6 +142,8 @@ jobs:
       run: |
         cd ./ee/server/services
         npm run build
+        # check if build succeeded
+        [ ! -d ./dist/ee/server/services ] && exit 1
         rm -rf dist/
 
     - name: Build Rocket.Chat From Pull Request
