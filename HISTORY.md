@@ -1,6 +1,24 @@
 
 # 4.2.0 (Under Release Candidate Process)
 
+## 4.2.0-rc.2
+`2021-11-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix sort param on omnichannel endpoints ([#23789](https://github.com/RocketChat/Rocket.Chat/pull/23789))
+
+- Regression: Include files on EE services build ([#23793](https://github.com/RocketChat/Rocket.Chat/pull/23793))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.2.0-rc.1
 `2021-11-23  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
