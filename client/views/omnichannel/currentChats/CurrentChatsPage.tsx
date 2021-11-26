@@ -44,11 +44,10 @@ const CurrentChatsPage: FC<{
 				renderRow={renderRow}
 				results={data && data.rooms}
 				total={data && data.total}
-				setParams={setParams}
 				params={params}
 				reload={reload}
 				renderFilter={({ onChange, ...props }: any): any => (
-					<FilterByText setFilter={onChange} {...props} />
+					<FilterByText setFilter={onChange} setParams={setParams} {...props} />
 				)}
 			/>
 		</Page.Content>
