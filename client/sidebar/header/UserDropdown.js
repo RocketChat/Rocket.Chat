@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { popover, AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import MarkdownText from '../../components/MarkdownText';
@@ -34,6 +34,7 @@ const ADMIN_PERMISSIONS = [
 	'manage-incoming-integrations',
 	'manage-own-outgoing-integrations',
 	'manage-own-incoming-integrations',
+	'view-engagement-dashboard',
 ];
 
 const style = {

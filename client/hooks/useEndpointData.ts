@@ -1,18 +1,26 @@
 import { useCallback, useEffect } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
+import { MatchPathPattern, OperationParams, OperationResult, PathFor } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
-import { Params, PathFor, Return } from '../contexts/ServerContext/endpoints';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
-const defaultParams = {};
-
-export const useEndpointData = <P extends PathFor<'GET'>>(
-	endpoint: P,
-	params: Params<'GET', P>[0] = defaultParams as Params<'GET', P>[0],
-	initialValue?: Serialized<Return<'GET', P>> | (() => Serialized<Return<'GET', P>>),
-): AsyncState<Serialized<Return<'GET', P>>> & { reload: () => void } => {
+export const useEndpointData = <TPath extends PathFor<'GET'>>(
+	endpoint: TPath,
+	params: void extends OperationParams<'GET', MatchPathPattern<TPath>>
+		? void
+		: Serialized<
+				OperationParams<'GET', MatchPathPattern<TPath>>
+		  > = undefined as void extends OperationParams<'GET', MatchPathPattern<TPath>>
+		? void
+		: Serialized<OperationParams<'GET', MatchPathPattern<TPath>>>,
+	initialValue?:
+		| Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>
+		| (() => Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>),
+): AsyncState<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> & {
+	reload: () => void;
+} => {
 	const { resolve, reject, reset, ...state } = useAsyncState(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getData = useEndpoint('GET', endpoint);

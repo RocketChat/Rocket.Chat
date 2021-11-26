@@ -5,7 +5,7 @@ import { clientLogger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { federationRequestToPeer } from '../lib/http';
 
-export function federationSearchUsers(query) {
+export async function federationSearchUsers(query) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.searchUsers');
 	}
@@ -16,12 +16,12 @@ export function federationSearchUsers(query) {
 
 	const uri = `/api/v1/federation.users.search?${ qs.stringify({ username, domain: peerDomain }) }`;
 
-	const { data: { users } } = federationRequestToPeer('GET', peerDomain, uri);
+	const { data: { users } } = await federationRequestToPeer('GET', peerDomain, uri);
 
 	return users;
 }
 
-export function getUserByUsername(query) {
+export async function getUserByUsername(query) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.searchUsers');
 	}
@@ -32,12 +32,12 @@ export function getUserByUsername(query) {
 
 	const uri = `/api/v1/federation.users.getByUsername?${ qs.stringify({ username }) }`;
 
-	const { data: { user } } = federationRequestToPeer('GET', peerDomain, uri);
+	const { data: { user } } = await federationRequestToPeer('GET', peerDomain, uri);
 
 	return user;
 }
 
-export function requestEventsFromLatest(domain, fromDomain, contextType, contextQuery, latestEventIds) {
+export async function requestEventsFromLatest(domain, fromDomain, contextType, contextQuery, latestEventIds) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.requestEventsFromLatest');
 	}
@@ -46,11 +46,11 @@ export function requestEventsFromLatest(domain, fromDomain, contextType, context
 
 	const uri = '/api/v1/federation.events.requestFromLatest';
 
-	federationRequestToPeer('POST', domain, uri, { fromDomain, contextType, contextQuery, latestEventIds });
+	await federationRequestToPeer('POST', domain, uri, { fromDomain, contextType, contextQuery, latestEventIds });
 }
 
 
-export function dispatchEvents(domains, events) {
+export async function dispatchEvents(domains, events) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.dispatchEvents');
 	}
@@ -61,17 +61,17 @@ export function dispatchEvents(domains, events) {
 
 	const uri = '/api/v1/federation.events.dispatch';
 
-	for (const domain of domains) {
-		federationRequestToPeer('POST', domain, uri, { events }, { ignoreErrors: true });
+	for await (const domain of domains) {
+		await federationRequestToPeer('POST', domain, uri, { events }, { ignoreErrors: true });
 	}
 }
 
-export function dispatchEvent(domains, event) {
-	dispatchEvents([...new Set(domains)], [event]);
+export async function dispatchEvent(domains, event) {
+	await dispatchEvents([...new Set(domains)], [event]);
 }
 
-export function getUpload(domain, fileId) {
-	const { data: { upload, buffer } } = federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+export async function getUpload(domain, fileId) {
+	const { data: { upload, buffer } } = await federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 	return { upload, buffer: Buffer.from(buffer) };
 }

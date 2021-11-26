@@ -38,11 +38,16 @@ function NotFoundPage() {
 								404
 							</Box>
 
-							<Box fontScale='h2' color='alternative'>
+							<Box role='heading' aria-level='1' fontScale='h2' color='alternative'>
 								{t('Oops_page_not_found')}
 							</Box>
 
-							<Box fontScale='p3' color='alternative'>
+							<Box
+								role='status'
+								aria-label='Sorry_page_you_requested_does_not_exist_or_was_deleted'
+								fontScale='p3'
+								color='alternative'
+							>
 								{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}
 							</Box>
 						</Margins>

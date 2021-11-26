@@ -4,7 +4,7 @@ import React from 'react';
 import BusinessHoursTimeZone from './BusinessHoursTimeZone';
 
 export default {
-	title: 'omnichannel/businessHours/ee/BusinessHoursTimeZone',
+	title: 'omnichannel/businessHours/BusinessHoursTimeZone',
 	component: BusinessHoursTimeZone,
 };
 

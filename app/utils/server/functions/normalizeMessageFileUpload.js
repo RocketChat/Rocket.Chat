@@ -1,11 +1,11 @@
 import { getURL } from '../../lib/getURL';
 import { FileUpload } from '../../../file-upload/server';
-import { Uploads } from '../../../models/server';
+import { Uploads } from '../../../models/server/raw';
 
-export const normalizeMessageFileUpload = (message) => {
+export const normalizeMessageFileUpload = async (message) => {
 	if (message.file && !message.fileUpload) {
 		const jwt = FileUpload.generateJWTToFileUrls({ rid: message.rid, userId: message.u._id, fileId: message.file._id });
-		const file = Uploads.findOne({ _id: message.file._id });
+		const file = await Uploads.findOne({ _id: message.file._id });
 		if (!file) {
 			return message;
 		}
