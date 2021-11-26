@@ -1,6 +1,21 @@
 
 # 4.2.0 (Under Release Candidate Process)
 
+## 4.2.0-rc.3
+`2021-11-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add @rocket.chat/emitter to EE services ([#23802](https://github.com/RocketChat/Rocket.Chat/pull/23802))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.2.0-rc.2
 `2021-11-26  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
