@@ -4,8 +4,8 @@ import React, { FC } from 'react';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const CallControls: FC<{ state: any; disabled?: boolean }> = ({ state, disabled = false }) => {
-	const onClose = () => 'DoTheMagicTrick';
-	const onPickup = () => 'DoTheMagicTrick';
+	const onClose = (): void => console.log('DoTheMagicTrick');
+	const onPickup = (): void => console.log('DoTheMagicTrick');
 	const t = useTranslation();
 
 	return (

@@ -55,7 +55,7 @@ export type VoIpCallerInfo =
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
 	state: IState = {
 		isReady: false,
-		enableVideo: false 
+		enableVideo: false,
 	};
 
 	private session: Session | undefined;
