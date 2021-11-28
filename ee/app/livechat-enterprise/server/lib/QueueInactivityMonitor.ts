@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../app/settings/server';
-import { Logger } from '../../../../../app/logger/server';
+import { Logger } from '../../../../../server/lib/logger/Logger';
 import { LivechatRooms, Users, LivechatInquiry } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { IUser } from '../../../../../definition/IUser';

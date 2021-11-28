@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('LoginProtection');
 

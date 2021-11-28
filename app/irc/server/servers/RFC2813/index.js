@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import parseMessage from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';
 import localCommandHandlers from './localCommandHandlers';
-import { Logger } from '../../../../logger/server';
+import { Logger } from '../../../../../server/lib/logger/Logger';
 
 const logger = new Logger('IRC Server');
 
