@@ -20,7 +20,7 @@ Meteor.methods({
 					},
 					public: true,
 				}, {
-					fields: {
+					projection: {
 						_id: 1,
 						_deletedAt: 1,
 					},
@@ -69,7 +69,7 @@ Meteor.methods({
 					$ne: true,
 				},
 			}, {
-				fields: {
+				projection: {
 					_id: 1,
 					_deletedAt: 1,
 				},
