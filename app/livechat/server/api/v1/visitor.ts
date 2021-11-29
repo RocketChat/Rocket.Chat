@@ -93,10 +93,25 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('invalid-token');
 		}
 
+		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
+			fields: {
+				name: 1,
+				t: 1,
+				cl: 1,
+				u: 1,
+				usernames: 1,
+				servedBy: 1,
+			},
+		}).fetch();
+
+		if (rooms && rooms.length) {
+			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
+		}
+
 		const { _id } = visitor;
 		const result = Livechat.removeGuest(_id);
 		if (!result) {
-			return API.v1.failure();
+			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 
 		return API.v1.success({
