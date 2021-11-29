@@ -1239,7 +1239,7 @@
   "Show_only_online": "הצג רק מחוברים",
   "Show_preregistration_form": "צג טופס הרשמה מראש",
   "Showing_archived_results": "<p>מציג <b>%s</b> תוצאות בארכיון</p>",
-  "Showing_online_users": "מציג <b>__total_showing__</b> מתוך __total__ משתמשים",
+  "Showing_online_users": null,
   "Showing_results": "<p>מוצגות <b>%s</b> תוצאות</p>",
   "since_creation": "מאז %s",
   "Site_Name": "שם האתר",

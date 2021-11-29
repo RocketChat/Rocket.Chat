@@ -2337,7 +2337,7 @@
   "Show_Setup_Wizard": "ສະແດງຕົວຊ່ວຍສ້າງການຕັ້ງຄ່າ",
   "Show_the_keyboard_shortcut_list": "ສະແດງລາຍະການທາງລັດແປ້ນພິມ",
   "Showing_archived_results": "<p> <b>ສະແດງໃຫ້ເຫັນຜົນໄດ້ຮັບທີ່ເກັບ %s</b> </p>",
-  "Showing_online_users": "ສະແດງໃຫ້ເຫັນ <b>__total_showing__</b> ຂອງຜູ້ຊົມໃຊ້ __total__",
+  "Showing_online_users": null,
   "Showing_results": "<p> <b>ສະແດງໃຫ້ເຫັນຜົນໄດ້ຮັບ %s</b> </p>",
   "Sidebar": "Sidebar",
   "Sidebar_list_mode": "ໂຫມດບັນທັດຂອງແຖບ Sidebar",

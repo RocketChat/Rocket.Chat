@@ -2367,7 +2367,7 @@
   "Show_Setup_Wizard": "Mostra procedura guidata di installazione",
   "Show_the_keyboard_shortcut_list": "Mostra l'elenco delle scorciatoie per la tastiera",
   "Showing_archived_results": "<p>Mostra <b>%s</b> risultati archiviati</p>",
-  "Showing_online_users": "Visualizzati <b>__total_showing__</b> su __total__users",
+  "Showing_online_users": null,
   "Showing_results": "<p>Visualizzati <b>%s</b> risultati</p>",
   "Sidebar": "Sidebar",
   "Sidebar_list_mode": "Modalità Elenco canali laterale",

@@ -2310,7 +2310,7 @@
   "Show_Setup_Wizard": "Εμφάνιση του οδηγού εγκατάστασης",
   "Show_the_keyboard_shortcut_list": "Εμφάνιση της λίστας συντομεύσεων πληκτρολογίου",
   "Showing_archived_results": "<p> Εμφάνιση αρχειοθετημένα <b>αποτελέσματα %s</b> </p>",
-  "Showing_online_users": "Εμφανίζονται <b>__total_showing__</b> από __total__ users",
+  "Showing_online_users": null,
   "Showing_results": "<p>Εμφανιζονται <b>%s</b> αποτελεσματα</p>",
   "Sidebar": "Πλευρική γραμμή",
   "Sidebar_list_mode": "Λειτουργία λίστας καναλιών πλευρικής γραμμής",

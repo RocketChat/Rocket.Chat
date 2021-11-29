@@ -2776,7 +2776,7 @@
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Та вэбсайтаа CRech-тай livechat-тай амархан холбох боломжтой.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Та livechat өрөө орхиж болохгүй. Ойрхон товчлуурыг ашиглана уу.",
   "You_have_been_muted": "Та чимээгүй болж, энэ өрөөнд ярьж чадахгүй байна",
-  "You_have_n_codes_remaining": "Танд кодын тоо үлдсэн байна.",
+  "You_have_n_codes_remaining": null,
   "You_have_not_verified_your_email": "Та өөрийн имэйлийг баталгаажуулаагүй байна.",
   "You_have_successfully_unsubscribed": "Та манай Майдансын жагсаалтаас амжилттай цуцалсан.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Та интеграцыг ашиглахын тулд эхлээд API жетоныг тохируулах хэрэгтэй.",

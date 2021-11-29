@@ -2296,7 +2296,7 @@
   "Show_Setup_Wizard": "Vebijêrk Setup",
   "Show_the_keyboard_shortcut_list": "Lîsteya kurteya klavyeyê nîşan bide",
   "Showing_archived_results": "<p style=\";text-align:right;direction:rtl\"> Rûpela results <b>trendê %s</b> </p>",
-  "Showing_online_users": "<b>__total_showing__</b> لە __total__ users نیشاندراوە",
+  "Showing_online_users": null,
   "Showing_results": "<p>نیشاندانی <b>%s</b> ئەنجام</p>",
   "Sidebar": "Sidebar",
   "Sidebar_list_mode": "Mîhengên Channel Lîsteya Sidebar",
