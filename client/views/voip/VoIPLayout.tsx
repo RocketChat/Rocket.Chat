@@ -104,7 +104,6 @@ const VoIPLayout: FC<{
 	return (
 		<Box width='70%' m='auto'>
 			<FieldGroup>
-
 				{enableVideo ? (
 					<video
 						id='remote_media'

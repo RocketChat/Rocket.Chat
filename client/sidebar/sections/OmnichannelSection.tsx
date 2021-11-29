@@ -121,7 +121,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			onRegistered,
 			handleVoipCallStatusChange,
 		};
-	}, []);
+	}, [registered, voipCallAvailable, voipLib, voipLibIsReady]);
 
 	useEffect(() => {
 		if (!voipLib) {
