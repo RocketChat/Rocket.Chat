@@ -67,7 +67,9 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 
 		return API.v1.success({ ...config });
 	},
+
 	// NOTE: you can use this POST endpoint for both create and update operation
+
 	async post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			host: String,
