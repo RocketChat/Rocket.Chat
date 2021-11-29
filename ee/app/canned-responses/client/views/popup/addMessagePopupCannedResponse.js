@@ -1,13 +1,12 @@
 import _ from 'underscore';
 import { Tracker } from 'meteor/tracker';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { CannedResponse } from '../../collections/CannedResponse';
 import { addMessagePopup, removeMessagePopup } from '../../../../../../app/ui-message/client/popup/customMessagePopups';
 import { t } from '../../../../../../app/utils';
 import { settings } from '../../../../../../app/settings';
 
-const added = new ReactiveVar(false);
+// const added = new ReactiveVar(false);
 Tracker.autorun(() => {
 	const templateFunc = (template) => ({
 		title: t('Canned_Responses'),
@@ -43,11 +42,9 @@ Tracker.autorun(() => {
 	});
 
 	const settingValue = settings.get('Canned_Responses_Enable');
-	if (settingValue && !added.get()) {
+	if (settingValue) {
 		addMessagePopup(templateFunc, 'cannedResponses');
-		added.set(true);
-	} else if (!settingValue && added.get()) {
+	} else {
 		removeMessagePopup('cannedResponses');
-		added.set(false);
 	}
 });

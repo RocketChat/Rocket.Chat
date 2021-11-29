@@ -1,10 +1,15 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 export const customMessagePopups = new ReactiveVar([]);
 
+const nonReactiveGetFunc = function() {
+	return customMessagePopups.get();
+};
+
 export const addMessagePopup = (configGetter, name) => {
 	customMessagePopups.set([
-		...customMessagePopups.get(),
+		...Tracker.nonreactive(nonReactiveGetFunc),
 		{
 			configGetter,
 			name,
@@ -13,7 +18,7 @@ export const addMessagePopup = (configGetter, name) => {
 };
 
 export const removeMessagePopup = (popupName) => {
-	const customMessagePopupsList = customMessagePopups.get();
+	const customMessagePopupsList = Tracker.nonreactive(nonReactiveGetFunc);
 	const element = customMessagePopupsList.findIndex(({ name }) => name === popupName);
 	if (element < 0) {
 		return;
