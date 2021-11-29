@@ -4528,6 +4528,7 @@
   "UTF8_User_Names_Validation_Description": "RegExp that will be used to validate usernames",
   "UTF8_Channel_Names_Validation": "UTF8 Channel Names Validation",
   "UTF8_Channel_Names_Validation_Description": "RegExp that will be used to validate channel names",
+  "Videocall_enabled": "Video Call Enabled",
   "Validate_email_address": "Validate Email Address",
   "Validation": "Validation",
   "Value_messages": "__value__ messages",
