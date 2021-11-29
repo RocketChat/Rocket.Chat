@@ -69,7 +69,6 @@ function NewImportPage() {
 
 	const handleImportFileChange = async (event) => {
 		event = event.originalEvent || event;
-
 		let { files } = event.target;
 		if (!files || files.length === 0) {
 			files = (event.dataTransfer != null ? event.dataTransfer.files : undefined) || [];
@@ -202,7 +201,9 @@ function NewImportPage() {
 							</Field.Row>
 							{importer && (
 								<Field.Hint>
-									{t('Importer_From_Description', { from: t(importer.name) })}
+									{importer.name === 'CSV'
+										? t('Importer_From_Description_CSV')
+										: t('Importer_From_Description', { from: t(importer.name) })}
 								</Field.Hint>
 							)}
 						</Field>

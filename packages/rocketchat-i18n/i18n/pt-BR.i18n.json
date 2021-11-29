@@ -2152,6 +2152,7 @@
   "Importer_done": "Importação concluída!",
   "Importer_ExternalUrl_Description": "Você também pode usar uma URL para um arquivo acessível publicamente:",
   "Importer_finishing": "Terminando a importação.",
+  "Importer_From_Description_CSV": "Importa dados de CSV para o Rocket.Chat. O formato do arquivo importado deve ser ZIP.",
   "Importer_From_Description": "Importa dados de __from__  para o Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Por favor esteja ciente que esta importação é ainda um trabalho em andamento, favor reportar quaisquer erros que ocorrerem no GitHub:",
   "Importer_HipChatEnterprise_Information": "O arquivo carregado deve ser um tar.gz descriptografado, leia a documentação para obter mais informações:",
