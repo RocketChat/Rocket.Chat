@@ -8,6 +8,7 @@ import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
 import { Settings } from '../../app/models/server/raw';
+import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function() {
 	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
@@ -66,9 +67,7 @@ Meteor.startup(async function() {
 			console.log(`Name: ${ adminUser.name }`.green);
 
 			if (process.env.ADMIN_EMAIL) {
-				const re = /^[^@].*@[^@]+$/i;
-
-				if (re.test(process.env.ADMIN_EMAIL)) {
+				if (validateEmail(process.env.ADMIN_EMAIL)) {
 					if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
 						adminUser.emails = [{
 							address: process.env.ADMIN_EMAIL,
