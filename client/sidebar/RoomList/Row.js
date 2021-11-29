@@ -5,7 +5,7 @@ import Omnichannel from '../sections/Omnichannel';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 const sections = {
-	Omnichannel,
+	Omnichannel: OmnichannelSection,
 };
 
 const Row = ({ data, item }) => {
