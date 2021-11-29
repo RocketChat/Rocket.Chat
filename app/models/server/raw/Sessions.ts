@@ -7,6 +7,7 @@ import type { IUser } from '../../../../definition/IUser';
 type DestructuredDate = {year: number; month: number; day: number};
 type DestructuredDateWithType = {year: number; month: number; day: number; type?: 'month' | 'week'};
 type DestructuredRange = {start: DestructuredDate; end: DestructuredDate};
+type DateRange = {start: Date; end: Date};
 type FullReturn = { year: number; month: number; day: number; data: ISession[] };
 
 const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
@@ -688,7 +689,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		]).toArray();
 	}
 
-	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DestructuredRange & { groupSize: number }): Promise<{
+	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DateRange & { groupSize: number }): Promise<{
 		hour: number;
 		users: number;
 	}[]> {
@@ -768,7 +769,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		]).toArray();
 	}
 
-	async getTotalOfSessionByHourAndDayBetweenDates({ start, end }: DestructuredRange): Promise<{
+	async getTotalOfSessionByHourAndDayBetweenDates({ start, end }: DateRange): Promise<{
 		hour: number;
 		day: number;
 		month: number;
