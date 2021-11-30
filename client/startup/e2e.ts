@@ -46,13 +46,13 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
-			Notifications.unUser('e2ekeyRequest', handle);
+			Notifications.unUser('e2e.keyRequest', handle);
 			observable?.stop();
 			offClientBeforeSendMessage?.();
 			return;
 		}
 
-		Notifications.onUser('e2ekeyRequest', handle);
+		Notifications.onUser('e2e.keyRequest', handle);
 
 		observable = Subscriptions.find().observe({
 			changed: async (doc: ISubscription) => {
