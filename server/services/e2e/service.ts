@@ -48,6 +48,15 @@ export class E2EService extends ServiceClass implements IE2EService {
 		};
 	}
 
+	async setUserKeys(uid: IUser['_id'], keyPair: E2EKeyPair): Promise<void> {
+		await this.Users.update({ _id: uid }, {
+			$set: {
+				'e2e.public_key': keyPair.public_key,
+				'e2e.private_key': keyPair.private_key,
+			},
+		});
+	}
+
 	async getRoomMembersWithoutPublicKey(uid: IUser['_id'], rid: IRoom['_id']): Promise<IUser[]> {
 		if (!await canAccessRoom({ _id: rid }, { _id: uid })) {
 			throw new Error('error-invalid-room');

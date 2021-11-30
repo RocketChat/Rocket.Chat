@@ -342,15 +342,6 @@ export class Users extends Base {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
-		this.update({ _id: userId }, {
-			$set: {
-				'e2e.public_key': public_key,
-				'e2e.private_key': private_key,
-			},
-		});
-	}
-
 	rocketMailUnsubscribe(_id, createdAt) {
 		const query = {
 			_id,

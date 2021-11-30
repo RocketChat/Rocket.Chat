@@ -135,7 +135,7 @@ class E2E extends Emitter {
 
 		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
-			await call('e2e.setUserPublicAndPrivateKeys', {
+			await APIClient.v1.post('e2e.setUserPublicAndPrivateKeys', {
 				public_key: Meteor._localStorage.getItem('public_key'),
 				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
@@ -190,7 +190,7 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword) {
-		await call('e2e.setUserPublicAndPrivateKeys', {
+		await APIClient.v1.post('e2e.setUserPublicAndPrivateKeys', {
 			public_key: Meteor._localStorage.getItem('public_key'),
 			private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), newPassword),
 		});
