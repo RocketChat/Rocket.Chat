@@ -596,7 +596,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 	constructor(
 		public readonly col: Collection<ISession>,
 		public readonly colSecondary: Collection<ISession>,
-		public readonly trash?: Collection<ISession>,
+		trash?: Collection<ISession>,
 	) {
 		super(col, trash);
 
