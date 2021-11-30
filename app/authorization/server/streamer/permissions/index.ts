@@ -10,7 +10,9 @@ Meteor.methods({
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 
-		const records = await Permissions.find(updatedAt && { _updatedAt: { $gt: updatedAt } }).toArray();
+		const records = await Permissions.find(
+			updatedAt && { _updatedAt: { $gt: updatedAt } },
+		).toArray();
 
 		if (updatedAt instanceof Date) {
 			return {
@@ -18,7 +20,7 @@ Meteor.methods({
 				remove: await Permissions.trashFindDeletedAfter(
 					updatedAt,
 					{},
-					{ fields: { _id: 1, _deletedAt: 1 } },
+					{ projection: { _id: 1, _deletedAt: 1 } },
 				).toArray(),
 			};
 		}

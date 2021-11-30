@@ -12,7 +12,7 @@ type ScopedModelRoles = {
 
 export class RolesRaw extends BaseRaw<IRole> {
 	constructor(public readonly col: Collection<IRole>,
-		private readonly models: ScopedModelRoles, public readonly trash?: Collection<IRole>) {
+		private readonly models: ScopedModelRoles, trash?: Collection<IRole>) {
 		super(col, trash);
 	}
 
