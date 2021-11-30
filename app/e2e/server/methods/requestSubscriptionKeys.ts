@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Rooms } from '../../../models';
-import { Notifications } from '../../../notifications';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { Notifications } from '../../../notifications/server';
+import { IRoom } from '../../../../definition/IRoom';
+import { ISubscription } from '../../../../definition/ISubscription';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {
@@ -12,7 +14,7 @@ Meteor.methods({
 		}
 
 		// Get all encrypted rooms that the user is subscribed to and has no E2E key yet
-		const subscriptions = Subscriptions.findByUserIdWithoutE2E(Meteor.userId());
+		const subscriptions: ISubscription[] = Subscriptions.findByUserIdWithoutE2E(Meteor.userId());
 		const roomIds = subscriptions.map((subscription) => subscription.rid);
 
 		// For all subscriptions without E2E key, get the rooms that have encryption enabled
@@ -25,7 +27,7 @@ Meteor.methods({
 			},
 		};
 
-		const rooms = Rooms.find(query);
+		const rooms: IRoom[] = Rooms.find(query);
 		rooms.forEach((room) => {
 			Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
 		});

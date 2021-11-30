@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { checkCodeForUser, ITwoFactorOptions } from './code/index';
 import { IMethodThisType } from '../../../definition/IMethodThisType';
 
-export function twoFactorRequired(fn: Function, options: ITwoFactorOptions): Function {
+export function twoFactorRequired(fn: Function, options?: ITwoFactorOptions): (this: Meteor.MethodThisType, ...args: any[]) => any {
 	return function(this: IMethodThisType, ...args: any[]): any {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });

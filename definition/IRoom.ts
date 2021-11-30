@@ -70,6 +70,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	usernames?: string[];
 	ts?: Date;
+
+	e2eKeyId?: unknown;
 }
 
 export interface ICreatedRoom extends IRoom {
