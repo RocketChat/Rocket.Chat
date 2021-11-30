@@ -113,8 +113,8 @@ export const findBusiestsChatsInADayByHours = async ({ start }: { start: Date })
 	}[];
 }> => ({
 	hours: await Sessions.getBusiestTimeWithinHoursPeriod({
-		start: createDestructuredDate(moment(start).subtract(24, 'hours')),
-		end: createDestructuredDate(start),
+		start: moment(start).subtract(24, 'hours').toDate(),
+		end: start,
 		groupSize: 2,
 	}),
 });
@@ -143,7 +143,7 @@ export const findUserSessionsByHourWithinAWeek = async ({ start, end }: { start:
 	}[];
 }> => ({
 	week: await Sessions.getTotalOfSessionByHourAndDayBetweenDates({
-		start: createDestructuredDate(start),
-		end: createDestructuredDate(end),
+		start,
+		end,
 	}),
 });
