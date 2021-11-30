@@ -569,6 +569,7 @@ export class FileUploadClass {
 	}
 
 	delete(fileId) {
+		// TODO: Remove this method
 		if (this.store && this.store.delete) {
 			this.store.delete(fileId);
 		}
