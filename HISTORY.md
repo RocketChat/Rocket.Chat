@@ -1,6 +1,43 @@
 
 # 4.2.0 (Under Release Candidate Process)
 
+## 4.2.0-rc.4
+`2021-11-30  ·  1 🐛  ·  5 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- LDAP users being disabled when an AD security policy is enabled ([#23820](https://github.com/RocketChat/Rocket.Chat/pull/23820))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- i18n: Language update from LingoHub 🤖 on 2021-11-29Z ([#23812](https://github.com/RocketChat/Rocket.Chat/pull/23812))
+
+- Regression: "When is the chat busier" and "Users by time of day" charts are not working ([#23815](https://github.com/RocketChat/Rocket.Chat/pull/23815))
+
+  - Fix "When is the chat busier" (Hours) and "Users by time of day" charts, which weren't displaying any data;
+
+- Regression: Add trash to raw models ([#23774](https://github.com/RocketChat/Rocket.Chat/pull/23774))
+
+- Regression: Current Chats not Filtering ([#23803](https://github.com/RocketChat/Rocket.Chat/pull/23803))
+
+- Regression: Mark Livechat WebRTC video calling as alpha ([#23813](https://github.com/RocketChat/Rocket.Chat/pull/23813))
+
+  ![image](https://user-images.githubusercontent.com/34130764/143832378-82b99a72-23e8-4115-8b28-a0d210de598b.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.2.0-rc.3
 `2021-11-26  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
