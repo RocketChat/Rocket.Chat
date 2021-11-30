@@ -66,7 +66,7 @@ type ResultFields<Base, Defaults> = Defaults extends void
 		? Pick<Defaults, keyof Defaults>
 		: Omit<Defaults, keyof Defaults>;
 
-const warnFields =	process.env.NODE_ENV !== 'production'
+const warnFields = process.env.NODE_ENV !== 'production'
 	? (...rest: any): void => {
 		console.warn(...rest, new Error().stack);
 	}
@@ -81,7 +81,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	private preventSetUpdatedAt: boolean;
 
-	public readonly trash?: Collection<RocketChatRecordDeleted<T>>
+	public readonly trash?: Collection<RocketChatRecordDeleted<T>>;
 
 	constructor(
 		public readonly col: Collection<T>,
@@ -293,9 +293,13 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 				__collection__: this.name,
 			} as RocketChatRecordDeleted<T>;
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as FilterQuery<RocketChatRecordDeleted<T>>, trash, {
-				upsert: true,
-			});
+			await this.trash?.updateOne(
+				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
+				{ $set: trash },
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		return this.col.deleteOne(filter, options);
@@ -324,9 +328,13 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 			ids.push(_id);
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as FilterQuery<RocketChatRecordDeleted<T>>, trash, {
-				upsert: true,
-			});
+			await this.trash?.updateOne(
+				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
+				{ $set: trash },
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		return this.col.deleteMany({ _id: { $in: ids } } as unknown as FilterQuery<T>, options);
