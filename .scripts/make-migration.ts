@@ -43,7 +43,7 @@ function main(number: string, comment: string): void {
 const [, , number, comment] = process.argv;
 
 if (!number || (comment && !comment.trim())) {
-	console.error('USAGE: meteor npm run migration:add <migration number> [migration comment: optional]');
+	console.error('Usage:\n\tmeteor npm run migration:add <migration number> [migration comment: optional]\n');
 	process.exit(1);
 }
 
