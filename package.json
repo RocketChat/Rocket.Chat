@@ -17,7 +17,7 @@
 		"ha": "meteor npm run ha:start",
 		"ha:start": "ts-node .scripts/run-ha.ts main",
 		"ha:add": "ts-node .scripts/run-ha.ts instance",
-		"migration:add": "ts-node .scripts/make-migration.ts",
+		"migration:add": "ts-node-transpile-only --skip-project .scripts/make-migration.ts",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
