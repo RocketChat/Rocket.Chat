@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findAdminRoomsAutocomplete, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
@@ -282,6 +282,20 @@ API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
 				count,
 				sort,
 			},
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.adminRooms', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findAdminRoomsAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
 		})));
 	},
 });

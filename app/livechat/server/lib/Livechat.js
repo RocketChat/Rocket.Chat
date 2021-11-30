@@ -222,7 +222,7 @@ export const Livechat = {
 		return true;
 	},
 
-	deleteMessage({ guest, message }) {
+	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -239,7 +239,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		deleteMessage(message, guest);
+		await deleteMessage(message, guest);
 
 		return true;
 	},
@@ -514,7 +514,7 @@ export const Livechat = {
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
-			'Livechat_videocall_enabled',
+			'Omnichannel_call_provider',
 			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
@@ -598,7 +598,7 @@ export const Livechat = {
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
+			Promise.await(this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department }));
 		});
 	},
 
@@ -1277,6 +1277,12 @@ export const Livechat = {
 			},
 		};
 		LivechatVisitors.updateById(contactId, updateUser);
+	},
+	updateCallStatus(callId, rid, status, user) {
+		Rooms.setCallStatus(rid, status);
+		if (status === 'ended' || status === 'declined') {
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
+		}
 	},
 };
 

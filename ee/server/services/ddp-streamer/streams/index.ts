@@ -14,10 +14,11 @@ const notifications = new NotificationsModule(Stream);
 
 getConnection()
 	.then((db) => {
+		const Users = new UsersRaw(db.collection<IUser>(Collections.User));
 		notifications.configure({
 			Rooms: new RoomsRaw(db.collection<IRoom>(Collections.Rooms)),
-			Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions)),
-			Users: new UsersRaw(db.collection<IUser>(Collections.User)),
+			Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions), { Users }),
+			Users,
 			Settings: new SettingsRaw(db.collection<ISetting>(Collections.Settings)),
 		});
 	});

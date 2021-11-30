@@ -5,8 +5,8 @@ import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
 import { settings } from '../../app/settings/server';
 
-function generateStatistics(logger) {
-	const cronStatistics = statistics.save();
+async function generateStatistics(logger) {
+	const cronStatistics = await statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 

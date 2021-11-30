@@ -6,19 +6,22 @@ import { useTranslation } from '../contexts/TranslationContext';
 type FilterByTextProps = {
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
-	displayButton: boolean;
+	inputRef?: () => void;
+};
+
+type FilterByTextPropsWithButton = FilterByTextProps & {
+	displayButton: true;
 	textButton: string;
 	onButtonClick: () => void;
-	inputRef: () => void;
 };
+const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
+	'displayButton' in props && props.displayButton === true;
 
 const FilterByText: FC<FilterByTextProps> = ({
 	placeholder,
 	onChange: setFilter,
-	displayButton: display = false,
-	textButton = '',
-	onButtonClick,
 	inputRef,
+	children: _,
 	...props
 }) => {
 	const t = useTranslation();
@@ -53,9 +56,11 @@ const FilterByText: FC<FilterByTextProps> = ({
 				onChange={handleInputChange}
 				value={text}
 			/>
-			<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>
-				{textButton}
-			</Button>
+			{isFilterByTextPropsWithButton(props) && (
+				<Button onClick={props.onButtonClick} mis='x8' primary>
+					{props.textButton}
+				</Button>
+			)}
 		</Box>
 	);
 };

@@ -6,7 +6,7 @@ import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
 export class TeamRaw extends BaseRaw<ITeam> {
 	constructor(
 		public readonly col: Collection<ITeam>,
-		public readonly trash?: Collection<ITeam>,
+		trash?: Collection<ITeam>,
 	) {
 		super(col, trash);
 

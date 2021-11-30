@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
+import { Integrations, Uploads } from '../../../models/server/raw';
 import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -272,18 +273,18 @@ API.v1.addRoute('groups.files', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-		const files = Uploads.find(ourQuery, {
+		const files = Promise.await(Uploads.find(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
-		}).fetch();
+		}).toArray());
 
 		return API.v1.success({
 			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
-			total: Uploads.find(ourQuery).count(),
+			total: Promise.await(Uploads.find(ourQuery).count()),
 		});
 	},
 });
@@ -312,21 +313,24 @@ API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields: projection, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, { channel: { $in: channelsToSearch } });
-		const integrations = Integrations.find(ourQuery, {
+		const cursor = Integrations.find(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields,
-		}).fetch();
+			projection,
+		});
+
+		const integrations = Promise.await(cursor.toArray());
+		const total = Promise.await(cursor.count());
 
 		return API.v1.success({
 			integrations,
 			count: integrations.length,
 			offset,
-			total: Integrations.find(ourQuery).count(),
+			total,
 		});
 	},
 });
