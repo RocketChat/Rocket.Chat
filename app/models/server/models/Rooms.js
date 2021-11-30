@@ -334,20 +334,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setE2eKeyId(_id, e2eKeyId, options) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				e2eKeyId,
-			},
-		};
-
-		return this.update(query, update, options);
-	}
-
 	findOneByImportId(_id, options) {
 		const query = { importIds: _id };
 

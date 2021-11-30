@@ -6,10 +6,8 @@ import { IRoom } from '../../../definition/IRoom';
 import './settings';
 import './beforeCreateRoom';
 import './methods/setUserPublicAndPrivateKeys';
-import './methods/getUsersOfRoomWithoutKey';
 import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
-import './methods/fetchMyKeys';
 import './methods/resetOwnE2EKey';
 import './methods/requestSubscriptionKeys';
 

@@ -24,7 +24,7 @@ import {
 } from './helper';
 import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
-import { roomTypes, RoomSettingsEnum } from '../../utils/client';
+import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
@@ -299,7 +299,7 @@ export class E2ERoom extends Emitter {
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
 
-			await call('e2e.setRoomKeyID', this.roomId, this.keyID);
+			await APIClient.v1.post('e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
 			this.error('Error exporting group key: ', error);
@@ -310,7 +310,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const { users } = await call('e2e.getUsersOfRoomWithoutKey', this.roomId);
+			const { users } = await APIClient.v1.get('e2e.getUsersOfRoomWithoutKey', this.roomId);
 			users.forEach((user) => this.encryptForParticipant(user));
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
