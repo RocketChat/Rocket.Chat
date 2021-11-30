@@ -67774,6 +67774,80 @@
           ]
         }
       ]
+    },
+    "4.2.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23774",
+          "title": "Regression: Add trash to raw models",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.2.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23820",
+          "title": "[FIX] LDAP users being disabled when an AD security policy is enabled",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.2.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23815",
+          "title": "Regression: \"When is the chat busier\" and \"Users by time of day\" charts are not working",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix \"When is the chat busier\" (Hours) and \"Users by time of day\" charts, which weren't displaying any data;",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23812",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-29Z",
+          "userLogin": "lingohub[bot]",
+          "milestone": "4.2.0",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23813",
+          "title": "Regression: Mark Livechat WebRTC video calling as alpha",
+          "userLogin": "murtaza98",
+          "description": "![image](https://user-images.githubusercontent.com/34130764/143832378-82b99a72-23e8-4115-8b28-a0d210de598b.png)",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23803",
+          "title": "Regression: Current Chats not Filtering",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
