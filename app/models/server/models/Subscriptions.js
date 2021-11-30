@@ -120,17 +120,6 @@ export class Subscriptions extends Base {
 		return query;
 	}
 
-	findByRidWithoutE2EKey(rid, options) {
-		const query = {
-			rid,
-			E2EKey: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	updateAudioNotificationValueById(_id, audioNotificationValue) {
 		const query = {
 			_id,

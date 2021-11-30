@@ -365,19 +365,6 @@ export class Users extends Base {
 		return affectedRows;
 	}
 
-	fetchKeysByUserId(userId) {
-		const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
-
-		if (!user || !user.e2e || !user.e2e.public_key) {
-			return {};
-		}
-
-		return {
-			public_key: user.e2e.public_key,
-			private_key: user.e2e.private_key,
-		};
-	}
-
 	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
 		return this.update({
 			_id: userId,
@@ -503,19 +490,6 @@ export class Users extends Base {
 				},
 			},
 		});
-	}
-
-	findByIdsWithPublicE2EKey(ids, options) {
-		const query = {
-			_id: {
-				$in: ids,
-			},
-			'e2e.public_key': {
-				$exists: 1,
-			},
-		};
-
-		return this.find(query, options);
 	}
 
 	resetE2EKey(userId) {
