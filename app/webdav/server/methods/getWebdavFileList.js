@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models';
+import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 Meteor.methods({
@@ -15,7 +15,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'getWebdavFileList' });
 		}
 
-		const account = WebdavAccounts.findOne({ _id: accountId, user_id: Meteor.userId() });
+		const account = await WebdavAccounts.findOneByIdAndUserId(accountId, Meteor.userId());
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'getWebdavFileList' });
 		}

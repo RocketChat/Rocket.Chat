@@ -208,7 +208,7 @@ export class CROWD {
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
 						Meteor.defer(function() {
-							deleteUser(user._id);
+							Promise.await(deleteUser(user._id));
 							logger.info('User removed:', crowd_username);
 						});
 					}

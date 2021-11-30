@@ -6,7 +6,7 @@ import { BaseRaw } from './BaseRaw';
 export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {
 	constructor(
 		public readonly col: Collection<IBannerDismiss>,
-		public readonly trash?: Collection<IBannerDismiss>,
+		trash?: Collection<IBannerDismiss>,
 	) {
 		super(col, trash);
 

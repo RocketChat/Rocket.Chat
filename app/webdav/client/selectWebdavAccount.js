@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
-import { WebdavAccounts } from '../../models';
+import { WebdavAccounts } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.selectWebdavAccount.helpers({

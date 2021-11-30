@@ -27,6 +27,7 @@ import { setUserStatus } from '../../../../imports/users-presence/server/activeU
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
 
+
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
@@ -283,7 +284,11 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.register', { authRequired: false }, {
+API.v1.addRoute('users.register', { authRequired: false,
+	rateLimiterOptions: {
+		numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser'),
+		intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+	} }, {
 	post() {
 		if (this.userId) {
 			return API.v1.failure('Logged in users can not register again.');
@@ -593,7 +598,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
-				mobileNotifications: Match.Maybe(String),
+				pushNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
@@ -943,4 +948,10 @@ API.v1.addRoute('users.logout', { authRequired: true }, {
 			message: `User ${ userId } has been logged out!`,
 		});
 	},
+});
+
+settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
+	const userRegisterRoute = '/api/v1/users.registerpost';
+
+	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });

@@ -334,6 +334,8 @@ export class CustomOAuth {
 					return;
 				}
 
+				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
+
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
@@ -342,8 +344,6 @@ export class CustomOAuth {
 				if (this.mergeUsers !== true) {
 					throw new Meteor.Error('CustomOAuth', `User with username ${ user.username } already exists`);
 				}
-
-				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
 
 				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {

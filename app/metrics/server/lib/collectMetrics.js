@@ -10,7 +10,7 @@ import { Facts } from 'meteor/facts-base';
 import { Info, getOplogInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
-import { Statistics } from '../../../models/server';
+import { Statistics } from '../../../models/server/raw';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
@@ -42,7 +42,7 @@ const setPrometheusData = async () => {
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
 
-	const statistics = Statistics.findLast();
+	const statistics = await Statistics.findLast();
 	if (!statistics) {
 		return;
 	}

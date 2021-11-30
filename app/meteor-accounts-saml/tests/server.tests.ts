@@ -1,7 +1,4 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-
-import chai from 'chai';
+import { expect } from 'chai';
 
 import '../../lib/tests/server.mocks.js';
 import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
@@ -38,9 +35,6 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import '../../../definition/xml-encryption';
-
-const { expect } = chai;
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {

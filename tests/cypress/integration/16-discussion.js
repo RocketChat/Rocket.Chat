@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback, no-var, space-before-function-paren,
 quotes, prefer-template, no-undef, no-unused-vars*/
 
