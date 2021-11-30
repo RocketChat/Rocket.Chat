@@ -62,7 +62,7 @@ Meteor.methods({
 		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
-			removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
+			await removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
 		Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {

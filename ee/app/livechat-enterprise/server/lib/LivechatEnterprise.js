@@ -7,7 +7,7 @@ import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
-import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
+import { addUserRolesSync, removeUserFromRolesSync } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
@@ -25,7 +25,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addMonitor' });
 		}
 
-		if (addUserRoles(user._id, 'livechat-monitor')) {
+		if (addUserRolesSync(user._id, 'livechat-monitor')) {
 			return user;
 		}
 
@@ -41,7 +41,7 @@ export const LivechatEnterprise = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeMonitor' });
 		}
 
-		if (removeUserFromRoles(user._id, 'livechat-monitor')) {
+		if (removeUserFromRolesSync(user._id, 'livechat-monitor')) {
 			return true;
 		}
 

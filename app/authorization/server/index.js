@@ -1,4 +1,4 @@
-import { addUserRoles } from './functions/addUserRoles';
+import { addUserRoles, addUserRolesSync } from './functions/addUserRoles';
 import {
 	canAccessRoom,
 	roomAccessValidators,
@@ -12,7 +12,7 @@ import {
 	hasPermission,
 } from './functions/hasPermission';
 import { hasRole, subscriptionHasRole } from './functions/hasRole';
-import { removeUserFromRoles } from './functions/removeUserFromRoles';
+import { removeUserFromRoles, removeUserFromRolesSync } from './functions/removeUserFromRoles';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
@@ -28,10 +28,12 @@ export {
 	hasRole,
 	subscriptionHasRole,
 	removeUserFromRoles,
+	removeUserFromRolesSync,
 	canSendMessage,
 	validateRoomMessagePermissions,
 	roomAccessValidators,
 	addUserRoles,
+	addUserRolesSync,
 	canAccessRoom,
 	hasAllPermission,
 	hasAtLeastOnePermission,

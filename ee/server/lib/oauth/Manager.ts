@@ -1,8 +1,8 @@
-import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
 import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { Roles } from '../../../../app/models/server/raw';
+import { syncUserRoles } from '../syncUserRoles';
 
 export const logger = new Logger('OAuth');
 
@@ -43,15 +43,9 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val) && rolesToSync.includes(val));
-
-			// remove all roles that the user has, but sso doesnt
-			removeUserFromRoles(user._id, toRemove);
-
-			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val) && (!rolesToSync.length || rolesToSync.includes(val)));
-
-			// add all roles that sso has, but the user doesnt
-			addUserRoles(user._id, toAdd);
+			Promise.await(syncUserRoles(user._id, rolesFromSSO, {
+				allowedRoles: rolesToSync,
+			}));
 		}
 	}
 

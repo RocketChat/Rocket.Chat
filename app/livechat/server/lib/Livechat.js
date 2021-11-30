@@ -30,7 +30,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
+import { addUserRolesSync, hasPermission, hasRole, removeUserFromRolesSync, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -811,7 +811,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (addUserRoles(user._id, 'livechat-agent')) {
+		if (addUserRolesSync(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
@@ -829,7 +829,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addManager' });
 		}
 
-		if (addUserRoles(user._id, 'livechat-manager')) {
+		if (addUserRolesSync(user._id, 'livechat-manager')) {
 			return user;
 		}
 
@@ -847,7 +847,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, 'livechat-agent')) {
+		if (removeUserFromRolesSync(_id, 'livechat-agent')) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -867,7 +867,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeManager' });
 		}
 
-		return removeUserFromRoles(user._id, 'livechat-manager');
+		return removeUserFromRolesSync(user._id, 'livechat-manager');
 	},
 
 	removeGuest(_id) {

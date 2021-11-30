@@ -19,8 +19,8 @@ import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger, searchLogger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
-import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
+import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
 
 export class LDAPEEManager extends LDAPManager {
@@ -157,22 +157,6 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static broadcastRoleChange(type: string, _id: string, uid: string, username: string): void {
-		// #ToDo: would be better to broadcast this only once for all users and roles, or at least once by user.
-		if (!settings.get('UI_DisplayRoles')) {
-			return;
-		}
-
-		api.broadcast('user.roleUpdate', {
-			type,
-			_id,
-			u: {
-				_id: uid,
-				username,
-			},
-		});
-	}
-
 	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
 		const { username } = user;
 		if (!username) {
@@ -180,13 +164,13 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const syncUserRoles = settings.get<boolean>('LDAP_Sync_User_Data_Roles') ?? false;
+		const shouldSyncUserRoles = settings.get<boolean>('LDAP_Sync_User_Data_Roles') ?? false;
 		const syncUserRolesAutoRemove = settings.get<boolean>('LDAP_Sync_User_Data_Roles_AutoRemove') ?? false;
 		const syncUserRolesFieldMap = (settings.get<string>('LDAP_Sync_User_Data_RolesMap') ?? '').trim();
 		const syncUserRolesFilter = (settings.get<string>('LDAP_Sync_User_Data_Roles_Filter') ?? '').trim();
 		const syncUserRolesBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Roles_BaseDN') ?? '').trim();
 
-		if (!syncUserRoles || !syncUserRolesFieldMap) {
+		if (!shouldSyncUserRoles || !syncUserRolesFieldMap) {
 			logger.debug('not syncing user roles');
 			return;
 		}
@@ -208,37 +192,28 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const ldapFields = Object.keys(fieldMap);
+		const roleList: Array<IRole['name']> = [];
+		const allowedRoles: Array<IRole['name']> = [];
+
 		for await (const ldapField of ldapFields) {
 			if (!fieldMap[ldapField]) {
 				continue;
 			}
 
 			const userField = fieldMap[ldapField];
-
 			const [roleName] = userField.split(/\.(.+)/);
-			if (!_.find<IRole>(roles, (el) => el.name === roleName)) {
-				logger.debug(`User Role doesn't exist: ${ roleName }`);
-				continue;
-			}
-
-			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
+			allowedRoles.push(roleName);
 
 			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				if (await Roles.addUserRoles(user._id, roleName)) {
-					this.broadcastRoleChange('added', roleName, user._id, username);
-				}
-				logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
+				roleList.push(roleName);
 				continue;
-			}
-
-			if (!syncUserRolesAutoRemove) {
-				continue;
-			}
-
-			if (await Roles.removeUserRoles(user._id, roleName)) {
-				this.broadcastRoleChange('removed', roleName, user._id, username);
 			}
 		}
+
+		await syncUserRoles(user._id, roleList, {
+			allowedRoles,
+			skipRemovingRoles: !syncUserRolesAutoRemove,
+		});
 	}
 
 	private static createRoomForSync(channel: string): IRoom | undefined {

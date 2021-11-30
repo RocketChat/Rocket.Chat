@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload/server';
-import { addUserRoles, getUsersInRole } from '../../app/authorization/server';
+import { addUserRolesSync, getUsersInRole } from '../../app/authorization/server';
 import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
@@ -28,7 +28,7 @@ Meteor.startup(async function() {
 			type: 'bot',
 		});
 
-		addUserRoles('rocket.cat', 'bot');
+		addUserRolesSync('rocket.cat', 'bot');
 
 		const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
 
@@ -112,7 +112,7 @@ Meteor.startup(async function() {
 
 			Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-			addUserRoles(id, 'admin');
+			addUserRolesSync(id, 'admin');
 		} else {
 			console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
 		}
@@ -138,7 +138,7 @@ Meteor.startup(async function() {
 		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 		if (oldestUser) {
-			addUserRoles(oldestUser._id, ['admin']);
+			addUserRolesSync(oldestUser._id, ['admin']);
 			console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
 		}
 	}
@@ -189,7 +189,7 @@ Meteor.startup(async function() {
 
 		Accounts.setPassword(adminUser._id, adminUser._id);
 
-		addUserRoles(adminUser._id, ['admin']);
+		addUserRolesSync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');

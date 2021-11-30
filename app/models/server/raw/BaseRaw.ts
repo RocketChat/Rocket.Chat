@@ -137,7 +137,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
 
-	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+	async findOneById<P>(_id: string, options?: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
 		const query = { _id } as FilterQuery<T>;

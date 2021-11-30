@@ -122,7 +122,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 		Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	addUserRoles(owner._id, ['owner'], room._id);
+	Promise.await(addUserRoles(owner._id, ['owner'], room._id));
 
 	if (type === 'c') {
 		Meteor.defer(() => {

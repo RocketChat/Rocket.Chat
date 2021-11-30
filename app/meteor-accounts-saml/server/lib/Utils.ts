@@ -9,6 +9,7 @@ import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
 import { Logger } from '../../../../server/lib/logger/Logger';
+import { ensureArray } from '../../../../server/lib/arrayUtils';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -323,7 +324,7 @@ export class SAMLUtils {
 		const values: Record<string, string> = {
 			regex: '',
 		};
-		const fieldNames = this.ensureArray<string>(mapping.fieldName);
+		const fieldNames = ensureArray<string>(mapping.fieldName);
 
 		let mainValue;
 		for (const fieldName of fieldNames) {
@@ -402,11 +403,6 @@ export class SAMLUtils {
 		return name;
 	}
 
-	public static ensureArray<T>(param: T | Array<T>): Array<T> {
-		const emptyArray: Array<T> = [];
-		return emptyArray.concat(param);
-	}
-
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
@@ -444,7 +440,7 @@ export class SAMLUtils {
 				idpSession: profile.sessionIndex,
 				nameID: profile.nameID,
 			},
-			emailList: this.ensureArray<string>(email),
+			emailList: ensureArray<string>(email),
 			fullName: name || profile.displayName || profile.username,
 			eppn: profile.eppn,
 			attributeList,
