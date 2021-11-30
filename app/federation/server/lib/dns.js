@@ -17,12 +17,12 @@ const memoizedDnsResolveTXT = mem(dnsResolveTXT, { maxAge: cacheMaxAge });
 
 const hubUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
 
-export function registerWithHub(peerDomain, url, publicKey) {
+export async function registerWithHub(peerDomain, url, publicKey) {
 	const body = { domain: peerDomain, url, public_key: publicKey };
 
 	try {
 		// If there is no DNS entry for that, get from the Hub
-		federationRequest('POST', `${ hubUrl }/api/v1/peers`, body);
+		await federationRequest('POST', `${ hubUrl }/api/v1/peers`, body);
 
 		return true;
 	} catch (err) {
@@ -32,12 +32,12 @@ export function registerWithHub(peerDomain, url, publicKey) {
 	}
 }
 
-export function searchHub(peerDomain) {
+export async function searchHub(peerDomain) {
 	try {
 		dnsLogger.debug(`searchHub: peerDomain=${ peerDomain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const { data: { peer } } = federationRequest('GET', `${ hubUrl }/api/v1/peers?search=${ peerDomain }`);
+		const { data: { peer } } = await federationRequest('GET', `${ hubUrl }/api/v1/peers?search=${ peerDomain }`);
 
 		if (!peer) {
 			dnsLogger.debug(`searchHub: could not find peerDomain=${ peerDomain }`);

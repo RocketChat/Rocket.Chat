@@ -3,8 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Uploads } from '../../../models/server';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms, Uploads } from '../../../models/server/raw';
 import { callbacks } from '../../../callbacks/server';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
@@ -35,7 +34,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
+		await Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 

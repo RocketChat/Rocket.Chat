@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: ['@rocket.chat/eslint-config', 'prettier'],
 	parser: 'babel-eslint',
-	plugins: ['react', 'react-hooks', 'prettier'],
+	plugins: ['react', 'react-hooks', 'prettier', 'testing-library'],
 	rules: {
 		'import/named': 'error',
 		'import/order': [
@@ -63,6 +63,8 @@ module.exports = {
 			plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
 			rules: {
 				'@typescript-eslint/ban-ts-ignore': 'off',
+				'@typescript-eslint/explicit-function-return-type': 'warn',
+				// '@typescript-eslint/explicit-module-boundary-types': 'off',
 				'@typescript-eslint/indent': 'off',
 				'@typescript-eslint/interface-name-prefix': ['error', 'always'],
 				'@typescript-eslint/no-extra-parens': 'off',
@@ -131,6 +133,26 @@ module.exports = {
 			rules: {
 				'react/display-name': 'off',
 				'react/no-multi-comp': 'off',
+			},
+		},
+		{
+			files: ['**/*.tests.js', '**/*.tests.ts', '**/*.spec.ts', '**/*.spec.tsx'],
+			extends: ['plugin:testing-library/react'],
+			rules: {
+				'testing-library/no-await-sync-events': 'warn',
+				'testing-library/no-manual-cleanup': 'warn',
+				'testing-library/prefer-explicit-assert': 'warn',
+				'testing-library/prefer-user-event': 'warn',
+			},
+			env: {
+				mocha: true,
+			},
+		},
+		{
+			files: ['**/*.stories.ts', '**/*.stories.tsx'],
+			rules: {
+				'@typescript-eslint/explicit-function-return-type': 'off',
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
 			},
 		},
 	],

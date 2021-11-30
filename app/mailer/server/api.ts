@@ -132,7 +132,7 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
-export const checkAddressFormat = (from: string): boolean => rfcMailPatternWithName.test(from);
+export const checkAddressFormat = (adresses: string | string[]): boolean => ([] as string[]).concat(adresses).every((address) => rfcMailPatternWithName.test(address));
 
 export const sendNoWrap = ({
 	to,
@@ -152,7 +152,7 @@ export const sendNoWrap = ({
 	headers?: string;
 }): void => {
 	if (!checkAddressFormat(to)) {
-		return;
+		throw new Meteor.Error('invalid email');
 	}
 
 	if (!text) {
