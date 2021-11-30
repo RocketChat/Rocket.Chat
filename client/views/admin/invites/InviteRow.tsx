@@ -11,6 +11,14 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { imperativeModal } from '../../../lib/imperativeModal';
 
+const isExpired = (expires: IInvite['expires']): boolean => {
+	if (expires && expires.getTime() < new Date().getTime()) {
+		return true;
+	}
+
+	return false;
+};
+
 type InviteRowProps = IInvite & {
 	onRemove: (_id: IInvite['_id']) => void;
 };
@@ -37,7 +45,7 @@ const InviteRow = ({
 		days: IInvite['days'];
 	}): string => {
 		if (days > 0) {
-			if (expires && expires.getTime() < new Date().getTime()) {
+			if (isExpired(expires)) {
 				return t('Expired');
 			}
 
