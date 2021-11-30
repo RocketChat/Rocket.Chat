@@ -3,7 +3,7 @@ export interface IRocketChatRecord {
 	_updatedAt: Date;
 }
 
-export type RocketChatRecordDeleted<T> = IRocketChatRecord & {
+export type RocketChatRecordDeleted<T> = T & IRocketChatRecord & {
 	_deletedAt: Date;
 	__collection__: string;
-} & T;
+};

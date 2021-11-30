@@ -270,18 +270,18 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	}
 
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
-		return this.deleteOne({ _id } as FilterQuery<RocketChatRecordDeleted<T>>);
+		return this.deleteOne({ _id } as FilterQuery<T>);
 	}
 
 	async deleteOne(
-		filter: FilterQuery<RocketChatRecordDeleted<T>>,
+		filter: FilterQuery<T>,
 		options?: CommonOptions & { bypassDocumentValidation?: boolean },
 	): Promise<DeleteWriteOpResultObject> {
 		if (!this.trash) {
 			return this.col.deleteOne(filter, options);
 		}
 
-		const doc = (await this.findOne(filter)) as unknown as IRocketChatRecord | undefined;
+		const doc = (await this.findOne(filter)) as unknown as (IRocketChatRecord & T) | undefined;
 
 		if (doc) {
 			const { _id, ...record } = doc;
@@ -292,6 +292,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 				_deletedAt: new Date(),
 				__collection__: this.name,
 			} as RocketChatRecordDeleted<T>;
+
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne(
 				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
@@ -317,7 +318,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 		const ids: string[] = [];
 		for await (const doc of cursor) {
-			const { _id, ...record } = doc as unknown as IRocketChatRecord;
+			const { _id, ...record } = doc as unknown as IRocketChatRecord & T;
 
 			const trash = {
 				...record,
@@ -327,6 +328,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			} as RocketChatRecordDeleted<T>;
 
 			ids.push(_id);
+
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne(
 				{ _id } as FilterQuery<RocketChatRecordDeleted<T>>,
