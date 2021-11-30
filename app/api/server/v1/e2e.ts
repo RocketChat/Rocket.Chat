@@ -3,6 +3,7 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { E2E } from '../../../../server/sdk';
+import { Subscriptions } from '../../../models/server';
 
 API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	async get() {
@@ -62,6 +63,28 @@ API.v1.addRoute('e2e.setUserPublicAndPrivateKeys', { authRequired: true }, {
 
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		await E2E.setUserKeys(this.userId, { public_key, private_key });
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('e2e.updateGroupKey', { authRequired: true }, {
+	async post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			uid: String,
+			rid: String,
+			key: String,
+		}));
+
+		const { uid, rid, key } = this.bodyParams;
+
+		const mySub = await Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		if (mySub) { // I have a subscription to this room
+			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
+			if (userSub) { // uid also has subscription to this room
+				return API.v1.success(await Subscriptions.updateGroupE2EKey(userSub._id, key));
+			}
+		}
 
 		return API.v1.success();
 	},

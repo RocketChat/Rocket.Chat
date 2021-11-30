@@ -5,7 +5,6 @@ import { IRoom } from '../../../definition/IRoom';
 
 import './settings';
 import './beforeCreateRoom';
-import './methods/updateGroupKey';
 import './methods/resetOwnE2EKey';
 import './methods/requestSubscriptionKeys';
 

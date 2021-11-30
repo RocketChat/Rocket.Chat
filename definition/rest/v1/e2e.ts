@@ -82,4 +82,45 @@ export type E2EEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: {}) => void;
 	};
+
+	/**
+	 * @openapi
+	 *  /api/v1/e2e.updateGroupKey:
+	 *    post:
+	 *      description: Updates the end-to-end encryption key for a user on a room
+	 *      security:
+	 *        - autenticated: {}
+	 *      requestBody:
+	 *        description: A tuple containing the user ID, the room ID, and the key
+	 *        content:
+	 *          application/json:
+	 *            schema:
+	 *              type: object
+	 *              properties:
+	 *                uid:
+	 *                  type: string
+	 *                rid:
+	 *                  type: string
+	 *                key:
+	 *                  type: string
+	 *      responses:
+	 *        200:
+	 *          content:
+	 *            application/json:
+	 *              schema:
+	 *                $ref: '#/components/schemas/ApiSuccessV1'
+	 *        default:
+	 *          description: Unexpected error
+	 *          content:
+	 *            application/json:
+	 *              schema:
+	 *                $ref: '#/components/schemas/ApiFailureV1'
+	 */
+	'/v1/e2e.updateGroupKey': {
+		POST: (params: {
+			uid: IUser['_id'];
+			rid: IRoom['_id'];
+			key: Exclude<IRoom['e2eKeyId'], undefined>;
+		}) => void;
+	};
 };

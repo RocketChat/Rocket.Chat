@@ -27,7 +27,6 @@ import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
-import { call } from '../../../client/lib/utils/call';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -330,7 +329,11 @@ export class E2ERoom extends Emitter {
 		try {
 			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			await APIClient.v1.post('e2e.updateGroupKey', {
+				rid: this.roomId,
+				uid: user._id,
+				key: this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)),
+			});
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
