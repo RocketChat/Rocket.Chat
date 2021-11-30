@@ -19,6 +19,7 @@ import { useUserPreference, useUserSubscriptions } from '../../contexts/UserCont
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useMethodData } from '../../hooks/useMethodData';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
@@ -219,6 +220,8 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		}
 	});
 
+	usePreventDefault(boxRef);
+
 	useEffect(() => {
 		resetCursor();
 	});
@@ -301,7 +304,6 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 				h='full'
 				w='full'
 				data-qa='sidebar-search-result'
-				onClick={onClose}
 				aria-busy={status !== AsyncStatePhase.RESOLVED}
 			>
 				<Virtuoso
