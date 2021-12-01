@@ -3,6 +3,7 @@ import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
 type RoomType = 'c' | 'd' | 'p' | 'l';
+type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -35,6 +36,11 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus?: CallStatus;
+	webRtcCallStartTime?: Date;
+	servedBy?: {
+		_id: string;
+	};
 
 	streamingOptions?: {
 		id?: string;
@@ -64,6 +70,9 @@ export interface IRoom extends IRocketChatRecord {
 
 	sysMes?: string[];
 	muted?: string[];
+
+	usernames?: string[];
+	ts?: Date;
 }
 
 export interface ICreatedRoom extends IRoom {
@@ -75,6 +84,8 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	uids: Array<string>;
 	usernames: Array<Username>;
 }
+
+export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',
@@ -110,6 +121,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		ts: Date;
+		username: IUser['username'];
 	};
 	onHold?: boolean;
 	departmentId?: string;
@@ -123,6 +136,11 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	responseBy: any;
 	priorityId: any;
 	livechatData: any;
+	queuedAt?: Date;
+
+	ts: Date;
+	label?: string;
+	crmData?: unknown;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

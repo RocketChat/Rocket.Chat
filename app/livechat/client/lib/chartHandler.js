@@ -194,9 +194,9 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
 				data: dataPoints,		// data points corresponding to data labels, x-axis points
 				backgroundColor: [
 					'#2de0a5',
-					'#ffd21f',
-					'#f5455c',
 					'#cbced1',
+					'#f5455c',
+					'#ffd21f',
 				],
 				borderWidth: 0,
 			}],

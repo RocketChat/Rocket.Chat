@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { getRoles } from './getRoles';
-import { Users, Roles } from '../../../models';
+import { Users } from '../../../models/server';
+import { Roles } from '../../../models/server/raw';
 
 export const removeUserFromRoles = (userId, roleNames, scope) => {
 	if (!userId || !roleNames) {
@@ -27,7 +28,7 @@ export const removeUserFromRoles = (userId, roleNames, scope) => {
 		});
 	}
 
-	Roles.removeUserRoles(userId, roleNames, scope);
+	Promise.await(Roles.removeUserRoles(userId, roleNames, scope));
 
 	return true;
 };

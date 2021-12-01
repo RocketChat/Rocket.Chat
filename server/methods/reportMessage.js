@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages, Reports } from '../../app/models';
+import { Messages } from '../../app/models/server';
+import { Reports } from '../../app/models/server/raw';
 
 Meteor.methods({
-	reportMessage(messageId, description) {
+	async reportMessage(messageId, description) {
 		check(messageId, String);
 		check(description, String);
 
@@ -27,6 +28,8 @@ Meteor.methods({
 			});
 		}
 
-		return Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
+		await Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
+
+		return true;
 	},
 });

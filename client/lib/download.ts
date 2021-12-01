@@ -37,7 +37,7 @@ export const downloadJsonAs = (jsonObject: unknown, basename: string): void => {
 	);
 };
 
-export const downloadCsvAs = (csvData: unknown[][], basename: string): void => {
+export const downloadCsvAs = (csvData: readonly (readonly unknown[])[], basename: string): void => {
 	const escapeCell = (cell: unknown): string => `"${String(cell).replace(/"/g, '""')}"`;
 	const content = csvData.reduce(
 		(content, row) => `${content + row.map(escapeCell).join(';')}\n`,

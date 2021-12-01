@@ -26,7 +26,7 @@ Meteor.startup(function() {
 		},
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const [attachment] = message.attachments;
+			const [attachment] = message.attachments || [];
 			const { file } = message;
 			const url = getURL(attachment.title_link, { full: true });
 			modal.open({

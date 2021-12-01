@@ -5,7 +5,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
-import { getValidRoomName } from '../../../utils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -53,6 +52,35 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				jitsiTimeout: time,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatus(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatusAndCallStartTime(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+				webRtcCallStartTime: new Date(),
 			},
 		};
 
@@ -335,6 +363,7 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
+			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);

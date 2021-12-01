@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { getSettingDefaults } from './getSettingDefaults';
@@ -84,5 +82,15 @@ describe('getSettingDefaults', () => {
 		expect(setting).to.have.property('_id');
 
 		expect(setting).to.have.property('blocked').to.be.equal(true);
+	});
+
+	it('should not return undefined options', () => {
+		const setting = getSettingDefaults({ _id: 'test', value: true, type: 'string', section: undefined, group: undefined }, new Set(['test']));
+
+		expect(setting).to.be.an('object');
+		expect(setting).to.have.property('_id');
+
+		expect(setting).to.not.have.property('section');
+		expect(setting).to.not.have.property('group');
 	});
 });

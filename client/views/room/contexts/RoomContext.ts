@@ -20,6 +20,7 @@ export type RoomContextValue = {
 	};
 	// tabBar: TabBar;
 	room: IRoom;
+	subscribed: boolean;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);

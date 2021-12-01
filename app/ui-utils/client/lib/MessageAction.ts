@@ -56,7 +56,7 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: (e: MouseEvent, { message, tabbar }: { message: IMessage; tabbar: ToolboxContextValue }) => any;
+	action: (e: MouseEvent, { message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom }) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 }
 

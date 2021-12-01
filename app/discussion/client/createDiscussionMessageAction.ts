@@ -22,12 +22,12 @@ Meteor.startup(function() {
 			label: 'Discussion_start',
 			context: ['message', 'message-mobile'],
 			async action(_, props) {
-				const { message = messageArgs(this).msg } = props;
+				const { message = messageArgs(this).msg, room } = props;
 
 				imperativeModal.open({
 					component: CreateDiscussion,
 					props: {
-						defaultParentRoom: message.rid,
+						defaultParentRoom: room.prid || room._id,
 						onClose: imperativeModal.close,
 						parentMessageId: message._id,
 						nameSuggestion: message?.msg?.substr(0, 140),

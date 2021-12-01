@@ -1,4 +1,5 @@
-import { IStreamer, IStreamerConstructor, IPublication } from '../streamer/streamer.module';
+import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -168,7 +169,11 @@ export class NotificationsModule {
 
 
 		this.streamRoom.allowRead(async function(eventName, extraData): Promise<boolean> {
-			const [rid] = eventName.split('/');
+			const [rid, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
 
 			// typing from livechat widget
 			if (extraData?.token) {
@@ -213,7 +218,7 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (e) {
-				SystemLogger.error(e);
+				SystemLogger.error('Error: ', e);
 				return false;
 			}
 		}
@@ -250,21 +255,41 @@ export class NotificationsModule {
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
-			if (!this.userId) {
-				return false;
-			}
-
 			const [roomId, e] = eventName.split('/');
-			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
+			if (!this.userId) {
+				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, { projection: { t: 1, 'servedBy._id': 1 } });
+				if (room && room.t === 'l' && e === 'webrtc' && room.servedBy) {
+					notifyUser(room.servedBy._id, e, ...args);
+					return false;
+				}
+			} else if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
+				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, { projection: { 'v._id': 1, _id: 0 } }).toArray();
+				if (livechatSubscriptions && e === 'webrtc') {
+					livechatSubscriptions.forEach((subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args));
+					return false;
+				}
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});
 
-		this.streamUser.allowWrite('logged');
+		this.streamUser.allowWrite(async function(eventName) {
+			const [userId, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
+
+			return (this.userId != null) && (this.userId === userId);
+		});
 		this.streamUser.allowRead(async function(eventName) {
-			const [userId] = eventName.split('/');
+			const [userId, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
+
 			return (this.userId != null) && this.userId === userId;
 		});
 
