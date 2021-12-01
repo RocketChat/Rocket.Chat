@@ -12,7 +12,7 @@ type T = IWebdavAccount;
 export class WebdavAccountsRaw extends BaseRaw<T> {
 	constructor(
 		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
+		trash?: Collection<T>,
 	) {
 		super(col, trash);
 

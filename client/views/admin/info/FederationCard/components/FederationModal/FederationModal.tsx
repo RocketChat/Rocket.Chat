@@ -182,7 +182,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 							{currentTab === 2 && (
 								<>
 									<Box mbe='x16'>
-										<Box is='p' fontWeight='c2' fontSize='p1'>
+										<Box is='p' fontWeight='c2' fontSize='p3'>
 											{t('Federation_SRV_no_support')}
 										</Box>
 										<Box is='p' mbs='x8' fontSize='x12'>

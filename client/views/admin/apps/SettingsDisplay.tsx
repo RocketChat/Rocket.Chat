@@ -44,7 +44,7 @@ const SettingsDisplay: FC<SettingsDisplayProps> = ({
 		<>
 			<Divider />
 			<Box display='flex' flexDirection='column'>
-				<Box fontScale='s2' mb='x12'>
+				<Box fontScale='h4' mb='x12'>
 					{t('Settings')}
 				</Box>
 				<AppSettingsAssembler settings={settings} values={values} handlers={handlers} />

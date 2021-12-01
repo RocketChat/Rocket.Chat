@@ -53,7 +53,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
 		return (
-			<Box fontScale='h1' pb='x20'>
+			<Box fontScale='h2' pb='x20'>
 				{t('Custom_User_Status_Error_Invalid_User_Status')}
 			</Box>
 		);
