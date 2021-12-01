@@ -1,37 +1,56 @@
-import { Table } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
-import { IInvite } from '../../../../definition/IInvite';
-import GenericTable from '../../../components/GenericTable';
+import GenericModal from '../../../components/GenericModal';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+} from '../../../components/GenericTable';
 import Page from '../../../components/Page';
-import { useEndpoint } from '../../../contexts/ServerContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import InviteRow from './InviteRow';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();
-	const [invites, setInvites] = useState<Array<IInvite>>([]);
-	const listInvites = useEndpoint('GET', 'listInvites');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
-	useEffect(() => {
-		const loadInvites = async (): Promise<void> => {
-			const result = (await listInvites()) || [];
+	const { phase, value, reload } = useEndpointData('listInvites');
 
-			const invites = result.map((data: IInvite) => ({
-				...data,
-				createdAt: new Date(data.createdAt),
-				expires: data.expires ? new Date(data.expires) : null,
-			}));
-
-			setInvites(invites);
+	const onRemove = (removeInvite: () => void): void => {
+		const confirmRemove = async (): Promise<void> => {
+			try {
+				await removeInvite();
+				dispatchToastMessage({ type: 'success', message: t('Invite_removed') });
+				reload();
+			} catch (error) {
+				if (typeof error === 'string' || error instanceof Error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			} finally {
+				setModal();
+			}
 		};
 
-		loadInvites();
-	}, [listInvites]);
-
-	const handleInviteRemove = (_id: IInvite['_id']): void => {
-		setInvites((invites) => invites.filter((invite) => invite._id !== _id));
+		setModal(
+			<GenericModal
+				title={t('Are_you_sure')}
+				children={t('Are_you_sure_you_want_to_delete_this_record')}
+				variant='danger'
+				confirmText={t('Yes')}
+				cancelText={t('No')}
+				onClose={(): void => setModal()}
+				onCancel={(): void => setModal()}
+				onConfirm={confirmRemove}
+			/>,
+		);
 	};
 
 	const notSmall = useMediaQuery('(min-width: 768px)');
@@ -40,36 +59,30 @@ const InvitesPage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Invites')} />
 			<Page.Content>
-				<GenericTable
-					results={invites}
-					header={
-						<>
-							<Table.Cell is='th' width={notSmall ? '20%' : '80%'}>
-								{t('Token')}
-							</Table.Cell>
-							{notSmall && (
-								<>
-									<Table.Cell is='th' width='35%'>
-										{t('Created_at')}
-									</Table.Cell>
-									<Table.Cell is='th' width='20%'>
-										{t('Expiration')}
-									</Table.Cell>
-									<Table.Cell is='th' width='10%'>
-										{t('Uses')}
-									</Table.Cell>
-									<Table.Cell is='th' width='10%'>
-										{t('Uses_left')}
-									</Table.Cell>
-								</>
-							)}
-							<Table.Cell is='th' />
-						</>
-					}
-					renderRow={(invite: IInvite): ReactElement => (
-						<InviteRow key={invite._id} {...invite} onRemove={handleInviteRemove} />
-					)}
-				/>
+				<GenericTable>
+					<GenericTableHeader>
+						<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>
+							{t('Token')}
+						</GenericTableHeaderCell>
+						{notSmall && (
+							<>
+								<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
+								<GenericTableHeaderCell w='20%'>{t('Expiration')}</GenericTableHeaderCell>
+								<GenericTableHeaderCell w='10%'>{t('Uses')}</GenericTableHeaderCell>
+								<GenericTableHeaderCell w='10%'>{t('Uses_left')}</GenericTableHeaderCell>
+							</>
+						)}
+						<GenericTableHeaderCell />
+					</GenericTableHeader>
+					<GenericTableBody>
+						{phase === AsyncStatePhase.LOADING && (
+							<GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />
+						)}
+						{phase === AsyncStatePhase.RESOLVED &&
+							Array.isArray(value) &&
+							value.map((invite) => <InviteRow key={invite._id} {...invite} onRemove={onRemove} />)}
+					</GenericTableBody>
+				</GenericTable>
 			</Page.Content>
 		</Page>
 	);
