@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
-import { OAuthApps, Users } from '../../../../models';
+import { OAuthApps } from '../../../../models/server/raw';
+import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
-	updateOAuthApp(applicationId, application) {
+	async updateOAuthApp(applicationId, application) {
 		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
@@ -19,7 +20,7 @@ Meteor.methods({
 		if (!_.isBoolean(application.active)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', { method: 'updateOAuthApp' });
 		}
-		const currentApplication = OAuthApps.findOne(applicationId);
+		const currentApplication = await OAuthApps.findOneById(applicationId);
 		if (currentApplication == null) {
 			throw new Meteor.Error('error-application-not-found', 'Application not found', { method: 'updateOAuthApp' });
 		}
@@ -30,7 +31,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'updateOAuthApp' });
 		}
 
-		OAuthApps.update(applicationId, {
+		await OAuthApps.updateOne({ _id: applicationId }, {
 			$set: {
 				name: application.name,
 				active: application.active,
@@ -43,6 +44,6 @@ Meteor.methods({
 				}),
 			},
 		});
-		return OAuthApps.findOne(applicationId);
+		return OAuthApps.findOneById(applicationId);
 	},
 });

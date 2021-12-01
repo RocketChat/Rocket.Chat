@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import { API } from '../api';
 import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { EmailInbox } from '../../../models';
+import { EmailInbox } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 
@@ -79,12 +79,12 @@ API.v1.addRoute('email-inbox/:_id', { authRequired: true }, {
 		const { _id } = this.urlParams;
 		if (!_id) { throw new Error('error-invalid-param'); }
 
-		const emailInboxes = EmailInbox.findOneById(_id);
+		const emailInboxes = Promise.await(EmailInbox.findOneById(_id));
 
 		if (!emailInboxes) {
 			return API.v1.notFound();
 		}
-		EmailInbox.removeById(_id);
+		Promise.await(EmailInbox.removeById(_id));
 		return API.v1.success({ _id });
 	},
 });

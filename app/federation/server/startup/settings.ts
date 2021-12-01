@@ -7,11 +7,11 @@ import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMetho
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
-import { FederationKeys } from '../../../models/server';
+import { FederationKeys } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
-Meteor.startup(function() {
-	const federationPublicKey = FederationKeys.getPublicKeyString();
+Meteor.startup(async function() {
+	const federationPublicKey = await FederationKeys.getPublicKeyString();
 
 	settingsRegistry.addGroup('Federation', function() {
 		this.add('FEDERATION_Enabled', false, {
@@ -36,7 +36,7 @@ Meteor.startup(function() {
 			// disableReset: true,
 		});
 
-		this.add('FEDERATION_Public_Key', federationPublicKey, {
+		this.add('FEDERATION_Public_Key', federationPublicKey || '', {
 			readonly: true,
 			type: 'string',
 			multiline: true,
@@ -65,26 +65,26 @@ Meteor.startup(function() {
 	});
 });
 
-const updateSettings = function(): void {
+const updateSettings = async function(): Promise<void> {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub' && !isRegisteringOrEnabled()) {
+	if (getFederationDiscoveryMethod() === 'hub' && !Promise.await(isRegisteringOrEnabled())) {
 		// Register with hub
 		try {
-			updateStatus(STATUS_REGISTERING);
+			await updateStatus(STATUS_REGISTERING);
 
-			registerWithHub(getFederationDomain(), settings.get('Site_Url'), FederationKeys.getPublicKeyString());
+			await registerWithHub(getFederationDomain(), settings.get('Site_Url'), await FederationKeys.getPublicKeyString());
 
-			updateStatus(STATUS_ENABLED);
+			await updateStatus(STATUS_ENABLED);
 		} catch (err) {
 			// Disable federation
-			updateEnabled(false);
+			await updateEnabled(false);
 
-			updateStatus(STATUS_ERROR_REGISTERING);
+			await updateStatus(STATUS_ERROR_REGISTERING);
 		}
-	} else {
-		updateStatus(STATUS_ENABLED);
+		return;
 	}
+	await updateStatus(STATUS_ENABLED);
 };
 
 // Add settings listeners
@@ -92,11 +92,11 @@ settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${ value ? 'enabled' : 'disabled' }`);
 
 	if (value) {
-		updateSettings();
+		Promise.await(updateSettings());
 
 		enableCallbacks();
 	} else {
-		updateStatus(STATUS_DISABLED);
+		Promise.await(updateStatus(STATUS_DISABLED));
 
 		disableCallbacks();
 	}

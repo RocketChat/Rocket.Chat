@@ -5,9 +5,12 @@ import { Info as info, APIClient } from '../../app/utils/client';
 import { Serialized } from '../../definition/Serialized';
 import {
 	Method,
-	Params,
 	PathFor,
-	Return,
+	MatchPathPattern,
+	OperationParams,
+	OperationResult,
+} from '../../definition/rest';
+import {
 	ServerContext,
 	ServerMethodName,
 	ServerMethodParameters,
@@ -31,11 +34,11 @@ const callMethod = <MethodName extends ServerMethodName>(
 		});
 	});
 
-const callEndpoint = <M extends Method, P extends PathFor<M>>(
-	method: M,
-	path: P,
-	params: Params<M, P>[0],
-): Promise<Serialized<Return<M, P>>> => {
+const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
+	method: TMethod,
+	path: TPath,
+	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
 	const api = path[0] === '/' ? APIClient : APIClient.v1;
 	const endpointPath = path[0] === '/' ? path.slice(1) : path;
 
@@ -61,18 +64,6 @@ const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise
 
 	return APIClient.v1.upload(endpoint, params, formData).promise;
 };
-
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		// eslint-disable-next-line @typescript-eslint/no-namespace
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: typeof Meteor.Streamer;
-			};
-		}
-	}
-}
 
 const getStream = (
 	streamName: string,

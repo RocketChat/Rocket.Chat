@@ -262,6 +262,7 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+				livechatStatusSystemModified: false,
 			},
 		};
 
@@ -1433,23 +1434,6 @@ export class Users extends Base {
 		};
 
 		return this.find(query).count() !== 0;
-	}
-
-	addBannerById(_id, banner) {
-		const query = {
-			_id,
-			[`banners.${ banner.id }.read`]: {
-				$ne: true,
-			},
-		};
-
-		const update = {
-			$set: {
-				[`banners.${ banner.id }`]: banner,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setBannerReadById(_id, bannerId) {
