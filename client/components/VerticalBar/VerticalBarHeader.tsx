@@ -21,7 +21,7 @@ const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof
 			display='flex'
 			alignItems='center'
 			justifyContent='space-between'
-			fontScale='s2'
+			fontScale='h4'
 			flexGrow={1}
 			overflow='hidden'
 			color='neutral-800'

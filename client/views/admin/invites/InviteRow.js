@@ -76,7 +76,7 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 	return (
 		<Table.Row>
 			<Table.Cell>
-				<Box color='hint' fontScale='p1'>
+				<Box color='hint' fontScale='p3'>
 					{_id}
 				</Box>
 			</Table.Cell>

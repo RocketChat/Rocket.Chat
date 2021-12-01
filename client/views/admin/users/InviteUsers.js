@@ -23,10 +23,10 @@ export function InviteUsers({ data, ...props }) {
 	};
 	return (
 		<VerticalBar.ScrollableContent {...props}>
-			<Box is='h2' fontScale='h1' mb='x8'>
+			<Box is='h2' fontScale='h2' mb='x8'>
 				{t('Send_invitation_email')}
 			</Box>
-			<Box fontScale='p1' mb='x8'>
+			<Box fontScale='p3' mb='x8'>
 				{t('Send_invitation_email_info')}
 			</Box>
 			<TextAreaInput rows={5} flexGrow={0} onChange={(e) => setText(e.currentTarget.value)} />

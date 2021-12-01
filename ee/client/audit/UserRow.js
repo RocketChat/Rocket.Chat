@@ -26,11 +26,11 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 					/>
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2' withTruncatedText color='default'>
+							<Box fontScale='p4' withTruncatedText color='default'>
 								{name || username}
 							</Box>
 							{name && (
-								<Box fontScale='p1' color='hint' withTruncatedText>
+								<Box fontScale='p3' color='hint' withTruncatedText>
 									{' '}
 									{`@${username}`}{' '}
 								</Box>
@@ -40,14 +40,14 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 				</Box>
 			</Table.Cell>
 			<Table.Cell>
-				<Box fontScale='p2' withTruncatedText color='hint'>
+				<Box fontScale='p4' withTruncatedText color='hint'>
 					{msg}
 				</Box>{' '}
 				<Box mi='x4' />
 			</Table.Cell>
 			<Table.Cell withTruncatedText>{when}</Table.Cell>
 			<Table.Cell withTruncatedText>{results}</Table.Cell>
-			<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+			<Table.Cell fontScale='p3' color='hint' withTruncatedText>
 				<FilterDisplay
 					t={t}
 					users={users}

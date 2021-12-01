@@ -33,7 +33,7 @@ function ViewModeList() {
 	return (
 		<>
 			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='micro'>
+				<Box is='p' style={style} fontScale='c1'>
 					{t('Display')}
 				</Box>
 			</Margins>

@@ -10,10 +10,10 @@ const CounterItem = ({ title = '', count = '-', ...props }) => (
 		flexGrow={1}
 		{...props}
 	>
-		<Box fontScale='s1' textTransform='uppercase' color='hint' textAlign='center' pi='x8'>
+		<Box fontScale='h4' textTransform='uppercase' color='hint' textAlign='center' pi='x8'>
 			{title}
 		</Box>
-		<Box fontScale='h1'>{count}</Box>
+		<Box fontScale='h2'>{count}</Box>
 	</Box>
 );
 
