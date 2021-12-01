@@ -56,12 +56,12 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_remove_guest_info_when_chat_ended', false, {
+		this.add('Livechat_clear_local_storage_when_chat_ended', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,
 			section: 'Livechat',
-			i18nLabel: 'Remove_guest_info_when_chat_ended',
+			i18nLabel: 'Clear_livechat_session_when_chat_ended',
 			enableQuery: omnichannelEnabledQuery,
 		});
 

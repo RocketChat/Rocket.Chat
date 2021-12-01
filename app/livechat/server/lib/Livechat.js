@@ -529,7 +529,7 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
-			'Livechat_remove_guest_info_when_chat_ended',
+			'Livechat_clear_local_storage_when_chat_ended',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});

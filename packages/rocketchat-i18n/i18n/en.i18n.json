@@ -866,7 +866,7 @@
   "clear_cache_now": "Clear Cache Now",
   "Clear_filters": "Clear filters",
   "clear_history": "Clear History",
-  "Remove_guest_info_when_chat_ended": "Remove guest information when chat ended",
+  "Clear_livechat_session_when_chat_ended": "Clear guest session when chat ended",
   "Click_here": "Click here",
   "Click_here_for_more_details_or_contact_sales_for_a_new_license": "<a target=\"_blank\" href=\"__url__\">Click here</a> for more details or contact <strong>__email__</strong> for a new license.",
   "Click_here_for_more_info": "Click here for more info",
