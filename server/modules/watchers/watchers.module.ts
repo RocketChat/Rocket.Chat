@@ -16,7 +16,7 @@ import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInqui
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
 import { ISetting, SettingValue } from '../../../definition/ISetting';
-import { IInquiry } from '../../../definition/IInquiry';
+import { ILivechatInquiryRecord } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
 import { subscriptionFields, roomFields } from './publishFields';
@@ -209,15 +209,15 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	}
 
-	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
+	watch<ILivechatInquiryRecord>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				data = data ?? await LivechatInquiry.findOneById(id);
+				data = data ?? await LivechatInquiry.findOneById(id) ?? undefined;
 				break;
 
 			case 'removed':
-				data = await LivechatInquiry.trashFindOneById(id);
+				data = await LivechatInquiry.trashFindOneById(id) ?? undefined;
 				break;
 		}
 

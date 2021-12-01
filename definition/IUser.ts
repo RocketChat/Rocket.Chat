@@ -95,16 +95,8 @@ export interface IRole {
 	name: string;
 	protected: boolean;
 	// scope?: string;
-	scope?: 'Users' | 'Subscriptions';
+	scope: 'Users' | 'Subscriptions';
 	_id: string;
-}
-
-export interface IDailyActiveUsers {
-	usersList: string[];
-	users: number;
-	day: number;
-	month: number;
-	year: number;
 }
 
 export interface IUser extends IRocketChatRecord {

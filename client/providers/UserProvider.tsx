@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useMemo, FC } from 'react';
 
-import { callbacks } from '../../app/callbacks/client';
+import { callbacks } from '../../app/callbacks/lib/callbacks';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';

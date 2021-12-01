@@ -33,17 +33,25 @@
                 </div>
             </div>
         {{else}}
-            <div class="flex-tab__result js-list">
-                <ul class="list clearfix contact-chat-history-messages-list">
-                    {{# with messageContext}}
-                        {{#each msg in messages}}{{> message msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
-                    {{/with}}
+            {{#if hasError}}
+                <div class="rocket-search-result">
+                    <div class="contact-chat-history-search-empty">
+                        <h2>{{_ "Not_found_or_not_allowed"}}</h2>
+                    </div>
+                </div>
+            {{else}}
+                <div class="flex-tab__result js-list">
+                    <ul class="list clearfix contact-chat-history-messages-list">
+                        {{# with messageContext}}
+                            {{#each msg in messages}}{{> message msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+                        {{/with}}
 
-                    {{#if isLoading}}
-                        {{> loading}}
-                    {{/if}}
-                </ul>
-            </div>
+                        {{#if isLoading}}
+                            {{> loading}}
+                        {{/if}}
+                    </ul>
+                </div>
+            {{/if}}
         {{/if}}
 	</section>
 </template>
