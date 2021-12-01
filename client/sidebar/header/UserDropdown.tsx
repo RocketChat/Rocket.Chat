@@ -166,9 +166,11 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							</Option>
 						);
 					})}
-				<Option icon='emoji' onClick={handleCustomStatus}>
-					{`${t('Custom_Status')}...`}
-				</Option>
+				<Option
+					icon='emoji'
+					label={`${t('Custom_Status')}...`}
+					onClick={handleCustomStatus}
+				></Option>
 			</Box>
 
 			{(accountBoxItems.length || showAdmin) && (
@@ -176,9 +178,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					<Divider mi='neg-x16' mb='x16' />
 					<Box mi='neg-x16'>
 						{showAdmin && (
-							<Option icon={'customize'} onClick={handleAdmin}>
-								{t('Administration')}
-							</Option>
+							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
 						)}
 						{accountBoxItems.map((item, i) => {
 							let action;
@@ -198,9 +198,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							}
 
 							return (
-								<Option icon={item.icon} onClick={action} key={i}>
-									{t(item.name)}
-								</Option>
+								<Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>
 							);
 						})}
 					</Box>
@@ -209,12 +207,8 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 			<Divider mi='neg-x16' mb='x16' />
 			<Box mi='neg-x16'>
-				<Option icon='user' onClick={handleMyAccount}>
-					{t('My_Account')}
-				</Option>
-				<Option icon='sign-out' onClick={handleLogout}>
-					{t('Logout')}
-				</Option>
+				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
+				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 			</Box>
 		</Box>
 	);
