@@ -77,7 +77,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 						justifyContent='center'
 						position='absolute'
 						color={color}
-						fontScale='p2'
+						fontScale='p4'
 						style={{ left: 0, right: 0, top: 0, bottom: 0 }}
 					>
 						{unlimited ? '∞' : localePercentage}

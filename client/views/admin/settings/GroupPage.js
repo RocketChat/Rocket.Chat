@@ -148,7 +148,7 @@ function GroupPage({
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 					{t.has(i18nDescription) && (
-						<Box is='p' color='hint' fontScale='p1'>
+						<Box is='p' color='hint' fontScale='p3'>
 							{t(i18nDescription)}
 						</Box>
 					)}

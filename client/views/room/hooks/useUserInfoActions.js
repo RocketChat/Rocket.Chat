@@ -65,7 +65,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
 				<Modal.Close onClick={close} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{text}</Modal.Content>
+			<Modal.Content fontScale='p3'>{text}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button ghost onClick={close}>

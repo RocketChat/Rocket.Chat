@@ -8,7 +8,7 @@ const defaultWrapperRenderer = (text) => (
 	<Box
 		fontFamily='mono'
 		alignSelf='center'
-		fontScale='p1'
+		fontScale='p3'
 		style={{ wordBreak: 'break-all' }}
 		mie='x4'
 		flexGrow={1}

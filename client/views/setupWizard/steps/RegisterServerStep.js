@@ -91,7 +91,7 @@ function RegisterServerStep({ step, title, active }) {
 
 			<Margins blockEnd='x32'>
 				<Box>
-					<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>
+					<Box is='p' fontScale='h4' color='hint' marginBlockEnd='x16'>
 						{t('Register_Server_Info')}
 					</Box>
 

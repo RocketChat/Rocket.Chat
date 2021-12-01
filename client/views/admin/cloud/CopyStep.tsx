@@ -64,7 +64,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 						<Box
 							height='x108'
 							fontFamily='mono'
-							fontScale='p1'
+							fontScale='p3'
 							color='alternative'
 							style={{ wordBreak: 'break-all' }}
 						>

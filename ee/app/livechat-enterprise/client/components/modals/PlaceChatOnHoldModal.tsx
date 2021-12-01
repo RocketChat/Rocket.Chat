@@ -23,7 +23,7 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
 			<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
-		<Modal.Content fontScale='p1'>
+		<Modal.Content fontScale='p3'>
 			{t('Would_you_like_to_place_chat_on_hold')}
 		</Modal.Content>
 		<Modal.Footer>

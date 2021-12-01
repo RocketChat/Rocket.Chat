@@ -16,7 +16,7 @@ const Section = ({
 		<Margins block='x24'>
 			<Box display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap'>
 				{title && (
-					<Box flexGrow={1} fontScale='s2' color='default'>
+					<Box flexGrow={1} fontScale='p3' color='default'>
 						{title}
 					</Box>
 				)}
