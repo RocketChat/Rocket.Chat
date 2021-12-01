@@ -11,6 +11,7 @@ import { UiKitCoreApp } from './uikit-core-app/service';
 import { MediaService } from './image/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
+import './voip/settings';
 import { AnalyticsService } from './analytics/service';
 import { LDAPService } from './ldap/service';
 
