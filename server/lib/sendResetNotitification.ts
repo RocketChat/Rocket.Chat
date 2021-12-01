@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Users, Subscriptions } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
 import { IUser } from '../../definition/IUser';
 
-const sendResetNotitification = function(uid: string): void {
+export const sendResetNotitification = function(uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
@@ -51,17 +51,3 @@ const sendResetNotitification = function(uid: string): void {
 		});
 	}
 };
-
-export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boolean {
-	if (notifyUser) {
-		sendResetNotitification(uid);
-	}
-
-	Users.resetE2EKey(uid);
-	Subscriptions.resetUserE2EKey(uid);
-
-	// Force the user to logout, so that the keys can be generated again
-	Users.unsetLoginTokens(uid);
-
-	return true;
-}

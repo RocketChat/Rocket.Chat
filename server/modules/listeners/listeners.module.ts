@@ -271,5 +271,9 @@ export class ListenersModule {
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
+
+		service.onEvent('e2e.keyRequested', ({ rid, keyId }) => {
+			notifications.notifyRoom('e2e.keyRequest', rid, keyId);
+		});
 	}
 }

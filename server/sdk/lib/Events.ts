@@ -22,6 +22,7 @@ export type EventSignatures = {
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
+	'e2e.keyRequested'(data: { rid: IRoom['_id']; keyId: Exclude<IRoom['e2eKeyId'], undefined> }): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;

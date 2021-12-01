@@ -1,5 +1,6 @@
 import type { E2EKeyPair } from '../../../server/sdk/types/e2e/E2EKeyPair';
 import type { IRoom } from '../../IRoom';
+import type { ISubscription } from '../../ISubscription';
 import type { IUser } from '../../IUser';
 
 export type E2EEndpoints = {
@@ -121,6 +122,14 @@ export type E2EEndpoints = {
 			uid: IUser['_id'];
 			rid: IRoom['_id'];
 			key: Exclude<IRoom['e2eKeyId'], undefined>;
-		}) => void;
+		}) => ISubscription | null;
+	};
+
+	'/v1/e2e.requestSubscriptionKeys': {
+		POST: () => void;
+	};
+
+	'/v1/e2e.resetOwnE2EKey': {
+		POST: () => boolean;
 	};
 };

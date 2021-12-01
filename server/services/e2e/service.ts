@@ -57,6 +57,24 @@ export class E2EService extends ServiceClass implements IE2EService {
 		});
 	}
 
+	async resetUserKeys(uid: IUser['_id']): Promise<void> {
+		await this.Users.update({ _id: uid }, {
+			$unset: {
+				e2e: '',
+			},
+		});
+
+		await this.Subscriptions.update({ 'u._id': uid }, {
+			$unset: {
+				E2EKey: '',
+			},
+		}, {
+			multi: true,
+		});
+
+		await this.Users.unsetLoginTokens(uid);
+	}
+
 	async getRoomMembersWithoutPublicKey(uid: IUser['_id'], rid: IRoom['_id']): Promise<IUser[]> {
 		if (!await canAccessRoom({ _id: rid }, { _id: uid })) {
 			throw new Error('error-invalid-room');
@@ -99,5 +117,47 @@ export class E2EService extends ServiceClass implements IE2EService {
 		}
 
 		await this.Rooms.update({ _id: rid }, { $set: { e2eKeyId: keyId } });
+	}
+
+	async updateGroupKey(uid: IUser['_id'], params: {
+		uid: IUser['_id'];
+		rid: IRoom['_id'];
+		keyId: Exclude<ISubscription['E2EKey'], undefined>;
+	}): Promise<ISubscription | null> {
+		const mySubscription = await this.Subscriptions.findOneByRoomIdAndUserId(params.rid, uid);
+		if (!mySubscription) {
+			return null;
+		}
+
+		const theirSubscription = await this.Subscriptions.findOneByRoomIdAndUserId(params.rid, params.uid);
+		if (!theirSubscription) {
+			return null;
+		}
+
+		await this.Subscriptions.update({ _id: theirSubscription._id }, { $set: { E2EKey: params.keyId } });
+
+		return this.Subscriptions.findOneById(theirSubscription._id);
+	}
+
+	async requestSubscriptionKeys(uid: IUser['_id']): Promise<void> {
+		const roomIds = await this.Subscriptions.find({
+			'u._id': uid,
+			E2EKey: {
+				$exists: false,
+			},
+		})
+			.map((doc) => doc.rid)
+			.toArray();
+
+		await this.Rooms.find({
+			e2eKeyId: {
+				$exists: true,
+			},
+			_id: {
+				$in: roomIds,
+			},
+		}).forEach((room) => {
+			this.emit('e2e.keyRequested', { rid: room._id, keyId: room.e2eKeyId });
+		});
 	}
 }

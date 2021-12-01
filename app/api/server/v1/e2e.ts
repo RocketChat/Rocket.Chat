@@ -1,18 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { E2E } from '../../../../server/sdk';
-import { Subscriptions } from '../../../models/server';
 
 API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	async get() {
-		const uid = Meteor.userId();
-		if (!uid) {
-			return API.v1.failure('Invalid user');
-		}
+		const { userId } = this;
 
-		const result = await E2E.getUserKeys(uid);
+		const result = await E2E.getUserKeys(userId);
 
 		return API.v1.success(result);
 	},
@@ -76,16 +71,31 @@ API.v1.addRoute('e2e.updateGroupKey', { authRequired: true }, {
 			key: String,
 		}));
 
+		const { userId } = this;
 		const { uid, rid, key } = this.bodyParams;
 
-		const mySub = await Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
-		if (mySub) { // I have a subscription to this room
-			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
-			if (userSub) { // uid also has subscription to this room
-				return API.v1.success(await Subscriptions.updateGroupE2EKey(userSub._id, key));
-			}
-		}
+		const subscription = await E2E.updateGroupKey(userId, { uid, rid, keyId: key });
+
+		return API.v1.success(subscription);
+	},
+});
+
+API.v1.addRoute('e2e.requestSubscriptionKeys', { authRequired: true }, {
+	async post() {
+		const { userId } = this;
+
+		await E2E.requestSubscriptionKeys(userId);
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('e2e.resetOwnE2EKey', { authRequired: true, twoFactorRequired: true }, {
+	async post() {
+		const { userId } = this;
+
+		await E2E.resetUserKeys(userId);
+
+		return API.v1.success(true);
 	},
 });

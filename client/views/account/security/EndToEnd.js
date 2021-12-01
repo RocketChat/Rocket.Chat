@@ -6,7 +6,7 @@ import React, { useCallback, useEffect } from 'react';
 import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -21,7 +21,7 @@ const EndToEnd = (props) => {
 	const publicKey = useLocalStorage('public_key');
 	const privateKey = useLocalStorage('private_key');
 
-	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
+	const resetE2eKey = useEndpoint('POST', '/v1/e2e.resetOwnE2EKey');
 
 	const { values, handlers, reset } = useForm({ password: '', passwordConfirm: '' });
 	const { password, passwordConfirm } = values;
