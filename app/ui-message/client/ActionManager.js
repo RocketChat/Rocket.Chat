@@ -9,8 +9,10 @@ import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 import { UIKitInteractionTypes } from '../../../definition/UIKit';
 import * as banners from '../../../client/lib/banners';
+import { addAction, deleteAction } from '../../../client/views/room/lib/Toolbox';
+import Apps from '../../../client/views/room/contextualBar/Apps';
 
-const events = new Emitter();
+export const events = new Emitter();
 
 export const on = (...args) => {
 	events.on(...args);
@@ -26,6 +28,8 @@ const triggersId = new Map();
 
 const instances = new Map();
 
+let lastUserInteractionPayload = {};
+
 const invalidateTriggerId = (id) => {
 	const appId = triggersId.get(id);
 	triggersId.delete(id);
@@ -38,7 +42,6 @@ export const generateTriggerId = (appId) => {
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 	return triggerId;
 };
-
 
 const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
@@ -59,6 +62,14 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	if (!viewId) {
 		return;
 	}
+
+	lastUserInteractionPayload = {
+		type,
+		triggerId,
+		viewId,
+		appId,
+		...data,
+	};
 
 	if ([UIKitInteractionTypes.ERRORS].includes(type)) {
 		events.emit(viewId, {
@@ -94,13 +105,19 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 				...data,
 			},
 		});
+
 		instances.set(viewId, {
 			close() {
 				instance.close();
 				instances.delete(viewId);
 			},
 		});
+
 		return UIKitInteractionTypes.MODAL_OPEN;
+	}
+
+	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
+		events.emit('apps-contextual-bar');
 	}
 
 	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
@@ -120,6 +137,15 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			instance.close();
 		}
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
+	}
+
+	if ([UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE].includes(type)) {
+		const instance = instances.get(viewId);
+
+		if (instance) {
+			instance.close();
+		}
+		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
 	}
 
 	return UIKitInteractionTypes.MODAL_ClOSE;
@@ -171,6 +197,8 @@ export const triggerCancel = async ({ view, ...options }) => {
 		}
 	}
 };
+
+export const getLastUserInteractionPayload = () => lastUserInteractionPayload;
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>
