@@ -47,7 +47,7 @@ export function OAuthAppsTable() {
 				action
 				qa-oauth-app-id={_id}
 			>
-				<Table.Cell withTruncatedText color='default' fontScale='p2'>
+				<Table.Cell withTruncatedText color='default' fontScale='p4'>
 					{name}
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{createdBy}</Table.Cell>

@@ -36,7 +36,7 @@ export default function NewZapier({ ...props }) {
 		<>
 			<Box
 				pb='x20'
-				fontScale='s1'
+				fontScale='h4'
 				dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }}
 			/>
 			{!script && (

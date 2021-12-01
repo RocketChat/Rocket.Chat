@@ -47,10 +47,10 @@ function CustomUserStatus({ data, sort, onClick, onHeaderClick, setParams, param
 				action
 				qa-user-id={_id}
 			>
-				<Table.Cell fontScale='p1' color='default' style={style}>
+				<Table.Cell fontScale='p3' color='default' style={style}>
 					{name}
 				</Table.Cell>
-				<Table.Cell fontScale='p1' color='default' style={style}>
+				<Table.Cell fontScale='p3' color='default' style={style}>
 					{statusType}
 				</Table.Cell>
 			</Table.Row>
