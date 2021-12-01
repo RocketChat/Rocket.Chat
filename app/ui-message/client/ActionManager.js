@@ -9,8 +9,6 @@ import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 import { UIKitInteractionTypes } from '../../../definition/UIKit';
 import * as banners from '../../../client/lib/banners';
-import { addAction, deleteAction } from '../../../client/views/room/lib/Toolbox';
-import Apps from '../../../client/views/room/contextualBar/Apps';
 
 export const events = new Emitter();
 

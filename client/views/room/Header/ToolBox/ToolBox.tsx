@@ -4,6 +4,7 @@ import React, { memo, ReactNode, useRef, ComponentProps, FC, useEffect } from 'r
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
+import { on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { IRoom } from '../../../../../definition/IRoom';
 import Header from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
@@ -11,8 +12,6 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
-
-import { on, off } from '../../../../../app/ui-message/client/ActionManager';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
 	<Option label={title} icon={icon} {...props} />
@@ -61,16 +60,16 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 		openTabBar(actions[index].id);
 	});
 
-  const openBar = () => {
-    openTabBar('apps-contextual-bar');
-  };
+	const openBar = () => {
+		openTabBar('apps-contextual-bar');
+	};
 
-  useEffect(() => {
-    on('apps-contextual-bar', openBar);
-    return () => {
-      off('apps-contextual-bar', openBar);
-    }
-  }, []);
+	useEffect(() => {
+		on('apps-contextual-bar', openBar);
+		return () => {
+			off('apps-contextual-bar', openBar);
+		};
+	}, [openBar]);
 
 	// const open = useMutableCallback((index) => {
 	// 	openTabBar(actions[index].id);

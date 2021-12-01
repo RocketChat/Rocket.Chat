@@ -78,10 +78,10 @@ addAction('keyboard-shortcut-list', {
 });
 
 addAction('apps-contextual-bar', {
-  groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-  id: 'apps-contextual-bar',
-  title: 'Apps Contextual Bar',
-  icon: 'members',
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+	id: 'apps-contextual-bar',
+	title: 'Apps Contextual Bar',
+	icon: 'members',
 	template: lazy(() => import('../../contextualBar/Apps')),
-  order: 300,
+	order: 300,
 });
