@@ -18,7 +18,7 @@ const mockButtons = () => ([
 		nameI18n: 'test-i18n',
 		when: {
 			messageActionContext: [MessageActionContext.MESSAGE],
-			roomTypes: [TemporaryRoomTypeFilter.CHANNEL, TemporaryRoomTypeFilter.GROUP],
+			roomTypes: [TemporaryRoomTypeFilter.PUBLIC_CHANNEL, TemporaryRoomTypeFilter.PRIVATE_CHANNEL],
 			hasOnePermission: ['view-all-teams'],
 			hasAllRoles: ['admin', 'moderator'],
 		},
@@ -42,7 +42,7 @@ const mockButtons = () => ([
 		appId: 'mock-app-3',
 		nameI18n: 'test-i18n',
 		when: {
-			roomTypes: [TemporaryRoomTypeFilter.TEAM, TemporaryRoomTypeFilter.LIVE_CHAT],
+			roomTypes: [TemporaryRoomTypeFilter.PUBLIC_TEAM, TemporaryRoomTypeFilter.PRIVATE_TEAM, TemporaryRoomTypeFilter.LIVE_CHAT],
 			hasOnePermission: ['view-all-teams'],
 			hasAllRoles: ['admin'],
 		},

@@ -5,7 +5,16 @@ import { Meteor } from 'meteor/meteor';
 import { IUIActionButton, TemporaryRoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
 
 import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../authorization/client';
-import { IRoom, RoomType } from '../../../../../definition/IRoom';
+import {
+	IRoom,
+	isDirectMessageRoom,
+	isMultipleDirectMessageRoom,
+	isOmnichannelRoom,
+	isPrivateDiscussion,
+	isPrivateTeamRoom,
+	isPublicDiscussion,
+	isPublicTeamRoom,
+} from '../../../../../definition/IRoom';
 
 export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
@@ -18,18 +27,21 @@ export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };
 
-const mapFilterToRoomType: {[k in TemporaryRoomTypeFilter]: RoomType} = {
-	[TemporaryRoomTypeFilter.CHANNEL]: 'c',
-	[TemporaryRoomTypeFilter.GROUP]: 'p',
-	[TemporaryRoomTypeFilter.DIRECT]: 'd',
-	[TemporaryRoomTypeFilter.DIRECT_MULTIPLE]: 'd',
-	[TemporaryRoomTypeFilter.TEAM]: 'p',
-	[TemporaryRoomTypeFilter.LIVE_CHAT]: 'l',
+const enumToFilter: {[k in TemporaryRoomTypeFilter]: (room: IRoom) => boolean} = {
+	[TemporaryRoomTypeFilter.PUBLIC_CHANNEL]: (room) => room.t === 'c',
+	[TemporaryRoomTypeFilter.PRIVATE_CHANNEL]: (room) => room.t === 'p',
+	[TemporaryRoomTypeFilter.PUBLIC_TEAM]: isPublicTeamRoom,
+	[TemporaryRoomTypeFilter.PRIVATE_TEAM]: isPrivateTeamRoom,
+	[TemporaryRoomTypeFilter.PUBLIC_DISCUSSION]: isPublicDiscussion,
+	[TemporaryRoomTypeFilter.PRIVATE_DISCUSSION]: isPrivateDiscussion,
+	[TemporaryRoomTypeFilter.DIRECT]: isDirectMessageRoom,
+	[TemporaryRoomTypeFilter.DIRECT_MULTIPLE]: isMultipleDirectMessageRoom,
+	[TemporaryRoomTypeFilter.LIVE_CHAT]: isOmnichannelRoom,
 };
 
 export const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
 	const { roomTypes } = button.when || {};
-	return !roomTypes || roomTypes.some((filter): boolean => mapFilterToRoomType[filter] === room.t);
+	return !roomTypes || roomTypes.some((filter): boolean => enumToFilter[filter]?.(room));
 };
 
 export const applyButtonFilters = (button: IUIActionButton, room?: IRoom): boolean => {
