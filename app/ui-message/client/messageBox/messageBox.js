@@ -400,10 +400,15 @@ Template.messageBox.events({
 
 		const files = items
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
-			.map((item) => ({
-				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.png`,
-			})).filter(({ file }) => file !== null);
+			.map((item) => {
+				const fileItem = item.getAsFile();
+				const fileFormat = fileItem.type.split('/')[1];
+
+				return {
+					file: fileItem,
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ fileFormat }`,
+				};
+			}).filter(({ file }) => file !== null);
 
 		if (files.length) {
 			event.preventDefault();
