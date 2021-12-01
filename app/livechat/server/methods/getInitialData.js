@@ -3,6 +3,7 @@ import _ from 'underscore';
 
 import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken, departmentId) {
@@ -98,6 +99,7 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = Users.findOnlineAgents().count() > 0;
-		return info;
+
+		return deprecationWarning({ endpoint: 'livechat:getInitialData', versionWillBeRemoved: '5.0', response: info });
 	},
 });
