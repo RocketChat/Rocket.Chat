@@ -49,8 +49,14 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		});
 	}
 
-	getMessagesSentTotalByDate({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<T> {
-		return this.col.aggregate([
+	getMessagesSentTotalByDate({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<{
+		_id: IAnalytic['date'];
+		messages: number;
+	}> {
+		return this.col.aggregate<{
+			_id: IAnalytic['date'];
+			messages: number;
+		}>([
 			{
 				$match: {
 					type: 'messages',
@@ -68,7 +74,10 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		]);
 	}
 
-	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<T> {
+	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<{
+		t: IRoom['t'];
+		messages: number;
+	}> {
 		const params = [
 			{
 				$match: {
@@ -93,7 +102,12 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		return this.col.aggregate(params);
 	}
 
-	getMostPopularChannelsByMessagesSentQuantity({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<T> {
+	getMostPopularChannelsByMessagesSentQuantity({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<{
+		t: IRoom['t'];
+		name: string;
+		messages: number;
+		usernames: string[];
+	}> {
 		return this.col.aggregate([
 			{
 				$match: {
@@ -121,8 +135,14 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		]);
 	}
 
-	getTotalOfRegisteredUsersByDate({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<T> {
-		return this.col.aggregate([
+	getTotalOfRegisteredUsersByDate({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<{
+		_id: IAnalytic['date'];
+		users: number;
+	}> {
+		return this.col.aggregate<{
+			_id: IAnalytic['date'];
+			users: number;
+		}>([
 			{
 				$match: {
 					type: 'users',

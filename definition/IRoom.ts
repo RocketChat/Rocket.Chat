@@ -3,6 +3,7 @@ import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
 export type RoomType = 'c' | 'd' | 'p' | 'l';
+type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -32,6 +33,11 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus?: CallStatus;
+	webRtcCallStartTime?: Date;
+	servedBy?: {
+		_id: string;
+	};
 
 	streamingOptions?: {
 		id?: string;
@@ -63,11 +69,25 @@ export interface IRoom extends IRocketChatRecord {
 	muted?: string[];
 
 	usernames?: string[];
+	ts?: Date;
 }
 
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 }
+
+export interface ITeamRoom extends IRoom {
+	teamMain: boolean;
+	teamId: string;
+}
+
+export const isTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => !!room.teamMain;
+export const isPrivateTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'p';
+export const isPublicTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'c';
+
+export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid;
+export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
+export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
@@ -76,6 +96,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 }
 
 export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
+export const isMultipleDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => isDirectMessageRoom(room) && room.uids.length > 2;
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',
@@ -111,6 +132,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		ts: Date;
+		username: IUser['username'];
 	};
 	onHold?: boolean;
 	departmentId?: string;
@@ -125,6 +148,10 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+
+	ts: Date;
+	label?: string;
+	crmData?: unknown;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

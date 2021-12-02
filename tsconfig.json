@@ -42,9 +42,10 @@
 	"exclude": [
 		"./.meteor/**",
 		"./packages/**",
-		"./imports/client"
+		"./imports/client**",
+		"**/dist/**",
 		// "./ee/server/services/**"
-		// "node_modules"
+		"node_modules"
 	],
 	"ts-node": {
 		"files": true

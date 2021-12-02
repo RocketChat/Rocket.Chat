@@ -10,13 +10,13 @@ import {
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword } from '../../../contexts/UserContext';
-import { useCallbacks } from '../../../hooks/useCallbacks';
 import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
@@ -27,7 +27,6 @@ function AdminUserInformationStep({ step, title, active }) {
 	const defineUsername = useMethod('setUsername');
 
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const callbacks = useCallbacks();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const registerAdminUser = async ({

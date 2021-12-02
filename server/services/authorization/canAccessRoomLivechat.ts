@@ -9,6 +9,7 @@ export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, ext
 	// room can be sent as `null` but in that case a `rid` is also sent on extraData
 	// this is the case for file uploads
 	const livechatRoom = room || (extraData?.rid && await Rooms.findOneById(extraData?.rid));
+
 	if (livechatRoom?.t !== 'l') {
 		return false;
 	}

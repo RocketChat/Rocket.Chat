@@ -9,7 +9,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 // eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void => void MessageAction.addButton({
 	id: getIdForActionButton(button),
-	icon: 'arrow-loop',
+	icon: button.icon || '',
 	label: button.nameI18n,
 	context: button.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred'],
 	condition({ room }: any) {

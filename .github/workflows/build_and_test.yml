@@ -142,6 +142,8 @@ jobs:
       run: |
         cd ./ee/server/services
         npm run build
+        # check if build succeeded
+        [ ! -d ./dist/ee/server/services ] && exit 1
         rm -rf dist/
 
     - name: Build Rocket.Chat From Pull Request
@@ -242,8 +244,14 @@ jobs:
       run: |
         npm install
 
+    - name: Unit Test (definitions)
+      run: npm run testunit-definition
+
     - name: Unit Test
       run: npm run testunit
+
+    - name: Unit Test (client)
+      run: npm run testunit-client
 
     - name: E2E Test
       env:

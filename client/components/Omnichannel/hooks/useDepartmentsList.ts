@@ -40,7 +40,7 @@ export const useDepartmentsList = (
 				text: options.filter,
 				offset: start,
 				count: end + start,
-				sort: JSON.stringify({ name: 1 }),
+				sort: `{ "name": 1 }`,
 			});
 
 			const items = departments
