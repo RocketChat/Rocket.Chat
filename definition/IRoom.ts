@@ -85,9 +85,10 @@ export const isTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => !!room.te
 export const isPrivateTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'p';
 export const isPublicTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'c';
 
-export const isDiscussion = (room: Partial<IRoom>): room is ITeamRoom => !!room.prid;
-export const isPrivateDiscussion = (room: Partial<IRoom>): room is ITeamRoom => isDiscussion(room) && room.t === 'p';
-export const isPublicDiscussion = (room: Partial<IRoom>): room is ITeamRoom => isDiscussion(room) && room.t === 'c';
+export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid;
+export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
+export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;

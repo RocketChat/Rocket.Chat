@@ -12,7 +12,7 @@ const APP_GROUP = 'Create_new';
 // eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void => void messageBox.actions.add(APP_GROUP, button.nameI18n, {
 	id: getIdForActionButton(button),
-	icon: 'arrow-back',
+	icon: button.icon || '',
 	condition() {
 		return applyButtonFilters(button, Rooms.findOne(Session.get('openedRoom')));
 	},

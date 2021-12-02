@@ -8,7 +8,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 // eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void => void addAction(getIdForActionButton(button), ({ room }) => (applyButtonFilters(button, room) ? {
 	id: button.actionId,
-	icon: 'arrow-down',
+	icon: button.icon || '',
 	title: button.nameI18n as any,
 	// Filters were applied in the applyButtonFilters function
 	// if the code made it this far, the button should be shown
