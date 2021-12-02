@@ -25,7 +25,7 @@ const Header = ({ room }) => {
 		return null;
 	}
 
-	if (room.t === 'd' && room.uids.length < 3) {
+	if (room.t === 'd' && room?.uids?.length < 3) {
 		return <DirectRoomHeader slots={slots} room={room} />;
 	}
 
