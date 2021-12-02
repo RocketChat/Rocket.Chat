@@ -1,4 +1,4 @@
-FROM node:8.17-alpine3.9
+FROM node:12.16-alpine3.9
 
 RUN apk add --no-cache python make g++ libc6-compat ttf-dejavu
 
