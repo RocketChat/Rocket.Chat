@@ -294,7 +294,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		}
 	}
 
-	addUserRoles(_id, roles);
+	Promise.await(addUserRoles(_id, roles));
 
 	return _id;
 });
