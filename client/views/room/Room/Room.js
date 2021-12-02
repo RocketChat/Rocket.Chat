@@ -50,6 +50,8 @@ const Room = () => {
 					tabBar={tabBar}
 					rid={room._id}
 					_id={room._id}
+					type={room.t}
+					roomName={room.name}
 				/>
 			</RoomTemplate.Body>
 			{tab && (

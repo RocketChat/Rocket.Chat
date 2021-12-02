@@ -30,6 +30,7 @@ import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
+import { appLayout } from '../../../../../client/lib/appLayout';
 
 export const chatMessages = {};
 
@@ -988,7 +989,8 @@ Meteor.startup(() => {
 
 			const room = Rooms.findOne({ _id: template.data._id });
 			if (!room) {
-				return FlowRouter.go('home');
+				Session.set('roomNotFound', { type: template.data.type, name: template.data.roomName });
+				return appLayout.render('main', { center: 'roomNotFound' });
 			}
 		});
 	});
