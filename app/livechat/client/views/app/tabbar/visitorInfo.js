@@ -11,13 +11,15 @@ import UAParser from 'ua-parser-js';
 import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
-import { t, handleError, roomTypes } from '../../../../../utils';
+import { t, roomTypes } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
-import { DateFormat } from '../../../../../lib/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
+import { Markdown } from '../../../../../markdown/client';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -136,22 +138,11 @@ Template.visitorInfo.helpers({
 		return Template.instance().action.get() === 'forward';
 	},
 
-	editDetails() {
-		const instance = Template.instance();
-		const user = instance.user.get();
-		return {
-			visitorId: user ? user._id : null,
-			roomId: this.rid,
-			save() {
-				instance.action.set();
-			},
-			cancel() {
-				instance.action.set();
-			},
-		};
+	sendingTranscript() {
+		return Template.instance().action.get() === 'transcript';
 	},
 
-	forwardDetails() {
+	roomInfoData() {
 		const instance = Template.instance();
 		const user = instance.user.get();
 		return {
@@ -211,9 +202,19 @@ Template.visitorInfo.helpers({
 		return hasPermission('transfer-livechat-guest');
 	},
 
+	canSendTranscript() {
+		const room = Template.instance().room.get();
+		return !room.email && hasPermission('send-omnichannel-chat-transcript');
+	},
+
+	canPlaceChatOnHold() {
+		const room = Template.instance().room.get();
+		return room.open && !room.onHold && room.servedBy && room.lastMessage && !room.lastMessage?.token && settings.get('Livechat_allow_manual_on_hold');
+	},
+
 	roomClosedDateTime() {
 		const { closedAt } = this;
-		return DateFormat.formatDateAndTime(closedAt);
+		return formatDateAndTime(closedAt);
 	},
 
 	roomClosedBy() {
@@ -240,6 +241,20 @@ Template.visitorInfo.helpers({
 		// To make the dynamic template reactive we need to pass a ReactiveVar through the data property
 		// because only the dynamic template data will be reloaded
 		return Template.instance().room;
+	},
+
+	transcriptRequest() {
+		const room = Template.instance().room.get();
+		return room?.transcriptRequest;
+	},
+
+	transcriptRequestedDateTime() {
+		const { requestedAt } = this;
+		return formatDateAndTime(requestedAt);
+	},
+
+	markdown(text) {
+		return Markdown.parse(text);
 	},
 });
 
@@ -308,6 +323,37 @@ Template.visitorInfo.events({
 		event.preventDefault();
 
 		instance.action.set('forward');
+	},
+
+	'click .send-transcript'(event, instance) {
+		event.preventDefault();
+
+		instance.action.set('transcript');
+	},
+
+	'click .on-hold'(event) {
+		event.preventDefault();
+
+		modal.open({
+			title: t('Would_you_like_to_place_chat_on_hold'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('Yes'),
+		},
+		async () => {
+			const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
+			if (success) {
+				modal.open({
+					title: t('Chat_On_Hold'),
+					text: t('Chat_On_Hold_Successfully'),
+					type: 'success',
+					timer: 1500,
+					showConfirmButton: false,
+				});
+			}
+		});
 	},
 });
 

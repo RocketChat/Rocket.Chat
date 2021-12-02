@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Migrations } from '../../../app/migrations';
-import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../../app/models/server';
+import { addMigration } from '../../lib/migrations';
+import { Rooms, Messages, Subscriptions, Users } from '../../../app/models/server';
+import { Settings, Uploads } from '../../../app/models/server/raw';
 
 const unifyRooms = (room) => {
 	// verify if other DM already exists
@@ -56,11 +58,15 @@ const fixSelfDMs = () => {
 				rid: correctId,
 			},
 		}, { multi: true });
-		Uploads.update({ rid: room._id }, {
-			$set: {
-				rid: correctId,
-			},
-		}, { multi: true });
+
+		// Fix error of upload permission check using Meteor.userId()
+		Meteor.runAsUser(room.uids[0], async () => {
+			await Uploads.update({ rid: room._id }, {
+				$set: {
+					rid: correctId,
+				},
+			}, { multi: true });
+		});
 	});
 };
 
@@ -85,21 +91,21 @@ const fixDiscussions = () => {
 	});
 };
 
-const fixUserSearch = () => {
-	const setting = Settings.findOneById('Accounts_SearchFields', { fields: { value: 1 } });
+const fixUserSearch = async () => {
+	const setting = await Settings.findOneById('Accounts_SearchFields', { projection: { value: 1 } });
 	const value = setting?.value?.trim();
 	if (value === '' || value === 'username, name') {
-		Settings.updateValueById('Accounts_SearchFields', 'username, name, bio');
+		await Settings.updateValueById('Accounts_SearchFields', 'username, name, bio');
 	}
 
 	Users.tryDropIndex('name_text_username_text_bio_text');
 };
 
-Migrations.add({
+addMigration({
 	version: 183,
 	up() {
 		fixDiscussions();
 		fixSelfDMs();
-		fixUserSearch();
+		return fixUserSearch();
 	},
 });

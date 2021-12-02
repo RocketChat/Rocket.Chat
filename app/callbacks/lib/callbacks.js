@@ -3,11 +3,23 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 
 let timed = false;
+let logger = {
+	debug() {},
+	log() {},
+	info() {},
+	error() {},
+};
 
 if (Meteor.isClient) {
-	const { getConfig } = require('../../ui-utils/client/config');
+	const { getConfig } = require('../../../client/lib/utils/getConfig');
 	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
 }
+
+if (Meteor.isServer) {
+	const { Logger } = require('../../../server/lib/logger/Logger');
+	logger = new Logger('Callbacks');
+}
+
 /*
 * Callback hooks provide an easy way to add extra steps to common operations.
 * @namespace RocketChat.callbacks
@@ -36,6 +48,7 @@ const wrapRun = (hook, fn) => (...args) => {
 };
 
 const handleResult = (fn) => (result, constant) => {
+	logger.debug(`Executing callback with id ${ fn.id } for hook ${ fn.hook }`);
 	const callbackResult = callbacks.runItem({ hook: fn.hook, callback: fn, result, constant });
 	return typeof callbackResult === 'undefined' ? result : callbackResult;
 };
@@ -59,8 +72,8 @@ const combinedCallbacks = new Map();
 
 /*
 * Callback priorities
+* @enum {CallbackPriority}
 */
-
 callbacks.priority = {
 	HIGH: -1000,
 	MEDIUM: 0,
@@ -73,8 +86,9 @@ const getHooks = (hookName) => callbacks[hookName] || [];
 * Add a callback function to a hook
 * @param {String} hook - The name of the hook
 * @param {Function} callback - The callback function
+* @param {CallbackPriority} priority - The callback run priority (order)
+* @param {String} id - Human friendly name for this callback
 */
-
 callbacks.add = function(
 	hook,
 	callback,

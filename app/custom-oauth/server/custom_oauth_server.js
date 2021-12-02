@@ -7,11 +7,11 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
+import { callbacks } from '../../callbacks/server';
 
 const logger = new Logger('CustomOAuth');
 
@@ -73,14 +73,15 @@ export class CustomOAuth {
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
+		this.keyField = options.keyField;
 		this.usernameField = (options.usernameField || '').trim();
 		this.emailField = (options.emailField || '').trim();
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
-		this.mergeRoles = options.mergeRoles || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.accessTokenParam = options.accessTokenParam;
+		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
@@ -176,7 +177,7 @@ export class CustomOAuth {
 				data = JSON.parse(response.content);
 			}
 
-			logger.debug('Identity response', JSON.stringify(data, null, 2));
+			logger.debug({ msg: 'Identity response', data });
 
 			return this.normalizeIdentity(data);
 		} catch (err) {
@@ -321,14 +322,19 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+				let user = undefined;
+
+				if (this.keyField === 'username') {
+					user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+				} else if (this.keyField === 'email') {
+					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
+				}
+
 				if (!user) {
 					return;
 				}
 
-				if (this.mergeRoles) {
-					updateRolesFromSSO(user, serviceData, this.rolesClaim);
-				}
+				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
 
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
@@ -368,9 +374,7 @@ export class CustomOAuth {
 				user.name = user.services[this.name].name;
 			}
 
-			if (this.mergeRoles) {
-				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
-			}
+			callbacks.run('afterValidateNewOAuthUser', { identity: user.services[this.name], serviceName: this.name, user });
 
 			return true;
 		});

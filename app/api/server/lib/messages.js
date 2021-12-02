@@ -116,14 +116,14 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findDiscussionsFromRoom({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
 
 	if (!await canAccessRoomAsync(room, { _id: uid })) {
 		throw new Error('error-not-allowed');
 	}
 
-	const cursor = Messages.findDiscussionsByRoom(roomId, {
+	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,

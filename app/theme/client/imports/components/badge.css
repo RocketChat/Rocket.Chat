@@ -3,6 +3,7 @@
 
 	min-width: 18px;
 	min-height: 18px;
+	margin: 0 3px;
 	padding: 2px 5px;
 
 	color: var(--badge-text-color);
@@ -15,6 +16,12 @@
 	justify-content: center;
 
 	&--unread {
+		white-space: nowrap;
+
+		background-color: var(--badge-unread-background);
+	}
+
+	&--thread {
 		margin: 0 3px;
 
 		white-space: nowrap;

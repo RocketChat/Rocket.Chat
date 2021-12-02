@@ -19,18 +19,22 @@ const validateDateParams = (property, date) => {
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
-			return API.v1.unauthorized();
-		}
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		const { agents, departmentId, open, tags, roomName } = this.requestParams();
+		const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
 		let { createdAt, customFields, closedAt } = this.requestParams();
 		check(agents, Match.Maybe([String]));
 		check(roomName, Match.Maybe(String));
 		check(departmentId, Match.Maybe(String));
 		check(open, Match.Maybe(String));
+		check(onhold, Match.Maybe(String));
 		check(tags, Match.Maybe([String]));
+
+		const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
+		const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+		if (!hasAdminAccess && !hasAgentAccess) {
+			return API.v1.unauthorized();
+		}
 
 		createdAt = validateDateParams('createdAt', createdAt);
 		closedAt = validateDateParams('closedAt', closedAt);
@@ -48,6 +52,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			closedAt,
 			tags,
 			customFields,
+			onhold,
 			options: { offset, count, sort, fields },
 		})));
 	},

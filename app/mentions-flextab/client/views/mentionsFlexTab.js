@@ -8,6 +8,7 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
 import { Messages, Users } from '../../../models/client';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 const LIMIT_DEFAULT = 50;
 
@@ -73,6 +74,7 @@ Template.mentionsFlexTab.onDestroyed(function() {
 });
 
 Template.mentionsFlexTab.events({
+	...getCommonRoomEvents(),
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);

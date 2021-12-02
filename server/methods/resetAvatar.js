@@ -4,8 +4,8 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { FileUpload } from '../../app/file-upload';
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings';
-import { Notifications } from '../../app/notifications';
 import { hasPermission } from '../../app/authorization/server';
+import { api } from '../sdk/api';
 
 Meteor.methods({
 	resetAvatar(userId) {
@@ -14,8 +14,9 @@ Meteor.methods({
 				method: 'resetAvatar',
 			});
 		}
+		const canEditOtherUserAvatar = hasPermission(Meteor.userId(), 'edit-other-user-avatar');
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'resetAvatar',
 			});
@@ -24,7 +25,7 @@ Meteor.methods({
 		let user;
 
 		if (userId && userId !== Meteor.userId()) {
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+			if (!canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'resetAvatar',
 				});
@@ -42,10 +43,8 @@ Meteor.methods({
 		}
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
-		Users.unsetAvatarOrigin(user._id);
-		Notifications.notifyLogged('updateAvatar', {
-			username: user.username,
-		});
+		Users.unsetAvatarData(user._id);
+		api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
 	},
 });
 

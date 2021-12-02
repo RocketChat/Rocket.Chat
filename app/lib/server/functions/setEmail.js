@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer';
 import { settings } from '../../../settings';
-
 import { checkEmailAvailability } from '.';
 
 let html = '';
@@ -24,7 +24,7 @@ const _sendEmailChangeNotification = function(to, newEmail) {
 		subject,
 		html,
 		data: {
-			email: s.escapeHTML(newEmail),
+			email: escapeHTML(newEmail),
 		},
 	};
 

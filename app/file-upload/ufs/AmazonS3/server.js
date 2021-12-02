@@ -6,6 +6,8 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+
 /**
  * AmazonS3 store
  * @param options
@@ -47,14 +49,14 @@ export class AmazonS3Store extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file, forceDownload = false) {
+		this.getRedirectURL = function(file, forceDownload = false, callback) {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
 				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
 			};
 
-			return s3.getSignedUrl('getObject', params);
+			return s3.getSignedUrl('getObject', params, callback);
 		};
 
 		/**
@@ -91,7 +93,7 @@ export class AmazonS3Store extends UploadFS.Store {
 
 			s3.deleteObject(params, (err, data) => {
 				if (err) {
-					console.error(err);
+					SystemLogger.error(err);
 				}
 
 				callback && callback(err, data);
@@ -144,7 +146,7 @@ export class AmazonS3Store extends UploadFS.Store {
 
 			}, (error) => {
 				if (error) {
-					console.error(error);
+					SystemLogger.error(error);
 				}
 
 				writeStream.emit('real_finish');

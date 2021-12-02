@@ -5,51 +5,169 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { hasRole, hasPermission } from '../../../authorization/server';
-import { Info } from '../../../utils/server';
+import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
-import { StdOut } from '../../../logger/server/streamer';
+import { getLogs } from '../../../../server/stream/stdout';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-
-// DEPRECATED
-// Will be removed after v3.0.0
-API.v1.addRoute('info', { authRequired: false }, {
-	get() {
-		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v3.0.0';
-		console.warn(warningMessage);
-		const user = this.getLoggedInUser();
-
-		if (user && hasRole(user._id, 'admin')) {
-			return API.v1.success(this.deprecationWarning({
-				endpoint: 'info',
-				versionWillBeRemoved: '3.0.0',
-				response: {
-					info: Info,
-				},
-			}));
-		}
-
-		return API.v1.success(this.deprecationWarning({
-			endpoint: 'info',
-			versionWillBeRemoved: '3.0.0',
-			response: {
-				info: {
-					version: Info.version,
-				},
-			},
-		}));
-	},
-});
-
+/**
+ * @openapi
+ *  /api/v1/me:
+ *    get:
+ *      description: Gets user data of the authenticated user
+ *      security:
+ *        - authenticated: []
+ *      responses:
+ *        200:
+ *          description: The user data of the authenticated user
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      name:
+ *                        type: string
+ *                      username:
+ *                        type: string
+ *                      nickname:
+ *                        type: string
+ *                      emails:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            address:
+ *                              type: string
+ *                            verified:
+ *                              type: boolean
+ *                      email:
+ *                        type: string
+ *                      status:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusDefault:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusText:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusConnection:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      bio:
+ *                        type: string
+ *                      avatarOrigin:
+ *                        type: string
+ *                        enum: [none, local, upload, url]
+ *                      utcOffset:
+ *                        type: number
+ *                      language:
+ *                        type: string
+ *                      settings:
+ *                        type: object
+ *                        properties:
+ *                          preferences:
+ *                            type: object
+ *                      enableAutoAway:
+ *                        type: boolean
+ *                      idleTimeLimit:
+ *                        type: number
+ *                      roles:
+ *                        type: array
+ *                      active:
+ *                        type: boolean
+ *                      defaultRoom:
+ *                        type: string
+ *                      customFields:
+ *                        type: array
+ *                      requirePasswordChange:
+ *                        type: boolean
+ *                      requirePasswordChangeReason:
+ *                        type: string
+ *                      services:
+ *                        type: object
+ *                        properties:
+ *                          github:
+ *                            type: object
+ *                          gitlab:
+ *                            type: object
+ *                          tokenpass:
+ *                            type: object
+ *                          blockstack:
+ *                            type: object
+ *                          password:
+ *                            type: object
+ *                            properties:
+ *                              exists:
+ *                                type: boolean
+ *                          totp:
+ *                            type: object
+ *                            properties:
+ *                              enabled:
+ *                                type: boolean
+ *                          email2fa:
+ *                            type: object
+ *                            properties:
+ *                              enabled:
+ *                                type: boolean
+ *                      statusLivechat:
+ *                        type: string
+ *                        enum: [available, 'not-available']
+ *                      banners:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            id:
+ *                              type: string
+ *                            title:
+ *                              type: string
+ *                            text:
+ *                              type: string
+ *                            textArguments:
+ *                              type: array
+ *                              items: {}
+ *                            modifiers:
+ *                              type: array
+ *                              items:
+ *                                type: string
+ *                            infoUrl:
+ *                              type: string
+ *                      oauth:
+ *                        type: object
+ *                        properties:
+ *                          authorizedClients:
+ *                            type: array
+ *                            items:
+ *                              type: string
+ *                      _updatedAt:
+ *                        type: string
+ *                        format: date-time
+ *                      avatarETag:
+ *                        type: string
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
+		const fields = getDefaultUserFields();
+		const user = Users.findOneById(this.userId, { fields });
+
+		// The password hash shouldn't be leaked but the client may need to know if it exists.
+		if (user?.services?.password?.bcrypt) {
+			user.services.password.exists = true;
+			delete user.services.password.bcrypt;
+		}
+
+		return API.v1.success(this.getUserInfo(user));
 	},
 });
 
@@ -128,9 +246,9 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel = s.escapeHTML(channel);
-		text = s.escapeHTML(text);
-		name = s.escapeHTML(name);
+		channel = escapeHTML(channel);
+		text = escapeHTML(text);
+		name = escapeHTML(name);
 
 		return {
 			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
@@ -212,12 +330,48 @@ API.v1.addRoute('directory', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ *  /api/v1/stdout.queue:
+ *    get:
+ *      description: Retrieves last 1000 lines of server logs
+ *      security:
+ *        - authenticated: ['view-logs']
+ *      responses:
+ *        200:
+ *          description: The user data of the authenticated user
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      queue:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            id:
+ *                              type: string
+ *                            string:
+ *                              type: string
+ *                            ts:
+ *                              type: string
+ *                              format: date-time
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-logs')) {
 			return API.v1.unauthorized();
 		}
-		return API.v1.success({ queue: StdOut.queue });
+		return API.v1.success({ queue: getLogs() });
 	},
 });
 
@@ -262,6 +416,10 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
+			SystemLogger.error(`Exception while invoking method ${ method }`, error.message);
+			if (settings.get('Log_Level') === '2') {
+				Meteor._debug(`Exception while invoking method ${ method }`, error);
+			}
 			return API.v1.success(mountResult({ id, error }));
 		}
 	},

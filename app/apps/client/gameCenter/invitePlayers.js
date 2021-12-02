@@ -10,7 +10,8 @@ import { Session } from 'meteor/session';
 import { AutoComplete } from '../../../meteor-autocomplete/client';
 import { roomTypes } from '../../../utils/client';
 import { ChatRoom } from '../../../models/client';
-import { call, modal } from '../../../ui-utils/client';
+import { modal } from '../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 import './invitePlayers.html';
 
@@ -54,13 +55,13 @@ Template.InvitePlayers.helpers({
 	roomModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
 	userModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
 	nameSuggestion() {
@@ -77,7 +78,7 @@ Template.InvitePlayers.events({
 		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
 
 		try {
-			const result = await call('createPrivateGroup', privateGroupName, users);
+			const result = await callWithErrorHandling('createPrivateGroup', privateGroupName, users);
 
 			roomTypes.openRouteLink(result.t, result);
 
@@ -90,7 +91,7 @@ Template.InvitePlayers.events({
 					return;
 				}
 
-				call('sendMessage', {
+				callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
 					rid: result.rid,
 					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', { name }),

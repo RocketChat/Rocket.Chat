@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
@@ -18,7 +18,7 @@ import { ChatSubscription, ChatMessage } from '../../../models';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-export const readMessage = new class extends EventEmitter {
+export const readMessage = new class extends Emitter {
 	constructor() {
 		super();
 		this.debug = false;
@@ -30,7 +30,6 @@ export const readMessage = new class extends EventEmitter {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
 		}
-
 
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
@@ -71,6 +70,13 @@ export const readMessage = new class extends EventEmitter {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
+
+		const subscription = ChatSubscription.findOne({ rid });
+		if (subscription == null) {
+			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
+			return;
+		}
+
 		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
@@ -109,8 +115,7 @@ export const readMessage = new class extends EventEmitter {
 		}
 
 		if (!subscription.alert && (subscription.unread === 0)) {
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
@@ -153,9 +158,8 @@ export const readMessage = new class extends EventEmitter {
 
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
-			roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
+			$(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 		}
 	}
 }();

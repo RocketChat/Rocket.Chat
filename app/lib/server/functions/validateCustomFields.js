@@ -37,7 +37,7 @@ export const validateCustomFields = function(fields) {
 			throw new Meteor.Error('error-user-registration-custom-field', `Max length of field ${ fieldName } ${ field.maxLength }`, { method: 'registerUser' });
 		}
 
-		if (field.minLength && fieldValue.length < field.minLength) {
+		if (field.minLength && fieldValue.length > 0 && fieldValue.length < field.minLength) {
 			throw new Meteor.Error('error-user-registration-custom-field', `Min length of field ${ fieldName } ${ field.minLength }`, { method: 'registerUser' });
 		}
 	});

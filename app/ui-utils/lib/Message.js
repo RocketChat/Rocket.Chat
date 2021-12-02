@@ -1,6 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { MessageTypes } from './MessageTypes';
 import { settings } from '../../settings';
@@ -28,7 +29,7 @@ export const Message = {
 		}
 		msg.html = msg.msg;
 		if (s.trim(msg.html) !== '') {
-			msg.html = s.escapeHTML(msg.html);
+			msg.html = escapeHTML(msg.html);
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
 		return msg.html;

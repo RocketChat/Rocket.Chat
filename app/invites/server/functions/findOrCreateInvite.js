@@ -3,7 +3,8 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions, Rooms } from '../../../models/server';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
@@ -23,7 +24,7 @@ function getInviteUrl(invite) {
 const possibleDays = [0, 1, 7, 15, 30];
 const possibleUses = [0, 1, 5, 10, 25, 50, 100];
 
-export const findOrCreateInvite = (userId, invite) => {
+export const findOrCreateInvite = async (userId, invite) => {
 	if (!userId || !invite) {
 		return false;
 	}
@@ -46,18 +47,18 @@ export const findOrCreateInvite = (userId, invite) => {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', { method: 'findOrCreateInvite' });
 	}
 
-	let { days, maxUses } = invite;
+	const { days = 1, maxUses = 0 } = invite;
 
 	if (!possibleDays.includes(days)) {
-		days = 1;
+		throw new Meteor.Error('invalid-number-of-days', 'Invite should expire in 1, 7, 15 or 30 days, or send 0 to never expire.');
 	}
 
 	if (!possibleUses.includes(maxUses)) {
-		maxUses = 0;
+		throw new Meteor.Error('invalid-number-of-uses', 'Invite should be valid for 1, 5, 10, 25, 50, 100 or infinite (0) uses.');
 	}
 
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
-	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
+	const existing = await Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
 
 	// If an existing invite was found, return it's _id instead of creating a new one.
 	if (existing) {
@@ -86,7 +87,7 @@ export const findOrCreateInvite = (userId, invite) => {
 		uses: 0,
 	};
 
-	Invites.create(createInvite);
+	await Invites.insertOne(createInvite);
 	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);

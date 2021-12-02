@@ -1,5 +1,6 @@
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
+import { callbacks } from '../../../../callbacks';
 
 /* Auto Selection Queuing method:
 	*
@@ -19,16 +20,13 @@ class AutoSelection {
 		};
 	}
 
-	getNextAgent(department) {
+	getNextAgent(department, ignoreAgentId) {
+		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', undefined, { ...department ? { departmentId: department } : {} });
 		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(department);
+			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery);
 		}
 
-		return Users.getNextAgent();
-	}
-
-	delegateAgent(agent) {
-		return agent;
+		return Users.getNextAgent(ignoreAgentId, extraQuery);
 	}
 }
 

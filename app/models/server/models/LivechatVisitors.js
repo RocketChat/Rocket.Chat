@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Settings from './Settings';
@@ -8,6 +8,9 @@ import Settings from './Settings';
 export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
+
+		this.tryEnsureIndex({ token: 1 });
+		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
 	}
 
 	/**
@@ -120,9 +123,6 @@ export class LivechatVisitors extends Base {
 	 * @return {string} The next visitor name
 	 */
 	getNextVisitorUsername() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_guest_count',
 		};
@@ -133,7 +133,7 @@ export class LivechatVisitors extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return `guest-${ livechatCount.value.value + 1 }`;
 	}
@@ -204,7 +204,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i'),
+			'visitorEmails.address': new RegExp(`^${ escapeRegExp(emailAddress) }$`, 'i'),
 		};
 
 		return this.findOne(query);
@@ -239,6 +239,10 @@ export class LivechatVisitors extends Base {
 	}
 
 	// REMOVE
+	removeDepartmentById(_id) {
+		return this.update({ _id }, { $unset: { department: 1 } });
+	}
+
 	removeById(_id) {
 		const query = { _id };
 		return this.remove(query);

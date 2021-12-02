@@ -7,67 +7,25 @@ import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
 
 import { Progress } from './ImporterProgress';
-import { Selection } from './ImporterSelection';
 import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { Settings, Imports } from '../../../models';
 import { Logger } from '../../../logger';
-import { FileUpload } from '../../../file-upload';
-import { sendMessage } from '../../../lib';
+import { ImportDataConverter } from './ImportDataConverter';
+import { ImportData } from '../../../models/server';
+import { t } from '../../../utils/server';
+import {
+	Selection,
+	SelectionChannel,
+	SelectionUser,
+} from '..';
 
 /**
  * Base class for all of the importers.
  */
 export class Base {
-	/**
-	 * The max BSON object size we can store in MongoDB is 16777216 bytes
-	 * but for some reason the mongo instanace which comes with Meteor
-	 * errors out for anything close to that size. So, we are rounding it
-	 * down to 8000000 bytes.
-	 *
-	 * @param {any} item The item to calculate the BSON size of.
-	 * @returns {number} The size of the item passed in.
-	 * @static
-	 */
-	static getBSONSize(item) {
-		const { calculateObjectSize } = require('bson');
-
-		return calculateObjectSize(item);
-	}
-
-	/**
-	 * The max BSON object size we can store in MongoDB is 16777216 bytes
-	 * but for some reason the mongo instanace which comes with Meteor
-	 * errors out for anything close to that size. So, we are rounding it
-	 * down to 8000000 bytes.
-	 *
-	 * @returns {number} 8000000 bytes.
-	 */
-	static getMaxBSONSize() {
-		return 8000000;
-	}
-
-	/**
-	 * Splits the passed in array to at least one array which has a size that
-	 * is safe to store in the database.
-	 *
-	 * @param {any[]} theArray The array to split out
-	 * @returns {any[][]} The safe sized arrays
-	 * @static
-	 */
-	static getBSONSafeArraysFromAnArray(theArray) {
-		const BSONSize = Base.getBSONSize(theArray);
-		const maxSize = Math.floor(theArray.length / Math.ceil(BSONSize / Base.getMaxBSONSize()));
-		const safeArrays = [];
-		let i = 0;
-		while (i < theArray.length) {
-			safeArrays.push(theArray.slice(i, i += maxSize));
-		}
-		return safeArrays;
-	}
-
 	/**
 	 * Constructs a new importer, adding an empty collection, AdmZip property, and empty users & channels
 	 *
@@ -84,6 +42,7 @@ export class Base {
 		this.https = https;
 		this.AdmZip = AdmZip;
 		this.getFileType = getFileType;
+		this.converter = new ImportDataConverter();
 
 		this.prepare = this.prepare.bind(this);
 		this.startImport = this.startImport.bind(this);
@@ -92,11 +51,12 @@ export class Base {
 		this.addCountToTotal = this.addCountToTotal.bind(this);
 		this.addCountCompleted = this.addCountCompleted.bind(this);
 		this.updateRecord = this.updateRecord.bind(this);
-		this.uploadFile = this.uploadFile.bind(this);
 
 		this.info = info;
 
-		this.logger = new Logger(`${ this.info.name } Importer`, {});
+		this.logger = new Logger(`${ this.info.name } Importer`);
+		this.converter.setLogger(this.logger);
+
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
@@ -140,7 +100,7 @@ export class Base {
 	 */
 	prepareUsingLocalFile(fullFilePath) {
 		const file = fs.readFileSync(fullFilePath);
-		const buffer = Buffer.isBuffer(file) ? file : new Buffer(file);
+		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
 
 		const { contentType } = this.importRecord;
 		const fileName = this.importRecord.file;
@@ -163,7 +123,7 @@ export class Base {
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
 		this.collection.remove({});
 		if (!skipTypeCheck) {
-			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
+			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
 			this.logger.debug('Expected file type is:', this.info.mimeType);
 
@@ -196,7 +156,70 @@ export class Base {
 			throw new Error(`Channels in the selected data wasn't found, it must but at least an empty array for the ${ this.info.name } importer.`);
 		}
 
-		return this.updateProgress(ProgressStep.IMPORTING_STARTED);
+		this.updateProgress(ProgressStep.IMPORTING_STARTED);
+		this.reloadCount();
+		const started = Date.now();
+		const startedByUserId = Meteor.userId();
+
+		const beforeImportFn = (data, type) => {
+			switch (type) {
+				case 'channel': {
+					const id = data.t === 'd' ? '__directMessages__' : data.importIds[0];
+					for (const channel of importSelection.channels) {
+						if (channel.channel_id === id) {
+							return channel.do_import;
+						}
+					}
+
+					return false;
+				}
+				case 'user': {
+					const id = data.importIds[0];
+					for (const user of importSelection.users) {
+						if (user.user_id === id) {
+							return user.do_import;
+						}
+					}
+
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		const afterImportFn = () => {
+			this.addCountCompleted(1);
+		};
+
+		Meteor.defer(() => {
+			try {
+				this.updateProgress(ProgressStep.IMPORTING_USERS);
+				this.converter.convertUsers({ beforeImportFn, afterImportFn });
+
+				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
+				this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
+
+				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+				this.converter.convertMessages({ afterImportFn });
+
+				this.updateProgress(ProgressStep.FINISHING);
+
+				Meteor.defer(() => {
+					this.converter.clearSuccessfullyImportedData();
+				});
+
+				this.updateProgress(ProgressStep.DONE);
+			} catch (e) {
+				this.logger.error(e);
+				this.updateProgress(ProgressStep.ERROR);
+			}
+
+			const timeTook = Date.now() - started;
+			this.logger.log(`Import took ${ timeTook } milliseconds.`);
+		});
+
+		return this.getProgress();
 	}
 
 	/**
@@ -233,6 +256,9 @@ export class Base {
 				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 
+				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
+
 				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
@@ -243,6 +269,7 @@ export class Base {
 				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
@@ -291,9 +318,13 @@ export class Base {
 		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
+			this.reportProgress();
+		} else if (!this._reportProgressHandler) {
+			this._reportProgressHandler = setTimeout(() => {
+				this.reportProgress();
+			}, 250);
 		}
 
-		this.reportProgress();
 		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
@@ -303,6 +334,10 @@ export class Base {
 	 * Sends an updated progress to the websocket
 	 */
 	reportProgress() {
+		if (this._reportProgressHandler) {
+			clearTimeout(this._reportProgressHandler);
+			this._reportProgressHandler = false;
+		}
 		ImporterWebsocket.progressUpdated(this.progress);
 	}
 
@@ -340,18 +375,6 @@ export class Base {
 		});
 	}
 
-	flagConflictingEmails(emailList) {
-		Imports.model.update({
-			_id: this.importRecord._id,
-			'fileData.users.email': { $in: emailList },
-		}, {
-			$set: {
-				'fileData.users.$.is_email_taken': true,
-				'fileData.users.$.do_import': false,
-			},
-		});
-	}
-
 	/**
 	 * Updates the import record with the given fields being `set`.
 	 *
@@ -365,79 +388,23 @@ export class Base {
 		return this.importRecord;
 	}
 
-	/**
-	 * Uploads the file to the storage.
-	 *
-	 * @param {any} details An object with details about the upload: `name`, `size`, `type`, and `rid`.
-	 * @param {string} fileUrl Url of the file to download/import.
-	 * @param {any} user The Rocket.Chat user.
-	 * @param {any} room The Rocket.Chat Room.
-	 * @param {Date} timeStamp The timestamp the file was uploaded
-	 */
-	uploadFile(details, fileUrl, user, room, timeStamp) {
-		this.logger.debug(`Uploading the file ${ details.name } from ${ fileUrl }.`);
-		const requestModule = /https/i.test(fileUrl) ? this.https : this.http;
+	buildSelection() {
+		this.updateProgress(ProgressStep.USER_SELECTION);
 
-		const fileStore = FileUpload.getStore('Uploads');
+		const users = ImportData.getAllUsersForSelection();
+		const channels = ImportData.getAllChannelsForSelection();
+		const hasDM = ImportData.checkIfDirectMessagesExists();
 
-		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
-			const contentType = res.headers['content-type'];
-			if (!details.type && contentType) {
-				details.type = contentType;
-			}
+		const selectionUsers = users.map((u) => new SelectionUser(u.data.importIds[0], u.data.username, u.data.emails[0], Boolean(u.data.deleted), u.data.type === 'bot', true));
+		const selectionChannels = channels.map((c) => new SelectionChannel(c.data.importIds[0], c.data.name, Boolean(c.data.archived), true, c.data.t === 'p', undefined, c.data.t === 'd'));
+		const selectionMessages = ImportData.countMessages();
 
-			const rawData = [];
-			res.on('data', (chunk) => rawData.push(chunk));
-			res.on('end', Meteor.bindEnvironment(() => {
-				fileStore.insert(details, Buffer.concat(rawData), function(err, file) {
-					if (err) {
-						throw new Error(err);
-					} else {
-						const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+		if (hasDM) {
+			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
+		}
 
-						const attachment = {
-							title: file.name,
-							title_link: url,
-						};
+		const results = new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 
-						if (/^image\/.+/.test(file.type)) {
-							attachment.image_url = url;
-							attachment.image_type = file.type;
-							attachment.image_size = file.size;
-							attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-						}
-
-						if (/^audio\/.+/.test(file.type)) {
-							attachment.audio_url = url;
-							attachment.audio_type = file.type;
-							attachment.audio_size = file.size;
-						}
-
-						if (/^video\/.+/.test(file.type)) {
-							attachment.video_url = url;
-							attachment.video_type = file.type;
-							attachment.video_size = file.size;
-						}
-
-						const msg = {
-							rid: details.rid,
-							ts: timeStamp,
-							msg: '',
-							file: {
-								_id: file._id,
-							},
-							groupable: false,
-							attachments: [attachment],
-						};
-
-						if ((details.message_id != null) && (typeof details.message_id === 'string')) {
-							msg._id = details.message_id;
-						}
-
-						return sendMessage(user, msg, room, true);
-					}
-				});
-			}));
-		}));
+		return results;
 	}
 }

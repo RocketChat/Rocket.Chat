@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
-import { Notifications } from '../../../notifications';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -73,10 +72,7 @@ Meteor.methods({
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser, user);
 			} else {
-				Notifications.notifyUser(userId, 'message', {
-					_id: Random.id(),
-					rid: data.rid,
-					ts: new Date(),
+				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 					msg: TAPi18n.__('Username_is_already_in_here', {
 						postProcess: 'sprintf',
 						sprintf: [newUser.username],

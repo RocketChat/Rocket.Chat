@@ -4,10 +4,11 @@ import s from 'underscore.string';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
-import { Subscriptions } from '../../../models';
+import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
-export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
+export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -43,13 +44,8 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				throw new Meteor.Error('invalid-channel');
 		}
 
-		if (mustBeJoined && !Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
-			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
-		}
-
-		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
-			console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
+		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
+			SystemLogger.warn({ msg: 'Attachments should be Array, ignoring value', attachments: messageObj.attachments });
 			messageObj.attachments = undefined;
 		}
 
@@ -60,6 +56,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
+			tmid: messageObj.tmid,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
@@ -81,6 +78,8 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				}
 			}
 		}
+
+		validateRoomMessagePermissions(room, { uid: user._id, ...user });
 
 		const messageReturn = sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });

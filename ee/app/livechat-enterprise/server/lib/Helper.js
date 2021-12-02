@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { hasRole } from '../../../../../app/authorization';
+import { memoizeDebounce } from './debounceByParams';
 import {
 	LivechatDepartment,
 	Users,
@@ -13,22 +12,24 @@ import {
 } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { logger, helperLogger } from './logger';
+import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
-	if (agentId) {
-		const user = Users.getAgentInfo(agentId);
-		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
+	if (departmentId) {
+		const department = LivechatDepartment.findOneById(departmentId);
+		const { maxNumberSimultaneousChat } = department || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
 		}
 	}
 
-	if (departmentId) {
-		const department = LivechatDepartment.findOneById(departmentId);
-		const { maxNumberSimultaneousChat } = department || {};
+	if (agentId) {
+		const user = Users.getAgentInfo(agentId);
+		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
 		}
@@ -82,7 +83,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		Livechat.stream.emit(inquiry.rid, {
+		notifications.streamLivechatRoom.emit(inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -94,19 +95,37 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
+	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		return;
+	}
+
+	helperLogger.debug(`Updating statuses for queue ${ department || 'Public' }`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
+
+	if (!queue.length) {
+		return;
+	}
+
 	const queueInfo = await getQueueInfo(department);
 	queue.forEach((inquiry) => {
 		dispatchInquiryPosition(inquiry, queueInfo);
 	});
 };
 
-const processWaitingQueue = async (department) => {
+// When dealing with lots of queued items we need to make sure to notify their position
+// but we don't need to notify _each_ change that takes place, just their final position
+export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
+
+export const processWaitingQueue = async (department) => {
+	const queue = department || 'Public';
+	helperLogger.debug(`Processing items on queue ${ queue }`);
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
+		helperLogger.debug(`No items to process on queue ${ queue }`);
 		return;
 	}
 
+	helperLogger.debug(`Processing inquiry ${ inquiry._id } from queue ${ queue }`);
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
@@ -116,39 +135,15 @@ const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-
+		helperLogger.debug(`Inquiry ${ inquiry._id } taken successfully by agent ${ agentId }. Notifying`);
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
 	}
-
-	const { departmentId } = room || {};
-	await dispatchWaitingQueueStatus(departmentId);
-};
-
-export const checkWaitingQueue = async (department) => {
-	if (!settings.get('Livechat_waiting_queue')) {
-		return;
-	}
-
-	const departments = (department && [department]) || LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id);
-	if (departments.length === 0) {
-		return processWaitingQueue();
-	}
-
-	return Promise.all(departments.map(async (department) => processWaitingQueue(department)));
-};
-
-export const allowAgentSkipQueue = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
-
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
-	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		return;
 	}
 
@@ -168,12 +163,38 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 };
 
 export const updatePredictedVisitorAbandonment = () => {
-	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
-	} else {
+	if (!settings.get('Livechat_abandoned_rooms_action') || (settings.get('Livechat_abandoned_rooms_action') === 'none')) {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
+	} else {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
+
+let queueTimeout;
+
+settings.get('Livechat_max_queue_wait_time', (value) => {
+	queueTimeout = value;
+});
+
+export const updateQueueInactivityTimeout = () => {
+	if (queueTimeout <= 0) {
+		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
+		OmnichannelQueueInactivityMonitor.stop();
+		return;
+	}
+
+	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
+	LivechatInquiry.getQueuedInquiries({ fields: { _updatedAt: 1 } }).forEach((inq) => {
+		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
+		try {
+			return OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, new Date(aggregatedDate.format()));
+		} catch (e) {
+			// this will usually happen if other instance attempts to re-create a job
+			logger.error({ err: e });
+		}
+	});
+};
+
 
 export const updateRoomPriorityHistory = (rid, user, priority) => {
 	const history = {
@@ -239,7 +260,11 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const { _id: rid } = room;
+	if (!settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		return null;
+	}
+
+	const { _id: rid, departmentId: department } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
 	if (!inquiry) {
 		return null;
@@ -250,7 +275,7 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
 
 	if (!inq) {
 		return null;

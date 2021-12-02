@@ -1,3 +1,5 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
@@ -44,6 +46,16 @@ export class MessagesRaw extends BaseRaw {
 
 	findDiscussionsByRoom(rid, options) {
 		const query = { rid, drid: { $exists: true } };
+
+		return this.find(query, options);
+	}
+
+	findDiscussionsByRoomAndText(rid, text, options) {
+		const query = {
+			rid,
+			drid: { $exists: true },
+			msg: new RegExp(escapeRegExp(text), 'i'),
+		};
 
 		return this.find(query, options);
 	}
@@ -152,7 +164,7 @@ export class MessagesRaw extends BaseRaw {
 			{
 				$project: {
 					_id: 0,
-					date: { $toInt: '$_id.date' },
+					date: '$_id.date',
 					room: {
 						_id: '$_id._id',
 						name: '$_id.name',
@@ -171,5 +183,18 @@ export class MessagesRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	findLivechatClosedMessages(rid, options) {
+		return this.find(
+			{
+				rid,
+				$or: [
+					{ t: { $exists: false } },
+					{ t: 'livechat-close' },
+				],
+			},
+			options,
+		);
 	}
 }

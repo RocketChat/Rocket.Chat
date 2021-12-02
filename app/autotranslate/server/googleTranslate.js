@@ -7,14 +7,15 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
-import { settings } from '../../settings';
+import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../settings/server';
 
 /**
  * Represents google translate class
  * @class
  * @augments AutoTranslate
  */
+
 class GoogleAutoTranslate extends AutoTranslate {
 	/**
 	 * setup api reference to Google translate to be used as message translation provider.
@@ -25,7 +26,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		this.name = 'google-translate';
 		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_GoogleAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -63,47 +64,45 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 * @returns {object} code : value pair
 	 */
 	getSupportedLanguages(target) {
-		let supportedLanguages = {};
-		if (this.autoTranslateEnabled && this.apiKey) {
-			if (this.supportedLanguages[target]) {
-				return this.supportedLanguages[target];
-			}
+		if (!this.apiKey) {
+			return [];
+		}
 
-			let result;
-			const params = {
-				key: this.apiKey,
-			};
+		if (this.supportedLanguages[target]) {
+			return this.supportedLanguages[target];
+		}
 
-			if (target) {
-				params.target = target;
-			}
+		let result;
+		const params = {
+			key: this.apiKey,
+		};
 
-			try {
-				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-					params,
-				});
-			} catch (e) {
-				// Fallback: Get the English names of the target languages
-				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
-					params.target = 'en';
-					target = 'en';
-					if (!this.supportedLanguages[target]) {
-						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
-							params,
-						});
-					}
+		if (target) {
+			params.target = target;
+		}
+
+		try {
+			result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+				params,
+			});
+		} catch (e) {
+			// Fallback: Get the English names of the target languages
+			if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
+				params.target = 'en';
+				target = 'en';
+				if (!this.supportedLanguages[target]) {
+					result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', {
+						params,
+					});
 				}
 			}
-
-			if (this.supportedLanguages[target]) {
-				supportedLanguages = this.supportedLanguages[target];
-			} else {
-				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-				supportedLanguages = this.supportedLanguages[target || 'en'];
-			}
-
-			return supportedLanguages;
 		}
+
+		if (this.supportedLanguages[target]) {
+			return this.supportedLanguages[target];
+		}
+		this.supportedLanguages[target || 'en'] = result?.data?.data?.languages;
+		return this.supportedLanguages[target || 'en'];
 	}
 
 	/**

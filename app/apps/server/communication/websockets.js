@@ -1,5 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -48,10 +50,10 @@ export class AppServerListener {
 		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
 
 		if (AppStatusUtils.isEnabled(status)) {
-			await this.orch.getManager().enable(appId).catch(console.error);
+			await this.orch.getManager().enable(appId).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
-			await this.orch.getManager().disable(appId, status, true).catch(console.error);
+			await this.orch.getManager().disable(appId, status, true).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}
@@ -67,7 +69,10 @@ export class AppServerListener {
 
 		const storageItem = await this.orch.getStorage().retrieveOne(appId);
 
-		await this.orch.getManager().update(storageItem.zip);
+		const appPackage = await this.orch.getAppSourceStorage().fetch(storageItem);
+
+		await this.orch.getManager().updateLocal(storageItem, appPackage);
+
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
 
@@ -78,7 +83,7 @@ export class AppServerListener {
 			return;
 		}
 
-		await this.orch.getManager().remove(appId);
+		await this.orch.getManager().removeLocal(appId);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
 	}
 
@@ -101,18 +106,10 @@ export class AppServerListener {
 
 export class AppServerNotifier {
 	constructor(orch) {
-		this.engineStreamer = new Meteor.Streamer('apps-engine', { retransmit: false });
-		this.engineStreamer.serverOnly = true;
-		this.engineStreamer.allowRead('none');
-		this.engineStreamer.allowEmit('all');
-		this.engineStreamer.allowWrite('none');
+		this.engineStreamer = notifications.streamAppsEngine;
 
 		// This is used to broadcast to the web clients
-		this.clientStreamer = new Meteor.Streamer('apps', { retransmit: false });
-		this.clientStreamer.serverOnly = true;
-		this.clientStreamer.allowRead('all');
-		this.clientStreamer.allowEmit('all');
-		this.clientStreamer.allowWrite('none');
+		this.clientStreamer = notifications.streamApps;
 
 		this.received = new Map();
 		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);

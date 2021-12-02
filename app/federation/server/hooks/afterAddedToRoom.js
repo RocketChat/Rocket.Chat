@@ -1,4 +1,4 @@
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
@@ -16,7 +16,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		return involvedUsers;
 	}
 
-	logger.client.debug(() => `afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterAddedToRoom', involvedUsers, room });
 
 	// If there are not federated users on this room, ignore it
 	const { users, subscriptions } = getFederatedRoomData(room);
@@ -45,11 +45,16 @@ async function afterAddedToRoom(involvedUsers, room) {
 			//
 
 			// Get the users domains
-			const domainsAfterAdd = users.map((u) => u.federation.origin);
+			const domainsAfterAdd = [];
+			users.forEach((user) => {
+				if (user.hasOwnProperty('federation') && !domainsAfterAdd.includes(user.federation.origin)) {
+					domainsAfterAdd.push(user.federation.origin);
+				}
+			});
 
 			// Check if the number of domains is allowed
-			if (!checkRoomDomainsLength(room.federation.domains)) {
-				throw new Error('Cannot federate rooms with more than 10 domains');
+			if (!checkRoomDomainsLength(domainsAfterAdd)) {
+				throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
 			}
 
 			//
@@ -68,7 +73,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Subscriptions.remove({ _id: subscription._id });
 
-		logger.client.error('afterAddedToRoom => Could not add user:', err);
+		clientLogger.error({ msg: 'afterAddedToRoom => Could not add user:', err });
 	}
 
 	return involvedUsers;

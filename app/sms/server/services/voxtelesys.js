@@ -1,21 +1,18 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
-import { Notifications } from '../../../notifications';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { mime } from '../../../utils/lib/mimeTypes';
+import { api } from '../../../../server/sdk/api';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => Notifications.notifyUser(userId, 'message', {
-	_id: Random.id(),
-	rid,
-	ts: new Date(),
+const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
 	msg,
 });
 
@@ -83,7 +80,7 @@ class Voxtelesys {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return console.error(`(Voxtelesys) -> ${ reason }`);
+				return SystemLogger.error(`(Voxtelesys) -> ${ reason }`);
 			}
 
 			media = [publicFilePath];
@@ -104,7 +101,7 @@ class Voxtelesys {
 		try {
 			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
 		} catch (error) {
-			console.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
+			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
 		}
 	}
 

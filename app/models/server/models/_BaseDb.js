@@ -4,24 +4,160 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
+import { setUpdatedAt } from '../lib/setUpdatedAt';
+import { metrics } from '../../../metrics/server/lib/metrics';
+import { getOplogHandle } from './_oplogHandle';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
-const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
-	trash._ensureIndex({ collection: 1 });
+	trash._ensureIndex({ __collection__: 1 });
 	trash._ensureIndex(
 		{ _deletedAt: 1 },
 		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
 	);
+
+	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	console.log(e);
+	SystemLogger.error(e);
 }
 
-export class BaseDb extends EventEmitter {
-	constructor(model, baseModel, options = {}) {
+const actions = {
+	i: 'insert',
+	u: 'update',
+	d: 'remove',
+};
+
+export class BaseDbWatch extends EventEmitter {
+	constructor(collectionName) {
 		super();
+		this.collectionName = collectionName;
+
+		if (!process.env.DISABLE_DB_WATCH) {
+			this.initDbWatch();
+		}
+	}
+
+	initDbWatch() {
+		const _oplogHandle = Promise.await(getOplogHandle());
+
+		// When someone start listening for changes we start oplog if available
+		const handleListener = async (event /* , listener*/) => {
+			if (event !== 'change') {
+				return;
+			}
+
+			this.removeListener('newListener', handleListener);
+
+			const query = {
+				collection: this.collectionName,
+			};
+
+			if (!_oplogHandle) {
+				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
+				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
+				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
+				3. Start your instance with OPLOG configuration: export MONGO_OPLOG_URL=mongodb://localhost:27017/local MONGO_URL=mongodb://localhost:27017/meteor node main.js
+				`);
+			}
+
+			_oplogHandle.onOplogEntry(
+				query,
+				this.processOplogRecord.bind(this),
+			);
+			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
+			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
+				_oplogHandle._defineTooFarBehind(
+					Number.MAX_SAFE_INTEGER,
+				);
+			}
+		};
+
+		if (_oplogHandle) {
+			this.on('newListener', handleListener);
+		}
+	}
+
+	processOplogRecord({ id, op }) {
+		const action = actions[op.op];
+		metrics.oplog.inc({
+			collection: this.collectionName,
+			op: action,
+		});
+
+		if (action === 'insert') {
+			this.emit('change', {
+				action,
+				clientAction: 'inserted',
+				id: op.o._id,
+				data: op.o,
+				oplog: true,
+			});
+			return;
+		}
+
+		if (action === 'update') {
+			if (!op.o.$set && !op.o.$unset) {
+				this.emit('change', {
+					action,
+					clientAction: 'updated',
+					id,
+					data: op.o,
+					oplog: true,
+				});
+				return;
+			}
+
+			const diff = {};
+			if (op.o.$set) {
+				for (const key in op.o.$set) {
+					if (op.o.$set.hasOwnProperty(key)) {
+						diff[key] = op.o.$set[key];
+					}
+				}
+			}
+			const unset = {};
+			if (op.o.$unset) {
+				for (const key in op.o.$unset) {
+					if (op.o.$unset.hasOwnProperty(key)) {
+						diff[key] = undefined;
+						unset[key] = 1;
+					}
+				}
+			}
+
+			this.emit('change', {
+				action,
+				clientAction: 'updated',
+				id,
+				diff,
+				unset,
+				oplog: true,
+			});
+			return;
+		}
+
+		if (action === 'remove') {
+			this.emit('change', {
+				action,
+				clientAction: 'removed',
+				id,
+				oplog: true,
+			});
+		}
+	}
+}
+
+
+export class BaseDb extends BaseDbWatch {
+	constructor(model, baseModel, options = {}) {
+		const collectionName = Match.test(model, String) ? baseName + model : model._name;
+
+		super(collectionName);
+
+		this.collectionName = collectionName;
 
 		if (Match.test(model, String)) {
 			this.name = model;
@@ -35,45 +171,9 @@ export class BaseDb extends EventEmitter {
 
 		this.baseModel = baseModel;
 
+		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
+
 		this.wrapModel();
-
-		const { oplogEnabled, mongo } = getMongoInfo();
-
-		// When someone start listening for changes we start oplog if available
-		const handleListener = (event /* , listener*/) => {
-			if (event !== 'change') {
-				return;
-			}
-
-			this.removeListener('newListener', handleListener);
-
-			const query = {
-				collection: this.collectionName,
-			};
-
-			if (!mongo._oplogHandle) {
-				throw new Error(`Error: Unable to find Mongodb Oplog. You must run the server with oplog enabled. Try the following:\n
-				1. Start your mongodb in a replicaset mode: mongod --smallfiles --oplogSize 128 --replSet rs0\n
-				2. Start the replicaset via mongodb shell: mongo mongo/meteor --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"\n
-				3. Start your instance with OPLOG configuration: export MONGO_OPLOG_URL=mongodb://localhost:27017/local MONGO_URL=mongodb://localhost:27017/meteor node main.js
-				`);
-			}
-
-			mongo._oplogHandle.onOplogEntry(
-				query,
-				this.processOplogRecord.bind(this),
-			);
-			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
-			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				mongo._oplogHandle._defineTooFarBehind(
-					Number.MAX_SAFE_INTEGER,
-				);
-			}
-		};
-
-		if (oplogEnabled) {
-			this.on('newListener', handleListener);
-		}
 
 		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
@@ -83,6 +183,9 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
+		if (this.preventSetUpdatedAt) {
+			return record;
+		}
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
@@ -91,12 +194,7 @@ export class BaseDb extends EventEmitter {
 		// 	}
 		// }
 
-		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date();
-		} else {
-			record._updatedAt = new Date();
-		}
+		setUpdatedAt(record);
 
 		return record;
 	}
@@ -122,28 +220,52 @@ export class BaseDb extends EventEmitter {
 		};
 	}
 
-	_doNotMixInclusionAndExclusionFields(options) {
-		if (options && options.fields) {
-			const keys = Object.keys(options.fields);
-			const removeKeys = keys.filter((key) => options.fields[key] === 0);
-			if (keys.length > removeKeys.length) {
-				removeKeys.forEach((key) => delete options.fields[key]);
-			}
+	_ensureDefaultFields(options) {
+		if (!this.baseModel.defaultFields) {
+			return options;
 		}
+
+		if (!options) {
+			return { fields: this.baseModel.defaultFields };
+		}
+
+		if (options.fields != null && Object.keys(options.fields).length > 0) {
+			return options;
+		}
+
+		return {
+			...options,
+			fields: this.baseModel.defaultFields,
+		};
 	}
 
-	find(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.find(...args);
+	_doNotMixInclusionAndExclusionFields(options) {
+		const optionsDef = this._ensureDefaultFields(options);
+		if (!optionsDef?.fields) {
+			return optionsDef;
+		}
+
+		const keys = Object.keys(optionsDef.fields);
+		const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
+		if (keys.length > removeKeys.length) {
+			removeKeys.forEach((key) => delete optionsDef.fields[key]);
+		}
+
+		return optionsDef;
+	}
+
+	find(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.find(query, optionsDef);
 	}
 
 	findById(_id, options) {
 		return this.find({ _id }, options);
 	}
 
-	findOne(...args) {
-		this._doNotMixInclusionAndExclusionFields(args[1]);
-		return this.model.findOne(...args);
+	findOne(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.findOne(query, optionsDef);
 	}
 
 	findOneById(_id, options) {
@@ -161,67 +283,6 @@ export class BaseDb extends EventEmitter {
 				|| (Match.test(update[key], Object)
 					&& this.updateHasPositionalOperator(update[key])),
 		);
-	}
-
-	processOplogRecord(action) {
-		if (action.op.op === 'i') {
-			this.emit('change', {
-				action: 'insert',
-				clientAction: 'inserted',
-				id: action.op.o._id,
-				data: action.op.o,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action.op.op === 'u') {
-			if (!action.op.o.$set && !action.op.o.$unset) {
-				this.emit('change', {
-					action: 'update',
-					clientAction: 'updated',
-					id: action.id,
-					data: action.op.o,
-					oplog: true,
-				});
-				return;
-			}
-
-			const diff = {};
-			if (action.op.o.$set) {
-				for (const key in action.op.o.$set) {
-					if (action.op.o.$set.hasOwnProperty(key)) {
-						diff[key] = action.op.o.$set[key];
-					}
-				}
-			}
-
-			if (action.op.o.$unset) {
-				for (const key in action.op.o.$unset) {
-					if (action.op.o.$unset.hasOwnProperty(key)) {
-						diff[key] = undefined;
-					}
-				}
-			}
-
-			this.emit('change', {
-				action: 'update',
-				clientAction: 'updated',
-				id: action.id,
-				diff,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action.op.op === 'd') {
-			this.emit('change', {
-				action: 'remove',
-				clientAction: 'removed',
-				id: action.id,
-				oplog: true,
-			});
-		}
 	}
 
 	insert(record, ...args) {

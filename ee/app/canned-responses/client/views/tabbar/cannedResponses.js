@@ -1,11 +1,12 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { CannedResponse } from '../../collections/CannedResponse';
-import { t, handleError } from '../../../../../../app/utils';
+import { t } from '../../../../../../app/utils';
 import { chatMessages } from '../../../../../../app/ui/client';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 import './cannedResponses.html';
 
@@ -135,7 +136,7 @@ Template.cannedResponses.events({
 
 		const cannedResponse = CannedResponse.findOne({ _id });
 		if (!cannedResponse) {
-			toastr.success(t('Invalid Canned Response'));
+			dispatchToastMessage({ type: 'success', message: t('Invalid Canned Response') });
 		}
 
 		instance.cannedResponse.set(cannedResponse);
@@ -155,7 +156,7 @@ Template.cannedResponses.events({
 				return handleError(error);
 			}
 
-			toastr.success(t('Canned_Response_Removed'));
+			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			instance.action.set(null);
 		});
 	},
@@ -222,7 +223,7 @@ Template.cannedResponses.events({
 		const context = instance.context.get();
 		if (context === 'department') {
 			if (!instance.departmentId) {
-				toastr.error(t('Invalid_Department'));
+				dispatchToastMessage({ type: 'error', message: t('Invalid_Department') });
 				return;
 			}
 
@@ -237,7 +238,7 @@ Template.cannedResponses.events({
 				return handleError(error);
 			}
 
-			toastr.success(t('Saved'));
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			instance.action.set(null);
 		});
 	},

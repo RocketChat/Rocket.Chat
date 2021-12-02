@@ -1,4 +1,4 @@
-import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server/raw';
@@ -6,7 +6,7 @@ import { Users } from '../../../../models/server/raw';
 async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	const query = {};
 	if (text) {
-		const filterReg = new RegExp(s.escapeRegExp(text), 'i');
+		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		Object.assign(query, { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
 	}
 
@@ -14,7 +14,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,

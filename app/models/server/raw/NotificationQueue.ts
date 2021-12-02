@@ -1,29 +1,40 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {
-	Collection,
-	ObjectId,
-} from 'mongodb';
+import { UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { INotification } from '../../../../definition/INotification';
 
-export class NotificationQueueRaw extends BaseRaw {
-	public readonly col!: Collection<INotification>;
+export class NotificationQueueRaw extends BaseRaw<INotification> {
+	protected indexes: IndexSpecification[] = [
+		{ key: { uid: 1 } },
+		{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },
+		{ key: { schedule: 1 }, sparse: true },
+		{ key: { sending: 1 }, sparse: true },
+		{ key: { error: 1 }, sparse: true },
+	];
 
-	unsetSendingById(_id: string) {
-		return this.col.updateOne({ _id }, {
+	unsetSendingById(_id: string): Promise<UpdateWriteOpResult> {
+		return this.updateOne({ _id }, {
 			$unset: {
 				sending: 1,
 			},
 		});
 	}
 
-	removeById(_id: string) {
-		return this.col.deleteOne({ _id });
+	setErrorById(_id: string, error: any): Promise<UpdateWriteOpResult> {
+		return this.updateOne({
+			_id,
+		}, {
+			$set: {
+				error,
+			},
+			$unset: {
+				sending: 1,
+			},
+		});
 	}
 
-	clearScheduleByUserId(uid: string) {
-		return this.col.updateMany({
+	clearScheduleByUserId(uid: string): Promise<UpdateWriteOpResult> {
+		return this.updateMany({
 			uid,
 			schedule: { $exists: true },
 		}, {
@@ -34,7 +45,7 @@ export class NotificationQueueRaw extends BaseRaw {
 	}
 
 	async clearQueueByUserId(uid: string): Promise<number | undefined> {
-		const op = await this.col.deleteMany({
+		const op = await this.deleteMany({
 			uid,
 		});
 
@@ -55,6 +66,8 @@ export class NotificationQueueRaw extends BaseRaw {
 					{ schedule: { $exists: false } },
 					{ schedule: { $lte: now } },
 				],
+			}, {
+				error: { $exists: false },
 			}],
 		}, {
 			$set: {
@@ -67,12 +80,5 @@ export class NotificationQueueRaw extends BaseRaw {
 		});
 
 		return result.value;
-	}
-
-	insertOne(data: Omit<INotification, '_id'>) {
-		return this.col.insertOne({
-			_id: new ObjectId().toHexString(),
-			...data,
-		});
 	}
 }

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasAtLeastOnePermission } from '../../../authorization/server';
-import { IntegrationHistory, Integrations } from '../../../models';
+import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { API } from '../api';
 import { mountIntegrationHistoryQueryBasedOnPermissions, mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findOneIntegration } from '../lib/integrations';
@@ -63,21 +63,24 @@ API.v1.addRoute('integrations.history', { authRequired: true }, {
 
 		const { id } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields: projection, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, id), query);
 
-		const history = IntegrationHistory.find(ourQuery, {
+		const cursor = IntegrationHistory.find(ourQuery, {
 			sort: sort || { _updatedAt: -1 },
 			skip: offset,
 			limit: count,
-			fields,
-		}).fetch();
+			projection,
+		});
+
+		const history = Promise.await(cursor.toArray());
+		const total = Promise.await(cursor.count());
 
 		return API.v1.success({
 			history,
 			offset,
 			items: history.length,
-			total: IntegrationHistory.find(ourQuery).count(),
+			total,
 		});
 	},
 });
@@ -94,21 +97,25 @@ API.v1.addRoute('integrations.list', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields: projection, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
-		const integrations = Integrations.find(ourQuery, {
+		const cursor = Integrations.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields,
-		}).fetch();
+			projection,
+		});
+
+		const total = Promise.await(cursor.count());
+
+		const integrations = Promise.await(cursor.toArray());
 
 		return API.v1.success({
 			integrations,
 			offset,
 			items: integrations.length,
-			total: Integrations.find(ourQuery).count(),
+			total,
 		});
 	},
 });
@@ -138,9 +145,9 @@ API.v1.addRoute('integrations.remove', { authRequired: true }, {
 		switch (this.bodyParams.type) {
 			case 'webhook-outgoing':
 				if (this.bodyParams.target_url) {
-					integration = Integrations.findOne({ urls: this.bodyParams.target_url });
+					integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
 				} else if (this.bodyParams.integrationId) {
-					integration = Integrations.findOne({ _id: this.bodyParams.integrationId });
+					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
 				}
 
 				if (!integration) {
@@ -155,7 +162,7 @@ API.v1.addRoute('integrations.remove', { authRequired: true }, {
 					integration,
 				});
 			case 'webhook-incoming':
-				integration = Integrations.findOne({ _id: this.bodyParams.integrationId });
+				integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
 
 				if (!integration) {
 					return API.v1.failure('No integration found.');
@@ -188,5 +195,63 @@ API.v1.addRoute('integrations.get', { authRequired: true }, {
 				createdBy,
 			})),
 		});
+	},
+});
+
+API.v1.addRoute('integrations.update', { authRequired: true }, {
+	put() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			urls: Match.Maybe([String]),
+			channel: String,
+			event: Match.Maybe(String),
+			triggerWords: Match.Maybe([String]),
+			alias: Match.Maybe(String),
+			avatar: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			token: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			script: Match.Maybe(String),
+			targetChannel: Match.Maybe(String),
+			integrationId: Match.Maybe(String),
+			target_url: Match.Maybe(String),
+		}));
+
+		let integration;
+		switch (this.bodyParams.type) {
+			case 'webhook-outgoing':
+				if (this.bodyParams.target_url) {
+					integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
+				} else if (this.bodyParams.integrationId) {
+					integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+				}
+
+				if (!integration) {
+					return API.v1.failure('No integration found.');
+				}
+
+				Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
+
+				return API.v1.success({
+					integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+				});
+			case 'webhook-incoming':
+				integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
+
+				if (!integration) {
+					return API.v1.failure('No integration found.');
+				}
+
+				Meteor.call('updateIncomingIntegration', integration._id, this.bodyParams);
+
+				return API.v1.success({
+					integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+				});
+			default:
+				return API.v1.failure('Invalid integration type.');
+		}
 	},
 });

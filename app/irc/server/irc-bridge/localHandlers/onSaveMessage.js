@@ -1,3 +1,4 @@
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Subscriptions, Users } from '../../../../models';
 
 export default function handleOnSaveMessage(message, to) {
@@ -6,7 +7,7 @@ export default function handleOnSaveMessage(message, to) {
 	if (to.t === 'd') {
 		const subscriptions = Subscriptions.findByRoomId(to._id);
 		subscriptions.forEach((subscription) => {
-			if (subscription.u.username !== to.username) {
+			if (subscription.u._id !== message.u._id) {
 				const userData = Users.findOne({ username: subscription.u.username });
 				if (userData) {
 					if (userData.profile && userData.profile.irc && userData.profile.irc.nick) {
@@ -21,7 +22,7 @@ export default function handleOnSaveMessage(message, to) {
 		});
 
 		if (!toIdentification) {
-			console.error('[irc][server] Target user not found');
+			SystemLogger.error('[irc][server] Target user not found');
 			return;
 		}
 	} else {

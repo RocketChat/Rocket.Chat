@@ -14,7 +14,7 @@ describe('LIVECHAT - office hours', function() {
 
 	describe('livechat/office-hours', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-officeHours', []).then(() => {
+			updatePermission('view-livechat-business-hours', []).then(() => {
 				request.get(api('livechat/office-hours'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -27,7 +27,7 @@ describe('LIVECHAT - office hours', function() {
 			});
 		});
 		it('should return an array of office hours', (done) => {
-			updatePermission('view-livechat-officeHours', ['admin']).then(() => {
+			updatePermission('view-livechat-business-hours', ['admin']).then(() => {
 				request.get(api('livechat/office-hours'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')

@@ -7,7 +7,7 @@ export async function findAgentDepartments({ userId, enabledDepartmentsOnly, age
 	}
 	if (enabledDepartmentsOnly) {
 		return {
-			departments: await LivechatDepartmentAgents.findActiveDepartmentsByAgentId(agentId),
+			departments: await LivechatDepartmentAgents.findActiveDepartmentsByAgentId(agentId).toArray(),
 		};
 	}
 

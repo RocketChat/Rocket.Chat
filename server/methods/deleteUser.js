@@ -3,10 +3,11 @@ import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { deleteUser } from '../../app/lib';
+import { callbacks } from '../../app/callbacks/server';
+import { deleteUser } from '../../app/lib/server';
 
 Meteor.methods({
-	deleteUser(userId) {
+	async deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
 
 		if (!Meteor.userId()) {
@@ -36,7 +37,7 @@ Meteor.methods({
 
 		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
 
-		const userIsAdmin = user.roles.indexOf('admin') > -1;
+		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
 		if (adminCount === 1 && userIsAdmin) {
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
@@ -45,7 +46,9 @@ Meteor.methods({
 			});
 		}
 
-		deleteUser(userId);
+		await deleteUser(userId, confirmRelinquish);
+
+		callbacks.run('afterDeleteUser', user);
 
 		return true;
 	},

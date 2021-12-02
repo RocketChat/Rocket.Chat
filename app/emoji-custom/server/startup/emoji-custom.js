@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file';
 
 export let RocketChatFileEmojiCustomInstance;
@@ -20,7 +21,7 @@ Meteor.startup(function() {
 		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
 	}
 
-	console.log(`Using ${ storeType } for custom emoji storage`.green);
+	SystemLogger.info(`Using ${ storeType } for custom emoji storage`);
 
 	let path = '~/uploads';
 	if (settings.get('EmojiUpload_FileSystemPath') != null) {
@@ -104,6 +105,8 @@ Meteor.startup(function() {
 		}
 		if (/^svg$/i.test(params.emoji.split('.').pop())) {
 			res.setHeader('Content-Type', 'image/svg+xml');
+		} else if (/^png$/i.test(params.emoji.split('.').pop())) {
+			res.setHeader('Content-Type', 'image/png');
 		} else {
 			res.setHeader('Content-Type', 'image/jpeg');
 		}

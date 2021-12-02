@@ -1,5 +1,18 @@
+export type BundleFeature =
+	| 'auditing'
+	| 'canned-responses'
+	| 'ldap-enterprise'
+	| 'livechat-enterprise'
+	| 'omnichannel-mobile-enterprise'
+	| 'engagement-dashboard'
+	| 'push-privacy'
+	| 'scalability'
+	| 'teams-mention'
+	| 'saml-enterprise'
+	| 'oauth-enterprise';
+
 interface IBundle {
-	[key: string]: string[];
+	[key: string]: BundleFeature[];
 }
 
 const bundles: IBundle = {
@@ -8,13 +21,19 @@ const bundles: IBundle = {
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'omnichannel-mobile-enterprise',
 		'engagement-dashboard',
+		'push-privacy',
+		'scalability',
+		'teams-mention',
+		'saml-enterprise',
+		'oauth-enterprise',
 	],
 	pro: [
 	],
 };
 
-const getBundleFromModule = (moduleName: string): string|undefined => {
+export const getBundleFromModule = (moduleName: string): string|undefined => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
 		return;
@@ -43,7 +62,7 @@ export function getBundleModules(moduleName: string): string[] {
 	}
 
 	const bundle = getBundleFromModule(moduleName);
-	if (!bundle) {
+	if (!bundle || !bundles[bundle]) {
 		return [];
 	}
 

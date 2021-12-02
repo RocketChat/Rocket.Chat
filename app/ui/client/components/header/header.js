@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 
-import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+
 import './header.html';
 
 Template.header.helpers({
@@ -8,7 +9,7 @@ Template.header.helpers({
 		return Template.instance().data.back;
 	},
 	buttons() {
-		return TabBar.getButtons();
+		console.log('asdasd');
 	},
 });
 

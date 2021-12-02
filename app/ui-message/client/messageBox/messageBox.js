@@ -21,22 +21,22 @@ import {
 import {
 	messageBox,
 	popover,
-	call,
-	keyCodes,
-	isRTL,
 } from '../../../ui-utils';
 import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../../utils';
+} from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
-import './messageBoxTyping';
+import './userActionIndicator.ts';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { isRTL } from '../../../../client/lib/utils/isRTL';
+import { call } from '../../../../client/lib/utils/call';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -90,7 +90,7 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
 		const { value } = input;
 		this.set('');
 
@@ -98,7 +98,7 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		onSend.call(this.data, event, { rid, tmid, value }, () => {
+		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
 			autogrow.update();
 			input.focus();
 		});
@@ -106,15 +106,23 @@ Template.messageBox.onCreated(function() {
 });
 
 Template.messageBox.onRendered(function() {
-	const $input = $(this.find('.js-input-message'));
-	this.source = $input[0];
-	$input.on('dataChange', () => {
-		const messages = $input.data('reply') || [];
-		this.replyMessageData.set(messages);
-	});
+	let inputSetup = false;
+
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
+
+		if (!inputSetup) {
+			const $input = $(this.find('.js-input-message'));
+			this.source = $input[0];
+			if (this.source) {
+				inputSetup = true;
+			}
+			$input.on('dataChange', () => {
+				const messages = $input.data('reply') || [];
+				this.replyMessageData.set(messages);
+			});
+		}
 
 		if (!room) {
 			return this.state.set({
@@ -205,6 +213,10 @@ Template.messageBox.helpers({
 			return false;
 		}
 
+		if (subscription?.onHold) {
+			return false;
+		}
+
 		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
@@ -246,6 +258,10 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
+	},
+	onHold() {
+		const { rid, subscription } = Template.currentData();
+		return rid && !!subscription?.onHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();
@@ -461,6 +477,7 @@ Template.messageBox.events({
 			data: {
 				rid: this.rid,
 				tmid: this.tmid,
+				prid: this.subscription.prid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -478,6 +495,7 @@ Template.messageBox.events({
 					rid: this.rid,
 					tmid: this.tmid,
 					messageBox: instance.firstNode,
+					prid: this.subscription.prid,
 					event,
 				});
 			});

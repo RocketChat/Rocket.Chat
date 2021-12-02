@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
 
@@ -18,6 +17,11 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
+		this.tryEnsureIndex({ source: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -135,7 +139,22 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneById(_id, fields) {
+	findByIds(ids, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id: { $in: ids },
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneById(_id, fields = {}) {
 		const options = {};
 
 		if (fields) {
@@ -166,6 +185,39 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+			...departmentId && { departmentId },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+
 	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
 		const query = {
 			t: 'l',
@@ -194,9 +246,6 @@ export class LivechatRooms extends Base {
 	}
 
 	updateRoomCount = function() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -207,7 +256,7 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return livechatCount.value.value;
 	}
@@ -227,6 +276,17 @@ export class LivechatRooms extends Base {
 			t: 'l',
 			open: true,
 			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			departmentId,
 		};
 
 		return this.findOne(query, options);
@@ -401,11 +461,11 @@ export class LivechatRooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
-					t: 'l',
+					t,
 					ts: {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
@@ -413,11 +473,24 @@ export class LivechatRooms extends Base {
 					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
+			{ $addFields: { roomId: '$_id' } },
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: '_id',
-					foreignField: 'rid',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+								// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}, ...extraQuery ? [extraQuery] : []],
+							},
+						},
+					}],
 					as: 'messages',
 				},
 			},
@@ -436,16 +509,9 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
-						msgs: '$msgs',
 					},
-					messages: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $ifNull: ['$messages.t', false] },
-								],
-							}, 1, 0],
-						},
+					messagesCount: {
+						$sum: 1,
 					},
 				},
 			},
@@ -457,10 +523,78 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+					msgs: '$messagesCount',
+				},
+			}]);
+	}
+
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
-
+			{ $addFields: { roomId: '$_id' } },
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+									// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}],
+							},
+						},
+					}],
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+						onHold: '$onHold',
+					},
+					messagesCount: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: '$messagesCount',
+					onHold: '$_id.onHold',
+				},
+			},
 		]);
 	}
 
@@ -483,6 +617,35 @@ export class LivechatRooms extends Base {
 			},
 			$unset: {
 				open: 1,
+			},
+		});
+	}
+
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				transcriptRequest: {
+					requestedAt,
+					requestedBy,
+					email,
+					subject,
+				},
+			},
+		});
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$unset: {
+				transcriptRequest: 1,
 			},
 		});
 	}
@@ -569,9 +732,8 @@ export class LivechatRooms extends Base {
 			t: 'l',
 		};
 		const update = {
-			$unset: {
-				servedBy: 1,
-			},
+			$set: { queuedAt: new Date() },
+			$unset: { servedBy: 1 },
 		};
 
 		this.update(query, update);
@@ -615,6 +777,81 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
 			},
 		};
 

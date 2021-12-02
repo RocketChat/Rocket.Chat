@@ -1,14 +1,14 @@
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { FederationRoomEvents } from '../../../models/server';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { dispatchEvents } from '../handler';
 
 API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, {
-	async post() {
+	post() {
 		if (!isFederationEnabled()) {
 			return API.v1.failure('Federation not enabled');
 		}
@@ -18,14 +18,14 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 		let payload;
 
 		try {
-			payload = decryptIfNeeded(this.request, this.bodyParams);
+			payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
 		} catch (err) {
 			return API.v1.failure('Could not decrypt payload');
 		}
 
 		const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(payload);
 
-		logger.server.debug(`federation.events.requestFromLatest => contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+		serverLogger.debug({ msg: 'federation.events.requestFromLatest', contextType, contextQuery, latestEventIds });
 
 		let EventsModel;
 
@@ -54,7 +54,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 		}
 
 		// Dispatch all the events, on the same request
-		dispatchEvents([fromDomain], missingEvents);
+		Promise.await(dispatchEvents([fromDomain], missingEvents));
 
 		return API.v1.success();
 	},

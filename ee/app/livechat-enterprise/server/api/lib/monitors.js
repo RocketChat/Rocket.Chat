@@ -1,4 +1,4 @@
-import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../../app/models/server/raw';
@@ -9,7 +9,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 	}
 	const query = {};
 	if (text) {
-		const filterReg = new RegExp(s.escapeRegExp(text), 'i');
+		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		Object.assign(query, { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
 	}
 
@@ -17,7 +17,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,
@@ -44,7 +44,7 @@ export async function findMonitorByUsername({ userId, username }) {
 		throw new Error('error-not-authorized');
 	}
 	const user = await Users.findOne({ username }, {
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,

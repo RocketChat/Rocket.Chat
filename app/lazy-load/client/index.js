@@ -9,14 +9,16 @@ const loadImage = (el) => {
 	map.delete(el);
 
 	if (!instance) {
-		return instance.loaded.set(true);
+		return;
 	}
+
 	const img = new Image();
 	const src = el.getAttribute('data-src');
 	img.onload = () => {
 		el.className = el.className.replace('lazy-img', '');
 		el.src = src;
 		el.removeAttribute('data-src');
+		instance.loaded.set(true);
 	};
 	img.src = src;
 };

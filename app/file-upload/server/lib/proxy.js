@@ -15,11 +15,11 @@ WebApp.connectHandlers.stack.unshift({
 	route: '',
 	handle: Meteor.bindEnvironment(function(req, res, next) {
 		// Quick check to see if request should be catch
-		if (req.url.indexOf(UploadFS.config.storesPath) === -1) {
+		if (!req.url.includes(`/${ UploadFS.config.storesPath }/`)) {
 			return next();
 		}
 
-		logger.debug('Upload URL:', req.url);
+		logger.debug({ msg: 'Upload URL:', url: req.url });
 
 		if (req.method !== 'POST') {
 			return next();
@@ -75,7 +75,7 @@ WebApp.connectHandlers.stack.unshift({
 			instance.extraInformation.host = 'localhost';
 		}
 
-		logger.debug('Wrong instance, proxing to:', `${ instance.extraInformation.host }:${ instance.extraInformation.port }`);
+		logger.debug(`Wrong instance, proxing to ${ instance.extraInformation.host }:${ instance.extraInformation.port }`);
 
 		const options = {
 			hostname: instance.extraInformation.host,
@@ -84,6 +84,7 @@ WebApp.connectHandlers.stack.unshift({
 			method: 'POST',
 		};
 
+		logger.warn('UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload');
 		const proxy = http.request(options, function(proxy_res) {
 			proxy_res.pipe(res, {
 				end: true,

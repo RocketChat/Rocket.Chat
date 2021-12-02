@@ -5,6 +5,9 @@ import { EventEmitter } from 'events';
 import parseMessage from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';
 import localCommandHandlers from './localCommandHandlers';
+import { Logger } from '../../../../logger/server';
+
+const logger = new Logger('IRC Server');
 
 class RFC2813 {
 	constructor(config) {
@@ -18,7 +21,7 @@ class RFC2813 {
 		this.serverPrefix = null;
 
 		// Hold the buffer while receiving
-		this.receiveBuffer = new Buffer('');
+		this.receiveBuffer = Buffer.from('');
 	}
 
 	/**
@@ -35,7 +38,7 @@ class RFC2813 {
 		this.socket.on('data', this.onReceiveFromPeer.bind(this));
 
 		this.socket.on('connect', this.onConnect.bind(this));
-		this.socket.on('error', (err) => console.log('[irc][server][err]', err));
+		this.socket.on('error', (err) => logger.error(err));
 		this.socket.on('timeout', () => this.log('Timeout'));
 		this.socket.on('close', () => this.log('Connection Closed'));
 		// Setup local
@@ -46,7 +49,8 @@ class RFC2813 {
 	 * Log helper
 	 */
 	log(message) {
-		console.log(`[irc][server] ${ message }`);
+		// TODO logger: debug?
+		logger.info(message);
 	}
 
 	/**
@@ -136,7 +140,7 @@ class RFC2813 {
 		}
 
 		// Reset the buffer
-		this.receiveBuffer = new Buffer('');
+		this.receiveBuffer = Buffer.from('');
 
 		lines.forEach((line) => {
 			if (line.length && !line.startsWith('\a')) {
@@ -148,11 +152,11 @@ class RFC2813 {
 					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
 
 					if (command) {
-						this.log(`Emitting peer command to local: ${ JSON.stringify(command) }`);
+						this.log({ msg: 'Emitting peer command to local', command });
 						this.emit('peerCommand', command);
 					}
 				} else {
-					this.log(`Unhandled peer message: ${ JSON.stringify(parsedMessage) }`);
+					this.log({ msg: 'Unhandled peer message', parsedMessage });
 				}
 			}
 		});
@@ -169,9 +173,9 @@ class RFC2813 {
 		if (localCommandHandlers[command]) {
 			this.log(`Handling local command: ${ command }`);
 
-			localCommandHandlers[command].call(this, parameters);
+			localCommandHandlers[command].call(this, parameters, this);
 		} else {
-			this.log(`Unhandled local command: ${ JSON.stringify(command) }`);
+			this.log({ msg: 'Unhandled local command', command });
 		}
 	}
 }

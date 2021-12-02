@@ -1,20 +1,17 @@
 import { callbacks } from '../../../../../app/callbacks';
-import { settings } from '../../../../../app/settings';
-import { checkWaitingQueue, dispatchWaitingQueueStatus } from '../lib/Helper';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../app/settings/server';
+import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
+import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 const onCloseLivechat = (room) => {
+	Promise.await(LivechatEnterprise.releaseOnHoldChat(room));
+
 	if (!settings.get('Livechat_waiting_queue')) {
 		return room;
 	}
 
 	const { departmentId } = room || {};
-	if (!RoutingManager.getConfig().autoAssignAgent) {
-		dispatchWaitingQueueStatus(departmentId);
-		return room;
-	}
-
-	checkWaitingQueue(departmentId);
+	debouncedDispatchWaitingQueueStatus(departmentId);
 
 	return room;
 };

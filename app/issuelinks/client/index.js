@@ -1,1 +1,1 @@
-import './client';
+export { createIssueLinksMessageRenderer } from './client';

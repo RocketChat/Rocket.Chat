@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Messages } from '../../../models/server';
 
 API.v1.addRoute('autotranslate.getSupportedLanguages', { authRequired: true }, {
@@ -22,6 +22,7 @@ API.v1.addRoute('autotranslate.saveSettings', { authRequired: true }, {
 		if (!settings.get('AutoTranslate_Enabled')) {
 			return API.v1.failure('AutoTranslate is disabled.');
 		}
+
 		if (!roomId) {
 			return API.v1.failure('The bodyParam "roomId" is required.');
 		}

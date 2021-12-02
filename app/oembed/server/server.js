@@ -10,10 +10,12 @@ import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
 
-import { OEmbedCache, Messages } from '../../models';
+import { Messages } from '../../models/server';
+import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -60,7 +62,7 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -102,6 +104,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		maxRedirects: redirectCount,
 		headers: {
 			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
 	let headers = null;
@@ -142,10 +145,9 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	return stream.on('error', function(err) {
 		error = err;
 	});
-};
+});
 
 OEmbed.getUrlMeta = function(url, withFragment) {
-	const getUrlContentSync = Meteor.wrapAsync(getUrlContent);
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query);
@@ -158,7 +160,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContentSync(urlObj, 5);
+	const content = getUrlContent(urlObj, 5);
 	if (!content) {
 		return;
 	}
@@ -190,12 +192,11 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
 		}
+		delete metas.oembedHtml;
 	}
 	let headers = undefined;
-	let data = undefined;
 
-
-	if (content && content.headers) {
+	if (content?.headers) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
@@ -203,28 +204,29 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		});
 	}
 	if (content && content.statusCode !== 200) {
-		return data;
+		return;
 	}
-	data = callbacks.run('oembed:afterParseContent', {
+	return callbacks.run('oembed:afterParseContent', {
+		url,
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
 		content,
 	});
-	return data;
 };
 
-OEmbed.getUrlMetaWithCache = function(url, withFragment) {
-	const cache = OEmbedCache.findOneById(url);
+OEmbed.getUrlMetaWithCache = async function(url, withFragment) {
+	const cache = await OEmbedCache.findOneById(url);
+
 	if (cache != null) {
 		return cache.data;
 	}
 	const data = OEmbed.getUrlMeta(url, withFragment);
 	if (data != null) {
 		try {
-			OEmbedCache.createWithIdAndData(url, data);
+			await OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			console.error('OEmbed duplicated record', url);
+			SystemLogger.error('OEmbed duplicated record', url);
 		}
 		return data;
 	}
@@ -259,25 +261,30 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-OEmbed.rocketUrlParser = function(message) {
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
+
+OEmbed.rocketUrlParser = async function(message) {
 	if (Array.isArray(message.urls)) {
-		let attachments = [];
+		const attachments = [];
 		let changed = false;
-		message.urls.forEach(function(item) {
+		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
 				return;
 			}
 			if (!isURL(item.url)) {
 				return;
 			}
-			const data = OEmbed.getUrlMetaWithCache(item.url);
+			const data = await OEmbed.getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (data.attachments) {
-					attachments = _.union(attachments, data.attachments);
+					attachments.push(...data.attachments);
 					return;
 				}
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
+					if (item.meta && item.meta.oembedHtml) {
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					}
 				}
 				if (data.headers != null) {
 					item.headers = getRelevantHeaders(data.headers);
@@ -285,7 +292,7 @@ OEmbed.rocketUrlParser = function(message) {
 				item.parsedUrl = data.parsedUrl;
 				changed = true;
 			}
-		});
+		}
 		if (attachments.length) {
 			Messages.setMessageAttachments(message._id, attachments);
 		}
@@ -296,9 +303,9 @@ OEmbed.rocketUrlParser = function(message) {
 	return message;
 };
 
-settings.get('API_Embed', function(key, value) {
+settings.watch('API_Embed', function(value) {
 	if (value) {
-		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add('afterSaveMessage', (message) => Promise.await(OEmbed.rocketUrlParser(message)), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

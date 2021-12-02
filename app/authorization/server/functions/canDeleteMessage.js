@@ -1,5 +1,6 @@
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
+import { Rooms } from '../../../models';
 
 const elapsedTime = (ts) => {
 	const dif = Date.now() - ts;
@@ -30,12 +31,20 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 	}
 	const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
 
-	if (!blockDeleteInMinutes) {
-		return true;
+	if (blockDeleteInMinutes) {
+		const timeElapsedForMessage = elapsedTime(ts);
+		return timeElapsedForMessage <= blockDeleteInMinutes;
 	}
 
-	const timeElapsedForMessage = elapsedTime(ts);
-	return timeElapsedForMessage <= blockDeleteInMinutes;
+	const room = await Rooms.findOneById(rid, { fields: { ro: 1, unmuted: 1 } });
+	if (room.ro === true && !await hasPermissionAsync(uid, 'post-readonly', rid)) {
+		// Unless the user was manually unmuted
+		if (!(room.unmuted || []).includes(u.username)) {
+			throw new Error('You can\'t delete messages because the room is readonly.');
+		}
+	}
+
+	return true;
 };
 
 export const canDeleteMessage = (uid, { u, rid, ts }) => Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));

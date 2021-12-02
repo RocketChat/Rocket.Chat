@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions } from '../../models';
-import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Hide is a named function that will replace /hide commands
@@ -29,10 +28,7 @@ function Hide(command, param, item) {
 		});
 
 		if (!roomObject) {
-			return Notifications.notifyUser(user._id, 'message', {
-				_id: Random.id(),
-				rid: item.rid,
-				ts: new Date(),
+			api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -41,10 +37,7 @@ function Hide(command, param, item) {
 		}
 
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			return Notifications.notifyUser(user._id, 'message', {
-				_id: Random.id(),
-				rid: item.rid,
-				ts: new Date(),
+			return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
 					sprintf: [room],
@@ -56,10 +49,7 @@ function Hide(command, param, item) {
 
 	Meteor.call('hideRoom', rid, (error) => {
 		if (error) {
-			return Notifications.notifyUser(user._id, 'message', {
-				_id: Random.id(),
-				rid: item.rid,
-				ts: new Date(),
+			return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 				msg: TAPi18n.__(error, null, user.language),
 			});
 		}

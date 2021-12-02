@@ -4,6 +4,7 @@ import { jws } from 'jsrsasign';
 import { Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 
 Meteor.methods({
 	'jitsi:generateAccessToken': (rid) => {
@@ -17,8 +18,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not allowed', { method: 'jitsi:generateToken' });
 		}
 
-		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
-
+		let rname;
+		if (settings.get('Jitsi_URL_Room_Hash')) {
+			rname = settings.get('uniqueID') + rid;
+		} else {
+			rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+		}
+		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
 		const jitsiApplicationSecret = settings.get('Jitsi_Application_Secret');
@@ -29,7 +35,7 @@ Meteor.methods({
 			payload.context = {
 				user: {
 					name: user.name,
-					email: user.emails[0].address,
+					email: getUserEmailAddress(user),
 					avatar: Meteor.absoluteUrl(`avatar/${ user.username }`),
 					id: user._id,
 				},

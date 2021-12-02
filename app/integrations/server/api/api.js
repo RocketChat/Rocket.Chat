@@ -10,10 +10,11 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import { logger } from '../logger';
-import { processWebhookMessage } from '../../../lib';
+import { incomingLogger } from '../logger';
+import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import * as Models from '../../../models';
+import * as Models from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
@@ -63,8 +64,8 @@ function getIntegrationScript(integration) {
 	const script = integration.scriptCompiled;
 	const { sandbox, store } = buildSandbox();
 	try {
-		logger.incoming.info('Will evaluate script of Trigger', integration.name);
-		logger.incoming.debug(script);
+		incomingLogger.info({ msg: 'Will evaluate script of Trigger', name: integration.name });
+		incomingLogger.debug(script);
 
 		const vmScript = vm.createScript(script, 'script.js');
 		vmScript.runInNewContext(sandbox);
@@ -77,23 +78,20 @@ function getIntegrationScript(integration) {
 
 			return compiledScripts[integration._id].script;
 		}
-	} catch ({ stack }) {
-		logger.incoming.error('[Error evaluating Script in Trigger', integration.name, ':]');
-		logger.incoming.error(script.replace(/^/gm, '  '));
-		logger.incoming.error('[Stack:]');
-		logger.incoming.error(stack.replace(/^/gm, '  '));
+	} catch (err) {
+		incomingLogger.error({ msg: 'Error evaluating Script in Trigger', name: integration.name, script, err });
 		throw API.v1.failure('error-evaluating-script');
 	}
 
 	if (!sandbox.Script) {
-		logger.incoming.error('[Class "Script" not in Trigger', integration.name, ']');
+		incomingLogger.error({ msg: 'Class "Script" not in Trigger', name: integration.name });
 		throw API.v1.failure('class-script-not-found');
 	}
 }
 
 function createIntegration(options, user) {
-	logger.incoming.info('Add integration', options.name);
-	logger.incoming.debug(options);
+	incomingLogger.info({ msg: 'Add integration', name: options.name });
+	incomingLogger.debug(options);
 
 	Meteor.runAsUser(user._id, function() {
 		switch (options.event) {
@@ -129,12 +127,13 @@ function createIntegration(options, user) {
 }
 
 function removeIntegration(options, user) {
-	logger.incoming.info('Remove integration');
-	logger.incoming.debug(options);
+	incomingLogger.info('Remove integration');
+	incomingLogger.debug(options);
 
-	const integrationToRemove = Models.Integrations.findOne({
-		urls: options.target_url,
-	});
+	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
+	if (!integrationToRemove) {
+		return API.v1.failure('integration-not-found');
+	}
 
 	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
@@ -142,9 +141,8 @@ function removeIntegration(options, user) {
 }
 
 function executeIntegrationRest() {
-	logger.incoming.info('Post integration:', this.integration.name);
-	logger.incoming.debug('@urlParams:', this.urlParams);
-	logger.incoming.debug('@bodyParams:', this.bodyParams);
+	incomingLogger.info({ msg: 'Post integration:', name: this.integration.name });
+	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
 	if (this.integration.enabled !== true) {
 		return {
@@ -165,7 +163,7 @@ function executeIntegrationRest() {
 		try {
 			script = getIntegrationScript(this.integration);
 		} catch (e) {
-			logger.incoming.warn(e);
+			incomingLogger.error(e);
 			return API.v1.failure(e.message);
 		}
 
@@ -214,7 +212,7 @@ function executeIntegrationRest() {
 			})).wait();
 
 			if (!result) {
-				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
+				incomingLogger.debug({ msg: 'Process Incoming Request result of Trigger has no data', name: this.integration.name });
 				return API.v1.success();
 			} if (result && result.error) {
 				return API.v1.failure(result.error);
@@ -226,13 +224,9 @@ function executeIntegrationRest() {
 				this.user = result.user;
 			}
 
-			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
-			logger.incoming.debug('result', this.bodyParams);
-		} catch ({ stack }) {
-			logger.incoming.error('[Error running Script in Trigger', this.integration.name, ':]');
-			logger.incoming.error(this.integration.scriptCompiled.replace(/^/gm, '  '));
-			logger.incoming.error('[Stack:]');
-			logger.incoming.error(stack.replace(/^/gm, '  '));
+			incomingLogger.debug({ msg: 'Process Incoming Request result of Trigger', name: this.integration.name, result: this.bodyParams });
+		} catch (err) {
+			incomingLogger.error({ msg: 'Error running Script in Trigger', name: this.integration.name, script: this.integration.scriptCompiled, err });
 			return API.v1.failure('error-running-script');
 		}
 	}
@@ -253,7 +247,7 @@ function executeIntegrationRest() {
 		}
 
 		if (this.scriptResponse) {
-			logger.incoming.debug('response', this.scriptResponse);
+			incomingLogger.debug({ msg: 'response', response: this.scriptResponse });
 		}
 
 		return API.v1.success(this.scriptResponse);
@@ -271,7 +265,7 @@ function removeIntegrationRest() {
 }
 
 function integrationSampleRest() {
-	logger.incoming.info('Sample Integration');
+	incomingLogger.info('Sample Integration');
 	return {
 		statusCode: 200,
 		body: [
@@ -308,7 +302,7 @@ function integrationSampleRest() {
 }
 
 function integrationInfoRest() {
-	logger.incoming.info('Info integration');
+	incomingLogger.info('Info integration');
 	return {
 		statusCode: 200,
 		body: {
@@ -381,13 +375,13 @@ const Api = new WebHookAPI({
 				}
 			}
 
-			this.integration = Models.Integrations.findOne({
+			this.integration = Promise.await(Integrations.findOne({
 				_id: this.request.params.integrationId,
 				token: decodeURIComponent(this.request.params.token),
-			});
+			}));
 
 			if (!this.integration) {
-				logger.incoming.info('Invalid integration id', this.request.params.integrationId, 'or token', this.request.params.token);
+				incomingLogger.info(`Invalid integration id ${ this.request.params.integrationId } or token ${ this.request.params.token }`);
 
 				return {
 					error: {

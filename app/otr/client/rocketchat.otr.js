@@ -3,14 +3,16 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { Subscriptions } from '../../models';
-import { promises } from '../../promises/client';
 import { Notifications } from '../../notifications';
 import { t } from '../../utils';
+import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
+import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
 
 class OTRClass {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
+		this.crypto = null;
 	}
 
 	isEnabled() {
@@ -53,7 +55,7 @@ Meteor.startup(function() {
 		}
 	});
 
-	promises.add('onClientBeforeSendMessage', function(message) {
+	onClientBeforeSendMessage.use(function(message) {
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			return OTR.getInstanceByRoomId(message.rid).encrypt(message)
 				.then((msg) => {
@@ -63,9 +65,9 @@ Meteor.startup(function() {
 				});
 		}
 		return Promise.resolve(message);
-	}, promises.priority.HIGH);
+	});
 
-	promises.add('onClientMessageReceived', function(message) {
+	onClientMessageReceived.use(function(message) {
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
@@ -104,5 +106,5 @@ Meteor.startup(function() {
 			message.msg = '';
 		}
 		return Promise.resolve(message);
-	}, promises.priority.HIGH);
+	});
 });

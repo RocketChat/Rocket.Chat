@@ -1,12 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import toastr from 'toastr';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { AppWebsocketReceiver } from './communication';
-import { APIClient } from '../../utils';
-import { registerAdminSidebarItem } from '../../../client/admin';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { settings } from '../../settings/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { APIClient } from '../../utils';
+import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
@@ -32,7 +33,6 @@ class AppClientOrchestrator {
 	load = async (isEnabled) => {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
-			this.registerAdminMenuItems();
 			this.isLoaded = true;
 		}
 
@@ -50,26 +50,13 @@ class AppClientOrchestrator {
 
 	getAppClientManager = () => this._manager;
 
-	registerAdminMenuItems = () => {
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'apps',
-			i18nLabel: 'Apps',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'marketplace',
-			i18nLabel: 'Marketplace',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-	}
-
 	handleError = (error) => {
 		console.error(error);
 		if (hasAtLeastOnePermission(['manage-apps'])) {
-			toastr.error(error.message);
+			dispatchToastMessage({
+				type: 'error',
+				message: error.message,
+			});
 		}
 	}
 
@@ -142,20 +129,22 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	installApp = async (appId, version) => {
+	installApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post('apps/', {
 			appId,
 			marketplace: true,
 			version,
+			permissionsGranted,
 		});
 		return app;
 	}
 
-	updateApp = async (appId, version) => {
+	updateApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post(`apps/${ appId }`, {
 			appId,
 			marketplace: true,
 			version,
+			permissionsGranted,
 		});
 		return app;
 	}
@@ -202,5 +191,10 @@ Meteor.startup(() => {
 			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
+	});
+
+	Tracker.autorun(() => {
+		const isEnabled = settings.get('Apps_Framework_enabled');
+		Apps.load(isEnabled);
 	});
 });

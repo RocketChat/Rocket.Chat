@@ -9,11 +9,11 @@ export const getUserNotificationPreference = (user, pref) => {
 	let preferenceKey;
 	switch (pref) {
 		case 'desktop': preferenceKey = 'desktopNotifications'; break;
-		case 'mobile': preferenceKey = 'mobileNotifications'; break;
+		case 'mobile': preferenceKey = 'pushNotifications'; break;
 		case 'email': preferenceKey = 'emailNotificationMode'; break;
 	}
 
-	if (user && user.settings && user.settings.preferences && user.settings.preferences[preferenceKey] !== 'default') {
+	if (user?.settings?.preferences && typeof user.settings.preferences[preferenceKey] !== 'undefined' && user.settings.preferences[preferenceKey] !== 'default') {
 		return {
 			value: user.settings.preferences[preferenceKey],
 			origin: 'user',
