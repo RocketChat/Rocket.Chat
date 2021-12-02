@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 
 import { APIClient } from '../../utils/client';
@@ -46,3 +47,5 @@ export const loadButtons = (): Promise<void> => APIClient.get('apps/actionButton
 	})
 	.then(console.log)
 	.catch(console.error);
+
+Meteor.startup(() => loadButtons());
