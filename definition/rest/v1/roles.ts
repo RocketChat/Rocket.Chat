@@ -1,5 +1,6 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
+import { RocketChatRecordDeleted } from '../../IRocketChatRecord';
 import { IRole, IUser } from '../../IUser';
 
 const ajv = new Ajv();
@@ -150,7 +151,7 @@ export type RolesEndpoints = {
 		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
-				remove: IRole[];
+				remove: RocketChatRecordDeleted<IRole>[];
 			};
 		};
 	};

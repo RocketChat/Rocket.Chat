@@ -76,7 +76,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 				<Modal.Title>{t('Transcript')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p3'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<Field marginBlock='x15'>
 					<Field.Label>{t('Email')}*</Field.Label>

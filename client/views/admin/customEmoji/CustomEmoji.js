@@ -1,12 +1,11 @@
-import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import { Box, Table } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
-import { useCustomSound } from '../../../contexts/CustomSoundContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) {
+function CustomEmoji({ data, sort, onClick, onHeaderClick, setParams, params }) {
 	const t = useTranslation();
 
 	const header = useMemo(
@@ -17,31 +16,24 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 				active={sort[0] === 'name'}
 				onClick={onHeaderClick}
 				sort='name'
+				w='x200'
 			>
 				{t('Name')}
 			</GenericTable.HeaderCell>,
-			<GenericTable.HeaderCell w='x40' key='action' />,
+			<GenericTable.HeaderCell key='aliases' w='x200'>
+				{t('Aliases')}
+			</GenericTable.HeaderCell>,
 		],
 		[onHeaderClick, sort, t],
 	);
 
-	const customSound = useCustomSound();
-
-	const handlePlay = useCallback(
-		(sound) => {
-			customSound.play(sound);
-		},
-		[customSound],
-	);
-
-	const renderRow = (sound) => {
-		const { _id, name } = sound;
-
+	const renderRow = (emojis) => {
+		const { _id, name, aliases } = emojis;
 		return (
 			<Table.Row
 				key={_id}
-				onKeyDown={onClick(_id, sound)}
-				onClick={onClick(_id, sound)}
+				onKeyDown={onClick(_id, emojis)}
+				onClick={onClick(_id, emojis)}
 				tabIndex={0}
 				role='link'
 				action
@@ -50,16 +42,8 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 				<Table.Cell fontScale='p3' color='default'>
 					<Box withTruncatedText>{name}</Box>
 				</Table.Cell>
-				<Table.Cell alignItems={'end'}>
-					<Button
-						ghost
-						small
-						square
-						aria-label={t('Play')}
-						onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}
-					>
-						<Icon name='play' size='x20' />
-					</Button>
+				<Table.Cell fontScale='p3' color='default'>
+					<Box withTruncatedText>{aliases}</Box>
 				</Table.Cell>
 			</Table.Row>
 		);
@@ -69,7 +53,7 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data?.sounds ?? []}
+			results={data?.emojis ?? []}
 			total={data?.total ?? 0}
 			setParams={setParams}
 			params={params}
@@ -78,4 +62,4 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 	);
 }
 
-export default AdminSounds;
+export default CustomEmoji;
