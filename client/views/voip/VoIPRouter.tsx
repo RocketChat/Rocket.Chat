@@ -25,7 +25,7 @@ const apiTest = async (logger: ClientLogger): Promise<void> => {
 	try {
 		logger.info('Executing voipServerConfig.management');
 		const output = await APIClient.v1.post(
-			'voipServerConfig.management',
+			'voip/serverConfig/management',
 			{},
 			{
 				host: 'omni-asterisk.dev.rocket.chat',

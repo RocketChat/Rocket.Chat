@@ -7,13 +7,9 @@ import { Voip } from '../../../../../server/sdk';
 import { ICallServerConfigData, IManagementConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
 
 // management api(s)
-API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
-	get() {
-		if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
-			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
-		}
-
-		const config = Promise.await(Voip.getServerConfigData(ServerType.MANAGEMENT));
+API.v1.addRoute('voip/serverConfig/management', { authRequired: true, permissionsRequired: ['manage-voip-contact-center-settings'] }, {
+	async get() {
+		const config = await Voip.getServerConfigData(ServerType.MANAGEMENT);
 
 		if (!config) {
 			return API.v1.notFound();
@@ -22,7 +18,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 		return API.v1.success({ ...config });
 	},
 	// NOTE: you can use this POST endpoint for both create and update operation
-	post() {
+	async post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			host: String,
 			port: Number,
@@ -31,13 +27,9 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 			password: String,
 		}));
 
-		if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
-			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
-		}
-
 		const { host, port, serverName, username, password } = this.bodyParams;
 
-		Promise.await(Voip.addServerConfigData({
+		await Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
 			name: serverName,
@@ -47,7 +39,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 				username,
 				password,
 			} as IManagementConfigData,
-		}));
+		});
 
 		return API.v1.success();
 	},
@@ -55,12 +47,12 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 
 // call-server api(s)
 API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
-	get() {
+	async get() {
 		if (!hasPermission(this.userId, 'manage-voip-call-settings')) {
-			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
+			return API.v1.unauthorized(TAPi18n.__('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
 		}
 
-		const config = Promise.await(Voip.getServerConfigData(ServerType.CALL_SERVER));
+		const config = await Voip.getServerConfigData(ServerType.CALL_SERVER);
 		if (!config) {
 			return API.v1.notFound();
 		}
@@ -79,7 +71,7 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 		}));
 
 		if (!hasPermission(this.userId, 'manage-voip-call-settings')) {
-			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
+			return API.v1.unauthorized(TAPi18n.__('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
 		}
 
 		const { host, websocketPort, websocketPath, serverName } = this.bodyParams;

@@ -196,7 +196,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				routeConfig,
 				voipUser,
 				registrationConfig: extensionConfig,
-			};
+			} as OmnichannelContextValue;
 		}
 
 		return {
@@ -214,7 +214,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			voipUser,
 			registrationConfig: extensionConfig,
-		};
+		} as OmnichannelContextValue;
 	}, [
 		agentAvailable,
 		voipCallAvailable,
