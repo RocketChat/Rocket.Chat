@@ -88,30 +88,3 @@ export async function deriveKey(salt, baseKey, keyUsages = ['encrypt', 'decrypt'
 
 	return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
 }
-
-export async function readFileAsArrayBuffer(file) {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = function(evt) {
-			resolve(evt.target.result);
-		};
-		reader.onerror = function(evt) {
-			reject(evt);
-		};
-		reader.readAsArrayBuffer(file);
-	});
-}
-
-export class Deferred {
-	constructor() {
-		const p = new Promise((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-
-		p.resolve = this.resolve;
-		p.reject = this.reject;
-
-		return p;
-	}
-}
