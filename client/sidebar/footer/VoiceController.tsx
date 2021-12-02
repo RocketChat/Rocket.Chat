@@ -60,7 +60,7 @@ const VoiceController: FC = (): ReactElement | null => {
 							<SidebarItemAction icon='phone-off' danger primary onClick={actions.end} />
 						)}
 						{call.state === 'OFFER_RECEIVED' && (
-							<SidebarItemAction icon='phone-off' danger primary onClick={actions.pickUp} />
+							<SidebarItemAction icon='phone' success primary onClick={actions.pickUp} />
 						)}
 					</SidebarItemActions>
 				</SidebarItemContainer>
