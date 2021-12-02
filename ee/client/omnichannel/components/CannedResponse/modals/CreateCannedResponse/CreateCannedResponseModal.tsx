@@ -49,7 +49,7 @@ const CreateCannedResponseModal: FC<{
 					}}
 				/>
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p3'>
 				<CannedResponseForm
 					isManager={isManager}
 					isMonitor={isMonitor}

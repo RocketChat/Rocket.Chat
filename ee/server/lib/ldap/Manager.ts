@@ -17,7 +17,7 @@ import {
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
-import { logger, searchLogger } from '../../../../server/lib/ldap/Logger';
+import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
@@ -384,36 +384,45 @@ export class LDAPEEManager extends LDAPManager {
 	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
 		// Account locked by "Draft-behera-ldap-password-policy"
 		if (ldapUser.pwdAccountLockedTime) {
+			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
 			return true;
 		}
 
 		// EDirectory: Account manually disabled by an admin
 		if (ldapUser.loginDisabled) {
+			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');
 			return true;
 		}
 
 		// Oracle: Account must not be allowed to authenticate
 		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
+			mapLogger.debug('User must not be allowed to authenticate (attribute orclIsEnabled)');
 			return true;
 		}
 
 		// Active Directory - Account locked automatically by security policies
-		if (ldapUser.lockoutTime) {
-			// Automatic unlock is disabled
-			if (!ldapUser.lockoutDuration) {
-				return true;
-			}
+		if (ldapUser.lockoutTime && ldapUser.lockoutTime !== '0') {
+			const lockoutTimeValue = Number(ldapUser.lockoutTime);
+			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
+				// Automatic unlock is disabled
+				if (!ldapUser.lockoutDuration) {
+					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
+					return true;
+				}
 
-			const lockoutTime = new Date(Number(ldapUser.lockoutTime));
-			lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
-			// Account has not unlocked itself yet
-			if (lockoutTime.valueOf() > Date.now()) {
-				return true;
+				const lockoutTime = new Date(lockoutTimeValue);
+				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
+				// Account has not unlocked itself yet
+				if (lockoutTime.valueOf() > Date.now()) {
+					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
+					return true;
+				}
 			}
 		}
 
 		// Active Directory - Account disabled by an Admin
 		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
+			mapLogger.debug('User account disabled by an admin (attribute userAccountControl)');
 			return true;
 		}
 
@@ -440,7 +449,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		userData.deleted = deleted;
-		logger.debug(`${ deleted ? 'Deactivating' : 'Activating' } user ${ userData.name } (${ userData.username })`);
+		logger.info(`${ deleted ? 'Deactivating' : 'Activating' } user ${ userData.name } (${ userData.username })`);
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {

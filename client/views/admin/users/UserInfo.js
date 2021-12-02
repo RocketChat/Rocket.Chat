@@ -108,6 +108,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 						_id={data.user._id}
 						username={data.user.username}
 						onChange={onChange}
+						onReload={onReload}
 					/>
 				)
 			}
