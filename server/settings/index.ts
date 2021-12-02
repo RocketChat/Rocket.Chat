@@ -1,2 +1,2 @@
-import './e2e';
+import './e2ee';
 import './ldap';

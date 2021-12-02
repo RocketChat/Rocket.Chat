@@ -1,13 +1,13 @@
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { E2E } from '../../../../server/sdk';
+import { E2EE } from '../../../../server/sdk';
 
 API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	async get() {
 		const { userId } = this;
 
-		const result = await E2E.getUserKeys(userId);
+		const result = await E2EE.getUserKeys(userId);
 
 		return API.v1.success(result);
 	},
@@ -21,7 +21,7 @@ API.v1.addRoute('e2e.getUsersOfRoomWithoutKey', { authRequired: true }, {
 
 		const { rid } = this.queryParams;
 
-		const users = await E2E.getRoomMembersWithoutPublicKey(this.userId, rid);
+		const users = await E2EE.getRoomMembersWithoutPublicKey(this.userId, rid);
 
 		return API.v1.success({
 			users,
@@ -38,7 +38,7 @@ API.v1.addRoute('e2e.setRoomKeyID', { authRequired: true }, {
 
 		const { rid, keyID } = this.bodyParams;
 
-		await E2E.setRoomKeyId(this.userId, rid, keyID);
+		await E2EE.setRoomKeyId(this.userId, rid, keyID);
 
 		return API.v1.success();
 	},
@@ -57,7 +57,7 @@ API.v1.addRoute('e2e.setUserPublicAndPrivateKeys', { authRequired: true }, {
 		const { public_key, private_key } = this.bodyParams;
 
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		await E2E.setUserKeys(this.userId, { public_key, private_key });
+		await E2EE.setUserKeys(this.userId, { public_key, private_key });
 
 		return API.v1.success();
 	},
@@ -74,7 +74,7 @@ API.v1.addRoute('e2e.updateGroupKey', { authRequired: true }, {
 		const { userId } = this;
 		const { uid, rid, key } = this.bodyParams;
 
-		const subscription = await E2E.updateGroupKey(userId, { uid, rid, keyId: key });
+		const subscription = await E2EE.updateGroupKey(userId, { uid, rid, keyId: key });
 
 		return API.v1.success(subscription);
 	},
@@ -84,7 +84,7 @@ API.v1.addRoute('e2e.requestSubscriptionKeys', { authRequired: true }, {
 	async post() {
 		const { userId } = this;
 
-		await E2E.requestSubscriptionKeys(userId);
+		await E2EE.requestSubscriptionKeys(userId);
 
 		return API.v1.success();
 	},
@@ -94,7 +94,7 @@ API.v1.addRoute('e2e.resetOwnE2EKey', { authRequired: true, twoFactorRequired: t
 	async post() {
 		const { userId } = this;
 
-		await E2E.resetUserKeys(userId);
+		await E2EE.resetUserKeys(userId);
 
 		return API.v1.success(true);
 	},

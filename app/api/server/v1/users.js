@@ -22,10 +22,10 @@ import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
-import { sendE2EKeyResetNotificationEmail } from '../../../../server/lib/sendE2EKeyResetNotificationEmail';
+import { sendE2EEKeyResetNotificationEmail } from '../../../../server/lib/sendE2EEKeyResetNotificationEmail';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { E2E, Team } from '../../../../server/sdk';
+import { E2EE, Team } from '../../../../server/sdk';
 
 
 API.v1.addRoute('users.create', { authRequired: true }, {
@@ -855,7 +855,7 @@ API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: tr
 	async post() {
 		// reset own keys
 		if (this.isUserFromParams()) {
-			await E2E.resetUserKeys(this.userId);
+			await E2EE.resetUserKeys(this.userId);
 			return API.v1.success();
 		}
 
@@ -873,9 +873,9 @@ API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: tr
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		sendE2EKeyResetNotificationEmail(user._id);
+		sendE2EEKeyResetNotificationEmail(user._id);
 
-		await E2E.resetUserKeys(user._id);
+		await E2EE.resetUserKeys(user._id);
 
 		return API.v1.success();
 	},

@@ -1,11 +1,11 @@
-import type { E2EKeyPair } from '../../../server/sdk/types/e2e/E2EKeyPair';
+import type { E2EEKeyPair } from '../../../server/sdk/types/e2ee/E2EEKeyPair';
 import type { IRoom } from '../../IRoom';
 import type { ISubscription } from '../../ISubscription';
 import type { IUser } from '../../IUser';
 
-export type E2EEndpoints = {
+export type E2EEEndpoints = {
 	'/v1/e2e.fetchMyKeys': {
-		GET: () => {} | E2EKeyPair;
+		GET: () => {} | E2EEKeyPair;
 	};
 
 	'/v1/e2e.getUsersOfRoomWithoutKey': {

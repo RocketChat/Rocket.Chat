@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
 
-import { IE2EService } from '../../sdk/types/e2e/IE2EService';
+import { IE2EEService } from '../../sdk/types/e2ee/IE2EEService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { E2EKeyPair } from '../../sdk/types/e2e/E2EKeyPair';
+import { E2EEKeyPair } from '../../sdk/types/e2ee/E2EEKeyPair';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
@@ -11,8 +11,8 @@ import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 
-export class E2EService extends ServiceClass implements IE2EService {
-	protected readonly name = 'e2e';
+export class E2EEService extends ServiceClass implements IE2EEService {
+	protected readonly name = 'e2ee';
 
 	private readonly Users: UsersRaw;
 
@@ -29,7 +29,7 @@ export class E2EService extends ServiceClass implements IE2EService {
 		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 	}
 
-	async getUserKeys(uid: IUser['_id']): Promise<E2EKeyPair | {}> {
+	async getUserKeys(uid: IUser['_id']): Promise<E2EEKeyPair | {}> {
 		const user = await this.Users.findOne<Pick<IUser, 'e2e'>>({ _id: uid }, { projection: { e2e: 1 } });
 
 		if (!user) {
@@ -48,7 +48,7 @@ export class E2EService extends ServiceClass implements IE2EService {
 		};
 	}
 
-	async setUserKeys(uid: IUser['_id'], keyPair: E2EKeyPair): Promise<void> {
+	async setUserKeys(uid: IUser['_id'], keyPair: E2EEKeyPair): Promise<void> {
 		await this.Users.update({ _id: uid }, {
 			$set: {
 				'e2e.public_key': keyPair.public_key,

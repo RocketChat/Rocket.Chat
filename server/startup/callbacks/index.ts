@@ -1,2 +1,2 @@
-import './afterJoinRoom/e2e';
-import './beforeCreateRoom/e2e';
+import './afterJoinRoom/e2ee';
+import './beforeCreateRoom/e2ee';

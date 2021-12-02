@@ -6,7 +6,7 @@ import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
 import { IUser } from '../../definition/IUser';
 
-export const sendE2EKeyResetNotificationEmail = function(uid: string): void {
+export const sendE2EEKeyResetNotificationEmail = function(uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
