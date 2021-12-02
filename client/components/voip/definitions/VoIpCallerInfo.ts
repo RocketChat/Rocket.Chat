@@ -9,8 +9,13 @@ export interface IState {
 
 export type VoIpCallerInfo =
 	| {
-			state: Exclude<CallStates, 'IN_CALL'>;
+			state: Exclude<CallStates, 'IN_CALL' | 'OFFER_RECEIVED'>;
 			userState: UserState;
+	  }
+	| {
+			state: 'OFFER_RECEIVED';
+			userState: UserState;
+			callerInfo: ICallerInfo;
 	  }
 	| {
 			state: 'IN_CALL';
