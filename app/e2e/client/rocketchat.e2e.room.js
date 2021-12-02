@@ -309,7 +309,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const { users } = await APIClient.v1.get('e2e.getUsersOfRoomWithoutKey', this.roomId);
+			const { users } = await APIClient.v1.get('e2e.getUsersOfRoomWithoutKey', { rid: this.roomId });
 			users.forEach((user) => this.encryptForParticipant(user));
 		} catch (error) {
 			return this.error('Error getting room users: ', error);

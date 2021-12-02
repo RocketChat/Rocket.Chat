@@ -22,7 +22,7 @@ import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
-import { sendResetNotitification } from '../../../../server/lib/sendResetNotitification';
+import { sendE2EKeyResetNotificationEmail } from '../../../../server/lib/sendE2EKeyResetNotificationEmail';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { E2E, Team } from '../../../../server/sdk';
@@ -873,13 +873,7 @@ API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: tr
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		Meteor.bindEnvironment(() => {
-			sendResetNotitification(user._id);
-		});
-
-		// Meteor.runAsUser(this.userId, () => {
-		// 	sendResetNotitification(user._id);
-		// });
+		sendE2EKeyResetNotificationEmail(user._id);
 
 		await E2E.resetUserKeys(user._id);
 
