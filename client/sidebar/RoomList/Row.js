@@ -1,4 +1,4 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { SidebarSection, SidebarSectionTitle } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import Omnichannel from '../sections/Omnichannel';
@@ -16,7 +16,9 @@ const Row = ({ data, item }) => {
 		return Section ? (
 			<Section aria-level='1' />
 		) : (
-			<Sidebar.Section.Title aria-level='1'>{t(item)}</Sidebar.Section.Title>
+			<SidebarSection>
+				<SidebarSectionTitle aria-level='1'>{t(item)}</SidebarSectionTitle>
+			</SidebarSection>
 		);
 	}
 	return (

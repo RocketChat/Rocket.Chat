@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 
 import { settings } from '../../../app/settings/client';
 import { useVoiceChannel } from '../../../app/voice-channel/client/VoiceChannelManager';
-import GlobalVoiceController from './GlobalVoiceController';
+import VoiceController from './VoiceController';
 
 const SidebarFooter = (): ReactElement => {
 	const sidebarFooterStyle = css`
@@ -23,7 +23,7 @@ const SidebarFooter = (): ReactElement => {
 	const state = useVoiceChannel();
 
 	if (state.state === 'connected') {
-		return <GlobalVoiceController />;
+		return <VoiceController />;
 	}
 
 	return (
