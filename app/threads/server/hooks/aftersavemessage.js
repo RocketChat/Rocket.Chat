@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { Messages, Subscriptions } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
-import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { sendMessageNotifications, sendNotification } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { callJoinRoom } from '../../../lib/server/functions/notifications';
 
 function notifyUsersOnReply(message, replies, room) {
 	// skips this callback if the message was edited
@@ -31,12 +32,10 @@ const notification = (message, room, replies) => {
 	}
 
 	// will send a notification to everyone who replied/followed the thread except the owner of the message
-	sendMessageNotifications(message, room, replies);
-
-	return message;
+	return sendMessageNotifications(message, room, replies);
 };
 
-export const processThreads = (message, room) => {
+export const processThreads = async (message, room) => {
 	if (!message.tmid) {
 		return message;
 	}
@@ -58,7 +57,49 @@ export const processThreads = (message, room) => {
 
 	notifyUsersOnReply(message, replies, room);
 	metaData(message, parentMessage, replies);
-	notification(message, room, replies);
+
+	const {
+		sender,
+		hasMentionToAll,
+		hasMentionToHere,
+		notificationMessage,
+		mentionIdsWithoutGroups,
+	} = await notification(message, room, replies);
+
+	if (room.t === 'c') {
+		const mentions = [...mentionIdsWithoutGroups];
+		Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, { fields: { 'u._id': 1 } }).forEach((subscription) => {
+			const index = mentions.indexOf(subscription.u._id);
+			if (index !== -1) {
+				mentions.splice(index, 1);
+			}
+		});
+
+		Promise.all(mentions
+			.map(async (userId) => {
+				await callJoinRoom(userId, room._id);
+
+				return userId;
+			}),
+		).then((users) => {
+			users.forEach((userId) => {
+				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+
+				sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds,
+				});
+			});
+		}).catch((error) => {
+			throw new Meteor.Error(error);
+		});
+	}
 
 	return message;
 };
