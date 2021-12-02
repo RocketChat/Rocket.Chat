@@ -6,7 +6,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IVoipExtensionBase } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
-import { IAgentExtensionMap, IOmnichannelVoipServiceResult } from '../../../definition/ILivechatVoipServiceResult';
+import { IOmnichannelVoipServiceResult } from '../../../definition/ILivechatVoipServiceResult';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IUser } from '../../../definition/IUser';
 
@@ -69,7 +69,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 				_id: user._id,
 				agentName: user.username,
 				extension: user.extension,
-			} as IAgentExtensionMap)),
-		} as unknown as IOmnichannelVoipServiceResult;
+			})),
+		};
 	}
 }
