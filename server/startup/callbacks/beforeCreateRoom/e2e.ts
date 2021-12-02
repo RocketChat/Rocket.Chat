@@ -1,6 +1,6 @@
-import { callbacks } from '../../callbacks/server';
-import { settings } from '../../settings/server';
-import { IRoom } from '../../../definition/IRoom';
+import { callbacks } from '../../../../app/callbacks/server';
+import { settings } from '../../../../app/settings/server';
+import { IRoom } from '../../../../definition/IRoom';
 
 callbacks.add('beforeCreateRoom', ({ type, extraData }: {
 	type: IRoom['t'];
