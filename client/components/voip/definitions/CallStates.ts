@@ -1,13 +1,14 @@
 /**
- * Enumerator represnting call state
+ * Enumerator representing call state
  * @remarks
  */
 
-export type CallState =
-	| 'IDLE'
+export type CallStates =
+	| 'INITIAL'
 	| 'SERVER_CONNECTED'
 	| 'REGISTERED'
 	| 'OFFER_RECEIVED'
+	| 'IDLE'
 	| 'ANSWER_SENT'
 	| 'IN_CALL'
 	| 'UNREGISTERED'

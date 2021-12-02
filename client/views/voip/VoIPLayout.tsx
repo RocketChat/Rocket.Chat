@@ -11,15 +11,16 @@ import { useSubscription } from 'use-subscription';
 
 // import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { ClientLogger } from '../../../lib/ClientLogger';
-import { VoIpCallerInfo, VoIPUser } from '../../components/voip/VoIPUser';
+import { VoIPUser } from '../../components/voip/VoIPUser';
 import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
-import { useRegistrationInfo } from '../../contexts/OmnichannelContext';
+import { VoIpCallerInfo } from '../../components/voip/definitions/VoIpCallerInfo';
+import { useCallRegistrationInfo } from '../../contexts/CallContext';
 
 const VoIPLayout: FC<{
 	voipUser: VoIPUser;
 }> = ({ voipUser }) => {
 	const [enableVideo, setEnableVideo] = useState(true);
-	const extensionConfig = useRegistrationInfo();
+	const extensionConfig = useCallRegistrationInfo();
 
 	const remoteVideoMedia = useRef<HTMLVideoElement>(null);
 	const remoteAudioMedia = useRef<HTMLAudioElement>(null);

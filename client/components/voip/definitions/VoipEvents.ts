@@ -1,4 +1,4 @@
-import { ICallerInfo } from '../ICallEventDelegate';
+import { ICallerInfo } from './ICallerInfo';
 
 export type VoipEvents = {
 	registered: undefined;

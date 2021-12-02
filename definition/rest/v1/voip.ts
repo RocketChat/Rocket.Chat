@@ -2,6 +2,6 @@ import { IRegistrationInfo } from '../../../client/components/voip/IRegistration
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfo': {
-		GET: (params: { extention: string }) => IRegistrationInfo;
+		GET: (params: { extension: string }) => IRegistrationInfo;
 	};
 };

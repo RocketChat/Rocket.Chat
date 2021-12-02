@@ -22,35 +22,14 @@ import { OutgoingRequestDelegate } from 'sip.js/lib/core';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
 import { ClientLogger } from '../../../lib/ClientLogger';
-import { CallState } from './Callstate';
-import { ICallerInfo } from './ICallEventDelegate';
 import { Operation } from './Operations';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from './VoIPUserConfiguration';
+import { CallStates } from './definitions/CallStates';
+import { ICallerInfo } from './definitions/ICallerInfo';
+import { UserState } from './definitions/UserState';
+import { VoIpCallerInfo, IState } from './definitions/VoIpCallerInfo';
 import { VoipEvents } from './definitions/VoipEvents';
 import Stream from './media/Stream';
-// User state is based on whether the User has sent an invite(UAC) or it
-// has received an invite (UAS)
-enum UserState {
-	IDLE,
-	UAC,
-	UAS,
-}
-
-interface IState {
-	isReady: boolean;
-	enableVideo: boolean;
-}
-
-export type VoIpCallerInfo =
-	| {
-			state: Exclude<CallState, 'IN_CALL'>;
-			userState: UserState;
-	  }
-	| {
-			state: 'IN_CALL';
-			userState: UserState;
-			callerInfo: ICallerInfo;
-	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)
 
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
 	state: IState = {
@@ -72,13 +51,13 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	logger: ClientLogger;
 
-	private _callState: CallState = 'IDLE';
+	private _callState: CallStates = 'IDLE';
 
 	private _callerInfo: ICallerInfo | undefined;
 
 	private _userState: UserState = UserState.IDLE;
 
-	get callState(): CallState {
+	get callState(): CallStates {
 		return this._callState;
 	}
 
@@ -426,7 +405,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * Public method called from outside to reject a call.
 	 * @remarks
 	 */
-	rejectCall(): any {
+	rejectCall(): Promise<unknown> {
 		this.logger.info('rejectCall()');
 
 		if (!this.session) {
