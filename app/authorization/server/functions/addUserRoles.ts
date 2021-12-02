@@ -29,4 +29,4 @@ export const addUserRoles = async (userId: IUser['_id'], roleNames: IRole['name'
 	return Roles.addUserRoles(userId, roleNames, scope);
 };
 
-export const addUserRoleSync = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => Promise.await(addUserRoles(userId, roleNames, scope));
+export const addUserRolesSync = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => Promise.await(addUserRoles(userId, roleNames, scope));
