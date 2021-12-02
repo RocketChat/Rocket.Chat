@@ -14,7 +14,7 @@ export default function CreateRoomListItem({ text, icon, action }) {
 						</Flex.Item>
 						<Margins inline='x8'>
 							<Flex.Item grow={1}>
-								<Box is='span' fontScale='p2'>
+								<Box is='span' fontScale='p4'>
 									{text}
 								</Box>
 							</Flex.Item>

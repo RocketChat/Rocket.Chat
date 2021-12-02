@@ -11,7 +11,7 @@ type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
 	constructor(public readonly col: Collection<T>,
 		private readonly models: { Users: UsersRaw },
-		public readonly trash?: Collection<T>) {
+		trash?: Collection<T>) {
 		super(col, trash);
 	}
 

@@ -10,7 +10,7 @@ const Username = ({ name, status = <UserStatus.Offline />, title, ...props }) =>
 		title={title}
 		flexShrink={0}
 		alignItems='center'
-		fontScale='s2'
+		fontScale='h4'
 		color='default'
 		withTruncatedText
 	>
