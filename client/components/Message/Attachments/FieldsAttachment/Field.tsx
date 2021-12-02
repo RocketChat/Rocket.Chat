@@ -9,7 +9,7 @@ type FieldProps = {
 
 const Field: FC<FieldProps> = ({ title, value, ...props }) => (
 	<Box mb='x4' pi='x4' width='full' flexBasis={100} flexShrink={0} {...props}>
-		<Box fontScale='p2' color='default'>
+		<Box fontScale='p4' color='default'>
 			{title}
 		</Box>
 		{value}

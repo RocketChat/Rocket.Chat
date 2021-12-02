@@ -22,7 +22,7 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 				<Modal.Title>{t('Return_to_the_queue')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{t('Would_you_like_to_return_the_queue')}</Modal.Content>
+			<Modal.Content fontScale='p3'>{t('Would_you_like_to_return_the_queue')}</Modal.Content>
 			<Modal.Footer>
 				<Box>
 					<ButtonGroup align='end'>
