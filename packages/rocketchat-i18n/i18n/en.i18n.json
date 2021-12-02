@@ -3177,6 +3177,7 @@
   "Office_Hours": "Office Hours",
   "Office_hours_enabled": "Office Hours Enabled",
   "Office_hours_updated": "Office hours updated",
+  "offline": "offline",
   "Offline": "Offline",
   "Offline_DM_Email": "Direct Message Email Subject",
   "Offline_Email_Subject_Description": "You may use the following placeholders:<br/><ul><li>[Site_Name], [Site_URL], [User] & [Room] for the Application Name, URL, Username & Roomname respectively.<li/></ul>",
