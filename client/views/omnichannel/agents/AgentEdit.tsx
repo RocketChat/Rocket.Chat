@@ -9,32 +9,59 @@ import {
 	Select,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { IUser } from '../../../../definition/IUser';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 
-function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {
+// TODO: TYPE:
+// Department
+
+type dataType = {
+	status: string;
+	user: IUser;
+};
+
+type AgentEditProps = {
+	data: dataType;
+	userDepartments: { departments: Array<{ departmentId: string }> };
+	availableDepartments: { departments: Array<{ _id: string; name?: string }> };
+	uid: string;
+	reset: () => void;
+};
+
+const AgentEdit: FC<AgentEditProps> = ({
+	data,
+	userDepartments,
+	availableDepartments,
+	uid,
+	reset,
+	...props
+}) => {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
 	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
+	const voipEnabled = useSetting('VoIP_Enabled');
 
 	const { user } = data || { user: {} };
 	const { name, username, statusLivechat } = user;
 
 	const email = getUserEmailAddress(user);
-	const options = useMemo(
+
+	const options: [string, string][] = useMemo(
 		() =>
 			availableDepartments && availableDepartments.departments
-				? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id])
+				? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id]))
 				: [],
 		[availableDepartments],
 	);
@@ -47,7 +74,14 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 	);
 	const eeForms = useSubscription(formsSubscription);
 
-	const saveRef = useRef({ values: {}, hasUnsavedChanges: false });
+	const saveRef = useRef({
+		values: {},
+		hasUnsavedChanges: false,
+		reset: () => undefined,
+		commit: () => undefined,
+	});
+
+	const { reset: resetMaxChats, commit: commitMaxChats } = saveRef.current;
 
 	const onChangeMaxChats = useMutableCallback(({ hasUnsavedChanges, ...value }) => {
 		saveRef.current = value;
@@ -57,17 +91,21 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 		}
 	});
 
-	const { useMaxChatsPerAgent = () => {} } = eeForms;
+	const { useMaxChatsPerAgent = (): ReactElement | null => null } = eeForms as any; // TODO: Find out how to use ts with eeForms
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		departments: initialDepartmentValue,
 		status: statusLivechat,
 		maxChats: 0,
+		voipExtension: '',
 	});
-	const { reset: resetMaxChats, commit: commitMaxChats } = saveRef.current;
 
-	const { handleDepartments, handleStatus } = handlers;
-	const { departments, status } = values;
+	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
+	const { departments, status, voipExtension } = values as {
+		departments: string[];
+		status: string;
+		voipExtension: string;
+	};
 
 	const MaxChats = useMaxChatsPerAgent();
 
@@ -85,11 +123,11 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 		try {
 			await saveAgentInfo(uid, saveRef.current.values, departments);
 			await saveAgentStatus({ status, agentId: uid });
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			dispatchToastMessage({ type: 'success', message: t('Success') });
 			agentsRoute.push({});
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as string });
 		}
 		commit();
 		commitMaxChats();
@@ -148,6 +186,19 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 
 			{MaxChats && <MaxChats data={user} onChange={onChangeMaxChats} />}
 
+			{voipEnabled && (
+				<Field>
+					<Field.Label>{t('VoIP_Extension')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							flexGrow={1}
+							value={voipExtension as string}
+							onChange={handleVoipExtension}
+						/>
+					</Field.Row>
+				</Field>
+			)}
+
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<Margins inlineEnd='x4'>
@@ -172,6 +223,6 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 			</Field.Row>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default AgentEdit;
