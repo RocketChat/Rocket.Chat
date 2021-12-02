@@ -138,7 +138,7 @@ export function addSettings(): void {
 					invalidValue: '',
 				});
 
-				this.add('LDAP_Sync_User_Data_RolesMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
+				this.add('LDAP_Sync_User_Data_RolesMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support",\n\t"manager": ["leader", "moderator"]\n}', {
 					type: 'code',
 					multiline: true,
 					public: false,

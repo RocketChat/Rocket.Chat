@@ -2361,7 +2361,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "LDAP Benutzergruppen-Filter",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "Der LDAP-Suchfilter, mit dem überprüft wird, ob sich ein Benutzer in einer Gruppe befindet.",
   "LDAP_Sync_User_Data_RolesMap": "Benutzerdatengruppenzuordnung",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Ordnen Sie LDAP-Gruppen zu Rocket.Chat Benutzerrollen <br/> Als Beispiel ordnet {\"rocket-admin\":\"admin\", \"tech-support\":\"support\"} die LDAP-Gruppe von rocket-admin als \"admin\" zu.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Ordnen Sie LDAP-Gruppen zu Rocket.Chat Benutzerrollen <br/> Als Beispiel ordnet {\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]} die LDAP-Gruppe von rocket-admin als \"admin\" zu.",
   "LDAP_Timeout": "Timeout (ms)",
   "LDAP_Timeout_Description": "Wie lange auf ein Suchergebnis gewartet werden soll, bevor ein Fehler ausgegeben wird",
   "LDAP_Unique_Identifier_Field": "Feld für eindeutige Identifizierung",

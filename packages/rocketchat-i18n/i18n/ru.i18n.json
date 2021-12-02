@@ -2498,7 +2498,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "Фильтр Группы Пользователей",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "Фильтр поиска LDAP используется для проверки того, входит ли пользователь в группу.",
   "LDAP_Sync_User_Data_RolesMap": "Карта группы пользовательских данных",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Сопоставьте группы LDAP с ролями пользователей Rocket.Chat <br/>В качестве примера `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}` сопоставит группу LDAP rocket-admin с ролью \"admin\" в Rocket Chat.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Сопоставьте группы LDAP с ролями пользователей Rocket.Chat <br/>В качестве примера `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}` сопоставит группу LDAP rocket-admin с ролью \"admin\" в Rocket Chat.",
   "LDAP_Timeout": "Тайм-аут (мс)",
   "LDAP_Timeout_Description": "Сколько миллисекунд ждать результата поиска, прежде чем вернуть ошибку",
   "LDAP_Unique_Identifier_Field": "Поле уникального идентификатора",

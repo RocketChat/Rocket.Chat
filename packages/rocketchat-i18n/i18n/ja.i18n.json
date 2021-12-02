@@ -2326,7 +2326,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "ユーザーグループフィルター",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "ユーザーがグループに属しているかどうかを確認するために使用されるLDAP検索フィルター。",
   "LDAP_Sync_User_Data_RolesMap": "ユーザーデータグループマップ",
-  "LDAP_Sync_User_Data_RolesMap_Description": "LDAPグループをRocket.Chatユーザーロールにマップする<br/>例として、 `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\"}`は rocket-admin LDAPグループをRocket.Chatのadminロールにマップします。",
+  "LDAP_Sync_User_Data_RolesMap_Description": "LDAPグループをRocket.Chatユーザーロールにマップする<br/>例として、 `{\"rocket-admin\":\"admin\", \"tech-support\":\"support\", \"manager\":[\"leader\", \"moderator\"]}`は rocket-admin LDAPグループをRocket.Chatのadminロールにマップします。",
   "LDAP_Timeout": "タイムアウト (ミリ秒)",
   "LDAP_Timeout_Description": "エラーを返す前に検索結果を待つ時間は何マイル秒か",
   "LDAP_Unique_Identifier_Field": "一意性を識別するフィールド",

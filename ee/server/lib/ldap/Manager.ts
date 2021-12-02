@@ -213,30 +213,32 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			const userField = fieldMap[ldapField];
+			const userFields: string[] = Array.isArray(fieldMap[ldapField]) ? fieldMap[ldapField] : new Array(fieldMap[ldapField]);
 
-			const [roleName] = userField.split(/\.(.+)/);
-			if (!_.find<IRole>(roles, (el) => el.name === roleName)) {
-				logger.debug(`User Role doesn't exist: ${ roleName }`);
-				continue;
-			}
-
-			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
-
-			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				if (await Roles.addUserRoles(user._id, roleName)) {
-					this.broadcastRoleChange('added', roleName, user._id, username);
+			for await (const userField of userFields) {
+				const [roleName] = userField.split(/\.(.+)/);
+				if (!_.find<IRole>(roles, (el) => el.name === roleName)) {
+					logger.debug(`User Role doesn't exist: ${ roleName }`);
+					continue;
 				}
-				logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
-				continue;
-			}
 
-			if (!syncUserRolesAutoRemove) {
-				continue;
-			}
+				logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
 
-			if (await Roles.removeUserRoles(user._id, roleName)) {
-				this.broadcastRoleChange('removed', roleName, user._id, username);
+				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
+					if (await Roles.addUserRoles(user._id, [roleName])) {
+						this.broadcastRoleChange('added', roleName, user._id, username);
+					}
+					logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
+					continue;
+				}
+
+				if (!syncUserRolesAutoRemove) {
+					continue;
+				}
+
+				if (await Roles.removeUserRoles(user._id, [roleName])) {
+					this.broadcastRoleChange('removed', roleName, user._id, username);
+				}
 			}
 		}
 	}

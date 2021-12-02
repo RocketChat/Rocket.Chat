@@ -2566,7 +2566,7 @@
   "LDAP_Sync_User_Data_Roles_Filter": "Filtro de Grupo de Usuário",
   "LDAP_Sync_User_Data_Roles_Filter_Description": "O filtro de busca LDAP usado para verificar se um usuário está em um grupo.",
   "LDAP_Sync_User_Data_RolesMap": "Mapeamento de Grupo de Dados de Usuário",
-  "LDAP_Sync_User_Data_RolesMap_Description": "Mapeia grupos LDAP para papeis de usuário Rocket.Chat <br/>Por exemplo, `{\"rocket-admin\":\"admin\", \"suporte-tecnico\":\"suporte\"}` irá mapear o grupo LDAP rocket-admin para o papel \"admin\" do Rocket.Chat.",
+  "LDAP_Sync_User_Data_RolesMap_Description": "Mapeia grupos LDAP para papeis de usuário Rocket.Chat <br/>Por exemplo, `{\"rocket-admin\":\"admin\", \"suporte-tecnico\":\"suporte\", \"manager\":[\"leader\", \"moderator\"]}` irá mapear o grupo LDAP rocket-admin para o papel \"admin\" do Rocket.Chat.",
   "LDAP_Teams_BaseDN": "BaseDN LDAP de Equipes",
   "LDAP_Teams_BaseDN_Description": "O BaseDN LDAP usado para procurar equipes do usuário",
   "LDAP_Teams_Name_Field": "Atributo de Nome do Time LDAP",
