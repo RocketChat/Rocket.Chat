@@ -206,7 +206,6 @@
 		"body-parser": "1.19.0",
 		"bson": "^4.5.1",
 		"busboy": "^0.3.1",
-		"bytebuffer": "5.0.1",
 		"cas": "https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62",
 		"change-case": "^4.1.2",
 		"chart.js": "^2.9.3",

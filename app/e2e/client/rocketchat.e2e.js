@@ -18,7 +18,7 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
-} from './helper';
+} from './helpers';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import './tabbar';

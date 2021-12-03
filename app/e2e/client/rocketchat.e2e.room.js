@@ -20,13 +20,12 @@ import {
 	exportJWKKey,
 	importAESKey,
 	importRSAKey,
-} from './helper';
+	readFileAsArrayBuffer } from './helpers';
 import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
-import { readFileAsArrayBuffer } from './readFileAsArrayBuffer';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
