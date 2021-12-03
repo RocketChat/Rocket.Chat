@@ -1,15 +1,15 @@
-import { AppClientManager } from "@rocket.chat/apps-engine/client/AppClientManager";
-import { Meteor } from "meteor/meteor";
-import { Tracker } from "meteor/tracker";
+import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { dispatchToastMessage } from "../../../client/lib/toast";
-import { hasAtLeastOnePermission } from "../../authorization";
-import { settings } from "../../settings/client";
-import { CachedCollectionManager } from "../../ui-cached-collection";
-import { APIClient } from "../../utils";
-import { AppWebsocketReceiver } from "./communication";
-import { handleI18nResources } from "./i18n";
-import { RealAppsEngineUIHost } from "./RealAppsEngineUIHost";
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { settings } from '../../settings/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { APIClient } from '../../utils';
+import { AppWebsocketReceiver } from './communication';
+import { handleI18nResources } from './i18n';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -44,7 +44,7 @@ class AppClientOrchestrator {
 
 		await handleI18nResources();
 		this.setEnabled(isEnabled);
-	};
+	}
 
 	getWsListener = () => this.ws;
 
@@ -52,138 +52,129 @@ class AppClientOrchestrator {
 
 	handleError = (error) => {
 		console.error(error);
-		if (hasAtLeastOnePermission(["manage-apps"])) {
+		if (hasAtLeastOnePermission(['manage-apps'])) {
 			dispatchToastMessage({
-				type: "error",
+				type: 'error',
 				message: error.message,
 			});
 		}
-	};
+	}
 
-	isEnabled = () => this.deferredIsEnabled;
+	isEnabled = () => this.deferredIsEnabled
 
 	getApps = async () => {
-		const { apps } = await APIClient.get("apps");
+		const { apps } = await APIClient.get('apps');
 		return apps;
-	};
+	}
 
 	getAppsFromMarketplace = async () => {
-		const appsOverviews = await APIClient.get("apps", { marketplace: "true" });
-		return appsOverviews.map(
-			({ latest, price, pricingPlans, purchaseType, isEnterpriseOnly }) => ({
-				...latest,
-				price,
-				pricingPlans,
-				purchaseType,
-				isEnterpriseOnly,
-			})
-		);
-	};
+		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
+		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType, isEnterpriseOnly }) => ({
+			...latest,
+			price,
+			pricingPlans,
+			purchaseType,
+			isEnterpriseOnly,
+		}));
+	}
 
 	getAppsOnBundle = async (bundleId) => {
-		const { apps } = await APIClient.get(`apps/bundles/${bundleId}/apps`);
+		const { apps } = await APIClient.get(`apps/bundles/${ bundleId }/apps`);
 		return apps;
-	};
+	}
 
 	getAppsLanguages = async () => {
-		const { apps } = await APIClient.get("apps/languages");
+		const { apps } = await APIClient.get('apps/languages');
 		return apps;
-	};
+	}
 
 	getApp = async (appId) => {
-		const { app } = await APIClient.get(`apps/${appId}`);
+		const { app } = await APIClient.get(`apps/${ appId }`);
 		return app;
-	};
+	}
 
 	getAppFromMarketplace = async (appId, version) => {
-		const { app } = await APIClient.get(`apps/${appId}`, {
-			marketplace: "true",
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
 			version,
 		});
 		return app;
-	};
+	}
 
 	getLatestAppFromMarketplace = async (appId, version) => {
-		const { app } = await APIClient.get(`apps/${appId}`, {
-			marketplace: "true",
-			update: "true",
+		const { app } = await APIClient.get(`apps/${ appId }`, {
+			marketplace: 'true',
+			update: 'true',
 			appVersion: version,
 		});
 		return app;
-	};
+	}
 
 	getAppSettings = async (appId) => {
-		const { settings } = await APIClient.get(`apps/${appId}/settings`);
+		const { settings } = await APIClient.get(`apps/${ appId }/settings`);
 		return settings;
-	};
+	}
 
 	setAppSettings = async (appId, settings) => {
-		const { updated } = await APIClient.post(
-			`apps/${appId}/settings`,
-			undefined,
-			{ settings }
-		);
+		const { updated } = await APIClient.post(`apps/${ appId }/settings`, undefined, { settings });
 		return updated;
-	};
+	}
 
 	getAppApis = async (appId) => {
-		const { apis } = await APIClient.get(`apps/${appId}/apis`);
+		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
 		return apis;
-	};
+	}
 
 	getAppLanguages = async (appId) => {
-		const { languages } = await APIClient.get(`apps/${appId}/languages`);
+		const { languages } = await APIClient.get(`apps/${ appId }/languages`);
 		return languages;
-	};
+	}
 
 	installApp = async (appId, version, permissionsGranted) => {
-		const { app } = await APIClient.post("apps/", {
+		const { app } = await APIClient.post('apps/', {
 			appId,
 			marketplace: true,
 			version,
 			permissionsGranted,
 		});
 		return app;
-	};
+	}
 
 	updateApp = async (appId, version, permissionsGranted) => {
-		const { app } = await APIClient.post(`apps/${appId}`, {
+		const { app } = await APIClient.post(`apps/${ appId }`, {
 			appId,
 			marketplace: true,
 			version,
 			permissionsGranted,
 		});
 		return app;
-	};
+	}
 
-	uninstallApp = (appId) => APIClient.delete(`apps/${appId}`);
+	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
 
-	syncApp = (appId) => APIClient.post(`apps/${appId}/sync`);
+	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)
 
 	setAppStatus = async (appId, status) => {
-		const { status: effectiveStatus } = await APIClient.post(
-			`apps/${appId}/status`,
-			{ status }
-		);
+		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
 		return effectiveStatus;
-	};
+	}
 
-	enableApp = (appId) => this.setAppStatus(appId, "manually_enabled");
+	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled')
 
-	disableApp = (appId) => this.setAppStatus(appId, "manually_disabled");
+	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled')
 
-	buildExternalUrl = (appId, purchaseType = "buy", details = false) =>
-		APIClient.get("apps", {
-			buildExternalUrl: "true",
+	buildExternalUrl = (appId, purchaseType = 'buy', details = false) =>
+		APIClient.get('apps', {
+			buildExternalUrl: 'true',
 			appId,
 			purchaseType,
 			details,
-		});
+		})
 
 	getCategories = async () => {
-		const categories = await APIClient.get("apps", { categories: "true" });
+		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
-	};
+	}
 
 	getUIHost = () => this._appClientUIHost;
 }
@@ -192,7 +183,7 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call("apps/is-enabled", (error, isEnabled) => {
+		Meteor.call('apps/is-enabled', (error, isEnabled) => {
 			if (error) {
 				Apps.handleError(error);
 				return;
@@ -204,7 +195,7 @@ Meteor.startup(() => {
 	});
 
 	Tracker.autorun(() => {
-		const isEnabled = settings.get("Apps_Framework_enabled");
+		const isEnabled = settings.get('Apps_Framework_enabled');
 		Apps.load(isEnabled);
 	});
 });
