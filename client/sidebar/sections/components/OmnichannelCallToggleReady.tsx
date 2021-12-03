@@ -5,7 +5,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useCallClient } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export const OmnichannelCallToogleReady = (): ReactElement => {
+export const OmnichannelCallToggleReady = (): ReactElement => {
 	const [agentEnabled, setAgentEnabled] = useState(false); // TODO: get from AgentInfo
 	const t = useTranslation();
 	const [registered, setRegistered] = useState(false);
@@ -49,7 +49,6 @@ export const OmnichannelCallToogleReady = (): ReactElement => {
 		voipClient.off('registered', onRegistered);
 		voipClient.off('registrationerror', onRegistrationError);
 	});
-
 
 	useEffect(() => {
 		if (!voipClient) {

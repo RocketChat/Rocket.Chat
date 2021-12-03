@@ -1,8 +1,7 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useRef } from 'react';
+import React, { memo, ReactElement } from 'react';
 
-import { ClientLogger } from '../../../lib/ClientLogger';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useLayout } from '../../contexts/LayoutContext';
@@ -15,12 +14,11 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { OmnichannelCallToogle } from './components/OmnichannelCallToogle';
+import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
@@ -49,7 +47,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			await changeAgentStatus();
 		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
-			loggerRef.current?.error(`handleAvailableStatusChange ${error}`);
 		}
 	});
 
@@ -65,7 +62,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{showOmnichannelQueueLink && (
 					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
 				)}
-				{isCallEnabled && <OmnichannelCallToogle />}
+				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
 				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}
 			</Sidebar.TopBar.Actions>

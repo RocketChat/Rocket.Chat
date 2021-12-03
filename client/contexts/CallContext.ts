@@ -1,11 +1,15 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
-import { VoIpCallerInfo } from '../components/voip/definitions/VoIpCallerInfo';
 
 import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
 import { VoIPUser } from '../components/voip/VoIPUser';
+import { VoIpCallerInfo } from '../components/voip/definitions/VoIpCallerInfo';
 
-type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady;
+type CallContextValue =
+	| CallContextDisabled
+	| CallContextEnabled
+	| CallContextReady
+	| CallContextError;
 
 type CallContextDisabled = {
 	enabled: false;
@@ -14,7 +18,7 @@ type CallContextDisabled = {
 
 type CallContextEnabled = {
 	enabled: true;
-	ready: false;
+	ready: unknown;
 };
 type CallContextReady = {
 	enabled: true;
@@ -23,9 +27,17 @@ type CallContextReady = {
 	voipClient: VoIPUser;
 	actions: CallActions;
 };
+type CallContextError = {
+	enabled: true;
+	ready: false;
+	error: Error;
+};
 
 export const isCallContextReady = (context: CallContextValue): context is CallContextReady =>
 	(context as CallContextReady).ready;
+
+export const isCallContextError = (context: CallContextValue): context is CallContextError =>
+	(context as CallContextError).error !== undefined;
 
 type CallActions = {
 	mute: () => unknown;
@@ -55,11 +67,16 @@ export const useIsCallReady = (): boolean => {
 	return Boolean(ready);
 };
 
+export const useIsCallError = (): boolean => {
+	const context = useContext(CallContext);
+	return Boolean(isCallContextError(context));
+};
+
 /* @deprecated */
 export const useCallRegistrationInfo = (): IRegistrationInfo => {
 	const context = useContext(CallContext);
 
-	if (!context.enabled || !context.ready) {
+	if (!isCallContextReady(context)) {
 		throw new Error('useCallRegistrationInfo only if Calls are enabled and ready');
 	}
 	return context.registrationInfo;
@@ -68,7 +85,7 @@ export const useCallRegistrationInfo = (): IRegistrationInfo => {
 export const useCallActions = (): CallActions => {
 	const context = useContext(CallContext);
 
-	if (!context.enabled || !context.ready) {
+	if (!isCallContextReady(context)) {
 		throw new Error('useCallActions only if Calls are enabled and ready');
 	}
 	return context.actions;

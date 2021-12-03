@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export const OmnichannelCallToogleLoading = (): ReactElement => {
+export const OmnichannelCallToggleError = (): ReactElement => {
 	const t = useTranslation();
-	return <Sidebar.TopBar.Action icon='phone' data-label={t('Loading')} disabled />;
+	return <Sidebar.TopBar.Action icon='phone' danger data-title={t('Error')} disabled />;
 };

@@ -8,7 +8,27 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useWebRtcServers } from './useWebRtcServers';
 
-export const useVoipClient = (): [VoIPUser, IRegistrationInfo] | [] => {
+type UseVoipClientResult =
+	| UseVoipClientResultResolved
+	| UseVoipClientResultError
+	| UseVoipClientResultLoading;
+
+type UseVoipClientResultResolved = {
+	voipClient: VoIPUser;
+	registrationInfo: IRegistrationInfo;
+};
+type UseVoipClientResultError = { error: Error };
+type UseVoipClientResultLoading = Record<string, never>;
+
+export const isUseVoipClientResultError = (
+	result: UseVoipClientResult,
+): result is UseVoipClientResultError => !!(result as UseVoipClientResultError).error;
+
+export const isUseVoipClientResultLoading = (
+	result: UseVoipClientResult,
+): result is UseVoipClientResultLoading => Object.keys(result).length === 0;
+
+export const useVoipClient = (): UseVoipClientResult => {
 	const config = useEndpointData(
 		'connector.extension.getRegistrationInfo',
 		useMemo(() => ({ extension: '80000' }), []),
@@ -18,13 +38,19 @@ export const useVoipClient = (): [VoIPUser, IRegistrationInfo] | [] => {
 
 	const iceServers = useWebRtcServers();
 
-	const [result, setClient] = useSafely(useState<[VoIPUser, IRegistrationInfo] | []>([]));
+	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
 	useEffect(() => {
-		if (config.phase !== AsyncStatePhase.RESOLVED) {
-			setClient([]);
+		if (config.phase === AsyncStatePhase.REJECTED) {
+			setResult({ error: config.error as Error });
 			return;
 		}
+
+		if (config.phase !== AsyncStatePhase.RESOLVED) {
+			setResult({});
+			return;
+		}
+
 		const {
 			extensionDetails: { extension, password },
 			host,
@@ -32,21 +58,25 @@ export const useVoipClient = (): [VoIPUser, IRegistrationInfo] | [] => {
 		} = config.value;
 		let client: VoIPUser;
 		(async (): Promise<void> => {
-			client = await SimpleVoipUser.create(
-				extension,
-				password,
-				host,
-				websocketPath,
-				iceServers,
-				'video',
-			);
-			setClient([client, config.value]);
+			try {
+				client = await SimpleVoipUser.create(
+					extension,
+					password,
+					host,
+					websocketPath,
+					iceServers,
+					'video',
+				);
+				setResult({ voipClient: client, registrationInfo: config.value });
+			} catch (e) {
+				setResult({ error: e as Error });
+			}
 		})();
 		return (): void => {
 			// client?.disconnect();
 			// TODO how to close the client? before creating a new one?
 		};
-	}, [iceServers, config.phase, config.value, setClient]);
+	}, [iceServers, config.phase, config.value, setResult, config.error]);
 
 	return result;
 };

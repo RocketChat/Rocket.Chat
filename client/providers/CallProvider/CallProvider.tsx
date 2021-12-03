@@ -1,19 +1,31 @@
 import React, { useMemo, FC } from 'react';
 
 import { CallContext } from '../../contexts/CallContext';
-import { useVoipClient } from './hooks/useVoipClient';
+import {
+	isUseVoipClientResultError,
+	isUseVoipClientResultLoading,
+	useVoipClient,
+} from './hooks/useVoipClient';
 
-const CallProvider: FC = ({ children }) => {
-	const [voipClient, registrationInfo] = useVoipClient();
+export const CallProvider: FC = ({ children }) => {
+	// TODO: Test Settings and return false if its disabled (based on the settings)
+	const result = useVoipClient();
 
 	const contextValue = useMemo(() => {
-		// TODO: Test Settings and return false if its disabled (based on the settings)
-		if (!voipClient || !registrationInfo) {
+		if (isUseVoipClientResultError(result)) {
+			return {
+				enabled: true,
+				error: result.error,
+			};
+		}
+		if (isUseVoipClientResultLoading(result)) {
 			return {
 				enabled: true,
 				ready: false,
 			};
 		}
+
+		const { registrationInfo, voipClient } = result;
 
 		return {
 			enabled: true,
@@ -30,8 +42,6 @@ const CallProvider: FC = ({ children }) => {
 				reject: (): Promise<unknown> => voipClient.rejectCall(),
 			},
 		};
-	}, [voipClient, registrationInfo]);
+	}, [result]);
 	return <CallContext.Provider children={children} value={contextValue} />;
 };
-
-export default CallProvider;
