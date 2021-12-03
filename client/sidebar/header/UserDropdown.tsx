@@ -1,11 +1,13 @@
 import { Box, Margins, Divider, Option, OptionContent } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { popover, AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
+import { IUser } from '../../../definition/IUser';
+import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
@@ -16,6 +18,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
 import EditStatusModal from './EditStatusModal';
 
@@ -37,32 +40,41 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const style = {
-	marginLeft: '-16px',
-	marginRight: '-16px',
-};
-
-const setStatus = (status) => {
+const setStatus = (status: IUser['status']): void => {
 	AccountBox.setStatus(status);
 	callbacks.run('userStatusManuallySet', status);
 };
 
-const getItems = () => AccountBox.getItems();
+const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
 
-const UserDropdown = ({ user, onClose }) => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, name: string): string => {
+	const isDefaultStatus = (name: string): name is UserStatusEnum => name in UserStatusEnum;
+	if (isDefaultStatus(name)) {
+		return t(name);
+	}
+
+	return name;
+};
+
+type UserDropdownProps = {
+	user: IUser;
+	onClose: () => void;
+};
+
+const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
+	const logout = useLogout();
 	const { sidebar } = useLayout();
 
-	const logout = useLogout();
+	const { username, avatarETag, status, statusText } = user;
 
-	const { name, username, avatarETag, status, statusText } = user;
+	const displayName = useUserDisplayName(user);
 
-	const useRealName = useSetting('UI_Use_Real_Name');
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (key) => userStatus.list[key].name !== 'invisible'
-		: () => true;
+		? (key: keyof typeof userStatus['list']): boolean => userStatus.list[key].name !== 'invisible'
+		: (): boolean => true;
 
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
@@ -97,7 +109,7 @@ const UserDropdown = ({ user, onClose }) => {
 		<Box display='flex' flexDirection='column' maxWidth='244px'>
 			<Box display='flex' flexDirection='row' mi='neg-x8'>
 				<Box mie='x4' mis='x8'>
-					<UserAvatar size='x36' username={username} etag={avatarETag} />
+					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
 				</Box>
 				<Box
 					mie='x8'
@@ -105,7 +117,7 @@ const UserDropdown = ({ user, onClose }) => {
 					display='flex'
 					overflow='hidden'
 					flexDirection='column'
-					fontScale='p1'
+					fontScale='p3'
 					mb='neg-x4'
 					flexGrow={1}
 					flexShrink={1}
@@ -114,18 +126,21 @@ const UserDropdown = ({ user, onClose }) => {
 						<Margins inline='x4'>
 							<UserStatus status={status} />
 							<Box is='span' withTruncatedText display='inline-block'>
-								{useRealName ? name || username : username}
+								{displayName}
 							</Box>
 						</Margins>
 					</Box>
-					<Box color='hint' withTruncatedText display='inline-block'>
-						<MarkdownText content={statusText || t(status)} variant='inlineWithoutBreaks' />
+					<Box color='hint'>
+						<MarkdownText
+							withTruncatedText
+							content={statusText || t(status || 'offline')}
+							variant='inlineWithoutBreaks'
+						/>
 					</Box>
 				</Box>
 			</Box>
-
 			<Divider mi='neg-x16' mb='x16' borderColor='muted' />
-			<div style={style}>
+			<Box mi='neg-x16'>
 				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 					{t('Status')}
 				</Box>
@@ -133,16 +148,16 @@ const UserDropdown = ({ user, onClose }) => {
 					.filter(filterInvisibleStatus)
 					.map((key, i) => {
 						const status = userStatus.list[key];
-						const name = status.localizeName ? t(status.name) : status.name;
+						const name = status.localizeName ? translateStatusName(t, status.name) : status.name;
 						const modifier = status.statusType || user.status;
 
 						return (
 							<Option
-								onClick={() => {
+								key={i}
+								onClick={(): void => {
 									setStatus(status.statusType);
 									onClose();
 								}}
-								key={i}
 							>
 								<Option.Column>
 									<UserStatus status={modifier} />
@@ -151,21 +166,25 @@ const UserDropdown = ({ user, onClose }) => {
 							</Option>
 						);
 					})}
-				<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} />
-			</div>
+				<Option
+					icon='emoji'
+					label={`${t('Custom_Status')}...`}
+					onClick={handleCustomStatus}
+				></Option>
+			</Box>
 
 			{(accountBoxItems.length || showAdmin) && (
 				<>
 					<Divider mi='neg-x16' mb='x16' />
-					<div style={style}>
+					<Box mi='neg-x16'>
 						{showAdmin && (
-							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin} />
+							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
 						)}
 						{accountBoxItems.map((item, i) => {
 							let action;
 
 							if (item.href || item.sideNav) {
-								action = () => {
+								action = (): void => {
 									if (item.href) {
 										FlowRouter.go(item.href);
 										popover.close();
@@ -178,17 +197,19 @@ const UserDropdown = ({ user, onClose }) => {
 								};
 							}
 
-							return <Option icon={item.icon} label={t(item.name)} onClick={action} key={i} />;
+							return (
+								<Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>
+							);
 						})}
-					</div>
+					</Box>
 				</>
 			)}
 
 			<Divider mi='neg-x16' mb='x16' />
-			<div style={style}>
-				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount} />
-				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout} />
-			</div>
+			<Box mi='neg-x16'>
+				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
+				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
+			</Box>
 		</Box>
 	);
 };

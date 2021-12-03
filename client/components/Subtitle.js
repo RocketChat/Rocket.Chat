@@ -6,7 +6,7 @@ function Subtitle(props) {
 		<Box
 			color='default'
 			fontFamily='sans'
-			fontScale='s1'
+			fontScale='h4'
 			marginBlockEnd='x8'
 			withRichContent
 			{...props}

@@ -163,7 +163,7 @@ const CannedResponseEdit: FC<{
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow fontScale='p1'>
+			<Page.ScrollableContentWithShadow fontScale='p3'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
 						isManager={hasManagerPermission}

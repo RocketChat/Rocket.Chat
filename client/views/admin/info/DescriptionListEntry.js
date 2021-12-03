@@ -11,7 +11,7 @@ const DescriptionListEntry = ({ children, label, ...props }) => (
 			align='end'
 			color='hint'
 			backgroundColor='surface'
-			fontScale='p2'
+			fontScale='p4'
 			style={style}
 		>
 			{label}

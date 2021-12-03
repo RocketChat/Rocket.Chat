@@ -25,12 +25,12 @@ const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 		<>
 			<Divider />
 			<Box display='flex' flexDirection='column'>
-				<Box fontScale='s2' mb='x12'>
+				<Box fontScale='h4' mb='x12'>
 					{t('APIs')}
 				</Box>
 				{apis.map((api) => (
 					<Box key={api.path} mb='x8'>
-						<Box fontScale='p2'>
+						<Box fontScale='p4'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
 						</Box>
 						{api.methods.map((method) => (
