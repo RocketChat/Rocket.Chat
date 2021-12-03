@@ -30,8 +30,20 @@ describe('Teams (definition/rest/v1)', () => {
 			);
 		});
 
+		it('should return false if teamName and userId are informed but rooms are undefined', () => {
+			assert.isFalse(
+				isTeamsRemoveMemberProps({ teamName: 'teamName', userId: 'userId', rooms: undefined }),
+			);
+		});
+
 		it('should return false if teamId and userId are informed and rooms are empty', () => {
 			assert.isFalse(isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: [] }));
+		});
+
+		it('should return false if teamId and userId are informed but rooms are undefined', () => {
+			assert.isFalse(
+				isTeamsRemoveMemberProps({ teamId: 'teamId', userId: 'userId', rooms: undefined }),
+			);
 		});
 
 		it('should return false if teamId and userId are informed but rooms are empty', () => {
