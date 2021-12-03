@@ -338,6 +338,9 @@ export class Store {
 
 			// Code executed before inserting file
 			collection.before.insert(function(userId, file) {
+				if (userId === undefined && file.userId) {
+					userId = file.userId;
+				}
 				if (!self.permissions.checkInsert(userId, file)) {
 					throw new Meteor.Error('forbidden', 'Forbidden');
 				}
@@ -345,6 +348,9 @@ export class Store {
 
 			// Code executed before updating file
 			collection.before.update(function(userId, file, fields, modifiers) {
+				if (userId === undefined && file.userId) {
+					userId = file.userId;
+				}
 				if (!self.permissions.checkUpdate(userId, file, fields, modifiers)) {
 					throw new Meteor.Error('forbidden', 'Forbidden');
 				}
@@ -352,6 +358,9 @@ export class Store {
 
 			// Code executed before removing file
 			collection.before.remove(function(userId, file) {
+				if (userId === undefined && file.userId) {
+					userId = file.userId;
+				}
 				if (!self.permissions.checkRemove(userId, file)) {
 					throw new Meteor.Error('forbidden', 'Forbidden');
 				}
