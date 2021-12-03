@@ -10,7 +10,7 @@ export const parseStringToIceServer = (server: string): IceServer => {
 		...(username &&
 			credential && {
 				username: decodeURIComponent(username),
-				password: decodeURIComponent(credential),
+				credential: decodeURIComponent(credential),
 			}),
 	};
 };

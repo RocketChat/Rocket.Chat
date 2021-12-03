@@ -13,7 +13,7 @@ describe('parseStringToIceServers', () => {
 			assert.equal(servers.length, 1);
 			assert.equal(servers[0].urls, 'stun:stun.l.google.com:19302');
 			assert.equal(servers[0].username, undefined);
-			assert.equal(servers[0].password, undefined);
+			assert.equal(servers[0].credential, undefined);
 		});
 
 		it('should parse string to servers with multiple urls', () => {
@@ -34,7 +34,7 @@ describe('parseStringToIceServers', () => {
 			assert.equal(servers[1].urls, 'stun:stun1.l.google.com:19302');
 			assert.equal(servers[2].urls, 'turn:numb.viagenie.ca:3478');
 			assert.equal(servers[2].username, 'team@rocket.chat');
-			assert.equal(servers[2].password, 'demo');
+			assert.equal(servers[2].credential, 'demo');
 		});
 	});
 
@@ -48,7 +48,7 @@ describe('parseStringToIceServers', () => {
 			const server = parseStringToIceServer('team%40rocket.chat:demo@turn:numb.viagenie.ca:3478');
 			assert.equal(server.urls, 'turn:numb.viagenie.ca:3478');
 			assert.equal(server.username, 'team@rocket.chat');
-			assert.equal(server.password, 'demo');
+			assert.equal(server.credential, 'demo');
 		});
 	});
 });
