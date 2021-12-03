@@ -21,7 +21,6 @@ import {
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
-import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';

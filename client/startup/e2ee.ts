@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -29,4 +30,8 @@ Meteor.startup(() => {
 		detachMessageReceivedTransform = onClientMessageReceived.use(handleAfterReceiveMessage);
 		detachSendingMessageTransform = onClientBeforeSendMessage.use(handleBeforeSendMessage);
 	});
+});
+
+Accounts.onLogout(() => {
+	e2e.stopClient();
 });
