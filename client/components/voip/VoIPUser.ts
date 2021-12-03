@@ -62,12 +62,12 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL') {
+		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED') {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}
 			return {
-				state: 'IN_CALL',
+				state: this.callState,
 				callerInfo: this._callerInfo,
 				userState: this._userState,
 			};

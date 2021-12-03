@@ -1,7 +1,8 @@
 import { IceServer } from '../definitions/IceServer';
 
 export const parseStringToIceServer = (server: string): IceServer => {
-	const [urls, ...credentials] = server.trim().split('@');
+	const credentials = server.trim().split('@');
+	const urls = credentials.pop() as string;
 	const [username, credential] = credentials.length === 1 ? credentials[0].split(':') : [];
 
 	return {
@@ -9,7 +10,7 @@ export const parseStringToIceServer = (server: string): IceServer => {
 		...(username &&
 			credential && {
 				username: decodeURIComponent(username),
-				credential: decodeURIComponent(credential),
+				password: decodeURIComponent(credential),
 			}),
 	};
 };
