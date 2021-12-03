@@ -40,8 +40,10 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const setStatus = (status: IUser['status']): void => {
-	AccountBox.setStatus(status);
+const isDefaultStatus = (name: string): boolean => Object.keys(userStatus.list).includes(name);
+
+const setStatus = (status: IUser['status'], statusText: IUser['statusText']): void => {
+	AccountBox.setStatus(status, !isDefaultStatus(statusText || '') ? statusText : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
@@ -155,7 +157,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							<Option
 								key={i}
 								onClick={(): void => {
-									setStatus(status.statusType);
+									setStatus(status.statusType, status.name);
 									onClose();
 								}}
 							>

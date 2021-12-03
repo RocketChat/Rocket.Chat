@@ -42,7 +42,7 @@ export const userStatus: UserStatusTypes = {
 			id: UserStatus.BUSY,
 			statusType: UserStatus.BUSY,
 		},
-		invisible: {
+		offline: {
 			name: UserStatus.OFFLINE,
 			localizeName: true,
 			id: UserStatus.OFFLINE,
