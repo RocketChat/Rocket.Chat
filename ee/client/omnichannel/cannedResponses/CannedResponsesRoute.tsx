@@ -171,7 +171,7 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactElement => (
+		({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }): ReactElement => (
 			<Table.Row
 				key={_id}
 				tabIndex={0}
@@ -187,14 +187,14 @@ const CannedResponsesRoute: FC = () => {
 						<UserAvatar size='x24' username={createdBy.username} />
 						<Box display='flex' withTruncatedText mi='x8'>
 							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-								<Box fontScale='p2' withTruncatedText color='default'>
+								<Box fontScale='p4' withTruncatedText color='default'>
 									{createdBy.username}
 								</Box>
 							</Box>
 						</Box>
 					</Box>
 				</Table.Cell>
-				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
+				<Table.Cell withTruncatedText>{getTime(_createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
 				{!(scope === 'global' && isMonitor && !isManager) && (
 					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />

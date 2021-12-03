@@ -8,7 +8,7 @@ type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {
 	constructor(
 		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
+		trash?: Collection<T>,
 	) {
 		super(col, trash);
 
@@ -74,7 +74,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
-			'u._id': userId,
+			userId,
 			teamId: {
 				$in: teamIds,
 			},

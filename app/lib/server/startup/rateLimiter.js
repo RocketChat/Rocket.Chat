@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics';
 import { Logger } from '../../../logger';
 
@@ -108,10 +108,9 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-const callback = (message, name) => (reply, input) => {
+const callback = (msg, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		logger.info('DDP RATE LIMIT:', message);
-		logger.info({ ...reply, ...input });
+		logger.info({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,
@@ -203,9 +202,9 @@ const configConnectionByMethod = _.debounce(() => {
 }, 1000);
 
 if (!process.env.TEST_MODE) {
-	settings.get(/^DDP_Rate_Limit_IP_.+/, configIP);
-	settings.get(/^DDP_Rate_Limit_User_[^B].+/, configUser);
-	settings.get(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);
-	settings.get(/^DDP_Rate_Limit_User_By_Method_.+/, configUserByMethod);
-	settings.get(/^DDP_Rate_Limit_Connection_By_Method_.+/, configConnectionByMethod);
+	settings.watchByRegex(/^DDP_Rate_Limit_IP_.+/, configIP);
+	settings.watchByRegex(/^DDP_Rate_Limit_User_[^B].+/, configUser);
+	settings.watchByRegex(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);
+	settings.watchByRegex(/^DDP_Rate_Limit_User_By_Method_.+/, configUserByMethod);
+	settings.watchByRegex(/^DDP_Rate_Limit_Connection_By_Method_.+/, configConnectionByMethod);
 }

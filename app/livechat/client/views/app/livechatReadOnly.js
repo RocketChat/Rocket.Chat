@@ -64,7 +64,7 @@ Template.livechatReadOnly.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 
 	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
-		if (clientAction === 'removed' || !await callWithErrorHandling('canAccessRoom', inquiry.rid, Meteor.userId())) {
+		if (clientAction === 'removed') {
 			// this will force to refresh the room
 			// since the client wont get notified of room changes when chats are on queue (no one assigned)
 			// a better approach should be performed when refactoring these templates to use react

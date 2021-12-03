@@ -46,7 +46,7 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 	});
 
 	return (
-		<Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Table.Cell fontScale='p3' color='hint' onClick={handleDelete} withTruncatedText>
 			<Button small ghost title={t('Remove')} onClick={handleDelete}>
 				<Icon name='trash' size='x16' />
 			</Button>

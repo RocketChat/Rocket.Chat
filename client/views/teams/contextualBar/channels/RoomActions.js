@@ -37,12 +37,12 @@ const RoomActions = ({ room, reload }) => {
 	const removeRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		'teams.removeRoom',
-		t('Success'),
+		t('Room_has_been_removed'),
 	);
 	const deleteRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		room.t === 'c' ? 'channels.delete' : 'groups.delete',
-		t('Success'),
+		t('Room_has_been_deleted'),
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {

@@ -5,11 +5,11 @@ import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
 
 import { Logger } from '../lib/logger/Logger';
-import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
-import { isDocker, getURL } from '../../app/utils';
+import { hasPermission } from '../../app/authorization/server';
+import { settings } from '../../app/settings/server';
+import { isDocker, getURL } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
-import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import { InstanceStatus as InstanceStatusRaw } from '../../app/models/server/raw';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
 import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 
@@ -61,7 +61,7 @@ function startMatrixBroadcast() {
 	}
 
 	matrixBroadCastActions = {
-		added(record) {
+		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
 
 			const subPath = getURL('', { cdn: false, full: false });
@@ -100,7 +100,7 @@ function startMatrixBroadcast() {
 			connections[instance].onReconnect = function() {
 				return authorizeConnection(instance);
 			};
-		},
+		}),
 
 		removed(id) {
 			const record = cache.get(id);
@@ -129,19 +129,15 @@ function startMatrixBroadcast() {
 		},
 	};
 
-	const query = {
+	InstanceStatusRaw.find({
 		'extraInformation.port': {
 			$exists: true,
 		},
-	};
-
-	const options = {
+	}, {
 		sort: {
 			_createdAt: -1,
 		},
-	};
-
-	InstanceStatusModel.find(query, options).fetch().forEach(matrixBroadCastActions.added);
+	}).forEach(matrixBroadCastActions.added);
 }
 
 
@@ -201,7 +197,7 @@ export function startStreamBroadcast() {
 
 	logger.info('startStreamBroadcast');
 
-	settings.get('Stream_Cast_Address', function(key, value) {
+	settings.watch('Stream_Cast_Address', function(value) {
 		// var connection, fn, instance;
 		const fn = function(instance, connection) {
 			connection.disconnect();
@@ -272,7 +268,7 @@ export function startStreamBroadcast() {
 	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
-	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+	settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
 		if (TroubleshootDisableInstanceBroadcast === value) { return; }
 		TroubleshootDisableInstanceBroadcast = value;
 

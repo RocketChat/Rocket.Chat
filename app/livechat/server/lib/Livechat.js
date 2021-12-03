@@ -40,6 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Users as UsersRaw } from '../../../models/server/raw';
 
 const logger = new Logger('Livechat');
 
@@ -221,7 +222,7 @@ export const Livechat = {
 		return true;
 	},
 
-	deleteMessage({ guest, message }) {
+	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -238,7 +239,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		deleteMessage(message, guest);
+		await deleteMessage(message, guest);
 
 		return true;
 	},
@@ -513,7 +514,7 @@ export const Livechat = {
 			'Livechat_offline_success_message',
 			'Livechat_offline_form_unavailable',
 			'Livechat_display_offline_form',
-			'Livechat_videocall_enabled',
+			'Omnichannel_call_provider',
 			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
@@ -597,7 +598,7 @@ export const Livechat = {
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
+			Promise.await(this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department }));
 		});
 	},
 
@@ -734,9 +735,9 @@ export const Livechat = {
 		} catch (e) {
 			Livechat.webhookLogger.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
-			Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
+			(attempts - 1) && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(Meteor.bindEnvironment(function() {
-				Livechat.sendRequest(postData, callback, attempts--);
+				Livechat.sendRequest(postData, callback, attempts - 1);
 			}), 10000);
 		}
 	},
@@ -882,6 +883,12 @@ export const Livechat = {
 
 	setUserStatusLivechat(userId, status) {
 		const user = Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	},
+
+	setUserStatusLivechatIf(userId, status, condition, fields) {
+		const user = Promise.await(UsersRaw.setLivechatStatusIf(userId, status, condition, fields));
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
@@ -1271,8 +1278,14 @@ export const Livechat = {
 		};
 		LivechatVisitors.updateById(contactId, updateUser);
 	},
+	updateCallStatus(callId, rid, status, user) {
+		Rooms.setCallStatus(rid, status);
+		if (status === 'ended' || status === 'declined') {
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
+		}
+	},
 };
 
-settings.get('Livechat_history_monitor_type', (key, value) => {
+settings.watch('Livechat_history_monitor_type', (value) => {
 	Livechat.historyMonitorType = value;
 });

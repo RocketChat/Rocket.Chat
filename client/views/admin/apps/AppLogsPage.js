@@ -81,7 +81,7 @@ function AppLogsPage({ id, ...props }) {
 			<Page.ScrollableContent>
 				{loading && <LogsLoading />}
 				{app.error && (
-					<Box maxWidth='x600' alignSelf='center' fontScale='h1'>
+					<Box maxWidth='x600' alignSelf='center' fontScale='hh21'>
 						{app.error.message}
 					</Box>
 				)}

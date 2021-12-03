@@ -6,12 +6,12 @@ function getCustomOAuthServices(): Record<string, {
 	mergeRoles: boolean;
 	users: number;
 }> {
-	const customOauth = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(customOauth.map(({ key, value }) => {
+	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/mi);
+	return Object.fromEntries(Object.entries(customOauth).map(([key, value]) => {
 		const name = key.replace('Accounts_OAuth_Custom-', '');
 		return [name, {
 			enabled: Boolean(value),
-			mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
+			mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${ name }-merge_roles`),
 			users: Users.countActiveUsersByService(name),
 		}];
 	}));

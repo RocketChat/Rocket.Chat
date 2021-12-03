@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings';
-import { WebdavAccounts } from '../../../models';
+import { settings } from '../../../settings/server';
+import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 import { Notifications } from '../../../notifications/server';
 
@@ -24,7 +24,7 @@ Meteor.methods({
 			pass: String,
 		}));
 
-		const duplicateAccount = WebdavAccounts.findOne({ user_id: userId, server_url: formData.serverURL, username: formData.username });
+		const duplicateAccount = await WebdavAccounts.findOneByUserIdServerUrlAndUsername({ user_id: userId, server_url: formData.serverURL, username: formData.username });
 		if (duplicateAccount !== undefined) {
 			throw new Meteor.Error('duplicated-account', {
 				method: 'addWebdavAccount',
@@ -49,7 +49,7 @@ Meteor.methods({
 			};
 
 			await client.stat('/');
-			WebdavAccounts.insert(accountData);
+			await WebdavAccounts.insertOne(accountData);
 			Notifications.notifyUser(userId, 'webdav', {
 				type: 'changed',
 				account: accountData,
@@ -89,12 +89,14 @@ Meteor.methods({
 			};
 
 			await client.stat('/');
-			WebdavAccounts.upsert({
+			await WebdavAccounts.updateOne({
 				user_id: userId,
 				server_url: data.serverURL,
 				name: data.name,
 			}, {
 				$set: accountData,
+			}, {
+				upsert: true,
 			});
 			Notifications.notifyUser(userId, 'webdav', {
 				type: 'changed',

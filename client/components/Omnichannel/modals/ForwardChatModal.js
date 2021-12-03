@@ -16,9 +16,9 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useForm } from '../../../hooks/useForm';
-import ModalSeparator from '../../ModalSeparator';
 import UserAutoComplete from '../../UserAutoComplete';
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
+import ModalSeparator from './ModalSeparator';
 
 const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const t = useTranslation();
@@ -89,7 +89,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p3'>
 				<Field mbe={'x30'}>
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>

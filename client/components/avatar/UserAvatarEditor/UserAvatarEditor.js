@@ -19,10 +19,20 @@ function UserAvatarEditor({
 	const [newAvatarSource, setNewAvatarSource] = useState();
 	const [urlEmpty, setUrlEmpty] = useState(true);
 
+	const toDataURL = (file, callback) => {
+		const reader = new FileReader();
+		reader.onload = function (e) {
+			callback(e.target.result);
+		};
+		reader.readAsDataURL(file);
+	};
+
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
 			setAvatarObj(avatarObj);
-			setNewAvatarSource(URL.createObjectURL(file));
+			toDataURL(file, (dataurl) => {
+				setNewAvatarSource(dataurl);
+			});
 		},
 		[setAvatarObj],
 	);
@@ -49,7 +59,7 @@ function UserAvatarEditor({
 	};
 
 	return (
-		<Box display='flex' flexDirection='column' fontScale='p2'>
+		<Box display='flex' flexDirection='column' fontScale='p4'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
 				<UserAvatar

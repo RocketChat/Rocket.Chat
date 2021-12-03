@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { isEmail } from '../../../../app/utils/lib/isEmail.js';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -316,7 +316,7 @@ export default function UserForm({
 				{hasCustomFields && (
 					<>
 						<Divider />
-						<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+						<Box fontScale='h4'>{t('Custom_Fields')}</Box>
 					</>
 				)}
 				<CustomFieldsForm

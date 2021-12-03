@@ -344,15 +344,15 @@ API.v1.addRoute('livechat/departments.available-by-unit/:unitId', { authRequired
 	},
 });
 
-API.v1.addRoute('livechat/departments.by-unit/:unitId', { authRequired: true }, {
-	get() {
+API.v1.addRoute('livechat/departments.by-unit/:id', { authRequired: true }, {
+	async get() {
 		check(this.urlParams, {
-			unitId: String,
+			id: String,
 		});
 		const { offset, count } = this.getPaginationItems();
-		const { unitId } = this.urlParams;
+		const { id } = this.urlParams;
 
-		const { departments, total } = Promise.await(findAllDepartmentsByUnit(unitId, offset, count));
+		const { departments, total } = await findAllDepartmentsByUnit(id, offset, count);
 
 		return API.v1.success({
 			departments,

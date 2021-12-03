@@ -1,7 +1,7 @@
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
 import { classLogger, connLogger } from './logger';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
@@ -62,7 +62,7 @@ class SlackBridgeClass {
 
 	processSettings() {
 		// Slack installation API token
-		settings.get('SlackBridge_APIToken', (key, value) => {
+		settings.watch('SlackBridge_APIToken', (value) => {
 			if (value !== this.apiTokens) {
 				this.apiTokens = value;
 				if (this.connected) {
@@ -71,35 +71,35 @@ class SlackBridgeClass {
 				}
 			}
 
-			classLogger.debug(`Setting: ${ key }`, value);
+			classLogger.debug('Setting: SlackBridge_APIToken', value);
 		});
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
-		settings.get('SlackBridge_AliasFormat', (key, value) => {
+		settings.watch('SlackBridge_AliasFormat', (value) => {
 			this.aliasFormat = value;
-			classLogger.debug(`Setting: ${ key }`, value);
+			classLogger.debug('Setting: SlackBridge_AliasFormat', value);
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
-		settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
+		settings.watch('SlackBridge_ExcludeBotnames', (value) => {
 			this.excludeBotnames = value;
-			classLogger.debug(`Setting: ${ key }`, value);
+			classLogger.debug('Setting: SlackBridge_ExcludeBotnames', value);
 		});
 
 		// Reactions
-		settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
+		settings.watch('SlackBridge_Reactions_Enabled', (value) => {
 			this.isReactionsEnabled = value;
-			classLogger.debug(`Setting: ${ key }`, value);
+			classLogger.debug('Setting: SlackBridge_Reactions_Enabled', value);
 		});
 
 		// Is this entire SlackBridge enabled
-		settings.get('SlackBridge_Enabled', (key, value) => {
+		settings.watch('SlackBridge_Enabled', (value) => {
 			if (value && this.apiTokens) {
 				this.connect();
 			} else {
 				this.disconnect();
 			}
-			classLogger.debug(`Setting: ${ key }`, value);
+			classLogger.debug('Setting: SlackBridge_Enabled', value);
 		});
 	}
 }

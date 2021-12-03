@@ -39,10 +39,10 @@ function CustomEmoji({ data, sort, onClick, onHeaderClick, setParams, params }) 
 				action
 				qa-user-id={_id}
 			>
-				<Table.Cell fontScale='p1' color='default'>
+				<Table.Cell fontScale='p3' color='default'>
 					<Box withTruncatedText>{name}</Box>
 				</Table.Cell>
-				<Table.Cell fontScale='p1' color='default'>
+				<Table.Cell fontScale='p3' color='default'>
 					<Box withTruncatedText>{aliases}</Box>
 				</Table.Cell>
 			</Table.Row>

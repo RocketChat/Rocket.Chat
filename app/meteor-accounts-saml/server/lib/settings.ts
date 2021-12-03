@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../../settings/server';
+import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { SettingComposedValue } from '../../../settings/lib/settings';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
@@ -104,16 +103,16 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 
 export const loadSamlServiceProviders = function(): void {
 	const serviceName = 'saml';
-	const services = settings.get(/^(SAML_Custom_)[a-z]+$/i) as SettingComposedValue[] | undefined;
+	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
 	if (!services) {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
-	const providers = services.map((service) => {
-		if (service.value === true) {
-			const samlConfigs = getSamlConfigs(service.key);
-			SAMLUtils.log(service.key);
+	const providers = services.map(([key, value]) => {
+		if (value === true) {
+			const samlConfigs = getSamlConfigs(key);
+			SAMLUtils.log(key);
 			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase(),
 			}, {
@@ -135,8 +134,8 @@ export const addSamlService = function(name: string): void {
 };
 
 export const addSettings = function(name: string): void {
-	settings.addGroup('SAML', function() {
-		this.set({
+	settingsRegistry.addGroup('SAML', function() {
+		this.with({
 			tab: 'SAML_Connection',
 		}, function() {
 			this.add(`SAML_Custom_${ name }`, false, {
@@ -196,7 +195,7 @@ export const addSettings = function(name: string): void {
 			});
 		});
 
-		this.set({
+		this.with({
 			tab: 'SAML_General',
 		}, function() {
 			this.section('SAML_Section_1_User_Interface', function() {
