@@ -3,7 +3,6 @@ import './appRoot';
 import './banners';
 import './contextualBar';
 import './customTranslations';
-import './e2ee';
 import './emailVerification';
 import './i18n';
 import './ldap';

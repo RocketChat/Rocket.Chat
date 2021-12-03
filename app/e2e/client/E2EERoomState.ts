@@ -1,4 +1,4 @@
-export enum E2ERoomState {
+export enum E2EERoomState {
 	NO_PASSWORD_SET = 'NO_PASSWORD_SET',
 	NOT_STARTED = 'NOT_STARTED',
 	DISABLED = 'DISABLED',

@@ -4,7 +4,6 @@ import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { Emitter } from '@rocket.chat/emitter';
 
 import { e2e } from './rocketchat.e2e';
 import {
@@ -25,41 +24,42 @@ import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
 import { log, logError } from './logger';
-import { E2ERoomState } from './E2ERoomState';
+import { E2EERoomState } from './E2EERoomState';
+import { E2EERoomClient } from './E2EERoomClient';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
-	[E2ERoomState.NOT_STARTED]: [
-		E2ERoomState.ESTABLISHING,
-		E2ERoomState.DISABLED,
-		E2ERoomState.KEYS_RECEIVED,
+	[E2EERoomState.NOT_STARTED]: [
+		E2EERoomState.ESTABLISHING,
+		E2EERoomState.DISABLED,
+		E2EERoomState.KEYS_RECEIVED,
 	],
-	[E2ERoomState.READY]: [
-		E2ERoomState.DISABLED,
+	[E2EERoomState.READY]: [
+		E2EERoomState.DISABLED,
 	],
-	[E2ERoomState.ERROR]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.NOT_STARTED,
+	[E2EERoomState.ERROR]: [
+		E2EERoomState.KEYS_RECEIVED,
+		E2EERoomState.NOT_STARTED,
 	],
-	[E2ERoomState.WAITING_KEYS]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.ERROR,
-		E2ERoomState.DISABLED,
+	[E2EERoomState.WAITING_KEYS]: [
+		E2EERoomState.KEYS_RECEIVED,
+		E2EERoomState.ERROR,
+		E2EERoomState.DISABLED,
 	],
-	[E2ERoomState.ESTABLISHING]: [
-		E2ERoomState.READY,
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.ERROR,
-		E2ERoomState.DISABLED,
-		E2ERoomState.WAITING_KEYS,
+	[E2EERoomState.ESTABLISHING]: [
+		E2EERoomState.READY,
+		E2EERoomState.KEYS_RECEIVED,
+		E2EERoomState.ERROR,
+		E2EERoomState.DISABLED,
+		E2EERoomState.WAITING_KEYS,
 	],
 };
 
 const filterMutation = (currentState, nextState) => {
 	if (currentState === nextState) {
-		return nextState === E2ERoomState.ERROR;
+		return nextState === E2EERoomState.ERROR;
 	}
 
 	if (!(currentState in permitedMutations)) {
@@ -73,7 +73,7 @@ const filterMutation = (currentState, nextState) => {
 	return false;
 };
 
-export class E2ERoom extends Emitter {
+export class E2ERoom extends E2EERoomClient {
 	state = undefined;
 
 	[PAUSED] = undefined;
@@ -85,8 +85,8 @@ export class E2ERoom extends Emitter {
 		this.roomId = roomId;
 		this.typeOfRoom = t;
 
-		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
-		this.once(E2ERoomState.READY, () => this.decryptSubscription());
+		this.once(E2EERoomState.READY, () => this.decryptPendingMessages());
+		this.once(E2EERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
 				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
@@ -94,7 +94,7 @@ export class E2ERoom extends Emitter {
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
 
-		this.setState(E2ERoomState.NOT_STARTED);
+		this.setState(E2EERoomState.NOT_STARTED);
 	}
 
 	log(...msg) {
@@ -121,23 +121,23 @@ export class E2ERoom extends Emitter {
 	}
 
 	isReady() {
-		return this.state === E2ERoomState.READY;
+		return this.state === E2EERoomState.READY;
 	}
 
 	isDisabled() {
-		return this.state === E2ERoomState.DISABLED;
+		return this.state === E2EERoomState.DISABLED;
 	}
 
 	enable() {
-		if (this.state === E2ERoomState.READY) {
+		if (this.state === E2EERoomState.READY) {
 			return;
 		}
 
-		this.setState(E2ERoomState.READY);
+		this.setState(E2EERoomState.READY);
 	}
 
 	disable() {
-		this.setState(E2ERoomState.DISABLED);
+		this.setState(E2EERoomState.DISABLED);
 	}
 
 	pause() {
@@ -153,7 +153,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	keyReceived() {
-		this.setState(E2ERoomState.KEYS_RECEIVED);
+		this.setState(E2EERoomState.KEYS_RECEIVED);
 	}
 
 	async shouldConvertSentMessages() {
@@ -175,7 +175,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isWaitingKeys() {
-		return this.state === E2ERoomState.WAITING_KEYS;
+		return this.state === E2EERoomState.WAITING_KEYS;
 	}
 
 	get keyID() {
@@ -214,21 +214,21 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
-		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
+		if (this.state !== E2EERoomState.KEYS_RECEIVED && this.state !== E2EERoomState.NOT_STARTED) {
 			return;
 		}
 
-		this.setState(E2ERoomState.ESTABLISHING);
+		this.setState(E2EERoomState.ESTABLISHING);
 
 		try {
 			const groupKey = Subscriptions.findOne({ rid: this.roomId }).E2EKey;
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
-				this.setState(E2ERoomState.READY);
+				this.setState(E2EERoomState.READY);
 				return;
 			}
 		} catch (error) {
-			this.setState(E2ERoomState.ERROR);
+			this.setState(E2EERoomState.ERROR);
 			this.error('Error fetching group key: ', error);
 			return;
 		}
@@ -236,18 +236,18 @@ export class E2ERoom extends Emitter {
 		try {
 			const room = Rooms.findOne({ _id: this.roomId });
 			if (!room.e2eKeyId) { // TODO CHECK_PERMISSION
-				this.setState(E2ERoomState.CREATING_KEYS);
+				this.setState(E2EERoomState.CREATING_KEYS);
 				await this.createGroupKey();
-				this.setState(E2ERoomState.READY);
+				this.setState(E2EERoomState.READY);
 				return;
 			}
 
-			this.setState(E2ERoomState.WAITING_KEYS);
+			this.setState(E2EERoomState.WAITING_KEYS);
 			this.log('Requesting room key');
 			Notifications.notifyUsersOfRoom(this.roomId, 'e2e.keyRequest', this.roomId, room.e2eKeyId);
 		} catch (error) {
 			// this.error = error;
-			this.setState(E2ERoomState.ERROR);
+			this.setState(E2EERoomState.ERROR);
 		}
 	}
 

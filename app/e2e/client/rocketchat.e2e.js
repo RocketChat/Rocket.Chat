@@ -3,9 +3,7 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Emitter } from '@rocket.chat/emitter';
 
-import { E2ERoom } from './rocketchat.e2e.room';
 import {
 	toString,
 	toArrayBuffer,
@@ -20,24 +18,23 @@ import {
 	deriveKey,
 } from './helpers';
 import * as banners from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { Subscriptions, Messages } from '../../models/client';
 import './tabbar';
 import { log, logError } from './logger';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EEPasswordModal from '../../../client/views/e2ee/SaveE2EEPasswordModal';
 import EnterE2EEPasswordModal from '../../../client/views/e2ee/EnterE2EEPasswordModal';
 import { APIClient } from '../../utils/client';
+import { E2EEManager } from './E2EEManager';
 
 let failedToDecodeKey = false;
 
-class E2E extends Emitter {
+class E2E extends E2EEManager {
 	constructor() {
 		super();
 		this.started = false;
 		this.enabled = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
-		this.instancesByRoomId = {};
 
 		this.on('ready', () => {
 			this._ready.set(true);
@@ -61,30 +58,12 @@ class E2E extends Emitter {
 		return this.enabled.get();
 	}
 
+	setEnabled(enabled) {
+		this.enabled.set(enabled);
+	}
+
 	isReady() {
-		return this.enabled.get() && this._ready.get();
-	}
-
-	async getInstanceByRoomId(rid) {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
-
-		if (room.t !== 'd' && room.t !== 'p') {
-			return null;
-		}
-
-		if (room.encrypted !== true && !room.e2eKeyId) {
-			return null;
-		}
-
-		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
-		}
-
-		return this.instancesByRoomId[rid];
-	}
-
-	removeInstanceByRoomId(rid) {
-		delete this.instancesByRoomId[rid];
+		return this.isEnabled() && this._ready.get();
 	}
 
 	async startClient() {
@@ -180,9 +159,9 @@ class E2E extends Emitter {
 
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
-		this.instancesByRoomId = {};
+		this.clearRoomClients();
 		this.privateKey = null;
-		this.enabled.set(false);
+		this.setEnabled(false);
 		this._ready.set(false);
 		this.started = false;
 	}
@@ -398,6 +377,16 @@ class E2E extends Emitter {
 
 	closeAlert() {
 		banners.closeById('e2e');
+	}
+
+	toggle(enabled) {
+		if (enabled) {
+			this.startClient();
+			this.setEnabled(true);
+		} else {
+			this.setEnabled(false);
+			this.closeAlert();
+		}
 	}
 }
 
