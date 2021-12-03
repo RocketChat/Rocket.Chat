@@ -96,3 +96,12 @@ export const useCallState = (): VoIpCallerInfo => {
 	);
 	return useSubscription(subscription);
 };
+
+export const useCallClient = (): VoIPUser => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useClient only if Calls are enabled and ready');
+	}
+	return context.voipClient;
+};

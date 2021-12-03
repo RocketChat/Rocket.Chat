@@ -1,3 +1,4 @@
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
@@ -41,7 +42,9 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
-	const [routeConfig, setRouteConfig] = useState<OmichannelRoutingConfig | undefined>(undefined);
+	const [routeConfig, setRouteConfig] = useSafely(
+		useState<OmichannelRoutingConfig | undefined>(undefined),
+	);
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -63,7 +66,14 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, voipCallAvailable]);
+	}, [
+		accessible,
+		getRoutingConfig,
+		iceServersSetting,
+		omnichannelRouting,
+		setRouteConfig,
+		voipCallAvailable,
+	]);
 
 	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
