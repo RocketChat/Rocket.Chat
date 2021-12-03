@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import GenericModal from '../../components/GenericModal';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const SaveE2EPasswordModal = ({
+const SaveE2EEPasswordModal = ({
 	passwordRevealText,
 	onClose,
 	onCancel,
@@ -32,4 +32,4 @@ const SaveE2EPasswordModal = ({
 	);
 };
 
-export default SaveE2EPasswordModal;
+export default SaveE2EEPasswordModal;

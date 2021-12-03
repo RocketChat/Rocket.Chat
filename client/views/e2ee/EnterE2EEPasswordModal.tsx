@@ -5,7 +5,7 @@ import React, { ReactElement, useState, useCallback } from 'react';
 import GenericModal from '../../components/GenericModal';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const EnterE2EPasswordModal = ({
+const EnterE2EEPasswordModal = ({
 	onConfirm,
 	onClose,
 	onCancel,
@@ -63,4 +63,4 @@ const EnterE2EPasswordModal = ({
 	);
 };
 
-export default EnterE2EPasswordModal;
+export default EnterE2EEPasswordModal;

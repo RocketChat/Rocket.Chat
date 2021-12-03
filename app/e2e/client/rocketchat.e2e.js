@@ -26,8 +26,8 @@ import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import SaveE2EEPasswordModal from '../../../client/views/e2ee/SaveE2EEPasswordModal';
+import EnterE2EEPasswordModal from '../../../client/views/e2ee/EnterE2EEPasswordModal';
 import { APIClient } from '../../utils/client';
 
 let failedToDecodeKey = false;
@@ -154,7 +154,7 @@ class E2E extends Emitter {
 				closable: false,
 				icon: 'key',
 				action: () => {
-					imperativeModal.open({ component: SaveE2EPasswordModal,
+					imperativeModal.open({ component: SaveE2EEPasswordModal,
 						props: {
 							passwordRevealText,
 							onClose: imperativeModal.close,
@@ -298,7 +298,7 @@ class E2E extends Emitter {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			const showModal = () => {
-				imperativeModal.open({ component: EnterE2EPasswordModal,
+				imperativeModal.open({ component: EnterE2EEPasswordModal,
 					props: {
 						onClose: imperativeModal.close,
 						onCancel: () => {

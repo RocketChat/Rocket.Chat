@@ -3,6 +3,7 @@ import { QueryClientProvider } from 'react-query';
 
 import { OmnichannelRoomIconProvider } from '../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import { queryClient } from '../../lib/queryClient';
+import E2EEProvider from '../e2ee/E2EEProvider';
 import PageLoading from './PageLoading';
 
 const ConnectionStatusBar = lazy(
@@ -18,10 +19,12 @@ const AppRoot: FC = () => (
 		<MeteorProvider>
 			<QueryClientProvider client={queryClient}>
 				<OmnichannelRoomIconProvider>
-					<ConnectionStatusBar />
-					<BannerRegion />
-					<AppLayout />
-					<PortalsWrapper />
+					<E2EEProvider>
+						<ConnectionStatusBar />
+						<BannerRegion />
+						<AppLayout />
+						<PortalsWrapper />
+					</E2EEProvider>
 				</OmnichannelRoomIconProvider>
 			</QueryClientProvider>
 		</MeteorProvider>
