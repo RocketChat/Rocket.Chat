@@ -5,7 +5,7 @@ import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
 import { VoIPUser } from '../components/voip/VoIPUser';
 import { VoIpCallerInfo } from '../components/voip/definitions/VoIpCallerInfo';
 
-type CallContextValue =
+export type CallContextValue =
 	| CallContextDisabled
 	| CallContextEnabled
 	| CallContextReady

@@ -1,6 +1,6 @@
 import React, { useMemo, FC } from 'react';
 
-import { CallContext } from '../../contexts/CallContext';
+import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import {
 	isUseVoipClientResultError,
 	isUseVoipClientResultLoading,
@@ -11,10 +11,18 @@ export const CallProvider: FC = ({ children }) => {
 	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
 
-	const contextValue = useMemo(() => {
+	// type CallContextReady = {
+	// 	enabled: true;
+	// 	ready: true;
+	// 	registrationInfo: IRegistrationInfo; // TODO: Remove after delete the example
+	// 	voipClient: VoIPUser;
+	// 	actions: CallActions;
+	// };
+	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {
 			return {
 				enabled: true,
+				ready: false,
 				error: result.error,
 			};
 		}
