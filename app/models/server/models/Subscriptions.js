@@ -286,16 +286,6 @@ export class Subscriptions extends Base {
 		return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
 	}
 
-	resetUserE2EKey(userId) {
-		this.update({ 'u._id': userId }, {
-			$unset: {
-				E2EKey: '',
-			},
-		}, {
-			multi: true,
-		});
-	}
-
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
