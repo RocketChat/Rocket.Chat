@@ -11,25 +11,27 @@ import { attachKeyRequestHandler } from './attachKeyRequestHandler';
 import { attachSubscriptionWatcher } from './attachSubscriptionWatcher';
 import { e2e } from './rocketchat.e2e';
 
+const isEnabled = (): boolean => {
+	if (!Meteor.userId()) {
+		return false;
+	}
+
+	const adminEmbedded = isLayoutEmbedded() && FlowRouter.current().path.startsWith('/admin');
+
+	if (adminEmbedded) {
+		return false;
+	}
+
+	return settings.get('E2E_Enable');
+};
+
 export const attachE2EEManagement = (): (() => void) | undefined => {
 	if (!window.crypto) {
 		return undefined;
 	}
 
 	const flagWatcher = Tracker.autorun(() => {
-		if (!Meteor.userId()) {
-			e2e.toggle(false);
-			return;
-		}
-
-		const adminEmbedded = isLayoutEmbedded() && FlowRouter.current().path.startsWith('/admin');
-
-		if (adminEmbedded) {
-			e2e.toggle(false);
-			return;
-		}
-
-		e2e.toggle(settings.get('E2E_Enable'));
+		e2e.toggle(isEnabled());
 	});
 
 	let detachKeyRequestHandler: (() => void) | undefined;
@@ -41,7 +43,10 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 	const attachLogoutHandler = (): (() => void) => {
 		const computation = Accounts.onLogout(() => {
 			e2e.stopClient();
-		}) as unknown as Tracker.Computation; // return type is wrong at declaration files
+		}) as unknown as {
+			stop(): void;
+			callback: () => void;
+		}; // return type is wrong at declaration files
 
 		return (): void => {
 			computation.stop();

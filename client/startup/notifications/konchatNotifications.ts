@@ -8,9 +8,8 @@ import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
-import { IMessage } from '../../../definition/IMessage';
-import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
+import { NotificationEvent } from '../../../definition/NotificationEvent';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
@@ -26,24 +25,6 @@ const notifyNewRoom = (sub: ISubscription): void => {
 	) {
 		KonchatNotification.newRoom(sub.rid);
 	}
-};
-
-type NotificationEvent = {
-	title: string;
-	text: string;
-	duration: number;
-	payload: {
-		_id: IMessage['_id'];
-		rid: IMessage['rid'];
-		tmid: IMessage['_id'];
-		sender: IMessage['u'];
-		type: IRoom['t'];
-		name: IRoom['name'];
-		message: {
-			msg: IMessage['msg'];
-			t: string;
-		};
-	};
 };
 
 function notifyNewMessageAudio(rid: string): void {

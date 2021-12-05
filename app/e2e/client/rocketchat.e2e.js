@@ -7,8 +7,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import {
 	toString,
 	toArrayBuffer,
-	joinVectorAndEcryptedData,
-	splitVectorAndEcryptedData,
+	joinVectorAndEncryptedData,
+	splitVectorAndEncryptedData,
 	encryptAES,
 	decryptAES,
 	generateRSAKey,
@@ -246,7 +246,7 @@ class E2E extends E2EEManager {
 		try {
 			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(private_key));
 
-			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
+			return EJSON.stringify(joinVectorAndEncryptedData(vector, encodedPrivateKey));
 		} catch (error) {
 			return this.error('Error encrypting encodedPrivateKey: ', error);
 		}
@@ -319,7 +319,7 @@ class E2E extends E2EEManager {
 
 		const masterKey = await this.getMasterKey(password);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(private_key));
+		const [vector, cipherText] = splitVectorAndEncryptedData(EJSON.parse(private_key));
 
 		try {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
@@ -329,30 +329,6 @@ class E2E extends E2EEManager {
 		}
 	}
 
-	async decryptMessage(message) {
-		if (message.t !== 'e2e' || message.e2e === 'done') {
-			return message;
-		}
-
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		if (!e2eRoom) {
-			return message;
-		}
-
-		const data = await e2eRoom.decrypt(message.msg);
-
-		if (!data) {
-			return message;
-		}
-
-		return {
-			...message,
-			msg: data.text,
-			e2e: 'done',
-		};
-	}
-
 	async decryptPendingMessages() {
 		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
 			Messages.direct.update({ _id }, await this.decryptMessage(msg));
@@ -360,9 +336,10 @@ class E2E extends E2EEManager {
 	}
 
 	async decryptSubscription(rid) {
-		const e2eRoom = await this.getInstanceByRoomId(rid);
+		const roomClient = this.getRoomClient(rid);
+		await roomClient.whenCipherEnabled();
 		this.log('decryptSubscription ->', rid);
-		e2eRoom?.decryptSubscription();
+		roomClient.decryptSubscription();
 	}
 
 	async decryptSubscriptions() {
@@ -383,10 +360,11 @@ class E2E extends E2EEManager {
 		if (enabled) {
 			this.startClient();
 			this.setEnabled(true);
-		} else {
-			this.setEnabled(false);
-			this.closeAlert();
+			return;
 		}
+
+		this.setEnabled(false);
+		this.closeAlert();
 	}
 }
 

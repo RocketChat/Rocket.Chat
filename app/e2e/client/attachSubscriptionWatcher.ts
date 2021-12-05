@@ -6,7 +6,7 @@ export const attachSubscriptionWatcher = (): (() => void) => {
 	const watcher = Subscriptions.find().observe({
 		changed: async (doc: ISubscription) => {
 			if (!doc.encrypted && !doc.E2EKey) {
-				e2e.removeInstanceByRoomId(doc.rid);
+				e2e.deleteRoomClient(doc.rid);
 				return;
 			}
 
@@ -41,7 +41,7 @@ export const attachSubscriptionWatcher = (): (() => void) => {
 			return e2e.getInstanceByRoomId(doc.rid);
 		},
 		removed: (doc: ISubscription) => {
-			e2e.removeInstanceByRoomId(doc.rid);
+			e2e.deleteRoomClient(doc.rid);
 		},
 	});
 

@@ -88,10 +88,10 @@ export const KonchatNotification = {
 		}
 
 		if (notification.payload.message && notification.payload.message.t === 'e2e') {
-			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
-			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
-			}
+			const roomClient = e2e.getRoomClient(notification.payload.rid);
+			await roomClient.whenCipherEnabled();
+			const message = await roomClient.decryptMessage(notification.payload.message);
+			notification.text = message.msg;
 		}
 
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {

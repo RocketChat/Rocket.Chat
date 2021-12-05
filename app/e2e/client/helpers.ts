@@ -10,7 +10,7 @@ export const toArrayBuffer = (str: string): ArrayBuffer => {
 	return buffer;
 };
 
-export const joinVectorAndEcryptedData = (vector: Uint8Array, encryptedData: ArrayBuffer): Uint8Array => {
+export const joinVectorAndEncryptedData = (vector: Uint8Array, encryptedData: ArrayBuffer): Uint8Array => {
 	const cipherText = new Uint8Array(encryptedData);
 	const output = new Uint8Array(vector.length + cipherText.length);
 	output.set(vector, 0);
@@ -18,7 +18,7 @@ export const joinVectorAndEcryptedData = (vector: Uint8Array, encryptedData: Arr
 	return output;
 };
 
-export const splitVectorAndEcryptedData = (cipherText: Uint8Array): [vector: Uint8Array, encryptedData: Uint8Array] => {
+export const splitVectorAndEncryptedData = (cipherText: Uint8Array): [vector: Uint8Array, encryptedData: Uint8Array] => {
 	const vector = cipherText.slice(0, 16);
 	const encryptedData = cipherText.slice(16);
 
@@ -88,21 +88,8 @@ export const deriveKey = (salt: ArrayBuffer, baseKey: CryptoKey, keyUsages: KeyU
 		keyUsages,
 	);
 
-export const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
-	new Promise((resolve, reject) => {
-		const reader = new FileReader();
-
-		reader.onload = (): void => {
-			if (reader.result instanceof ArrayBuffer) {
-				resolve(reader.result);
-			}
-
-			reject(new Error('invalid output'));
-		};
-
-		reader.onerror = (): void => {
-			reject(reader.error);
-		};
-
-		reader.readAsArrayBuffer(file);
-	});
+export const checkSignal = (signal: AbortSignal | undefined): void => {
+	if (signal?.aborted) {
+		throw new Error('aborted');
+	}
+};

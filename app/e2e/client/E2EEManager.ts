@@ -5,16 +5,33 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { Rooms } from '../../models/client';
+import { checkSignal } from './helpers';
 import { E2ERoom } from './rocketchat.e2e.room';
 
 export abstract class E2EEManager extends Emitter {
 	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
 
+	getRoomClient(rid: IRoom['_id']): E2ERoom {
+		const roomClient = this.roomClients.get(rid);
+
+		if (roomClient) {
+			return roomClient;
+		}
+
+		const newRoomClient = new E2ERoom(Meteor.userId(), rid);
+		this.roomClients.set(rid, newRoomClient);
+		return newRoomClient;
+	}
+
 	deleteRoomClient(rid: IRoom['_id']): void {
+		this.roomClients.get(rid)?.emit('released');
 		this.roomClients.delete(rid);
 	}
 
 	clearRoomClients(): void {
+		for (const roomClient of this.roomClients.values()) {
+			roomClient.emit('released');
+		}
 		this.roomClients.clear();
 	}
 
@@ -29,35 +46,52 @@ export abstract class E2EEManager extends Emitter {
 			return null;
 		}
 
-		if (!this.roomClients.get(rid)) {
-			this.roomClients.set(rid, new E2ERoom(Meteor.userId(), rid, room.t));
+		const roomClient = this.roomClients.get(rid);
+
+		if (roomClient) {
+			return roomClient;
 		}
 
-		return this.roomClients.get(rid) ?? null;
+		const newRoomClient = new E2ERoom(Meteor.userId(), rid);
+		this.roomClients.set(rid, newRoomClient);
+		return newRoomClient;
 	}
 
-	/** @deprecated */
-	removeInstanceByRoomId(rid: IRoom['_id']): void {
-		this.deleteRoomClient(rid);
-	}
+	async decryptMessage(message: IMessage, signal?: AbortSignal): Promise<IMessage> {
+		checkSignal(signal);
 
-	abstract decryptMessage(msg: IMessage): Promise<IMessage>;
+		const roomClient = this.getRoomClient(message.rid);
+
+		await roomClient.whenCipherEnabled();
+
+		checkSignal(signal);
+
+		return roomClient?.decryptMessage(message) ?? message;
+	}
 
 	abstract toggle(enabled: boolean): void;
 
 	abstract isReady(): boolean;
 
-	async transformReceivedMessage(msg: IMessage): Promise<IMessage> {
-		if (!this.isReady()) {
-			throw new Error('E2EE not ready');
-		}
+	async transformReceivedMessage(message: IMessage): Promise<IMessage> {
+		try {
+			if (!this.isReady()) {
+				throw new Error('E2EE not ready');
+			}
 
-		const e2eRoom = await this.getInstanceByRoomId(msg.rid);
-		if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
-			return msg;
-		}
+			const roomClient = this.getRoomClient(message.rid);
 
-		return this.decryptMessage(msg);
+			await roomClient.whenCipherEnabled();
+
+			if (!roomClient?.shouldConvertReceivedMessages()) {
+				return message;
+			}
+
+			return roomClient.decryptMessage(message);
+		} catch (error) {
+			console.error(error);
+			return message;
+		}
 	}
 
 	async transformSendingMessage(message: IMessage): Promise<IMessage> {
@@ -80,11 +114,6 @@ export abstract class E2EEManager extends Emitter {
 		}
 
 		// Should encrypt this message.
-		const msg = await e2eRoom.encrypt(message);
-
-		message.msg = msg;
-		message.t = 'e2e';
-		message.e2e = 'pending';
-		return message;
+		return e2eRoom.encryptMessage(message);
 	}
 }

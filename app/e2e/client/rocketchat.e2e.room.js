@@ -1,33 +1,23 @@
-import _ from 'underscore';
 import { Base64 } from 'meteor/base64';
-import { EJSON } from 'meteor/ejson';
-import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
-import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { e2e } from './rocketchat.e2e';
 import {
 	toString,
 	toArrayBuffer,
-	joinVectorAndEcryptedData,
-	splitVectorAndEcryptedData,
 	encryptRSA,
-	encryptAES,
 	decryptRSA,
-	decryptAES,
 	generateAESKey,
 	exportJWKKey,
 	importAESKey,
 	importRSAKey,
-	readFileAsArrayBuffer } from './helpers';
+} from './helpers';
 import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
-import { log, logError } from './logger';
 import { E2EERoomState } from './E2EERoomState';
 import { E2EERoomClient } from './E2EERoomClient';
 
-const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
@@ -78,12 +68,11 @@ export class E2ERoom extends E2EERoomClient {
 
 	[PAUSED] = undefined;
 
-	constructor(userId, roomId, t) {
-		super();
+	constructor(userId, roomId) {
+		super(roomId);
 
 		this.userId = userId;
 		this.roomId = roomId;
-		this.typeOfRoom = t;
 
 		this.once(E2EERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2EERoomState.READY, () => this.decryptSubscription());
@@ -98,11 +87,11 @@ export class E2ERoom extends E2EERoomClient {
 	}
 
 	log(...msg) {
-		log(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		console.log(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
 	}
 
 	error(...msg) {
-		logError(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		console.error(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
 	}
 
 	setState(requestedState) {
@@ -122,6 +111,10 @@ export class E2ERoom extends E2EERoomClient {
 
 	isReady() {
 		return this.state === E2EERoomState.READY;
+	}
+
+	isPaused() {
+		return this[PAUSED];
 	}
 
 	isDisabled() {
@@ -171,36 +164,28 @@ export class E2ERoom extends E2EERoomClient {
 	}
 
 	shouldConvertReceivedMessages() {
-		return this.isReady();
+		return this.decryptionActive;
 	}
 
 	isWaitingKeys() {
 		return this.state === E2EERoomState.WAITING_KEYS;
 	}
 
-	get keyID() {
-		return this[KEY_ID];
-	}
-
-	set keyID(keyID) {
-		this[KEY_ID] = keyID;
-	}
-
 	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({ rid: this.roomId });
 
-		const data = await (subscription.lastMessage?.msg && this.decrypt(subscription.lastMessage.msg));
-		if (!data?.text) {
-			this.log('decryptSubscriptions nothing to do');
+		if (!subscription.lastMessage) {
 			return;
 		}
+
+		const lastMessage = await this.decryptMessage(subscription.lastMessage);
 
 		Subscriptions.direct.update({
 			_id: subscription._id,
 		}, {
 			$set: {
-				'lastMessage.msg': data.text,
-				'lastMessage.e2e': 'done',
+				'lastMessage.msg': lastMessage.msg,
+				'lastMessage.e2e': lastMessage.e2e,
 			},
 		});
 		this.log('decryptSubscriptions Done');
@@ -214,6 +199,8 @@ export class E2ERoom extends E2EERoomClient {
 
 	// Initiates E2E Encryption
 	async handshake() {
+		await this.whenCipherEnabled();
+
 		if (this.state !== E2EERoomState.KEYS_RECEIVED && this.state !== E2EERoomState.NOT_STARTED) {
 			return;
 		}
@@ -335,129 +322,6 @@ export class E2ERoom extends E2EERoomClient {
 			});
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
-		}
-	}
-
-	// Encrypts files before upload. I/O is in arraybuffers.
-	async encryptFile(file) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return;
-		}
-
-		const fileArrayBuffer = await readFileAsArrayBuffer(file);
-
-		const vector = crypto.getRandomValues(new Uint8Array(16));
-		let result;
-		try {
-			result = await encryptAES(vector, this.groupSessionKey, fileArrayBuffer);
-		} catch (error) {
-			return this.error('Error encrypting group key: ', error);
-		}
-
-		const output = joinVectorAndEcryptedData(vector, result);
-
-		const encryptedFile = new File([toArrayBuffer(EJSON.stringify(output))], file.name);
-
-		return encryptedFile;
-	}
-
-	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
-	async decryptFile(message) {
-		if (message[0] !== '{') {
-			return;
-		}
-
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(message));
-
-		try {
-			return await decryptAES(vector, this.groupSessionKey, cipherText);
-		} catch (error) {
-			this.error('Error decrypting file: ', error);
-
-			return false;
-		}
-	}
-
-	// Encrypts messages
-	async encryptText(data) {
-		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
-		}
-
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return data;
-		}
-
-		const vector = crypto.getRandomValues(new Uint8Array(16));
-		let result;
-		try {
-			result = await encryptAES(vector, this.groupSessionKey, data);
-		} catch (error) {
-			return this.error('Error encrypting message: ', error);
-		}
-
-		return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
-	}
-
-	// Helper function for encryption of messages
-	encrypt(message) {
-		let ts;
-		if (isNaN(TimeSync.serverOffset())) {
-			ts = new Date();
-		} else {
-			ts = new Date(Date.now() + TimeSync.serverOffset());
-		}
-
-		const data = new TextEncoder('UTF-8').encode(EJSON.stringify({
-			_id: message._id,
-			text: message.msg,
-			userId: this.userId,
-			ts,
-		}));
-
-		return this.encryptText(data);
-	}
-
-	// Decrypt messages
-
-	async decryptMessage(message) {
-		if (message.t !== 'e2e' || message.e2e === 'done') {
-			return message;
-		}
-
-		const data = await this.decrypt(message.msg);
-
-		if (!data?.text) {
-			return message;
-		}
-
-		return {
-			...message,
-			msg: data.text,
-			e2e: 'done',
-		};
-	}
-
-	async decrypt(message) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return message;
-		}
-
-		const keyID = message.slice(0, 12);
-
-		if (keyID !== this.keyID) {
-			return message;
-		}
-
-		message = message.slice(12);
-
-		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
-
-		try {
-			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
-			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
-		} catch (error) {
-			return this.error('Error decrypting message: ', error, message);
 		}
 	}
 

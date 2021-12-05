@@ -66,7 +66,7 @@ export interface IMessage extends IRocketChatRecord {
 	dcount?: number;
 	tcount?: number;
 	t?: MessageTypesValues;
-	e2e?: 'pending';
+	e2e?: 'pending' | 'done';
 
 	urls: any;
 	/** @deprecated Deprecated in favor of files */
