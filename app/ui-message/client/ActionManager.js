@@ -80,7 +80,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE].includes(type)) {
+	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitIncomingInteractionType.CONTEXTUAL_BAR_UPDATE].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -116,6 +116,8 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 
 	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
 		events.emit('apps-contextual-bar');
+
+		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
 
 	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
@@ -135,15 +137,6 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			instance.close();
 		}
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
-	}
-
-	if ([UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE].includes(type)) {
-		const instance = instances.get(viewId);
-
-		if (instance) {
-			instance.close();
-		}
-		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
 	}
 
 	return UIKitInteractionTypes.MODAL_ClOSE;

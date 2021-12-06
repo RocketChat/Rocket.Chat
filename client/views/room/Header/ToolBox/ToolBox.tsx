@@ -52,7 +52,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					...item,
 				},
 			] as any;
-		}),
+		}).slice(0,-1),
 	);
 
 	const actionDefault = useMutableCallback((e) => {

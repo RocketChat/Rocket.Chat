@@ -7,7 +7,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 const Apps = ({ view, onSubmit, onClose }) => (
 	<>
 		<VerticalBar.Header>
-			<VerticalBar.Icon name='keyboard' />
+			{view.showIcon ? <VerticalBar.Icon name='keyboard' /> : null}
 			<VerticalBar.Text>{'App bar'}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
