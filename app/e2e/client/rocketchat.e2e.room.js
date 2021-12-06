@@ -199,7 +199,7 @@ export class E2ERoom extends E2EERoomClient {
 
 	// Initiates E2E Encryption
 	async handshake() {
-		await this.whenCipherEnabled();
+		await this.whenMetadataSet();
 
 		if (this.state !== E2EERoomState.KEYS_RECEIVED && this.state !== E2EERoomState.NOT_STARTED) {
 			return;

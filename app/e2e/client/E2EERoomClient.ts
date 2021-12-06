@@ -97,61 +97,89 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 
 	abstract isSupportedRoomType(t: IRoom['t']): boolean;
 
-	private cipherEnabled = false;
-
-	private isCipherEnabledFor(subscription: ISubscription | undefined, room: IRoom | undefined): boolean {
-		if (!subscription || !room) {
-			return false;
-		}
-
-		if (!roomTypes.getConfig(room.t).allowRoomSettingChange({}, RoomSettingsEnum.E2E)) {
-			return false;
-		}
-
-		if (!subscription.encrypted && !subscription.E2EKey) {
-			return false;
-		}
-
-		if (!room.encrypted && !room.e2eKeyId) {
-			return false;
-		}
-
-		return true;
-	}
+	private metadata: {
+		subscription: ISubscription;
+		room: IRoom;
+	} | undefined = undefined;
 
 	get decryptionActive(): boolean {
-		return this.cipherEnabled && this.isReady();
+		return this.metadata !== undefined && this.isReady();
 	}
 
 	get encryptionActive(): boolean {
-		return this.cipherEnabled && this.isReady() && !this.isPaused();
+		return this.metadata !== undefined && this.isReady() && !this.isPaused();
 	}
 
 	constructor(rid: IRoom['_id']) {
 		super();
 
 		const computation = Tracker.autorun(() => {
-			const subscription = Subscriptions.findOne({ rid });
-			const room = Rooms.findOne({ _id: rid });
-
-			this.cipherEnabled = this.isCipherEnabledFor(subscription, room);
-			this.emit('updated');
+			this.updateMetadata(rid);
 		});
 
 		this.once('released', () => {
-			this.cipherEnabled = false;
+			this.metadata = undefined;
 			computation.stop();
 		});
 	}
 
-	async whenCipherEnabled(): Promise<void> {
-		if (this.cipherEnabled) {
+	private updateMetadata(rid: IRoom['_id']): void {
+		try {
+			this.metadata = undefined;
+
+			const subscription = Subscriptions.findOne({ rid });
+			const room = Rooms.findOne({ _id: rid });
+
+			if (!subscription || !room) {
+				return;
+			}
+
+			if (!roomTypes.getConfig(room.t).allowRoomSettingChange({}, RoomSettingsEnum.E2E)) {
+				return;
+			}
+
+			if (!subscription.encrypted && !subscription.E2EKey) {
+				return;
+			}
+
+			if (!room.encrypted && !room.e2eKeyId) {
+				return;
+			}
+
+			this.metadata = {
+				subscription,
+				room,
+			};
+		} finally {
+			this.emit('metadataUpdated');
+		}
+	}
+
+	protected async whenMetadataSet(): Promise<void> {
+		if (this.metadata !== undefined) {
 			return;
 		}
 
 		return new Promise((resolve) => {
-			const detach = this.on('updated', () => {
-				if (this.cipherEnabled) {
+			const detach = this.on('metadataUpdated', () => {
+				if (this.metadata !== undefined) {
+					detach();
+					resolve();
+				}
+			});
+		});
+	}
+
+	async whenReady(): Promise<void> {
+		await this.whenMetadataSet();
+
+		if (this.isReady()) {
+			return;
+		}
+
+		return new Promise((resolve) => {
+			const detach = this.on('STATE_CHANGED', () => {
+				if (this.isReady()) {
 					detach();
 					resolve();
 				}

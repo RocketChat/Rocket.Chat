@@ -20,7 +20,6 @@ import {
 import * as banners from '../../../client/lib/banners';
 import { Subscriptions, Messages } from '../../models/client';
 import './tabbar';
-import { log, logError } from './logger';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EEPasswordModal from '../../../client/views/e2ee/SaveE2EEPasswordModal';
 import EnterE2EEPasswordModal from '../../../client/views/e2ee/EnterE2EEPasswordModal';
@@ -47,11 +46,11 @@ class E2E extends E2EEManager {
 	}
 
 	log(...msg) {
-		log('E2E', ...msg);
+		console.log('E2E', ...msg);
 	}
 
 	error(...msg) {
-		logError('E2E', ...msg);
+		console.error('E2E', ...msg);
 	}
 
 	isEnabled() {
@@ -276,7 +275,8 @@ class E2E extends E2EEManager {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			const showModal = () => {
-				imperativeModal.open({ component: EnterE2EEPasswordModal,
+				imperativeModal.open({
+					component: EnterE2EEPasswordModal,
 					props: {
 						onClose: imperativeModal.close,
 						onCancel: () => {
@@ -337,7 +337,7 @@ class E2E extends E2EEManager {
 
 	async decryptSubscription(rid) {
 		const roomClient = this.getRoomClient(rid);
-		await roomClient.whenCipherEnabled();
+		await roomClient.whenReady();
 		this.log('decryptSubscription ->', rid);
 		roomClient.decryptSubscription();
 	}

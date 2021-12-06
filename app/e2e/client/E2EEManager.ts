@@ -8,7 +8,13 @@ import { Rooms } from '../../models/client';
 import { checkSignal } from './helpers';
 import { E2ERoom } from './rocketchat.e2e.room';
 
-export abstract class E2EEManager extends Emitter {
+interface IE2EERoomClientPool {
+	getRoomClient(rid: IRoom['_id']): E2ERoom;
+	deleteRoomClient(rid: IRoom['_id']): void;
+	clearRoomClients(): void;
+}
+
+class E2EERoomClientPool implements IE2EERoomClientPool {
 	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
 
 	getRoomClient(rid: IRoom['_id']): E2ERoom {
@@ -33,6 +39,24 @@ export abstract class E2EEManager extends Emitter {
 			roomClient.emit('released');
 		}
 		this.roomClients.clear();
+	}
+}
+
+export abstract class E2EEManager extends Emitter implements IE2EERoomClientPool {
+	private _roomClients = new E2EERoomClientPool();
+
+	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
+
+	getRoomClient(rid: IRoom['_id']): E2ERoom {
+		return this._roomClients.getRoomClient(rid);
+	}
+
+	deleteRoomClient(rid: IRoom['_id']): void {
+		return this._roomClients.deleteRoomClient(rid);
+	}
+
+	clearRoomClients(): void {
+		return this._roomClients.clearRoomClients();
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
@@ -62,7 +86,7 @@ export abstract class E2EEManager extends Emitter {
 
 		const roomClient = this.getRoomClient(message.rid);
 
-		await roomClient.whenCipherEnabled();
+		await roomClient.whenReady();
 
 		checkSignal(signal);
 
@@ -81,7 +105,7 @@ export abstract class E2EEManager extends Emitter {
 
 			const roomClient = this.getRoomClient(message.rid);
 
-			await roomClient.whenCipherEnabled();
+			await roomClient.whenReady();
 
 			if (!roomClient?.shouldConvertReceivedMessages()) {
 				return message;
