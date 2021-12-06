@@ -1,15 +1,15 @@
 import {
 	Box,
-	Fallback,
-	FallbackAction,
-	FallbackActions,
-	FallbackIcon,
-	FallbackSubtitle,
-	FallbackSuggestion,
-	FallbackSuggestionList,
-	FallbackSuggestionListItem,
-	FallbackSuggestionText,
-	FallbackTitle,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesSubtitle,
+	StatesSuggestion,
+	StatesSuggestionList,
+	StatesSuggestionListItem,
+	StatesSuggestionText,
+	StatesTitle,
 	Pagination,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
@@ -92,11 +92,16 @@ const AppsTable: FC<{
 							{onMediumBreakpoint && (
 								<GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>
 							)}
+							{isMarketplace && <GenericTableHeaderCell>{t('Price')}</GenericTableHeaderCell>}
+
 							<GenericTableHeaderCell width='x160'>{t('Status')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
 							{appsResult.phase === AsyncStatePhase.LOADING && (
-								<GenericTableLoadingTable headerCells={onMediumBreakpoint ? 3 : 2} />
+								<GenericTableLoadingTable
+									// eslint-disable-next-line no-nested-ternary
+									headerCells={onMediumBreakpoint ? (isMarketplace ? 4 : 3) : 2}
+								/>
 							)}
 							{appsResult.phase === AsyncStatePhase.RESOLVED &&
 								appsResult.value.items.map((app) => (
@@ -126,29 +131,28 @@ const AppsTable: FC<{
 				isMarketplace &&
 				appsResult.value.count === 0 && (
 					<Box mbs='x20'>
-						<Fallback>
-							<FallbackIcon name='magnifier' />
-							<FallbackTitle>No app matches</FallbackTitle>
-							<FallbackSubtitle>
-								No Marketplace matches for:
-								<strong>"{text}"</strong>
-							</FallbackSubtitle>
-							<FallbackSuggestion>
-								<FallbackSuggestionText>You can try to:</FallbackSuggestionText>
-								<FallbackSuggestionList>
-									<FallbackSuggestionListItem>Search by category</FallbackSuggestionListItem>
-									<FallbackSuggestionListItem>
-										Search for a more general term
-									</FallbackSuggestionListItem>
-									<FallbackSuggestionListItem>
-										Search for a more specific term
-									</FallbackSuggestionListItem>
-									<FallbackSuggestionListItem>
-										Check if the spelling is correct
-									</FallbackSuggestionListItem>
-								</FallbackSuggestionList>
-							</FallbackSuggestion>
-						</Fallback>
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_app_matches')}</StatesTitle>
+							<StatesSubtitle>
+								{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+							</StatesSubtitle>
+							<StatesSuggestion>
+								<StatesSuggestionText>{t('You_can_try_to')}:</StatesSuggestionText>
+								<StatesSuggestionList>
+									<StatesSuggestionListItem>{t('Search_by_category')}</StatesSuggestionListItem>
+									<StatesSuggestionListItem>
+										{t('Search_for_a_more_general_term')}
+									</StatesSuggestionListItem>
+									<StatesSuggestionListItem>
+										{t('Search_for_a_more_specific_term')}
+									</StatesSuggestionListItem>
+									<StatesSuggestionListItem>
+										{t('Check_if_the_spelling_is_correct')}
+									</StatesSuggestionListItem>
+								</StatesSuggestionList>
+							</StatesSuggestion>
+						</States>
 					</Box>
 				)}
 
@@ -156,18 +160,16 @@ const AppsTable: FC<{
 				!isMarketplace &&
 				appsResult.value.total === 0 && (
 					<Box mbs='x20'>
-						<Fallback>
-							<FallbackIcon name='magnifier' />
-							<FallbackTitle>No Apps Installed</FallbackTitle>
-							<FallbackSubtitle>
-								Explore the Marketplace to find awesome apps for Rocket.Chat
-							</FallbackSubtitle>
-							<FallbackActions>
-								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
-									Explore Marketplace
-								</FallbackAction>
-							</FallbackActions>
-						</Fallback>
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_apps_installed')}</StatesTitle>
+							<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
+							<StatesActions>
+								<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									{t('Explore_marketplace')}
+								</StatesAction>
+							</StatesActions>
+						</States>
 					</Box>
 				)}
 
@@ -176,25 +178,25 @@ const AppsTable: FC<{
 				appsResult.value.total !== 0 &&
 				appsResult.value.count === 0 && (
 					<Box mbs='x20'>
-						<Fallback>
-							<FallbackIcon name='magnifier' />
-							<FallbackTitle>No installed app matches</FallbackTitle>
-							<FallbackSubtitle>
+						<States>
+							<StatesIcon name='magnifier' />
+							<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
+							<StatesSubtitle>
 								<span>
-									No app matches for <strong>"{text}"</strong>
+									{t('No_app_matches_for')} <strong>"{text}"</strong>
 								</span>
-							</FallbackSubtitle>
-							<FallbackSuggestion>
-								<FallbackSuggestionText>
-									Try searching in the Marketplace instead
-								</FallbackSuggestionText>
-							</FallbackSuggestion>
-							<FallbackActions>
-								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
-									Search on Marketplace
-								</FallbackAction>
-							</FallbackActions>
-						</Fallback>
+							</StatesSubtitle>
+							<StatesSuggestion>
+								<StatesSuggestionText>
+									{t('Try_searching_in_the_marketplace_instead')}
+								</StatesSuggestionText>
+							</StatesSuggestion>
+							<StatesActions>
+								<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									{t('Search_on_marketplace')}
+								</StatesAction>
+							</StatesActions>
+						</States>
 					</Box>
 				)}
 		</>

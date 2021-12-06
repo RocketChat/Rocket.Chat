@@ -58,17 +58,17 @@ const getApis = async (appId: string, installed: boolean): Promise<Array<IApiEnd
 };
 
 export const useAppInfo = (appId: string): AppInfo | undefined => {
-	const { apps } = useContext(AppsContext);
+	const { value } = useContext(AppsContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
-			if (!apps.length || !appId) {
+			if (!value?.apps?.length || !appId) {
 				return;
 			}
 
-			const app = apps.find((app) => app.id === appId) ?? {
+			const app = value.apps.find((app) => app.id === appId) ?? {
 				...(await Apps.getApp(appId)),
 				installed: true,
 				marketplace: false,
@@ -83,7 +83,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 		};
 
 		fetchAppInfo();
-	}, [appId, apps]);
+	}, [appId, value]);
 
 	return appData;
 };
