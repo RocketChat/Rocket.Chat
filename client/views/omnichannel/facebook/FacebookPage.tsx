@@ -57,7 +57,7 @@ const FacebookPage: FC<FacebookPageProps> = ({
 					)}
 					{enabled && (
 						<>
-							<Box fontScale='h1' mbe='x8'>
+							<Box fontScale='h2' mbe='x8'>
 								{t('Pages')}
 							</Box>
 							{pages?.length ? (

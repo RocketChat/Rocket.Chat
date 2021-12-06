@@ -150,6 +150,8 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'access-mailer', roles: ['admin'] },
 		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
+		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
+		{ _id: 'mobile-download-file', roles: ['user', 'admin'] },
 	];
 
 

@@ -187,7 +187,7 @@ const CannedResponsesRoute: FC = () => {
 						<UserAvatar size='x24' username={createdBy.username} />
 						<Box display='flex' withTruncatedText mi='x8'>
 							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-								<Box fontScale='p2' withTruncatedText color='default'>
+								<Box fontScale='p4' withTruncatedText color='default'>
 									{createdBy.username}
 								</Box>
 							</Box>

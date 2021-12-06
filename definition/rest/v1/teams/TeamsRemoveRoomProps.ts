@@ -4,7 +4,9 @@ import type { IRoom } from '../../../IRoom';
 
 const ajv = new Ajv();
 
-export type TeamsRemoveRoomProps = ({ teamId: string } | { teamName: string }) & { roomId: IRoom['_id'] };
+export type TeamsRemoveRoomProps = ({ teamId: string } | { teamName: string }) & {
+	roomId: IRoom['_id'];
+};
 
 export const teamsRemoveRoomPropsSchema: JSONSchemaType<TeamsRemoveRoomProps> = {
 	oneOf: [

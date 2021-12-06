@@ -57,6 +57,18 @@ export function addOAuthService(name: string, values: { [k: string]: string | bo
 		enterprise: true,
 		invalidValue: false,
 		modules: ['oauth-enterprise'] });
+	settingsRegistry.add(`Accounts_OAuth_Custom-${ name }-roles_to_sync`          , values.rolesToSync || '', { type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${ name }`,
+		i18nLabel: 'Accounts_OAuth_Custom_Roles_To_Sync',
+		i18nDescription: 'Accounts_OAuth_Custom_Roles_To_Sync_Description',
+		enterprise: true,
+		enableQuery: {
+			_id: `Accounts_OAuth_Custom-${ name }-merge_roles`,
+			value: true,
+		},
+		invalidValue: '',
+		modules: ['oauth-enterprise'] });
 	settingsRegistry.add(`Accounts_OAuth_Custom-${ name }-merge_users`, values.mergeUsers || false, { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Users', persistent: true });
 	settingsRegistry.add(`Accounts_OAuth_Custom-${ name }-show_button`            , values.showButton || true                     , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Show_Button_On_Login_Page', persistent: true });
 	settingsRegistry.add(`Accounts_OAuth_Custom-${ name }-groups_channel_map`     , values.channelsMap || '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}' , { type: 'code'   , multiline: true, code: 'application/json', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Channel_Map', persistent: true });

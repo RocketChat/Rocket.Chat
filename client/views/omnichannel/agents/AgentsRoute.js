@@ -137,11 +137,11 @@ function AgentsRoute() {
 						/>
 						<Box display='flex' withTruncatedText mi='x8'>
 							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-								<Box fontScale='p2' withTruncatedText color='default'>
+								<Box fontScale='p4' withTruncatedText color='default'>
 									{name || username}
 								</Box>
 								{!mediaQuery && name && (
-									<Box fontScale='p1' color='hint' withTruncatedText>
+									<Box fontScale='p3' color='hint' withTruncatedText>
 										{' '}
 										{`@${username}`}{' '}
 									</Box>
@@ -152,7 +152,7 @@ function AgentsRoute() {
 				</Table.Cell>
 				{mediaQuery && (
 					<Table.Cell>
-						<Box fontScale='p2' withTruncatedText color='hint'>
+						<Box fontScale='p4' withTruncatedText color='hint'>
 							{username}
 						</Box>{' '}
 						<Box mi='x4' />
