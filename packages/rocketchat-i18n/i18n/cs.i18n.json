@@ -2486,7 +2486,6 @@
   "Message_editing": "Editace zprávy",
   "Message_ErasureType": "Typ mazání zprávy",
   "Message_ErasureType_Delete": "Smazat všechny zprávy",
-  "Message_ErasureType_Description": "Určete, co udělat se zprávami uživatelů, kteří odstraní svůj účet.",
   "Message_ErasureType_Keep": "Uchovat zprávy a uživatelské jméno",
   "Message_ErasureType_Unlink": "Odpojit spojení mezi uživatelem a zprávami",
   "Message_GlobalSearch": "Globální vyhledávání",

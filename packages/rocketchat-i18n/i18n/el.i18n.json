@@ -1735,7 +1735,6 @@
   "Message_editing": "επεξεργασίας του μηνύματος",
   "Message_ErasureType": "Τύπος διαγραφής μηνυμάτων",
   "Message_ErasureType_Delete": "Διαγραφή όλων των μηνυμάτων",
-  "Message_ErasureType_Description": "Προσδιορίστε τι πρέπει να κάνετε με τα μηνύματα των χρηστών που καταργούν το λογαριασμό τους.",
   "Message_ErasureType_Keep": "Κρατήστε μηνύματα και όνομα χρήστη",
   "Message_ErasureType_Unlink": "Κατάργηση σύνδεσης μεταξύ χρήστη και μηνυμάτων",
   "Message_GlobalSearch": "Καθολική αναζήτηση",

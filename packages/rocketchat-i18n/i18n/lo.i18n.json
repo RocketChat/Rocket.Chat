@@ -1763,7 +1763,6 @@
   "Message_editing": "ການແກ້ໄຂຂໍ້ຄວາມ",
   "Message_ErasureType": "Message Erasure Type",
   "Message_ErasureType_Delete": "ລົບຂໍ້ຄວາມທັງຫມົດ",
-  "Message_ErasureType_Description": "ກໍານົດສິ່ງທີ່ຕ້ອງເຮັດກັບຂໍ້ຄວາມຂອງຜູ້ໃຊ້ທີ່ຖອນບັນຊີຂອງເຂົາເຈົ້າ.",
   "Message_ErasureType_Keep": "ຮັກສາຂໍ້ຄວາມແລະຊື່ຜູ້ໃຊ້",
   "Message_ErasureType_Unlink": "ລົບການເຊື່ອມຕໍ່ລະຫວ່າງຜູ້ໃຊ້ແລະຂໍ້ຄວາມ",
   "Message_GlobalSearch": "Global Search",

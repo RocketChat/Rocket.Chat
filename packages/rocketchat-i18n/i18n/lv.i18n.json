@@ -1735,7 +1735,6 @@
   "Message_editing": "Ziņojuma rediģēšana",
   "Message_ErasureType": "Ziņojuma dzēšanas veids",
   "Message_ErasureType_Delete": "Dzēst visus ziņojumus",
-  "Message_ErasureType_Description": "Nosakiet, kā rīkoties ar lietotāju ziņojumiem, kuri dzēš savu kontu.",
   "Message_ErasureType_Keep": "Saglabāt ziņojumus un lietotāja vārdu",
   "Message_ErasureType_Unlink": "Noņemt saiti starp lietotāju un ziņojumiem",
   "Message_GlobalSearch": "Globālā meklēšana",

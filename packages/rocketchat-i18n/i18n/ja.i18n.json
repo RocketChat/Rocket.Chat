@@ -2601,7 +2601,6 @@
   "Message_editing": "メッセージの編集",
   "Message_ErasureType": "メッセージ消去タイプ",
   "Message_ErasureType_Delete": "すべてのメッセージを削除",
-  "Message_ErasureType_Description": "アカウントを削除したユーザーのメッセージで何をすべきかを決定します。",
   "Message_ErasureType_Keep": "メッセージとユーザー名を保持する",
   "Message_ErasureType_Unlink": "ユーザーとメッセージの間のリンクを削除する",
   "Message_GlobalSearch": "グローバル検索",

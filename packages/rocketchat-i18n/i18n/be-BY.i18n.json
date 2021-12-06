@@ -1739,7 +1739,6 @@
   "Message_editing": "рэдагаванне паведамлення",
   "Message_ErasureType": "Тып паведамленні Erasure",
   "Message_ErasureType_Delete": "Выдаліць усе паведамленні",
-  "Message_ErasureType_Description": "Вызначыць, што рабіць з паведамленнямі карыстальнікаў, якія выдаліць свой уліковы запіс.",
   "Message_ErasureType_Keep": "Трымаеце Паведамленні і імя карыстальніка",
   "Message_ErasureType_Unlink": "Выдаліць сувязь паміж карыстальнікам і паведамленні",
   "Message_GlobalSearch": "глабальны пошук",

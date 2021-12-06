@@ -1729,7 +1729,6 @@
   "Message_editing": "Viestin muokkaus",
   "Message_ErasureType": "Viestin pyyhkimistyyppi",
   "Message_ErasureType_Delete": "Poista kaikki viestit",
-  "Message_ErasureType_Description": "Määritä, mitä tehdä tiliä poistavien käyttäjien viestien kanssa.",
   "Message_ErasureType_Keep": "Pidä viestit ja käyttäjänimi",
   "Message_ErasureType_Unlink": "Poista käyttäjän ja viestien välinen yhteys",
   "Message_GlobalSearch": "Globaali haku",

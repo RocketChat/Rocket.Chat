@@ -1725,7 +1725,6 @@
   "Message_editing": "editing mesej",
   "Message_ErasureType": "Jenis Penghapusan Mesej",
   "Message_ErasureType_Delete": "Padam Semua Mesej",
-  "Message_ErasureType_Description": "Tentukan apa yang perlu dilakukan dengan mesej pengguna yang mengalih keluar akaun mereka.",
   "Message_ErasureType_Keep": "Simpan Mesej dan Nama Pengguna",
   "Message_ErasureType_Unlink": "Keluarkan Pautan Antara Pengguna dan Mesej",
   "Message_GlobalSearch": "Carian Global",

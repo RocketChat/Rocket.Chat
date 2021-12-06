@@ -2011,7 +2011,6 @@
   "Message_editing": "ویرایش پیام",
   "Message_ErasureType": "نوع پاک کردن پیام",
   "Message_ErasureType_Delete": "حذف همه پیام ها",
-  "Message_ErasureType_Description": "آنچه را که با پیام های کاربران که حساب کاربری خود را حذف می کنند تعیین کنید.",
   "Message_ErasureType_Keep": "پیام ها و نام کاربری را نگه دارید",
   "Message_ErasureType_Unlink": "حذف لینک بین کاربر و پیام ها",
   "Message_GlobalSearch": "جستجوی جهانی",

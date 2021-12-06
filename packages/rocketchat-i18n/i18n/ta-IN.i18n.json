@@ -1726,7 +1726,6 @@
   "Message_editing": "செய்தி எடிட்டிங்",
   "Message_ErasureType": "செய்தி அழித்தல் வகை",
   "Message_ErasureType_Delete": "அனைத்து செய்திகளையும் நீக்கு",
-  "Message_ErasureType_Description": "தங்கள் கணக்கை அகற்றும் பயனர்களின் செய்திகளை என்ன செய்ய வேண்டும் என்பதைத் தீர்மானிக்கவும்.",
   "Message_ErasureType_Keep": "செய்திகள் மற்றும் பயனர் பெயர் வைத்திருங்கள்",
   "Message_ErasureType_Unlink": "பயனர் மற்றும் செய்திகள் இடையே இணைப்பு நீக்க",
   "Message_GlobalSearch": "உலகளாவிய தேடல்",
