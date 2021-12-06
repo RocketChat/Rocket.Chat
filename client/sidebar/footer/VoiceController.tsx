@@ -2,6 +2,7 @@ import {
 	SidebarItem,
 	SidebarItemContent,
 	// SidebarItemAvatar,
+	SidebarItemSubtitle,
 	SidebarItemWrapper,
 	SidebarItemTitle,
 	SidebarItemContainer,
@@ -25,6 +26,8 @@ const VoiceController: FC = (): ReactElement | null => {
 	if (call.state !== 'IN_CALL' && call.state !== 'OFFER_RECEIVED') {
 		return null;
 	}
+
+	const subtitle = call.state === 'IN_CALL' ? 'Call in Progress' : 'Calling';
 
 	return (
 		<SidebarFooter elevated>
@@ -51,6 +54,11 @@ const VoiceController: FC = (): ReactElement | null => {
 					<SidebarItemContent>
 						<SidebarItemWrapper>
 							<SidebarItemTitle>{call.callerInfo.callerName}</SidebarItemTitle>
+						</SidebarItemWrapper>
+					</SidebarItemContent>
+					<SidebarItemContent>
+						<SidebarItemWrapper>
+							<SidebarItemSubtitle>{subtitle}</SidebarItemSubtitle>
 						</SidebarItemWrapper>
 					</SidebarItemContent>
 				</SidebarItemContent>
