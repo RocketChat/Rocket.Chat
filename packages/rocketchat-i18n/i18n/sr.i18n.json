@@ -1,7 +1,6 @@
 {
   "403": "Забрањен",
   "500": "Интерна грешка сервера",
-  "__username__was_set__role__by__user_by_": null,
   "@username": "@корисничко име",
   "@username_message": "@ корисничко име <message>",
   "#channel": "#канал",
@@ -2087,7 +2086,6 @@
   "Show_Setup_Wizard": "Прикажи чаробњак за подешавање",
   "Show_the_keyboard_shortcut_list": "Покажите листу пречица на тастатури",
   "Showing_archived_results": "<p> <b>Показујући %s</b> архивиране резултате </p>",
-  "Showing_online_users": null,
   "Showing_results": "<p>Приказујем <b>%s</b> резултата</p>",
   "Sidebar": "Сидебар",
   "Sidebar_list_mode": "Режим листе канала бочне траке",
