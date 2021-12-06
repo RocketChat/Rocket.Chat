@@ -40,17 +40,17 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const isDefaultStatus = (name: string): boolean => Object.keys(userStatus.list).includes(name);
+const isDefaultStatus = (name: string): name is UserStatusEnum =>
+	name.toUpperCase() in UserStatusEnum;
 
-const setStatus = (status: IUser['status'], statusText: IUser['statusText']): void => {
-	AccountBox.setStatus(status, !isDefaultStatus(statusText || '') ? statusText : '');
+const setStatus = (status: typeof userStatus.list['']): void => {
+	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : undefined);
 	callbacks.run('userStatusManuallySet', status);
 };
 
 const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
 
 const translateStatusName = (t: ReturnType<typeof useTranslation>, name: string): string => {
-	const isDefaultStatus = (name: string): name is UserStatusEnum => name in UserStatusEnum;
 	if (isDefaultStatus(name)) {
 		return t(name);
 	}
@@ -157,7 +157,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							<Option
 								key={i}
 								onClick={(): void => {
-									setStatus(status.statusType, status.name);
+									setStatus(status);
 									onClose();
 								}}
 							>
