@@ -17,6 +17,7 @@ export type App = {
 	pricingPlans: unknown[];
 	iconFileContent: unknown;
 	installed?: boolean;
+	isEnterpriseOnly?: boolean;
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
