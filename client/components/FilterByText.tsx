@@ -48,6 +48,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 			onSubmit={handleFormSubmit}
 			display='flex'
 			flexDirection='row'
+			width='96%'
 			{...props}
 		>
 			<TextInput
