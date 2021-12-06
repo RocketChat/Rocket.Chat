@@ -4,7 +4,6 @@ import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { App } from '../types';
-
 // TODO: memoize app list if props don't change
 export const useFilteredApps = ({
 	filterFunction = () => true,
