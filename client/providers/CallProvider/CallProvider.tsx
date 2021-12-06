@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 
 import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
-import { createAnchor } from '../../lib/utils/createAnchor';
 import {
 	isUseVoipClientResultError,
 	isUseVoipClientResultLoading,
