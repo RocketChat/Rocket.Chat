@@ -31,14 +31,14 @@ import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpo
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import MarketplaceRow from './MarketplaceRow';
+import CategoryDropDown from './components/CategoryDropDown';
+import TagList from './components/TagList';
+import { CategoryDropDownListProps } from './definitions/CategoryDropdownDefinitions';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
-import { useFilteredApps } from './hooks/useFilteredApps';
-import CategoryDropDown from './components/CategoryDropDown';
-import { useCategoryToggle } from './hooks/useCategoryToggle';
-import { CategoryDropDownListProps } from './definitions/CategoryDropdownDefinitions';
 import { useCategoryTagList } from './hooks/useCategoryTagList';
-import TagList from './components/TagList';
+import { useCategoryToggle } from './hooks/useCategoryToggle';
+import { useFilteredApps } from './hooks/useFilteredApps';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;

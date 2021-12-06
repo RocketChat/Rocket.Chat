@@ -5,6 +5,7 @@ import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { App } from '../types';
+
 export const useFilteredApps = ({
 	filterFunction = (): boolean => true,
 	text,
