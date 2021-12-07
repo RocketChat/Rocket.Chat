@@ -82,6 +82,8 @@
 
 		margin-bottom: 8px;
 
+		padding: 0 12px;
+
 		text-transform: uppercase;
 
 		color: var(--popover-title-color);
