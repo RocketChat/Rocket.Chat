@@ -7,11 +7,11 @@ import { IUser } from '../../../definition/IUser';
 import { IRole } from '../../../definition/IRole';
 import { IPermission } from '../../../definition/IPermission';
 
-const isValidScope = (scope: IRole['scope']): scope is keyof typeof Models =>
+const isValidScope = (scope: IRole['scope']): boolean =>
 	typeof scope === 'string' && scope in Models;
 
 const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(permissionIds: IPermission['_id'][], scope: IRole['scope'], userId: IUser['_id']): boolean => {
+	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
 		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
@@ -34,7 +34,7 @@ const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermi
 					return false;
 				}
 
-				const model = Models[roleScope];
+				const model = Models[roleScope as keyof typeof Models];
 				return model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 			});
 		});
@@ -46,8 +46,8 @@ const all = createPermissionValidator(Array.prototype.every);
 
 const validatePermissions = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope: IRole['scope'],
-	predicate: (permissionIds: IPermission['_id'][], scope: IRole['scope'], userId: IUser['_id']) => boolean,
+	scope: string | undefined,
+	predicate: (permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']) => boolean,
 	userId?: IUser['_id'] | null,
 ): boolean => {
 	userId = userId ?? Meteor.userId();
@@ -65,17 +65,17 @@ const validatePermissions = (
 
 export const hasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
+	scope?: string,
 ): boolean => validatePermissions(permissions, scope, all);
 
 export const hasAtLeastOnePermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
+	scope?: string,
 ): boolean => validatePermissions(permissions, scope, atLeastOne);
 
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: IRole['scope'],
+	scope?: string,
 	userId?: IUser['_id'] | null,
 ): boolean => validatePermissions(permissions, scope, all, userId);
 

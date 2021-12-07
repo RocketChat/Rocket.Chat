@@ -55,6 +55,7 @@ function _OAuthServicesUpdate() {
 				data.mergeUsers = settings.get(`${ key }-merge_users`);
 				data.mapChannels = settings.get(`${ key }-map_channels`);
 				data.mergeRoles = settings.get(`${ key }-merge_roles`);
+				data.rolesToSync = settings.get(`${ key }-roles_to_sync`);
 				data.showButton = settings.get(`${ key }-show_button`);
 
 				new CustomOAuth(serviceName.toLowerCase(), {
@@ -78,6 +79,7 @@ function _OAuthServicesUpdate() {
 					channelsAdmin: data.channelsAdmin,
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
+					rolesToSync: data.rolesToSync,
 					accessTokenParam: data.accessTokenParam,
 					showButton: data.showButton,
 				});
@@ -184,6 +186,7 @@ function customOAuthServicesInit() {
 					mergeUsers: process.env[`${ serviceKey }_merge_users`] === 'true',
 					mapChannels: process.env[`${ serviceKey }_map_channels`],
 					mergeRoles: process.env[`${ serviceKey }_merge_roles`] === 'true',
+					rolesToSync: process.env[`${ serviceKey }_roles_to_sync`],
 					showButton: process.env[`${ serviceKey }_show_button`] === 'true',
 					avatarField: process.env[`${ serviceKey }_avatar_field`],
 				};

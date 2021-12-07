@@ -18,7 +18,7 @@ function GroupPageSkeleton() {
 
 			<Page.Content>
 				<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-					<Box is='p' color='hint' fontScale='p1'>
+					<Box is='p' color='hint' fontScale='p3'>
 						<Skeleton />
 						<Skeleton />
 						<Skeleton width='75%' />

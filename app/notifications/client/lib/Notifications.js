@@ -78,9 +78,9 @@ class Notifications {
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
 
-	async onUser(eventName, callback) {
-		await this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
-		return () => this.unUser(eventName, callback);
+	async onUser(eventName, callback, visitorId = null) {
+		await this.streamUser.on(`${ Meteor.userId() || visitorId }/${ eventName }`, callback);
+		return () => this.unUser(eventName, callback, visitorId);
 	}
 
 	unAll(callback) {
@@ -95,8 +95,8 @@ class Notifications {
 		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
 	}
 
-	unUser(eventName, callback) {
-		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
+	unUser(eventName, callback, visitorId = null) {
+		return this.streamUser.removeListener(`${ Meteor.userId() || visitorId }/${ eventName }`, callback);
 	}
 }
 

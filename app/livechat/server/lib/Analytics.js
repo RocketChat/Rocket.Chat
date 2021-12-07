@@ -2,6 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { LivechatRooms } from '../../../models';
+import { LivechatRooms as LivechatRoomsRaw } from '../../../models/server/raw';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger';
@@ -288,8 +289,8 @@ export const Analytics = {
 			const totalMessagesInHour = new Map();		// total messages in hour 0, 1, ... 23 of weekday
 			const days = to.diff(from, 'days') + 1;		// total days
 
-			const summarize = (m) => ({ metrics, msgs }) => {
-				if (metrics && !metrics.chatDuration) {
+			const summarize = (m) => ({ metrics, msgs, onHold = false }) => {
+				if (metrics && !metrics.chatDuration && !onHold) {
 					openConversations++;
 				}
 				totalMessages += msgs;
@@ -337,13 +338,17 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
+			const onHoldConversations = Promise.await(LivechatRoomsRaw.getOnHoldConversationsBetweenDate(from, to, departmentId));
 
-			const data = [{
+			return [{
 				title: 'Total_conversations',
 				value: totalConversations,
 			}, {
 				title: 'Open_conversations',
 				value: openConversations,
+			}, {
+				title: 'On_Hold_conversations',
+				value: onHoldConversations,
 			}, {
 				title: 'Total_messages',
 				value: totalMessages,
@@ -357,8 +362,6 @@ export const Analytics = {
 				title: 'Busiest_time',
 				value: `${ busiestHour.from }${ busiestHour.to ? `- ${ busiestHour.to }` : '' }`,
 			}];
-
-			return data;
 		},
 
 		/**

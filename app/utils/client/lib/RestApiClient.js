@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import jQuery from 'jquery';
 
 import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
@@ -20,6 +21,15 @@ export const APIClient = {
 		}
 
 		return APIClient._jqueryCall('POST', endpoint, params, body);
+	},
+
+	put(endpoint, params, body) {
+		if (!body) {
+			body = params;
+			params = {};
+		}
+
+		return APIClient._jqueryCall('PUT', endpoint, params, body);
 	},
 
 	upload(endpoint, params, formData, xhrOptions) {
@@ -167,6 +177,10 @@ export const APIClient = {
 
 		upload(endpoint, params, formData) {
 			return APIClient.upload(`v1/${ endpoint }`, params, formData);
+		},
+
+		put(endpoint, params, body) {
+			return APIClient.put(`v1/${ endpoint }`, params, body);
 		},
 	},
 };

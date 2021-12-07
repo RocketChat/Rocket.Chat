@@ -62,5 +62,5 @@ Meteor.startup(async () => {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
-	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechat(user._id, 'not-available'));
+	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }));
 });

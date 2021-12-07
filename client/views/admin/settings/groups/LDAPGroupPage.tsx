@@ -19,7 +19,6 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const syncNow = useEndpoint('POST', 'ldap.syncNow');
 	const testSearch = useEndpoint('POST', 'ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
-	const ldapSyncEnabled = useSetting('LDAP_Background_Sync') && ldapEnabled;
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
@@ -39,7 +38,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
-			const { message } = await testConnection(undefined);
+			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -48,12 +47,12 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleSyncNowButtonClick = async (): Promise<void> => {
 		try {
-			await testConnection(undefined);
+			await testConnection();
 			const confirmSync = async (): Promise<void> => {
 				closeModal();
 
 				try {
-					const { message } = await syncNow(undefined);
+					const { message } = await syncNow();
 					dispatchToastMessage({ type: 'success', message: t(message) });
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -79,7 +78,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleSearchTestButtonClick = async (): Promise<void> => {
 		try {
-			await testConnection(undefined);
+			await testConnection();
 			let username = '';
 			const handleChangeUsername = (event: FormEvent<HTMLInputElement>): void => {
 				username = event.currentTarget.value;
@@ -135,13 +134,11 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 						disabled={!ldapEnabled || changed}
 						onClick={handleSearchTestButtonClick}
 					/>
-					{ldapSyncEnabled && (
-						<Button
-							children={t('LDAP_Sync_Now')}
-							disabled={!ldapSyncEnabled || changed}
-							onClick={handleSyncNowButtonClick}
-						/>
-					)}
+					<Button
+						children={t('LDAP_Sync_Now')}
+						disabled={!ldapEnabled || changed}
+						onClick={handleSyncNowButtonClick}
+					/>
 					<Button is='a' href='https://go.rocket.chat/i/ldap-docs' target='_blank'>
 						{t('LDAP_Documentation')}
 					</Button>

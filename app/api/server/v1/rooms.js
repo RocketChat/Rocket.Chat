@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findAdminRoomsAutocomplete, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
@@ -65,9 +65,7 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 
 API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
-		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
-
-		if (!room) {
+		if (!canAccessRoom({ _id: this.urlParams.rid }, { _id: this.userId })) {
 			return API.v1.unauthorized();
 		}
 
@@ -191,9 +189,11 @@ API.v1.addRoute('rooms.info', { authRequired: true }, {
 	get() {
 		const room = findRoomByIdOrName({ params: this.requestParams() });
 		const { fields } = this.parseJsonQuery();
-		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+
+		if (!room || !canAccessRoom(room, { _id: this.userId })) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
+
 		return API.v1.success({ room: Rooms.findOneByIdOrName(room._id, { fields }) });
 	},
 });
@@ -244,9 +244,11 @@ API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
 		const room = findRoomByIdOrName({ params: this.requestParams() });
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
-		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+
+		if (!room || !canAccessRoom(room, { _id: this.userId })) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
+
 		const ourQuery = Object.assign(query, { prid: room._id });
 
 		const discussions = Rooms.find(ourQuery, {
@@ -280,6 +282,20 @@ API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
 				count,
 				sort,
 			},
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.adminRooms', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findAdminRoomsAutocomplete({
+			uid: this.userId,
+			selector: JSON.parse(selector),
 		})));
 	},
 });

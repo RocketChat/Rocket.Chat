@@ -26,7 +26,7 @@ Meteor.methods({
 
 		return retrieveRegistrationStatus();
 	},
-	'cloud:getWorkspaceRegisterData'() {
+	async 'cloud:getWorkspaceRegisterData'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:getWorkspaceRegisterData' });
 		}
@@ -35,9 +35,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:getWorkspaceRegisterData' });
 		}
 
-		return Buffer.from(JSON.stringify(buildWorkspaceRegistrationData())).toString('base64');
+		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData())).toString('base64');
 	},
-	'cloud:registerWorkspace'() {
+	async 'cloud:registerWorkspace'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:startRegister' });
 		}
@@ -48,7 +48,7 @@ Meteor.methods({
 
 		return startRegisterWorkspace();
 	},
-	'cloud:syncWorkspace'() {
+	async 'cloud:syncWorkspace'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:syncWorkspace' });
 		}

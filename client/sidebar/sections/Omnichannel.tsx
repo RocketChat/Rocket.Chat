@@ -2,17 +2,19 @@ import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, ReactElement, useState, useCallback, useRef } from 'react';
 
+import { hasPermission } from '../../../app/authorization/client';
 import { ClientLogger } from '../../../lib/ClientLogger';
 import { VoipEvents } from '../../components/voip/SimpleVoipUser';
+import { useLayout } from '../../contexts/LayoutContext';
 import {
 	useIsVoipLibReady,
 	useVoipUser,
 	useOmnichannelShowQueueLink,
 	useOmnichannelQueueLink,
-	useOmnichannelDirectoryLink,
 	useOmnichannelAgentAvailable,
 	useOmnichannelVoipCallAvailable,
 } from '../../contexts/OmnichannelContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -27,10 +29,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const voipLibIsReady = useIsVoipLibReady();
 	const voipLib = useVoipUser();
 	const agentAvailable = useOmnichannelAgentAvailable();
-
+	const { sidebar } = useLayout();
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const queueLink = useOmnichannelQueueLink();
-	const directoryLink = useOmnichannelDirectoryLink();
+	const directoryRoute = useRoute('omnichannel-directory');
 
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
@@ -106,6 +108,11 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		onUnregistrationError,
 	]);
 
+	const handleDirectory = useMutableCallback(() => {
+		sidebar.toggle();
+		directoryRoute.push({});
+	});
+
 	return (
 		<Sidebar.TopBar.ToolBox {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
@@ -115,7 +122,9 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				)}
 				<Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} />
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+				{hasPermission(['view-omnichannel-contact-center']) && (
+					<Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />
+				)}{' '}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

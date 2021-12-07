@@ -47,6 +47,7 @@ const useQuery: useQueryType = (
 			departmentId?: string;
 			tags?: string[];
 			customFields?: string;
+			onhold?: boolean;
 		} = {
 			...(guest && { roomName: guest }),
 			sort: JSON.stringify({
@@ -71,8 +72,10 @@ const useQuery: useQueryType = (
 				}),
 			});
 		}
+
 		if (status !== 'all') {
-			query.open = status === 'opened';
+			query.open = status === 'opened' || status === 'onhold';
+			query.onhold = status === 'onhold';
 		}
 		if (servedBy && servedBy !== 'all') {
 			query.agents = [servedBy];
@@ -215,25 +218,32 @@ const CurrentChatsRoute: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, servedBy, ts, lm, department, open }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={(): void => onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
-				<Table.Cell withTruncatedText>{fname}</Table.Cell>
-				<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
-				<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
-				<Table.Cell withTruncatedText>{open ? t('Open') : t('Closed')}</Table.Cell>
-				{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} reload={reload} />}
-			</Table.Row>
-		),
-		[onRowClick, reload, t, canRemoveClosedChats],
+		({ _id, fname, servedBy, ts, lm, department, open, onHold }) => {
+			const getStatusText = (open: boolean, onHold: boolean): string => {
+				if (!open) return t('Closed');
+				return onHold ? t('On_Hold_Chats') : t('Open');
+			};
+
+			return (
+				<Table.Row
+					key={_id}
+					tabIndex={0}
+					role='link'
+					onClick={(): void => onRowClick(_id)}
+					action
+					qa-user-id={_id}
+				>
+					<Table.Cell withTruncatedText>{fname}</Table.Cell>
+					<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
+					<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
+					<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
+					<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
+					<Table.Cell withTruncatedText>{getStatusText(open, onHold)}</Table.Cell>
+					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} reload={reload} />}
+				</Table.Row>
+			);
+		},
+		[onRowClick, reload, canRemoveClosedChats, t],
 	);
 
 	if (!canViewCurrentChats) {

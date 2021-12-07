@@ -8,7 +8,8 @@ import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms, CredentialTokens } from '../../../models/server';
+import { Users, Rooms } from '../../../models/server';
+import { CredentialTokens } from '../../../models/server/raw';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
@@ -55,20 +56,20 @@ export class SAML {
 		}
 	}
 
-	public static hasCredential(credentialToken: string): boolean {
-		return CredentialTokens.findOneById(credentialToken) != null;
+	public static async hasCredential(credentialToken: string): Promise<boolean> {
+		return await CredentialTokens.findOneNotExpiredById(credentialToken) != null;
 	}
 
-	public static retrieveCredential(credentialToken: string): Record<string, any> | undefined {
+	public static async retrieveCredential(credentialToken: string): Promise<Record<string, any> | undefined> {
 		// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
-		const data = CredentialTokens.findOneById(credentialToken);
+		const data = await CredentialTokens.findOneNotExpiredById(credentialToken);
 		if (data) {
 			return data.userInfo;
 		}
 	}
 
-	public static storeCredential(credentialToken: string, loginResult: object): void {
-		CredentialTokens.create(credentialToken, loginResult);
+	public static async storeCredential(credentialToken: string, loginResult: {profile: Record<string, any>}): Promise<void> {
+		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
@@ -380,7 +381,7 @@ export class SAML {
 	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
+		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile/* , loggedOut*/) => {
 			try {
 				if (err) {
 					SAMLUtils.error(err);
@@ -400,7 +401,7 @@ export class SAML {
 					profile,
 				};
 
-				this.storeCredential(credentialToken, loginResult);
+				await this.storeCredential(credentialToken, loginResult);
 				const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
 				res.writeHead(302, {
 					Location: url,
