@@ -148,7 +148,7 @@ Template.popover.onDestroyed(function() {
 		this.data.onDestroyed();
 	}
 	$(window).off('resize', this.position);
-	this.observer.disconnect();
+	this.observer && this.observer.disconnect();
 });
 
 Template.popover.events({
