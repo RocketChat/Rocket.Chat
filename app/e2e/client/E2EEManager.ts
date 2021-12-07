@@ -4,7 +4,6 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { Rooms, Subscriptions } from '../../models/client';
-import { checkSignal } from './helpers';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { ISubscription } from '../../../definition/ISubscription';
 import { Notifications } from '../../notifications/client';
@@ -74,14 +73,10 @@ export abstract class E2EEManager extends Emitter {
 		};
 	}
 
-	async decryptMessage(message: IMessage, signal?: AbortSignal): Promise<IMessage> {
-		checkSignal(signal);
-
+	async decryptMessage(message: IMessage): Promise<IMessage> {
 		const roomClient = this.roomClients.track(message.rid);
 
 		await roomClient.whenReady();
-
-		checkSignal(signal);
 
 		return roomClient?.decryptMessage(message) ?? message;
 	}

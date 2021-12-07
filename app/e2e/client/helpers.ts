@@ -87,9 +87,3 @@ export const deriveKey = (salt: ArrayBuffer, baseKey: CryptoKey, keyUsages: KeyU
 		true,
 		keyUsages,
 	);
-
-export const checkSignal = (signal: AbortSignal | undefined): void => {
-	if (signal?.aborted) {
-		throw new Error('aborted');
-	}
-};

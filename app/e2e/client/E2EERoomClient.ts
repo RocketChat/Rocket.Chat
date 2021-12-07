@@ -7,7 +7,7 @@ import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
 import { IMessage } from '../../../definition/IMessage';
-import { checkSignal, decryptAES, encryptAES, joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './helpers';
+import { decryptAES, encryptAES, joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './helpers';
 import { IRoom } from '../../../definition/IRoom';
 import { Rooms, Subscriptions } from '../../models/client';
 import { ISubscription } from '../../../definition/ISubscription';
@@ -22,8 +22,8 @@ type EncryptableMessage = {
 };
 
 interface IE2EECipher {
-	encrypt(input: EncryptableMessage, signal?: AbortSignal): Promise<string>;
-	decrypt(input: string, signal?: AbortSignal): Promise<EncryptableMessage>;
+	encrypt(input: EncryptableMessage): Promise<string>;
+	decrypt(input: string): Promise<EncryptableMessage>;
 }
 
 interface ICryptoKeyHolder {
@@ -35,15 +35,11 @@ interface ICryptoKeyHolder {
 class E2EECipher implements IE2EECipher {
 	constructor(private cryptoKeyHolder: ICryptoKeyHolder) {}
 
-	async encrypt(input: EncryptableMessage, signal?: AbortSignal): Promise<string> {
-		checkSignal(signal);
-
+	async encrypt(input: EncryptableMessage): Promise<string> {
 		const data = new TextEncoder().encode(EJSON.stringify(input));
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		const result = await encryptAES(vector, this.cryptoKeyHolder.key, data);
-
-		checkSignal(signal);
 
 		return this.cryptoKeyHolder.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
 	}
@@ -58,9 +54,7 @@ class E2EECipher implements IE2EECipher {
 		return typeof x === 'object' && x !== null && 'text' in x;
 	}
 
-	async decrypt(input: string, signal?: AbortSignal): Promise<EncryptableMessage> {
-		checkSignal(signal);
-
+	async decrypt(input: string): Promise<EncryptableMessage> {
 		if (!this.isDecryptable(input)) {
 			throw new Error('input is not decryptable');
 		}
@@ -70,8 +64,6 @@ class E2EECipher implements IE2EECipher {
 		const [vector, cipherText] = splitVectorAndEncryptedData(Base64.decode(encryptedText));
 
 		const result = await decryptAES(vector, this.cryptoKeyHolder.key, cipherText);
-
-		checkSignal(signal);
 
 		const decryptedText = new TextDecoder().decode(new Uint8Array(result));
 
@@ -241,29 +233,6 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 		});
 	}
 
-	private createAbortSignal(predicate: () => boolean): { signal: AbortSignal; release: () => void } {
-		const abortController = new AbortController();
-
-		const eventHandler = (): void => {
-			if (!abortController.signal.aborted && predicate()) {
-				abortController.abort();
-				this.off('STATE_CHANGED', eventHandler);
-				this.off('PAUSED', eventHandler);
-			}
-		};
-
-		this.on('STATE_CHANGED', eventHandler);
-		this.on('PAUSED', eventHandler);
-
-		return {
-			signal: abortController.signal,
-			release: (): void => {
-				this.off('STATE_CHANGED', eventHandler);
-				this.off('PAUSED', eventHandler);
-			},
-		};
-	}
-
 	async decryptMessage(message: IMessage): Promise<IMessage> {
 		// not ready for decryption
 		if (!this.decryptionActive) {
@@ -275,15 +244,11 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 			return message;
 		}
 
-		const { signal, release } = this.createAbortSignal(() => !this.decryptionActive);
-
-		const data = await this.cipher.decrypt(message.msg, signal)
+		const data = await this.cipher.decrypt(message.msg)
 			.catch((reason) => {
 				console.error(reason);
 				return undefined;
 			});
-
-		release();
 
 		// decryption was deactivated or failed
 		if (!this.decryptionActive || !data?.text) {
@@ -314,20 +279,16 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 		const tsServerOffset = TimeSync.serverOffset();
 		const ts = new Date(Date.now() + (isNaN(tsServerOffset) ? 0 : tsServerOffset));
 
-		const { signal, release } = this.createAbortSignal(() => !this.encryptionActive);
-
 		const msg = await this.cipher.encrypt({
 			_id: message._id,
 			text: message.msg,
 			userId: this.metadata.uid,
 			ts,
-		}, signal)
+		})
 			.catch((reason) => {
 				console.error(reason);
 				return undefined;
 			});
-
-		release();
 
 		if (!this.encryptionActive || !msg) {
 			return message;
