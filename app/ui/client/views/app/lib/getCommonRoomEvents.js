@@ -3,13 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import {
-	popover,
-	MessageAction,
-} from '../../../../../ui-utils/client';
-import {
-	addMessageToList,
-} from '../../../../../ui-utils/client/lib/MessageAction';
+import { popover, MessageAction } from '../../../../../ui-utils/client';
+import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
@@ -31,28 +26,28 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg }, context, 'menu').map(
-		(item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}),
-	);
+	let menuItems = MessageAction.getButtons(
+		{ ...messageContext, message: messageContext.msg },
+		context,
+		'menu',
+	).map((item) => ({
+		icon: item.icon,
+		name: t(item.label),
+		type: 'message-action',
+		id: item.id,
+		modifier: item.color,
+	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(
-			messageContext,
-			context,
-			'message',
-		).map((item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}));
+		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map(
+			(item) => ({
+				icon: item.icon,
+				name: t(item.label),
+				type: 'message-action',
+				id: item.id,
+				modifier: item.color,
+			}),
+		);
 
 		menuItems = menuItems.concat(messageItems);
 	}
@@ -122,11 +117,7 @@ export const getCommonRoomEvents = () => ({
 					return;
 				}
 
-				if (
-					e.target
-					&& e.target.nodeName === 'A'
-					&& isURL(e.target.getAttribute('href'))
-				) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					e.preventDefault();
 					e.stopPropagation();
 				}
@@ -141,11 +132,7 @@ export const getCommonRoomEvents = () => ({
 
 			'touchend .message'(e) {
 				clearTimeout(touchtime);
-				if (
-					e.target
-					&& e.target.nodeName === 'A'
-					&& isURL(e.target.getAttribute('href'))
-				) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					if (touchMoved === true) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -174,9 +161,7 @@ export const getCommonRoomEvents = () => ({
 		};
 	})(),
 	'click [data-message-action]'(event, template) {
-		const button = MessageAction.getButtonById(
-			event.currentTarget.dataset.messageAction,
-		);
+		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
 		if ((button != null ? button.action : undefined) != null) {
 			button.action.call(this, event, { tabBar: template.tabBar, rid: template.data.rid });
 		}
@@ -197,23 +182,35 @@ export const getCommonRoomEvents = () => ({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { msg: { rid, _id, tmid } } = messageArgs(this);
+		const {
+			msg: { rid, _id, tmid },
+		} = messageArgs(this);
 		const room = Rooms.findOne({ _id: rid });
 
-		FlowRouter.go(FlowRouter.getRouteName(), {
-			rid,
-			name: room.name,
-			tab: 'thread',
-			context: tmid || _id,
-		}, {
-			jump: tmid && tmid !== _id && _id && _id,
-		});
+		FlowRouter.go(
+			FlowRouter.getRouteName(),
+			{
+				rid,
+				name: room.name,
+				tab: 'thread',
+				context: tmid || _id,
+			},
+			{
+				jump: tmid && tmid !== _id && _id && _id,
+			},
+		);
 	},
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
-		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
+		ChatMessage.update(
+			{ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') },
+			{ $set: { 'urls.$.downloadImages': true } },
+		);
+		ChatMessage.update(
+			{ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
+			{ $set: { 'attachments.$.downloadImages': true } },
+		);
 	},
 	'click .user-card-message'(e, instance) {
 		const { msg } = messageArgs(this);
@@ -309,11 +306,7 @@ export const getCommonRoomEvents = () => ({
 		let messages = $input.data('reply') || [];
 		messages = addMessageToList(messages, message);
 
-		$input
-			.focus()
-			.data('mention-user', false)
-			.data('reply', messages)
-			.trigger('dataChange');
+		$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
 	},
 	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const { rid } = instance.data;
@@ -334,11 +327,11 @@ export const getCommonRoomEvents = () => ({
 	},
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
-		const { msg: message, context: ctx } = messageContext;
-		const context =			ctx || message.context || message.actionContext || 'message';
+		const { msg: message, u: user, context: ctx } = messageContext;
+		const context = ctx || message.context || message.actionContext || 'message';
 
 		const allItems = MessageAction.getButtons(
-			messageContext,
+			{ ...messageContext, message, user },
 			context,
 			'menu',
 		).map((item) => ({
@@ -394,7 +387,10 @@ export const getCommonRoomEvents = () => ({
 
 		if (channel) {
 			if (isLayoutEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', {
+					path: FlowRouter.path('channel', { name: channel }),
+					channel,
+				});
 			}
 			goToRoomById(channel);
 			return;

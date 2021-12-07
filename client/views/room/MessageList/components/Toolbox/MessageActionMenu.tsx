@@ -1,10 +1,9 @@
-import { css } from '@rocket.chat/css-in-js';
-import { MessageToolbox, Box, Option, Tile } from '@rocket.chat/fuselage';
-import { usePosition } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState, useEffect, Fragment } from 'react';
+import { MessageToolbox, Option } from '@rocket.chat/fuselage';
+import React, { FC, useState, Fragment, useRef } from 'react';
 
 import { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { useTranslation, TranslationKey } from '../../../../../contexts/TranslationContext';
+import { ToolboxDropdown } from './ToolboxDropdown';
 
 type Option = {
 	id: string;
@@ -16,20 +15,13 @@ type Option = {
 	action: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const style = css`
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-`;
-
 export const MessageActionMenu: FC<{
 	// options: {
 	// 	[key: string]: Option;
 	// };
 	options: MessageActionConfig[];
 }> = ({ options }) => {
-	const ref = React.useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLElement>(null);
 
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
@@ -47,16 +39,20 @@ export const MessageActionMenu: FC<{
 		}, {} as { [key: string]: Option[] });
 
 	return (
-		<MessageToolbox.Item ref={ref} icon='kebab' onClick={() => setVisible(true)}>
+		<MessageToolbox.Item ref={ref} icon='kebab' onClick={(): void => setVisible(true)}>
 			{visible && (
-				<Dropdown reference={ref} onClose={() => setVisible(false)}>
+				<ToolboxDropdown
+					reference={ref}
+					onClose={(e): void => {
+						e.stopPropagation();
+						setVisible(false);
+					}}
+				>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (
 								<Option
-									{...(option.variant === 'danger' && {
-										danger: true,
-									})}
+									variant={option.variant}
 									key={option.id}
 									id={option.id}
 									icon={option.icon}
@@ -67,39 +63,8 @@ export const MessageActionMenu: FC<{
 							{index !== arr.length - 1 && <Option.Divider />}
 						</Fragment>
 					))}
-				</Dropdown>
+				</ToolboxDropdown>
 			)}
 		</MessageToolbox.Item>
-	);
-};
-
-// eslint-disable-next-line react/no-multi-comp
-const Dropdown: FC<{ reference: React.MutableRefObject<HTMLDivElement>; onClose: () => void }> = ({
-	onClose,
-	reference,
-	children,
-}) => {
-	const target = React.useRef<HTMLButtonElement>(null);
-	const { style: s, ...rest } = usePosition(reference, target, {
-		watch: true,
-		placement: 'bottom-start',
-	});
-
-	useEffect(() => onClose, []);
-
-	return (
-		<Box onClick={onClose} className={style}>
-			<Tile
-				is='ul'
-				padding={0}
-				paddingBlock={'x12'}
-				paddingInline={0}
-				elevation='2'
-				ref={target}
-				style={s}
-			>
-				{children}
-			</Tile>
-		</Box>
 	);
 };

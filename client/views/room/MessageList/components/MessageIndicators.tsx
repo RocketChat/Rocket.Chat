@@ -40,7 +40,7 @@ export const MessageIndicators: FC<{
 
 	const uid = useUserId();
 
-	const formater = useMessageDateFormatter(); // TODO: useMessageDateFormatter
+	const formatter = useMessageDateFormatter(); // TODO: useMessageDateFormatter
 
 	return (
 		<MessageStatusIndicator>
@@ -59,10 +59,10 @@ export const MessageIndicators: FC<{
 					color={message.u._id !== message.editedBy._id ? 'danger' : undefined}
 					data-title={
 						message.editedBy._id === uid
-							? t('Message_has_been_edited_at', { date: formater(message.editedAt) })
+							? t('Message_has_been_edited_at', { date: formatter(message.editedAt) })
 							: t('Message_has_been_edited_by_at', {
 									username: message.editedBy.username || '?',
-									date: formater(message.editedAt),
+									date: formatter(message.editedAt),
 							  })
 					}
 				/>

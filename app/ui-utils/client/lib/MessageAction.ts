@@ -15,15 +15,15 @@ import { IRoom } from '../../../../definition/IRoom';
 import { SettingValue } from '../../../../definition/ISetting';
 import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
 
-
-const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function(err: any, data: any) {
-		if (err) {
-			return reject(err);
-		}
-		resolve(data);
+const call = (method: string, ...args: any[]): Promise<any> =>
+	new Promise((resolve, reject) => {
+		Meteor.call(method, ...args, function (err: any, data: any) {
+			if (err) {
+				return reject(err);
+			}
+			resolve(data);
+		});
 	});
-});
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -34,9 +34,15 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 	return messagesList;
 };
 
-
 type MessageActionGroup = 'message' | 'menu';
-type MessageActionContext = 'message' | 'threads' | 'message-mobile'| 'pinned' | 'direct' | 'starred' | 'mentions';
+type MessageActionContext =
+	| 'message'
+	| 'threads'
+	| 'message-mobile'
+	| 'pinned'
+	| 'direct'
+	| 'starred'
+	| 'mentions';
 
 type MessageActionConditionProps = {
 	message: IMessage;
@@ -56,13 +62,16 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: (e: MouseEvent, { message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom }) => any;
+	action: (
+		e: MouseEvent,
+		{ message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom },
+	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
-}
+};
 
 type MessageActionConfigList = MessageActionConfig[];
 
-export const MessageAction = new class {
+export const MessageAction = new (class {
 	/*
   	config expects the following keys (only id is mandatory):
   		id (mandatory)
@@ -76,7 +85,7 @@ export const MessageAction = new class {
 
 	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
-	addButton(config: MessageActionConfig): void{
+	addButton(config: MessageActionConfig): void {
 		if (!config || !config.id) {
 			return;
 		}
@@ -121,25 +130,53 @@ export const MessageAction = new class {
 		return allButtons[id];
 	}
 
-	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 })
+	_getButtons = mem(
+		(): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'),
+		{ maxAge: 1000 },
+	);
 
-	getButtonsByCondition(prop: MessageActionConditionProps, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
+	getButtonsByCondition(
+		prop: MessageActionConditionProps,
+		arr: MessageActionConfigList = MessageAction._getButtons(),
+	): MessageActionConfigList {
 		return arr.filter((button) => !button.condition || button.condition(prop));
 	}
 
-	getButtonsByGroup = mem(function(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
-		return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
-	}, { maxAge: 1000 })
+	getButtonsByGroup = mem(
+		function (
+			group: MessageActionGroup,
+			arr: MessageActionConfigList = MessageAction._getButtons(),
+		): MessageActionConfigList {
+			return arr.filter(
+				(button) =>
+					!button.group ||
+					(Array.isArray(button.group) ? button.group.includes(group) : button.group === group),
+			);
+		},
+		{ maxAge: 1000 },
+	);
 
-	getButtonsByContext(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
-		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
+	getButtonsByContext(
+		context: MessageActionContext,
+		arr: MessageActionConfigList,
+	): MessageActionConfigList {
+		return !context
+			? arr
+			: arr.filter((button) => !button.context || button.context.includes(context));
 	}
 
-	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
+	getButtons(
+		props: MessageActionConditionProps,
+		context: MessageActionContext,
+		group: MessageActionGroup,
+	): MessageActionConfigList {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
 		if (props.message) {
-			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
+			return this.getButtonsByCondition(
+				{ ...props, context },
+				this.getButtonsByContext(context, allButtons),
+			);
 		}
 		return allButtons;
 	}
@@ -155,7 +192,7 @@ export const MessageAction = new class {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || await call('getSingleMessage', msgId);
+		const msg = Messages.findOne(msgId) || (await call('getSingleMessage', msgId));
 		if (!msg) {
 			throw new Error('message-not-found');
 		}
@@ -167,8 +204,8 @@ export const MessageAction = new class {
 			throw new Error('room-not-found');
 		}
 
-		const subData = Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
+		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
 		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
-		return `${ roomURL }?msg=${ msgId }`;
+		return `${roomURL}?msg=${msgId}`;
 	}
-}();
+})();

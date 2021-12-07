@@ -24,10 +24,14 @@ export type CustomScrollbarsProps = {
 	onScroll?: (values: ScrollValues) => void;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
+	autoHide?: boolean;
 };
 
 const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
-	function WrappedComponent({ children, style, onScroll, overflowX, renderView }, ref) {
+	function WrappedComponent(
+		{ children, style, onScroll, overflowX, renderView, autoHide = true },
+		ref,
+	) {
 		const scrollbarsStyle = useMemo(
 			() => ({ ...style, ...styleDefault }),
 			[style],
@@ -35,7 +39,7 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 
 		return (
 			<Scrollbars
-				autoHide
+				autoHide={autoHide}
 				autoHideTimeout={2000}
 				autoHideDuration={500}
 				style={scrollbarsStyle}

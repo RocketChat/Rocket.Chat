@@ -10,20 +10,12 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageReactions,
-	ReactionEmoji,
-	ReactionCouter,
-	MessagePrivateIndicator,
+	MessageStatusPrivateIndicator,
 	MessageReactionAction,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import {
-	IMessage,
-	IMessageReactionsNormalized,
-	isDiscussionMessage,
-	isMessageReactionsNormalized,
-	isThreadMessage,
-} from '../../../../../definition/IMessage';
+import { IMessage, isDiscussionMessage, isThreadMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
@@ -31,16 +23,13 @@ import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
-import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions } from '../../contexts/MessageContext';
-import { MessageReaction } from '../MessageReaction';
 import {
 	useMessageListShowRoles,
 	useMessageListShowUsernames,
@@ -50,6 +39,7 @@ import {
 	useUserHasReacted,
 } from '../contexts/MessageListContext';
 import { MessageIndicators } from './MessageIndicators';
+import { MessageReaction } from './MessageReaction';
 import Toolbox from './Toolbox';
 
 const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
@@ -98,8 +88,8 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						)}
 						{showRoles && Array.isArray(user.roles) && user.roles.length > 0 && (
 							<MessageRoles>
-								{user.roles.map((role) => (
-									<MessageRole>{role}</MessageRole>
+								{user.roles.map((role, index) => (
+									<MessageRole key={index}>{role}</MessageRole>
 								))}
 								{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
 							</MessageRoles>
@@ -108,9 +98,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 							{formatters.messageHeader(message.ts)}
 						</MessageTimestamp>
 						{message.private && (
-							<MessagePrivateIndicator>
+							<MessageStatusPrivateIndicator>
 								{t('Only_you_can_see_this_message')}
-							</MessagePrivateIndicator>
+							</MessageStatusPrivateIndicator>
 						)}
 						<MessageIndicators message={message} />
 					</MessageHeader>

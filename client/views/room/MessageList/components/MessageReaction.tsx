@@ -1,13 +1,13 @@
 import {
 	MessageReaction as MessageReactionTemplate,
-	ReactionEmoji,
-	ReactionCouter,
+	MessageReactionEmoji,
+	MessageReactionCounter,
 } from '@rocket.chat/fuselage';
 import React, { FC, useRef } from 'react';
 
-import { useTooltipClose, useTooltipOpen } from '../../../contexts/TooltipContext';
-import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
-import { getEmojiClassNameAndDataTitle } from '../../../lib/utils/renderEmoji';
+import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';
+import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
+import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 
 type TranslationRepliesKey =
 	| 'You_have_reacted'
@@ -23,12 +23,8 @@ type TranslationRepliesKey =
 //   "You_and_more_Reacted_with": "You, __users__ and __count__ more have react with __emoji__",
 //   "You_and_Reacted_with": "You and __count__ more have react with __emoji__",
 
-const getTranslationKey = (
-	count: number,
-	users: string[],
-	mine: boolean,
-): TranslationRepliesKey => {
-	if (users.length === 1) {
+const getTranslationKey = (users: string[], mine: boolean): TranslationRepliesKey => {
+	if (users.length === 0) {
 		if (mine) {
 			return 'You_have_reacted';
 		}
@@ -52,37 +48,47 @@ export const MessageReaction: FC<{
 	counter: number;
 	name: string;
 	names: string[];
-}> = ({ hasReacted, reactToMessage, counter, name, names }) => {
+}> = ({ hasReacted, reactToMessage, counter, name, names, ...props }) => {
 	const t = useTranslation();
-	const ref = useRef<HTMLElement>(null);
+	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
 
 	const mine = hasReacted(name);
 
-	const key: TranslationKey = getTranslationKey(counter, names, mine) as TranslationKey;
+	const key = getTranslationKey(names, mine);
 
+	const emojiProps = getEmojiClassNameAndDataTitle(name);
 	return (
 		<MessageReactionTemplate
 			ref={ref}
 			key={name}
 			mine={mine}
 			onClick={(): void => reactToMessage(name)}
-			tabindex='0'
+			tabIndex={0}
 			role='button'
-			onMouseOver={() => {
+			onMouseOver={(e): void => {
+				e.stopPropagation();
+				e.preventDefault();
 				ref.current &&
 					openTooltip(
-						<>{t(key, { counter: names.length, users: names.join(', '), emoji: name })}</>,
+						<>
+							{t(key as TranslationKey, {
+								counter: names.length,
+								users: names.join(', '),
+								emoji: name,
+							})}
+						</>,
 						ref.current,
 					);
 			}}
 			onMouseLeave={() => {
 				closeTooltip();
 			}}
+			{...props}
 		>
-			<ReactionEmoji {...getEmojiClassNameAndDataTitle(name)} />
-			<ReactionCouter counter={counter} />
+			<MessageReactionEmoji {...emojiProps} />
+			<MessageReactionCounter counter={counter} />
 		</MessageReactionTemplate>
 	);
 };

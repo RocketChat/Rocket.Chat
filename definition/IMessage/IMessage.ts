@@ -9,29 +9,27 @@ import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
-
 type MessageTypesValues =
-| 'e2e'
-| 'uj'
-| 'ul'
-| 'ru'
-| 'au'
-| 'mute_unmute'
-| 'r'
-| 'ut'
-| 'wm'
-| 'rm'
-| 'subscription-role-added'
-| 'subscription-role-removed'
-| 'room_archived'
-| 'room_unarchived'
-| 'room_changed_privacy'
-| 'room_changed_avatar'
-| 'room_changed_topic'
-| 'room_e2e_enabled'
-| 'room_e2e_disabled'
-| 'livechat-close'
-
+	| 'e2e'
+	| 'uj'
+	| 'ul'
+	| 'ru'
+	| 'au'
+	| 'mute_unmute'
+	| 'r'
+	| 'ut'
+	| 'wm'
+	| 'rm'
+	| 'subscription-role-added'
+	| 'subscription-role-removed'
+	| 'room_archived'
+	| 'room_unarchived'
+	| 'room_changed_privacy'
+	| 'room_changed_avatar'
+	| 'room_changed_topic'
+	| 'room_e2e_enabled'
+	| 'room_e2e_disabled'
+	| 'livechat-close';
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -58,7 +56,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
-	starred?: {_id: IUser['_id']}[];
+	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
 	drid?: RoomID;
 
@@ -84,22 +82,22 @@ export interface IMessage extends IRocketChatRecord {
 	sentByEmail?: boolean;
 }
 
+export type MessageSystem = {
+	t: 'system';
+};
+
 export interface IEditedMessage extends IMessage {
 	editedAt: Date;
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => {
-	return 'editedAt' in message && 'editedBy' in message;
-};
+export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
 
 export interface ITranslatedMessage extends IMessage {
-	translations: {	[key: string]: unknown };
+	translations: { [key: string]: unknown };
 }
 
-export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => {
-	return 'translations' in message;
-};
+export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
 
 export interface IThreadMessage extends IMessage {
 	tcount: number;
@@ -108,9 +106,7 @@ export interface IThreadMessage extends IMessage {
 	replies: IUser['_id'][];
 }
 
-export const isThreadMessage = (message: IMessage): message is IThreadMessage => {
-	return !!message.tcount;
-};
+export const isThreadMessage = (message: IMessage): message is IThreadMessage => !!message.tcount;
 
 export interface IDiscussionMessage extends IMessage {
 	drid: string;
@@ -118,19 +114,13 @@ export interface IDiscussionMessage extends IMessage {
 	dcount: number;
 }
 
-export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => {
-	return !!message.drid;
-};
-
+export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => !!message.drid;
 
 export interface IPrivateMessage extends IMessage {
 	private: true;
 }
 
-export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => {
-	return !!message.private;
-};
-
+export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => !!message.private;
 
 export interface IMessageReactionsNormalized extends IMessage {
 	reactions: {
@@ -141,14 +131,21 @@ export interface IMessageReactionsNormalized extends IMessage {
 	};
 }
 
-
-export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized => Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
+export const isMessageReactionsNormalized = (
+	message: IMessage,
+): message is IMessageReactionsNormalized =>
+	Boolean(
+		'reactions' in message
+			&& message.reactions
+			&& message.reactions[0]
+			&& 'names' in message.reactions[0],
+	);
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
 		references?: string[];
 		messageId?: string;
 	};
-}
+};
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;

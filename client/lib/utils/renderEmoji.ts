@@ -13,26 +13,44 @@ export const renderEmoji = (emojiName: string): string | undefined => {
 	return undefined;
 };
 
-export const getEmojiClassNameAndDataTitle = (
-	emojiName: string,
-): { 'className': string; 'name': string; 'data-title': string; 'children': string } => {
-	const html = renderEmoji(emojiName);
-	if (!html) {
-		return { 'className': '', 'data-title': '', 'children': '', 'name': '' };
-	}
-	const result =
-		/class="(?<className>[a-z_ \-0-9]+)" title="(?<datatitle>[\:a-z_\-]+)">(?<children>[^\<]+)</.exec(
-			html,
-		);
-	if (!result) {
-		return { 'className': '', 'data-title': '', 'children': '', 'name': '' };
-	}
-
-	const { groups } = result;
-	return {
-		'className': groups?.className,
-		'data-title': groups?.datatitle,
-		'name': groups?.datatitle,
-		'children': groups?.children,
-	} as unknown as ReturnType<typeof getEmojiClassNameAndDataTitle>;
+type EmojiParserResult = {
+	'className'?: string;
+	'name': string;
+	'data-title'?: string;
+	'children'?: string;
+	'image'?: string;
 };
+
+export const createGetEmojiClassNameAndDataTitle =
+	(parser: (emojiName: string) => string | undefined) =>
+	(emojiName: string): EmojiParserResult => {
+		const html = parser(emojiName);
+		if (!html) {
+			return { 'className': '', 'data-title': '', 'children': '', 'name': '' };
+		}
+
+		const div = document.createElement('div');
+
+		div.innerHTML = html;
+
+		const emojiElement = div.firstElementChild;
+		if (!emojiElement) {
+			return { 'className': '', 'data-title': '', 'children': '', 'name': '', 'image': '' };
+		}
+
+		const image = (
+			Object.fromEntries(
+				(emojiElement.getAttribute('style') || '')?.split(';').map((s) => s.split(':')),
+			) as Record<string, string>
+		)['background-image'];
+
+		return {
+			'className': emojiElement.getAttribute('class') || '',
+			'data-title': emojiElement.getAttribute('data-title') || '',
+			'name': emojiElement.getAttribute('name') || '',
+			'children': emojiElement.innerHTML,
+			image,
+		};
+	};
+
+export const getEmojiClassNameAndDataTitle = createGetEmojiClassNameAndDataTitle(renderEmoji);

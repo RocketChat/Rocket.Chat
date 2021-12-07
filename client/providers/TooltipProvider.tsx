@@ -6,7 +6,7 @@ import TooltipPortal from '../components/TooltipPortal';
 import { TooltipContext } from '../contexts/TooltipContext';
 
 const TooltipProvider: FC = ({ children }) => {
-	const lastAnchor = useRef<HTMLElement>(null);
+	const lastAnchor = useRef<HTMLElement>();
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useState<ReactNode>(null);
@@ -30,7 +30,7 @@ const TooltipProvider: FC = ({ children }) => {
 			if (timeout) {
 				clearTimeout(timeout);
 			}
-			lastAnchor.current = null;
+			lastAnchor.current = undefined;
 
 			timeout = setTimeout(() => {
 				if (!anchor) {
@@ -47,7 +47,6 @@ const TooltipProvider: FC = ({ children }) => {
 				lastAnchor.current = anchor;
 				setTooltip(<TooltipComponent title={title} anchor={anchor} />);
 			}, 300);
-
 			setTooltip(null);
 		};
 

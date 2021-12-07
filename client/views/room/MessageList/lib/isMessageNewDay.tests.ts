@@ -42,6 +42,6 @@ describe('isMessageNewDay', () => {
 		const message = {
 			...baseMessage,
 		};
-		expect(isMessageNewDay(undefined, message)).to.be.true;
+		expect(isMessageNewDay(message, undefined)).to.be.true;
 	});
 });
