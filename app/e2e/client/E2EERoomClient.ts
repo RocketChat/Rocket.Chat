@@ -4,6 +4,7 @@ import { Base64 } from 'meteor/base64';
 import { EJSON } from 'meteor/ejson';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { Tracker } from 'meteor/tracker';
+import { Meteor } from 'meteor/meteor';
 
 import { IMessage } from '../../../definition/IMessage';
 import { checkSignal, decryptAES, encryptAES, joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './helpers';
@@ -11,6 +12,7 @@ import { IRoom } from '../../../definition/IRoom';
 import { Rooms, Subscriptions } from '../../models/client';
 import { ISubscription } from '../../../definition/ISubscription';
 import { RoomSettingsEnum, roomTypes } from '../../utils/client';
+import { IUser } from '../../../definition/IUser';
 
 type EncryptableMessage = {
 	_id: IMessage['_id'];
@@ -18,9 +20,6 @@ type EncryptableMessage = {
 	userId: IMessage['u']['_id'];
 	ts: Date;
 };
-
-const isEncryptableMessage = (x: EJSONableProperty): x is EncryptableMessage =>
-	typeof x === 'object' && x !== null && 'text' in x;
 
 interface IE2EECipher {
 	encrypt(input: EncryptableMessage, signal?: AbortSignal): Promise<string>;
@@ -30,17 +29,11 @@ interface IE2EECipher {
 interface ICryptoKeyHolder {
 	readonly keyID: string;
 
-	readonly groupSessionKey: CryptoKey;
+	readonly key: CryptoKey;
 }
 
 class E2EECipher implements IE2EECipher {
 	constructor(private cryptoKeyHolder: ICryptoKeyHolder) {}
-
-	private isDecryptable(input: string): boolean {
-		const keyID = input.slice(0, 12);
-
-		return keyID === this.cryptoKeyHolder.keyID;
-	}
 
 	async encrypt(input: EncryptableMessage, signal?: AbortSignal): Promise<string> {
 		checkSignal(signal);
@@ -48,11 +41,21 @@ class E2EECipher implements IE2EECipher {
 		const data = new TextEncoder().encode(EJSON.stringify(input));
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
-		const result = await encryptAES(vector, this.cryptoKeyHolder.groupSessionKey, data);
+		const result = await encryptAES(vector, this.cryptoKeyHolder.key, data);
 
 		checkSignal(signal);
 
 		return this.cryptoKeyHolder.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
+	}
+
+	private isDecryptable(input: string): boolean {
+		const keyID = input.slice(0, 12);
+
+		return keyID === this.cryptoKeyHolder.keyID;
+	}
+
+	private isEncryptableMessage(x: EJSONableProperty): x is EncryptableMessage {
+		return typeof x === 'object' && x !== null && 'text' in x;
 	}
 
 	async decrypt(input: string, signal?: AbortSignal): Promise<EncryptableMessage> {
@@ -66,7 +69,7 @@ class E2EECipher implements IE2EECipher {
 
 		const [vector, cipherText] = splitVectorAndEncryptedData(Base64.decode(encryptedText));
 
-		const result = await decryptAES(vector, this.cryptoKeyHolder.groupSessionKey, cipherText);
+		const result = await decryptAES(vector, this.cryptoKeyHolder.key, cipherText);
 
 		checkSignal(signal);
 
@@ -74,7 +77,7 @@ class E2EECipher implements IE2EECipher {
 
 		const parsed = EJSON.parse(decryptedText);
 
-		if (!isEncryptableMessage(parsed)) {
+		if (!this.isEncryptableMessage(parsed)) {
 			throw new Error('unknown decrypted message format');
 		}
 
@@ -82,12 +85,49 @@ class E2EECipher implements IE2EECipher {
 	}
 }
 
+type E2EERoomMetadata = {
+	uid: IUser['_id'];
+	subscription: ISubscription;
+	room: IRoom;
+};
+
+const getRoomMetadata = (rid: IRoom['_id']): E2EERoomMetadata | undefined => {
+	const uid = Meteor.userId();
+
+	if (!uid) {
+		return undefined;
+	}
+
+	const subscription = Subscriptions.findOne({ rid });
+	const room = Rooms.findOne({ _id: rid });
+
+	if (!subscription || !room) {
+		return undefined;
+	}
+
+	if (!roomTypes.getConfig(room.t).allowRoomSettingChange({}, RoomSettingsEnum.E2E)) {
+		return undefined;
+	}
+
+	if (!subscription.encrypted && !subscription.E2EKey) {
+		return undefined;
+	}
+
+	if (!room.encrypted && !room.e2eKeyId) {
+		return undefined;
+	}
+
+	return {
+		uid,
+		subscription,
+		room,
+	};
+};
+
 export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder {
 	keyID: string;
 
-	groupSessionKey: CryptoKey;
-
-	userId: string;
+	key: CryptoKey;
 
 	private cipher: IE2EECipher = new E2EECipher(this);
 
@@ -97,10 +137,19 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 
 	abstract isSupportedRoomType(t: IRoom['t']): boolean;
 
-	private metadata: {
-		subscription: ISubscription;
-		room: IRoom;
-	} | undefined = undefined;
+	abstract resume(): void;
+
+	abstract pause(): void;
+
+	abstract disable(): void;
+
+	abstract isWaitingKeys(): boolean;
+
+	abstract keyReceived(): void;
+
+	abstract decryptSubscription(): void;
+
+	private metadata: E2EERoomMetadata | undefined = undefined;
 
 	get decryptionActive(): boolean {
 		return this.metadata !== undefined && this.isReady();
@@ -113,8 +162,14 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 	constructor(rid: IRoom['_id']) {
 		super();
 
+		this.on('metadataUpdated', () => this.handleMetadataUpdated());
+
 		const computation = Tracker.autorun(() => {
-			this.updateMetadata(rid);
+			try {
+				this.metadata = getRoomMetadata(rid);
+			} finally {
+				this.emit('metadataUpdated');
+			}
 		});
 
 		this.once('released', () => {
@@ -123,36 +178,35 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 		});
 	}
 
-	private updateMetadata(rid: IRoom['_id']): void {
-		try {
-			this.metadata = undefined;
+	release(): void {
+		this.emit('released');
+	}
 
-			const subscription = Subscriptions.findOne({ rid });
-			const room = Rooms.findOne({ _id: rid });
-
-			if (!subscription || !room) {
-				return;
-			}
-
-			if (!roomTypes.getConfig(room.t).allowRoomSettingChange({}, RoomSettingsEnum.E2E)) {
-				return;
-			}
-
-			if (!subscription.encrypted && !subscription.E2EKey) {
-				return;
-			}
-
-			if (!room.encrypted && !room.e2eKeyId) {
-				return;
-			}
-
-			this.metadata = {
-				subscription,
-				room,
-			};
-		} finally {
-			this.emit('metadataUpdated');
+	private handleMetadataUpdated(): void {
+		if (this.metadata === undefined) {
+			return;
 		}
+
+		const { subscription } = this.metadata;
+
+		subscription.encrypted ? this.resume() : this.pause();
+
+		// Cover private groups and direct messages
+		if (!this.isSupportedRoomType(subscription.t)) {
+			this.disable();
+			return;
+		}
+
+		if (subscription.E2EKey && this.isWaitingKeys()) {
+			this.keyReceived();
+			return;
+		}
+
+		if (!this.isReady()) {
+			return;
+		}
+
+		this.decryptSubscription();
 	}
 
 	protected async whenMetadataSet(): Promise<void> {
@@ -211,10 +265,12 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 	}
 
 	async decryptMessage(message: IMessage): Promise<IMessage> {
+		// not ready for decryption
 		if (!this.decryptionActive) {
 			return message;
 		}
 
+		// the message is not encrypted / alrready encryted
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
 		}
@@ -229,6 +285,7 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 
 		release();
 
+		// decryption was deactivated or failed
 		if (!this.decryptionActive || !data?.text) {
 			return message;
 		}
@@ -241,7 +298,16 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 	}
 
 	async encryptMessage(message: IMessage): Promise<IMessage> {
+		if (this.metadata === undefined) {
+			return message;
+		}
+
 		if (!this.encryptionActive) {
+			return message;
+		}
+
+		if (message.t === 'e2e') {
+			// already encrypted
 			return message;
 		}
 
@@ -253,7 +319,7 @@ export abstract class E2EERoomClient extends Emitter implements ICryptoKeyHolder
 		const msg = await this.cipher.encrypt({
 			_id: message._id,
 			text: message.msg,
-			userId: this.userId,
+			userId: this.metadata.uid,
 			ts,
 		}, signal)
 			.catch((reason) => {

@@ -68,10 +68,9 @@ export class E2ERoom extends E2EERoomClient {
 
 	[PAUSED] = undefined;
 
-	constructor(userId, roomId) {
+	constructor(roomId) {
 		super(roomId);
 
-		this.userId = userId;
 		this.roomId = roomId;
 
 		this.once(E2EERoomState.READY, () => this.decryptPendingMessages());
@@ -263,7 +262,7 @@ export class E2ERoom extends E2EERoomClient {
 		try {
 			const key = await importAESKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
-			this.groupSessionKey = key;
+			this.key = key;
 		} catch (error) {
 			return this.error('Error importing group key: ', error);
 		}
@@ -273,14 +272,14 @@ export class E2ERoom extends E2EERoomClient {
 		this.log('Creating room key');
 		// Create group key
 		try {
-			this.groupSessionKey = await generateAESKey();
+			this.key = await generateAESKey();
 		} catch (error) {
 			console.error('Error generating group key: ', error);
 			throw error;
 		}
 
 		try {
-			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
+			const sessionKeyExported = await exportJWKKey(this.key);
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
 

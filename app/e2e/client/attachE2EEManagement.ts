@@ -7,8 +7,6 @@ import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSen
 import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { settings } from '../../settings/client';
-import { attachKeyRequestHandler } from './attachKeyRequestHandler';
-import { attachSubscriptionWatcher } from './attachSubscriptionWatcher';
 import { e2e } from './rocketchat.e2e';
 
 const isEnabled = (): boolean => {
@@ -63,11 +61,9 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
       return;
 		}
 
-		detachKeyRequestHandler = attachKeyRequestHandler();
-		detachSubscriptionWatcher = attachSubscriptionWatcher();
-		detachMessageReceivedTransform = onClientMessageReceived.use((msg) =>
-			e2e.transformReceivedMessage(msg),
-		);
+		detachKeyRequestHandler = e2e.watchKeyRequests();
+		detachSubscriptionWatcher = e2e.watchSubscriptions();
+		detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2e.transformReceivedMessage(msg));
 		detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) =>
 			e2e.transformSendingMessage(msg),
 		);

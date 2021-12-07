@@ -1,90 +1,83 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
-import { Rooms } from '../../models/client';
+import { Rooms, Subscriptions } from '../../models/client';
 import { checkSignal } from './helpers';
 import { E2ERoom } from './rocketchat.e2e.room';
+import { ISubscription } from '../../../definition/ISubscription';
+import { Notifications } from '../../notifications/client';
 
 interface IE2EERoomClientPool {
-	getRoomClient(rid: IRoom['_id']): E2ERoom;
-	deleteRoomClient(rid: IRoom['_id']): void;
-	clearRoomClients(): void;
+	track(rid: IRoom['_id']): E2ERoom;
+	untrack(rid: IRoom['_id']): void;
+	untrackAll(): void;
 }
 
 class E2EERoomClientPool implements IE2EERoomClientPool {
 	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
 
-	getRoomClient(rid: IRoom['_id']): E2ERoom {
+	track(rid: IRoom['_id']): E2ERoom {
 		const roomClient = this.roomClients.get(rid);
 
 		if (roomClient) {
 			return roomClient;
 		}
 
-		const newRoomClient = new E2ERoom(Meteor.userId(), rid);
+		const newRoomClient = new E2ERoom(rid);
 		this.roomClients.set(rid, newRoomClient);
 		return newRoomClient;
 	}
 
-	deleteRoomClient(rid: IRoom['_id']): void {
-		this.roomClients.get(rid)?.emit('released');
+	untrack(rid: IRoom['_id']): void {
+		this.roomClients.get(rid)?.release();
 		this.roomClients.delete(rid);
 	}
 
-	clearRoomClients(): void {
+	untrackAll(): void {
 		for (const roomClient of this.roomClients.values()) {
-			roomClient.emit('released');
+			roomClient.release();
 		}
 		this.roomClients.clear();
 	}
 }
 
-export abstract class E2EEManager extends Emitter implements IE2EERoomClientPool {
-	private _roomClients = new E2EERoomClientPool();
+export abstract class E2EEManager extends Emitter {
+	private roomClients = new E2EERoomClientPool();
 
-	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
+	watchSubscriptions(): (() => void) {
+		const subscriptionWatcher: Meteor.LiveQueryHandle = Subscriptions.find().observe({
+			added: ({ rid }: ISubscription) => {
+				this.roomClients.track(rid);
+			},
+			removed: ({ rid }: ISubscription) => {
+				this.roomClients.untrack(rid);
+			},
+		});
 
-	getRoomClient(rid: IRoom['_id']): E2ERoom {
-		return this._roomClients.getRoomClient(rid);
+		return (): void => {
+			subscriptionWatcher.stop();
+		};
 	}
 
-	deleteRoomClient(rid: IRoom['_id']): void {
-		return this._roomClients.deleteRoomClient(rid);
-	}
+	watchKeyRequests(): (() => void) {
+		const handleKeyRequest = (roomId: IRoom['_id'], keyId: string): void => {
+			const roomClient = this.roomClients.track(roomId);
+			roomClient.provideKeyToUser(keyId);
+		};
 
-	clearRoomClients(): void {
-		return this._roomClients.clearRoomClients();
-	}
+		Notifications.onUser('e2e.keyRequest', handleKeyRequest);
 
-	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
-
-		if (room.t !== 'd' && room.t !== 'p') {
-			return null;
-		}
-
-		if (room.encrypted !== true && !room.e2eKeyId) {
-			return null;
-		}
-
-		const roomClient = this.roomClients.get(rid);
-
-		if (roomClient) {
-			return roomClient;
-		}
-
-		const newRoomClient = new E2ERoom(Meteor.userId(), rid);
-		this.roomClients.set(rid, newRoomClient);
-		return newRoomClient;
+		return (): void => {
+			Notifications.unUser('e2e.keyRequest', handleKeyRequest);
+		};
 	}
 
 	async decryptMessage(message: IMessage, signal?: AbortSignal): Promise<IMessage> {
 		checkSignal(signal);
 
-		const roomClient = this.getRoomClient(message.rid);
+		const roomClient = this.roomClients.track(message.rid);
 
 		await roomClient.whenReady();
 
@@ -103,11 +96,11 @@ export abstract class E2EEManager extends Emitter implements IE2EERoomClientPool
 				throw new Error('E2EE not ready');
 			}
 
-			const roomClient = this.getRoomClient(message.rid);
+			const roomClient = this.roomClients.track(message.rid);
 
 			await roomClient.whenReady();
 
-			if (!roomClient?.shouldConvertReceivedMessages()) {
+			if (!roomClient.shouldConvertReceivedMessages()) {
 				return message;
 			}
 
@@ -123,21 +116,19 @@ export abstract class E2EEManager extends Emitter implements IE2EERoomClientPool
 			throw new Error('E2EE not ready');
 		}
 
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+		const roomClient = this.roomClients.track(message.rid);
 
-		if (!e2eRoom) {
-			return message;
-		}
+		await roomClient.whenReady();
 
 		const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
 
-		subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+		subscription.encrypted ? roomClient.resume() : roomClient.pause();
 
-		if (!await e2eRoom.shouldConvertSentMessages()) {
+		if (!await roomClient.shouldConvertSentMessages()) {
 			return message;
 		}
 
 		// Should encrypt this message.
-		return e2eRoom.encryptMessage(message);
+		return roomClient.encryptMessage(message);
 	}
 }

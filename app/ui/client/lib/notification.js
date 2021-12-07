@@ -88,7 +88,7 @@ export const KonchatNotification = {
 		}
 
 		if (notification.payload.message && notification.payload.message.t === 'e2e') {
-			const roomClient = e2e.getRoomClient(notification.payload.rid);
+			const roomClient = e2e.track(notification.payload.rid);
 			await roomClient.whenMetadataSet();
 			const message = await roomClient.decryptMessage(notification.payload.message);
 			notification.text = message.msg;

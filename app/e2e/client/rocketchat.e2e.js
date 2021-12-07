@@ -158,7 +158,7 @@ class E2E extends E2EEManager {
 
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
-		this.clearRoomClients();
+		this.untrackAll();
 		this.privateKey = null;
 		this.setEnabled(false);
 		this._ready.set(false);
@@ -336,7 +336,7 @@ class E2E extends E2EEManager {
 	}
 
 	async decryptSubscription(rid) {
-		const roomClient = this.getRoomClient(rid);
+		const roomClient = this.roomClients.track(rid);
 		await roomClient.whenReady();
 		this.log('decryptSubscription ->', rid);
 		roomClient.decryptSubscription();
