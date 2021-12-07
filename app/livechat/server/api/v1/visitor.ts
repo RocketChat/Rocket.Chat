@@ -153,7 +153,6 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		const status = callStatus;
 		Livechat.updateCallStatus(callId, rid, status, guest);
 		return API.v1.success({ token, callStatus });
 	},
