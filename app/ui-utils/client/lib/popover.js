@@ -131,10 +131,15 @@ Template.popover.onRendered(function() {
 		}
 		popoverContent.style.opacity = 1;
 	}, 50);
+	
+	const observer = new MutationObserver(position);
+	observer.observe(popoverContent, { childList: true, subtree: true });
+
 	$(window).on('resize', position);
 	position();
 	this.position = position;
-
+	this.observer = observer;
+	
 	this.firstNode.style.visibility = 'visible';
 });
 
@@ -143,6 +148,7 @@ Template.popover.onDestroyed(function() {
 		this.data.onDestroyed();
 	}
 	$(window).off('resize', this.position);
+	this.observer.disconnect();
 });
 
 Template.popover.events({
