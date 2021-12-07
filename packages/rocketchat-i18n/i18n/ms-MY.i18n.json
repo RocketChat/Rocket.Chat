@@ -1,7 +1,6 @@
 {
   "403": "Larangan",
   "500": "Ralat Pelayan Dalaman",
-  "__username__was_set__role__by__user_by_": null,
   "@username": "@pengguna",
   "@username_message": "@username <message>",
   "#channel": "#channel",
@@ -1022,7 +1021,6 @@
   "error-application-not-found": "Permohonan tidak dijumpai",
   "error-archived-duplicate-name": "Ada satu saluran yang diarkibkan dengan nama '__room_name__'",
   "error-avatar-invalid-url": "avatar URL tidak sah: __url__",
-  "error-avatar-url-handling": null,
   "error-cant-invite-for-direct-room": "tidak boleh menjemput pengguna ke bilik terus",
   "error-channels-setdefault-is-same": "Tetapan lalai saluran adalah sama dengan apa yang akan ditukar kepada.",
   "error-channels-setdefault-missing-default-param": "Diperlukan 'default' bodyParam",
@@ -2309,7 +2307,6 @@
   "Show_Setup_Wizard": "Tunjukkan Penyihir Persediaan",
   "Show_the_keyboard_shortcut_list": "Tunjukkan senarai pintasan papan kekunci",
   "Showing_archived_results": "<p> Menunjukkan hasil yang <b>diarkibkan %s</b> </p>",
-  "Showing_online_users": null,
   "Showing_results": "<p>Menunjukan <b>%s</b> keputusan</p>",
   "Sidebar": "Sidebar",
   "Sidebar_list_mode": "Mod Senarai Saluran Sidebar",
