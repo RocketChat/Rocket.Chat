@@ -1,5 +1,6 @@
-import React, { ReactNode, useMemo, memo } from 'react';
+import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
+import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
@@ -11,8 +12,10 @@ const replyBroadcast = () => {
 
 export const MessageProvider = memo(function MessageProvider({
 	broadcast,
+	rid,
 	children,
 }: {
+	rid: string;
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
@@ -27,7 +30,7 @@ export const MessageProvider = memo(function MessageProvider({
 	const messageHeader = useFormatTime();
 	const context = useMemo(() => {
 		const openThread =
-			(rid: string, tmid: string, jump?: string): (() => void) =>
+			(tmid: string, jump?: string): (() => void) =>
 			(): void => {
 				router.replace(
 					{
@@ -39,25 +42,40 @@ export const MessageProvider = memo(function MessageProvider({
 					jump ? { jump } : undefined,
 				);
 			};
-		const openDiscussion = (drid: string) => (): Promise<void> => goToRoomById(drid);
 
-		const openUserCard = () => {
-			console.log('openUserCard');
-			// openUserCard({
-			// 	username,
-			// 	rid: instance.data.rid,
-			// 	target: e.currentTarget,
-			// 	open: (e) => {
-			// 		e.preventDefault();
-			// 		instance.data.tabBar.openUserInfo(username);
-			// 	},
-			// });
+		const openUserInfo = (username: string): void => {
+			const tab =
+				{
+					channel: 'members-list',
+					group: 'members-list',
+					direct: 'user-info',
+					livechat: 'room-info',
+				}[routeName] || 'members-list';
+
+			router.replace({
+				...params,
+				tab,
+				context: username,
+			});
 		};
+		const openDiscussion = (drid: string) => (): Promise<void> => goToRoomById(drid);
 
 		return {
 			broadcast: Boolean(broadcast),
 			actions: {
-				openUserCard,
+				openUserCard:
+					(username: string) =>
+					(e: MouseEvent<HTMLDivElement>): void => {
+						openUserCard({
+							username,
+							rid,
+							target: e.currentTarget,
+							open: (e: MouseEvent<HTMLDivElement>) => {
+								e.preventDefault();
+								openUserInfo(username);
+							},
+						});
+					},
 				openDiscussion,
 				openThread,
 				replyBroadcast,
@@ -66,7 +84,7 @@ export const MessageProvider = memo(function MessageProvider({
 				messageHeader,
 			},
 		};
-	}, [broadcast, messageHeader, router, params]);
+	}, [broadcast, messageHeader, router, params, rid, routeName]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

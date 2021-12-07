@@ -21,7 +21,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const format = useFormatDate();
 	return (
 		<MessageListProvider rid={rid}>
-			<MessageProvider>
+			<MessageProvider rid={rid}>
 				{messages.map((message, index, arr) => {
 					const previous = arr[index - 1];
 

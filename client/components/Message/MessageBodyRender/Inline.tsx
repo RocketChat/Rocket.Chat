@@ -10,12 +10,8 @@ import Link from './Link';
 import Mention from './Mention';
 import Plain from './Plain';
 import Strike from './Strike';
-import { UserMention } from './definitions/UserMention';
 
-const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = ({
-	value = [],
-	mentions = [],
-}) => (
+const Inline: FC<{ value: ASTParagraph['value'] }> = ({ value = [] }) => (
 	<>
 		{value.map((block, idx) => {
 			switch (block.type) {
@@ -32,7 +28,7 @@ const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = (
 				case 'LINK':
 					return <Link key={idx} value={block.value} />;
 				case 'MENTION_USER':
-					return <Mention key={idx} value={block.value} mentions={mentions} />;
+					return <Mention key={idx} value={block.value} />;
 				case 'EMOJI':
 					return <Emoji key={idx} emojiHandle={`:${block.value.value}:`} />;
 				case 'MENTION_CHANNEL':

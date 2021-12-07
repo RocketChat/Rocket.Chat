@@ -78,11 +78,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			<MessageContainer>
 				{!sequential && (
 					<MessageHeader>
-						<MessageName data-username={user.username} onClick={openUserCard}>
+						<MessageName data-username={user.username} onClick={openUserCard(user.username)}>
 							{(showUsername && user.name) || user.username}
 						</MessageName>
 						{!showUsername && user.name && user.name !== user.username && (
-							<MessageUsername data-username={user.username} onClick={openUserCard}>
+							<MessageUsername data-username={user.username} onClick={openUserCard(user.username)}>
 								@{user.username}
 							</MessageUsername>
 						)}
@@ -107,7 +107,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 				<MessageBody>
 					{!message.blocks && message.md && (
-						<MessageBodyRender mentions={message.mentions} tokens={message.md} />
+						<MessageBodyRender
+							onMentionClick={openUserCard}
+							mentions={message.mentions}
+							tokens={message.md}
+						/>
 					)}
 					{!message.blocks && !message.md && message.msg}
 				</MessageBody>

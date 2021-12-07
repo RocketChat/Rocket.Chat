@@ -1,11 +1,10 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, MouseEvent } from 'react';
 
-const openUserCard = () => {
-	console.log('openUserCard');
-};
-const followMessage = () => {
-	console.log('followMessage');
-};
+const openUserCard =
+	(_username: string) =>
+	(_e: MouseEvent<HTMLDivElement>): void => {
+		console.log('openUserCard');
+	};
 
 const openDiscussion = () => () => {
 	console.log('openDiscussion');
@@ -17,11 +16,10 @@ const replyBroadcast = () => {
 
 export type MessageContextValue = {
 	broadcast: boolean;
-	buttons: any[];
-	menuButtons: any[];
+	// buttons: any[];
+	// menuButtons: any[];
 	actions: {
-		openUserCard: () => void;
-		followMessage: () => void;
+		openUserCard: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 		openDiscussion: (drid: string) => () => void;
 		openThread: (rid: string, tmid: string, jump?: string) => () => void;
 		replyBroadcast: () => void;
@@ -34,12 +32,11 @@ export type MessageContextValue = {
 };
 
 export const MessageContext = createContext<MessageContextValue>({
-	buttons: [],
-	menuButtons: [],
+	// buttons: [],
+	// menuButtons: [],
 	broadcast: false,
 	actions: {
 		openUserCard,
-		followMessage,
 		openDiscussion,
 		openThread,
 		replyBroadcast,

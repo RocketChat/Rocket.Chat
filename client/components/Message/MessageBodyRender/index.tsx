@@ -1,5 +1,5 @@
-import { BigEmoji as ASTBigEmoji, MarkdownAST as GazzodownAST } from '@rocket.chat/message-parser';
-import React, { FC, memo } from 'react';
+import { BigEmoji as ASTBigEmoji, MarkdownAST } from '@rocket.chat/message-parser';
+import React, { FC, memo, MouseEvent } from 'react';
 
 import BigEmoji from './BigEmoji';
 import Code from './Code';
@@ -9,23 +9,25 @@ import Paragraph from './Paragraph';
 import Quote from './Quote';
 import TaskList from './TaskList';
 import UnorderedList from './UnorderedList';
+import { MessageBodyContext } from './contexts/MessageBodyContext';
 import { UserMention } from './definitions/UserMention';
 
 type BodyProps = {
-	tokens: GazzodownAST;
+	tokens: MarkdownAST;
 	mentions?: UserMention[];
+	onMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
 
-const isBigEmoji = (tokens: GazzodownAST): tokens is [ASTBigEmoji] =>
+const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [] }) => {
+const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], onMentionClick }) => {
 	if (isBigEmoji(tokens)) {
 		return <BigEmoji value={tokens[0].value} />;
 	}
 
 	return (
-		<>
+		<MessageBodyContext.Provider value={{ mentions, onMentionClick }}>
 			{tokens.map((block, index) => {
 				if (block.type === 'UNORDERED_LIST') {
 					return <UnorderedList value={block.value} key={index} />;
@@ -43,7 +45,7 @@ const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [] }) => {
 				}
 
 				if (block.type === 'PARAGRAPH') {
-					return <Paragraph mentions={mentions} value={block.value} key={index} />;
+					return <Paragraph value={block.value} key={index} />;
 				}
 
 				if (block.type === 'CODE') {
@@ -56,7 +58,7 @@ const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [] }) => {
 
 				return null;
 			})}
-		</>
+		</MessageBodyContext.Provider>
 	);
 };
 
