@@ -64,7 +64,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const showRoles = useMessageListShowRoles();
 	const showUsername = useMessageListShowUsernames();
 
-	const meUid = useUserId();
+	const mineUid = useUserId();
 
 	const user: UserPresence = useUserData(message.u._id) || { ...message.u, roles: [] };
 	return (
@@ -135,9 +135,9 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 				{isThreadMessage(message) && (
 					<Thread
-						openThread={openThread}
+						openThread={openThread(message.rid, message._id)}
 						counter={message.tcount}
-						following={Boolean(meUid && message?.replies.indexOf(meUid) > -1)}
+						following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
 						mid={message._id}
 						rid={message.rid}
 						lm={message.tlm}
@@ -154,7 +154,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						drid={message.drid}
 						lm={message.dlm}
 						rid={message.rid}
-						openDiscussion={openDiscussion}
+						openDiscussion={openDiscussion(message.drid)}
 					/>
 				)}
 

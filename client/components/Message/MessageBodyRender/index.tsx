@@ -13,13 +13,13 @@ import { UserMention } from './definitions/UserMention';
 
 type BodyProps = {
 	tokens: GazzodownAST;
-	mentions: UserMention[];
+	mentions?: UserMention[];
 };
 
 const isBigEmoji = (tokens: GazzodownAST): tokens is [ASTBigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions }) => {
+const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [] }) => {
 	if (isBigEmoji(tokens)) {
 		return <BigEmoji value={tokens[0].value} />;
 	}

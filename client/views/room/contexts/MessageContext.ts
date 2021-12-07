@@ -7,12 +7,10 @@ const followMessage = () => {
 	console.log('followMessage');
 };
 
-const openDiscussion = () => {
+const openDiscussion = () => () => {
 	console.log('openDiscussion');
 };
-const openThread = () => {
-	console.log('openThread');
-};
+const openThread = () => () => console.log('openThread');
 const replyBroadcast = () => {
 	console.log('replyBroadcast');
 };
@@ -24,8 +22,8 @@ export type MessageContextValue = {
 	actions: {
 		openUserCard: () => void;
 		followMessage: () => void;
-		openDiscussion: () => void;
-		openThread: () => void;
+		openDiscussion: (drid: string) => () => void;
+		openThread: (rid: string, tmid: string, jump?: string) => () => void;
 		replyBroadcast: () => void;
 	};
 	formatters: {

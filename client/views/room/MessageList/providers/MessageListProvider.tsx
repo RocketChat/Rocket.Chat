@@ -27,7 +27,7 @@ export const MessageListProvider: FC<{
 
 	const { isMobile } = useLayout();
 
-	const showUsernames = Boolean(useSetting('UI_Use_Real_Name'));
+	const showUsernames = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 

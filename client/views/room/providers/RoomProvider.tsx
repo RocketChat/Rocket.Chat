@@ -15,24 +15,6 @@ export type Props = {
 	rid: IRoom['_id'];
 };
 
-const openUserCard = () => {
-	console.log('openUserCard');
-};
-const followMessage = () => {
-	console.log('followMessage');
-};
-const unfollowMessage = () => {
-	console.log('unfollowMessage');
-};
-const openDiscussion = () => {
-	console.log('openDiscussion');
-};
-const openThread = () => {
-	console.log('openThread');
-};
-const replyBroadcast = () => {
-	console.log('replyBroadcast');
-};
 const fields = {};
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
@@ -51,18 +33,10 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		return {
 			subscribed,
 			rid,
-			actions: {
-				openUserCard,
-				followMessage,
-				unfollowMessage,
-				openDiscussion,
-				openThread,
-				replyBroadcast,
-			},
 			getMore,
 			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 		};
-	}, [room, rid, subscribed]);
+	}, [room, rid, subscribed, getMore]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -107,14 +81,6 @@ export const useRoomContext = (): RoomContextValue => {
 		throw Error('useRoom should be used only inside rooms context');
 	}
 	return context;
-};
-
-export const useRoomActions = (): RoomContextValue['actions'] => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context.actions;
 };
 
 export default memo(RoomProvider);
