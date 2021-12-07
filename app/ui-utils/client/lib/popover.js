@@ -131,7 +131,7 @@ Template.popover.onRendered(function() {
 		}
 		popoverContent.style.opacity = 1;
 	}, 50);
-	
+
 	const observer = new MutationObserver(position);
 	observer.observe(popoverContent, { childList: true, subtree: true });
 
@@ -139,7 +139,7 @@ Template.popover.onRendered(function() {
 	position();
 	this.position = position;
 	this.observer = observer;
-	
+
 	this.firstNode.style.visibility = 'visible';
 });
 
