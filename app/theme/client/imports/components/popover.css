@@ -42,7 +42,7 @@
 
 		max-height: 70%;
 
-		padding: var(--popover-padding) 0;
+		padding: var(--popover-padding);
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -53,6 +53,10 @@
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+		&--templateless {
+			padding: var(--popover-padding) 0;
+		}
 	}
 
 	&__column {
