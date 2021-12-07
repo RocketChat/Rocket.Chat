@@ -17,9 +17,9 @@ export const useCategoryToggle = (
 				const itemAll = items.find(({ id }) => id === 'all');
 				const itemPrev = items.find(({ id }) => id === item.id);
 
-				if (item.id === 'all') {
+				if (item.id === 'all' && item.checked === false) {
 					itemsWithoutAll.forEach((i) => {
-						i.checked = !item.checked;
+						i.checked = true;
 					});
 				}
 
@@ -27,8 +27,11 @@ export const useCategoryToggle = (
 					itemPrev.checked = !itemPrev.checked;
 				}
 
-				if (itemAll) {
-					itemAll.checked = itemsWithoutAll.every((i) => i.checked);
+				if (
+					itemAll &&
+					itemsWithoutAll.some((currentCategory) => currentCategory.checked === false)
+				) {
+					itemAll.checked = false;
 				}
 
 				return [...prev];

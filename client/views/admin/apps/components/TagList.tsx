@@ -9,13 +9,17 @@ import {
 const TagList: FC<{
 	categories: (CategoryDropdownItem & { checked: true })[];
 	onClick: CategoryDropDownListProps['onSelected'];
+	originalCategoryList?: CategoryDropdownItem[];
 	tagGap?: string;
-}> = ({ categories, onClick, tagGap }) => (
+}> = ({ categories, onClick, originalCategoryList, tagGap }) => (
 	<>
 		{categories &&
+			originalCategoryList &&
+			categories.length !== originalCategoryList.length &&
 			categories.map((category) => (
 				<Chip
 					mie={tagGap}
+					mbe={tagGap}
 					key={category.id}
 					onClick={(): void => onClick(category)}
 					disabled={undefined}

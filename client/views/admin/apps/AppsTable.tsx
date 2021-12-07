@@ -66,6 +66,7 @@ const AppsTable: FC<{
 				{
 					id: 'all',
 					label: 'All categories',
+					checked: true,
 				},
 			],
 		},
@@ -106,6 +107,10 @@ const AppsTable: FC<{
 
 	const selectedCategories = useCategoryTagList(categoriesList);
 
+	const originalCategoryList = categoriesTemp
+		.flatMap((groups) => groups.items)
+		.filter(({ id }) => id !== 'all');
+
 	const {
 		current,
 		itemsPerPage,
@@ -130,8 +135,13 @@ const AppsTable: FC<{
 				<CategoryDropDown data={categoriesList} onSelected={onSelected} mis='8px' />
 			</Box>
 
-			<Box display='flex'>
-				<TagList categories={selectedCategories} onClick={onSelected} tagGap='8px' />
+			<Box display='flex' flexWrap='wrap'>
+				<TagList
+					categories={selectedCategories}
+					originalCategoryList={originalCategoryList}
+					onClick={onSelected}
+					tagGap='8px'
+				/>
 			</Box>
 
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
