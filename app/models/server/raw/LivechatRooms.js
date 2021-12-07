@@ -1114,4 +1114,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params);
 	}
+
+	findOneVoipRoomById(id, options = {}) {
+		return this.findOne({
+			t: 'v',
+			_id: id,
+		}, options);
+	}
 }

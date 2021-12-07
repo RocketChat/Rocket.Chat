@@ -1,6 +1,8 @@
 import { IVoipServerConfig, ServerType } from '../../../definition/IVoipServerConfig';
 import { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
+import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 
 export interface IVoipService {
 	getConfiguration(): any;
@@ -15,4 +17,6 @@ export interface IVoipService {
 	getExtensionList(): Promise<IVoipConnectorResult>;
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
 	getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult>;
+	// change IRoom for IVoipRoom
+	handleEvent(event: string, room: IRoom, user: IUser, comment?: string): Promise<void>;
 }

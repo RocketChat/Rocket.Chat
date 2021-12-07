@@ -44,8 +44,6 @@ import './v1/instances';
 import './v1/banners';
 import './v1/email-inbox';
 import './v1/teams';
-import './v1/voip/extensions';
-import './v1/voip/queues';
-import './v1/voip/server-config';
+import './v1/voip';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

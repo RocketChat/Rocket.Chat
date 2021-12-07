@@ -11,6 +11,9 @@ import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IExtensionDetails, IQueueMembershipDetails, IRegistrationInfo } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
+import { IUser } from '../../../definition/IUser';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { IRoom } from '../../../definition/IRoom';
 
 export class VoipService extends ServiceClass implements IVoipService {
 	protected name = 'voip';
@@ -173,5 +176,18 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return Promise.resolve({
 			result: extensionRegistrationInfo,
 		});
+	}
+
+	async handleEvent(event: string, room: IRoom, user: IUser, comment?: string): Promise<void> {
+		const message = {
+			t: event,
+			msg: comment,
+			groupable: false,
+		};
+
+		// TODO: Check room is voip
+		// TODO: Check event is valid voip event
+		// TODO: Add events (messageTypes) to IMessage interface
+		await sendMessage(user, message, room);
 	}
 }
