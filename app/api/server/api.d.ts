@@ -33,14 +33,6 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 		);
 };
 
-type NotFoundResult = {
-	statusCode: 404;
-	body: {
-		success: false;
-		error: string;
-	};
-};
-
 type UnauthorizedResult<T> = {
 	statusCode: 403;
 	body: {
