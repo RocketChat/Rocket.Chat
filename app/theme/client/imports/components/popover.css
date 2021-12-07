@@ -86,7 +86,7 @@
 
 		margin-bottom: 8px;
 
-		padding: 0 12px;
+		padding: 0 var(--popover-padding);
 
 		text-transform: uppercase;
 
@@ -102,7 +102,7 @@
 
 		width: 100%;
 
-		padding: 4px 12px;
+		padding: 4px var(--popover-padding);
 
 		cursor: pointer;
 
