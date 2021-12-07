@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { Subscriptions, Users, Messages, Rooms } from '../../../models/server';
+import { Uploads } from '../../../models/server/raw';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -19,7 +20,7 @@ function findDirectMessageRoom(params, user, allowAdminOverride) {
 		nameOrId: params.username || params.roomId,
 	});
 
-	const canAccess = Meteor.call('canAccessRoom', room._id, user._id)
+	const canAccess = canAccessRoom(room, user)
 		|| (allowAdminOverride && hasPermission(user._id, 'view-room-administration'));
 	if (!canAccess || !room || room.t !== 'd') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
@@ -148,18 +149,18 @@ API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
-		const files = Uploads.find(ourQuery, {
+		const files = Promise.await(Uploads.find(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
-		}).fetch();
+		}).toArray());
 
 		return API.v1.success({
 			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
-			total: Uploads.find(ourQuery).count(),
+			total: Promise.await(Uploads.find(ourQuery).count()),
 		});
 	},
 });

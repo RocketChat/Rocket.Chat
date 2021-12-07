@@ -66042,6 +66042,1825 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.1.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23524",
+          "title": "Chore: Fix some TS warnings",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23521",
+          "title": "[FIX] Delay start of email inbox",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23495",
+          "title": "Chore: Make omnichannel settings dependent on omnichannel being enabled",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23523",
+          "title": "Chore: Update Livechat Package",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23411",
+          "title": "[FIX] SAML Users' roles being reset to default on login",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove `roles` field update on `insertOrUpdateSAMLUser` function;\r\n- Add SAML `syncRoles` event;",
+          "milestone": "4.0.4",
+          "contributors": [
+            "matheusbsilva137",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23522",
+          "title": "[FIX] Queue error handling and unlocking behavior",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.4",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23314",
+          "title": "[FIX] MONGO_OPTIONS being ignored for oplog connection",
+          "userLogin": "cuonghuunguyen",
+          "contributors": [
+            "cuonghuunguyen",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23392",
+          "title": "[IMPROVE] Allow Omnichannel to handle huge queues ",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23515",
+          "title": "[IMPROVE] Make Livechat Instructions setting multi-line",
+          "userLogin": "murtaza98",
+          "description": "Since now we're supporting markdown text on this field (via this PR - https://github.com/RocketChat/Rocket.Chat.Livechat/pull/648), it would be nice to make this setting multiline so users can have more space to edit the text\r\n![image](https://user-images.githubusercontent.com/34130764/138146712-13e4968b-5312-4d53-b44c-b5699c5e49c1.png)",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23505",
+          "title": "Chore: Improve watch OAuth settings logic",
+          "userLogin": "ggazzo",
+          "description": "Just prevent to perform 200 deletions for registers that not even exist",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23519",
+          "title": "Regression: Fix enterprise setting validation",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23514",
+          "title": "Chore: Ensure all permissions are created up to this point",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23469",
+          "title": "[FIX] useEndpointAction replace by useEndpointActionExperimental",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23394",
+          "title": "[FIX] Omni-Webhook's retry mechanism going in infinite loop",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23511",
+          "title": "Regression: Fix user typings style",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23510",
+          "title": "Chore: Update pino and pino-pretty",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23506",
+          "title": "Regression: Prevent Settings Unit Test Error ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23486",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-10-18Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23376",
+          "title": "Bump url-parse from 1.4.7 to 1.5.3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23172",
+          "title": "[FIX] Rewrite missing webRTC feature",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23488",
+          "title": "Chore: Replace `promises` helper",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23210",
+          "title": "Chore: Startup Time",
+          "userLogin": "ggazzo",
+          "description": "The settings logic has been improved as a whole.\r\n\r\nAll the logic to get the data from the env var was confusing.\r\n\r\nSetting default values was tricky to understand.\r\n\r\nEvery time the server booted, all settings were updated and callbacks were called 2x or more (horrible for environments with multiple instances and generating a turbulent startup).\r\n\r\n`Settings.get(......, callback);` was deprecated. We now have better methods for each case.",
+          "milestone": "4.1.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23491",
+          "title": "Chore: Move `isJSON` helper",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23497",
+          "title": "Update the community open call link in README",
+          "userLogin": "Sing-Li",
+          "contributors": [
+            "Sing-Li",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "23490",
+          "title": "Chore: Move `addMinutesToADate` helper",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23489",
+          "title": "Chore: Move `isEmail` helper",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23228",
+          "title": "[FIX] Admins can't update or reset user avatars when the \"Allow User Avatar Change\" setting is off",
+          "userLogin": "matheusbsilva137",
+          "description": "- Allow admins (or any other user with the `edit-other-user-avatar` permission) to update or reset user avatars even when the \"Allow User Avatar Change\" setting is off.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23473",
+          "title": "[FIX] Server crashing when Routing method is not available at start",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.3",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22949",
+          "title": "[FIX] Avoid last admin deactivate itself",
+          "userLogin": "ostjen",
+          "description": "Co-authored-by: @Kartik18g",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            null
+          ]
+        },
+        {
+          "pr": "23418",
+          "title": "[FIX][APPS] Communication problem when updating and uninstalling apps in cluster",
+          "userLogin": "thassiov",
+          "description": "- Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.\r\n- Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.",
+          "milestone": "4.0.3",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23462",
+          "title": "[FIX] Markdown quote message style",
+          "userLogin": "tiagoevanp",
+          "description": "Before:\r\n![image](https://user-images.githubusercontent.com/17487063/137496669-3abecab4-cf90-45cb-8b1b-d9411a5682dd.png)\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/17487063/137496905-fd727f90-f707-4ec6-8139-ba2eb1a2146e.png)",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "22950",
+          "title": "[NEW] Stream to get individual presence updates",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23396",
+          "title": "[FIX] Prevent starting Omni-Queue if Omnichannel is disabled",
+          "userLogin": "murtaza98",
+          "description": "Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23404",
+          "title": "[FIX][ENTERPRISE] Omnichannel agent is not leaving the room when a forwarded chat is queued",
+          "userLogin": "murtaza98",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23419",
+          "title": "Chore: Partially migrate 2FA client code to TypeScript",
+          "userLogin": "tassoevan",
+          "description": "Additionally, hides `toastr` behind an module to handle UI's toast notifications.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23342",
+          "title": "Chore: clean README",
+          "userLogin": "AbhJ",
+          "contributors": [
+            "AbhJ",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23355",
+          "title": "Chore: Fixed a Typo in 11-admin.js test",
+          "userLogin": "badbart",
+          "contributors": [
+            "badbart",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23405",
+          "title": "Chore: Document REST API endpoints (DNS)",
+          "userLogin": "tassoevan",
+          "description": "Describes endpoints for DNS on REST API using a JSDoc annotation compatible with OpenAPI spec.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23430",
+          "title": "Chore: Document REST API endpoints (E2E)",
+          "userLogin": "tassoevan",
+          "description": "Describes endpoints for end-to-end encryption on REST API using a JSDoc annotation compatible with OpenAPI spec.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23428",
+          "title": "Chore: Document REST API endpoints (Misc)",
+          "userLogin": "tassoevan",
+          "description": "Describes miscellaneous endpoints on REST API using a JSDoc annotation compatible with OpenAPI spec.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "20947",
+          "title": "[IMPROVE] Add markdown to custom fields in user Info",
+          "userLogin": "yash-rajpal",
+          "description": "Added markdown to custom fields to render links",
+          "contributors": [
+            "yash-rajpal",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23393",
+          "title": "[FIX] user/agent upload not working via Apps Engine after 3.16.0",
+          "userLogin": "murtaza98",
+          "description": "Fixes #22974",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23377",
+          "title": "[FIX] Attachment buttons overlap in mobile view",
+          "userLogin": "Aman-Maheshwari",
+          "milestone": "4.0.2",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23378",
+          "title": "[FIX] Users' `roles` and `type` being reset to default on LDAP DataSync",
+          "userLogin": "matheusbsilva137",
+          "description": "- Update `roles` and `type` fields only if they are specified in the data imported from LDAP (otherwise, no changes are applied).",
+          "milestone": "4.0.1",
+          "contributors": [
+            "matheusbsilva137",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23382",
+          "title": "[FIX] LDAP not stoping after wrong password",
+          "userLogin": "rodrigok",
+          "milestone": "4.0.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "23381",
+          "title": "[FIX] MongoDB deprecation link",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23385",
+          "title": "Chore: Remove dangling README file",
+          "userLogin": "tassoevan",
+          "description": "Removes the elderly `server/restapi/README.md`.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23379",
+          "title": "[FIX] resumeToken not working",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23372",
+          "title": "[FIX] unwanted toastr error message when deleting user",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23370",
+          "title": "Chore: Migrate some React components/hooks to TypeScript",
+          "userLogin": "tassoevan",
+          "description": "Just low-hanging fruits.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23366",
+          "title": "[FIX] BigBlueButton integration error due to missing file import",
+          "userLogin": "wolbernd",
+          "description": "Fixes BigBlueButton integration",
+          "milestone": "4.0.1",
+          "contributors": [
+            "wolbernd",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23375",
+          "title": "Chore: Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "4.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23374",
+          "title": "[FIX] imported migration v240",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "22941",
+          "title": "[IMPROVE] optimized groups.listAll response time",
+          "userLogin": "ostjen",
+          "description": "groups.listAll endpoint was having performance issues, specially when the total number of groups was high. This happened because the endpoint was loading all objects in memory then using splice to paginate, instead of paginating beforehand.\r\n\r\nConsidering 70k groups, this was the performance improvement:\r\n\r\nbefore\r\n![image](https://user-images.githubusercontent.com/28611993/129601314-bdf89337-79fa-4446-9f44-95264af4adb3.png)\r\n\r\nafter\r\n![image](https://user-images.githubusercontent.com/28611993/129601358-5872e166-f923-4c1c-b21d-eb9507365ecf.png)",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23213",
+          "title": "[FIX] Read only description in team creation",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/133608433-8ca788a3-71a8-4d40-8c40-8156ab03c606.png)\r\n\r\n![image](https://user-images.githubusercontent.com/27704687/133608400-4cdc7a67-95e5-46c6-8c65-29ab107cd314.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23364",
+          "title": "Chore: Upgrade Storybook",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23360",
+          "title": "Chore: Move components away from /app/",
+          "userLogin": "tassoevan",
+          "description": "We currently do NOT recommend placing React components under `/app`.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23361",
+          "title": "Chore: Document REST API endpoints (banners)",
+          "userLogin": "tassoevan",
+          "description": "Describes endpoints for banners on REST API using a JSDoc annotation compatible with OpenAPI spec.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23362",
+          "title": "Merge master into develop & Set version to 4.1.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.0.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23386",
+          "title": "Release 4.0.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ostjen",
+            "wolbernd",
+            "d-gubert",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23378",
+          "title": "[FIX] Users' `roles` and `type` being reset to default on LDAP DataSync",
+          "userLogin": "matheusbsilva137",
+          "description": "- Update `roles` and `type` fields only if they are specified in the data imported from LDAP (otherwise, no changes are applied).",
+          "milestone": "4.0.1",
+          "contributors": [
+            "matheusbsilva137",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23374",
+          "title": "[FIX] imported migration v240",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23375",
+          "title": "Chore: Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "4.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23366",
+          "title": "[FIX] BigBlueButton integration error due to missing file import",
+          "userLogin": "wolbernd",
+          "description": "Fixes BigBlueButton integration",
+          "milestone": "4.0.1",
+          "contributors": [
+            "wolbernd",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23372",
+          "title": "[FIX] unwanted toastr error message when deleting user",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23379",
+          "title": "[FIX] resumeToken not working",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23381",
+          "title": "[FIX] MongoDB deprecation link",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23382",
+          "title": "[FIX] LDAP not stoping after wrong password",
+          "userLogin": "rodrigok",
+          "milestone": "4.0.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "4.0.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23460",
+          "title": "Release 4.0.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "murtaza98",
+            "sampaiodiego",
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23377",
+          "title": "[FIX] Attachment buttons overlap in mobile view",
+          "userLogin": "Aman-Maheshwari",
+          "milestone": "4.0.2",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23393",
+          "title": "[FIX] user/agent upload not working via Apps Engine after 3.16.0",
+          "userLogin": "murtaza98",
+          "description": "Fixes #22974",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23404",
+          "title": "[FIX][ENTERPRISE] Omnichannel agent is not leaving the room when a forwarded chat is queued",
+          "userLogin": "murtaza98",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23396",
+          "title": "[FIX] Prevent starting Omni-Queue if Omnichannel is disabled",
+          "userLogin": "murtaza98",
+          "description": "Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "4.0.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23496",
+          "title": "Release 4.0.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23418",
+          "title": "[FIX][APPS] Communication problem when updating and uninstalling apps in cluster",
+          "userLogin": "thassiov",
+          "description": "- Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.\r\n- Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.",
+          "milestone": "4.0.3",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23473",
+          "title": "[FIX] Server crashing when Routing method is not available at start",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.3",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23531",
+          "title": "Regression: Waiting_queue setting not being applied due to missing module key",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23528",
+          "title": "Regression: Settings order",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23529",
+          "title": "Regression: watchByRegex without Fibers",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "4.0.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23532",
+          "title": "Release 4.0.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23411",
+          "title": "[FIX] SAML Users' roles being reset to default on login",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove `roles` field update on `insertOrUpdateSAMLUser` function;\r\n- Add SAML `syncRoles` event;",
+          "milestone": "4.0.4",
+          "contributors": [
+            "matheusbsilva137",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23522",
+          "title": "[FIX] Queue error handling and unlocking behavior",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.4",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.0.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23554",
+          "title": "Release 4.0.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23541",
+          "title": "[FIX] OAuth login not working on mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.0.5",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23552",
+          "title": "Regression: Mail body contains `undefined` text",
+          "userLogin": "tassoevan",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/2263066/138733018-10449892-5c2d-46fb-9355-00e98e0d6c9f.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/2263066/138733074-a1b88a77-bf64-41c3-a6c3-ac9e1cb63de1.png)",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23541",
+          "title": "[FIX] OAuth login not working on mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.0.5",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23556",
+          "title": "Regression: Prevent settings from getting updated",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23568",
+          "title": "Regression: Routing method not available when called from listeners at startup",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23391",
+          "title": "Bump: fuselage 0.30.1",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23577",
+          "title": "Regression: Debounce call based on params on omnichannel queue dispatch",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.1.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.1.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23607",
+          "title": "[FIX] App update flow failing in HA setups",
+          "userLogin": "d-gubert",
+          "description": "The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions",
+          "milestone": "4.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23627",
+          "title": "[FIX] LDAP users not being re-activated on login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23608",
+          "title": "[FIX] Advanced LDAP Sync Features",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.18.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "4.0.6": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.1.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23487",
+          "title": "[FIX] Notifications are not being filtered",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;\r\n - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);\r\n - Rename 'mobileNotifications' user's preference to 'pushNotifications'.",
+          "milestone": "4.1.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23661",
+          "title": "[FIX] Performance issues when running Omnichannel job queue dispatcher",
+          "userLogin": "renatobecker",
+          "milestone": "4.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23587",
+          "title": "[FIX] Omnichannel status being changed on page refresh",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23769",
+          "title": "Chore: Update settings.ts",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23565",
+          "title": "[FIX] Registration not possible when any user is blocked for multiple failed logins",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23770",
+          "title": "Regression: Fix sendMessagesToAdmins not in Fiber",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23771",
+          "title": "Chore: Remove duplicated 'name' key from rate limiter logs",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23761",
+          "title": "[NEW] Enable LDAP manual sync to deployments without EE license",
+          "userLogin": "rodrigok",
+          "description": "Open the Enterprise LDAP API that executes background sync to be used without any Enterprise License and enforce 2FA requirements.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "rodrigok",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23732",
+          "title": "[NEW] Rate limiting for user registering",
+          "userLogin": "ostjen",
+          "milestone": "4.2.0",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23675",
+          "title": "Chore: add index on appId + associations for apps_persistence collection",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23768",
+          "title": "Chore: Bump Rocket.Chat@livechat to 1.10",
+          "userLogin": "KevLehman",
+          "milestone": "4.2.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23766",
+          "title": "[IMPROVE] Improve the add user drop down for add a user in create channel modal for UserAutoCompleteMultiple",
+          "userLogin": "dougfabris",
+          "description": "Seeing only the name of the person you are not adding is not practical in my opinion because two people can have the same name. Moreover, you can't see the username of the person you want to add in the dropdown. So I changed that and created another selection of users to show the username as well. I made this change so that it would appear in the key place for creating a room and adding a user.\r\n\r\nBefore:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287805-faac8d00-a150-11eb-871f-147ab011ced0.mp4\r\n\r\n\r\nAfter:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287664-d2249300-a150-11eb-8cf6-0e04730b425d.mp4",
+          "milestone": "4.2.0",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23533",
+          "title": "[FIX] New specific endpoint for contactChatHistoryMessages with right permissions",
+          "userLogin": "tiagoevanp",
+          "description": "Anyone with 'View Omnichannel Rooms' permission can see the History Messages.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23588",
+          "title": "[FIX][ENTERPRISE] OAuth \"Merge Roles\" removes roles from users",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix OAuth \"Merge Roles\": the \"Merge Roles\" option now synchronize only the roles described in the \"**Roles to Sync**\" setting available in each Custom OAuth settings' group (instead of replacing users' roles by their OAuth roles);\r\n- Fix \"Merge Roles\" and \"Channel Mapping\" not being performed/updated on OAuth login.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23547",
+          "title": "[IMPROVE] Engagement Dashboard",
+          "userLogin": "tassoevan",
+          "description": "- Adds helpers `onToggledFeature` for server and client code to handle license activation/deactivation without server restart;\r\n- Replaces usage of `useEndpointData` with `useQuery` (from [React Query](https://react-query.tanstack.com/));\r\n- Introduces `view-engagement-dashboard` permission.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23004",
+          "title": "[NEW] Audio and Video calling in Livechat",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "dhruvjain99",
+            "murtaza98",
+            "Deepak-learner"
+          ]
+        },
+        {
+          "pr": "23758",
+          "title": "Chore: Type omnichannel models",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23737",
+          "title": "[NEW] Allow registering by REG_TOKEN environment variable",
+          "userLogin": "geekgonecrazy",
+          "description": "You can provide the REG_TOKEN environment variable containing a registration token and it will automatically register to your cloud account.  This simplifies the registration flow",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "23686",
+          "title": "[NEW] Permission for download/uploading files on mobile",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23735",
+          "title": "[IMPROVE] Stricter API types",
+          "userLogin": "tassoevan",
+          "description": "It:\r\n- Adds stricter types for `API`;\r\n- Enables types for `urlParams`;\r\n- Removes mandatory passage of `undefined` payload on client;\r\n- Corrects some regressions;\r\n- Reassures my belief in TypeScript supremacy.",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23757",
+          "title": "Regression:  Units endpoint to TS",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23750",
+          "title": "[NEW] REST endpoints to manage Omnichannel Business Units",
+          "userLogin": "KevLehman",
+          "description": "Basic documentation about endpoints can be found at https://www.postman.com/kaleman960/workspace/rocketchat-public-api/request/3865466-71502450-8c8f-42b4-8954-1cd3d01fcb0c",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23738",
+          "title": "[FIX] Autofocus on search input in admin",
+          "userLogin": "gabriellsh",
+          "description": "Removed \"generic\" autofocus on sidenav template.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23745",
+          "title": "Chore: Generic Table ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23739",
+          "title": "[FIX] Await promise to handle error when attempting to transfer a room",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23673",
+          "title": "[FIX][ENTERPRISE] Private rooms and discussions can't be audited",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add Private rooms (groups) and Discussions to the Message Auditing (Channels) autocomplete;\r\n- Update \"Channels\" tab name to \"Rooms\".",
+          "contributors": [
+            "matheusbsilva137",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23734",
+          "title": "[FIX] Missing user roles in edit user tab",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23733",
+          "title": "[FIX] Discussions created inside discussions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23694",
+          "title": "[NEW] Allow Omnichannel statistics to be collected.",
+          "userLogin": "cauefcr",
+          "description": "This PR adds the possibility for business stakeholders to see what is actually being used of the Omnichannel integrations.",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23725",
+          "title": "[IMPROVE] Re-naming department query param for Twilio",
+          "userLogin": "murtaza98",
+          "description": "Since the endpoint supports both, department ID and department Name, so we're renaming it to reflect the same. `departmentName` -> `department`",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23468",
+          "title": "[FIX]  Fixed E2E default room settings not being honoured",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "TheDigitalEagle",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23659",
+          "title": "[FIX] broken avatar preview when changing avatar",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23705",
+          "title": "[FIX] Prevent UserAction.addStream without Subscription",
+          "userLogin": "tiagoevanp",
+          "description": "When you take an Omnichannel chat from queue, the guest's typing information will appear.",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23499",
+          "title": "[FIX] PhotoSwipe crashing on show",
+          "userLogin": "tassoevan",
+          "description": "Waits for initial content to load before showing it.",
+          "contributors": [
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23695",
+          "title": "Chore: add `no-bidi` rule",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23711",
+          "title": "[FIX] Fix typo in FR translation",
+          "userLogin": "Cormoran96",
+          "contributors": [
+            "Cormoran96"
+          ]
+        },
+        {
+          "pr": "23706",
+          "title": "Chore: Mocha testing configuration",
+          "userLogin": "tassoevan",
+          "description": "We've been writing integration tests for the REST API quite regularly, but we can't say the same for UI-related modules. This PR is based on the assumption that _improving the developer experience on writing tests_ would increase our coverage and promote the adoption even for newcomers.\r\n\r\nHere as summary of the proposal:\r\n\r\n- Change Mocha configuration files:\r\n  - Add a base configuration (`.mocharc.base.json`);\r\n  - Rename the configuration for REST API tests (`mocha_end_to_end.opts.js -> .mocharc.api.js`);\r\n  - Add a configuration for client modules (`.mocharc.client.js`);\r\n  - Enable ESLint for them.\r\n- Add a Mocha test command exclusive for client modules (`npm run testunit-client`);\r\n- Enable fast watch mode:\r\n  - Configure `ts-node` to only transpile code (skip type checking);\r\n  - Define a list of files to be watched.\r\n- Configure `mocha` environment on ESLint only for test files (required when using Mocha's globals);\r\n- Adopt Chai as our assertion library:\r\n  - Unify the setup of Chai plugins (`chai-spies`, `chai-datetime`, `chai-dom`);\r\n  - Replace `assert` with `chai`;\r\n  - Replace `chai.expect` with `expect`.\r\n- Enable integration tests with React components:\r\n  - Enable JSX support on our default Babel configuration;\r\n  - Adopt [testing library](https://testing-library.com/).",
+          "contributors": [
+            "tassoevan",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23701",
+          "title": "Chore: Api definitions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23703",
+          "title": "[FIX][ENTERPRISE] Replace all occurrences of a placeholder on string instead of just first one",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23641",
+          "title": "[FIX] Omnichannel webhooks can't be saved",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23595",
+          "title": "[FIX] Omnichannel business hours page breaking navigation",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23626",
+          "title": "[IMPROVE] Allow override of default department for SMS Livechat sessions",
+          "userLogin": "bhardwajaditya",
+          "contributors": [
+            "bhardwajaditya"
+          ]
+        },
+        {
+          "pr": "23691",
+          "title": "[FIX] Omnichannel contact center navigation",
+          "userLogin": "tiagoevanp",
+          "description": "Derives from: https://github.com/RocketChat/Rocket.Chat/pull/23656\r\n\r\nThis PR includes a different approach to solving navigation problems following the same code structure and UI definitions of other \"ActionButtons\" components in Sidebar.",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23692",
+          "title": "Regression: Improve AggregationCursor types",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23696",
+          "title": "Chore: Remove useCallbacks",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23387",
+          "title": "[IMPROVE] Reduce complexity in some functions",
+          "userLogin": "tassoevan",
+          "description": "Overhauls all places where eslint's `complexity` rule is disabled.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23633",
+          "title": "Chore: Convert Fiber models to async Step 1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23389",
+          "title": "[NEW] Permissions for interacting with Omnichannel Contact Center",
+          "userLogin": "cauefcr",
+          "description": "Adds a new permission, one that allows for control over user access to Omnichannel Contact Center,",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23587",
+          "title": "[FIX] Omnichannel status being changed on page refresh",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23661",
+          "title": "[FIX] Performance issues when running Omnichannel job queue dispatcher",
+          "userLogin": "renatobecker",
+          "milestone": "4.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23608",
+          "title": "[FIX] Advanced LDAP Sync Features",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23627",
+          "title": "[FIX] LDAP users not being re-activated on login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23576",
+          "title": "[FIX] \"to users\" not working in export message",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23607",
+          "title": "[FIX] App update flow failing in HA setups",
+          "userLogin": "d-gubert",
+          "description": "The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions",
+          "milestone": "4.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23566",
+          "title": "[FIX] Apps scheduler \"losing\" jobs after server restart",
+          "userLogin": "d-gubert",
+          "description": "If a job is scheduled and the server restarted, said job won't be executed, giving the impression it's been lost.\r\n\r\nWhat happens is that the scheduler is only started when some app tries to schedule an app - if that happens, all jobs that are \"late\" will be executed; if that doesn't happen, no job will run.\r\n\r\nThis PR starts the apps scheduler right after all apps have been loaded",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23603",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-01Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23498",
+          "title": "[NEW] Show on-hold metrics on analytics pages and current chats",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23452",
+          "title": "Chore: Rearrange module typings",
+          "userLogin": "tassoevan",
+          "description": "- Move all external module declarations (definitions and augmentations) to `/definition/externals`;\r\n- ~Symlink some modules on `/definition/externals` to `/ee/server/services/definition/externals`~ Share types with `/ee/server/services`;\r\n- Use TypeScript as server code entrypoint.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23487",
+          "title": "[FIX] Notifications are not being filtered",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;\r\n - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);\r\n - Rename 'mobileNotifications' user's preference to 'pushNotifications'.",
+          "milestone": "4.1.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23542",
+          "title": "[IMPROVE] MKP12 - New UI - Merge Apps and Marketplace Tabs and Content",
+          "userLogin": "rique223",
+          "description": "Merged the Marketplace and Apps page into a single page with a tabs component that changes between Markeplace and installed apps.\r\n![page merging](https://user-images.githubusercontent.com/43561537/138516558-f86d62e6-1a5c-4817-a229-a1b876323960.gif)",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23586",
+          "title": "Merge master into develop & Set version to 4.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23778",
+          "title": "Regression: Fix incorrect API path for livechat calls",
+          "userLogin": "murtaza98",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23775",
+          "title": "Regression: Fix LDAP sync route",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23793",
+          "title": "Regression: Include files on EE services build",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23789",
+          "title": "Regression: Fix sort param on omnichannel endpoints",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23802",
+          "title": "Regression: Add @rocket.chat/emitter to EE services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23774",
+          "title": "Regression: Add trash to raw models",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.2.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23820",
+          "title": "[FIX] LDAP users being disabled when an AD security policy is enabled",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.2.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23815",
+          "title": "Regression: \"When is the chat busier\" and \"Users by time of day\" charts are not working",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix \"When is the chat busier\" (Hours) and \"Users by time of day\" charts, which weren't displaying any data;",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23812",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-29Z",
+          "userLogin": "lingohub[bot]",
+          "milestone": "4.2.0",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23813",
+          "title": "Regression: Mark Livechat WebRTC video calling as alpha",
+          "userLogin": "murtaza98",
+          "description": "![image](https://user-images.githubusercontent.com/34130764/143832378-82b99a72-23e8-4115-8b28-a0d210de598b.png)",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23803",
+          "title": "Regression: Current Chats not Filtering",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.2.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
     }
   }
 }

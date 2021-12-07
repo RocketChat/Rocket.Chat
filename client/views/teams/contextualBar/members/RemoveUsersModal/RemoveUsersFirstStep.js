@@ -35,7 +35,7 @@ const RemoveUsersFirstStep = ({
 			onConfirm={onConfirm}
 			{...props}
 		>
-			<Box mbe='x24' fontScale='p1'>
+			<Box mbe='x24' fontScale='p3'>
 				{t('Select_the_channels_you_want_the_user_to_be_removed_from')}
 			</Box>
 			<ChannelDesertionTable

@@ -63,7 +63,7 @@ const UserCard = forwardRef(function UserCard(
 				<Box withTruncatedText display='flex'>
 					<Username status={status} name={name} title={username !== name ? username : undefined} />
 					{nickname && (
-						<Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>
+						<Box title={t('Nickname')} color='hint' mis='x8' fontScale='p3' withTruncatedText>
 							({nickname})
 						</Box>
 					)}

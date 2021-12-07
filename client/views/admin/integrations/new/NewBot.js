@@ -8,7 +8,7 @@ export default function NewBot() {
 	return (
 		<Box
 			pb='x20'
-			fontScale='s1'
+			fontScale='h4'
 			key='bots'
 			dangerouslySetInnerHTML={{ __html: t('additional_integrations_Bots') }}
 		/>

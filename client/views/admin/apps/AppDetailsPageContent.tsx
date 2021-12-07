@@ -42,9 +42,9 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 					iconFileData={iconFileData}
 				/>
 				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
-					<Box fontScale='h1'>{name}</Box>
+					<Box fontScale='h2'>{name}</Box>
 					<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
-						<Box fontScale='p2' mie='x4'>
+						<Box fontScale='p4' mie='x4'>
 							{t('By_author', { author: authorName })}
 						</Box>
 						|<Box mis='x4'>{t('Version_version', { version })}</Box>
@@ -97,7 +97,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x12'>
-					<Box fontScale='s2'>{t('Categories')}</Box>
+					<Box fontScale='h4'>{t('Categories')}</Box>
 					<Box display='flex' flexDirection='row'>
 						{categories &&
 							categories.map((current) => (
@@ -107,7 +107,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 							))}
 					</Box>
 
-					<Box fontScale='s2'>{t('Contact')}</Box>
+					<Box fontScale='h4'>{t('Contact')}</Box>
 					<Box
 						display='flex'
 						flexDirection='row'
@@ -116,20 +116,20 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 						flexWrap='wrap'
 					>
 						<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
-							<Box fontScale='s1' color='hint'>
+							<Box fontScale='h4' color='hint'>
 								{t('Author_Site')}
 							</Box>
 							<ExternalLink to={homepage} />
 						</Box>
 						<Box display='flex' flexDirection='column' flexGrow={1}>
-							<Box fontScale='s1' color='hint'>
+							<Box fontScale='h4' color='hint'>
 								{t('Support')}
 							</Box>
 							<ExternalLink to={support} />
 						</Box>
 					</Box>
 
-					<Box fontScale='s2'>{t('Details')}</Box>
+					<Box fontScale='h4'>{t('Details')}</Box>
 					<Box display='flex' flexDirection='row'>
 						{description}
 					</Box>
@@ -140,7 +140,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 					<Divider />
 					<Box display='flex' flexDirection='column'>
 						<Margins block='x12'>
-							<Box fontScale='s2'>{t('Bundles')}</Box>
+							<Box fontScale='h4'>{t('Bundles')}</Box>
 							{bundledIn.map((bundle) => (
 								<Box key={bundle.bundleId} display='flex' flexDirection='row' alignItems='center'>
 									<Box
@@ -162,7 +162,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 										))}
 									</Box>
 									<Box display='flex' flexDirection='column' mis='x12'>
-										<Box fontScale='p2'>{bundle.bundleName}</Box>
+										<Box fontScale='p4'>{bundle.bundleName}</Box>
 										{bundle.apps.map((app) => (
 											<Box key={app.latest.name}>{app.latest.name},</Box>
 										))}

@@ -6,14 +6,14 @@ import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { encrypt } from './crypt';
 
-export function federationRequest(method, url, body, headers, peerKey = null) {
+export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;
 
 	if ((method === 'POST' || method === 'PUT') && body) {
 		data = EJSON.toJSONValue(body);
 
 		if (peerKey) {
-			data = encrypt(data, peerKey);
+			data = await encrypt(data, peerKey);
 		}
 	}
 
@@ -22,7 +22,7 @@ export function federationRequest(method, url, body, headers, peerKey = null) {
 	return MeteorHTTP.call(method, url, { data, timeout: 2000, headers: { ...headers, 'x-federation-domain': getFederationDomain() } });
 }
 
-export function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
+export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
 	const ignoreErrors = peerDomain === getFederationDomain() ? false : options.ignoreErrors;
 
 	const { url: baseUrl, publicKey } = search(peerDomain);
@@ -39,7 +39,7 @@ export function federationRequestToPeer(method, peerDomain, uri, body, options =
 	try {
 		httpLogger.debug({ msg: 'federationRequestToPeer', url: `${ baseUrl }${ uri }` });
 
-		result = federationRequest(method, `${ baseUrl }${ uri }`, body, options.headers || {}, peerKey);
+		result = await federationRequest(method, `${ baseUrl }${ uri }`, body, options.headers || {}, peerKey);
 	} catch (err) {
 		httpLogger.error({ msg: `${ ignoreErrors ? '[IGNORED] ' : '' }Error`, err });
 

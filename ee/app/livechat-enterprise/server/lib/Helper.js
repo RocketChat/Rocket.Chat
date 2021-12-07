@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import debounce from 'lodash.debounce';
 
+import { memoizeDebounce } from './debounceByParams';
 import {
 	LivechatDepartment,
 	Users,
@@ -95,8 +95,17 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
+	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		return;
+	}
+
 	helperLogger.debug(`Updating statuses for queue ${ department || 'Public' }`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
+
+	if (!queue.length) {
+		return;
+	}
+
 	const queueInfo = await getQueueInfo(department);
 	queue.forEach((inquiry) => {
 		dispatchInquiryPosition(inquiry, queueInfo);
@@ -105,7 +114,7 @@ export const dispatchWaitingQueueStatus = async (department) => {
 
 // When dealing with lots of queued items we need to make sure to notify their position
 // but we don't need to notify _each_ change that takes place, just their final position
-export const debouncedDispatchWaitingQueueStatus = debounce(dispatchWaitingQueueStatus, 1200);
+export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
 export const processWaitingQueue = async (department) => {
 	const queue = department || 'Public';
@@ -126,14 +135,11 @@ export const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-		helperLogger.debug(`Inquiry ${ inquiry._id } taken succesfully by agent ${ agentId }. Notifying`);
+		helperLogger.debug(`Inquiry ${ inquiry._id } taken successfully by agent ${ agentId }. Notifying`);
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
 	}
-
-	const { departmentId } = room || {};
-	await debouncedDispatchWaitingQueueStatus(departmentId);
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
@@ -251,6 +257,10 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
+		return null;
+	}
+
+	if (!settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		return null;
 	}
 

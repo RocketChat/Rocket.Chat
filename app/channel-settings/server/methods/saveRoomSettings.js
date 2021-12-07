@@ -128,7 +128,7 @@ const validators = {
 
 const settingSavers = {
 	roomName({ value, rid, user, room }) {
-		if (!saveRoomName(rid, value, user)) {
+		if (!Promise.await(saveRoomName(rid, value, user))) {
 			return;
 		}
 
@@ -231,13 +231,13 @@ const settingSavers = {
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
-	roomAvatar({ value, rid, user }) {
-		setRoomAvatar(rid, value, user);
+	async roomAvatar({ value, rid, user }) {
+		await setRoomAvatar(rid, value, user);
 	},
 };
 
 Meteor.methods({
-	saveRoomSettings(rid, settings, value) {
+	async saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -313,10 +313,10 @@ Meteor.methods({
 		});
 
 		// saving data
-		Object.keys(settings).forEach((setting) => {
+		for await (const setting of Object.keys(settings)) {
 			const value = settings[setting];
 
-			const saver = settingSavers[setting];
+			const saver = await settingSavers[setting];
 			if (saver) {
 				saver({
 					value,
@@ -325,7 +325,7 @@ Meteor.methods({
 					user,
 				});
 			}
-		});
+		}
 
 		Meteor.defer(function() {
 			const room = Rooms.findOneById(rid);

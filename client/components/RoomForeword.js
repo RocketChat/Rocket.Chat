@@ -45,7 +45,7 @@ const RoomForeword = ({ _id: rid }) => {
 					</Avatar.Stack>
 				</Margins>
 			</Flex.Item>
-			<Box color='default' fontScale='h1' flexGrow={1}>
+			<Box color='default' fontScale='h2' flexGrow={1}>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>

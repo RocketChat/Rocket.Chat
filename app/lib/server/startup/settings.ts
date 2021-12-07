@@ -1676,10 +1676,6 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Aerospace_and_Defense',
 				},
 				{
-					key: 'blockchain',
-					i18nLabel: 'Blockchain',
-				},
-				{
 					key: 'consulting',
 					i18nLabel: 'Consulting',
 				},
@@ -2977,7 +2973,7 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 });
 
 settingsRegistry.addGroup('Rate Limiter', function() {
-	this.section('DDP Rate Limiter', function() {
+	this.section('DDP_Rate_Limiter', function() {
 		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
 		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
 		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
@@ -2999,11 +2995,15 @@ settingsRegistry.addGroup('Rate Limiter', function() {
 		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
 	});
 
-	this.section('API Rate Limiter', function() {
+	this.section('API_Rate_Limiter', function() {
 		this.add('API_Enable_Rate_Limiter', true, { type: 'boolean' });
 		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
+
+	this.section('Feature_Limiting', function() {
+		this.add('Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 	});
 });
 

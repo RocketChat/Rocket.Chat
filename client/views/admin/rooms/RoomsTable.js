@@ -233,10 +233,10 @@ function RoomsTable() {
 									<Icon
 										mi='x2'
 										name={icon === 'omnichannel' ? 'livechat' : icon}
-										fontScale='p2'
+										fontScale='p4'
 										color='hint'
 									/>
-									<Box fontScale='p2' style={style} color='default'>
+									<Box fontScale='p4' style={style} color='default'>
 										{roomName}
 									</Box>
 								</Box>
@@ -244,7 +244,7 @@ function RoomsTable() {
 						</Box>
 					</Table.Cell>
 					<Table.Cell>
-						<Box color='hint' fontScale='p2' style={style}>
+						<Box color='hint' fontScale='p4' style={style}>
 							{t(getRoomType(room))}
 						</Box>
 						<Box mi='x4' />

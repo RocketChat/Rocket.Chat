@@ -11,7 +11,7 @@ import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
 const getInitialValue = (data) => ({
-	roles: data.rolesId,
+	roles: data.roles,
 	name: data.name ?? '',
 	password: '',
 	username: data.username,
