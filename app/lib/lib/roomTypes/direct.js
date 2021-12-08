@@ -151,7 +151,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
-				return 'Hide_Private_Warning';
+				return 'Remove_Private_Warning';
 			case UiTextContext.LEAVE_WARNING:
 				return 'Leave_Private_Warning';
 			default:

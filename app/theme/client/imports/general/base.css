@@ -206,6 +206,10 @@ button {
 	display: none;
 }
 
+.rcx-option[color="alert"] {
+	color: var(--rc-color-alert-message-warning);
+}
+
 @media print {
 	#rocket-chat.menu-nav,
 	.simplebar-content-wrapper,

@@ -37,7 +37,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const router = useRoute('home');
 
 	const subscription = useUserSubscription(rid, fields);
-	const canHide = false;
+	const canHide = type === 'd';
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
 
@@ -111,14 +111,14 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		setModal(
 			<GenericModalDoNotAskAgain
 				variant='danger'
-				confirmText={t('Yes_hide_it')}
+				confirmText={t('Yes_remove_it')}
 				cancelText={t('Cancel')}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={hide}
 				dontAskAgain={{
 					action: 'hideRoom',
-					label: t('Hide_room'),
+					label: t('Remove_room'),
 				}}
 			>
 				{t(warnText, name)}
@@ -156,12 +156,6 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const menuOptions = useMemo(
 		() => ({
-			...(canHide && {
-				hideRoom: {
-					label: { label: t('Hide'), icon: 'eye-off' },
-					action: handleHide,
-				},
-			}),
 			toggleRead: {
 				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 				action: handleToggleRead,
@@ -174,6 +168,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					},
 					action: handleToggleFavorite,
 				},
+				...(canHide && {
+					hideRoom: {
+						label: { label: t('Remove'), icon: 'cross', color: 'alert' },
+						action: handleHide,
+					},
+				}),
 			}),
 			...(canLeave && {
 				leaveRoom: {
@@ -208,8 +208,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }) => (
-				<Option label={label} title={label} icon={icon} {...props} />
+			renderItem={({ label: { label, icon, color }, ...props }) => (
+				<Option label={label} title={label} icon={icon} color={color} {...props} />
 			)}
 		/>
 	);
