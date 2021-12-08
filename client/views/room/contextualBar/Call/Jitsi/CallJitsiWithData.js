@@ -124,7 +124,7 @@ const CallJitsiWithData = ({ rid }) => {
 		user.username,
 	]);
 
-	const testAndHandleTimeout = useMutableCallback(async () => {
+	const testAndHandleTimeout = useMutableCallback(() => {
 		if (jitsi.openNewWindow) {
 			if (jitsi.window?.closed) {
 				return jitsi.dispose();
