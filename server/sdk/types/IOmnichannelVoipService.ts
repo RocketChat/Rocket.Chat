@@ -2,6 +2,6 @@ import { IOmnichannelVoipServiceResult } from '../../../definition/ILivechatVoip
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
-	getAvailableExtensions(): Promise<IOmnichannelVoipServiceResult> ;
+	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult> ;
 	getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult>;
 }

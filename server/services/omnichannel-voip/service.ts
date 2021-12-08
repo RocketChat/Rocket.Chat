@@ -42,7 +42,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return {};
 	}
 
-	async getAvailableExtensions(): Promise<IOmnichannelVoipServiceResult> {
+	async getFreeExtensions(): Promise<IOmnichannelVoipServiceResult> {
 		const allExtensions = await Voip.getExtensionList();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,

@@ -200,6 +200,16 @@ const VoIPLayout: FC = () => {
 		} catch (error) {
 			logger.error(`error ${error} in API agent.extension`);
 		}
+
+		try {
+			logger.info('Executing GET omnichannel/extension?type=available&username=amol.associate');
+			const extension = await APIClient.v1.get(
+				'omnichannel/extension?type=available&username=amol.associate',
+			);
+			logger.info('list = ', JSON.stringify(extension));
+		} catch (error) {
+			logger.error(`error ${error} in API agent.extension`);
+		}
 	};
 
 	const registerCallback = (): void => {
