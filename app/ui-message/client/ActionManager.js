@@ -10,7 +10,7 @@ import { APIClient } from '../../utils';
 import { UIKitInteractionTypes } from '../../../definition/UIKit';
 import * as banners from '../../../client/lib/banners';
 
-export const events = new Emitter();
+const events = new Emitter();
 
 export const on = (...args) => {
 	events.on(...args);

@@ -54,7 +54,7 @@ const useValues = (view) => {
 	return useReducer(reducer, null, initializer);
 };
 
-const AppsWithClose = () => {
+const AppsWithData = () => {
 	const onClose = useTabBarClose();
 
 	const [state, setState] = useState({});
@@ -121,4 +121,4 @@ const AppsWithClose = () => {
 	);
 };
 
-export default memo(AppsWithClose);
+export default memo(AppsWithData);

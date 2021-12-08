@@ -60,16 +60,16 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 		openTabBar(actions[index].id);
 	});
 
-	const openBar = () => {
+	const openAppsContextualBar = () => {
 		openTabBar('apps-contextual-bar');
 	};
 
 	useEffect(() => {
-		on('apps-contextual-bar', openBar);
+		on('apps-contextual-bar', openAppsContextualBar);
 		return () => {
-			off('apps-contextual-bar', openBar);
+			off('apps-contextual-bar', openAppsContextualBar);
 		};
-	}, [openBar]);
+	}, [openAppsContextualBar]);
 
 	// const open = useMutableCallback((index) => {
 	// 	openTabBar(actions[index].id);
