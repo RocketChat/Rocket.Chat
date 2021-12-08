@@ -225,14 +225,9 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 		onChangeDescription,
 		type,
 		onChangeType,
-		readOnly,
-		canChangeReadOnly,
-		onChangeReadOnly,
 		encrypted,
 		canChangeEncrypted,
 		onChangeEncrypted,
-		broadcast,
-		onChangeBroadcast,
 		members,
 		onChangeMembers,
 		hasUnsavedChanges,
@@ -292,19 +287,6 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 						<ToggleSwitch checked={type} onChange={onChangeType} />
 					</Box>
 				</Field>
-				<Field mbe='x24' disabled={!canChangeReadOnly}>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
-							<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
-						</Box>
-						<ToggleSwitch
-							checked={readOnly}
-							disabled={!canChangeReadOnly}
-							onChange={onChangeReadOnly}
-						/>
-					</Box>
-				</Field>
 				<Field disabled={!canChangeEncrypted} mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
@@ -320,15 +302,6 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							disabled={!canChangeEncrypted}
 							onChange={onChangeEncrypted}
 						/>
-					</Box>
-				</Field>
-				<Field mbe='x24'>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Teams_New_Broadcast_Label')}</Field.Label>
-							<Field.Description>{t('Teams_New_Broadcast_Description')}</Field.Description>
-						</Box>
-						<ToggleSwitch checked={broadcast} onChange={onChangeBroadcast} />
 					</Box>
 				</Field>
 				<Field mbe='x24'>

@@ -151,14 +151,12 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const {
 		roomName,
 		roomType,
-		readOnly,
 		encrypted,
 		roomAvatar,
 		archived,
 		roomTopic,
 		roomDescription,
 		roomAnnouncement,
-		reactWhenReadOnly,
 		joinCode,
 		joinCodeRequired,
 		systemMessages,
@@ -177,10 +175,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleEncrypted,
 		handleHideSysMes,
 		handleRoomName,
-		handleReadOnly,
 		handleArchived,
 		handleRoomAvatar,
-		handleReactWhenReadOnly,
 		handleRoomType,
 		handleRoomTopic,
 		handleRoomDescription,
@@ -199,10 +195,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewArchived,
 		canViewDescription,
 		canViewType,
-		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t)?.allowRoomSettingChange || (() => {});
@@ -226,8 +220,6 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
-	const canSetRo = usePermission('set-readonly', room._id);
-	const canSetReactWhenRo = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
@@ -367,32 +359,6 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
-					</Field>
-				)}
-				{canViewReadOnly && (
-					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Read_only')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch disabled={!canSetRo} checked={readOnly} onChange={handleReadOnly} />
-							</Field.Row>
-						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
-					</Field>
-				)}
-				{canViewReactWhenReadOnly && (
-					<Field>
-						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('React_when_read_only')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch
-									disabled={!canSetReactWhenRo}
-									checked={reactWhenReadOnly}
-									onChange={handleReactWhenReadOnly}
-								/>
-							</Field.Row>
-						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 					</Field>
 				)}
 				{canViewArchived && (
