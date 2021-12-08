@@ -1738,7 +1738,6 @@
   "Message_editing": "Upravovanie správ",
   "Message_ErasureType": "Typ vymazania správy",
   "Message_ErasureType_Delete": "Odstrániť všetky správy",
-  "Message_ErasureType_Description": "Určte, čo robiť so správami používateľov, ktorí odstránia svoj účet.",
   "Message_ErasureType_Keep": "Uchovávajte správy a meno používateľa",
   "Message_ErasureType_Unlink": "Odstrániť prepojenie medzi používateľom a správami",
   "Message_GlobalSearch": "Globálne vyhľadávanie",

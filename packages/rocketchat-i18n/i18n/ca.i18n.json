@@ -2893,7 +2893,6 @@
   "Message_editing": "Edició de missatges",
   "Message_ErasureType": "Tipus d'esborrat del missatge",
   "Message_ErasureType_Delete": "Suprimeix tots els missatges",
-  "Message_ErasureType_Description": "Determineu què fer amb els missatges dels usuaris que eliminen el compte.",
   "Message_ErasureType_Keep": "Mantenir missatges i noms d'usuari",
   "Message_ErasureType_Unlink": "Elimina l'enllaç entre l'usuari i els missatges",
   "Message_GlobalSearch": "Cerca global",

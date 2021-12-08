@@ -1861,7 +1861,6 @@
   "Message_editing": "Uređivanje poruke",
   "Message_ErasureType": "Vrsta pogreške poruke",
   "Message_ErasureType_Delete": "Izbriši sve poruke",
-  "Message_ErasureType_Description": "Odredite što učiniti s porukama korisnika koji uklanjaju svoj račun.",
   "Message_ErasureType_Keep": "Zadržite poruke i korisničko ime",
   "Message_ErasureType_Unlink": "Ukloni vezu između korisnika i poruka",
   "Message_GlobalSearch": "Globalno pretraživanje",

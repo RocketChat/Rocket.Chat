@@ -2892,7 +2892,6 @@
   "Message_editing": "Edición de mensajes",
   "Message_ErasureType": "Tipo de borrado del mensaje",
   "Message_ErasureType_Delete": "Eliminar todos los mensajes",
-  "Message_ErasureType_Description": "Determine qué hacer con los mensajes de los usuarios que eliminan su cuenta.",
   "Message_ErasureType_Keep": "Mantener mensajes y nombres de usuario",
   "Message_ErasureType_Unlink": "Eliminar enlace entre usuario y mensajes",
   "Message_GlobalSearch": "Búsqueda global",

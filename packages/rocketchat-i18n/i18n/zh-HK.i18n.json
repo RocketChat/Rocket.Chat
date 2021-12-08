@@ -1748,7 +1748,6 @@
   "Message_editing": "消息编辑",
   "Message_ErasureType": "消息擦除类型",
   "Message_ErasureType_Delete": "删除所有消息",
-  "Message_ErasureType_Description": "确定如何处理删除其帐户的用户的消息。",
   "Message_ErasureType_Keep": "保留消息和用户名",
   "Message_ErasureType_Unlink": "删除用户和消息之间的链接",
   "Message_GlobalSearch": "全局搜索",

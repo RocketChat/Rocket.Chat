@@ -2498,7 +2498,6 @@
   "Message_editing": "Meddelelsesredigering",
   "Message_ErasureType": "Meddelelse Erasure Type",
   "Message_ErasureType_Delete": "Slet alle meddelelser",
-  "Message_ErasureType_Description": "Bestem hvad man skal gøre med beskeder af brugere, der fjerner deres konto.",
   "Message_ErasureType_Keep": "Gem beskeder og brugernavn",
   "Message_ErasureType_Unlink": "Fjern link mellem bruger og meddelelser",
   "Message_GlobalSearch": "Global søgning",

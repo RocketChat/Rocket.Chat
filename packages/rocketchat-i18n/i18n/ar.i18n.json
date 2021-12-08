@@ -1805,7 +1805,6 @@
   "Message_editing": "تحرير رسالة",
   "Message_ErasureType": "رسالة نوع محو",
   "Message_ErasureType_Delete": "حذف كل الرسائل",
-  "Message_ErasureType_Description": "حدد ما يجب فعله مع رسائل المستخدمين الذين يزيلون حساباتهم.",
   "Message_ErasureType_Keep": "حافظ على الرسائل واسم المستخدم",
   "Message_ErasureType_Unlink": "إزالة الارتباط بين المستخدم والرسائل",
   "Message_GlobalSearch": "البحث العالمي",

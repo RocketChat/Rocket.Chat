@@ -2239,7 +2239,6 @@
   "Message_editing": "редагування повідомлень",
   "Message_ErasureType": "Тип повідомлення про помилку",
   "Message_ErasureType_Delete": "Видалити всі повідомлення",
-  "Message_ErasureType_Description": "Визначте, що робити з повідомленнями користувачів, які видаляють свій обліковий запис.",
   "Message_ErasureType_Keep": "Зберігати повідомлення та ім'я користувача",
   "Message_ErasureType_Unlink": "Видалити зв'язок між користувачем і повідомленнями",
   "Message_GlobalSearch": "Глобальний пошук",
