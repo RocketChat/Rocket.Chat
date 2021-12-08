@@ -34,6 +34,7 @@ const querySettings = {
 };
 
 const CallJitsiWithData = ({ rid }) => {
+	// console.log('rid = ', rid);
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
@@ -130,7 +131,7 @@ const CallJitsiWithData = ({ rid }) => {
 				return jitsi.dispose();
 			}
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -144,7 +145,7 @@ const CallJitsiWithData = ({ rid }) => {
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -182,7 +183,7 @@ const CallJitsiWithData = ({ rid }) => {
 
 			jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-			shouldDispose = jitsi.openNewWindow;
+			shouldDispose = !jitsi.openNewWindow;
 		}
 
 		fetchData().then(() => {
