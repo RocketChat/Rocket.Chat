@@ -512,7 +512,7 @@ describe('[Direct Messages]', function() {
 		});
 
 		after(async () => {
-			Promise.all(Object.values(roomIds).map((roomId) => deleteRoom({ type: 'd', roomId })));
+			await Promise.all(Object.values(roomIds).map((roomId) => deleteRoom({ type: 'd', roomId })));
 			await deleteUser(user);
 			await deleteUser(otherUser);
 			await deleteUser(thirdUser);
@@ -573,10 +573,10 @@ describe('[Direct Messages]', function() {
 				.end(done);
 		});
 
-		async function testRoomFNameForUser(credentials, rid, fullName) {
+		async function testRoomFNameForUser(testCredentials, roomId, fullName) {
 			return request.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId: rid })
+				.set(testCredentials)
+				.query({ roomId })
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
@@ -587,17 +587,17 @@ describe('[Direct Messages]', function() {
 		}
 
 		describe('Rooms fullName', () => {
-			it('should be own user\'s name for self dm', async () => {
+			it('should be own user\'s name for self DM', async () => {
 				await testRoomFNameForUser(userCredentials, roomIds.self, userFullName);
 			});
 
-			it('should be other user\'s name concatenated for multiple users\'s dm for every user', async () => {
+			it('should be other user\'s name concatenated for multiple users\'s DM for every user', async () => {
 				await testRoomFNameForUser(userCredentials, roomIds.multipleDm, [otherUserFullName, thirdUserFullName].join(', '));
 				await testRoomFNameForUser(otherUserCredentials, roomIds.multipleDm, [userFullName, thirdUserFullName].join(', '));
 				await testRoomFNameForUser(thirdUserCredentials, roomIds.multipleDm, [userFullName, otherUserFullName].join(', '));
 			});
 
-			it('should be other user\'s name for dm for both users', async () => {
+			it('should be other user\'s name for DM for both users', async () => {
 				await testRoomFNameForUser(userCredentials, roomIds.dm, otherUserFullName);
 				await testRoomFNameForUser(otherUserCredentials, roomIds.dm, userFullName);
 			});
