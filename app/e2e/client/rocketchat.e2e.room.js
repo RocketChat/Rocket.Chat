@@ -1,24 +1,17 @@
 import { Base64 } from 'meteor/base64';
-import { Session } from 'meteor/session';
 
-import { e2e } from './rocketchat.e2e';
 import {
-	toString,
 	toArrayBuffer,
 	encryptRSA,
-	decryptRSA,
 	generateAESKey,
 	exportJWKKey,
-	importAESKey,
 	importRSAKey,
 } from './helpers';
 import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
-import { roomTypes, RoomSettingsEnum, APIClient } from '../../utils/client';
+import { APIClient } from '../../utils/client';
 import { E2EERoomState } from './E2EERoomState';
 import { E2EERoomClient } from './E2EERoomClient';
-
-const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
 	[E2EERoomState.NOT_STARTED]: [
@@ -64,25 +57,16 @@ const filterMutation = (currentState, nextState) => {
 };
 
 export class E2ERoom extends E2EERoomClient {
-	state = undefined;
-
-	[PAUSED] = undefined;
-
-	constructor(roomId) {
-		super(roomId);
+	constructor(roomId, userPrivateKey) {
+		super(roomId, userPrivateKey);
 
 		this.roomId = roomId;
 
 		this.once(E2EERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2EERoomState.READY, () => this.decryptSubscription());
-		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === Session.get('openedRoom')) {
-				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
-			}
-		});
 		this.on('STATE_CHANGED', () => this.handshake());
 
-		this.setState(E2EERoomState.NOT_STARTED);
+		this.handshake();
 	}
 
 	log(...msg) {
@@ -108,68 +92,6 @@ export class E2ERoom extends E2EERoomClient {
 		this.emit(nextState, this);
 	}
 
-	isReady() {
-		return this.state === E2EERoomState.READY;
-	}
-
-	isPaused() {
-		return this[PAUSED];
-	}
-
-	isDisabled() {
-		return this.state === E2EERoomState.DISABLED;
-	}
-
-	enable() {
-		if (this.state === E2EERoomState.READY) {
-			return;
-		}
-
-		this.setState(E2EERoomState.READY);
-	}
-
-	disable() {
-		this.setState(E2EERoomState.DISABLED);
-	}
-
-	pause() {
-		this.log('PAUSED', this[PAUSED], '->', true);
-		this[PAUSED] = true;
-		this.emit('PAUSED', true);
-	}
-
-	resume() {
-		this.log('PAUSED', this[PAUSED], '->', false);
-		this[PAUSED] = false;
-		this.emit('PAUSED', false);
-	}
-
-	keyReceived() {
-		this.setState(E2EERoomState.KEYS_RECEIVED);
-	}
-
-	async shouldConvertSentMessages() {
-		if (!this.isReady() || this[PAUSED]) {
-			return false;
-		}
-
-		if (this[PAUSED] === undefined) {
-			return new Promise((resolve) => {
-				this.once('PAUSED', resolve);
-			});
-		}
-
-		return true;
-	}
-
-	shouldConvertReceivedMessages() {
-		return this.decryptionActive;
-	}
-
-	isWaitingKeys() {
-		return this.state === E2EERoomState.WAITING_KEYS;
-	}
-
 	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({ rid: this.roomId });
 
@@ -191,9 +113,10 @@ export class E2ERoom extends E2EERoomClient {
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
-		});
+		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' })
+			.forEach(async ({ _id, ...msg }) => {
+				Messages.direct.update({ _id }, await this.decryptMessage(msg));
+			});
 	}
 
 	// Initiates E2E Encryption
@@ -209,8 +132,8 @@ export class E2ERoom extends E2EERoomClient {
 		try {
 			const groupKey = Subscriptions.findOne({ rid: this.roomId }).E2EKey;
 			if (groupKey) {
-				await this.importGroupKey(groupKey);
-				this.setState(E2EERoomState.READY);
+				// await this.importGroupKey(groupKey);
+				// this.setState(E2EERoomState.READY);
 				return;
 			}
 		} catch (error) {
@@ -234,37 +157,6 @@ export class E2ERoom extends E2EERoomClient {
 		} catch (error) {
 			// this.error = error;
 			this.setState(E2EERoomState.ERROR);
-		}
-	}
-
-	isSupportedRoomType(type) {
-		return roomTypes.getConfig(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
-	}
-
-	async importGroupKey(groupKey) {
-		this.log('Importing room key ->', this.roomId);
-		// Get existing group key
-		// const keyID = groupKey.slice(0, 12);
-		groupKey = groupKey.slice(12);
-		groupKey = Base64.decode(groupKey);
-
-		// Decrypt obtained encrypted session key
-		try {
-			const decryptedKey = await decryptRSA(e2e.privateKey, groupKey);
-			this.sessionKeyExportedString = toString(decryptedKey);
-		} catch (error) {
-			return this.error('Error decrypting group key: ', error);
-		}
-
-		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
-
-		// Import session key for use.
-		try {
-			const key = await importAESKey(JSON.parse(this.sessionKeyExportedString));
-			// Key has been obtained. E2E is now in session.
-			this.key = key;
-		} catch (error) {
-			return this.error('Error importing group key: ', error);
 		}
 	}
 

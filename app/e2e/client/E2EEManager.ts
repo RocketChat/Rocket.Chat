@@ -1,9 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
-import { Rooms, Subscriptions } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { ISubscription } from '../../../definition/ISubscription';
 import { Notifications } from '../../notifications/client';
@@ -17,6 +16,9 @@ interface IE2EERoomClientPool {
 class E2EERoomClientPool implements IE2EERoomClientPool {
 	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
 
+	// eslint-disable-next-line no-empty-function
+	constructor(private userPrivateKey: CryptoKey) {}
+
 	track(rid: IRoom['_id']): E2ERoom {
 		const roomClient = this.roomClients.get(rid);
 
@@ -24,7 +26,7 @@ class E2EERoomClientPool implements IE2EERoomClientPool {
 			return roomClient;
 		}
 
-		const newRoomClient = new E2ERoom(rid);
+		const newRoomClient = new E2ERoom(rid, this.userPrivateKey);
 		this.roomClients.set(rid, newRoomClient);
 		return newRoomClient;
 	}
@@ -43,15 +45,35 @@ class E2EERoomClientPool implements IE2EERoomClientPool {
 }
 
 export abstract class E2EEManager extends Emitter {
-	private roomClients = new E2EERoomClientPool();
+	private roomClients: IE2EERoomClientPool | undefined;
+
+	private userPrivateKey: CryptoKey | undefined;
+
+	protected get privateKey(): CryptoKey | undefined {
+		return this.userPrivateKey;
+	}
+
+	protected set privateKey(userPrivateKey: CryptoKey | undefined) {
+		this.userPrivateKey = userPrivateKey ?? undefined;
+
+		if (!userPrivateKey) {
+			return;
+		}
+
+		if (this.roomClients) {
+			this.roomClients.untrackAll();
+		}
+
+		this.roomClients = new E2EERoomClientPool(userPrivateKey);
+	}
 
 	watchSubscriptions(): (() => void) {
 		const subscriptionWatcher: Meteor.LiveQueryHandle = Subscriptions.find().observe({
 			added: ({ rid }: ISubscription) => {
-				this.roomClients.track(rid);
+				this.roomClients?.track(rid);
 			},
 			removed: ({ rid }: ISubscription) => {
-				this.roomClients.untrack(rid);
+				this.roomClients?.untrack(rid);
 			},
 		});
 
@@ -62,8 +84,8 @@ export abstract class E2EEManager extends Emitter {
 
 	watchKeyRequests(): (() => void) {
 		const handleKeyRequest = (roomId: IRoom['_id'], keyId: string): void => {
-			const roomClient = this.roomClients.track(roomId);
-			roomClient.provideKeyToUser(keyId);
+			const roomClient = this.roomClients?.track(roomId);
+			roomClient?.provideKeyToUser(keyId);
 		};
 
 		Notifications.onUser('e2e.keyRequest', handleKeyRequest);
@@ -74,9 +96,9 @@ export abstract class E2EEManager extends Emitter {
 	}
 
 	async decryptMessage(message: IMessage): Promise<IMessage> {
-		const roomClient = this.roomClients.track(message.rid);
+		const roomClient = this.roomClients?.track(message.rid);
 
-		await roomClient.whenReady();
+		await roomClient?.whenReady();
 
 		return roomClient?.decryptMessage(message) ?? message;
 	}
@@ -87,19 +109,8 @@ export abstract class E2EEManager extends Emitter {
 
 	async transformReceivedMessage(message: IMessage): Promise<IMessage> {
 		try {
-			if (!this.isReady()) {
-				throw new Error('E2EE not ready');
-			}
-
-			const roomClient = this.roomClients.track(message.rid);
-
-			await roomClient.whenReady();
-
-			if (!roomClient.shouldConvertReceivedMessages()) {
-				return message;
-			}
-
-			return roomClient.decryptMessage(message);
+			const roomClient = this.roomClients?.track(message.rid);
+			return roomClient?.decryptMessage(message) ?? message;
 		} catch (error) {
 			console.error(error);
 			return message;
@@ -107,23 +118,7 @@ export abstract class E2EEManager extends Emitter {
 	}
 
 	async transformSendingMessage(message: IMessage): Promise<IMessage> {
-		if (!this.isReady()) {
-			throw new Error('E2EE not ready');
-		}
-
-		const roomClient = this.roomClients.track(message.rid);
-
-		await roomClient.whenReady();
-
-		const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
-
-		subscription.encrypted ? roomClient.resume() : roomClient.pause();
-
-		if (!await roomClient.shouldConvertSentMessages()) {
-			return message;
-		}
-
-		// Should encrypt this message.
-		return roomClient.encryptMessage(message);
+		const roomClient = this.roomClients?.track(message.rid);
+		return roomClient?.encryptMessage(message) ?? message;
 	}
 }
