@@ -34,7 +34,6 @@ const querySettings = {
 };
 
 const CallJitsiWithData = ({ rid }) => {
-	// console.log('rid = ', rid);
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
