@@ -47,7 +47,7 @@ function ConnectionStatusBar() {
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
 
-	if (connected) {
+	if (connected || status === 'connecting') {
 		return null;
 	}
 
