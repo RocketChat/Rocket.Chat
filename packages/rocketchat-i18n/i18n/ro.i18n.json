@@ -1727,7 +1727,6 @@
   "Message_editing": "editare mesaje",
   "Message_ErasureType": "Tipul de ștergere a mesajului",
   "Message_ErasureType_Delete": "Ștergeți toate mesajele",
-  "Message_ErasureType_Description": "Determinați ce să faceți cu mesajele utilizatorilor care își elimină contul.",
   "Message_ErasureType_Keep": "Păstrați mesajele și numele de utilizator",
   "Message_ErasureType_Unlink": "Eliminați legătura dintre utilizator și mesaje",
   "Message_GlobalSearch": "Căutare globală",

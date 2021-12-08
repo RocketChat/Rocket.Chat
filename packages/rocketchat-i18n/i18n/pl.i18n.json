@@ -2810,7 +2810,6 @@
   "Message_editing": "Edytowanie wiadomości",
   "Message_ErasureType": "Typ usunięcia wiadomości",
   "Message_ErasureType_Delete": "Usuń wszystkie wiadomości",
-  "Message_ErasureType_Description": "Określ, co zrobić z wiadomościami użytkowników, którzy usuwają swoje konto.",
   "Message_ErasureType_Keep": "Zachowaj wiadomości i nazwę użytkownika",
   "Message_ErasureType_Unlink": "Usuń połączenie między użytkownikiem a wiadomościami",
   "Message_GlobalSearch": "Wyszukiwanie globalne",

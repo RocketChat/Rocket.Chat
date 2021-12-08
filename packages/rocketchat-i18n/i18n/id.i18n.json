@@ -1727,7 +1727,6 @@
   "Message_editing": "editing pesan",
   "Message_ErasureType": "Jenis Penghapusan Pesan",
   "Message_ErasureType_Delete": "Hapus Semua Pesan",
-  "Message_ErasureType_Description": "Tentukan apa yang harus dilakukan dengan pesan pengguna yang menghapus akunnya.",
   "Message_ErasureType_Keep": "Simpan Pesan dan Nama Pengguna",
   "Message_ErasureType_Unlink": "Hapus Tautan Antara Pengguna dan Pesan",
   "Message_GlobalSearch": "Pencarian Global",

@@ -2062,7 +2062,6 @@
   "Message_editing": "İleti düzenleme",
   "Message_ErasureType": "İleti Silme Türü",
   "Message_ErasureType_Delete": "Tüm İletileri Sil",
-  "Message_ErasureType_Description": "Hesaplarını kaldıran kullanıcıların mesajlarıyla ne yapacağınızı belirleyin.",
   "Message_ErasureType_Keep": "Mesajları ve Kullanıcı Adlarını Tut",
   "Message_ErasureType_Unlink": "Kullanıcı ve İletiler Arasındaki Bağlantıyı Kaldır",
   "Message_GlobalSearch": "Genel Arama",
