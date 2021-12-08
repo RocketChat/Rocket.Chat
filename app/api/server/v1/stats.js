@@ -1,5 +1,5 @@
 import { API } from '../api';
-import { getStatistics, getLastStatistics } from '../../../statistics/server';
+import { getStatistics, getLastStatistics, getStatisticsByGroups } from '../../../statistics/server';
 
 API.v1.addRoute('statistics', { authRequired: true }, {
 	get() {
@@ -25,6 +25,17 @@ API.v1.addRoute('statistics.list', { authRequired: true }, {
 				sort,
 				fields,
 			},
+		})));
+	},
+});
+
+API.v1.addRoute('statistics.groups', { authRequired: true }, {
+	get() {
+		const { query } = this.parseJsonQuery();
+
+		return API.v1.success(Promise.await(getStatisticsByGroups({
+			userId: this.userId,
+			query,
 		})));
 	},
 });
