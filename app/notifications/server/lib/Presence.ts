@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 
-import { IUser } from '../../../../definition/IUser';
-import { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../server/modules/streamer/streamer.module';
+import type { IUser } from '../../../../definition/IUser';
 
 export type UserPresenseStreamProps = {
 	added: IUser['_id'][];

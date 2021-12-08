@@ -10,6 +10,7 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import * as Models from '../../../models/server';
+import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
@@ -22,7 +23,7 @@ export class RocketChatIntegrationHandler {
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		Models.Integrations.find({ type: 'webhook-outgoing' }).fetch().forEach((data) => this.addIntegration(data));
+		Promise.await(Integrations.find({ type: 'webhook-outgoing' }).forEach((data) => this.addIntegration(data)));
 	}
 
 	addIntegration(record) {
@@ -142,11 +143,11 @@ export class RocketChatIntegrationHandler {
 		}
 
 		if (historyId) {
-			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
+			Promise.await(IntegrationHistory.updateOne({ _id: historyId }, { $set: history }));
 			return historyId;
 		}
 		history._createdAt = new Date();
-		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
+		return Promise.await(IntegrationHistory.insertOne({ _id: Random.id(), ...history }));
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
@@ -715,7 +716,7 @@ export class RocketChatIntegrationHandler {
 					if (result.statusCode === 410) {
 						this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
 						outgoingLogger.error(`Disabling the Integration "${ trigger.name }" because the status code was 401 (Gone).`);
-						Models.Integrations.update({ _id: trigger._id }, { $set: { enabled: false } });
+						Promise.await(Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } }));
 						return;
 					}
 

@@ -36,7 +36,7 @@ function EditCustomSound({ _id, onChange, ...props }) {
 
 	if (error || !data || data.sounds.length < 1) {
 		return (
-			<Box fontScale='h1' pb='x20'>
+			<Box fontScale='h2' pb='x20'>
 				{error}
 			</Box>
 		);

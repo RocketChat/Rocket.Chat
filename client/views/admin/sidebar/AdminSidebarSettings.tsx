@@ -71,7 +71,7 @@ const AdminSidebarSettings: FC<AdminSidebarSettingsProps> = ({ currentPath }) =>
 
 	return (
 		<Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>
-			<Box pi='x24' pb='x8' fontScale='p2' color='info'>
+			<Box pi='x24' pb='x8' fontScale='p4' color='info'>
 				{t('Settings')}
 			</Box>
 			<Box pi='x24' pb='x8' display='flex'>

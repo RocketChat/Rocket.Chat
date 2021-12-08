@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise as MeteorPromise } from 'meteor/promise';
 import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 
@@ -167,7 +166,7 @@ export class AppCommandsBridge extends CommandBridge {
 			triggerId,
 		);
 
-		MeteorPromise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
+		Promise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
 	}
 
 	private _appCommandPreviewer(command: string, parameters: any, message: IMessage): any {
@@ -182,7 +181,7 @@ export class AppCommandsBridge extends CommandBridge {
 			Object.freeze(params),
 			threadId,
 		);
-		return MeteorPromise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
+		return Promise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
 	}
 
 	private async _appCommandPreviewExecutor(command: string, parameters: any, message: IMessage, preview: ISlashCommandPreviewItem, triggerId: string): Promise<void> {
@@ -199,6 +198,6 @@ export class AppCommandsBridge extends CommandBridge {
 			triggerId,
 		);
 
-		MeteorPromise.await(this.orch.getManager()?.getCommandManager().executePreview(command, preview, context));
+		Promise.await(this.orch.getManager()?.getCommandManager().executePreview(command, preview, context));
 	}
 }

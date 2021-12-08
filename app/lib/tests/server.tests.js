@@ -1,7 +1,3 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-import assert from 'assert';
-
 import { expect } from 'chai';
 import './server.mocks.js';
 
@@ -41,11 +37,11 @@ describe('PasswordPolicyClass', () => {
 		describe('Password tests with default options', () => {
 			it('should allow all passwords', () => {
 				const passwordPolice = new PasswordPolicyClass({ throwError: false });
-				assert.equal(passwordPolice.validate(), false);
-				assert.equal(passwordPolice.validate(''), false);
-				assert.equal(passwordPolice.validate('            '), false);
-				assert.equal(passwordPolice.validate('a'), true);
-				assert.equal(passwordPolice.validate('aaaaaaaaa'), true);
+				expect(passwordPolice.validate()).to.be.equal(false);
+				expect(passwordPolice.validate('')).to.be.equal(false);
+				expect(passwordPolice.validate('            ')).to.be.equal(false);
+				expect(passwordPolice.validate('a')).to.be.equal(true);
+				expect(passwordPolice.validate('aaaaaaaaa')).to.be.equal(true);
 			});
 		});
 	});

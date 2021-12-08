@@ -3,6 +3,7 @@ import _ from 'underscore';
 
 import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken, departmentId) {
@@ -75,7 +76,7 @@ Meteor.methods({
 		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
-		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.videoCall = initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true;
 		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
@@ -98,6 +99,7 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = Users.findOnlineAgents().count() > 0;
-		return info;
+
+		return deprecationWarning({ endpoint: 'livechat:getInitialData', versionWillBeRemoved: '5.0', response: info });
 	},
 });

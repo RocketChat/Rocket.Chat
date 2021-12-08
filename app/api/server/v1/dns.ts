@@ -48,7 +48,7 @@ import { resolveSRV, resolveTXT } from '../../../federation/server/functions/res
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('dns.resolve.srv', { authRequired: true }, {
-	get() {
+	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			url: String,
 		}));
@@ -58,7 +58,7 @@ API.v1.addRoute('dns.resolve.srv', { authRequired: true }, {
 			throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 		}
 
-		const resolved = Promise.await(resolveSRV(url));
+		const resolved = await resolveSRV(url);
 
 		return API.v1.success({ resolved });
 	},
@@ -99,7 +99,7 @@ API.v1.addRoute('dns.resolve.srv', { authRequired: true }, {
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('dns.resolve.txt', { authRequired: true }, {
-	post() {
+	async post() {
 		check(this.queryParams, Match.ObjectIncluding({
 			url: String,
 		}));
@@ -109,7 +109,7 @@ API.v1.addRoute('dns.resolve.txt', { authRequired: true }, {
 			throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 		}
 
-		const resolved = Promise.await(resolveTXT(url));
+		const resolved = await resolveTXT(url);
 
 		return API.v1.success({ resolved });
 	},

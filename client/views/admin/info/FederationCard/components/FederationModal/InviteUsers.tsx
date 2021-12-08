@@ -15,7 +15,7 @@ const InviteUsers: FC<{ onClose: () => void }> = ({ onClose }): ReactElement => 
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-			<Box fontWeight='c2' fontSize='p1'>
+			<Box fontWeight='c2' fontSize='p3'>
 				{t('Federation_Inviting_users_from_another_server')}
 			</Box>
 			<Box mbs='x16'>{t('Federation_Search_users_you_want_to_connect')}</Box>

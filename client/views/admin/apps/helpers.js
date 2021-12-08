@@ -91,6 +91,8 @@ export const appButtonProps = ({
 	price,
 	purchaseType,
 	subscriptionInfo,
+	pricingPlans,
+	isEnterpriseOnly,
 }) => {
 	const canUpdate =
 		installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
@@ -114,8 +116,19 @@ export const appButtonProps = ({
 		};
 	}
 
-	const canTrial = purchaseType === 'subscription' && !subscriptionInfo.status;
-	if (canTrial) {
+	const canSubscribe = purchaseType === 'subscription' && !subscriptionInfo.status;
+	if (canSubscribe) {
+		const cannotTry = pricingPlans.every(
+			(currentPricingPlan) => currentPricingPlan.trialDays === 0,
+		);
+
+		if (cannotTry || isEnterpriseOnly) {
+			return {
+				action: 'purchase',
+				label: 'Subscribe',
+			};
+		}
+
 		return {
 			action: 'purchase',
 			label: 'Trial',

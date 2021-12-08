@@ -115,7 +115,7 @@ const TwoFactorTOTP = (props) => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd='x8'>
-				<Box fontScale='s2'>{t('Two-factor_authentication')}</Box>
+				<Box fontScale='h4'>{t('Two-factor_authentication')}</Box>
 				{!totpEnabled && !registeringTotp && (
 					<>
 						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>
@@ -147,7 +147,7 @@ const TwoFactorTOTP = (props) => {
 						<Button primary danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
-						<Box fontScale='p2' mbs='x8'>
+						<Box fontScale='p4' mbs='x8'>
 							{t('Backup_codes')}
 						</Box>
 						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>

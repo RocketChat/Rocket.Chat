@@ -1,20 +1,23 @@
-import { Box, Pagination, Table, Tile } from '@rocket.chat/fuselage';
+import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, {
 	useState,
 	useEffect,
-	useCallback,
 	forwardRef,
 	ReactNode,
 	ReactElement,
 	Key,
-	RefAttributes,
+	useMemo,
+	Ref,
 } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import ScrollableContentWrapper from '../ScrollableContentWrapper';
-import LoadingRow from './LoadingRow';
+import { GenericTable as GenericTableV2 } from './V2/GenericTable';
+import { GenericTableBody } from './V2/GenericTableBody';
+import { GenericTableHeader } from './V2/GenericTableHeader';
+import { GenericTableLoadingTable } from './V2/GenericTableLoadingTable';
+import { usePagination } from './hooks/usePagination';
 
 const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
@@ -37,14 +40,10 @@ type GenericTableProps<
 	pagination?: boolean;
 } & FilterProps;
 
-const GenericTable: {
-	<
-		FilterProps extends { onChange?: (params: GenericTableParams) => void },
-		ResultProps extends { _id?: Key },
-	>(
-		props: GenericTableProps<FilterProps, ResultProps> & RefAttributes<HTMLElement>,
-	): ReactElement | null;
-} = forwardRef(function GenericTable(
+const GenericTable = forwardRef(function GenericTable<
+	FilterProps extends { onChange?: (params: GenericTableParams) => void },
+	ResultProps extends { _id?: Key },
+>(
 	{
 		children,
 		fixed = true,
@@ -57,41 +56,31 @@ const GenericTable: {
 		total,
 		pagination = true,
 		...props
-	},
-	ref,
+	}: GenericTableProps<FilterProps, ResultProps>,
+	ref: Ref<HTMLElement>,
 ) {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
 
-	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
-
-	const [current, setCurrent] = useState(0);
+	const {
+		itemsPerPage,
+		setItemsPerPage,
+		current,
+		setCurrent,
+		itemsPerPageLabel,
+		showingResultsLabel,
+	} = usePagination();
 
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ ...params, current, itemsPerPage });
+		setParams({ text: params.text || '', current, itemsPerPage });
 	}, [params, current, itemsPerPage, setParams]);
 
-	const Loading = useCallback(() => {
-		const headerCells = flattenChildren(header);
-		return (
-			<>
-				{Array.from({ length: 10 }, (_, i) => (
-					<LoadingRow key={i} cols={headerCells.length} />
-				))}
-			</>
-		);
-	}, [header]);
+	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
 
-	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
-		[t],
-	);
-
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
+	const isLoading = !results;
 
 	return (
 		<>
@@ -99,33 +88,23 @@ const GenericTable: {
 				? renderFilter({ ...props, onChange: setFilter } as any) // TODO: ugh
 				: null}
 			{results && !results.length ? (
-				<Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
+				<Tile fontScale='p3' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 			) : (
 				<>
-					<Box mi='neg-x24' pi='x24' flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
-						<ScrollableContentWrapper overflowX>
-							<Table fixed={fixed} sticky>
-								{header && (
-									<Table.Head>
-										<Table.Row>{header}</Table.Row>
-									</Table.Head>
-								)}
-								<Table.Body>
-									{RenderRow &&
-										(results ? (
-											results.map((props, index) => (
-												<RenderRow key={props._id || index} {...props} />
-											))
-										) : (
-											<Loading />
-										))}
-									{children && (results ? results.map(children) : <Loading />)}
-								</Table.Body>
-							</Table>
-						</ScrollableContentWrapper>
-					</Box>
+					<GenericTableV2 fixed={fixed} ref={ref}>
+						{header && <GenericTableHeader>{header}</GenericTableHeader>}
+						<GenericTableBody>
+							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
+							{!isLoading &&
+								((RenderRow &&
+									results?.map((props, index: number) => (
+										<RenderRow key={props._id || index} {...props} />
+									))) ||
+									(children && results?.map(children)))}
+						</GenericTableBody>
+					</GenericTableV2>
 					{pagination && (
 						<Pagination
 							divider

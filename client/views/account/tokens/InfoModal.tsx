@@ -27,7 +27,7 @@ const InfoModal: FC<InfoModalProps> = ({
 			<Modal.Title>{title}</Modal.Title>
 			<Modal.Close onClick={onClose} />
 		</Modal.Header>
-		<Modal.Content fontScale='p1'>{content}</Modal.Content>
+		<Modal.Content fontScale='p3'>{content}</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				{cancelText && <Button onClick={onClose}>{cancelText}</Button>}

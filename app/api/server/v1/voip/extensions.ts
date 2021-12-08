@@ -4,22 +4,22 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+import { logger } from './logger';
 
 // Get the connector version and type
 API.v1.addRoute('connector.getVersion', { authRequired: true }, {
-	get() {
-		const version = Promise.await(Voip.getConnectorVersion());
+	async get() {
+		const version = await Voip.getConnectorVersion();
 		return API.v1.success(version);
 	},
 });
 
 // Get the extensions available on the call server
 API.v1.addRoute('connector.extension.list', { authRequired: true }, {
-	get() {
-		const list = Promise.await(Voip.getExtensionList()) as IVoipConnectorResult;
+	async get() {
+		const list = await Voip.getExtensionList();
 		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
-		this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
+		logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
 		return API.v1.success({ extensions: result });
 	},
 });
@@ -29,12 +29,12 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
  * or will be consumed internally.
  */
 API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
-	get() {
+	async get() {
 		check(this.requestParams(), Match.ObjectIncluding({
 			extension: String,
 		}));
-		const endpointDetails = Promise.await(Voip.getExtensionDetails(this.requestParams())) as IVoipConnectorResult;
-		this.logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
+		const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
+		logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });
@@ -42,12 +42,12 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 /* Get the details for registration extension.
  */
 API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
-	get() {
+	async get() {
 		check(this.requestParams(), Match.ObjectIncluding({
 			extension: String,
 		}));
-		const endpointDetails = Promise.await(Voip.getRegistrationInfo(this.requestParams()));
-		this.logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
+		const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
+		logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });
