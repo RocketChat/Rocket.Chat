@@ -4,6 +4,7 @@ import { API } from '../../api';
 import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
+import { logger } from './logger';
 
 API.v1.addRoute('omnichannel/agent/extension', { authRequired: true }, {
 	// Get the extensions associated with the agent passed as request params.
@@ -27,7 +28,7 @@ API.v1.addRoute('omnichannel/agent/extension', { authRequired: true }, {
 				username: 1,
 				extension: 1,
 			},
-		}).toArray();
+		});
 		if (!extension) {
 			return API.v1.notFound('Extension not found');
 		}
@@ -53,8 +54,13 @@ API.v1.addRoute('omnichannel/agent/extension', { authRequired: true }, {
 		if (!user) {
 			return API.v1.notFound();
 		}
-		await Users.setExtension(user._id, extension);
-		return API.v1.success();
+		try {
+			await Users.setExtension(user._id, extension);
+			return API.v1.success();
+		} catch (e) {
+			logger.error({ msg: 'omnichannel/agent/extension extension already exists' });
+			API.v1.failure(`extension already exists${ extension }`);
+		}
 	},
 	async delete() {
 		if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
@@ -85,7 +91,7 @@ API.v1.addRoute('omnichannel/extension', { authRequired: true,
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			type: String,
-			agentId: Match.Maybe(String),
+			username: Match.Maybe(String),
 		}));
 		const { type, username } = this.queryParams;
 		switch ((type as string).toLowerCase()) {
@@ -116,15 +122,9 @@ API.v1.addRoute('omnichannel/extension', { authRequired: true,
 						username: 1,
 						extension: 1,
 					},
-				}).toArray();
+				});
 				const freeExt = await LivechatVoip.getFreeExtensions();
-				const extensions = [];
-				for (let i = 0; i < extension.length; i++) {
-					extensions.push(extension[i].extension);
-				}
-				for (let i = 0; i < freeExt.result.length; i++) {
-					extensions.push(freeExt.result[i]);
-				}
+				const extensions = [extension.extension, ...freeExt.result];
 				return API.v1.success({ available: extensions });
 			}
 			default:

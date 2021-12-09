@@ -781,7 +781,7 @@ export class UsersRaw extends BaseRaw {
 			_id: userId,
 			extension: { $exists: true },
 		};
-		return this.find(query, options);
+		return this.findOne(query, options);
 	}
 
 	setExtension(userId, extension) {
