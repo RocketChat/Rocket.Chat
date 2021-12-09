@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-type RoomType = 'c' | 'd' | 'p' | 'l';
+type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -94,7 +94,7 @@ export enum OmnichannelSourceType {
 }
 
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
-	t: 'l';
+	t: 'l' | 'v';
 	v: {
 		_id?: string;
 		token?: string;

@@ -52,6 +52,8 @@ import { UsersSessionsRaw } from './UsersSessions';
 import { UserDataFilesRaw } from './UserDataFiles';
 import { UploadsRaw } from './Uploads';
 import { WebdavAccountsRaw } from './WebdavAccounts';
+import { VoipVisitorRaw } from './VoipVisitor';
+import { VoipRoomsRaw } from './VoipRooms';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
@@ -126,7 +128,8 @@ export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions')
 export const UserDataFiles = new UserDataFilesRaw(db.collection(`${ prefix }user_data_files`), trashCollection);
 export const Uploads = new UploadsRaw(db.collection(`${ prefix }uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
-
+export const VoipRoom = new VoipRoomsRaw(db.collection(`${ prefix }room`), trashCollection);
+export const VoipVisitor = new VoipVisitorRaw(db.collection(`${ prefix }visitor`), trashCollection);
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,

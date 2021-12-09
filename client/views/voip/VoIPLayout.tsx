@@ -1,14 +1,18 @@
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
+import { IOmnichannelRoom } from '../../../definition/IRoom';
+import { IVisitor } from '../../../definition/IVisitor';
 import { ClientLogger } from '../../../lib/ClientLogger';
 import { ICallerInfo } from '../../components/voip/ICallEventDelegate';
 import { VoipEvents } from '../../components/voip/SimpleVoipUser';
 import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
 import { useVoipUser, useRegistrationInfo } from '../../contexts/OmnichannelContext';
+import { createToken } from '../../lib/utils/createToken';
 
 const VoIPLayout: FC = () => {
 	const [enableVideo, setEnableVideo] = useState(true);
+	const [initialised, setInitialised] = useState(false);
 	const extensionConfig = useRegistrationInfo();
 	const voipUser = useVoipUser();
 	const remoteVideoMedia = useRef<HTMLVideoElement>(null);
@@ -23,6 +27,10 @@ const VoIPLayout: FC = () => {
 	const acceptCall = useRef<HTMLButtonElement>(null);
 	const rejectCall = useRef<HTMLButtonElement>(null);
 	const endCall = useRef<HTMLButtonElement>(null);
+	const roomToken = createToken();
+	let caller: ICallerInfo;
+	let visitor: IVisitor;
+	let room: IOmnichannelRoom;
 	const logger: ClientLogger = useMemo(() => new ClientLogger('VoIPLayout'), []);
 	const onChange = useCallback((): void => {
 		if (callTypeSelection.current?.value) {
@@ -133,7 +141,53 @@ const VoIPLayout: FC = () => {
 			logger.error(`error ${error} in API connector.extension.getRegistrationInfo`);
 		}
 	};
+	/*
+	const testVoipRooms = async (): Promise<void> => {
+		const token = createToken();
+		try {
+			logger.info('Executing POST voip/visitor');
+			const output = await APIClient.v1.post(
+				'voip/visitor',
+				{},
+				{
+					visitor: {
+						id: createToken(),
+						token,
+						name: 'amol',
+						phone: '+919421203308',
+					},
+				},
+			);
+			logger.info('voip/visitor output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
 
+		try {
+			logger.info('Executing GET voip/room');
+			const output = await APIClient.v1.get(`voip/room`, { token, agentId: 'JrQAQF5xwMe3AdbKL' });
+			logger.info('GET voip/visitor output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
+
+		try {
+			logger.info('Executing GET voip/visitor');
+			const output = await APIClient.v1.get(`voip/visitor/${token}`);
+			logger.info('GET voip/visitor output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
+
+		try {
+			logger.info('Executing DELETE voip/visitor');
+			const output = await APIClient.v1.delete(`voip/visitor/${token}`);
+			logger.info('DELETE voip/visitor output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
+	};
+	*/
 	const registerCallback = (): void => {
 		if (callTypeSelection.current) {
 			callTypeSelection.current.disabled = true;
@@ -163,9 +217,10 @@ const VoIPLayout: FC = () => {
 		if (callerId.current) {
 			callerId.current.textContent = `Call from ${callerInfo.callerId}`;
 		}
+		caller = callerInfo;
 	};
 
-	const callEstablishedCallback = (): void => {
+	const callEstablishedCallback = async (): Promise<void> => {
 		logger.debug('callEstablishedCallback');
 		if (acceptCall.current) {
 			acceptCall.current.style.display = 'none';
@@ -176,9 +231,38 @@ const VoIPLayout: FC = () => {
 		if (endCall.current) {
 			endCall.current.style.display = 'block';
 		}
+		try {
+			// Create a new visitor
+			logger.info('Creating new visitor');
+			visitor = await APIClient.v1.post(
+				'voip/visitor',
+				{},
+				{
+					visitor: {
+						id: createToken(),
+						token: roomToken,
+						name: caller.callerName,
+						phone: caller.callerId,
+					},
+				},
+			);
+			logger.info('Created new Visitor = ', JSON.stringify(visitor));
+
+			// Now create a new room
+			logger.info('Creatring a new room');
+			const output = await APIClient.v1.get('voip/room', {
+				token: roomToken,
+				agentId: 'JrQAQF5xwMe3AdbKL',
+			});
+			room = output.room;
+			logger.info('New Room created', JSON.stringify(room));
+		} catch (error) {
+			logger.error(`error ${error} in vhile creating the room`);
+			throw error;
+		}
 	};
 
-	const callTerminationCallback = (): void => {
+	const callTerminationCallback = async (): Promise<void> => {
 		logger.debug('callTerminationCallback');
 		if (acceptCall.current) {
 			acceptCall.current.style.display = 'none';
@@ -191,6 +275,22 @@ const VoIPLayout: FC = () => {
 		}
 		if (callerId.current) {
 			callerId.current.textContent = '';
+		}
+		// Call is terminated. Now close the room
+
+		try {
+			logger.info('Closing the room');
+			const output = await APIClient.v1.post(
+				'voip/room.close',
+				{},
+				{
+					rid: room._id,
+					token: roomToken,
+				},
+			);
+			logger.info('Closed room Result = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in Closing the room`);
 		}
 	};
 
@@ -212,6 +312,20 @@ const VoIPLayout: FC = () => {
 		logger.debug('onEndCall');
 		voipUser?.endCall();
 	}, [logger, voipUser]);
+
+	const setupHandlers = (): void => {
+		if (!voipUser || initialised) {
+			return;
+		}
+		setInitialised(true);
+		voipUser?.setListener(VoipEvents.registered, registerCallback);
+		voipUser?.setListener(VoipEvents.unregistered, unregisterCallback);
+		voipUser?.setListener(VoipEvents.registrationerror, errorCallback);
+		voipUser?.setListener(VoipEvents.unregistrationerror, errorCallback);
+		voipUser?.setListener(VoipEvents.incomingcall, incomingCallCallback);
+		voipUser?.setListener(VoipEvents.callestablished, callEstablishedCallback);
+		voipUser?.setListener(VoipEvents.callterminated, callTerminationCallback);
+	};
 
 	useEffect(() => {
 		apiTest();
@@ -240,15 +354,8 @@ const VoIPLayout: FC = () => {
 		if (endCall.current) {
 			endCall.current.style.display = 'none';
 		}
-		voipUser?.setListener(VoipEvents.registered, registerCallback);
-		voipUser?.setListener(VoipEvents.unregistered, unregisterCallback);
-		voipUser?.setListener(VoipEvents.registrationerror, errorCallback);
-		voipUser?.setListener(VoipEvents.unregistrationerror, errorCallback);
-		voipUser?.setListener(VoipEvents.incomingcall, incomingCallCallback);
-		voipUser?.setListener(VoipEvents.callestablished, callEstablishedCallback);
-		voipUser?.setListener(VoipEvents.callterminated, callTerminationCallback);
+		setupHandlers();
 	});
-
 	return (
 		<div
 			style={{
@@ -356,6 +463,17 @@ const VoIPLayout: FC = () => {
 				</div>
 			</div>
 			<div style={{ marginTop: '20px', marginBottom: '30px' }}>
+				{/* 
+				<button
+					style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+					className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+					id='test-room'
+					onClick={testVoipRooms}
+				>
+					Test Room
+				</button>
+				*/}
+
 				<button
 					style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
 					className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
