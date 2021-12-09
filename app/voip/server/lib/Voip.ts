@@ -42,12 +42,11 @@ export class Voip {
 		department: string,
 		phone: any,
 		username: string): Promise<any> {
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 0' });
+		this.logger.debug({ msg: 'registerGuest' });
 		check(token, String);
 		check(id, Match.Maybe(String));
 
 		this.logger.debug(`New incoming conversation: id: ${ id } | token: ${ token }`);
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 1' });
 		let userId;
 		const updateUser = {
 			$set: {
@@ -59,7 +58,6 @@ export class Voip {
 			},
 
 		};
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 2' });
 
 		if (email) {
 			email = email.trim();
@@ -68,7 +66,6 @@ export class Voip {
 				{ address: email },
 			];
 		}
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 3' });
 		if (department) {
 			this.logger.debug(`Attempt to find a department with id/name ${ department }`);
 			const dep = LivechatDepartment.findOneByIdOrName(department);
@@ -79,7 +76,6 @@ export class Voip {
 			this.logger.debug(`Assigning visitor ${ token } to department ${ dep._id }`);
 			updateUser.$set.department = dep._id;
 		}
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 4' });
 		const user = await VoipVisitor.getVisitorByToken(token);
 		const existingUser = await VoipVisitor.findOneGuestByEmailAddress(email);
 
@@ -90,23 +86,19 @@ export class Voip {
 			this.logger.debug('Found matching user by email');
 			userId = existingUser._id;
 		} else {
-			this.logger.error({ msg: 'registerGuest AMOL_DEBUG 5' });
 			this.logger.debug(`No matches found. Attempting to create new user with token ${ token }`);
 			if (!username) {
 				username = await VoipVisitor.getNextVisitorUsername();
 			}
-			this.logger.error({ msg: 'registerGuest AMOL_DEBUG 6', id });
 			const userData = {
 				username,
 				ts: new Date().toString(),
 				_id: id,
 				token,
 			};
-			this.logger.error({ msg: 'registerGuest AMOL_DEBUG 7', userData });
+			this.logger.debug({ msg: 'registerGuest inserting user ', userData });
 			userId = await VoipVisitor.insert(userData);
-			this.logger.error({ msg: 'registerGuest AMOL_DEBUG 8', userId });
 		}
-		this.logger.error({ msg: 'registerGuest AMOL_DEBUG 9' });
 		if (userId) {
 			VoipVisitor.updateById(userId, updateUser);
 			return userId;
