@@ -94,6 +94,13 @@ export class AppRoomsConverter {
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
 			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
+			source: {
+				type: room.source.type ?? null,
+				id: room.source.id ?? null,
+				alias: room.source.alias ?? null,
+				sidebarIcon: room.source.sidebarIcon ?? null,
+				defaultIcon: room.source.defaultIcon ?? null,
+			},
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);
