@@ -635,7 +635,9 @@ describe('[Direct Messages]', function() {
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})
 					.end(done);
-        
+			});
+		});
+
 		async function testRoomFNameForUser(testCredentials, roomId, fullName) {
 			return request.get(api('subscriptions.getOne'))
 				.set(testCredentials)
