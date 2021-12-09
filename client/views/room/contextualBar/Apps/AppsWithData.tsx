@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
-import { getLastUserInteractionPayload, triggerBlockAction, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import { getLastUserInteractionPayload, triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -55,38 +55,57 @@ const useValues = (view) => {
 };
 
 const AppsWithData = () => {
-	const onClose = useTabBarClose();
+	const closeTabBar = useTabBarClose();
 
 	const [state, setState] = useState({});
 	const [view, setView] = useState({ blocks: [] });
 	const [viewId, setViewId] = useState();
+	const [appId, setAppId] = useState();
 	const [ _mid, setMid ] = useState();
 	const [values, updateValues] = useValues(view);
 
+  const handleUpdate = ({ type, ...data }) => {
+    if (type === 'errors') {
+      const { errors } = data;
+      setState((state) => ({ ...state, errors }));
+      return;
+    }
+
+    setState(data);
+  };
+
 	useEffect(() => {
-		const handleUpdate = ({ type, ...data }) => {
-			if (type === 'errors') {
-				const { errors } = data;
-				setState((state) => ({ ...state, errors }));
-				return;
-			}
-
-			setState(data);
-		};
-
 		setState(getLastUserInteractionPayload());
 		if (Object.entries(state).length) {
 			setView(state.view);
 			setViewId(state.viewId);
+			setAppId(state.appId);
 			setMid(state.mid);
 
 			on(viewId, handleUpdate);
+      on('close-apps-contextual-bar', closeTabBar);
 
 			return () => {
 				off(viewId, handleUpdate);
+        off('close-apps-contextual-bar', closeTabBar);
 			};
 		}
-	}, [view, viewId, state]);
+	}, [view, viewId, appId, state]);
+
+	const groupStateByBlockId = (obj) =>
+		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
+			obj[blockId] = obj[blockId] || {};
+			obj[blockId][key] = value;
+			return obj;
+		}, {});
+
+	const prevent = (e) => {
+		if (e) {
+			(e.nativeEvent || e).stopImmediatePropagation();
+			e.stopPropagation();
+			e.preventDefault();
+		}
+	};
 
 	const context = {
 		action: ({ actionId, appId, value, blockId, mid = _mid }) =>
@@ -114,9 +133,55 @@ const AppsWithData = () => {
 		values,
 	};
 
+	const handleSubmit = useMutableCallback((e) => {
+		prevent(e);
+		triggerSubmitView({
+			viewId,
+			appId,
+			payload: {
+				view: {
+					...view,
+					id: viewId,
+					state: groupStateByBlockId(values),
+				},
+			},
+		});
+	});
+
+	const handleCancel = useMutableCallback((e) => {
+		prevent(e);
+		return triggerCancel({
+			appId,
+			viewId,
+			view: {
+				...view,
+				id: viewId,
+				state: groupStateByBlockId(values),
+			},
+		});
+	});
+
+	const handleClose = useMutableCallback((e) => {
+		prevent(e);
+		return triggerCancel({
+			appId,
+			viewId,
+			view: {
+				...view,
+				id: viewId,
+				state: groupStateByBlockId(values),
+			},
+			isCleared: true,
+		});
+	});
+
 	return (
 		<kitContext.Provider value={context}>
-			<Apps onClose={onClose} view={view} />
+			<Apps
+        handleSubmit={handleSubmit}
+        handleClose={handleClose}
+        handleCancel={handleCancel}
+        view={view} />
 		</kitContext.Provider>
 	);
 };

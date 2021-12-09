@@ -4,22 +4,28 @@ import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 
-const Apps = ({ view, onSubmit, onClose }) => (
+const Apps = ({
+  view,
+  handleSubmit,
+  handleCancel,
+  handleClose,
+}) => (
 	<>
 		<VerticalBar.Header>
 			{view.showIcon ? <VerticalBar.Icon name='keyboard' /> : null}
 			<VerticalBar.Text>{'App bar'}</VerticalBar.Text>
-			{onClose && <VerticalBar.Close onClick={onClose} />}
+			{handleClose && <VerticalBar.Close onClick={handleClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
-			<Box is='form' method='post' action='#' onSubmit={onSubmit}>
+			<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
 				<UiKitComponent render={UiKitModal} blocks={view.blocks} />
 			</Box>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup align='end'>
+				{view.close && <Button onClick={handleCancel}>{modalParser.text(view.close.text)}</Button>}
 				{view.submit && (
-					<Button primary onClick={onSubmit}>
+					<Button primary onClick={handleSubmit}>
 						{modalParser.text(view.submit.text)}
 					</Button>
 				)}

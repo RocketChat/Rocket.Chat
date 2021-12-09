@@ -80,7 +80,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitIncomingInteractionType.CONTEXTUAL_BAR_UPDATE].includes(type)) {
+	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -92,23 +92,33 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
-		const instance = modal.push({
-			template: 'ModalBlock',
-			modifier: 'uikit',
-			closeOnEscape: false,
-			data: {
-				triggerId,
-				viewId,
-				appId,
-				...data,
-			},
-		});
+//		const instance = modal.push({
+//			template: 'ModalBlock',
+//			modifier: 'uikit',
+//			closeOnEscape: false,
+//			data: {
+//				triggerId,
+//				viewId,
+//				appId,
+//				...data,
+//			},
+//		});
+//
+//		instances.set(viewId, {
+//			close() {
+//				instance.close();
+//				instances.delete(viewId);
+//			},
+//		});
+
+		events.emit('apps-contextual-bar');
 
 		instances.set(viewId, {
 			close() {
-				instance.close();
+				// call close tabbar
+				events.emit('close-apps-contextual-bar');
 				instances.delete(viewId);
-			},
+			}
 		});
 
 		return UIKitInteractionTypes.MODAL_OPEN;
