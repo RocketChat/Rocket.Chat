@@ -3,6 +3,7 @@ import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
+import MarkdownText from '../../../components/MarkdownText';
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
@@ -131,7 +132,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 
 					<Box fontScale='h4'>{t('Details')}</Box>
 					<Box display='flex' flexDirection='row'>
-						{description}
+						<MarkdownText content={description} />
 					</Box>
 				</Margins>
 			</Box>

@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 
+import { Markdown } from '../../../../../app/markdown/lib/markdown';
 import { AppsContext } from '../AppsContext';
 import { App } from '../types';
 
@@ -36,7 +37,10 @@ export const useFilteredApps = ({
 	const total = filtered.length;
 	const start = current > total ? 0 : current;
 	const end = current + itemsPerPage;
-	const slice = filtered.slice(start, end);
+	const slice = filtered.slice(start, end).map((app) => ({
+		...app,
+		description: Markdown.filterMarkdownFromMessage(app.description),
+	}));
 
 	return [slice, total];
 };
