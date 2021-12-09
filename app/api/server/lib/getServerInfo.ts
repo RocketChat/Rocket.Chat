@@ -1,6 +1,6 @@
 
 import { Info } from '../../../utils/server';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { hasRolesAsync } from '../../../authorization/server/functions/hasRole';
 
 type ServerInfo = {
 	info: Info;
@@ -11,7 +11,7 @@ type ServerInfo = {
 const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
 
 export async function getServerInfo(userId?: string): Promise<ServerInfo> {
-	if (await hasRoleAsync(userId, 'admin')) {
+	if (userId && await hasRolesAsync(userId, ['admin'])) {
 		return {
 			info: Info,
 		};
