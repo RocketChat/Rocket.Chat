@@ -22,7 +22,7 @@ const NavigationItem = ({
 	return (
 		<Sidebar.GenericItem active={isActive} href={path} key={path}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
-			<Box withTruncatedText fontScale='p1' mi='x4' color='info'>
+			<Box withTruncatedText fontScale='p3' mi='x4' color='info'>
 				{label}{' '}
 				{tag && (
 					<Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>

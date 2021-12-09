@@ -89,7 +89,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p3'>
 				<Field mbe={'x30'}>
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>

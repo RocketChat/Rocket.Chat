@@ -193,7 +193,7 @@ function EditRoom({ room, onChange }) {
 					<Field>
 						<Field.Label>{t('Owner')}</Field.Label>
 						<Field.Row>
-							<Box fontScale='p1'>{room.u?.username}</Box>
+							<Box fontScale='p3'>{room.u?.username}</Box>
 						</Field.Row>
 					</Field>
 					{canViewDescription && (

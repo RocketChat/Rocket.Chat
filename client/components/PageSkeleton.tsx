@@ -13,7 +13,7 @@ const PageSkeleton = (): ReactElement => (
 
 		<Page.Content>
 			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-				<Box is='p' color='hint' fontScale='p1'>
+				<Box is='p' color='hint' fontScale='p3'>
 					<Skeleton />
 					<Skeleton />
 					<Skeleton width='75%' />

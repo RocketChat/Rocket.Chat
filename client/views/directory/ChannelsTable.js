@@ -134,7 +134,7 @@ function ChannelsTable() {
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
 									<Icon name={roomTypes.getIcon(room)} color='hint' />{' '}
-									<Box fontScale='p2' mi='x4'>
+									<Box fontScale='p4' mi='x4'>
 										{fname || name}
 									</Box>
 									<RoomTags room={room} style={style} />
@@ -142,7 +142,7 @@ function ChannelsTable() {
 								{topic && (
 									<MarkdownText
 										variant='inlineWithoutBreaks'
-										fontScale='p1'
+										fontScale='p3'
 										color='hint'
 										style={style}
 										content={topic}
@@ -151,21 +151,21 @@ function ChannelsTable() {
 							</Box>
 						</Box>
 					</Table.Cell>
-					<Table.Cell fontScale='p1' color='hint' style={style}>
+					<Table.Cell fontScale='p3' color='hint' style={style}>
 						{usersCount}
 					</Table.Cell>
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p3' color='hint' style={style}>
 							{formatDate(ts)}
 						</Table.Cell>
 					)}
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p3' color='hint' style={style}>
 							{lastMessage && formatDate(lastMessage.ts)}
 						</Table.Cell>
 					)}
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p3' color='hint' style={style}>
 							{belongsTo}
 						</Table.Cell>
 					)}

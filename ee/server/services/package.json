@@ -6,7 +6,11 @@
 	"scripts": {
 		"dev": "pm2 start ecosystem.config.js",
 		"pm2": "pm2",
-		"start": "ts-node index.ts",
+		"start:account": "ts-node --files ./account/service.ts",
+		"start:authorization": "ts-node --files ./authorization/service.ts",
+		"start:ddp-streamer": "ts-node --files ./ddp-streamer/service.ts",
+		"start:presence": "ts-node --files ./presence/service.ts",
+		"start:stream-hub": "ts-node --files ./stream-hub/service.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"build": "tsc",
 		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",
@@ -18,7 +22,8 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"@rocket.chat/string-helpers": "^0.29.0",
+		"@rocket.chat/emitter": "^0.30.1",
+		"@rocket.chat/string-helpers": "^0.30.1",
 		"ajv": "^8.7.1",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.19.0",

@@ -340,6 +340,7 @@ describe('[Direct Messages]', function() {
 		const email = `fname_${ apiEmail }`;
 		let userId;
 		let directMessageId;
+		let user;
 
 		before((done) => {
 			request.post(api('users.create'))
@@ -355,6 +356,7 @@ describe('[Direct Messages]', function() {
 					verified: true,
 				})
 				.expect((res) => {
+					user = res.body.user;
 					userId = res.body.user._id;
 				})
 				.end(done);
@@ -377,6 +379,8 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
+
+		after(async () => deleteUser(user));
 
 		it('should have fname property', (done) => {
 			request.get(api('subscriptions.getOne'))
@@ -482,34 +486,55 @@ describe('[Direct Messages]', function() {
 	});
 
 	describe('/im.create', () => {
+		let user;
+		let userCredentials;
+
 		let otherUser;
-		let roomId;
+		let otherUserCredentials;
+
+		let thirdUser;
+		let thirdUserCredentials;
+
+		let roomIds = {};
+
+		// Names have to be in alfabetical order so we can test the room's fullname
+		const userFullName = 'User A';
+		const otherUserFullName = 'User B';
+		const thirdUserFullName = 'User C';
 
 		before(async () => {
-			otherUser = await createUser();
+			user = await createUser({ name: userFullName });
+			otherUser = await createUser({ name: otherUserFullName });
+			thirdUser = await createUser({ name: thirdUserFullName });
+
+			userCredentials = await login(user.username, password);
+			otherUserCredentials = await login(otherUser.username, password);
+			thirdUserCredentials = await login(thirdUser.username, password);
 		});
 
 		after(async () => {
-			if (roomId) {
-				await deleteRoom({ type: 'd', roomId });
-			}
+			await Promise.all(Object.values(roomIds).map((roomId) => deleteRoom({ type: 'd', roomId })));
+			await deleteUser(user);
 			await deleteUser(otherUser);
+			await deleteUser(thirdUser);
+			user = undefined;
 			otherUser = undefined;
+			thirdUser = undefined;
 		});
 
 		it('creates a DM between two other parties (including self)', (done) => {
 			request.post(api('im.create'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					usernames: ['rocket.cat', otherUser.username].join(','),
+					usernames: [otherUser.username, thirdUser.username].join(','),
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername, 'rocket.cat', otherUser.username]);
-					roomId = res.body.room._id;
+					expect(res.body.room).to.have.property('usernames').and.to.have.members([thirdUser.username, user.username, otherUser.username]);
+					roomIds = { ...roomIds, multipleDm: res.body.room._id };
 				})
 				.end(done);
 		});
@@ -518,7 +543,7 @@ describe('[Direct Messages]', function() {
 			request.post(api('im.create'))
 				.set(credentials)
 				.send({
-					usernames: ['rocket.cat', otherUser.username].join(','),
+					usernames: [user.username, otherUser.username].join(','),
 					excludeSelf: true,
 				})
 				.expect(200)
@@ -526,24 +551,25 @@ describe('[Direct Messages]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members(['rocket.cat', otherUser.username]);
-					roomId = res.body.room._id;
+					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+					roomIds = { ...roomIds, dm: res.body.room._id };
 				})
 				.end(done);
 		});
 
 		it('should create a self-DM', (done) => {
 			request.post(api('im.create'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					username: adminUsername,
+					username: user.username,
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername]);
+					expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username]);
+					roomIds = { ...roomIds, self: res.body.room._id };
 				})
 				.end(done);
 		});
@@ -609,6 +635,34 @@ describe('[Direct Messages]', function() {
 						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
 					})
 					.end(done);
+        
+		async function testRoomFNameForUser(testCredentials, roomId, fullName) {
+			return request.get(api('subscriptions.getOne'))
+				.set(testCredentials)
+				.query({ roomId })
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('subscription').and.to.be.an('object');
+					expect(res.body.subscription).to.have.property('fname', fullName);
+				});
+		}
+
+		describe('Rooms fullName', () => {
+			it('should be own user\'s name for self DM', async () => {
+				await testRoomFNameForUser(userCredentials, roomIds.self, userFullName);
+			});
+
+			it('should be other user\'s name concatenated for multiple users\'s DM for every user', async () => {
+				await testRoomFNameForUser(userCredentials, roomIds.multipleDm, [otherUserFullName, thirdUserFullName].join(', '));
+				await testRoomFNameForUser(otherUserCredentials, roomIds.multipleDm, [userFullName, thirdUserFullName].join(', '));
+				await testRoomFNameForUser(thirdUserCredentials, roomIds.multipleDm, [userFullName, otherUserFullName].join(', '));
+			});
+
+			it('should be other user\'s name for DM for both users', async () => {
+				await testRoomFNameForUser(userCredentials, roomIds.dm, otherUserFullName);
+				await testRoomFNameForUser(otherUserCredentials, roomIds.dm, userFullName);
 			});
 		});
 	});

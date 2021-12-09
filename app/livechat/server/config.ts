@@ -56,6 +56,15 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		this.add('Livechat_clear_local_storage_when_chat_ended', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			section: 'Livechat',
+			i18nLabel: 'Clear_livechat_session_when_chat_ended',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		this.add('Livechat_validate_offline_email', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -619,6 +628,7 @@ Meteor.startup(function() {
 			],
 			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 			i18nLabel: 'Call_provider',
+			alert: 'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});
