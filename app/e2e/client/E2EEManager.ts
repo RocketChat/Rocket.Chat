@@ -28,17 +28,18 @@ class E2EERoomClientPool implements IE2EERoomClientPool {
 
 		const newRoomClient = new E2ERoom(rid, this.userPrivateKey);
 		this.roomClients.set(rid, newRoomClient);
+		newRoomClient.start();
 		return newRoomClient;
 	}
 
 	untrack(rid: IRoom['_id']): void {
-		this.roomClients.get(rid)?.release();
+		this.roomClients.get(rid)?.stop();
 		this.roomClients.delete(rid);
 	}
 
 	untrackAll(): void {
 		for (const roomClient of this.roomClients.values()) {
-			roomClient.release();
+			roomClient.stop();
 		}
 		this.roomClients.clear();
 	}
@@ -95,12 +96,9 @@ export abstract class E2EEManager extends Emitter {
 		};
 	}
 
-	async decryptMessage(message: IMessage): Promise<IMessage> {
+	async decryptMessage(message: IMessage, { waitForKey = false }: { waitForKey?: boolean } = {}): Promise<IMessage> {
 		const roomClient = this.roomClients?.track(message.rid);
-
-		await roomClient?.whenReady();
-
-		return roomClient?.decryptMessage(message) ?? message;
+		return roomClient?.decryptMessage(message, { waitForKey }) ?? message;
 	}
 
 	abstract toggle(enabled: boolean): void;

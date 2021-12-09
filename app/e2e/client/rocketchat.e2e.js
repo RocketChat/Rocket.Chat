@@ -336,9 +336,8 @@ class E2E extends E2EEManager {
 	}
 
 	async decryptSubscription(rid) {
-		const roomClient = this.roomClients?.track(rid);
-		await roomClient?.whenReady();
 		this.log('decryptSubscription ->', rid);
+		const roomClient = this.roomClients?.track(rid);
 		roomClient?.decryptSubscription();
 	}
 
