@@ -56,6 +56,16 @@ const Extended = ({
 						</Sidebar.Item.Title>
 						{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
 					</Sidebar.Item.Wrapper>
+					{badges && !time && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
+					{menu && !time && (
+								<Sidebar.Item.Menu {...handleMenuEvent}>
+									{menuVisibility ? (
+										menu()
+									) : (
+										<ActionButton square ghost small rcx-sidebar-item__menu icon='kebab' />
+									)}
+								</Sidebar.Item.Menu>
+					)}
 				</Sidebar.Item.Content>
 				<Sidebar.Item.Content>
 					<Sidebar.Item.Wrapper>
@@ -66,7 +76,7 @@ const Extended = ({
 							{subtitle}
 						</Sidebar.Item.Subtitle>
 						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
-						{menu && (
+						{menu && time && (
 							<Sidebar.Item.Menu {...handleMenuEvent}>
 								{menuVisibility ? (
 									menu()
