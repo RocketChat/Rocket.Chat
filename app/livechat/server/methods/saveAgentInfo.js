@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission, hasRole } from '../../../authorization';
+import { hasPermission, hasRole } from '../../../authorization/server';
 import { Livechat } from '../lib/Livechat';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
