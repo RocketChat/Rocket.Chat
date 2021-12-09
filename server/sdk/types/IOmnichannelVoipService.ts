@@ -1,4 +1,4 @@
-import { IOmnichannelVoipServiceResult } from '../../../definition/ILivechatVoipServiceResult';
+import { IOmnichannelVoipServiceResult } from '../../../definition/IOmnichannelVoipServiceResult';
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
