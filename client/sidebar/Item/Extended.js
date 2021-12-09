@@ -58,13 +58,13 @@ const Extended = ({
 					</Sidebar.Item.Wrapper>
 					{badges && !time && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 					{menu && !time && (
-								<Sidebar.Item.Menu {...handleMenuEvent}>
-									{menuVisibility ? (
-										menu()
-									) : (
-										<ActionButton square ghost small rcx-sidebar-item__menu icon='kebab' />
-									)}
-								</Sidebar.Item.Menu>
+						<Sidebar.Item.Menu {...handleMenuEvent}>
+							{menuVisibility ? (
+								menu()
+							) : (
+								<ActionButton square ghost small rcx-sidebar-item__menu icon='kebab' />
+							)}
+						</Sidebar.Item.Menu>
 					)}
 				</Sidebar.Item.Content>
 				<Sidebar.Item.Content>
