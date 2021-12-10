@@ -1,10 +1,16 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
-import { getLastUserInteractionPayload, triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import {
+	getLastUserInteractionPayload,
+	triggerBlockAction,
+	triggerCancel,
+	triggerSubmitView,
+	on,
+	off,
+} from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -61,18 +67,18 @@ const AppsWithData = () => {
 	const [view, setView] = useState({ blocks: [] });
 	const [viewId, setViewId] = useState();
 	const [appId, setAppId] = useState();
-	const [ _mid, setMid ] = useState();
+	const [_mid, setMid] = useState();
 	const [values, updateValues] = useValues(view);
 
-  const handleUpdate = ({ type, ...data }) => {
-    if (type === 'errors') {
-      const { errors } = data;
-      setState((state) => ({ ...state, errors }));
-      return;
-    }
+	const handleUpdate = ({ type, ...data }) => {
+		if (type === 'errors') {
+			const { errors } = data;
+			setState((state) => ({ ...state, errors }));
+			return;
+		}
 
-    setState(data);
-  };
+		setState(data);
+	};
 
 	useEffect(() => {
 		setState(getLastUserInteractionPayload());
@@ -83,14 +89,14 @@ const AppsWithData = () => {
 			setMid(state.mid);
 
 			on(viewId, handleUpdate);
-      on('close-apps-contextual-bar', closeTabBar);
+			on('close-apps-contextual-bar', closeTabBar);
 
 			return () => {
 				off(viewId, handleUpdate);
-        off('close-apps-contextual-bar', closeTabBar);
+				off('close-apps-contextual-bar', closeTabBar);
 			};
 		}
-	}, [view, viewId, appId, state]);
+	}, [view, viewId, appId, state, closeTabBar]);
 
 	const groupStateByBlockId = (obj) =>
 		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
@@ -178,10 +184,11 @@ const AppsWithData = () => {
 	return (
 		<kitContext.Provider value={context}>
 			<Apps
-        handleSubmit={handleSubmit}
-        handleClose={handleClose}
-        handleCancel={handleCancel}
-        view={view} />
+				handleSubmit={handleSubmit}
+				handleClose={handleClose}
+				handleCancel={handleCancel}
+				view={view}
+			/>
 		</kitContext.Provider>
 	);
 };

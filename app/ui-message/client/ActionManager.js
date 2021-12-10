@@ -122,7 +122,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 				// call close tabbar
 				events.emit('close-apps-contextual-bar');
 				instances.delete(viewId);
-			}
+			},
 		});
 
 

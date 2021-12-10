@@ -37,22 +37,24 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
-		(isMobile ? actions : actions.slice(6)).filter(action => !action.unlisted).map((item) => {
-			hiddenActionRenderers.current = {
-				...hiddenActionRenderers.current,
-				[item.id]: item.renderOption || renderMenuOption,
-			};
-			return [
-				item.id,
-				{
-					label: { title: t(item.title), icon: item.icon },
-					action: (): void => {
-						openTabBar(item.id);
+		(isMobile ? actions : actions.slice(6))
+			.filter((action) => !action.unlisted)
+			.map((item) => {
+				hiddenActionRenderers.current = {
+					...hiddenActionRenderers.current,
+					[item.id]: item.renderOption || renderMenuOption,
+				};
+				return [
+					item.id,
+					{
+						label: { title: t(item.title), icon: item.icon },
+						action: (): void => {
+							openTabBar(item.id);
+						},
+						...item,
 					},
-					...item,
-				},
-			] as any;
-		})
+				] as any;
+			}),
 	);
 
 	const actionDefault = useMutableCallback((e) => {
@@ -60,16 +62,16 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 		openTabBar(actions[index].id);
 	});
 
-	const openAppsContextualBar = () => {
-		openTabBar('apps-contextual-bar');
-	};
-
 	useEffect(() => {
+		const openAppsContextualBar = (): void => {
+			openTabBar('apps-contextual-bar');
+		};
+
 		on('open-apps-contextual-bar', openAppsContextualBar);
-		return () => {
+		return (): void => {
 			off('open-apps-contextual-bar', openAppsContextualBar);
 		};
-	}, [openAppsContextualBar]);
+	});
 
 	// const open = useMutableCallback((index) => {
 	// 	openTabBar(actions[index].id);
