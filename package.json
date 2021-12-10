@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "4.2.0",
+	"version": "4.2.1",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -61,7 +61,7 @@
 		"@babel/preset-react": "^7.14.5",
 		"@babel/register": "^7.14.5",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/livechat": "^1.10.0",
+		"@rocket.chat/livechat": "^1.11.0",
 		"@settlin/spacebars-loader": "^1.0.9",
 		"@storybook/addon-essentials": "^6.3.12",
 		"@storybook/addon-postcss": "^2.0.0",
@@ -107,7 +107,7 @@
 		"@types/react-dom": "^17.0.11",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.6",
-		"@types/sharp": "^0.28.3",
+		"@types/sharp": "^0.29.4",
 		"@types/string-strip-html": "^5.0.0",
 		"@types/supertest": "^2.0.11",
 		"@types/toastr": "^2.1.39",
@@ -290,7 +290,7 @@
 		"react-query": "^3.33.1",
 		"react-virtuoso": "^1.2.4",
 		"semver": "^5.7.1",
-		"sharp": "^0.22.1",
+		"sharp": "^0.29.3",
 		"sodium-native": "^3.2.1",
 		"sodium-plus": "^0.9.0",
 		"speakeasy": "^2.0.0",
