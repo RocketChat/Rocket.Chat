@@ -70,10 +70,6 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 };
 
 export const wrap = (html: string, data: { [key: string]: unknown } = {}): string => {
-	if (settings.get('email_plain_text_only')) {
-		return replace(html, data);
-	}
-
 	if (!body) {
 		throw new Error('`body` is not set yet');
 	}
@@ -158,7 +154,7 @@ export const sendNoWrap = ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(html).result : undefined;
+		text = html ? stripHtml(wrap(html)).result : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -198,7 +194,9 @@ export const send = ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		text: (text && stripHtml(wrap(text, data)).result)
+			|| (html && stripHtml(wrap(html, data)).result)
+			|| undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
