@@ -12,7 +12,7 @@ export const popover = {
 	open({ currentTarget, ...config }) {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
 		const data = {
-			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
+			targetRect: currentTarget?.getBoundingClientRect(),
 			...config,
 		};
 		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
@@ -148,7 +148,7 @@ Template.popover.onDestroyed(function() {
 		this.data.onDestroyed();
 	}
 	$(window).off('resize', this.position);
-	this.observer && this.observer.disconnect();
+	this.observer?.disconnect();
 });
 
 Template.popover.events({
