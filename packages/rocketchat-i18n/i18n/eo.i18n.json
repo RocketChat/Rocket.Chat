@@ -1728,7 +1728,6 @@
   "Message_editing": "Mesaĝo-redaktado",
   "Message_ErasureType": "Mesaĝo Erasure Tipo",
   "Message_ErasureType_Delete": "Forigi ĉiujn mesaĝojn",
-  "Message_ErasureType_Description": "Determini kion fari kun mesaĝoj de uzantoj kiuj forigas sian konton.",
   "Message_ErasureType_Keep": "Teni Mesaĝojn kaj Uzantnomon",
   "Message_ErasureType_Unlink": "Forigi Ligilon Inter Uzanto kaj Mesaĝoj",
   "Message_GlobalSearch": "Tutmonda Serĉo",

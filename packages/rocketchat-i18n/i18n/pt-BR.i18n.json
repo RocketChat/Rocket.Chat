@@ -2894,7 +2894,6 @@
   "Message_editing": "Edição de mensagem",
   "Message_ErasureType": "Tipo de apagamento de mensagem",
   "Message_ErasureType_Delete": "Excluir todas as mensagens",
-  "Message_ErasureType_Description": "Determine o que fazer com mensagens de usuários que removem suas contas.",
   "Message_ErasureType_Keep": "Mantenha mensagens e nome de usuário",
   "Message_ErasureType_Unlink": "Remover link entre usuário e mensagens",
   "Message_GlobalSearch": "Pesquisa Global",

@@ -1726,7 +1726,6 @@
   "Message_editing": "mesazhi redaktimi",
   "Message_ErasureType": "Lloji i shkyçjes së mesazhit",
   "Message_ErasureType_Delete": "Fshini të gjitha mesazhet",
-  "Message_ErasureType_Description": "Përcaktoni çfarë të bëni me mesazhet e përdoruesve që heqin llogarinë e tyre.",
   "Message_ErasureType_Keep": "Mbani Mesazhet dhe Emri i Përdoruesit",
   "Message_ErasureType_Unlink": "Hiq lidhjen mes përdoruesit dhe mesazhet",
   "Message_GlobalSearch": "Kërkimi global",
