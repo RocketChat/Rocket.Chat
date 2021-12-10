@@ -7,14 +7,15 @@ import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
 import { IMessage } from '../../../definition/IMessage';
-import { decryptAES, decryptRSA, encryptAES, exportJWKKey, generateAESKey, importAESKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, toString } from './helpers';
+import { decryptAES, decryptRSA, encryptAES, encryptRSA, exportJWKKey, generateAESKey, importAESKey, importRSAKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, toArrayBuffer, toString } from './helpers';
 import { IRoom } from '../../../definition/IRoom';
-import { Rooms, Subscriptions } from '../../models/client';
+import { Messages, Rooms, Subscriptions } from '../../models/client';
 import { ISubscription } from '../../../definition/ISubscription';
 import { APIClient, RoomSettingsEnum, roomTypes } from '../../utils/client';
 import { IUser } from '../../../definition/IUser';
 import { isShallowEqual } from '../../../lib/utils/isShallowEqual';
 import { Notifications } from '../../notifications/client';
+import { Serialized } from '../../../definition/Serialized';
 
 type EncryptableMessage = {
 	_id: IMessage['_id'];
@@ -74,6 +75,7 @@ type RoomMetadata = {
 	encryptionRequired: boolean;
 	roomKeyID: IRoom['e2eKeyId'];
 	encryptedKey: ISubscription['E2EKey'];
+	lastMessage: IRoom['lastMessage'];
 };
 
 const getRoomMetadata = (rid: IRoom['_id']): RoomMetadata | undefined => {
@@ -107,10 +109,11 @@ const getRoomMetadata = (rid: IRoom['_id']): RoomMetadata | undefined => {
 		encryptionRequired: room.encrypted === true,
 		roomKeyID: room.e2eKeyId,
 		encryptedKey: subscription.E2EKey,
+		lastMessage: room.lastMessage,
 	};
 };
 
-export abstract class E2EERoomClient extends Emitter<{
+export class E2EERoomClient extends Emitter<{
 	metadataChanged: void;
 	keyChanged: void;
 }> {
@@ -130,16 +133,6 @@ export abstract class E2EERoomClient extends Emitter<{
 		super();
 
 		this.on('metadataChanged', () => this.handleMetadataChanged());
-		this.on('keyChanged', () => {
-			const key = this.getKey();
-
-			if (!key) {
-				return;
-			}
-
-			this.decryptSubscription();
-			this.decryptPendingMessages();
-		});
 	}
 
 	start(): void {
@@ -292,6 +285,8 @@ export abstract class E2EERoomClient extends Emitter<{
 		const { roomKeyID: roomKeyId, encryptedKey: encryptedSubscriptionKey } = metadata;
 
 		if (keyID && key && keyID === roomKeyId) {
+			this.decryptLastMessage();
+			this.decryptPendingMessages();
 			return;
 		}
 
@@ -323,14 +318,84 @@ export abstract class E2EERoomClient extends Emitter<{
 		this.requestGroupKey(roomKeyId);
 	}
 
-	abstract decryptSubscription(): void;
+	async decryptLastMessage(): Promise<void> {
+		const metadata = this.getMetadata();
 
-	abstract decryptPendingMessages(): void;
+		if (metadata === undefined) {
+			return;
+		}
 
-	abstract encryptKeyForOtherParticipants(): Promise<void>;
+		const { lastMessage } = metadata;
 
-	async decryptMessage(message: IMessage, { waitForKey = false }: { waitForKey?: boolean } = {}): Promise<IMessage> {
-		// the message is not encrypted / alrready encryted
+		if (!lastMessage) {
+			return;
+		}
+
+		const decryptedLastMessage = await this.decryptMessage(lastMessage, { waitForKey: true });
+
+		Rooms.direct.update({
+			_id: this.rid,
+		}, {
+			$set: {
+				'lastMessage.msg': decryptedLastMessage.msg,
+				'lastMessage.e2e': decryptedLastMessage.e2e,
+			},
+		});
+
+		Subscriptions.direct.update({
+			rid: this.rid,
+		}, {
+			$set: {
+				'lastMessage.msg': decryptedLastMessage.msg,
+				'lastMessage.e2e': decryptedLastMessage.e2e,
+			},
+		});
+	}
+
+	async decryptPendingMessages(): Promise<void> {
+		return Messages.find({ rid: this.rid, t: 'e2e', e2e: 'pending' })
+			.forEach(async (message: IMessage) => {
+				const { _id, ...rest } = await this.decryptMessage(message);
+				Messages.direct.update({ _id }, rest);
+			});
+	}
+
+	async encryptKeyForOtherParticipants(): Promise<void> {
+		const { users } = await APIClient.v1.get<{ rid: IRoom['_id'] }, { users: IUser[] }>('e2e.getUsersOfRoomWithoutKey', { rid: this.rid });
+		users.forEach((user) => {
+			this.encryptForParticipant(user);
+		});
+	}
+
+	async encryptForParticipant(user: Serialized<IUser>): Promise<void> {
+		if (!user.e2e) {
+			return;
+		}
+
+		const userKey = await importRSAKey(JSON.parse(user.e2e.public_key), ['encrypt']);
+
+		if (!this.sessionKeyExportedString) {
+			return;
+		}
+
+		const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
+		await APIClient.v1.post('e2e.updateGroupKey', {
+			rid: this.rid,
+			uid: user._id,
+			key: this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)),
+		});
+	}
+
+	provideKeyToUser(keyID: string): void {
+		if (this.keyID !== keyID) {
+			return;
+		}
+
+		this.encryptKeyForOtherParticipants();
+	}
+
+	async decryptMessage<T extends Pick<IMessage, 't' | 'e2e' | 'msg'>>(message: T, { waitForKey = false }: { waitForKey?: boolean } = {}): Promise<T> {
+		// the message is not encrypted / already encryted
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
 		}
@@ -351,8 +416,14 @@ export abstract class E2EERoomClient extends Emitter<{
 		};
 	}
 
-	async encryptMessage(message: IMessage): Promise<IMessage> {
-		const { encryptionRequired, uid } = await this.fetchMetadata();
+	async encryptMessage<T extends Pick<IMessage, '_id' | 't' | 'e2e' | 'msg'>>(message: T): Promise<T> {
+		const metadata = this.getMetadata();
+
+		if (metadata === undefined) {
+			return message;
+		}
+
+		const { encryptionRequired, uid } = metadata;
 
 		if (!encryptionRequired) {
 			// encryption is not required on room

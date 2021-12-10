@@ -3,30 +3,31 @@ import { Emitter } from '@rocket.chat/emitter';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { Subscriptions } from '../../models/client';
-import { E2ERoom } from './rocketchat.e2e.room';
+import { E2EERoomClient } from './E2EERoomClient';
 import { ISubscription } from '../../../definition/ISubscription';
 import { Notifications } from '../../notifications/client';
+import { NotificationEvent } from '../../../definition/NotificationEvent';
 
 interface IE2EERoomClientPool {
-	track(rid: IRoom['_id']): E2ERoom;
+	track(rid: IRoom['_id']): E2EERoomClient;
 	untrack(rid: IRoom['_id']): void;
 	untrackAll(): void;
 }
 
 class E2EERoomClientPool implements IE2EERoomClientPool {
-	protected roomClients: Map<IRoom['_id'], E2ERoom> = new Map();
+	protected roomClients: Map<IRoom['_id'], E2EERoomClient> = new Map();
 
 	// eslint-disable-next-line no-empty-function
 	constructor(private userPrivateKey: CryptoKey) {}
 
-	track(rid: IRoom['_id']): E2ERoom {
+	track(rid: IRoom['_id']): E2EERoomClient {
 		const roomClient = this.roomClients.get(rid);
 
 		if (roomClient) {
 			return roomClient;
 		}
 
-		const newRoomClient = new E2ERoom(rid, this.userPrivateKey);
+		const newRoomClient = new E2EERoomClient(rid, this.userPrivateKey);
 		this.roomClients.set(rid, newRoomClient);
 		newRoomClient.start();
 		return newRoomClient;
@@ -96,9 +97,18 @@ export abstract class E2EEManager extends Emitter {
 		};
 	}
 
-	async decryptMessage(message: IMessage, { waitForKey = false }: { waitForKey?: boolean } = {}): Promise<IMessage> {
-		const roomClient = this.roomClients?.track(message.rid);
-		return roomClient?.decryptMessage(message, { waitForKey }) ?? message;
+	async decryptNotification(notification: NotificationEvent): Promise<NotificationEvent> {
+		const roomClient = this.roomClients?.track(notification.payload.rid);
+		const message = await roomClient?.decryptMessage({
+			msg: notification.payload.message.msg,
+			t: notification.payload.message.t,
+			e2e: 'pending',
+		}, { waitForKey: true });
+
+		return {
+			...notification,
+			text: message?.msg ?? notification.text,
+		};
 	}
 
 	abstract toggle(enabled: boolean): void;

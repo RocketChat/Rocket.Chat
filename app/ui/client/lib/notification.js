@@ -88,8 +88,7 @@ export const KonchatNotification = {
 		}
 
 		if (notification.payload.message && notification.payload.message.t === 'e2e') {
-			const message = await e2e.decryptMessage(notification.payload.message, { waitForKey: true });
-			notification.text = message.msg;
+			notification = await e2e.decryptNotification(notification);
 		}
 
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
