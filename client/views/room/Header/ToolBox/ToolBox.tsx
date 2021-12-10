@@ -65,9 +65,9 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	};
 
 	useEffect(() => {
-		on('apps-contextual-bar', openAppsContextualBar);
+		on('open-apps-contextual-bar', openAppsContextualBar);
 		return () => {
-			off('apps-contextual-bar', openAppsContextualBar);
+			off('open-apps-contextual-bar', openAppsContextualBar);
 		};
 	}, [openAppsContextualBar]);
 
