@@ -1,4 +1,4 @@
-import { Chip } from '@rocket.chat/fuselage';
+import { Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import {
@@ -9,25 +9,19 @@ import {
 const TagList: FC<{
 	categories: (CategoryDropdownItem & { checked: true })[];
 	onClick: CategoryDropDownListProps['onSelected'];
-	originalCategoryList?: CategoryDropdownItem[];
-	tagGap?: string;
-}> = ({ categories, onClick, originalCategoryList, tagGap }) => (
-	<>
-		{categories &&
-			originalCategoryList &&
-			categories.length !== originalCategoryList.length &&
-			categories.map((category) => (
-				<Chip
-					mie={tagGap}
-					mbe={tagGap}
-					key={category.id}
-					onClick={(): void => onClick(category)}
-					disabled={undefined}
-				>
-					{category.label}
-				</Chip>
-			))}
-	</>
+}> = ({ categories, onClick }) => (
+	<ButtonGroup small>
+		{categories.map((category) => (
+			<Chip
+				flexShrink={0}
+				key={category.id}
+				onClick={(): void => onClick(category)}
+				disabled={undefined}
+			>
+				{category.label}
+			</Chip>
+		))}
+	</ButtonGroup>
 );
 
 export default TagList;

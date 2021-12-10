@@ -210,7 +210,7 @@ const AppsProvider: FC = ({ children }) => {
 						};
 					}
 
-					const installedApp = installedApps.splice(appIndex, 1).pop();
+					const [installedApp] = installedApps.splice(appIndex, 1);
 					return {
 						...app,
 						installed: true,
@@ -230,15 +230,13 @@ const AppsProvider: FC = ({ children }) => {
 
 				dispatch({
 					type: 'success',
-					apps: appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)),
+					apps: appsData,
 				});
 			} catch (e) {
 				dispatch({
 					type: 'failure',
 					error: e,
 				});
-
-				handleAPIError(e);
 				unregisterListeners();
 			}
 		})();

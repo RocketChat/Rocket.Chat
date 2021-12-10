@@ -13,7 +13,7 @@ import {
 	Pagination,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -33,11 +33,9 @@ import AppRow from './AppRow';
 import MarketplaceRow from './MarketplaceRow';
 import CategoryDropDown from './components/CategoryDropDown';
 import TagList from './components/TagList';
-import { CategoryDropDownListProps } from './definitions/CategoryDropdownDefinitions';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
-import { useCategoryTagList } from './hooks/useCategoryTagList';
-import { useCategoryToggle } from './hooks/useCategoryToggle';
+import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
 const AppsTable: FC<{
@@ -60,57 +58,6 @@ const AppsTable: FC<{
 
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 
-	const categoriesTemp: CategoryDropDownListProps['groups'] = [
-		{
-			items: [
-				{
-					id: 'all',
-					label: 'All categories',
-					checked: false,
-				},
-			],
-		},
-		{
-			label: 'Filter by Category',
-			items: [
-				{ id: '0', label: 'Analytics', checked: false },
-				{ id: '1', label: 'Bots', checked: false },
-				{ id: '2', label: 'Communication', checked: false },
-				{ id: '3', label: 'Content Management', checked: false },
-				{ id: '4', label: 'Customer Support', checked: false },
-				{ id: '5', label: 'Design', checked: false },
-				{ id: '6', label: 'Developer Tools', checked: false },
-				{ id: '7', label: 'File Management', checked: false },
-				{ id: '8', label: 'Finance', checked: false },
-				{ id: '9', label: 'Health & Wellness', checked: false },
-				{ id: '10', label: 'Human Resources', checked: false },
-				{ id: '11', label: 'Marketing', checked: false },
-				{ id: '12', label: 'Media & News', checked: false },
-				{ id: '13', label: 'Office Management', checked: false },
-				{ id: '14', label: 'Omnichannel', checked: false },
-				{ id: '15', label: 'Other', checked: false },
-				{ id: '16', label: 'Productivity', checked: false },
-				{ id: '17', label: 'Project Management', checked: false },
-				{ id: '18', label: 'Sales', checked: false },
-				{ id: '19', label: 'Security & Compliance', checked: false },
-				{ id: '20', label: 'Social & Fun', checked: false },
-				{ id: '21', label: 'Team Culture', checked: false },
-				{ id: '22', label: 'Travel', checked: false },
-				{ id: '23', label: 'Voice & Video', checked: false },
-			],
-		},
-	];
-
-	const [categoriesList, setCategoriesList] = useState(() => categoriesTemp);
-
-	const onSelected = useCategoryToggle(setCategoriesList);
-
-	const selectedCategories = useCategoryTagList(categoriesList);
-
-	const originalCategoryList = categoriesTemp
-		.flatMap((groups) => groups.items)
-		.filter(({ id }) => id !== 'all');
-
 	const {
 		current,
 		itemsPerPage,
@@ -119,31 +66,23 @@ const AppsTable: FC<{
 		...paginationProps
 	} = usePagination();
 
+	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
+
 	const appsResult = useFilteredApps({
 		filterFunction,
 		text,
 		current,
 		itemsPerPage,
 		sortDirection,
-		categories: selectedCategories.map((currentCategory) => currentCategory.label),
+		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
 	});
 
 	return (
 		<>
-			<Box display='flex' alignItems='center' width='100%'>
-				<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} />
-				<CategoryDropDown data={categoriesList} onSelected={onSelected} mis='8px' />
-			</Box>
-
-			<Box display='flex' flexWrap='wrap'>
-				<TagList
-					categories={selectedCategories}
-					originalCategoryList={originalCategoryList}
-					onClick={onSelected}
-					tagGap='8px'
-				/>
-			</Box>
-
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
+				<CategoryDropDown data={categories} onSelected={onSelected} />
+			</FilterByText>
+			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
 				(appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count))) && (
 				<>
@@ -268,6 +207,20 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
+
+			{appsResult.phase === AsyncStatePhase.REJECTED && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='warning' />
+						<StatesTitle>{t('ERROR!')}</StatesTitle>
+						<StatesActions>
+							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+								{t('Reload_page')}
+							</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
 		</>
 	);
 };

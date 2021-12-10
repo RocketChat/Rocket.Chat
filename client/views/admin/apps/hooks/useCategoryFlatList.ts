@@ -5,7 +5,7 @@ import {
 	CategoryDropDownListProps,
 } from '../definitions/CategoryDropdownDefinitions';
 
-export const useCategoryTagList = (
+export const useCategoryFlatList = (
 	data: CategoryDropDownListProps['groups'],
 ): (CategoryDropdownItem & { checked: true })[] =>
 	useMemo(

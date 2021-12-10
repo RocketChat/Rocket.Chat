@@ -10,30 +10,24 @@ const CategoryDropDown: FC<
 	{
 		data: CategoryDropDownListProps['groups'];
 		onSelected: CategoryDropDownListProps['onSelected'];
-		mis?: string;
 	} & Partial<Pick<ComponentProps<typeof CategoryDropDownAnchor>, 'small' | 'mini'>>
-> = ({ data, onSelected, mis, ...props }) => {
+> = ({ data, onSelected, ...props }) => {
 	const reference = useRef<HTMLElement>(null);
-	const [collapsed, toogleCollapsed] = useToggle(false);
+	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
 		(e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			toogleCollapsed();
+			toggleCollapsed();
 			return false;
 		},
-		[toogleCollapsed],
+		[toggleCollapsed],
 	);
 
 	return (
 		<>
-			<CategoryDropDownAnchor
-				ref={reference}
-				onClick={toogleCollapsed as any}
-				mis={mis}
-				{...props}
-			/>
+			<CategoryDropDownAnchor ref={reference} onClick={toggleCollapsed as any} {...props} />
 			{collapsed && (
 				<CategoryDropDownListWrapper ref={reference} onClose={onClose}>
 					<CategoryDropDownList groups={data} onSelected={onSelected} />
