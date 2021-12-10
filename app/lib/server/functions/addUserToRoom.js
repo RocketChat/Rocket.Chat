@@ -6,6 +6,8 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Team } from '../../../../server/sdk';
 import { RoomMemberActions, roomTypes } from '../../../utils/server';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { Users } from '../../../models/server/raw';
 
 export const addUserToRoom = function (rid, user, inviter, silenced) {
 	const now = new Date();
@@ -50,6 +52,8 @@ export const addUserToRoom = function (rid, user, inviter, silenced) {
 		}),
 	);
 
+	const userPref = Promise.await(Users.findOne({ _id: user._id }, { projection: { settings: 1 } }));
+
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,
@@ -57,6 +61,8 @@ export const addUserToRoom = function (rid, user, inviter, silenced) {
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
+		...getDefaultSubscriptionPref(userPref),
+
 	});
 
 	if (!silenced) {
