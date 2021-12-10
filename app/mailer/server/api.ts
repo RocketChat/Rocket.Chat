@@ -116,14 +116,15 @@ export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string)
 	});
 };
 
+
 settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 	getTemplate('Email_Header', (value) => {
-		contentHeader = replace(value || '');
+		contentHeader = replace(value || '    ======================================== \n                  Rocket.chat \n    ======================================== \n');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 	}, false);
 
 	getTemplate('Email_Footer', (value) => {
-		contentFooter = replace(value || '');
+		contentFooter = replace(value || '--------------------------------------------- \n       © Rocket.Chat Technologies Corp. \n       Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 	}, false);
 
