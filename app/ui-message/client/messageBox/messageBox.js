@@ -34,6 +34,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
@@ -402,11 +403,10 @@ Template.messageBox.events({
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => {
 				const fileItem = item.getAsFile();
-				const fileFormat = fileItem.type.split('/')[1];
 
 				return {
 					file: fileItem,
-					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ fileFormat }`,
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ getImageExtensionFromMime(fileItem.type) }`,
 				};
 			}).filter(({ file }) => file !== null);
 
