@@ -47,7 +47,7 @@ const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum
 	isDefaultStatus(id);
 
 const setStatus = (status: typeof userStatus.list['']): void => {
-	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : undefined);
+	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
