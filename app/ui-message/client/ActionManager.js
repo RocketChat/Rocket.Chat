@@ -92,26 +92,30 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
-//		const instance = modal.push({
-//			template: 'ModalBlock',
-//			modifier: 'uikit',
-//			closeOnEscape: false,
-//			data: {
-//				triggerId,
-//				viewId,
-//				appId,
-//				...data,
-//			},
-//		});
-//
-//		instances.set(viewId, {
-//			close() {
-//				instance.close();
-//				instances.delete(viewId);
-//			},
-//		});
+		const instance = modal.push({
+			template: 'ModalBlock',
+			modifier: 'uikit',
+			closeOnEscape: false,
+			data: {
+				triggerId,
+				viewId,
+				appId,
+				...data,
+			},
+		});
 
-		events.emit('apps-contextual-bar');
+		instances.set(viewId, {
+			close() {
+				instance.close();
+				instances.delete(viewId);
+			},
+		});
+
+		return UIKitInteractionTypes.MODAL_OPEN;
+	}
+
+	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
+		events.emit('open-apps-contextual-bar');
 
 		instances.set(viewId, {
 			close() {
@@ -121,11 +125,6 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			}
 		});
 
-		return UIKitInteractionTypes.MODAL_OPEN;
-	}
-
-	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
-		events.emit('open-apps-contextual-bar');
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
