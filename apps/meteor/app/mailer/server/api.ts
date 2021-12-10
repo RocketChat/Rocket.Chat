@@ -154,7 +154,7 @@ export const sendNoWrap = ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(wrap(html)).result : undefined;
+		text = html ? stripHtml(html).result : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
