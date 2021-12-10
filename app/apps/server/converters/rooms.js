@@ -95,11 +95,11 @@ export class AppRoomsConverter {
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
 			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
 			source: {
-				type: room.source.type ?? null,
-				id: room.source.id ?? null,
-				alias: room.source.alias ?? null,
-				sidebarIcon: room.source.sidebarIcon ?? null,
-				defaultIcon: room.source.defaultIcon ?? null,
+				type: room.source ? room.source.type : null,
+				id: room.source ? room.source.id : null,
+				alias: room.source ? room.source.alias : null,
+				sidebarIcon: room.source ? room.source.sidebarIcon : null,
+				defaultIcon: room.source ? room.source.defaultIcon : null,
 			},
 		};
 
