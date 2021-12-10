@@ -125,7 +125,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
-		events.emit('apps-contextual-bar');
+		events.emit('open-apps-contextual-bar');
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}

@@ -37,7 +37,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
-		(isMobile ? actions : actions.slice(6)).map((item) => {
+		(isMobile ? actions : actions.slice(6)).filter(action => !action.unlisted).map((item) => {
 			hiddenActionRenderers.current = {
 				...hiddenActionRenderers.current,
 				[item.id]: item.renderOption || renderMenuOption,
@@ -52,7 +52,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					...item,
 				},
 			] as any;
-		}).slice(0,-1),
+		})
 	);
 
 	const actionDefault = useMutableCallback((e) => {
@@ -65,9 +65,9 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	};
 
 	useEffect(() => {
-		on('apps-contextual-bar', openAppsContextualBar);
+		on('open-apps-contextual-bar', openAppsContextualBar);
 		return () => {
-			off('apps-contextual-bar', openAppsContextualBar);
+			off('open-apps-contextual-bar', openAppsContextualBar);
 		};
 	}, [openAppsContextualBar]);
 
