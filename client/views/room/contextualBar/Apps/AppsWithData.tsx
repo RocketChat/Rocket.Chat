@@ -1,5 +1,4 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
-
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer } from 'react';
