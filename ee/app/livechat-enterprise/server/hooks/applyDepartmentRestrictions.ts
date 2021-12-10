@@ -3,8 +3,8 @@ import { addQueryRestrictionsToDepartmentsModel } from '../lib/query.helper';
 import { hasRole } from '../../../../../app/authorization/server/functions/hasRole';
 import { cbLogger } from '../lib/logger';
 
-callbacks.add('livechat.applyDepartmentRestrictions', (originalQuery = {}, { userId } = { userId: null }) => {
-	if (!userId || (userId && !hasRole(userId, 'livechat-monitor'))) {
+callbacks.add('livechat.applyDepartmentRestrictions', (originalQuery = {}, { userId }: { userId?: string | null } = { userId: null }) => {
+	if (!userId || !hasRole(userId, 'livechat-monitor')) {
 		cbLogger.debug('Skipping callback. No user id provided or user is not a monitor');
 		return originalQuery;
 	}
