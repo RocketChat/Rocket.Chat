@@ -1,3 +1,4 @@
 import './stylesheets/e2e.css';
+import './tabbar';
 
-export * from './rocketchat.e2e';
+export * from './e2ee';

@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { e2e } from '../../../e2e/client';
+import { e2ee } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -88,7 +88,7 @@ export const KonchatNotification = {
 		}
 
 		if (notification.payload.message && notification.payload.message.t === 'e2e') {
-			notification = await e2e.decryptNotification(notification);
+			notification = await e2ee.decryptNotification(notification);
 		}
 
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {

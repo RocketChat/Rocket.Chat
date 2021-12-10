@@ -17,7 +17,7 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef } from 'react';
 
-import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
+import { e2ee } from '../../../../../../app/e2e/client/e2ee';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';
 import GenericModal from '../../../../../components/GenericModal';
@@ -235,7 +235,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
 	const canToggleEncryption =
-		usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
+		usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2ee.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';

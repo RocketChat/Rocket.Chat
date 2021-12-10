@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useEffect } from 'react';
 
 import { callbacks } from '../../../../app/callbacks/lib/callbacks';
-import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
+import { e2ee } from '../../../../app/e2e/client/e2ee';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -46,7 +46,7 @@ const EndToEnd = (props) => {
 
 	const saveNewPassword = useCallback(async () => {
 		try {
-			await e2e.changePassword(password);
+			await e2ee.changePassword(password);
 			reset();
 			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
 		} catch (error) {

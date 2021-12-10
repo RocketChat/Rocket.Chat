@@ -5,8 +5,10 @@ declare module 'meteor/rocketchat:tap-i18n' {
 	namespace TAPi18n {
 		function __(s: string | undefined, options?: {
 			lng?: string;
+			postProcess?: 'sprintf';
+			sprintf?: unknown[];
 		} & {
-			[replacements: string]: boolean | number | string;
+			[replacements: string]: unknown;
 		}): string;
 		function getLanguages(): {
 			[language: string]: {

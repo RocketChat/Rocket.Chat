@@ -7,7 +7,7 @@ import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSen
 import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { settings } from '../../settings/client';
-import { e2e } from './rocketchat.e2e';
+import { e2ee } from './e2ee';
 
 const isEnabled = (): boolean => {
 	if (!Meteor.userId()) {
@@ -29,7 +29,7 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 	}
 
 	const flagWatcher = Tracker.autorun(() => {
-		e2e.toggle(isEnabled());
+		e2ee.toggle(isEnabled());
 	});
 
 	let detachKeyRequestHandler: (() => void) | undefined;
@@ -40,7 +40,7 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 
 	const attachLogoutHandler = (): (() => void) => {
 		const computation = Accounts.onLogout(() => {
-			e2e.stopClient();
+			e2ee.stopClient();
 		}) as unknown as {
 			stop(): void;
 			callback: () => void;
@@ -52,7 +52,7 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 	};
 
 	const attacher = Tracker.autorun(() => {
-		if (!e2e.isReady()) {
+		if (!e2ee.isReady()) {
 			detachKeyRequestHandler?.();
 			detachSubscriptionWatcher?.();
 			detachMessageReceivedTransform?.();
@@ -61,11 +61,11 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
       return;
 		}
 
-		detachKeyRequestHandler = e2e.watchKeyRequests();
-		detachSubscriptionWatcher = e2e.watchSubscriptions();
-		detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2e.transformReceivedMessage(msg));
+		detachKeyRequestHandler = e2ee.watchKeyRequests();
+		detachSubscriptionWatcher = e2ee.watchSubscriptions();
+		detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2ee.transformReceivedMessage(msg));
 		detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) =>
-			e2e.transformSendingMessage(msg),
+			e2ee.transformSendingMessage(msg),
 		);
 		detachLogoutHandler = attachLogoutHandler();
 	});
@@ -73,6 +73,6 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 	return (): void => {
 		attacher.stop();
 		flagWatcher.stop();
-		e2e.toggle(false);
+		e2ee.toggle(false);
 	};
 };
