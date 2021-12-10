@@ -3,37 +3,36 @@ import React, { FC } from 'react';
 
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 
-type RunAction = () => void;
+type RunAction = (action: string) => () => void;
 
 type ActionOptions = {
-	mid: string;
-	id: string;
 	icon: IconProps['name'];
 	i18nLabel?: TranslationKey;
 	label?: string;
+	methodId: string;
 	runAction?: RunAction;
 	danger?: boolean;
 };
 
-const resolveLegacyIcon = (legacyIcon: IconProps['name']): IconProps['name'] => {
+const resolveLegacyIcon = (
+	legacyIcon: IconProps['name'] | `icon-${IconProps['name'] | 'videocam'}`,
+): IconProps['name'] => {
 	if (legacyIcon === 'icon-videocam') {
 		return 'video';
 	}
 
-	return legacyIcon && legacyIcon.replace(/^icon-/, '');
+	return (legacyIcon && legacyIcon.replace(/^icon-/, '')) as IconProps['name'];
 };
 
-const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction, danger }) => {
+const Action: FC<ActionOptions> = ({ icon, methodId, i18nLabel, label, runAction, danger }) => {
 	const t = useTranslation();
 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
 		<Button
-			id={id}
-			data-mid={mid}
-			data-actionlink={id}
-			onClick={runAction}
+			data-method-id={methodId}
+			onClick={runAction(methodId)}
 			marginInline='x4'
 			primary
 			small

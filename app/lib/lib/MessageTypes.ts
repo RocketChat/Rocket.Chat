@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 
-import { MessageTypes } from '../../ui-utils';
-import { callbacks } from '../../callbacks';
+import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
-Meteor.startup(function () {
+Meteor.startup(function() {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -107,12 +107,12 @@ Meteor.startup(function () {
 			};
 		},
 	});
-	MessageTypes.registerType({
-		id: 'rtc',
-		render(message) {
-			return callbacks.run('renderRtcMessage', message);
-		},
-	});
+	// MessageTypes.registerType({
+	// 	id: 'rtc',
+	// 	render(message) {
+	// 		return callbacks.run('renderRtcMessage', message);
+	// 	},
+	// });
 	MessageTypes.registerType({
 		id: 'user-muted',
 		system: true,

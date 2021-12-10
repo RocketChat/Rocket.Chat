@@ -2,7 +2,7 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
-createTemplateForComponent('MessageActions', () => import('./components/Message/Actions'));
+createTemplateForComponent('MessageActions', () => import('./components/Message/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
 

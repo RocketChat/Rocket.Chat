@@ -1,6 +1,7 @@
 import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { MessageTypes } from '../../ui-utils';
 
@@ -13,7 +14,10 @@ MessageTypes.registerType({
 			return;
 		}
 		return {
-			history: `${ (message.navigation.page.title ? `${ message.navigation.page.title } - ` : '') + message.navigation.page.location.href }`,
+			history: `${
+				(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') +
+				message.navigation.page.location.href
+			}`,
 		};
 	},
 });
@@ -29,21 +33,29 @@ MessageTypes.registerType({
 
 		const { comment } = message.transferData;
 		const commentLabel = comment && comment !== '' ? '_with_a_comment' : '';
-		const from = message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
+		const from =
+			message.transferData.transferredBy &&
+			(message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
-			agent: () => TAPi18n.__(`Livechat_transfer_to_agent${ commentLabel }`, {
-				from,
-				to: message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.username),
-				...comment && { comment },
-			}),
-			department: () => TAPi18n.__(`Livechat_transfer_to_department${ commentLabel }`, {
-				from,
-				to: message.transferData.nextDepartment && message.transferData.nextDepartment.name,
-				...comment && { comment },
-			}),
-			queue: () => TAPi18n.__('Livechat_transfer_return_to_the_queue', {
-				from,
-			}),
+			agent: () =>
+				TAPi18n.__(`Livechat_transfer_to_agent${commentLabel}`, {
+					from,
+					to:
+						message.transferData.transferredTo &&
+						(message.transferData.transferredTo.name ||
+							message.transferData.transferredTo.username),
+					...(comment && { comment }),
+				}),
+			department: () =>
+				TAPi18n.__(`Livechat_transfer_to_department${commentLabel}`, {
+					from,
+					to: message.transferData.nextDepartment && message.transferData.nextDepartment.name,
+					...(comment && { comment }),
+				}),
+			queue: () =>
+				TAPi18n.__('Livechat_transfer_return_to_the_queue', {
+					from,
+				}),
 		};
 		return {
 			transfer: transferTypes[message.transferData.scope](),
@@ -62,13 +74,15 @@ MessageTypes.registerType({
 
 		const { requestData: { type, visitor = {}, user = {} } = {} } = message;
 		const requestTypes = {
-			visitor: () => TAPi18n.__('Livechat_visitor_transcript_request', {
-				guest: visitor.name || visitor.username,
-			}),
-			user: () => TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
-				agent: user.name || user.username,
-				guest: visitor.name || visitor.username,
-			}),
+			visitor: () =>
+				TAPi18n.__('Livechat_visitor_transcript_request', {
+					guest: visitor.name || visitor.username,
+				}),
+			user: () =>
+				TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
+					agent: user.name || user.username,
+					guest: visitor.name || visitor.username,
+				}),
 		};
 
 		return {
@@ -95,7 +109,7 @@ MessageTypes.registerType({
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
 			return TAPi18n.__('WebRTC_call_declined_message');
 		}
-		return message.msg;
+		return escapeHTML(message.msg);
 	},
 });
 

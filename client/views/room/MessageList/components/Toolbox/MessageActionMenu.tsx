@@ -43,8 +43,7 @@ export const MessageActionMenu: FC<{
 			{visible && (
 				<ToolboxDropdown
 					reference={ref}
-					onClose={(e): void => {
-						e.stopPropagation();
+					onClose={(): void => {
 						setVisible(false);
 					}}
 				>

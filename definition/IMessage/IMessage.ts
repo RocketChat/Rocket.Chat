@@ -1,3 +1,5 @@
+import { ComponentProps } from 'react';
+import { Icon } from '@rocket.chat/fuselage';
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
@@ -70,7 +72,19 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending';
 
-	urls: unknown[];
+	urls: {
+		url: string;
+		meta: Record<string, string>;
+	}[];
+
+	actionLinks?: {
+		icon: ComponentProps<typeof Icon>['name'];
+		i18nLabel: unknown;
+		label: string;
+		method_id: string;
+		params: string;
+	}[];
+
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
 	files?: FileProp[];
@@ -80,6 +94,7 @@ export interface IMessage extends IRocketChatRecord {
 	/* @deprecated */
 	bot?: boolean;
 	sentByEmail?: boolean;
+	webRtcCallEndTs?: Date;
 }
 
 export type MessageSystem = {
@@ -101,14 +116,19 @@ export interface ITranslatedMessage extends IMessage {
 export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage =>
 	'translations' in message;
 
-export interface IThreadMessage extends IMessage {
+export interface IThreadMainMessage extends IMessage {
 	tcount: number;
-	tmid: string;
 	tlm: Date;
 	replies: IUser['_id'][];
 }
+export interface IThreadMessage extends IMessage {
+	tmid: string;
+}
 
-export const isThreadMessage = (message: IMessage): message is IThreadMessage => !!message.tcount;
+export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage =>
+	'tcount' in message && 'tlm' in message;
+
+export const isThreadMessage = (message: IMessage): message is IThreadMessage => !!message.tmid;
 
 export interface IDiscussionMessage extends IMessage {
 	drid: string;

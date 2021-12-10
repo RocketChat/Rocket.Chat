@@ -1,12 +1,17 @@
 import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
 
+import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
+import { IMessage } from '../../../../definition/IMessage';
+import { useLayout } from '../../../contexts/LayoutContext';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
 
-const replyBroadcast = () => {
+const replyBroadcast = (): void => {
 	console.log('replyBroadcast');
 };
 
@@ -20,7 +25,8 @@ export const MessageProvider = memo(function MessageProvider({
 	children: ReactNode;
 }) {
 	const [routeName, params] = useCurrentRoute();
-
+	const { isEmbedded, isMobile } = useLayout();
+	const oembedEnabled = Boolean(useSetting('API_Embed'));
 	if (!routeName) {
 		throw new Error('routeName is not defined');
 	}
@@ -60,9 +66,22 @@ export const MessageProvider = memo(function MessageProvider({
 		};
 		const openDiscussion = (drid: string) => (): Promise<void> => goToRoomById(drid);
 
+		const runActionLink = isEmbedded
+			? (msg: IMessage) => (actionLink: string) => (): void =>
+					fireGlobalEvent('click-action-link', {
+						actionlink: actionLink,
+						value: msg._id,
+						message: msg,
+					})
+			: (msg: IMessage) => (actionLink: string) => (): void => {
+					actionLinks.run(actionLink, msg, undefined);
+			  };
 		return {
+			oembedEnabled,
+			oembedMaxWidth: isMobile ? '100%' : '368px',
 			broadcast: Boolean(broadcast),
 			actions: {
+				runActionLink,
 				openUserCard:
 					(username: string) =>
 					(e: MouseEvent<HTMLDivElement>): void => {
@@ -84,7 +103,17 @@ export const MessageProvider = memo(function MessageProvider({
 				messageHeader,
 			},
 		};
-	}, [broadcast, messageHeader, router, params, rid, routeName]);
+	}, [
+		isEmbedded,
+		oembedEnabled,
+		isMobile,
+		broadcast,
+		messageHeader,
+		router,
+		params,
+		rid,
+		routeName,
+	]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

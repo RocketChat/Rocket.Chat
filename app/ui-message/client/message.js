@@ -33,7 +33,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.message) {
 		msg.msg = escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) { // TODO: remove
 		msg.html = msg.msg;
 		msg = renderMentions(msg);
 		msg = msg.html;
@@ -196,12 +196,12 @@ Template.message.helpers({
 		const { msg } = this;
 		return +msg.ts;
 	},
-	chatops() {
-		const { msg, settings } = this;
-		if (msg.u && msg.u.username === settings.Chatops_Username) {
-			return 'chatops-message';
-		}
-	},
+	// chatops() {
+	// 	const { msg, settings } = this;
+	// 	if (msg.u && msg.u.username === settings.Chatops_Username) {
+	// 		return 'chatops-message';
+	// 	}
+	// },
 	time() {
 		const { msg, timeAgo: useTimeAgo } = this;
 
@@ -358,11 +358,10 @@ Template.message.helpers({
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
-		return _.map(msg.actionLinks, function(actionLink, key) {
-			return _.extend({
-				id: key,
-			}, _.omit(actionLink, 'method_id', 'params'));
-		});
+		return msg.actionLinks.map(({ method_id, ...actionLink }) => ({
+			methodId: method_id,
+			...actionLink,
+		}));
 	},
 	hideActionLinks() {
 		const { msg } = this;
