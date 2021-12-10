@@ -56,6 +56,15 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		this.add('Livechat_clear_local_storage_when_chat_ended', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			section: 'Livechat',
+			i18nLabel: 'Clear_livechat_session_when_chat_ended',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		this.add('Livechat_validate_offline_email', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
