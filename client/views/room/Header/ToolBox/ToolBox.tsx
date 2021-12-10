@@ -38,7 +38,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
 		(isMobile ? actions : actions.slice(6))
-			.filter(action => !action.unlisted)
+			.filter((action) => !action.unlisted)
 			.map((item) => {
 				hiddenActionRenderers.current = {
 					...hiddenActionRenderers.current,

@@ -3,7 +3,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer } from 'react';
 
-import { getLastUserInteractionPayload, triggerBlockAction, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import {
+	getLastUserInteractionPayload,
+	triggerBlockAction,
+	on,
+	off,
+} from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -59,7 +64,7 @@ const AppsWithData = () => {
 	const [state, setState] = useState({});
 	const [view, setView] = useState({ blocks: [] });
 	const [viewId, setViewId] = useState();
-	const [ _mid, setMid ] = useState();
+	const [_mid, setMid] = useState();
 	const [values, updateValues] = useValues(view);
 
 	useEffect(() => {
