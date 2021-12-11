@@ -14,7 +14,7 @@ const hasError = (error: {}): error is { error: string } =>
 	'error' in error && typeof (error as { error: unknown }).error === 'string';
 
 const hasMessage = (error: {}): error is { message: string } =>
-	'error' in error && typeof (error as { message: unknown }).message === 'string';
+	'message' in error && typeof (error as { message: unknown }).message === 'string';
 
 const hasErrorTitle = (
 	details: Record<string, string>,
