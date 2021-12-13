@@ -2544,6 +2544,7 @@
   "Message_editing": "메시지 편집",
   "Message_ErasureType": "메시지 삭제 유형",
   "Message_ErasureType_Delete": "모든 메시지 삭제",
+  "Message_ErasureType_Description": "계정을 삭제한 사용자의 메시지에 수행할 작업을 선택하세요.",
   "Message_ErasureType_Keep": "메시지 및 사용자 이름 보관",
   "Message_ErasureType_Unlink": "사용자와 메시지 간의 링크 제거",
   "Message_GlobalSearch": "전체 검색",

@@ -1525,6 +1525,7 @@
   "Message_editing": "Уређивање поруке",
   "Message_ErasureType": "Мессаге Ерасуре Типе",
   "Message_ErasureType_Delete": "Обриши све поруке",
+  "Message_ErasureType_Description": "Одредите шта да радите са порукама корисника који уклањају свој налог.",
   "Message_ErasureType_Keep": "Задржите поруке и корисничко име",
   "Message_ErasureType_Unlink": "Уклоните везу између корисника и порука",
   "Message_GlobalSearch": "Глобална претрага",
