@@ -1728,6 +1728,7 @@
   "Message_editing": "Mesaĝo-redaktado",
   "Message_ErasureType": "Mesaĝo Erasure Tipo",
   "Message_ErasureType_Delete": "Forigi ĉiujn mesaĝojn",
+  "Message_ErasureType_Description": "Determini kion fari kun mesaĝoj de uzantoj kiuj forigas sian konton.",
   "Message_ErasureType_Keep": "Teni Mesaĝojn kaj Uzantnomon",
   "Message_ErasureType_Unlink": "Forigi Ligilon Inter Uzanto kaj Mesaĝoj",
   "Message_GlobalSearch": "Tutmonda Serĉo",
@@ -2817,5 +2818,6 @@
   "Your_password_is_wrong": "Via pasvorto estas malĝusta!",
   "Your_push_was_sent_to_s_devices": "Via push estis sendita al%s aparatoj",
   "Your_server_link": "Via servilo-ligilo",
+  "Your_temporary_password_is_password": "Via provizora pasvorto estas: <strong>[pasvorto]</strong>",
   "Your_workspace_is_ready": "Via labora spaco pretas uzi 🎉"
 }

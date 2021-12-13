@@ -1789,6 +1789,7 @@
   "Message_editing": "Pranešimo redagavimas",
   "Message_ErasureType": "Message Erasure tipas",
   "Message_ErasureType_Delete": "Ištrinti visus pranešimus",
+  "Message_ErasureType_Description": "Nustatykite, ką daryti su naudotojų, kurie pašalina savo paskyrą, pranešimus.",
   "Message_ErasureType_Keep": "Laikyti pranešimus ir vartotojo vardą",
   "Message_ErasureType_Unlink": "Pašalinti vartotojo ir pranešimų nuorodą",
   "Message_GlobalSearch": "Visuotinė paieška",
