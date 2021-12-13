@@ -1808,6 +1808,7 @@
   "Message_editing": "Meldingsredigering",
   "Message_ErasureType": "Melding Erasure Type",
   "Message_ErasureType_Delete": "Slett alle meldinger",
+  "Message_ErasureType_Description": "Bestem hva du skal gjøre med meldinger til brukere som fjerner kontoen sin.",
   "Message_ErasureType_Keep": "Hold meldinger og brukernavn",
   "Message_ErasureType_Unlink": "Fjern koblingen mellom bruker og meldinger",
   "Message_GlobalSearch": "Global søk",

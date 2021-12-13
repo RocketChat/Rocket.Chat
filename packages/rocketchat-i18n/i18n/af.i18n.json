@@ -1728,6 +1728,7 @@
   "Message_editing": "Boodskap redigering",
   "Message_ErasureType": "Boodskap Erasure Tipe",
   "Message_ErasureType_Delete": "Verwyder alle boodskappe",
+  "Message_ErasureType_Description": "Bepaal wat om te doen met boodskappe van gebruikers wat hul rekening verwyder.",
   "Message_ErasureType_Keep": "Hou boodskappe en gebruikersnaam",
   "Message_ErasureType_Unlink": "Verwyder skakel tussen gebruiker en boodskappe",
   "Message_GlobalSearch": "Global Search",
