@@ -2818,5 +2818,6 @@
   "Your_password_is_wrong": "Via pasvorto estas malĝusta!",
   "Your_push_was_sent_to_s_devices": "Via push estis sendita al%s aparatoj",
   "Your_server_link": "Via servilo-ligilo",
+  "Your_temporary_password_is_password": "Via provizora pasvorto estas: <strong>[pasvorto]</strong>",
   "Your_workspace_is_ready": "Via labora spaco pretas uzi 🎉"
 }

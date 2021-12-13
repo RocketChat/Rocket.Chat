@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../../../../utils';
-import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
+import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization/client';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';

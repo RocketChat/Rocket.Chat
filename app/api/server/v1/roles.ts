@@ -7,7 +7,7 @@ import { getUsersInRole, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { isRoleAddUserToRoleProps, isRoleCreateProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps, isRoleUpdateProps } from '../../../../definition/rest/v1/roles';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -253,7 +253,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (!await hasRoleAsync(user._id, role.name, scope)) {
+		if (!await hasAnyRoleAsync(user._id, [role.name], scope)) {
 			throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
 		}
 
