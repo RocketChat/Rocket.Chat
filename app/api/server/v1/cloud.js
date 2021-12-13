@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 
 import { API } from '../api';
-import { hasRole } from '../../../authorization';
+import { hasRole } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 

@@ -1,6 +1,7 @@
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
+import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
@@ -115,5 +116,29 @@ export type OmnichannelEndpoints = {
 				};
 			}[];
 		}>;
+	};
+
+	'livechat/visitor': {
+		POST: (params: { visitor: ILivechatVisitorDTO }) => { visitor: ILivechatVisitor };
+	};
+
+	'livechat/visitor/:token': {
+		GET: (params: { token: string }) => { visitor: ILivechatVisitor };
+		DELETE: (params: { token: string }) => { visitor: { _id: string; ts: string } };
+	};
+
+	'livechat/visitor/:token/room': {
+		GET: (params: { token: string }) => { rooms: IOmnichannelRoom[] };
+	};
+
+	'livechat/visitor.callStatus': {
+		POST: (params: { token: string; callStatus: string; rid: string; callId: string }) => {
+			token: string;
+			callStatus: string;
+		};
+	};
+
+	'livechat/visitor.status': {
+		POST: (params: { token: string; status: string }) => { token: string; status: string };
 	};
 };
