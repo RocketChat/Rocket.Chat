@@ -118,7 +118,6 @@ export const EmojiPicker = {
 	pickEmoji(emoji) {
 		this.pickCallback(emoji);
 
-		this.close();
 		this.addRecent(emoji);
 	},
 	addRecent(_emoji) {
