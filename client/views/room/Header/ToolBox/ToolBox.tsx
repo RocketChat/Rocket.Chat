@@ -102,8 +102,8 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={(props): ReactNode =>
-						props.id && hiddenActionRenderers.current[props.id](props)
+					renderItem={({ value, ...props }): ReactNode =>
+						value && hiddenActionRenderers.current[value](props)
 					}
 				/>
 			)}
