@@ -1,4 +1,22 @@
 
+# 4.2.2
+`2021-12-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- creating room with federated member ([#23347](https://github.com/RocketChat/Rocket.Chat/pull/23347) by [@qwertiko](https://github.com/qwertiko))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@qwertiko](https://github.com/qwertiko)
+
 # 4.2.1
 `2021-12-10  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  7 👩‍💻👨‍💻`
 
@@ -6753,7 +6771,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.0
-`2020-11-14  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
