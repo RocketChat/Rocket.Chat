@@ -1,23 +1,29 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, ReactElement, ChangeEvent } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
 
-function AddCustomEmoji({ close, onChange, ...props }) {
-	const t = useTranslation();
+type AddCustomEmojiProps = {
+	close: () => void;
+	onChange: () => void;
+};
 
+const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): ReactElement => {
+	const t = useTranslation();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
-	const [emojiFile, setEmojiFile] = useState();
+	const [emojiFile, setEmojiFile] = useState<Blob>();
 	const [newEmojiPreview, setNewEmojiPreview] = useState('');
+	const [errors, setErrors] = useState({ name: false, emoji: false });
 
 	const setEmojiPreview = useCallback(
 		async (file) => {
 			setEmojiFile(file);
 			setNewEmojiPreview(URL.createObjectURL(file));
+			setErrors((prevState) => ({ ...prevState, emoji: false }));
 		},
 		[setEmojiFile],
 	);
@@ -29,11 +35,19 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 	);
 
 	const handleSave = useCallback(async () => {
+		if (!name) {
+			return setErrors((prevState) => ({ ...prevState, name: true }));
+		}
+
+		if (!emojiFile) {
+			return setErrors((prevState) => ({ ...prevState, emoji: true }));
+		}
+
 		const formData = new FormData();
 		formData.append('emoji', emojiFile);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		const result = await saveAction(formData);
+		const result = (await saveAction(formData)) as { success: boolean };
 
 		if (result.success) {
 			onChange();
@@ -43,24 +57,31 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 
 	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
+	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
+		if (e.currentTarget.value !== '') {
+			setErrors((prevState) => ({ ...prevState, name: false }));
+		}
+
+		return setName(e.currentTarget.value);
+	};
+
 	return (
 		<VerticalBar.ScrollableContent {...props}>
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
+					<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 				</Field.Row>
+				{errors.name && (
+					<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
+				)}
 			</Field>
 			<Field>
 				<Field.Label>{t('Aliases')}</Field.Label>
 				<Field.Row>
 					<TextInput
 						value={aliases}
-						onChange={(e) => setAliases(e.currentTarget.value)}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setAliases(e.currentTarget.value)}
 						placeholder={t('Aliases')}
 					/>
 				</Field.Row>
@@ -77,6 +98,11 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 						<Icon name='upload' size='x20' />
 					</Button>
 				</Field.Label>
+				{errors.emoji && (
+					<Field.Error>
+						{t('error-the-field-is-required', { field: t('Custom_Emoji') })}
+					</Field.Error>
+				)}
 				{newEmojiPreview && (
 					<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 						<Margins inline='x4'>
@@ -103,6 +129,6 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 			</Field>
 		</VerticalBar.ScrollableContent>
 	);
-}
+};
 
 export default AddCustomEmoji;
