@@ -3,16 +3,21 @@ import { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine
 
 import { APIClient } from '../../utils/client';
 import * as TabBar from './actionButtons/tabbar';
+import * as MessageAction from './actionButtons/messageAction';
+import * as MessageBox from './actionButtons/messageBox';
 
-let registeredButtons: Array<IUIActionButton>;
+let registeredButtons: Array<IUIActionButton> = [];
 
 export const addButton = (button: IUIActionButton): void => {
 	switch (button.context) {
 		case UIActionButtonContext.MESSAGE_ACTION:
-			// onMessageActionAdded(button);
+			MessageAction.onAdded(button);
 			break;
 		case UIActionButtonContext.ROOM_ACTION:
 			TabBar.onAdded(button);
+			break;
+		case UIActionButtonContext.MESSAGE_BOX_ACTION:
+			MessageBox.onAdded(button);
 			break;
 	}
 
@@ -21,8 +26,14 @@ export const addButton = (button: IUIActionButton): void => {
 
 export const removeButton = (button: IUIActionButton): void => {
 	switch (button.context) {
+		case UIActionButtonContext.MESSAGE_ACTION:
+			MessageAction.onRemoved(button);
+			break;
 		case UIActionButtonContext.ROOM_ACTION:
 			TabBar.onRemoved(button);
+			break;
+		case UIActionButtonContext.MESSAGE_BOX_ACTION:
+			MessageBox.onRemoved(button);
 			break;
 	}
 };
@@ -36,31 +47,5 @@ export const loadButtons = (): Promise<void> => APIClient.get('apps/actionButton
 	})
 	.then(console.log)
 	.catch(console.error);
-
-/**
-  * Returns an iterator so we preserve the original Array
-  * without needing to copy it
-  */
-export const getActionButtonsIterator = (filter?: (value: IUIActionButton) => boolean): IterableIterator<IUIActionButton> => {
-	let index = 0;
-
-	return {
-		next(): IteratorResult<IUIActionButton> {
-			let value;
-			do {
-				if (index >= registeredButtons.length) {
-					return { done: true, value: undefined };
-				}
-
-				value = registeredButtons[index++];
-			} while (filter && !filter(value));
-
-			return { done: false, value };
-		},
-		[Symbol.iterator](): IterableIterator<IUIActionButton> {
-			return this;
-		},
-	};
-};
 
 Meteor.startup(() => loadButtons());
