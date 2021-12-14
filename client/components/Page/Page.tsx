@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { useState, FC, ComponentProps } from 'react';
+import React, { useState, ReactElement, ComponentProps } from 'react';
 
 import PageContext from './PageContext';
 
-const Page: FC<ComponentProps<typeof Box>> = (props) => {
+const Page = (props: ComponentProps<typeof Box>): ReactElement => {
 	const [border, setBorder] = useState(false);
 	return (
 		<PageContext.Provider value={[border, setBorder]}>

@@ -1297,6 +1297,7 @@
   "Custom_Emoji_Delete_Warning": "Deleting an emoji cannot be undone.",
   "Custom_Emoji_Error_Invalid_Emoji": "Invalid emoji",
   "Custom_Emoji_Error_Name_Or_Alias_Already_In_Use": "The custom emoji or one of its aliases is already in use.",
+  "Custom_Emoji_Error_Same_Name_And_Alias": "The custom emoji name and their aliases should be different.",
   "Custom_Emoji_Has_Been_Deleted": "The custom emoji has been deleted.",
   "Custom_Emoji_Info": "Custom Emoji Info",
   "Custom_Emoji_Updated_Successfully": "Custom emoji updated successfully",
