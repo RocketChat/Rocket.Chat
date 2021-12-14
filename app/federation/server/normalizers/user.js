@@ -27,11 +27,10 @@ const normalizeUser = (originalResource) => {
 	// Get only what we need, non-sensitive data
 	const resource = _.pick(originalResource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt');
 
-	const email = resource.emails[0].address;
-
 	resource.emails = [{
 		address: `${ resource._id }@${ getFederationDomain() }`,
 	}];
+	const email = resource.emails[0].address;
 
 	resource.active = true;
 	resource.roles = ['user'];
