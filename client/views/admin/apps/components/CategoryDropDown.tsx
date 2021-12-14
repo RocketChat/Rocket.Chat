@@ -16,30 +16,30 @@ const CategoryDropDown: FC<
 > = ({ data, onSelected, ...props }) => {
 	const reference = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
-	const target = useRef(null);
 
 	const onClose = useCallback(
 		(e) => {
+			if (e.target !== reference.current && !reference.current?.contains(e.target)) {
+				toggleCollapsed(false);
+				return;
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			e.stopImmediatePropagation();
-			toggleCollapsed(false);
 			return false;
 		},
 		[toggleCollapsed],
 	);
 
-	useOutsideClick(target, onClose);
-
 	return (
-		<Box ref={target}>
+		<>
 			<CategoryDropDownAnchor ref={reference} onClick={toggleCollapsed as any} {...props} />
 			{collapsed && (
-				<CategoryDropDownListWrapper ref={reference}>
+				<CategoryDropDownListWrapper ref={reference} onClose={onClose}>
 					<CategoryDropDownList groups={data} onSelected={onSelected} />
 				</CategoryDropDownListWrapper>
 			)}
-		</Box>
+		</>
 	);
 };
 
