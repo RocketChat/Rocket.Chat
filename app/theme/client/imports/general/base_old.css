@@ -1680,12 +1680,12 @@
 			padding: 1rem;
 
 			border-width: 1px 0 0;
-			background: 
-			linear-gradient(
-				to bottom,
-				var(--rc-color-alert-message-warning-background) 0%,
-				rgba(255, 255, 255, 0) 100%
-			);
+			background:
+				linear-gradient(
+					to bottom,
+					var(--rc-color-alert-message-warning-background) 0%,
+					rgba(255, 255, 255, 0) 100%
+				);
 		}
 	}
 
@@ -3531,7 +3531,7 @@
 	height: 57px;
 	padding-bottom: 8px;
 
-	transition: 
+	transition:
 		transform 0.15s cubic-bezier(0.5, 0, 0.1, 1),
 		visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
