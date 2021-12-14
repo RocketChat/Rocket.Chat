@@ -1,6 +1,8 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, FC, useCallback, ComponentProps } from 'react';
 
+import { useOutsideClick } from '../../../../hooks/useOutsideClick';
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
@@ -14,6 +16,7 @@ const CategoryDropDown: FC<
 > = ({ data, onSelected, ...props }) => {
 	const reference = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
+	const target = useRef(null);
 
 	const onClose = useCallback(
 		(e) => {
@@ -26,15 +29,17 @@ const CategoryDropDown: FC<
 		[toggleCollapsed],
 	);
 
+	useOutsideClick(target, onClose);
+
 	return (
-		<>
+		<Box ref={target}>
 			<CategoryDropDownAnchor ref={reference} onClick={toggleCollapsed as any} {...props} />
 			{collapsed && (
-				<CategoryDropDownListWrapper ref={reference} onClose={onClose}>
+				<CategoryDropDownListWrapper ref={reference}>
 					<CategoryDropDownList groups={data} onSelected={onSelected} />
 				</CategoryDropDownListWrapper>
 			)}
-		</>
+		</Box>
 	);
 };
 

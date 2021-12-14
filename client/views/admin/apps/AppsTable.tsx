@@ -134,7 +134,6 @@ const AppsTable: FC<{
 					)}
 				</>
 			)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				isMarketplace &&
 				appsResult.value.count === 0 && (
@@ -163,7 +162,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total === 0 && (
@@ -180,7 +178,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total !== 0 &&
@@ -207,12 +204,12 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
+			// TODO: Create error variations for empty search message
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon name='warning' />
-						<StatesTitle>{t('ERROR!')}</StatesTitle>
+						<StatesTitle>{t('Error')}</StatesTitle>
 						<StatesActions>
 							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
 								{t('Reload_page')}
