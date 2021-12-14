@@ -142,6 +142,8 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 
+export const triggerActionButtonAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options });
+
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
 		const instance = instances.get(viewId);
