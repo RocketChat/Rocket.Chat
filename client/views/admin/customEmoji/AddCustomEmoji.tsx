@@ -17,7 +17,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const [aliases, setAliases] = useState('');
 	const [emojiFile, setEmojiFile] = useState<Blob>();
 	const [newEmojiPreview, setNewEmojiPreview] = useState('');
-	const [errors, setErrors] = useState({ name: false, emoji: false });
+	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
 	const setEmojiPreview = useCallback(
 		async (file) => {
@@ -37,6 +37,10 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const handleSave = useCallback(async () => {
 		if (!name) {
 			return setErrors((prevState) => ({ ...prevState, name: true }));
+		}
+
+		if (name === aliases) {
+			return setErrors((prevState) => ({ ...prevState, aliases: true }));
 		}
 
 		if (!emojiFile) {
@@ -65,6 +69,14 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		return setName(e.currentTarget.value);
 	};
 
+	const handleChangeAliases = (e: ChangeEvent<HTMLInputElement>): void => {
+		if (e.currentTarget.value !== name) {
+			setErrors((prevState) => ({ ...prevState, aliases: false }));
+		}
+
+		return setAliases(e.currentTarget.value);
+	};
+
 	return (
 		<VerticalBar.ScrollableContent {...props}>
 			<Field>
@@ -79,12 +91,9 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 			<Field>
 				<Field.Label>{t('Aliases')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={aliases}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setAliases(e.currentTarget.value)}
-						placeholder={t('Aliases')}
-					/>
+					<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
 				</Field.Row>
+				{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
 			</Field>
 			<Field>
 				<Field.Label

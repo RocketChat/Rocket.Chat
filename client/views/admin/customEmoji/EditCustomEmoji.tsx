@@ -36,6 +36,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
+	const [errors, setErrors] = useState({ name: false, aliases: false });
 
 	const { _id, name: previousName, aliases: previousAliases } = data || {};
 
@@ -71,6 +72,14 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	);
 
 	const handleSave = useCallback(async () => {
+		if (!name) {
+			return setErrors((prevState) => ({ ...prevState, name: true }));
+		}
+
+		if (name === aliases) {
+			return setErrors((prevState) => ({ ...prevState, aliases: true }));
+		}
+
 		if (!emojiFile && !newEmojiPreview) {
 			return;
 		}
@@ -124,9 +133,26 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		));
 	}, [deleteAction, close, dispatchToastMessage, onChange, setModal, t]);
 
-	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
+	const handleChangeAliases = useCallback(
+		(e) => {
+			if (e.currentTarget.value !== name) {
+				setErrors((prevState) => ({ ...prevState, aliases: false }));
+			}
+
+			return setAliases(e.currentTarget.value);
+		},
+		[setAliases, name],
+	);
 
 	const [clickUpload] = useFileInput(setEmojiFile, 'emoji');
+
+	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
+		if (e.currentTarget.value !== '') {
+			setErrors((prevState) => ({ ...prevState, name: false }));
+		}
+
+		return setName(e.currentTarget.value);
+	};
 
 	return (
 		<VerticalBar.ScrollableContent {...(props as any)}>
@@ -134,18 +160,20 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							value={name}
-							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
-							placeholder={t('Name')}
-						/>
+						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 					</Field.Row>
+					{errors.name && (
+						<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
+					)}
 				</Field>
 				<Field>
 					<Field.Label>{t('Aliases')}</Field.Label>
 					<Field.Row>
-						<TextInput value={aliases} onChange={handleAliasesChange} placeholder={t('Aliases')} />
+						<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
 					</Field.Row>
+					{errors.aliases && (
+						<Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>
+					)}
 				</Field>
 				<Field>
 					<Field.Label
