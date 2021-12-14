@@ -417,17 +417,19 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 								/>
 							</Field>
 						)}
-						<Field>
-							<Field.Label>{t('Fallback_forward_department')}</Field.Label>
-							<AutoCompleteDepartment
-								haveNone
-								value={fallbackForwardDepartment}
-								onChange={handleFallbackForwardDepartment}
-								placeholder={t('Fallback_forward_department')}
-								label={t('Fallback_forward_department')}
-								onlyMyDepartments
-							/>
-						</Field>
+						{AutoCompleteDepartment && (
+							<Field>
+								<Field.Label>{t('Fallback_forward_department')}</Field.Label>
+								<AutoCompleteDepartment
+									haveNone
+									value={fallbackForwardDepartment}
+									onChange={handleFallbackForwardDepartment}
+									placeholder={t('Fallback_forward_department')}
+									label={t('Fallback_forward_department')}
+									onlyMyDepartments
+								/>
+							</Field>
+						)}
 						<Field>
 							<Box display='flex' flexDirection='row'>
 								<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
