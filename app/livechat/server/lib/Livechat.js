@@ -65,9 +65,9 @@ export const Livechat = {
 		});
 	},
 
-	online(department) {
+	online(department, skipNoAgentSetting = false) {
 		Livechat.logger.debug(`Checking online agents ${ department ? `for department ${ department }` : '' }`);
-		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
 			return true;
 		}
@@ -634,6 +634,7 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		Livechat.logger.debug(`Saving transfer history for room ${ room._id }`);
+		console.log(JSON.stringify(room, null, 2), JSON.stringify(transferData, null, 2));
 		const { departmentId: previousDepartment } = room;
 		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 
@@ -954,6 +955,7 @@ export const Livechat = {
 			showOnOfflineForm: Boolean,
 			requestTagBeforeClosingChat: Match.Optional(Boolean),
 			chatClosingTags: Match.Optional([String]),
+			fallbackForwardDepartment: Match.Optional(String),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -969,7 +971,7 @@ export const Livechat = {
 			remove: Match.Maybe(Array),
 		}));
 
-		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
 			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
 		}
@@ -979,6 +981,10 @@ export const Livechat = {
 			if (!department) {
 				throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartment' });
 			}
+		}
+
+		if (fallbackForwardDepartment === _id) {
+			throw new Meteor.Error('error-fallback-department-circular', 'Cannot save department. Circular reference between fallback department and department');
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);

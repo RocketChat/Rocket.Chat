@@ -1114,4 +1114,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params);
 	}
+
+	setDepartmentByRoomId(roomId, department) {
+		return this.findOneAndUpdate({ _id: roomId }, { $set: { department } });
+	}
 }

@@ -12,6 +12,7 @@ type DepartmentsListOptions = {
 	departmentId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
+	haveNone?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -64,6 +65,13 @@ export const useDepartmentsList = (
 					_updatedAt: new Date(),
 				});
 
+			options.haveNone &&
+				items.unshift({
+					label: t('None'),
+					value: { value: '', label: t('None') },
+					_updatedAt: new Date(),
+				});
+
 			return {
 				items,
 				itemCount: options.departmentId ? total - 1 : total,
@@ -75,6 +83,7 @@ export const useDepartmentsList = (
 			options.filter,
 			options.haveAll,
 			options.onlyMyDepartments,
+			options.haveNone,
 			t,
 		],
 	);
