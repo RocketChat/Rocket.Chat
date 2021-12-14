@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
 	CategoryDropdownItem,
@@ -56,9 +56,13 @@ export const useCategories = (): [
 	const [data, setData] = useState<CategoryDropDownListProps['groups']>(categories);
 
 	const onSelected = useCategoryToggle(setData);
-	const selectedCategories = useCategoryFlatList(data);
+	const flatCategories = useCategoryFlatList(data);
 	const originalSize = useCategoryFlatList(categories).length;
 
+	const selectedCategories = useMemo(
+		() => flatCategories.filter((category) => Boolean(category.checked)),
+		[flatCategories],
+	) as (CategoryDropdownItem & { checked: true })[];
 	return [
 		data,
 		selectedCategories,

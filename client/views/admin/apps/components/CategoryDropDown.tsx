@@ -19,7 +19,8 @@ const CategoryDropDown: FC<
 		(e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			toggleCollapsed();
+			e.stopImmediatePropagation();
+			toggleCollapsed(false);
 			return false;
 		},
 		[toggleCollapsed],

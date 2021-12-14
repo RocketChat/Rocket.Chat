@@ -7,13 +7,5 @@ import {
 
 export const useCategoryFlatList = (
 	data: CategoryDropDownListProps['groups'],
-): (CategoryDropdownItem & { checked: true })[] =>
-	useMemo(
-		() =>
-			data
-				.flatMap((group) => group.items)
-				.filter(({ id, checked }) => id !== 'all' && checked === true) as (CategoryDropdownItem & {
-				checked: true;
-			})[],
-		[data],
-	);
+): CategoryDropdownItem[] =>
+	useMemo(() => data.flatMap((group) => group.items).filter(({ id }) => id !== 'all'), [data]);
