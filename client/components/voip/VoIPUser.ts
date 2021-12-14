@@ -367,7 +367,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * @remarks
 	 */
 
-	async acceptCall(mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+	async acceptCall(mediaRenderer: IMediaStreamRenderer): Promise<void> {
 		if (mediaRenderer) {
 			this.mediaStreamRendered = mediaRenderer;
 		}

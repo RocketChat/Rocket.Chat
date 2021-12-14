@@ -1,7 +1,6 @@
 import React, { useMemo, FC, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import {
 	isUseVoipClientResultError,
@@ -21,14 +20,7 @@ export const CallProvider: FC = ({ children }) => {
 	// 	actions: CallActions;
 	// };
 
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(new Audio()); // TODO: Create a dedicated file for the AUDIO and make the controlls accessible
-
-	const audioElement = <audio id='remote_media' ref={remoteAudioMediaRef} />;
-
-	const mediaRenderer = useMemo<IMediaStreamRenderer>(
-		() => ({ remoteMediaElement: remoteAudioMediaRef.current as HTMLMediaElement }),
-		[remoteAudioMediaRef],
-	);
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controlls accessible
 
 	const AudioTagPortal: FC = ({ children }) =>
 		useMemo(() => createPortal(children, document.body), [children]);
@@ -61,16 +53,21 @@ export const CallProvider: FC = ({ children }) => {
 				pause: (): void => undefined, // voipClient.pause()
 				resume: (): void => undefined, // voipClient.resume()
 				end: (): Promise<unknown> => voipClient.endCall(),
-				pickUp: (): Promise<unknown> => voipClient.acceptCall(mediaRenderer),
+				pickUp: async (): Promise<unknown> =>
+					remoteAudioMediaRef.current &&
+					voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
 				reject: (): Promise<unknown> => voipClient.rejectCall(),
 			},
-			remoteAudioMediaRef,
 		};
-	}, [mediaRenderer, result]);
+	}, [result]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
-			<AudioTagPortal>{audioElement}</AudioTagPortal>
+			{contextValue.enabled && (
+				<AudioTagPortal>
+					<audio ref={remoteAudioMediaRef} />
+				</AudioTagPortal>
+			)}
 		</CallContext.Provider>
 	);
 };

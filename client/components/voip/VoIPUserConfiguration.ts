@@ -38,6 +38,7 @@ export interface VoIPUserConfiguration {
 }
 
 export interface IMediaStreamRenderer {
-	localMediaElement?: HTMLMediaElement;
-	remoteMediaElement?: HTMLMediaElement;
+	/* @deprecated */
+	localMediaElement?: HTMLMediaElement; // TODO: Understand the usage of localMediaElement
+	remoteMediaElement: HTMLMediaElement;
 }
