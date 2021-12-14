@@ -404,9 +404,13 @@ Template.messageBox.events({
 			.map((item) => {
 				const fileItem = item.getAsFile();
 
+				const imageExtension = getImageExtensionFromMime(fileItem.type);
+
+				const extension = imageExtension ? `.${ imageExtension }` : '';
+
 				return {
 					file: fileItem,
-					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ getImageExtensionFromMime(fileItem.type) }`,
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }${ extension }`,
 				};
 			}).filter(({ file }) => file !== null);
 
