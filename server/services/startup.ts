@@ -25,6 +25,6 @@ api.registerService(new RoomService(db));
 api.registerService(new TeamService(db));
 api.registerService(new MediaService());
 api.registerService(new VoipService(db));
-api.registerService(new OmnichannelVoipService());
+api.registerService(new OmnichannelVoipService(db));
 api.registerService(new AnalyticsService(db));
 api.registerService(new LDAPService());

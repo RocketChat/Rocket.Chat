@@ -768,4 +768,44 @@ export class UsersRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
+	// Voip functions
+	findOneByAgentUsername(username, options) {
+		const query = { username, roles: 'livechat-agent' };
+
+		return this.findOne(query, options);
+	}
+
+	getVoipExtensionByUserId(userId, options) {
+		const query = {
+			_id: userId,
+			extension: { $exists: true },
+		};
+		return this.findOne(query, options);
+	}
+
+	setExtension(userId, extension) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				extension,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	unsetExtension(userId) {
+		const query = {
+			_id: userId,
+		};
+		const update = {
+			$unset: {
+				extension: true,
+			},
+		};
+		return this.update(query, update);
+	}
 }
