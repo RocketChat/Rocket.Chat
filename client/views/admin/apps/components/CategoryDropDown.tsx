@@ -1,8 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, FC, useCallback, ComponentProps } from 'react';
 
-import { useOutsideClick } from '../../../../hooks/useOutsideClick';
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
