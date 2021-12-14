@@ -1,5 +1,5 @@
+import { IMediaStreamRenderer } from '../../../definition/voip/VoIPUserConfiguration';
 import { VoIPUser } from './VoIPUser';
-import { IMediaStreamRenderer } from './VoIPUserConfiguration';
 
 export class SimpleVoipUser {
 	static async create(

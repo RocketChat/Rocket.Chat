@@ -1,9 +1,9 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
-import { VoIPUser } from '../components/voip/VoIPUser';
-import { VoIpCallerInfo } from '../components/voip/definitions/VoIpCallerInfo';
+import { IRegistrationInfo } from '../../definition/voip/IRegistrationInfo';
+import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
+import { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue =
 	| CallContextDisabled

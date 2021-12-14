@@ -181,8 +181,6 @@ declare class APIClass<TBasePath extends string = '/'> {
 		importIds: 0;
 		e2e: 0;
 	}
-
-	notFound(msg?: string): NotFoundResult;
 }
 
 export declare const API: {

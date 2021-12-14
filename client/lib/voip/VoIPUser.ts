@@ -21,15 +21,17 @@ import {
 import { OutgoingRequestDelegate } from 'sip.js/lib/core';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
-import { ClientLogger } from '../../../lib/ClientLogger';
-import { Operation } from './Operations';
-import { IMediaStreamRenderer, VoIPUserConfiguration } from './VoIPUserConfiguration';
-import { CallStates } from './definitions/CallStates';
-import { ICallerInfo } from './definitions/ICallerInfo';
-import { UserState } from './definitions/UserState';
-import { VoIpCallerInfo, IState } from './definitions/VoIpCallerInfo';
-import { VoipEvents } from './definitions/VoipEvents';
-import Stream from './media/Stream';
+import { CallStates } from '../../../definition/voip/CallStates';
+import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
+import { Operation } from '../../../definition/voip/Operations';
+import { UserState } from '../../../definition/voip/UserState';
+import {
+	IMediaStreamRenderer,
+	VoIPUserConfiguration,
+} from '../../../definition/voip/VoIPUserConfiguration';
+import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
+import { VoipEvents } from '../../../definition/voip/VoipEvents';
+import Stream from './Stream';
 
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
 	state: IState = {
@@ -48,8 +50,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	registerer: Registerer | undefined;
 
 	mediaStreamRendered?: IMediaStreamRenderer;
-
-	logger: ClientLogger;
 
 	private _callState: CallStates = 'IDLE';
 
@@ -108,7 +108,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
-		this.logger = new ClientLogger('VoIPUser');
 
 		this.on('connected', () => {
 			this.state.isReady = true;
@@ -122,7 +121,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	/* UserAgentDelegate methods end */
 	/* OutgoingRequestDelegate methods begin */
 	onAccept(): void {
-		this.logger.info('onAccept()');
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this._callState = 'REGISTERED';
 			this.emit('registered');
@@ -136,7 +134,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	onReject(error: any): void {
-		this.logger.info('onReject()');
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this.emit('registrationerror', error);
 		}
@@ -147,7 +144,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	/* OutgoingRequestDelegate methods end */
 
 	private async handleIncomingCall(invitation: Invitation): Promise<void> {
-		this.logger.info('handleIncomingCall()');
 		if (this.callState === 'REGISTERED') {
 			this._opInProgress = Operation.OP_PROCESS_INVITE;
 			this._callState = 'OFFER_RECEIVED';
@@ -165,7 +161,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			return;
 		}
 
-		this.logger.warn('handleIncomingCall() Rejecting. Incorrect state', this.callState);
 		await invitation.reject();
 	}
 
@@ -181,7 +176,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 */
 
 	private setupSessionEventHandlers(session: Session): void {
-		this.logger.info('setupSessionEventHandlers()');
 		this.session?.stateChange.addListener((state: SessionState) => {
 			if (this.session !== session) {
 				return; // if our session has changed, just return
@@ -216,11 +210,11 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	onTrackAdded(_event: any): void {
-		this.logger.debug('onTrackAdded()');
+		console.log('onTrackAdded');
 	}
 
 	onTrackRemoved(_event: any): void {
-		this.logger.debug('onTrackRemoved()');
+		console.log('onTrackRemoved');
 	}
 
 	/**
@@ -231,24 +225,19 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * Also sets up various event handlers.
 	 */
 	private setupRemoteMedia(): any {
-		this.logger.debug('setupRemoteMedia()');
 		if (!this.session) {
-			this.logger.error('setupRemoteMedia() : Sesson does not exist');
 			throw new Error('Session does not exist.');
 		}
 		const sdh = this.session?.sessionDescriptionHandler;
 		if (!sdh) {
-			this.logger.error('setupRemoteMedia() : no session description');
 			return undefined;
 		}
 		if (!(sdh instanceof SessionDescriptionHandler)) {
-			this.logger.error('setupRemoteMedia() : Unknown error');
 			throw new Error('Session description handler not instance of web SessionDescriptionHandler');
 		}
 
 		const remoteStream = sdh.remoteMediaStream;
 		if (!remoteStream) {
-			this.logger.error('setupRemoteMedia() : Remote stream not found');
 			throw new Error('Remote media stream undefiend.');
 		}
 
@@ -274,9 +263,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 */
 
 	async init(): Promise<void> {
-		this.logger.debug('init()');
 		const sipUri = `sip:${this.config.authUserName}@${this.config.sipRegistrarHostnameOrIP}`;
-		this.logger.verbose('init() endpoint identity = ', sipUri);
 		const transportOptions = {
 			server: this.config.webSocketURI,
 			connectionTimeout: 100, // Replace this with config
@@ -294,7 +281,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 				/* UserAgentDelegate methods begin */
 				onConnect: (): void => {
 					this._callState = 'SERVER_CONNECTED';
-					this.logger.info('onConnect() Connected');
 
 					this.emit('connected');
 
@@ -303,14 +289,11 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 					}
 				},
 				onDisconnect: (error: any): void => {
-					this.logger.info('onDisconnect() Disconnected');
 					if (error) {
 						this.emit('connectionerror', error);
-						this.logger.warn('onDisconnect() Error', error);
 					}
 				},
 				onInvite: async (invitation: Invitation): Promise<void> => {
-					this.logger.info('onDisconnect() Disconnected');
 					await this.handleIncomingCall(invitation);
 				},
 			},
@@ -342,7 +325,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 */
 
 	register(): void {
-		this.logger.info('register()');
 		this._opInProgress = Operation.OP_REGISTER;
 		this.registerer?.register({
 			requestDelegate: this,
@@ -355,7 +337,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 */
 
 	unregister(): void {
-		this.logger.info('unregister()');
 		this._opInProgress = Operation.OP_UNREGISTER;
 		this.registerer?.unregister({
 			all: true,
@@ -371,7 +352,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		if (mediaRenderer) {
 			this.mediaStreamRendered = mediaRenderer;
 		}
-		this.logger.info('acceptCall()');
 		// Call state must be in offer_received.
 		if (
 			this._callState === 'OFFER_RECEIVED' &&
@@ -386,18 +366,12 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 					},
 				},
 			};
-			this.logger.debug(
-				'acceptCall() constraints = ',
-				JSON.stringify(invitationAcceptOptions.sessionDescriptionHandlerOptions),
-			);
 			// Somethingis wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
-				this.logger.error('acceptCall() Session instance error');
 				throw new Error('Session not instance of Invitation.');
 			}
 			return this.session.accept(invitationAcceptOptions);
 		}
-		this.logger.error('acceptCall() Unknown error');
 		throw new Error('Something went wront');
 	}
 
@@ -406,18 +380,13 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * @remarks
 	 */
 	rejectCall(): Promise<unknown> {
-		this.logger.info('rejectCall()');
-
 		if (!this.session) {
-			this.logger.warn('rejectCall() Session does not exist');
 			throw new Error('Session does not exist.');
 		}
 		if (this._callState !== 'OFFER_RECEIVED') {
-			this.logger.warn('rejectCall() Incorrect call State', this.callState);
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		if (!(this.session instanceof Invitation)) {
-			this.logger.warn('rejectCall() Session not instance of Invitation.');
 			throw new Error('Session not instance of Invitation.');
 		}
 		return this.session.reject();
@@ -429,11 +398,9 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 */
 	async endCall(): Promise<any> {
 		if (!this.session) {
-			this.logger.warn('rejectCall() Session does not exist');
 			throw new Error('Session does not exist.');
 		}
 		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL') {
-			this.logger.warn('rejectCall() Incorrect call State', this.callState);
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		switch (this.session.state) {
@@ -441,13 +408,11 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
 				}
-				this.logger.warn('rejectCall() Session not instance of Invitation.');
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
 				}
-				this.logger.warn('rejectCall() Session not instance of Invitation.');
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Established:
 				return this.session.bye();
@@ -456,10 +421,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			case SessionState.Terminated:
 				break;
 			default:
-				this.logger.warn('rejectCall() Unknown state');
 				throw new Error('Unknown state');
 		}
-		this.logger.debug('ended');
 	}
 
 	/* CallEventDelegate implementation end */

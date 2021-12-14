@@ -10,18 +10,14 @@
  * mixing of 2 streams in to 2, adding/removing tracks, getting a track information
  * detecting voice energy etc. Which will be implemented as when needed
  */
-import { ClientLogger } from '../../../../lib/ClientLogger';
 
 export default class Stream {
-	logger: ClientLogger;
-
 	private mediaStream: MediaStream | undefined;
 
 	private renderingMediaElement: HTMLMediaElement | undefined;
 
 	constructor(mediaStream: MediaStream) {
 		this.mediaStream = mediaStream;
-		this.logger = new ClientLogger('Stream');
 	}
 	/**
 	 * Called for stopping the tracks in a given stream.
@@ -30,7 +26,6 @@ export default class Stream {
 	 */
 
 	private stopTracks(): void {
-		this.logger.info('stopTrack() total tracks = ', this.mediaStream?.getTracks().length);
 		const tracks = this.mediaStream?.getTracks();
 		if (tracks) {
 			for (let i = 0; i < tracks?.length; i++) {
@@ -45,7 +40,6 @@ export default class Stream {
 	 */
 
 	onTrackAdded(callBack: any): void {
-		this.logger.debug('onTrackAdded()');
 		this.mediaStream?.onaddtrack?.(callBack);
 	}
 
@@ -55,7 +49,6 @@ export default class Stream {
 	 */
 
 	onTrackRemoved(callBack: any): void {
-		this.logger.debug('onTrackRemoved()');
 		this.mediaStream?.onremovetrack?.(callBack);
 	}
 
@@ -65,7 +58,6 @@ export default class Stream {
 	 */
 
 	init(rmElement: HTMLMediaElement): void {
-		this.logger.debug('init()');
 		this.renderingMediaElement = rmElement;
 	}
 	/**
@@ -76,13 +68,11 @@ export default class Stream {
 	 */
 
 	play(autoPlay = true, muteAudio = false): void {
-		this.logger.debug('play() autoPlay = ', autoPlay, 'muteAudio = ', muteAudio);
 		if (this.renderingMediaElement && this.mediaStream) {
 			this.renderingMediaElement.autoplay = autoPlay;
 			this.renderingMediaElement.srcObject = this.mediaStream;
 			if (autoPlay) {
 				this.renderingMediaElement.play().catch((error: Error) => {
-					this.logger.error('play() error = ', error);
 					throw error;
 				});
 			}
@@ -97,7 +87,6 @@ export default class Stream {
 	 * @remarks
 	 */
 	pause(): void {
-		this.logger.debug('pause()');
 		this.renderingMediaElement?.pause();
 	}
 
@@ -111,7 +100,6 @@ export default class Stream {
 	 */
 
 	clear(): void {
-		this.logger.debug('clear()');
 		if (this.renderingMediaElement && this.mediaStream) {
 			this.renderingMediaElement.pause();
 			this.renderingMediaElement.srcObject = null;

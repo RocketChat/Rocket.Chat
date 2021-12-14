@@ -1,11 +1,11 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useMemo, useState } from 'react';
 
-import { IRegistrationInfo } from '../../../components/voip/IRegistrationInfo';
-import { SimpleVoipUser } from '../../../components/voip/SimpleVoipUser';
-import { VoIPUser } from '../../../components/voip/VoIPUser';
+import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
+import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
 
 type UseVoipClientResult =

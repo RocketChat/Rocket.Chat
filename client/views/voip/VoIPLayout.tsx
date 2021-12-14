@@ -10,11 +10,11 @@ import React, { FC, useRef, useState, useCallback, useEffect, useMemo, FormEvent
 import { useSubscription } from 'use-subscription';
 
 // import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
+import { IMediaStreamRenderer } from '../../../definition/voip/VoIPUserConfiguration';
+import { VoIpCallerInfo } from '../../../definition/voip/VoIpCallerInfo';
 import { ClientLogger } from '../../../lib/ClientLogger';
-import { VoIPUser } from '../../components/voip/VoIPUser';
-import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
-import { VoIpCallerInfo } from '../../components/voip/definitions/VoIpCallerInfo';
 import { useCallRegistrationInfo } from '../../contexts/CallContext';
+import { VoIPUser } from '../../lib/voip/VoIPUser';
 
 const VoIPLayout: FC<{
 	voipUser: VoIPUser;
