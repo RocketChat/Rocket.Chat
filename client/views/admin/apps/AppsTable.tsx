@@ -204,7 +204,7 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-			// TODO: Create error variations for empty search message
+			{/*TODO: Create error variations for empty search message*/}
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
