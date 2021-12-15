@@ -319,6 +319,8 @@ export const Livechat = {
 
 	setDepartmentForGuest({ token, department } = {}) {
 		check(token, String);
+		check(department, String);
+
 		Livechat.logger.debug(`Switching departments for user with token ${ token } (to ${ department })`);
 
 		const updateUser = {
