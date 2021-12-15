@@ -13,6 +13,8 @@ import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToD
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
+import { findRoomByNonValidatedName } from '../../../../server/lib/findRoomByNonValidatedName';
+
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -816,7 +818,7 @@ export class ImportDataConverter {
 		}).filter((user) => user);
 	}
 
-	findExistingRoom(data: IImportChannel): IRoom {
+	findExistingRoom(data: IImportChannel): IRoom | undefined {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
 			const room = Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general
@@ -836,7 +838,9 @@ export class ImportDataConverter {
 			return Rooms.findDirectRoomContainingAllUsernames(users, {});
 		}
 
-		return Rooms.findOneByNonValidatedName(data.name, {});
+		if (data.name) {
+			return findRoomByNonValidatedName(data.name);
+		}
 	}
 
 	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {

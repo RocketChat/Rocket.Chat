@@ -8,7 +8,6 @@ import type { IRole } from '../../../../definition/IRole';
 import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Rooms } from '../../../../app/models/server';
 import {
 	Users as UsersRaw,
 	Roles,
@@ -22,6 +21,7 @@ import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler
 import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Team } from '../../../../server/sdk';
+import { findRoomByNonValidatedName } from '../../../../server/lib/findRoomByNonValidatedName';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -291,7 +291,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
-				const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+				const room: IRoom | undefined = findRoomByNonValidatedName(channel) || this.createRoomForSync(channel);
 				if (!room) {
 					return;
 				}

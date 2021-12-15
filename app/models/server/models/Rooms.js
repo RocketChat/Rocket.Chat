@@ -354,24 +354,6 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByNonValidatedName(name, options) {
-		const room = this.findOneByName(name, options);
-		if (room) {
-			return room;
-		}
-
-		let channelName = s.trim(name);
-		try {
-			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
-			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
-		} catch (e) {
-			console.error(e);
-		}
-
-		return this.findOneByName(channelName, options);
-	}
-
 	findOneByName(name, options) {
 		const query = { name };
 

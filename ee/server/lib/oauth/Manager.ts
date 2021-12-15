@@ -1,8 +1,9 @@
 import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
-import { Rooms } from '../../../../app/models/server';
+import { findRoomByNonValidatedName } from '../../../../server/lib/findRoomByNonValidatedName';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { Roles } from '../../../../app/models/server/raw';
+import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
 
 export const logger = new Logger('OAuth');
 
@@ -18,16 +19,22 @@ export class OAuthEEManager {
 						channels = [channels];
 					}
 					for (const channel of channels) {
-						let room = Rooms.findOneByNonValidatedName(channel);
-						if (!room) {
-							room = createRoom('c', channel, channelsAdmin, [], false);
-							if (!room || !room.rid) {
+						const room = findRoomByNonValidatedName(channel);
+						let rid: IRoom['_id'] | undefined = room?._id;
+
+						if (!rid) {
+							// #ToDo: Remove the typecast once createRoom is properly typed
+							const newRoom = createRoom('c', channel, channelsAdmin, [], false) as unknown as ICreatedRoom | undefined;
+							if (!newRoom?.rid) {
 								logger.error(`could not create channel ${ channel }`);
 								return;
 							}
+
+							rid = newRoom.rid;
 						}
+
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user);
+							addUserToRoom(rid, user);
 						}
 					}
 				}
