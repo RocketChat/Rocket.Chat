@@ -3,17 +3,15 @@ import {
 	IUIKitErrorInteraction,
 	IUIKitSurface,
 	IInputElement,
+	IInputBlock,
+    IActionsBlock,
 } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer, Dispatch } from 'react';
 
-import {
-	triggerBlockAction,
-	on,
-	off,
-} from '../../../../../app/ui-message/client/ActionManager';
+import { triggerBlockAction, on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -36,20 +34,18 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 		const filterInputFields = ({
 			element,
 			elements = [],
-		}: {
-			element?: IInputElement;
-			elements?: IInputElement[];
-		}): boolean | undefined => {
+		}: IInputBlock | IActionsBlock): boolean => {
 			if (element?.initialValue) {
 				return true;
 			}
 
 			if (
-				elements.length &&
-				elements.map((element) => ({ element })).filter(filterInputFields).length
+				elements.map((element: IInputElement) => ({ element })).filter(filterInputFields).length
 			) {
 				return true;
 			}
+
+			return false;
 		};
 
 		const mapElementToState = ({
@@ -60,18 +56,18 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			element: IInputElement;
 			blockId: string;
 			elements?: IInputElement[];
-		}): InputFieldState => {
+		}): InputFieldState | InputFieldState[] => {
 			if (elements.length) {
 				return elements
 					.map((element) => ({ element, blockId }))
 					.filter(filterInputFields)
-					.map(mapElementToState);
+					.map(mapElementToState) as InputFieldState[];
 			}
 			return [element.actionId, { value: element.initialValue, blockId }];
 		};
 
 		return view.blocks
-			.filter(filterInputFields)
+			.filter((block: IInputBlock) => filterInputFields(block))
 			.map(mapElementToState)
 			.reduce((obj, el) => {
 				if (Array.isArray(el[0])) {
