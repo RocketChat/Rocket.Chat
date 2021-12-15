@@ -1,6 +1,6 @@
-export const createAnchor = (id: string): HTMLDivElement => {
+export const createAnchor = (id: string, target = document.body): HTMLDivElement => {
 	const div = document.createElement('div');
 	div.id = id;
-	document.body.appendChild(div);
+	target.appendChild(div);
 	return div;
 };

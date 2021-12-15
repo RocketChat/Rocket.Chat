@@ -20,7 +20,7 @@ export type OauthCustomConfiguration = {
 	identityPath: unknown;
 	authorizePath: unknown;
 	scope: unknown;
-	loginStyle: unknown;
+	loginStyle: 'popup' | 'redirect';
 	tokenSentVia: unknown;
 	identityTokenSentVia: unknown;
 	keyField: unknown;
