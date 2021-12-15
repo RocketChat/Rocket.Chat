@@ -4,7 +4,6 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-// import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
 // Get the connector version and type
 API.v1.addRoute('connector.getVersion', { authRequired: true }, {
@@ -42,15 +41,12 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 /* Get the details for registration extension.
  */
 
-console.log('API = connector.extension.getRegistrationDetails');
 API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
 	async get() {
 		check(this.requestParams(), Match.ObjectIncluding({
 			extension: String,
 		}));
-		console.log('API = connector.extension.getRegistrationDetails', this.requestParams());
 		const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-		// this.logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });

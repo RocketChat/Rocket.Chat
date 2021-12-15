@@ -12,7 +12,7 @@ const Header: FC<{
 	const t = useTranslation();
 	const compactHeaderStates = ['incoming', 'current'];
 	return (
-		<Sidebar.TopBar>
+		<Box>
 			{compactHeaderStates.includes(state) && (
 				<Box mbe={8} textAlign='center' color='surface'>
 					{calls} {t('Calls_in_queue', calls)}
@@ -40,7 +40,7 @@ const Header: FC<{
 					<Box fontSize={22}>{calls}</Box>
 				</Box>
 			)}
-		</Sidebar.TopBar>
+		</Box>
 	);
 };
 

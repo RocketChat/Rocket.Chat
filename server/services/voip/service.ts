@@ -149,7 +149,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 			requestParams);
 	}
 
-	async getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
+	async getRegistrationInfo(requestParams: { extension: string }): Promise<{result: IRegistrationInfo}> {
 		const config = await this.getServerConfigData(ServerType.CALL_SERVER);
 
 		if (!config) {

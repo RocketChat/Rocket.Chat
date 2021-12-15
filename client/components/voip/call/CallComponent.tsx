@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import CallControls from './CallControls';
 import CallerInfo from './CallerInfo';
 import Header from './Header';
 import { ButtonsList } from './hooks/useButtonsLists';
@@ -31,7 +30,6 @@ const CallComponent: FC<CallComponentProps> = ({ data, callData, buttons }) => {
 					opacity={disabled ? '0.4' : '1'}
 				>
 					<CallerInfo callerData={callData} data={data} />
-					<CallControls state={data.state} disabled={disabled} />
 				</Box>
 			)}
 		</Box>

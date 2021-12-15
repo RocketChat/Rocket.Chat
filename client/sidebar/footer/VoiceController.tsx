@@ -58,7 +58,8 @@ const VoiceController: FC = (): ReactElement | null => {
 					</SidebarItemContent>
 					<SidebarItemContent>
 						<SidebarItemWrapper>
-							<SidebarItemSubtitle>{subtitle}</SidebarItemSubtitle>
+							<SidebarItemSubtitle className=''>{subtitle}</SidebarItemSubtitle>
+							{/* TODO: Check if the required classname should be required in fuselage */}
 						</SidebarItemWrapper>
 					</SidebarItemContent>
 				</SidebarItemContent>

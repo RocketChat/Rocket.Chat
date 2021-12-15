@@ -56,7 +56,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	});
 
 	return (
-		<Sidebar.TopBar.ToolBox {...props}>
+		<Sidebar.TopBar.ToolBox className='' {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && (
