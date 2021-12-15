@@ -15,6 +15,20 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		super(col, trash);
 	}
 
+	async getBadgeCount(uid: string): Promise<number> {
+		const [result] = await this.col.aggregate<{ total: number } | undefined>([
+			{ $match: { 'u._id': uid, archived: { $ne: true } } },
+			{
+				$group: {
+					_id: 'total',
+					total: { $sum: '$unread' },
+				},
+			},
+		]).toArray();
+
+		return result?.total;
+	}
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | null> {
 		const query = {
 			rid,
