@@ -10,7 +10,6 @@ import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer, Dispatch } from 'react';
 
 import {
-	getUserInteractionPayloadByViewId,
 	triggerBlockAction,
 	on,
 	off,
@@ -87,13 +86,17 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	return useReducer(reducer, null, initializer);
 };
 
-const AppsWithData = ({ viewId }: { viewId: string }): JSX.Element => {
+const AppsWithData = ({
+	viewId,
+	payload,
+}: {
+	viewId: string;
+	payload: IUIKitContextualBarInteraction;
+}): JSX.Element => {
 	const onClose = useTabBarClose();
 	const onSubmit = (): boolean => true;
 
-	const [state, setState] = useState<IUIKitContextualBarInteraction>(
-		getUserInteractionPayloadByViewId(viewId),
-	);
+	const [state, setState] = useState<IUIKitContextualBarInteraction>(payload);
 	const { view } = state;
 	const [values, updateValues] = useValues(view);
 
