@@ -10,13 +10,13 @@ import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
 import AppsContextualBar from '../contextualBar/Apps';
+import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import {
 	useTab,
 	useTabBarOpen,
 	useTabBarClose,
 	useTabBarOpenUserInfo,
 } from '../providers/ToolboxProvider';
-import { useAppsContextualBar } from '../providers/UIKitProvider';
 import Aside from './Aside';
 import Body from './Body';
 import Footer from './Footer';
@@ -32,7 +32,8 @@ const Room = () => {
 
 	const hideFlexTab = useUserPreference('hideFlexTab');
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
-	const appsContextualBar = useAppsContextualBar();
+
+	const appsContextualBarContext = useAppsContextualBar();
 
 	const tabBar = useMemo(
 		() => ({ open, close, isOpen, openUserInfo }),
@@ -79,12 +80,14 @@ const Room = () => {
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}
-			{appsContextualBar && (
-				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBar}>
+			{appsContextualBarContext.viewId && (
+				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
 					<ErrorBoundary>
-						{appsContextualBar && (
-							<LazyComponent template={AppsContextualBar} viewId={appsContextualBar} />
-						)}
+						<LazyComponent
+							template={AppsContextualBar}
+							viewId={appsContextualBarContext.viewId}
+							payload={appsContextualBarContext.payload}
+						/>
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}

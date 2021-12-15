@@ -7,7 +7,6 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
 import { RoomContext } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
-import UIKitProvider from './UIKitProvider';
 
 export type Props = {
 	children: ReactNode;
@@ -40,9 +39,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 
 	return (
 		<RoomContext.Provider value={context}>
-			<UIKitProvider>
-				<ToolboxProvider room={room}>{children}</ToolboxProvider>
-			</UIKitProvider>
+			<ToolboxProvider room={room}>{children}</ToolboxProvider>
 		</RoomContext.Provider>
 	);
 };
