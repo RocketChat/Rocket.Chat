@@ -36,13 +36,18 @@ function getGuestByEmail(email: string, name: string, department = ''): any {
 
 	if (guest) {
 		logger.debug(`Guest with email ${ email } found with id ${ guest._id }`);
-		if (!!department && guest.department !== department) {
+		if (guest.department !== department) {
 			logger.debug({
 				msg: 'Switching departments for guest',
 				guest,
 				previousDepartment: guest.department,
 				newDepartment: department,
 			});
+			if (!department) {
+				LivechatVisitors.removeDepartmentById(guest._id);
+				delete guest.department;
+				return guest;
+			}
 			Livechat.setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneById(guest._id, {});
 		}
