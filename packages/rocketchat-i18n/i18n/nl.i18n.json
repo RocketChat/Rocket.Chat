@@ -2884,7 +2884,7 @@
   "Message_auditing": "Bericht auditing",
   "Message_auditing_log": "Bericht controlelogboek",
   "Message_BadWordsFilterList": "Voeg slechte woorden toe aan de zwarte lijst",
-  "Message_BadWordsFilterListDescription": "Voeg lijst met door komma's gescheiden lijst van slechte woorden om te filteren toe",
+  "Message_BadWordsFilterListDescription": "Voeg een door komma's gescheiden lijst van slechte woorden toe om te filteren",
   "Message_BadWordsWhitelist": "Verwijder woorden van de zwarte lijst",
   "Message_BadWordsWhitelistDescription": "Voeg een door komma's gescheiden woordenlijst toe die uit het filter moet worden verwijderd",
   "Message_Characther_Limit": "Tekenlimiet",
@@ -2898,7 +2898,7 @@
   "Message_editing": "Bericht bewerken",
   "Message_ErasureType": "Berichtverwijderingstype",
   "Message_ErasureType_Delete": "Verwijder alle berichten",
-  "Message_ErasureType_Description": "Bepaal wat u wilt doen met berichten van gebruikers die hun account verwijderen.",
+  "Message_ErasureType_Description": "Bepaal wat u wilt doen met berichten van gebruikers die hun account verwijderen.\n\n**Bewaar berichten en gebruikersnaam:** De bericht- en bestandsgeschiedenis van de gebruiker wordt verwijderd uit privéberichten en wordt bewaard in andere chatruimten.\n\n**Verwijder alle berichten:** Alle berichten en bestanden van de gebruiker worden verwijderd uit de database en het is niet meer mogelijk om de gebruiker te lokaliseren.\n\n**Verwijder link tussen gebruiker en berichten:** Deze optie wijst alle berichten en bestanden van de gebruiker toe aan de Rocket.Cat-bot en privéberichten worden verwijderd.",
   "Message_ErasureType_Keep": "Bewaar berichten en gebruikersnaam",
   "Message_ErasureType_Unlink": "Verwijder de link tussen gebruiker en berichten",
   "Message_GlobalSearch": "Globaal zoeken",
@@ -4762,7 +4762,7 @@
   "Your_push_was_sent_to_s_devices": "Je push werd verzonden naar %s apparaten",
   "Your_question": "Uw vraag",
   "Your_server_link": "Uw serverlink",
-  "Your_temporary_password_is_password": "Uw tijdelijke wachtwoord is <strong>[password]</strong>.",
+  "Your_temporary_password_is_password": "Uw tijdelijke wachtwoord is: <strong>[password]</strong>",
   "Your_TOTP_has_been_reset": "Uw Two Factor TOTP werd gereset.",
   "Your_workspace_is_ready": "Je werkruimte is klaar voor gebruik 🎉"
 }
