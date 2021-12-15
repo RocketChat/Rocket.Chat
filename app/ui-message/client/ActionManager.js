@@ -1,5 +1,6 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from 'meteor/random';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -25,8 +26,6 @@ const TRIGGER_TIMEOUT = 5000;
 const triggersId = new Map();
 
 const instances = new Map();
-
-let lastUserInteractionPayload = {};
 
 const invalidateTriggerId = (id) => {
 	const appId = triggersId.get(id);
@@ -60,14 +59,6 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	if (!viewId) {
 		return;
 	}
-
-	lastUserInteractionPayload = {
-		type,
-		triggerId,
-		viewId,
-		appId,
-		...data,
-	};
 
 	if ([UIKitInteractionTypes.ERRORS].includes(type)) {
 		events.emit(viewId, {
@@ -115,7 +106,20 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	}
 
 	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
-		events.emit('open-apps-contextual-bar');
+		instances.set(viewId, {
+			payload: {
+				type,
+				triggerId,
+				viewId,
+				appId,
+				...data,
+			},
+			close() {
+				instances.delete(viewId);
+			},
+		});
+
+		FlowRouter.go('channel', { name: 'GENERAL', tab: 'app' });
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
@@ -189,7 +193,7 @@ export const triggerCancel = async ({ view, ...options }) => {
 	}
 };
 
-export const getLastUserInteractionPayload = () => lastUserInteractionPayload;
+export const getUserInteractionPayloadByViewId = (viewId) => instances.get(viewId).payload;
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>
