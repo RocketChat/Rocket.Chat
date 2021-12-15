@@ -110,8 +110,8 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			payload: {
 				type,
 				triggerId,
-				viewId,
 				appId,
+				viewId,
 				...data,
 			},
 			close() {
@@ -119,7 +119,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			},
 		});
 
-		FlowRouter.go('channel', { name: 'GENERAL', tab: 'app' });
+		FlowRouter.setParams({ tab: 'app', context: viewId });
 
 		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
@@ -193,7 +193,19 @@ export const triggerCancel = async ({ view, ...options }) => {
 	}
 };
 
-export const getUserInteractionPayloadByViewId = (viewId) => instances.get(viewId).payload;
+export const getUserInteractionPayloadByViewId = (viewId) => {
+	if (!viewId) {
+		return {};
+	}
+
+	const instance = instances.get(viewId);
+
+	if (!instance) {
+		return {};
+	}
+
+	return instance.payload;
+};
 
 Meteor.startup(() =>
 	CachedCollectionManager.onLogin(() =>

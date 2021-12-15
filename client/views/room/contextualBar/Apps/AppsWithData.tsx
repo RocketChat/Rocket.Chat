@@ -1,10 +1,16 @@
+import {
+	IUIKitContextualBarInteraction,
+	IUIKitErrorInteraction,
+	IUIKitSurface,
+	IInputElement,
+} from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer } from 'react';
+import React, { memo, useState, useEffect, useReducer, Dispatch } from 'react';
 
 import {
-	getLastUserInteractionPayload,
+	getUserInteractionPayloadByViewId,
 	triggerBlockAction,
 	on,
 	off,
@@ -12,15 +18,30 @@ import {
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
-const useValues = (view) => {
+type InputFieldState = [string, { value: string | Array<string> | undefined; blockId: string }];
+type ActionParams = {
+	blockId: string;
+	appId: string;
+	actionId: string;
+	value: unknown;
+	viewId?: string;
+};
+
+const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	const reducer = useMutableCallback((values, { actionId, payload }) => ({
 		...values,
 		[actionId]: payload,
 	}));
 
 	const initializer = useMutableCallback(() => {
-		const filterInputFields = ({ element, elements = [] }) => {
-			if (element && element.initialValue) {
+		const filterInputFields = ({
+			element,
+			elements = [],
+		}: {
+			element?: IInputElement;
+			elements?: IInputElement[];
+		}): boolean | undefined => {
+			if (element?.initialValue) {
 				return true;
 			}
 
@@ -32,7 +53,15 @@ const useValues = (view) => {
 			}
 		};
 
-		const mapElementToState = ({ element, blockId, elements = [] }) => {
+		const mapElementToState = ({
+			element,
+			blockId,
+			elements = [],
+		}: {
+			element: IInputElement;
+			blockId: string;
+			elements?: IInputElement[];
+		}): InputFieldState => {
 			if (elements.length) {
 				return elements
 					.map((element) => ({ element, blockId }))
@@ -58,42 +87,39 @@ const useValues = (view) => {
 	return useReducer(reducer, null, initializer);
 };
 
-const AppsWithData = () => {
+const AppsWithData = ({ viewId }: { viewId: string }): JSX.Element => {
 	const onClose = useTabBarClose();
+	const onSubmit = (): boolean => true;
 
-	const [state, setState] = useState({});
-	const [view, setView] = useState({ blocks: [] });
-	const [viewId, setViewId] = useState();
-	const [_mid, setMid] = useState();
+	const [state, setState] = useState<IUIKitContextualBarInteraction>(
+		getUserInteractionPayloadByViewId(viewId),
+	);
+	const { view } = state;
 	const [values, updateValues] = useValues(view);
 
 	useEffect(() => {
-		const handleUpdate = ({ type, ...data }) => {
+		const handleUpdate = ({
+			type,
+			...data
+		}: IUIKitContextualBarInteraction | IUIKitErrorInteraction): void => {
 			if (type === 'errors') {
-				const { errors } = data;
+				const { errors } = data as Omit<IUIKitErrorInteraction, 'type'>;
 				setState((state) => ({ ...state, errors }));
 				return;
 			}
 
-			setState(data);
+			setState(data as IUIKitContextualBarInteraction);
 		};
 
-		setState(getLastUserInteractionPayload());
-		if (Object.entries(state).length) {
-			setView(state.view);
-			setViewId(state.viewId);
-			setMid(state.mid);
+		on(viewId, handleUpdate);
 
-			on(viewId, handleUpdate);
-
-			return () => {
-				off(viewId, handleUpdate);
-			};
-		}
-	}, [view, viewId, state]);
+		return (): void => {
+			off(viewId, handleUpdate);
+		};
+	}, [state, viewId]);
 
 	const context = {
-		action: ({ actionId, appId, value, blockId, mid = _mid }) =>
+		action: ({ actionId, appId, value, blockId }: ActionParams): Promise<void> =>
 			triggerBlockAction({
 				container: {
 					type: UIKitIncomingInteractionContainerType.VIEW,
@@ -103,9 +129,8 @@ const AppsWithData = () => {
 				appId,
 				value,
 				blockId,
-				mid,
 			}),
-		state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
+		state: ({ actionId, value, blockId = 'default' }: ActionParams): void => {
 			updateValues({
 				actionId,
 				payload: {
@@ -120,7 +145,7 @@ const AppsWithData = () => {
 
 	return (
 		<kitContext.Provider value={context}>
-			<Apps onClose={onClose} view={view} />
+			<Apps onClose={onClose} onSubmit={onSubmit} view={view} />
 		</kitContext.Provider>
 	);
 };

@@ -4,7 +4,7 @@ import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 
-const Apps = ({ view, onSubmit, onClose }) => (
+const Apps = ({ view, onSubmit, onClose }): JSX.Element => (
 	<>
 		<VerticalBar.Header>
 			{view.showIcon ? <VerticalBar.Icon name='keyboard' /> : null}
