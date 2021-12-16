@@ -147,7 +147,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					</Box>
 				</Box>
 			</Box>
-			<Divider mi='neg-x16' mb='x16' borderColor='muted' />
+			<Option.Divider />
 			<Box mi='neg-x16'>
 				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 					{t('Status')}
@@ -183,7 +183,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 			{(accountBoxItems.length || showAdmin) && (
 				<>
-					<Divider mi='neg-x16' mb='x16' />
+					<Option.Divider />
 					<Box mi='neg-x16'>
 						{showAdmin && (
 							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
@@ -213,7 +213,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</>
 			)}
 
-			<Divider mi='neg-x16' mb='x16' />
+			<Option.Divider />
 			<Box mi='neg-x16'>
 				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
