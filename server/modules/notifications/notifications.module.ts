@@ -276,12 +276,12 @@ export class NotificationsModule {
 
 		this.streamUser.allowWrite(async function(eventName) {
 			const [userId, e] = eventName.split('/');
-
+			console.log('allowWrite', userId, this.userId);
 			if (e === 'webrtc') {
 				return true;
 			}
 
-			return (this.userId != null) && (this.userId === userId);
+			return Boolean(this.userId);
 		});
 		this.streamUser.allowRead(async function(eventName) {
 			const [userId, e] = eventName.split('/');
@@ -455,6 +455,7 @@ export class NotificationsModule {
 	}
 
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
+		console.log(userId, eventName);
 		return this.streamUser.emit(`${ userId }/${ eventName }`, ...args);
 	}
 
