@@ -1,4 +1,4 @@
-import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
+import { Box, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
