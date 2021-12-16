@@ -2810,6 +2810,7 @@
   "Message_editing": "Edytowanie wiadomości",
   "Message_ErasureType": "Typ usunięcia wiadomości",
   "Message_ErasureType_Delete": "Usuń wszystkie wiadomości",
+  "Message_ErasureType_Description": "Określ, co zrobić z wiadomościami użytkowników, którzy usuwają swoje konto.",
   "Message_ErasureType_Keep": "Zachowaj wiadomości i nazwę użytkownika",
   "Message_ErasureType_Unlink": "Usuń połączenie między użytkownikiem a wiadomościami",
   "Message_GlobalSearch": "Wyszukiwanie globalne",
@@ -4613,7 +4614,7 @@
   "Your_push_was_sent_to_s_devices": "Twój push została wysłany do urządzeń: %s",
   "Your_question": "Twoje pytanie",
   "Your_server_link": "Twój link do serwera",
-  "Your_temporary_password_is_password": "Twoje tymczasowe hasło to <strong>[hasło]</strong>.",
+  "Your_temporary_password_is_password": "Twoje tymczasowe hasło to: <strong>[hasło]</strong>",
   "Your_TOTP_has_been_reset": "Twoje dwuskładnikowe TOTP zostało zresetowane",
   "Your_workspace_is_ready": "Twój obszar roboczy jest gotowy do użycia 🎉"
 }

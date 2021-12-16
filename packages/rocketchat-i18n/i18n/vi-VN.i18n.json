@@ -1716,6 +1716,7 @@
   "Message_editing": "Chỉnh sửa tin nhắn",
   "Message_ErasureType": "Loại tin nhắn xóa",
   "Message_ErasureType_Delete": "Xóa Tất cả Tin nhắn",
+  "Message_ErasureType_Description": "Xác định phải làm gì với thông báo của người dùng đã xóa tài khoản của họ.",
   "Message_ErasureType_Keep": "Giữ Tin nhắn và Tên Người dùng",
   "Message_ErasureType_Unlink": "Xóa liên kết giữa người dùng và tin nhắn",
   "Message_GlobalSearch": "Tìm kiếm toàn cầu",

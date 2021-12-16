@@ -1728,6 +1728,7 @@
   "Message_editing": "Mesajın redaktə edilməsi",
   "Message_ErasureType": "Mesaj Silaj Tipi",
   "Message_ErasureType_Delete": "Bütün Mesajları Sil",
+  "Message_ErasureType_Description": "Hesabını çıxaran istifadəçilərlə əlaqələrin müəyyənləşdirilməsi.",
   "Message_ErasureType_Keep": "Mesajlar və İstifadəçi adını saxlayın",
   "Message_ErasureType_Unlink": "İstifadəçi və Mesajlar Arasında Bağlantıyı Silin",
   "Message_GlobalSearch": "Qlobal Axtarış",

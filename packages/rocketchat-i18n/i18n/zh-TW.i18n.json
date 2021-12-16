@@ -2718,6 +2718,7 @@
   "Message_editing": "訊息編輯",
   "Message_ErasureType": "訊息刪除類型",
   "Message_ErasureType_Delete": "刪除所有消息",
+  "Message_ErasureType_Description": "確定如何處理刪除其帳號的使用者訊息。",
   "Message_ErasureType_Keep": "保留訊息和使用者名稱",
   "Message_ErasureType_Unlink": "刪除使用者和訊息之間的連接",
   "Message_GlobalSearch": "全域搜尋",

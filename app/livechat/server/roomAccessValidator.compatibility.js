@@ -1,6 +1,5 @@
-import { LivechatRooms } from '../../models';
-import { hasPermission, hasRole } from '../../authorization';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
+import { hasPermission, hasRole } from '../../authorization/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 export const validators = [

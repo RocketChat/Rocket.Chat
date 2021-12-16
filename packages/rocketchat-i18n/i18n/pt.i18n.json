@@ -2022,6 +2022,7 @@
   "Message_editing": "Edição de mensagem",
   "Message_ErasureType": "Tipo de apagamento de mensagem",
   "Message_ErasureType_Delete": "Apagar todas as mensagens",
+  "Message_ErasureType_Description": "Determine o que fazer com mensagens dos utilizadores que removem as suas contas.",
   "Message_ErasureType_Keep": "Mantenha as mensagens e nome de utilizador ",
   "Message_ErasureType_Unlink": "Remover link entre utilizador e mensagens",
   "Message_GlobalSearch": "Pesquisa Global",
