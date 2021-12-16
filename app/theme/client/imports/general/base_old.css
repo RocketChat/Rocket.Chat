@@ -19,8 +19,8 @@
 	border-width: 1px;
 	border-radius: var(--border-radius);
 
-	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
-		monospace;
+	font-family:
+		Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-size: 13px;
 	font-weight: 600;
 	direction: ltr;
@@ -79,7 +79,7 @@
 
 		width: 2px;
 
-		content: " ";
+		content: ' ';
 	}
 }
 
@@ -283,7 +283,7 @@
 		position: absolute;
 	}
 
-	& input[type="text"] {
+	& input[type='text'] {
 		display: block;
 	}
 
@@ -352,11 +352,11 @@
 }
 
 .rc-old form.inline {
-	& input[type="text"],
-	& input[type="number"],
-	& input[type="email"],
-	& input[type="url"],
-	& input[type="password"],
+	& input[type='text'],
+	& input[type='number'],
+	& input[type='email'],
+	& input[type='url'],
+	& input[type='password'],
 	& select {
 		width: auto;
 	}
@@ -397,7 +397,7 @@
 }
 
 .rc-old label.required::after {
-	content: " *";
+	content: ' *';
 }
 
 .rc-old .btn-loading {
@@ -773,9 +773,7 @@
 		overflow-y: auto;
 
 		width: 100%;
-		height: calc(
-			100% - calc(var(--header-min-height) + var(--footer-min-height))
-		);
+		height: calc(100% - calc(var(--header-min-height) + var(--footer-min-height)));
 		padding: 20px 10px;
 		direction: rtl;
 		-webkit-overflow-scrolling: touch;
@@ -807,8 +805,8 @@
 			font-weight: 400;
 		}
 
-		& input[type="text"],
-		& input[type="password"],
+		& input[type='text'],
+		& input[type='password'],
 		& select {
 			padding: 0 8px 0 30px;
 
@@ -1062,7 +1060,7 @@
 		display: flex;
 		align-items: center;
 
-		& input[type="file"] {
+		& input[type=file] {
 			position: absolute !important;
 			z-index: 10000;
 			top: 0;
@@ -1302,7 +1300,9 @@
 
 	opacity: 0;
 	border-radius: var(--border-radius);
-	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	box-shadow:
+		0 1px 1px 0 rgba(0, 0, 0, 0.2),
+		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 	font-size: 1em;
 	font-weight: bold;
@@ -1593,7 +1593,9 @@
 	overflow: hidden;
 
 	border-radius: 5px;
-	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
+	box-shadow:
+		0 -1px 10px 0 rgba(0, 0, 0, 0.2),
+		0 1px 1px rgba(0, 0, 0, 0.16);
 }
 
 .rc-old .message-popup-title {
@@ -1683,11 +1685,7 @@
 			padding: 1rem;
 
 			border-width: 1px 0 0;
-			background: linear-gradient(
-				to bottom,
-				var(--rc-color-alert-message-warning-background) 0%,
-				rgba(255, 255, 255, 0) 100%
-			);
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, rgba(255, 255, 255, 0) 100%);
 		}
 	}
 
@@ -2608,8 +2606,7 @@
 	padding: 20px;
 
 	border-radius: 2px;
-	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08),
-		0 0 12px 0 rgba(47, 52, 61, 0.12);
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	& header {
 		padding: 18px 0 23px;
@@ -3023,7 +3020,7 @@
 		margin-right: 20px;
 	}
 
-	& input[type="file"] {
+	& input[type=file] {
 		position: absolute !important;
 		z-index: 10000;
 		top: 0;
@@ -3390,12 +3387,6 @@
 	}
 }
 
-/* @media (width > 780px) {
-	.rc-old.main-content {
-		transform: translateX(0) !important;
-	}
-} */
-
 @media (width <= 780px) {
 	.rc-old.main-content {
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
@@ -3540,8 +3531,7 @@
 	height: 57px;
 	padding-bottom: 8px;
 
-	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1),
-		visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
+	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1), visibility 0.15s cubic-bezier(0.5, 0, 0.1, 1);
 
 	border-bottom: 1px solid var(--color-gray-lightest);
 	justify-content: center;
