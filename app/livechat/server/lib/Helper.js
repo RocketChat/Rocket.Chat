@@ -439,7 +439,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 			return false;
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		return Promise.await(callbacks.run('livechat:onTransferFailure', { room, guest, transferData }));
+		return callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
 	Livechat.saveTransferHistory(room, transferData);

@@ -24,7 +24,7 @@
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
-		"typecheck": "tsc --noEmit --skipLibCheck",
+		"typecheck": "NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
