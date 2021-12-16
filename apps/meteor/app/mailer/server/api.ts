@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
-import { convert } from 'html-to-text';
+import { convert } from 'html-to-text';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 
@@ -158,7 +158,7 @@ export const sendNoWrap = ({
 	}
 
 	if (!text) {
-		text = html ?  convert(html) : undefined;
+		text = html ? convert(html) : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -199,7 +199,7 @@ export const send = ({
 		replyTo,
 		subject: replace(subject, data),
 		text: (text && replace(text, data))
-			|| (html &&  convert(replace(html, data)))
+			|| (html && convert(replace(html, data)))
 			|| undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
