@@ -26,7 +26,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 			},
 		]).toArray();
 
-		return result?.total;
+		return result?.total || 0;
 	}
 
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | null> {

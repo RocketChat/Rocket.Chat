@@ -108,7 +108,7 @@ export class AppUserBridge extends UserBridge {
 		return Users.getActiveLocalUserCount();
 	}
 
-	protected async getBadgeCount(uid: string): Promise<number> {
+	protected async getUserUnreadMessageCount(uid: string): Promise<number> {
 		return Subscriptions.getBadgeCount(uid);
 	}
 }
