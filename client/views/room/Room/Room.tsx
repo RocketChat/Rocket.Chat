@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, FC, useContext } from 'react';
+import React, { useMemo, FC } from 'react';
 
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -7,7 +7,6 @@ import { useUserPreference } from '../../../contexts/UserContext';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Announcement from '../Announcement';
 import Header from '../Header';
-import { MessageList } from '../MessageList/MessageList';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
@@ -30,8 +29,6 @@ export const Room: FC<{}> = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const hideFlexTab = useUserPreference('hideFlexTab');
 
-	const earlyAdopter = useUserPreference('enableMessageParserEarlyAdoption');
-
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
 	const tabBar = useMemo(
@@ -46,9 +43,8 @@ export const Room: FC<{}> = () => {
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
 				{!isLayoutEmbedded && room.announcement && (
-					<Announcement announcement={room.announcement} />
+					<Announcement announcement={room.announcement} announcementDetails={undefined} />
 				)}
-				{/* {earlyAdopter && <MessageList />} */}
 				<BlazeTemplate
 					onClick={hideFlexTab ? close : undefined}
 					name='roomOld'

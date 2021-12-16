@@ -7,5 +7,4 @@ export const createLazyPortal = <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps: () => PropsWithoutRef<Props> | undefined,
 	container: Element,
-	context?: Element,
-): ReactPortal => createPortal(createLazyElement(factory, getProps, context), container);
+): ReactPortal => createPortal(createLazyElement(factory, getProps), container);

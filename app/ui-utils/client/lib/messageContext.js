@@ -12,7 +12,6 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
-import { handleError } from '../../../../client/lib/utils/handleError';
 
 const fields = {
 	name: 1,
@@ -55,8 +54,7 @@ export function messageContext({ rid } = Template.instance()) {
 				value: msg._id,
 				message: msg,
 			})
-		: (msg, actionlink) =>
-			actionLinks.run(actionlink, msg);
+		: (msg, actionlink) => actionLinks.run(actionlink, msg);
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
@@ -108,7 +106,7 @@ export function messageContext({ rid } = Template.instance()) {
 				return () => (actionlink) => (e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					runAction(msg, actionlink, e);
+					runAction(msg, actionlink);
 				};
 			},
 			openDiscussion() {
