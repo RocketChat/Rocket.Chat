@@ -69,7 +69,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 	const canDelete = usePermission('delete-team', room._id);
 	const canEdit = usePermission('edit-team-channel', room._id);
 
-	const {value} = useEndpointData('teams.members', useMemo(() => ({ teamId : room.teamId }), [room.teamId]));
+	const { value } = useEndpointData('teams.members', useMemo(() => ({ teamId: room.teamId }), [room.teamId]));
 
 	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
 
@@ -113,8 +113,8 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 			}
 			closeModal();
 		};
-		
-		if(value.total>1){
+
+		if (value.total > 1) {
 			setModal(<LeaveTeamModal onConfirm={onLeaveConfirm} onCancel={closeModal} teamId={room.teamId} />);
 		} else {
 			setModal(<DeleteTeamModal onConfirm={onDeleteConfirm} onCancel={closeModal} teamId={room.teamId} />);
