@@ -75,7 +75,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		Livechat.updateMessage(data);
 	}
 
-	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string): Promise<ILivechatRoom> {
+	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, { source }: Pick<ILivechatRoom, 'source'>): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
 		let agentRoom;
@@ -90,6 +90,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			rid: Random.id(),
 			roomInfo: {
 				source: {
+					...source,
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
