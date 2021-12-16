@@ -30,7 +30,7 @@ type FileAttachment = {
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
-function getGuestByEmail(email: string, name: string, department?: string): any {
+function getGuestByEmail(email: string, name: string, department = ''): any {
 	logger.debug(`Attempt to register a guest for ${ email } on department: ${ department }`);
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
 
@@ -43,6 +43,11 @@ function getGuestByEmail(email: string, name: string, department?: string): any 
 				previousDepartment: guest.department,
 				newDepartment: department,
 			});
+			if (!department) {
+				LivechatVisitors.removeDepartmentById(guest._id);
+				delete guest.department;
+				return guest;
+			}
 			Livechat.setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneById(guest._id, {});
 		}
@@ -120,7 +125,7 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 	});
 }
 
-export async function onEmailReceived(email: ParsedMail, inbox: string, department?: string): Promise<void> {
+export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
 	logger.debug(`New email conversation received on inbox ${ inbox }. Will be assigned to department ${ department }`);
 	if (!email.from?.value?.[0]?.address) {
 		return;
@@ -134,6 +139,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	logger.debug(`Guest ${ guest._id } obtained. Attempting to find or create a room on department ${ department }`);
+
 	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
 
 	logger.debug({
