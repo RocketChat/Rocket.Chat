@@ -11,8 +11,8 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 // eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void => void addAction(getIdForActionButton(button), ({ room }) => (applyButtonFilters(button, room) ? {
 	id: button.actionId,
-	icon: button.icon || '',
-	title: t(Utilities.getI18nKeyForApp(button.nameI18n, button.appId)) as any,
+	icon: '', // Apps won't provide icons for now
+	title: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as any,
 	// Filters were applied in the applyButtonFilters function
 	// if the code made it this far, the button should be shown
 	groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
