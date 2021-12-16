@@ -3,7 +3,7 @@ import type ldapjs from 'ldapjs';
 
 import { ILDAPEntry } from '../../../../definition/ldap/ILDAPEntry';
 import type { IUser } from '../../../../definition/IUser';
-import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '../../../../definition/IRoom';
 import type { IRole } from '../../../../definition/IRole';
 import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
@@ -244,9 +244,9 @@ export class LDAPEEManager extends LDAPManager {
 	private static createRoomForSync(channel: string): IRoom | undefined {
 		logger.debug(`Channel '${ channel }' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
+		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = createRoom('c', channel, roomOwner, [], false, { customFields: { ldap: true } } as any) as unknown as ICreatedRoom | undefined;
+		const room = createRoom('c', channel, roomOwner, [], false, { customFields: { ldap: true } } as any);
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${ channel }' during ldap sync.`);
 			return;

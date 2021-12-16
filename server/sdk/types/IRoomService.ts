@@ -8,7 +8,7 @@ interface ISubscriptionExtraData {
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	nameValidationRegex?: string;
-	creator: string;
+	creator?: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
 

@@ -3,7 +3,7 @@ import { findRoomByNonValidatedName } from '../../../../server/lib/findRoomByNon
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { Roles } from '../../../../app/models/server/raw';
-import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
+import type { IRoom } from '../../../../definition/IRoom';
 
 export const logger = new Logger('OAuth');
 
@@ -23,8 +23,7 @@ export class OAuthEEManager {
 						let rid: IRoom['_id'] | undefined = room?._id;
 
 						if (!rid) {
-							// #ToDo: Remove the typecast once createRoom is properly typed
-							const newRoom = createRoom('c', channel, channelsAdmin, [], false) as unknown as ICreatedRoom | undefined;
+							const newRoom = createRoom('c', channel, channelsAdmin, [], false);
 							if (!newRoom?.rid) {
 								logger.error(`could not create channel ${ channel }`);
 								return;
