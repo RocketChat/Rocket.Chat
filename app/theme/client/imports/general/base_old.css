@@ -19,8 +19,12 @@
 	border-width: 1px;
 	border-radius: var(--border-radius);
 
-	font-family:
-		Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-family: Menlo,
+		Monaco,
+		Consolas,
+		"Liberation Mono",
+		"Courier New",
+		monospace;
 	font-size: 13px;
 	font-weight: 600;
 	direction: ltr;
