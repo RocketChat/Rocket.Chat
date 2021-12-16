@@ -275,8 +275,7 @@ export class NotificationsModule {
 		});
 
 		this.streamUser.allowWrite(async function(eventName) {
-			const [userId, e] = eventName.split('/');
-			console.log('allowWrite', userId, this.userId);
+			const [, e] = eventName.split('/');
 			if (e === 'webrtc') {
 				return true;
 			}
@@ -455,7 +454,6 @@ export class NotificationsModule {
 	}
 
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
-		console.log(userId, eventName);
 		return this.streamUser.emit(`${ userId }/${ eventName }`, ...args);
 	}
 
