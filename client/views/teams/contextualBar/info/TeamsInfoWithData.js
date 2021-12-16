@@ -14,7 +14,7 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
-import { useEndpointData } from '../../../../hooks/useEndpointData'
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
@@ -115,9 +115,9 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 		};
 
 		if (value.total > 1) {
-			setModal(<LeaveTeamModal onConfirm={onLeaveConfirm} onCancel={closeModal} teamId={room.teamId} />);
+			setModal(<LeaveTeamModal onConfirm={onLeaveConfirm} onCancel={closeModal} teamId={room.teamId} />,);
 		} else {
-			setModal(<DeleteTeamModal onConfirm={onDeleteConfirm} onCancel={closeModal} teamId={room.teamId} />);
+			setModal(<DeleteTeamModal onConfirm={onDeleteConfirm} onCancel={closeModal} teamId={room.teamId} />,);
 		}
 	});
 
