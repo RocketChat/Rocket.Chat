@@ -2,7 +2,7 @@
 /* eslint-disable arrow-body-style */
 
 import { Meteor } from 'meteor/meteor';
-import { IUIActionButton, TemporaryRoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
+import { IUIActionButton, RoomTypeFilter } from '@rocket.chat/apps-engine/definition/ui';
 
 import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../authorization/client';
 import {
@@ -27,16 +27,16 @@ export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };
 
-const enumToFilter: {[k in TemporaryRoomTypeFilter]: (room: IRoom) => boolean} = {
-	[TemporaryRoomTypeFilter.PUBLIC_CHANNEL]: (room) => room.t === 'c',
-	[TemporaryRoomTypeFilter.PRIVATE_CHANNEL]: (room) => room.t === 'p',
-	[TemporaryRoomTypeFilter.PUBLIC_TEAM]: isPublicTeamRoom,
-	[TemporaryRoomTypeFilter.PRIVATE_TEAM]: isPrivateTeamRoom,
-	[TemporaryRoomTypeFilter.PUBLIC_DISCUSSION]: isPublicDiscussion,
-	[TemporaryRoomTypeFilter.PRIVATE_DISCUSSION]: isPrivateDiscussion,
-	[TemporaryRoomTypeFilter.DIRECT]: isDirectMessageRoom,
-	[TemporaryRoomTypeFilter.DIRECT_MULTIPLE]: isMultipleDirectMessageRoom,
-	[TemporaryRoomTypeFilter.LIVE_CHAT]: isOmnichannelRoom,
+const enumToFilter: {[k in RoomTypeFilter]: (room: IRoom) => boolean} = {
+	[RoomTypeFilter.PUBLIC_CHANNEL]: (room) => room.t === 'c',
+	[RoomTypeFilter.PRIVATE_CHANNEL]: (room) => room.t === 'p',
+	[RoomTypeFilter.PUBLIC_TEAM]: isPublicTeamRoom,
+	[RoomTypeFilter.PRIVATE_TEAM]: isPrivateTeamRoom,
+	[RoomTypeFilter.PUBLIC_DISCUSSION]: isPublicDiscussion,
+	[RoomTypeFilter.PRIVATE_DISCUSSION]: isPrivateDiscussion,
+	[RoomTypeFilter.DIRECT]: isDirectMessageRoom,
+	[RoomTypeFilter.DIRECT_MULTIPLE]: isMultipleDirectMessageRoom,
+	[RoomTypeFilter.LIVE_CHAT]: isOmnichannelRoom,
 };
 
 export const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
