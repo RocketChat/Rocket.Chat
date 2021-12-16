@@ -114,9 +114,9 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountBoxItems = useReactiveValue(getItems);
 
 	return (
-		<Box display='flex' flexDirection='column' maxWidth='244px'>
-			<Box display='flex' flexDirection='row' mi='neg-x8'>
-				<Box mie='x4' mis='x8'>
+		<Box display='flex' flexDirection='column' w='244px'>
+			<Box display='flex' flexDirection='row'>
+				<Box mie='x4' mis='x16'>
 					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
 				</Box>
 				<Box
@@ -148,76 +148,64 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</Box>
 			</Box>
 			<Option.Divider />
-			<Box mi='neg-x16'>
-				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
-					{t('Status')}
-				</Box>
-				{Object.keys(userStatus.list)
-					.filter(filterInvisibleStatus)
-					.map((key, i) => {
-						const status = userStatus.list[key];
-						const name = status.localizeName ? translateStatusName(t, status) : status.name;
-						const modifier = status.statusType || user.status;
-
-						return (
-							<Option
-								key={i}
-								onClick={(): void => {
-									setStatus(status);
-									onClose();
-								}}
-							>
-								<Option.Column>
-									<UserStatus status={modifier} />
-								</Option.Column>
-								<Option.Content>{name}</Option.Content>
-							</Option>
-						);
-					})}
-				<Option
-					icon='emoji'
-					label={`${t('Custom_Status')}...`}
-					onClick={handleCustomStatus}
-				></Option>
+			<Box pi='x16' fontScale='c1' textTransform='uppercase'>
+				{t('Status')}
 			</Box>
+			{Object.keys(userStatus.list)
+				.filter(filterInvisibleStatus)
+				.map((key, i) => {
+					const status = userStatus.list[key];
+					const name = status.localizeName ? translateStatusName(t, status) : status.name;
+					const modifier = status.statusType || user.status;
+
+					return (
+						<Option
+							key={i}
+							onClick={(): void => {
+								setStatus(status);
+								onClose();
+							}}
+						>
+							<Option.Column>
+								<UserStatus status={modifier} />
+							</Option.Column>
+							<Option.Content>{name}</Option.Content>
+						</Option>
+					);
+				})}
+			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
 
 			{(accountBoxItems.length || showAdmin) && (
 				<>
 					<Option.Divider />
-					<Box mi='neg-x16'>
-						{showAdmin && (
-							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
-						)}
-						{accountBoxItems.map((item, i) => {
-							let action;
+					{showAdmin && (
+						<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
+					)}
+					{accountBoxItems.map((item, i) => {
+						let action;
 
-							if (item.href || item.sideNav) {
-								action = (): void => {
-									if (item.href) {
-										FlowRouter.go(item.href);
-										popover.close();
-									}
-									if (item.sideNav) {
-										SideNav.setFlex(item.sideNav);
-										SideNav.openFlex();
-										popover.close();
-									}
-								};
-							}
+						if (item.href || item.sideNav) {
+							action = (): void => {
+								if (item.href) {
+									FlowRouter.go(item.href);
+									popover.close();
+								}
+								if (item.sideNav) {
+									SideNav.setFlex(item.sideNav);
+									SideNav.openFlex();
+									popover.close();
+								}
+							};
+						}
 
-							return (
-								<Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>
-							);
-						})}
-					</Box>
+						return <Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>;
+					})}
 				</>
 			)}
 
 			<Option.Divider />
-			<Box mi='neg-x16'>
-				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
-				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
-			</Box>
+			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
+			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
 	);
 };
