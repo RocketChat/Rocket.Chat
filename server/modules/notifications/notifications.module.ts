@@ -275,13 +275,12 @@ export class NotificationsModule {
 		});
 
 		this.streamUser.allowWrite(async function(eventName) {
-			const [userId, e] = eventName.split('/');
-
+			const [, e] = eventName.split('/');
 			if (e === 'webrtc') {
 				return true;
 			}
 
-			return (this.userId != null) && (this.userId === userId);
+			return Boolean(this.userId);
 		});
 		this.streamUser.allowRead(async function(eventName) {
 			const [userId, e] = eventName.split('/');
