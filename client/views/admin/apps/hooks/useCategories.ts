@@ -1,21 +1,13 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
-import { Story } from '@storybook/react';
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
-import { useCategories } from '../hooks/useCategories';
-import { useCategoryToggle } from '../hooks/useCategoryToggle';
-import CategoryDropDown from './CategoryDropDown';
-import CategoryDropDownAnchor from './CategoryDropDownAnchor';
-import CategoryDropDownList from './CategoryDropDownList';
-import TagList from './TagList';
+import {
+	CategoryDropdownItem,
+	CategoryDropDownListProps,
+} from '../definitions/CategoryDropdownDefinitions';
+import { useCategoryFlatList } from './useCategoryFlatList';
+import { useCategoryToggle } from './useCategoryToggle';
 
-export default {
-	title: 'apps/components/CategoryDropDown',
-	component: CategoryDropDownAnchor,
-};
-
-const testGroup: CategoryDropDownListProps['groups'] = [
+const categories = [
 	{
 		items: [
 			{
@@ -55,26 +47,26 @@ const testGroup: CategoryDropDownListProps['groups'] = [
 	},
 ];
 
-export const Achor: Story = () => <CategoryDropDownAnchor />;
-export const List: Story = () => {
-	const [data, setData] = useState(() => testGroup);
+export const useCategories = (): [
+	CategoryDropDownListProps['groups'],
+	(CategoryDropdownItem & { checked: true })[],
+	(CategoryDropdownItem & { checked: true })[],
+	CategoryDropDownListProps['onSelected'],
+] => {
+	const [data, setData] = useState<CategoryDropDownListProps['groups']>(categories);
 
 	const onSelected = useCategoryToggle(setData);
+	const flatCategories = useCategoryFlatList(data);
+	const originalSize = useCategoryFlatList(categories).length;
 
-	return <CategoryDropDownList groups={data} onSelected={onSelected} />;
-};
-
-export const Default: Story = () => {
-	const [data, , categoryTagList, onSelected] = useCategories();
-
-	return (
-		<>
-			<ButtonGroup>
-				<CategoryDropDown mini data={data} onSelected={onSelected} />
-				<CategoryDropDown small data={data} onSelected={onSelected} />
-				<CategoryDropDown data={data} onSelected={onSelected} />
-			</ButtonGroup>
-			<TagList categories={categoryTagList} onClick={onSelected} />
-		</>
-	);
+	const selectedCategories = useMemo(
+		() => flatCategories.filter((category) => Boolean(category.checked)),
+		[flatCategories],
+	) as (CategoryDropdownItem & { checked: true })[];
+	return [
+		data,
+		selectedCategories,
+		originalSize === selectedCategories.length ? [] : selectedCategories,
+		onSelected,
+	];
 };

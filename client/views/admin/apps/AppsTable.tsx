@@ -13,7 +13,7 @@ import {
 	Pagination,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -31,8 +31,11 @@ import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpo
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import MarketplaceRow from './MarketplaceRow';
+import CategoryDropDown from './components/CategoryDropDown';
+import TagList from './components/TagList';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
+import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
 const AppsTable: FC<{
@@ -63,17 +66,23 @@ const AppsTable: FC<{
 		...paginationProps
 	} = usePagination();
 
+	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
+
 	const appsResult = useFilteredApps({
 		filterFunction,
 		text,
 		current,
 		itemsPerPage,
 		sortDirection,
+		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
 	});
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
+				<CategoryDropDown data={categories} onSelected={onSelected} />
+			</FilterByText>
+			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
 				(appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count))) && (
 				<>
@@ -125,7 +134,6 @@ const AppsTable: FC<{
 					)}
 				</>
 			)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				isMarketplace &&
 				appsResult.value.count === 0 && (
@@ -154,7 +162,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total === 0 && (
@@ -171,7 +178,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total !== 0 &&
@@ -198,6 +204,20 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
+			{/* TODO: Create error variations for empty search message */}
+			{appsResult.phase === AsyncStatePhase.REJECTED && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='warning' />
+						<StatesTitle>{t('Error')}</StatesTitle>
+						<StatesActions>
+							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+								{t('Reload_page')}
+							</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
 		</>
 	);
 };

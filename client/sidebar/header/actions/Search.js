@@ -1,6 +1,6 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import tinykeys from 'tinykeys';
 
 import { useOutsideClick } from '../../../hooks/useOutsideClick';
@@ -9,18 +9,17 @@ import SearchList from '../../search/SearchList';
 const Search = (props) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 
-	// const viewRef = useRef();
-
+	const ref = useRef();
 	const handleCloseSearch = useMutableCallback(() => {
 		setSearchOpen(false);
 		// viewRef.current && Blaze.remove(viewRef.current);
 	});
 
+	useOutsideClick(ref, handleCloseSearch);
+
 	const openSearch = useMutableCallback(() => {
 		setSearchOpen(true);
 	});
-
-	const ref = useOutsideClick(handleCloseSearch);
 
 	useEffect(() => {
 		const unsubscribe = tinykeys(window, {

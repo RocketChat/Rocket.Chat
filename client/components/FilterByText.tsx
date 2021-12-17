@@ -22,7 +22,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	placeholder,
 	onChange: setFilter,
 	inputRef,
-	children: _,
+	children,
 	...props
 }) => {
 	const t = useTranslation();
@@ -57,13 +57,15 @@ const FilterByText: FC<FilterByTextProps> = ({
 				onChange={handleInputChange}
 				value={text}
 			/>
-			{isFilterByTextPropsWithButton(props) && (
+			{isFilterByTextPropsWithButton(props) ? (
 				<Button onClick={props.onButtonClick} mis='x8' primary>
 					{props.textButton}
 				</Button>
+			) : (
+				children && <Box mis='x8'>{children} </Box>
 			)}
 		</Box>
 	);
 };
 
-export default memo(FilterByText);
+export default memo<FC<FilterByTextProps>>(FilterByText);
