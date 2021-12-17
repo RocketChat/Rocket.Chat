@@ -76,13 +76,3 @@ addAction('keyboard-shortcut-list', {
 	template: lazy(() => import('../../contextualBar/KeyboardShortcuts')),
 	order: 99,
 });
-
-addAction('apps-contextual-bar', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-	id: 'apps-contextual-bar',
-	title: 'Apps Contextual Bar',
-	icon: 'members',
-	template: lazy(() => import('../../contextualBar/Apps')),
-	order: 300,
-	unlisted: true,
-});

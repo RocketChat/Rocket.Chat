@@ -1,10 +1,9 @@
 import { Menu, Option, MenuProps, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactNode, useRef, ComponentProps, FC, useEffect } from 'react';
+import React, { memo, ReactNode, useRef, ComponentProps, FC } from 'react';
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
-import { on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { IRoom } from '../../../../../definition/IRoom';
 import Header from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
@@ -37,40 +36,27 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
-		(isMobile ? actions : actions.slice(6))
-			.filter((action) => !action.unlisted)
-			.map((item) => {
-				hiddenActionRenderers.current = {
-					...hiddenActionRenderers.current,
-					[item.id]: item.renderOption || renderMenuOption,
-				};
-				return [
-					item.id,
-					{
-						label: { title: t(item.title), icon: item.icon },
-						action: (): void => {
-							openTabBar(item.id);
-						},
-						...item,
+		(isMobile ? actions : actions.slice(6)).map((item) => {
+			hiddenActionRenderers.current = {
+				...hiddenActionRenderers.current,
+				[item.id]: item.renderOption || renderMenuOption,
+			};
+			return [
+				item.id,
+				{
+					label: { title: t(item.title), icon: item.icon },
+					action: (): void => {
+						openTabBar(item.id);
 					},
-				] as any;
-			}),
+					...item,
+				},
+			] as any;
+		}),
 	);
 
 	const actionDefault = useMutableCallback((e) => {
 		const index = e.currentTarget.getAttribute('data-toolbox');
 		openTabBar(actions[index].id);
-	});
-
-	useEffect(() => {
-		const openAppsContextualBar = (): void => {
-			openTabBar('apps-contextual-bar');
-		};
-
-		on('open-apps-contextual-bar', openAppsContextualBar);
-		return (): void => {
-			off('open-apps-contextual-bar', openAppsContextualBar);
-		};
 	});
 
 	// const open = useMutableCallback((index) => {
