@@ -1722,6 +1722,7 @@
   "Message_editing": "แก้ไขข้อความ",
   "Message_ErasureType": "ประเภทลบข้อความ",
   "Message_ErasureType_Delete": "ลบข้อความทั้งหมด",
+  "Message_ErasureType_Description": "กำหนดว่าจะทำอย่างไรกับข้อความของผู้ใช้ที่นำบัญชีออก",
   "Message_ErasureType_Keep": "เก็บข้อความและชื่อผู้ใช้",
   "Message_ErasureType_Unlink": "ลบการเชื่อมโยงระหว่างผู้ใช้และข้อความ",
   "Message_GlobalSearch": "การค้นหาทั่วโลก",

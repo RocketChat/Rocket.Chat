@@ -1722,6 +1722,7 @@
   "Message_editing": "Зурвас засварлах",
   "Message_ErasureType": "Зурвас арилгах төрөл",
   "Message_ErasureType_Delete": "Бүх мессежийг устгах",
+  "Message_ErasureType_Description": "Тэдний акаунтыг устгах хэрэглэгчийн мессежүүдтэй юу хийх хэрэгтэйг тодорхойлох.",
   "Message_ErasureType_Keep": "Мессеж болон Хэрэглэгчийн нэрийг хадгал",
   "Message_ErasureType_Unlink": "Хэрэглэгч болон Мессежүүдийн хооронд холбоосыг устгах",
   "Message_GlobalSearch": "Глобал хайлт",

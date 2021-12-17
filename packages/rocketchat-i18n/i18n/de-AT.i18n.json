@@ -1731,6 +1731,7 @@
   "Message_editing": "Bearbeiten von Nachrichten",
   "Message_ErasureType": "Nachrichtenlöschtyp",
   "Message_ErasureType_Delete": "Lösche alle Nachrichten",
+  "Message_ErasureType_Description": "Bestimmen Sie, was mit Nachrichten von Benutzern geschehen soll, die ihr Konto entfernen.",
   "Message_ErasureType_Keep": "Nachrichten und Benutzernamen behalten",
   "Message_ErasureType_Unlink": "Entfernen Sie die Verknüpfung zwischen Benutzer und Nachrichten",
   "Message_GlobalSearch": "Globale Suche",

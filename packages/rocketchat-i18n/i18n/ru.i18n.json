@@ -2811,6 +2811,7 @@
   "Message_editing": "Редактирование сообщений",
   "Message_ErasureType": "Тип стирания сообщения",
   "Message_ErasureType_Delete": "Удалить все сообщения",
+  "Message_ErasureType_Description": "Определите, что делать с сообщениями пользователей, которые удаляют свою учетную запись.",
   "Message_ErasureType_Keep": "Сохранять сообщения и имя пользователя",
   "Message_ErasureType_Unlink": "Удалить связь между пользователем и сообщениями",
   "Message_GlobalSearch": "Общий поиск",

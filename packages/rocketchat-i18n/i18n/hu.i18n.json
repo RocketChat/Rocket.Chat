@@ -2426,6 +2426,7 @@
   "Message_editing": "Üzenet szerkesztése",
   "Message_ErasureType": "Üzenet törlési típusa",
   "Message_ErasureType_Delete": "Összes üzenet törlése",
+  "Message_ErasureType_Description": "Határozza meg, hogy mit kell tennie a fiókjaikat eltávolító felhasználók üzeneteivel.",
   "Message_ErasureType_Keep": "Üzenetek és felhasználói név megtartása",
   "Message_ErasureType_Unlink": "A felhasználó és az üzenetek közötti kapcsolat eltávolítása",
   "Message_GlobalSearch": "Globális keresés",

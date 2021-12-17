@@ -101,15 +101,20 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch.getConverters()?.get('rooms').convertRoom(result.room);
 	}
 
-	protected async closeRoom(room: ILivechatRoom, comment: string, appId: string): Promise<boolean> {
+	protected async closeRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is closing a livechat room.`);
 
-		return Livechat.closeRoom({
-			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor),
+		const user = closer && this.orch.getConverters()?.get('users').convertById(closer.id);
+		const visitor = this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor);
+
+		const closeData: any = {
 			room: this.orch.getConverters()?.get('rooms').convertAppRoom(room),
 			comment,
-			user: undefined,
-		});
+			...user && { user },
+			...visitor && { visitor },
+		};
+
+		return Livechat.closeRoom(closeData);
 	}
 
 	protected async findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {

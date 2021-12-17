@@ -2030,6 +2030,7 @@
   "Message_editing": "កែសម្រួលសារ",
   "Message_ErasureType": "ប្រភេទការលុបសារ",
   "Message_ErasureType_Delete": "លុបសារទាំងអស់",
+  "Message_ErasureType_Description": "កំណត់អ្វីដែលត្រូវធ្វើជាមួយសាររបស់អ្នកប្រើដែលលុបគណនីរបស់ពួកគេ។",
   "Message_ErasureType_Keep": "រក្សាសារនិងឈ្មោះអ្នកប្រើប្រាស់",
   "Message_ErasureType_Unlink": "លុបតំណភ្ជាប់រវាងអ្នកប្រើនិងសារ",
   "Message_GlobalSearch": "ស្វែងរកសកល",

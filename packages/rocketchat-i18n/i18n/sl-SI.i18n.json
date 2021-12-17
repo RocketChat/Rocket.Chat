@@ -1718,6 +1718,7 @@
   "Message_editing": "Urejanje sporočil",
   "Message_ErasureType": "Vrsta izbrisa sporočila",
   "Message_ErasureType_Delete": "Izbriši vsa sporočila",
+  "Message_ErasureType_Description": "Določite, kaj storiti s sporočili uporabnikov, ki odstranijo svoj račun.",
   "Message_ErasureType_Keep": "Hranite sporočila in uporabniško ime",
   "Message_ErasureType_Unlink": "Odstrani povezavo med uporabnikom in sporočili",
   "Message_GlobalSearch": "Globalno iskanje",
