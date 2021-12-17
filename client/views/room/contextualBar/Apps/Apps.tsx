@@ -1,21 +1,24 @@
 import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
-import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { MouseEventHandler } from 'react';
 
+import { getURL } from '../../../../../app/utils/lib/getURL';
 import VerticalBar from '../../../../components/VerticalBar';
 
 type AppsProps = {
 	view: IUIKitSurface;
 	onSubmit: () => void;
 	onClose: MouseEventHandler<HTMLOrSVGElement>;
+	appName: string;
+	appId: string;
 };
 
-const Apps = ({ view, onSubmit, onClose }: AppsProps): JSX.Element => (
+const Apps = ({ view, onSubmit, onClose, appName, appId }: AppsProps): JSX.Element => (
 	<>
 		<VerticalBar.Header>
-			<VerticalBar.Icon name='cube' />
-			<VerticalBar.Text>{'App bar'}</VerticalBar.Text>
+			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
+			<VerticalBar.Text>{appName}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>

@@ -14,6 +14,7 @@ import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer, Dispatch } from 'react';
 
 import { triggerBlockAction, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import { App } from '../../../admin/apps/types';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
@@ -91,9 +92,11 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 const AppsWithData = ({
 	viewId,
 	payload,
+	appInfo,
 }: {
 	viewId: string;
 	payload: IUIKitContextualBarInteraction;
+	appInfo: App;
 }): JSX.Element => {
 	const onClose = useTabBarClose();
 	const onSubmit = (): boolean => true;
@@ -150,7 +153,13 @@ const AppsWithData = ({
 
 	return (
 		<kitContext.Provider value={context}>
-			<Apps onClose={onClose} onSubmit={onSubmit} view={view} />
+			<Apps
+				onClose={onClose}
+				onSubmit={onSubmit}
+				view={view}
+				appName={appInfo.name as string}
+				appId={appInfo.id}
+			/>
 		</kitContext.Provider>
 	);
 };

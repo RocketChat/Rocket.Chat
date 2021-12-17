@@ -80,13 +80,14 @@ const Room = () => {
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}
-			{appsContextualBarContext.viewId && Object.values(appsContextualBarContext.payload).length && (
+			{appsContextualBarContext && (
 				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
 					<ErrorBoundary>
 						<LazyComponent
 							template={AppsContextualBar}
 							viewId={appsContextualBarContext.viewId}
 							payload={appsContextualBarContext.payload}
+							appInfo={appsContextualBarContext.appInfo}
 						/>
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
