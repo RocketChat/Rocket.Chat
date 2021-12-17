@@ -163,7 +163,6 @@ const CallJitsiWithData = ({ rid }) => {
 			jitsi.off('HEARTBEAT', testAndHandleTimeout);
 			jitsi.dispose();
 		};
-		const none = () => {};
 
 		try {
 			if (jitsi.needsStart) {
@@ -179,7 +178,9 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 		jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-		return jitsi.openNewWindow ? none : clear;
+		return () => {
+			if (!jitsi.openNewWindow) clear();
+		};
 	}, [
 		accepted,
 		jitsi,
