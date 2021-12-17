@@ -4,7 +4,9 @@ import {
 	IUIKitSurface,
 	IInputElement,
 	IInputBlock,
-    IActionsBlock,
+	IBlock,
+	IBlockElement,
+	IActionsBlock,
 } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -15,7 +17,8 @@ import { triggerBlockAction, on, off } from '../../../../../app/ui-message/clien
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
-type InputFieldState = [string, { value: string | Array<string> | undefined; blockId: string }];
+type FieldState = { value: string | Array<string> | undefined; blockId: string };
+type InputFieldState = [string, FieldState];
 type ActionParams = {
 	blockId: string;
 	appId: string;
@@ -24,6 +27,8 @@ type ActionParams = {
 	viewId?: string;
 };
 
+const isInputBlock = (block: any): block is IInputBlock => block?.element?.initialValue;
+
 const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	const reducer = useMutableCallback((values, { actionId, payload }) => ({
 		...values,
@@ -31,16 +36,15 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	}));
 
 	const initializer = useMutableCallback(() => {
-		const filterInputFields = ({
-			element,
-			elements = [],
-		}: IInputBlock | IActionsBlock): boolean => {
-			if (element?.initialValue) {
+		const filterInputFields = (block: IBlock): boolean => {
+			if (isInputBlock(block)) {
 				return true;
 			}
 
 			if (
-				elements.map((element: IInputElement) => ({ element })).filter(filterInputFields).length
+				((block as IActionsBlock).elements as IInputElement[])?.filter((element) =>
+					filterInputFields({ element } as IInputBlock),
+				).length
 			) {
 				return true;
 			}
@@ -48,33 +52,31 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			return false;
 		};
 
-		const mapElementToState = ({
-			element,
-			blockId,
-			elements = [],
-		}: {
-			element: IInputElement;
-			blockId: string;
-			elements?: IInputElement[];
-		}): InputFieldState | InputFieldState[] => {
-			if (elements.length) {
-				return elements
-					.map((element) => ({ element, blockId }))
-					.filter(filterInputFields)
-					.map(mapElementToState) as InputFieldState[];
+		const mapElementToState = (block: IBlock): InputFieldState | InputFieldState[] => {
+			if (isInputBlock(block)) {
+				const { element, blockId } = block;
+				return [element.actionId, { value: element.initialValue, blockId } as FieldState];
 			}
-			return [element.actionId, { value: element.initialValue, blockId }];
+
+			const { elements, blockId }: { elements: IBlockElement[]; blockId?: string } =
+				block as IActionsBlock;
+
+			return elements
+				.filter((element) => filterInputFields({ element } as IInputBlock))
+				.map((element) =>
+					mapElementToState({ element, blockId } as IInputBlock),
+				) as InputFieldState[];
 		};
 
 		return view.blocks
-			.filter((block: IInputBlock) => filterInputFields(block))
+			.filter(filterInputFields)
 			.map(mapElementToState)
-			.reduce((obj, el) => {
+			.reduce((obj, el: InputFieldState | InputFieldState[]) => {
 				if (Array.isArray(el[0])) {
-					return { ...obj, ...Object.fromEntries(el) };
+					return { ...obj, ...Object.fromEntries(el as InputFieldState[]) };
 				}
 
-				const [key, value] = el;
+				const [key, value] = el as InputFieldState;
 				return { ...obj, [key]: value };
 			}, {});
 	});
