@@ -82,6 +82,7 @@ export const UserContext = createContext<UserContextValue>({
 
 export const useUserId = (): string | null => useContext(UserContext).userId;
 
+// TODO: Use IUser instead
 export const useUser = (): Meteor.User | null => useContext(UserContext).user;
 
 export const useLoginWithPassword = (): ((

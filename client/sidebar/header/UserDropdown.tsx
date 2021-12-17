@@ -4,10 +4,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
 import { callbacks } from '../../../app/callbacks/lib/callbacks';
-import { popover, AccountBox, SideNav } from '../../../app/ui-utils/client';
+import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import { IUser } from '../../../definition/IUser';
 import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
+import { ValueOf } from '../../../definition/utils';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
@@ -81,7 +82,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const displayName = useUserDisplayName(user);
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (key: keyof typeof userStatus['list']): boolean => userStatus.list[key].name !== 'invisible'
+		? (status: ValueOf<typeof userStatus['list']>): boolean => status.name !== 'invisible'
 		: (): boolean => true;
 
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
@@ -97,18 +98,18 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
-		popover.close();
+		onClose();
 	});
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
 		sidebar.toggle();
-		popover.close();
+		onClose();
 	});
 
 	const handleLogout = useMutableCallback(() => {
 		logout();
-		popover.close();
+		onClose();
 	});
 
 	const accountBoxItems = useReactiveValue(getItems);
@@ -151,10 +152,9 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 				{t('Status')}
 			</Box>
-			{Object.keys(userStatus.list)
+			{Object.values(userStatus.list)
 				.filter(filterInvisibleStatus)
-				.map((key, i) => {
-					const status = userStatus.list[key];
+				.map((status, i) => {
 					const name = status.localizeName ? translateStatusName(t, status) : status.name;
 					const modifier = status.statusType || user.status;
 
@@ -182,23 +182,26 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
 					)}
 					{accountBoxItems.map((item, i) => {
-						let action;
+						const action = (): void => {
+							if (item.href) {
+								FlowRouter.go(item.href);
+								onClose();
+							}
+							if (item.sideNav) {
+								SideNav.setFlex(item.sideNav);
+								SideNav.openFlex();
+								onClose();
+							}
+						};
 
-						if (item.href || item.sideNav) {
-							action = (): void => {
-								if (item.href) {
-									FlowRouter.go(item.href);
-									popover.close();
-								}
-								if (item.sideNav) {
-									SideNav.setFlex(item.sideNav);
-									SideNav.openFlex();
-									popover.close();
-								}
-							};
-						}
-
-						return <Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>;
+						return (
+							<Option
+								icon={item.icon}
+								label={t(item.name)}
+								onClick={item.href || item.sideNav ? action : undefined}
+								key={i}
+							></Option>
+						);
 					})}
 				</>
 			)}
