@@ -1,5 +1,5 @@
-import React from 'react';
 import { Message } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';

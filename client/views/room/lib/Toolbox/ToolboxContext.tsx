@@ -28,12 +28,10 @@ export const ToolboxContext = createContext<ToolboxContextValue>({
 
 export const useToolboxContext = (): ToolboxContextValue => useContext(ToolboxContext);
 
-
 /*
  * @deprecated
  * we cannot reach this context because the messages are wrapped by blaze
  */
-
 
 const tabbarStore = new Map<IRoom['_id'], ToolboxContextValue>();
 

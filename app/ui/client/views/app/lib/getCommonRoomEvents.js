@@ -17,6 +17,7 @@ import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
+import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');

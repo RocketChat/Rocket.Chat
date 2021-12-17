@@ -4,7 +4,7 @@ type OgImage = {
 	ogImageWidth: string;
 	ogImageHeight: string;
 	ogImageType: string;
-}
+};
 
 type OpenGraph = {
 	ogLocale: string;
@@ -20,11 +20,11 @@ type RocketchatOembed = {
 	title: string;
 	description: string;
 	msapplicationTileImage: string;
-}
+};
 
 type OembedHeader = {
 	contentType: string;
-}
+};
 
 type TwitterOembed = {
 	twitterCard: string;
@@ -33,15 +33,15 @@ type TwitterOembed = {
 	twitterSite: string;
 	twitterCreator: string;
 	twitterImage: string;
-}
+};
 
 export type Url = {
 	meta: RocketchatOembed & OpenGraph & TwitterOembed;
 	headers: OembedHeader;
-}
+};
 
 export type Oembed = {
 	title: string;
 	description: string;
 	url: string;
-}
+};

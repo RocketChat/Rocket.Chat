@@ -39,7 +39,7 @@ export const Room: FC<{}> = () => {
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
-				<Header room={room} rid={room._id} />
+				<Header room={room} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
 				{!isLayoutEmbedded && room.announcement && (
@@ -48,7 +48,6 @@ export const Room: FC<{}> = () => {
 				<BlazeTemplate
 					onClick={hideFlexTab ? close : undefined}
 					name='roomOld'
-					context={[RoomContext]}
 					tabBar={tabBar}
 					rid={room._id}
 					_id={room._id}

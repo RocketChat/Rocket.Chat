@@ -8,7 +8,7 @@ import AnnouncementModal from './AnnouncementModal';
 
 type AnnouncementParams = {
 	announcement: string;
-	announcementDetails: () => void;
+	announcementDetails?: () => void;
 };
 
 const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {

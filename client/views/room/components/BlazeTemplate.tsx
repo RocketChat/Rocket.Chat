@@ -1,9 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { memo, useLayoutEffect, useRef } from 'react';
+import React, { ComponentProps, FC, memo, useLayoutEffect, useRef } from 'react';
 
-const BlazeTemplate = ({ context, name, flexShrink, overflow, onClick, children, ...props }) => {
+const BlazeTemplate: FC<Omit<ComponentProps<typeof Box>, 'children'>> = ({
+	name,
+	flexShrink,
+	overflow,
+	onClick,
+	...props
+}) => {
 	const ref = useRef();
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {

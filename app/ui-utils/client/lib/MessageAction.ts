@@ -17,7 +17,7 @@ import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/T
 
 const call = (method: string, ...args: any[]): Promise<any> =>
 	new Promise((resolve, reject) => {
-		Meteor.call(method, ...args, function (err: any, data: any) {
+		Meteor.call(method, ...args, function(err: any, data: any) {
 			if (err) {
 				return reject(err);
 			}
@@ -71,7 +71,7 @@ export type MessageActionConfig = {
 
 type MessageActionConfigList = MessageActionConfig[];
 
-export const MessageAction = new (class {
+export const MessageAction = new class {
 	/*
   	config expects the following keys (only id is mandatory):
   		id (mandatory)
@@ -143,14 +143,14 @@ export const MessageAction = new (class {
 	}
 
 	getButtonsByGroup = mem(
-		function (
+		function(
 			group: MessageActionGroup,
 			arr: MessageActionConfigList = MessageAction._getButtons(),
 		): MessageActionConfigList {
 			return arr.filter(
 				(button) =>
-					!button.group ||
-					(Array.isArray(button.group) ? button.group.includes(group) : button.group === group),
+					!button.group
+					|| (Array.isArray(button.group) ? button.group.includes(group) : button.group === group),
 			);
 		},
 		{ maxAge: 1000 },
@@ -192,7 +192,7 @@ export const MessageAction = new (class {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || (await call('getSingleMessage', msgId));
+		const msg = Messages.findOne(msgId) || await call('getSingleMessage', msgId);
 		if (!msg) {
 			throw new Error('message-not-found');
 		}
@@ -204,8 +204,8 @@ export const MessageAction = new (class {
 			throw new Error('room-not-found');
 		}
 
-		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
+		const subData = Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
 		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
-		return `${roomURL}?msg=${msgId}`;
+		return `${ roomURL }?msg=${ msgId }`;
 	}
-})();
+}();

@@ -1217,18 +1217,18 @@ settingsRegistry.addGroup('Message', function() {
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
 	});
-	// TODO: deprecate this setting in favor of App 
-	this.add('API_EmbedDisabledFor', '', { 
+	// TODO: deprecate this setting in favor of App
+	this.add('API_EmbedDisabledFor', '', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
-	// TODO: deprecate this setting in favor of App 
+	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
 		type: 'string',
 		i18nDescription: 'API_EmbedIgnoredHosts_Description',
 	});
-	// TODO: deprecate this setting in favor of App 
+	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedSafePorts', '80, 443', {
 		type: 'string',
 	});
