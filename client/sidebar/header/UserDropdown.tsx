@@ -75,7 +75,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
 	const logout = useLogout();
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -115,7 +115,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountBoxItems = useReactiveValue(getItems);
 
 	return (
-		<Box display='flex' flexDirection='column' w='244px'>
+		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
 			<Box display='flex' flexDirection='row'>
 				<Box mie='x4' mis='x16'>
 					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
