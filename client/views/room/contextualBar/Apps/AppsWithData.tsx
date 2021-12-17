@@ -27,6 +27,10 @@ type ActionParams = {
 	viewId?: string;
 };
 
+type ViewState = IUIKitContextualBarInteraction & {
+	errors?: { [field: string]: string };
+};
+
 const isInputBlock = (block: any): block is IInputBlock => block?.element?.initialValue;
 
 const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
@@ -78,7 +82,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 
 				const [key, value] = el as InputFieldState;
 				return { ...obj, [key]: value };
-			}, {});
+			}, {} as { key: string; value: FieldState });
 	});
 
 	return useReducer(reducer, null, initializer);
@@ -94,7 +98,7 @@ const AppsWithData = ({
 	const onClose = useTabBarClose();
 	const onSubmit = (): boolean => true;
 
-	const [state, setState] = useState<IUIKitContextualBarInteraction>(payload);
+	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
 	const [values, updateValues] = useValues(view);
 

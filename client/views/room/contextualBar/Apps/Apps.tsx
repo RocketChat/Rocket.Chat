@@ -1,14 +1,14 @@
 import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 
 type AppsProps = {
 	view: IUIKitSurface;
 	onSubmit: () => void;
-	onClose: () => void;
+	onClose: MouseEventHandler<HTMLOrSVGElement>;
 };
 
 const Apps = ({ view, onSubmit, onClose }: AppsProps): JSX.Element => (
