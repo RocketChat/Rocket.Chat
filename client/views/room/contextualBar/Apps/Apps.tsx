@@ -1,20 +1,21 @@
 import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';
 import VerticalBar from '../../../../components/VerticalBar';
 
 type AppsProps = {
 	view: IUIKitSurface;
-	onSubmit: () => void;
-	onClose: MouseEventHandler<HTMLOrSVGElement>;
+	onSubmit: (e: any) => void;
+	onCancel: (e: any) => Promise<void>;
+	onClose: (e: any) => Promise<void>;
 	appName: string;
 	appId: string;
 };
 
-const Apps = ({ view, onSubmit, onClose, appName, appId }: AppsProps): JSX.Element => (
+const Apps = ({ view, onSubmit, onClose, onCancel, appName, appId }: AppsProps): JSX.Element => (
 	<>
 		<VerticalBar.Header>
 			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
@@ -28,6 +29,7 @@ const Apps = ({ view, onSubmit, onClose, appName, appId }: AppsProps): JSX.Eleme
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup align='end'>
+				{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
 				{view.submit && (
 					<Button primary onClick={onSubmit}>
 						{modalParser.text(view.submit.text)}

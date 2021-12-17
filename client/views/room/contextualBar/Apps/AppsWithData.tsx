@@ -11,15 +11,21 @@ import {
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer, Dispatch } from 'react';
+import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent } from 'react';
 
-import { triggerBlockAction, on, off } from '../../../../../app/ui-message/client/ActionManager';
+import {
+	triggerBlockAction,
+	triggerCancel,
+	triggerSubmitView,
+	on,
+	off,
+} from '../../../../../app/ui-message/client/ActionManager';
 import { App } from '../../../admin/apps/types';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
 type FieldState = { value: string | Array<string> | undefined; blockId: string };
-type InputFieldState = [string, FieldState];
+type InputFieldStateTuple = [string, string | FieldState];
+type InputFieldStateObject = { key: string; value: FieldState };
 type ActionParams = {
 	blockId: string;
 	appId: string;
@@ -57,7 +63,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			return false;
 		};
 
-		const mapElementToState = (block: IBlock): InputFieldState | InputFieldState[] => {
+		const mapElementToState = (block: IBlock): InputFieldStateTuple | InputFieldStateTuple[] => {
 			if (isInputBlock(block)) {
 				const { element, blockId } = block;
 				return [element.actionId, { value: element.initialValue, blockId } as FieldState];
@@ -70,18 +76,18 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 				.filter((element) => filterInputFields({ element } as IInputBlock))
 				.map((element) =>
 					mapElementToState({ element, blockId } as IInputBlock),
-				) as InputFieldState[];
+				) as InputFieldStateTuple[];
 		};
 
 		return view.blocks
 			.filter(filterInputFields)
 			.map(mapElementToState)
-			.reduce((obj, el: InputFieldState | InputFieldState[]) => {
+			.reduce((obj, el: InputFieldStateTuple | InputFieldStateTuple[]) => {
 				if (Array.isArray(el[0])) {
-					return { ...obj, ...Object.fromEntries(el as InputFieldState[]) };
+					return { ...obj, ...Object.fromEntries(el as InputFieldStateTuple[]) };
 				}
 
-				const [key, value] = el as InputFieldState;
+				const [key, value] = el as InputFieldStateTuple;
 				return { ...obj, [key]: value };
 			}, {} as { key: string; value: FieldState });
 	});
@@ -98,8 +104,7 @@ const AppsWithData = ({
 	payload: IUIKitContextualBarInteraction;
 	appInfo: App;
 }): JSX.Element => {
-	const onClose = useTabBarClose();
-	const onSubmit = (): boolean => true;
+	const { id: appId, name: appName } = appInfo;
 
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
@@ -126,6 +131,21 @@ const AppsWithData = ({
 		};
 	}, [state, viewId]);
 
+	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateTuple =>
+		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
+			obj[blockId] = obj[blockId] || {};
+			obj[blockId][key] = value;
+			return obj;
+		}, {});
+
+	const prevent = (e: SyntheticEvent): void => {
+		if (e) {
+			(e.nativeEvent || e).stopImmediatePropagation();
+			e.stopPropagation();
+			e.preventDefault();
+		}
+	};
+
 	const context = {
 		action: ({ actionId, appId, value, blockId }: ActionParams): Promise<void> =>
 			triggerBlockAction({
@@ -151,14 +171,57 @@ const AppsWithData = ({
 		values,
 	};
 
+	const handleSubmit = useMutableCallback((e: SyntheticEvent) => {
+		prevent(e);
+		triggerSubmitView({
+			viewId,
+			appId,
+			payload: {
+				view: {
+					...view,
+					id: viewId,
+					state: groupStateByBlockId(values),
+				},
+			},
+		});
+	});
+
+	const handleCancel = useMutableCallback((e: SyntheticEvent) => {
+		prevent(e);
+		return triggerCancel({
+			appId,
+			viewId,
+			view: {
+				...view,
+				id: viewId,
+				state: groupStateByBlockId(values),
+			},
+		});
+	});
+
+	const handleClose = useMutableCallback((e: SyntheticEvent) => {
+		prevent(e);
+		return triggerCancel({
+			appId,
+			viewId,
+			view: {
+				...view,
+				id: viewId,
+				state: groupStateByBlockId(values),
+			},
+			isCleared: true,
+		});
+	});
+
 	return (
 		<kitContext.Provider value={context}>
 			<Apps
-				onClose={onClose}
-				onSubmit={onSubmit}
+				onClose={handleClose}
+				onCancel={handleCancel}
+				onSubmit={handleSubmit}
 				view={view}
-				appName={appInfo.name as string}
-				appId={appInfo.id}
+				appName={appName}
+				appId={appId}
 			/>
 		</kitContext.Provider>
 	);
