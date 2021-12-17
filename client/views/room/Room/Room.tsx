@@ -10,7 +10,7 @@ import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
-import { RoomContext, useRoom } from '../contexts/RoomContext';
+import { useRoom } from '../contexts/RoomContext';
 import {
 	useTab,
 	useTabBarOpen,

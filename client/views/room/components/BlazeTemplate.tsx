@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import React, { ComponentProps, FC, memo, useLayoutEffect, useRef } from 'react';
 
-const BlazeTemplate: FC<Omit<ComponentProps<typeof Box>, 'children'>> = ({
+const BlazeTemplate: FC<Omit<ComponentProps<typeof Box>, 'children'> & Record<string, unknown>> = ({
 	name,
 	flexShrink,
 	overflow,
