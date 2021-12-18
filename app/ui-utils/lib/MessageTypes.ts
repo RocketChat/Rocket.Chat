@@ -5,9 +5,9 @@ type MessageType = {
 	id: string;
 	system?: boolean;
 	/* deprecated */
-	render: (message: IMessage) => string;
+	render?: (message: IMessage) => string;
 	/* deprecated */
-	template: (message: IMessage) => unknown;
+	template?: (message: IMessage) => unknown;
 	message: TranslationKey;
 	data?: (message: IMessage) => Record<string, string>;
 };

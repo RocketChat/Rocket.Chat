@@ -10,6 +10,7 @@ const baseMessage = {
 	u: {
 		_id: 'userId',
 		name: 'userName',
+		username: 'userName',
 	},
 	msg: 'message',
 	rid: 'roomId',

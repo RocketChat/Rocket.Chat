@@ -5,7 +5,7 @@ import { IRoom, IOmnichannelRoom, isOmnichannelRoom } from '../../../../definiti
 export type RoomContextValue = {
 	rid: IRoom['_id'];
 	// room: IRoom;
-	events: any;
+	// events: any;
 	// tabBar: TabBar;
 	room: IRoom;
 	subscribed: boolean;
