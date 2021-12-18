@@ -479,6 +479,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 			'metrics.chatDuration': {
 				$exists: false,
 			},
+			$or: [{
+				onHold: {
+					$exists: false,
+				},
+			}, {
+				onHold: {
+					$exists: true,
+					$eq: false,
+				},
+			}],
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
@@ -494,7 +504,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 			'metrics.chatDuration': {
 				$exists: true,
 			},
-			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -507,6 +516,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const query = {
 			t: 'l',
 			servedBy: { $exists: false },
+			open: true,
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -521,6 +531,41 @@ export class LivechatRoomsRaw extends BaseRaw {
 				t: 'l',
 				'servedBy.username': { $exists: true },
 				open: true,
+				$or: [{
+					onHold: {
+						$exists: false,
+					},
+				}, {
+					onHold: {
+						$exists: true,
+						$eq: false,
+					},
+				}],
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: '$servedBy.username',
+				chats: { $sum: 1 },
+			},
+		};
+		if (departmentId && departmentId !== 'undefined') {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group]).toArray();
+	}
+
+	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				'servedBy.username': { $exists: true },
+				open: true,
+				onHold: {
+					$exists: true,
+					$eq: true,
+				},
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
@@ -896,7 +941,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, options = {} }) {
+	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, onhold, options = {} }) {
 		const query = {
 			t: 'l',
 		};
@@ -911,6 +956,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
+			query.onHold = { $ne: true };
 		}
 		if (served !== undefined) {
 			query.servedBy = { $exists: served };
@@ -947,7 +993,33 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query._id = { $in: roomIds };
 		}
 
+		if (onhold) {
+			query.onHold = {
+				$exists: true,
+				$eq: onhold,
+			};
+		}
+
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
+	}
+
+	getOnHoldConversationsBetweenDate(from, to, departmentId) {
+		const query = {
+			onHold: {
+				$exists: true,
+				$eq: true,
+			},
+			ts: {
+				$gte: new Date(from),	// ISO Date, ts >= date.gte
+				$lt: new Date(to),	// ISODate, ts < date.lt
+			},
+		};
+
+		if (departmentId && departmentId !== 'undefined') {
+			query.departmentId = departmentId;
+		}
+
+		return this.find(query).count();
 	}
 
 	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {

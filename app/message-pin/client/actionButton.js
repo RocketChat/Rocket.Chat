@@ -2,14 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { Rooms } from '../../models/client';
+import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -26,11 +27,14 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
+		condition({ msg, subscription, room }) {
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
-
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
 		order: 7,
@@ -102,7 +106,7 @@ Meteor.startup(function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;

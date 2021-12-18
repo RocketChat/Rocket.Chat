@@ -14,18 +14,22 @@ type LogEntryProps = {
 const LogEntry: FC<LogEntryProps> = ({ severity, timestamp, caller, args }) => {
 	const t = useTranslation();
 
-	return <Box>
-		<Box>{severity}: {timestamp} {t('Caller')}: {caller}</Box>
-		<Box withRichContent width='full'>
-			<pre>
-				<code
-					dangerouslySetInnerHTML={{
-						__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
-					}}
-				/>
-			</pre>
+	return (
+		<Box>
+			<Box>
+				{severity}: {timestamp} {t('Caller')}: {caller}
+			</Box>
+			<Box withRichContent width='full'>
+				<pre>
+					<code
+						dangerouslySetInnerHTML={{
+							__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
+						}}
+					/>
+				</pre>
+			</Box>
 		</Box>
-	</Box>;
+	);
 };
 
 export default LogEntry;

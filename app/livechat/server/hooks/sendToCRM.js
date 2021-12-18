@@ -1,6 +1,6 @@
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks';
-import { Messages, LivechatRooms } from '../../../models/server';
+import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
@@ -8,27 +8,12 @@ import { normalizeMessageFileUpload } from '../../../utils/server/functions/norm
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-let sendNavHistoryMessageEnabled = false;
-let sendNavHistoryWebhookEnabled = false;
-let crmWebhookUrl = '';
-settings.get('Livechat_Visitor_navigation_as_a_message', (key, value) => {
-	sendNavHistoryMessageEnabled = value;
-});
-settings.get('Send_visitor_navigation_history_livechat_webhook_request', (key, value) => {
-	sendNavHistoryWebhookEnabled = value;
-});
-settings.get('Livechat_webhookUrl', (key, value) => {
-	crmWebhookUrl = value;
-});
-
-const crmEnabled = () => crmWebhookUrl !== '' && crmWebhookUrl !== undefined;
-
 const sendMessageType = (msgType) => {
 	switch (msgType) {
 		case msgClosingType:
 			return true;
 		case msgNavType:
-			return sendNavHistoryMessageEnabled && sendNavHistoryWebhookEnabled;
+			return settings.get('Livechat_Visitor_navigation_as_a_message') && settings.get('Send_visitor_navigation_history_livechat_webhook_request');
 		default:
 			return false;
 	}
@@ -51,7 +36,7 @@ const getAdditionalFieldsByType = (type, room) => {
 	}
 };
 function sendToCRM(type, room, includeMessages = true) {
-	if (crmEnabled() === false) {
+	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}
 
@@ -63,7 +48,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	let messages;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = Messages.findVisibleByRoomId({ rid: room._id, queryOptions: { sort: { ts: 1 } } });
+		messages = Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}
@@ -99,7 +84,7 @@ function sendToCRM(type, room, includeMessages = true) {
 			}
 
 			const { u } = message;
-			postData.messages.push(normalizeMessageFileUpload({ u, ...msg }));
+			postData.messages.push(Promise.await(normalizeMessageFileUpload({ u, ...msg })));
 		});
 	}
 

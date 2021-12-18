@@ -4,6 +4,7 @@ import { Session } from 'meteor/session';
 import { AccountBox } from './AccountBox';
 import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 export const SideNav = new class {
 	constructor() {
@@ -47,7 +48,7 @@ export const SideNav = new class {
 	closeFlex(callback = null) {
 		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
-			const subscription = Subscriptions.findOne({ rid: Session.get('lastOpenedRoom') });
+			const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
 			if (subscription) {
 				roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 			} else {
@@ -83,23 +84,6 @@ export const SideNav = new class {
 		return AccountBox.toggle();
 	}
 
-	focusInput() {
-		const sideNavDivs = Array.from(this.sideNav[0].children).filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
-		let highestZidx = 0;
-		let highestZidxElem;
-		sideNavDivs.forEach((el) => {
-			const zIndex = Number(window.getComputedStyle(el).zIndex);
-			if (zIndex > highestZidx) {
-				highestZidx = zIndex;
-				highestZidxElem = el;
-			}
-		});
-		setTimeout(() => {
-			const ref = highestZidxElem && highestZidxElem.querySelector('input');
-			return ref && ref.focus();
-		}, 200);
-	}
-
 	validate() {
 		const invalid = [];
 		this.sideNav.find('input.required').each(function() {
@@ -124,7 +108,6 @@ export const SideNav = new class {
 			return;
 		}
 		this.toggleFlex(1, callback);
-		return this.focusInput();
 	}
 
 	init() {

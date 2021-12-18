@@ -19,6 +19,8 @@ import {
 } from '../../app/user-data-download/server/cronProcessDownloads';
 import { IUser } from '../../definition/IUser';
 import { getMomentLocale } from './getMomentLocale';
+import { getURL } from '../../app/utils/lib/getURL';
+import { DataExport } from '../../app/user-data-download/server/DataExport';
 
 type ExportEmail = {
 	rid: string;
@@ -154,9 +156,9 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	await exportMessages();
 
-	fullFileList.forEach((attachmentData: any) => {
-		copyFile(attachmentData, assetsPath);
-	});
+	for await (const attachmentData of fullFileList) {
+		await copyFile(attachmentData, assetsPath);
+	}
 
 	const exportFile = `${ baseDir }-export.zip`;
 	await makeZipFile(exportPath, exportFile);
@@ -166,7 +168,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	const subject = TAPi18n.__('Channel_Export');
 
 	// eslint-disable-next-line @typescript-eslint/camelcase
-	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
+	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }) });
 
 	sendEmail(user, subject, body);
 };

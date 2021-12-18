@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
+import { Team } from '../../../../server/sdk';
 import { RoomMemberActions, roomTypes } from '../../../utils/server';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
@@ -67,6 +68,8 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 			});
 		} else if (room.prid) {
 			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
+		} else if (room.teamMain) {
+			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, { ts: now });
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}
@@ -82,6 +85,11 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
 		});
+	}
+
+	if (room.teamMain && room.teamId) {
+		// if user is joining to main team channel, create a membership
+		Promise.await(Team.addMember(inviter, user._id, room.teamId));
 	}
 
 	return true;

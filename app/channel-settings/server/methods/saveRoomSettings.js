@@ -18,9 +18,10 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
-import { isEnterprise } from '../../../../ee/app/license/server/license';
+import { Team } from '../../../../server/sdk';
+import { TEAM_TYPE } from '../../../../definition/ITeam';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite', 'hideHistoryForNewMembers'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
 const validators = {
 	default({ userId }) {
@@ -123,19 +124,17 @@ const validators = {
 			});
 		}
 	},
-	hideHistoryForNewMembers({ value }) {
-		if (!isEnterprise() && value) {
-			throw new Meteor.Error('error-action-not-allowed', 'Hiding the history for new users is not allowed.', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-	},
 };
 
 const settingSavers = {
-	roomName({ value, rid, user }) {
-		saveRoomName(rid, value, user);
+	roomName({ value, rid, user, room }) {
+		if (!Promise.await(saveRoomName(rid, value, user))) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			Team.update(user._id, room.teamId, { name: value, updateRoom: false });
+		}
 	},
 	roomTopic({ value, room, rid, user }) {
 		if (value !== room.topic) {
@@ -158,8 +157,17 @@ const settingSavers = {
 		}
 	},
 	roomType({ value, room, rid, user }) {
-		if (value !== room.t) {
-			saveRoomType(rid, value, user);
+		if (value === room.t) {
+			return;
+		}
+
+		if (!saveRoomType(rid, value, user)) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
 	tokenpass({ value, rid }) {
@@ -223,16 +231,13 @@ const settingSavers = {
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
-	roomAvatar({ value, rid, user }) {
-		setRoomAvatar(rid, value, user);
-	},
-	hideHistoryForNewMembers({ value, rid }) {
-		Rooms.saveHideHistoryForNewMembers(rid, value);
+	async roomAvatar({ value, rid, user }) {
+		await setRoomAvatar(rid, value, user);
 	},
 };
 
 Meteor.methods({
-	saveRoomSettings(rid, settings, value) {
+	async saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -308,10 +313,10 @@ Meteor.methods({
 		});
 
 		// saving data
-		Object.keys(settings).forEach((setting) => {
+		for await (const setting of Object.keys(settings)) {
 			const value = settings[setting];
 
-			const saver = settingSavers[setting];
+			const saver = await settingSavers[setting];
 			if (saver) {
 				saver({
 					value,
@@ -320,7 +325,7 @@ Meteor.methods({
 					user,
 				});
 			}
-		});
+		}
 
 		Meteor.defer(function() {
 			const room = Rooms.findOneById(rid);

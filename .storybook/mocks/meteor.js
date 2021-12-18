@@ -5,18 +5,22 @@ export const Meteor = {
 	isClient: true,
 	isServer: false,
 	_localStorage: window.localStorage,
-	absoluteUrl: () => {},
+	absoluteUrl: Object.assign(() => {}, {
+		defaultOptions: {},
+	}),
 	userId: () => {},
 	Streamer: () => ({
 		on: () => {},
 		removeListener: () => {},
 	}),
+	StreamerCentral: {
+		on: () => {},
+		removeListener: () => {},
+	},
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
 };
-
-Meteor.absoluteUrl.defaultOptions = {};
 
 export const Tracker = {
 	autorun: () => ({
@@ -41,7 +45,9 @@ export const ReactiveVar = (val) => {
 	let currentVal = val;
 	return {
 		get: () => currentVal,
-		set: (val) => { currentVal = val; },
+		set: (val) => {
+			currentVal = val;
+		},
 	};
 };
 
@@ -51,16 +57,19 @@ export const ReactiveDict = () => ({
 	all: () => {},
 });
 
-export const Template = () => ({
-	onCreated: () => {},
-	onRendered: () => {},
-	onDestroyed: () => {},
-	helpers: () => {},
-	events: () => {},
-});
-
-Template.registerHelper = () => {};
-Template.__checkName = () => {};
+export const Template = Object.assign(
+	() => ({
+		onCreated: () => {},
+		onRendered: () => {},
+		onDestroyed: () => {},
+		helpers: () => {},
+		events: () => {},
+	}),
+	{
+		registerHelper: () => {},
+		__checkName: () => {},
+	},
+);
 
 export const Blaze = {
 	Template,
@@ -77,8 +86,6 @@ export const FlowRouter = {
 		route: () => {},
 	}),
 };
-
-export const BlazeLayout = {};
 
 export const Session = {
 	get: () => {},

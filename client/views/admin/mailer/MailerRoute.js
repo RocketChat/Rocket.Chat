@@ -1,12 +1,11 @@
 import React from 'react';
 
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { Mailer } from './Mailer';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-
 
 const useSendMail = () => {
 	const meteorSendMail = useMethod('Mailer.sendMail');
@@ -49,7 +48,7 @@ export default function MailerRoute() {
 	const sendMail = useSendMail();
 
 	if (!canAccessMailer) {
-		return <NotAuthorizedPage/>;
+		return <NotAuthorizedPage />;
 	}
 
 	return <Mailer sendMail={sendMail} />;

@@ -2,14 +2,11 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
-function WorkspaceLoginSection({
-	onRegisterStatusChange,
-	...props
-}) {
+function WorkspaceLoginSection({ onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -84,25 +81,35 @@ function WorkspaceLoginSection({
 		checkLoginState();
 	}, [checkUserLoggedIn, dispatchToastMessage, setLoading, setLoggedIn]);
 
-	return <Box is='section' {...props}>
-		<Box withRichContent color='neutral-800'>
-			<p>{t('Cloud_workspace_connected')}</p>
+	return (
+		<Box is='section' {...props}>
+			<Box withRichContent color='neutral-800'>
+				<p>{t('Cloud_workspace_connected')}</p>
+			</Box>
+
+			<ButtonGroup>
+				{isLoggedIn ? (
+					<Button primary danger disabled={isLoading} onClick={handleLogoutButtonClick}>
+						{t('Cloud_logout')}
+					</Button>
+				) : (
+					<Button primary disabled={isLoading} onClick={handleLoginButtonClick}>
+						{t('Cloud_login_to_cloud')}
+					</Button>
+				)}
+			</ButtonGroup>
+
+			<Box withRichContent color='neutral-800'>
+				<p>{t('Cloud_workspace_disconnect')}</p>
+			</Box>
+
+			<ButtonGroup>
+				<Button primary danger disabled={isLoading} onClick={handleDisconnectButtonClick}>
+					{t('Disconnect')}
+				</Button>
+			</ButtonGroup>
 		</Box>
-
-		<ButtonGroup>
-			{isLoggedIn
-				? <Button primary danger disabled={isLoading} onClick={handleLogoutButtonClick}>{t('Cloud_logout')}</Button>
-				: <Button primary disabled={isLoading} onClick={handleLoginButtonClick}>{t('Cloud_login_to_cloud')}</Button>}
-		</ButtonGroup>
-
-		<Box withRichContent color='neutral-800'>
-			<p>{t('Cloud_workspace_disconnect')}</p>
-		</Box>
-
-		<ButtonGroup>
-			<Button primary danger disabled={isLoading} onClick={handleDisconnectButtonClick}>{t('Disconnect')}</Button>
-		</ButtonGroup>
-	</Box>;
+	);
 }
 
 export default WorkspaceLoginSection;

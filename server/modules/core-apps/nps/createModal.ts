@@ -5,34 +5,26 @@ import { settings } from '../../../../app/settings/server';
 import { IUser } from '../../../../definition/IUser';
 
 export type ModalParams = {
+	id: string;
+	type: string;
 	appId: string;
 	npsId: string;
-	bannerId: string;
 	triggerId: string;
 	score: string;
 	user: IUser;
 }
 
-export const createModal = Meteor.bindEnvironment(({ appId, npsId, bannerId, triggerId, score, user }: ModalParams): any => {
+export const createModal = Meteor.bindEnvironment(({ type = 'modal.open', id, appId, npsId, triggerId, score, user }: ModalParams): any => {
 	const language = user.language || settings.get('Language') || 'en';
 
-	const options = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map((score) => ({
-		text: {
-			type: 'plain_text',
-			text: score,
-			emoji: true,
-		},
-		value: score,
-	}));
-
 	return {
-		type: 'modal.open',
+		type,
 		triggerId,
 		appId,
 		view: {
 			appId,
 			type: 'modal',
-			id: bannerId,
+			id,
 			title: {
 				type: 'plain_text',
 				text: TAPi18n.__('We_appreciate_your_feedback', { lng: language }),
@@ -58,18 +50,14 @@ export const createModal = Meteor.bindEnvironment(({ appId, npsId, bannerId, tri
 			},
 			blocks: [{
 				blockId: npsId,
-				type: 'input',
-				element: {
-					type: 'static_select',
-					placeholder: {
-						type: 'plain_text',
-						text: TAPi18n.__('Score', { lng: language }),
-						emoji: false,
-					},
+				type: 'actions',
+				elements: [{
+					type: 'linear_scale',
 					initialValue: score,
-					options,
-					actionId: 'score',
-				},
+					actionId: 'nps-score',
+					preLabel: { type: 'plain_text', text: TAPi18n.__('Not_likely', { lng: language }) },
+					postLabel: { type: 'plain_text', text: TAPi18n.__('Extremely_likely', { lng: language }) },
+				}],
 				label: {
 					type: 'plain_text',
 					text: TAPi18n.__('Score', { lng: language }),

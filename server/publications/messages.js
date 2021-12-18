@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
 
 Meteor.methods({
 	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
@@ -15,14 +16,17 @@ Meteor.methods({
 			});
 		}
 
-		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
+		}
+
+		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'messages/get',
 			});
 		}
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: -1,
 			},
@@ -30,8 +34,8 @@ Meteor.methods({
 
 		if (lastUpdate instanceof Date) {
 			return {
-				updated: Promise.await(Message.getUpdates({ rid, userId: fromId, timestamp: lastUpdate, queryOptions })).records,
-				deleted: Promise.await(Message.getDeleted({ rid, userId: fromId, timestamp: lastUpdate, queryOptions: { ...queryOptions, fields: { _id: 1, _deletedAt: 1 } } })).records,
+				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),
+				deleted: Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 

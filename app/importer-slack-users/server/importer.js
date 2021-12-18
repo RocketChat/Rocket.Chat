@@ -26,7 +26,7 @@ export class SlackUsersImporter extends Base {
 
 		super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
-		const buf = new Buffer(uriResult.image, 'base64');
+		const buf = Buffer.from(uriResult.image, 'base64');
 		const parsed = this.csvParser(buf.toString());
 
 		parsed.forEach((user, index) => {

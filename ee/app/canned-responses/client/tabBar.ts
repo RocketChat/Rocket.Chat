@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { lazy, useMemo } from 'react';
 
 import { useHasLicense } from '../../../client/hooks/useHasLicense';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
@@ -11,9 +11,9 @@ addAction('canned-responses', () => {
 	return useMemo(() => (hasLicense && enabled ? {
 		groups: ['live'],
 		id: 'canned-responses',
-		title: 'Canned Responses',
+		title: 'Canned_Responses',
 		icon: 'canned-response',
-		template: 'cannedResponses',
+		template: lazy(() => import('../../../client/omnichannel/components/contextualBar/CannedResponse')),
 		order: 0,
 	} : null), [hasLicense, enabled]);
 });

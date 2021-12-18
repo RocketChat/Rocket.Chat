@@ -80,8 +80,6 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
-			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
-				return false;
 			default:
 				return true;
 		}
@@ -102,7 +100,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid, user) {
+	readOnly(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
@@ -113,7 +111,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
+		return !room.servedBy;
 	}
 
 	getAvatarPath(roomData) {
@@ -124,19 +122,16 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
-		// const button = instance.tabBar.getButtons({ room }).find((button) => button.id === 'visitor-info');
-		// if (!button) {
-		// 	return false;
-		// }
-
-		// const { template, i18nTitle: label, icon } = button;
-		// instance.tabBar.setTemplate(template);
-		// instance.tabBar.setData({
-		// 	label,
-		// 	icon,
-		// });
 
 		instance.tabBar.openUserInfo();
+		return true;
+	}
+
+	showQuickActionButtons() {
+		return true;
+	}
+
+	isLivechatRoom() {
 		return true;
 	}
 }

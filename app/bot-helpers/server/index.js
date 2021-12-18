@@ -2,9 +2,9 @@ import './settings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Users, Rooms } from '../../models';
-import { settings } from '../../settings';
-import { hasRole } from '../../authorization';
+import { Users, Rooms } from '../../models/server';
+import { settings } from '../../settings/server';
+import { hasRole } from '../../authorization/server';
 
 /**
  * BotHelpers helps bots
@@ -151,7 +151,7 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
+settings.watch('BotHelpers_userFields', function(settingValue) {
 	botHelpers.setupCursors(settingValue);
 });
 

@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
-import { settings } from '../../app/settings';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
@@ -16,14 +17,17 @@ Meteor.methods({
 			});
 		}
 
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'loadNextMessages' });
+		}
+
 		const fromId = Meteor.userId();
 
-		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
 			return false;
 		}
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: 1,
 			},
@@ -31,12 +35,17 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const { records } = Promise.await(Message.get(fromId, { rid, oldest: end, queryOptions }));
+		let records;
+		if (end) {
+			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+		} else {
+			records = Messages.findVisibleByRoomId(rid, options).fetch();
+		}
 
 		return {
 			messages: normalizeMessagesForUser(records, fromId),

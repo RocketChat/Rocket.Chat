@@ -18,6 +18,7 @@ Meteor.startup(function() {
 			firstBanner.textArguments = firstBanner.textArguments || [];
 
 			banners.open({
+				id: firstBanner.id,
 				title: TAPi18n.__(firstBanner.title),
 				text: TAPi18n.__(firstBanner.text, ...firstBanner.textArguments),
 				modifiers: firstBanner.modifiers,

@@ -1,4 +1,4 @@
-import { Collection, Cursor, FindOneOptions } from 'mongodb';
+import { Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection, InsertOneWriteOpResult } from 'mongodb';
 
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
@@ -7,16 +7,40 @@ type T = IBanner;
 export class BannersRaw extends BaseRaw<T> {
 	constructor(
 		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
+		trash?: Collection<T>,
 	) {
 		super(col, trash);
 
 		this.col.createIndexes([
 			{ key: { platform: 1, startAt: 1, expireAt: 1 } },
 		]);
+
+		this.col.createIndexes([
+			{ key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } },
+		]);
 	}
 
-	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOneOptions<T>): Cursor<T> {
+	create(doc: IBanner): Promise<InsertOneWriteOpResult<IBanner>> {
+		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
+		if (invalidPlatform) {
+			throw new Error('Invalid platform');
+		}
+
+		if (doc.startAt > doc.expireAt) {
+			throw new Error('Start date cannot be later than expire date');
+		}
+
+		if (doc.expireAt < new Date()) {
+			throw new Error('Cannot create banner already expired');
+		}
+
+		return this.insertOne({
+			active: true,
+			...doc,
+		});
+	}
+
+	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const today = new Date();
 
 		const query = {
@@ -24,6 +48,7 @@ export class BannersRaw extends BaseRaw<T> {
 			platform,
 			startAt: { $lte: today },
 			expireAt: { $gte: today },
+			active: { $ne: false },
 			$or: [
 				{ roles: { $in: roles } },
 				{ roles: { $exists: false } },
@@ -31,5 +56,9 @@ export class BannersRaw extends BaseRaw<T> {
 		};
 
 		return this.col.find(query, options);
+	}
+
+	disable(bannerId: string): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({ _id: bannerId, active: { $ne: false } }, { $set: { active: false, inactivedAt: new Date() } });
 	}
 }

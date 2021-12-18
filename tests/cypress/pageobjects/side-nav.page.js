@@ -28,6 +28,8 @@ class SideNav extends Page {
 
 	get popOverContent() { return browser.element('.rc-popover__content'); }
 
+	get popOverHideOption() { return browser.element('.rc-popover__content [data-id="hide"][data-type="sidebar-item"]'); }
+
 	get statusOnline() { return browser.element('.rc-popover__item--online'); }
 
 	get statusAway() { return browser.element('.rc-popover__item--away'); }

@@ -1,40 +1,37 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
-import { settings } from '../../app/settings';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	loadMissedMessages(rid, start) {
 		check(rid, String);
 		check(start, Date);
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadMissedMessages',
-			});
+		const fromId = Meteor.userId();
+
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const fromId = Meteor.userId();
-		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
 			return false;
 		}
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: -1,
 			},
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const { records } = Promise.await(Message.get(fromId, { rid, queryOptions }));
-
-		return records;
+		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
 	},
 });

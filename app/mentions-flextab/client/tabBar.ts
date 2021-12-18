@@ -1,7 +1,7 @@
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('mentions', {
-	groups: ['channel', 'group'],
+	groups: ['channel', 'group', 'team'],
 	id: 'mentions',
 	title: 'Mentions',
 	icon: 'at',

@@ -8,7 +8,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/ra
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
-export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
+type IBusinessHoursExtraProperties = {
 	timezoneName: string;
 	departmentsToApplyBusinessHour: string;
 }
@@ -20,33 +20,36 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {
+	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | null> {
 		if (!id) {
-			return;
+			return null;
 		}
 
 		const businessHour = await this.BusinessHourRepository.findOneById(id);
 		if (!businessHour) {
-			return;
+			return null;
 		}
 
-		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { name: 1 } }).toArray();
+		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { projection: { name: 1 } }).toArray();
 		return businessHour;
 	}
 
-	async saveBusinessHour(businessHourData: IBusinessHoursExtraProperties): Promise<ILivechatBusinessHour> {
+	async saveBusinessHour(businessHour: ILivechatBusinessHour & IBusinessHoursExtraProperties): Promise<ILivechatBusinessHour> {
+		const existingBusinessHour = await this.BusinessHourRepository.findOne({ name: businessHour.name }, { projection: { _id: 1 } }) as ILivechatBusinessHour;
+		if (existingBusinessHour && existingBusinessHour._id !== businessHour._id) {
+			throw new Error('error-business-hour-name-already-in-use');
+		}
+		const { timezoneName, departmentsToApplyBusinessHour, ...businessHourData } = businessHour;
 		businessHourData.timezone = {
-			name: businessHourData.timezoneName,
-			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
+			name: timezoneName,
+			utc: this.getUTCFromTimezone(timezoneName),
 		};
-		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
-		const businessHourToReturn = { ...businessHourData };
-		delete businessHourData.timezoneName;
-		delete businessHourData.departmentsToApplyBusinessHour;
+		const departments = departmentsToApplyBusinessHour?.split(',').filter(Boolean) || [];
+		const businessHourToReturn = { ...businessHourData, departmentsToApplyBusinessHour };
 		delete businessHourData.departments;
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
-		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-		const toRemove = [...currentDepartments.filter((dept: string) => !departments.includes(dept))];
+		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { projection: { _id: 1 } }).toArray()).map((dept) => dept._id);
+		const toRemove = [...currentDepartments.filter((dept) => !departments.includes(dept))];
 		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
 		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
 		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
@@ -66,8 +69,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
-		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { projection: { _id: 1 } }).toArray()).map((dept) => dept._id);
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { projection: { agentId: 1 } }).toArray()).map((dept) => dept.agentId);
 		this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 

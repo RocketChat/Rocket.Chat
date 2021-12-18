@@ -1,13 +1,10 @@
+import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { DDPCommon } from 'meteor/ddp-common';
 
 import { APIClient } from '../../app/utils/client';
 
-const bypassMethods: string[] = [
-	'setUserStatus',
-	'logout',
-];
+const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
 function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
 	if (method === 'login' && params[0]?.resume) {
@@ -33,10 +30,12 @@ function wrapMeteorDDPCalls(): void {
 			return _send.call(Meteor.connection, message);
 		}
 
-		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
+		const endpoint = Tracker.nonreactive(() =>
+			!Meteor.userId() ? 'method.callAnon' : 'method.call',
+		);
 
 		const restParams = {
-			message: DDPCommon.stringifyDDP(message),
+			message: DDPCommon.stringifyDDP({ ...message }),
 		};
 
 		const processResult = (_message: any): void => {
@@ -47,11 +46,12 @@ function wrapMeteorDDPCalls(): void {
 			Meteor.connection.onMessage(_message);
 		};
 
-		APIClient.v1.post(`${ endpoint }/${ encodeURIComponent(message.method.replace(/\//g, ':')) }`, restParams)
+		APIClient.v1
+			.post(`${endpoint}/${encodeURIComponent(message.method.replace(/\//g, ':'))}`, restParams)
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message);
+					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}

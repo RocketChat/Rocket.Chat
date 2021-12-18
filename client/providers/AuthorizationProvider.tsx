@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
+import React, { FC, useCallback, useEffect } from 'react';
 
 import {
 	hasPermission,
@@ -7,34 +7,38 @@ import {
 	hasAllPermission,
 	hasRole,
 } from '../../app/authorization/client';
-import { AuthorizationContext, RoleStore } from '../contexts/AuthorizationContext';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
-import { useReactiveValue } from '../hooks/useReactiveValue';
 import { Roles } from '../../app/models/client/models/Roles';
-
+import { AuthorizationContext, RoleStore } from '../contexts/AuthorizationContext';
+import { useReactiveValue } from '../hooks/useReactiveValue';
+import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const contextValue = {
-	queryPermission: createReactiveSubscriptionFactory(
-		(permission, scope) => hasPermission(permission, scope),
+	queryPermission: createReactiveSubscriptionFactory((permission, scope) =>
+		hasPermission(permission, scope),
 	),
-	queryAtLeastOnePermission: createReactiveSubscriptionFactory(
-		(permissions, scope) => hasAtLeastOnePermission(permissions, scope),
+	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) =>
+		hasAtLeastOnePermission(permissions, scope),
 	),
-	queryAllPermissions: createReactiveSubscriptionFactory(
-		(permissions, scope) => hasAllPermission(permissions, scope),
+	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) =>
+		hasAllPermission(permissions, scope),
 	),
-	queryRole: createReactiveSubscriptionFactory(
-		(role) => hasRole(Meteor.userId(), role),
-	),
+	queryRole: createReactiveSubscriptionFactory((role) => hasRole(Meteor.userId(), role)),
 	roleStore: new RoleStore(),
 };
 
-
 const AuthorizationProvider: FC = ({ children }) => {
-	const roles = useReactiveValue(useCallback(() => Roles.find().fetch().reduce((ret, obj) => {
-		ret[obj._id] = obj;
-		return ret;
-	}, {}), []));
+	const roles = useReactiveValue(
+		useCallback(
+			() =>
+				Roles.find()
+					.fetch()
+					.reduce((ret, obj) => {
+						ret[obj._id] = obj;
+						return ret;
+					}, {}),
+			[],
+		),
+	);
 
 	useEffect(() => {
 		contextValue.roleStore.roles = roles;

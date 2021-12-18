@@ -7,7 +7,7 @@ import { Users } from '../../../models/server/raw/index';
 import { IUser } from '../../../../definition/IUser';
 
 const sendResetNotification = async function(uid: string): Promise<void> {
-	const user: IUser = await Users.findOneById(uid, { projection: { language: 1, emails: 1 } });
+	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, { projection: { language: 1, emails: 1 } });
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
 	}
@@ -60,7 +60,7 @@ export async function resetTOTP(userId: string, notifyUser = false): Promise<boo
 	const result = await Users.resetTOTPById(userId);
 
 	if (result?.modifiedCount === 1) {
-		await Users.removeResumeService(userId);
+		await Users.unsetLoginTokens(userId);
 		return true;
 	}
 

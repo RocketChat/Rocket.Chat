@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import PageSkeleton from '../../../components/PageSkeleton';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useMethod } from '../../../contexts/ServerContext';
 import AppDetailsPage from './AppDetailsPage';
-import MarketplacePage from './MarketplacePage';
-import AppsPage from './AppsPage';
 import AppInstallPage from './AppInstallPage';
-import AppsProvider from './AppsProvider';
 import AppLogsPage from './AppLogsPage';
+import AppsPage from './AppsPage';
+import AppsProvider from './AppsProvider';
 
-function AppsRoute() {
+const AppsRoute = () => {
 	const [isLoading, setLoading] = useState(true);
 	const canViewAppsAndMarketplace = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
@@ -26,7 +25,7 @@ function AppsRoute() {
 				return;
 			}
 
-			if (!await isAppsEngineEnabled()) {
+			if (!(await isAppsEngineEnabled())) {
 				appsWhatIsItRoute.push();
 				return;
 			}
@@ -45,11 +44,10 @@ function AppsRoute() {
 		};
 	}, [canViewAppsAndMarketplace, isAppsEngineEnabled, appsWhatIsItRoute]);
 
-	const [currentRouteName] = useCurrentRoute();
-
-	const isMarketPlace = currentRouteName === 'admin-marketplace';
-
 	const context = useRouteParameter('context');
+
+	const isMarketPlace = !context;
+
 	const id = useRouteParameter('id');
 	const version = useRouteParameter('version');
 
@@ -61,15 +59,16 @@ function AppsRoute() {
 		return <PageSkeleton />;
 	}
 
-	return <AppsProvider>
-		{
-			(!context && isMarketPlace && <MarketplacePage />)
-		|| (!context && !isMarketPlace && <AppsPage />)
-		|| (context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>)
-		|| (context === 'logs' && <AppLogsPage id={id}/>)
-		|| (context === 'install' && <AppInstallPage />)
-		}
-	</AppsProvider>;
-}
+	return (
+		<AppsProvider>
+			{((!context || context === 'installed') && (
+				<AppsPage isMarketPlace={isMarketPlace} context={context} />
+			)) ||
+				(context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version} />) ||
+				(context === 'logs' && <AppLogsPage id={id} />) ||
+				(context === 'install' && <AppInstallPage />)}
+		</AppsProvider>
+	);
+};
 
 export default AppsRoute;

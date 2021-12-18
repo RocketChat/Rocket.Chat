@@ -1,11 +1,11 @@
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
-import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '../../../definition/UIKit';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-
+import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '../../../definition/UIKit';
 
 const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
-	const [state, setState] = useState<S>(initialState);
+	const [state, setState] = useSafely(useState<S>(initialState));
 
 	const { viewId } = state;
 
@@ -26,7 +26,7 @@ const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
 		return (): void => {
 			ActionManager.off(viewId, handleUpdate);
 		};
-	}, [viewId]);
+	}, [setState, viewId]);
 
 	return state;
 };

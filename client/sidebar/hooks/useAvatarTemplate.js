@@ -5,9 +5,9 @@ import { useUserPreference } from '../../contexts/UserContext';
 
 export const useAvatarTemplate = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
+	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar');
 	return useMemo(() => {
-		if (sidebarHideAvatar) {
+		if (!sidebarDisplayAvatar) {
 			return null;
 		}
 
@@ -23,6 +23,10 @@ export const useAvatarTemplate = () => {
 			}
 		})();
 
-		return (room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
-	}, [sidebarHideAvatar, sidebarViewMode]);
+		const renderRoomAvatar = (room) => (
+			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+		);
+
+		return renderRoomAvatar;
+	}, [sidebarDisplayAvatar, sidebarViewMode]);
 };

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
-import { Messages } from '../../app/models';
-import { settings } from '../../app/settings';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
@@ -29,14 +29,13 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!Meteor.call('canAccessRoom', message.rid, fromId)) {
+		if (!canAccessRoom({ _id: message.rid }, { _id: fromId })) {
 			return false;
 		}
 
 		limit -= 1;
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: -1,
 			},
@@ -44,25 +43,26 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const { records: messages } = Promise.await(Message.get(fromId, { rid: message.rid, latest: message.ts, queryOptions }));
+		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
 
-		const moreBefore = messages.length === queryOptions.limit;
+		const moreBefore = messages.length === options.limit;
 
 		messages.push(message);
 
-		queryOptions.sort = {
+		options.sort = {
 			ts: 1,
 		};
 
-		queryOptions.limit = Math.floor(limit / 2);
-		const { records: afterMessages } = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions }));
+		options.limit = Math.floor(limit / 2);
 
-		const moreAfter = afterMessages.length === queryOptions.limit;
+		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
+
+		const moreAfter = afterMessages.length === options.limit;
 
 		messages.push(...afterMessages);
 

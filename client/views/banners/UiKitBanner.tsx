@@ -1,14 +1,26 @@
 /* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
-import React, { Context, FC, useMemo } from 'react';
+import {
+	kitContext,
+	// @ts-ignore
+	bannerParser,
+	UiKitBanner as renderUiKitBannerBlocks,
+} from '@rocket.chat/fuselage-ui-kit';
+import React, { Context, FC, useMemo, ReactNode } from 'react';
 
-import * as banners from '../../lib/banners';
-// import { useEndpoint } from '../../contexts/ServerContext';
 import { UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit';
-import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
-import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
+import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
+import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
+import MarkdownText from '../../components/MarkdownText';
+import * as banners from '../../lib/banners';
+
+// TODO: move this to fuselage-ui-kit itself
+const mrkdwn = ({ text }: { text: string } = { text: '' }): ReactNode => (
+	<MarkdownText variant='inline' content={text} />
+);
+
+bannerParser.mrkdwn = mrkdwn;
 
 const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 	const state = useUIKitStateManager<UiKitBannerPayload>(payload);
@@ -25,26 +37,32 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 
 	const action = useUIKitHandleAction(state);
 
-	const contextValue = useMemo<typeof kitContext extends Context<infer V> ? V : never>(() => ({
-		action: async (...args) => {
-			await action(...args);
-			banners.closeById(state.viewId);
-		},
-		appId: state.appId,
-	}), [action, state.appId, state.viewId]);
+	const contextValue = useMemo<typeof kitContext extends Context<infer V> ? V : never>(
+		() => ({
+			action: async (...args): Promise<void> => {
+				await action(...args);
+				banners.closeById(state.viewId);
+			},
+			state: (): void => undefined,
+			appId: state.appId,
+		}),
+		[action, state.appId, state.viewId],
+	);
 
-	return <Banner
-		closeable
-		icon={icon}
-		inline={state.inline}
-		title={state.title}
-		variant={state.variant}
-		onClose={handleClose}
-	>
-		<kitContext.Provider value={contextValue}>
-			{renderUiKitBannerBlocks(state.blocks, { engine: 'rocket.chat' })}
-		</kitContext.Provider>
-	</Banner>;
+	return (
+		<Banner
+			closeable
+			icon={icon}
+			inline={state.inline}
+			title={state.title}
+			variant={state.variant}
+			onClose={handleClose}
+		>
+			<kitContext.Provider value={contextValue}>
+				{renderUiKitBannerBlocks(state.blocks, { engine: 'rocket.chat' })}
+			</kitContext.Provider>
+		</Banner>
+	);
 };
 
 export default UiKitBanner;

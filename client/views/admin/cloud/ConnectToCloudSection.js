@@ -3,15 +3,12 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import Subtitle from '../../../components/Subtitle';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
-function ConnectToCloudSection({
-	onRegisterStatusChange,
-	...props
-}) {
+function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -46,22 +43,35 @@ function ConnectToCloudSection({
 		}
 	};
 
-	return <Box is='section' {...props}>
-		<Subtitle>{t('Cloud_registration_required')}</Subtitle>
-		<Box withRichContent color='neutral-800'>
-			<p>{t('Cloud_registration_required_description')}</p>
+	return (
+		<Box is='section' {...props}>
+			<Subtitle>{t('Cloud_registration_required')}</Subtitle>
+			<Box withRichContent color='neutral-800'>
+				<p>{t('Cloud_registration_required_description')}</p>
+			</Box>
+			<ButtonGroup>
+				<Button
+					primary
+					disabled={isConnecting || !hasAcceptedTerms}
+					minHeight='x40'
+					onClick={handleRegisterButtonClick}
+				>
+					{isConnecting ? (
+						<Throbber is='span' inheritColor />
+					) : (
+						t('Cloud_registration_required_link_text')
+					)}
+				</Button>
+			</ButtonGroup>
+			{!hasAcceptedTerms && (
+				<Box mb='x12'>
+					<Callout type='warning'>
+						{t('Cloud_Service_Agree_PrivacyTerms_Login_Disabled_Warning')}
+					</Callout>
+				</Box>
+			)}
 		</Box>
-		<ButtonGroup>
-			<Button primary disabled={isConnecting || !hasAcceptedTerms} minHeight='x40' onClick={handleRegisterButtonClick}>
-				{isConnecting ? <Throbber is='span' inheritColor /> : t('Cloud_registration_required_link_text')}
-			</Button>
-		</ButtonGroup>
-		{!hasAcceptedTerms && <Box mb='x12'>
-			<Callout type='warning'>
-				{t('Cloud_Service_Agree_PrivacyTerms_Login_Disabled_Warning')}
-			</Callout>
-		</Box>}
-	</Box>;
+	);
 }
 
 export default ConnectToCloudSection;

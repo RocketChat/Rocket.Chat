@@ -1,4 +1,6 @@
+import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils';
 
@@ -79,4 +81,42 @@ MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',
+});
+
+MessageTypes.registerType({
+	id: 'livechat_webrtc_video_call',
+	render(message) {
+		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
+			return TAPi18n.__('WebRTC_call_ended_message', {
+				callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
+				endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+			});
+		}
+		if (message.msg === 'declined' && message.webRtcCallEndTs) {
+			return TAPi18n.__('WebRTC_call_declined_message');
+		}
+		return message.msg;
+	},
+});
+
+MessageTypes.registerType({
+	id: 'omnichannel_placed_chat_on_hold',
+	system: true,
+	message: 'Omnichannel_placed_chat_on_hold',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
+});
+
+MessageTypes.registerType({
+	id: 'omnichannel_on_hold_chat_resumed',
+	system: true,
+	message: 'Omnichannel_on_hold_chat_resumed',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
 });

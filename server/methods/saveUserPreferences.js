@@ -19,14 +19,13 @@ Meteor.methods({
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
-			audioNotifications: Match.Optional(String),
-			mobileNotifications: Match.Optional(String),
+			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
 			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
-			hideAvatars: Match.Optional(Boolean),
+			displayAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
 			idleTimeLimit: Match.Optional(Number),
@@ -34,9 +33,8 @@ Meteor.methods({
 			sidebarShowUnread: Match.Optional(Boolean),
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
-			sidebarHideAvatar: Match.Optional(Boolean),
+			sidebarDisplayAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
-			sidebarShowDiscussion: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
@@ -48,9 +46,8 @@ Meteor.methods({
 
 		const {
 			desktopNotifications: oldDesktopNotifications,
-			mobileNotifications: oldMobileNotifications,
+			pushNotifications: oldMobileNotifications,
 			emailNotificationMode: oldEmailNotifications,
-			audioNotifications: oldAudioNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -84,11 +81,11 @@ Meteor.methods({
 				}
 			}
 
-			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
-				if (settings.mobileNotifications === 'default') {
+			if (settings.pushNotifications && oldMobileNotifications !== settings.pushNotifications) {
+				if (settings.pushNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.mobileNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.pushNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
 				}
 			}
 
@@ -97,14 +94,6 @@ Meteor.methods({
 					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
 					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
-				}
-			}
-
-			if (settings.audioNotifications && oldAudioNotifications !== settings.audioNotifications) {
-				if (settings.audioNotifications === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'audioNotifications', 'audioPrefOrigin');
-				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.audioNotifications, 'audioNotifications', 'audioPrefOrigin');
 				}
 			}
 
