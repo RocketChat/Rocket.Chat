@@ -143,6 +143,15 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
 	}
 
+	if ([UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE].includes(type)) {
+		const instance = instances.get(viewId);
+
+		if (instance) {
+			instance.close();
+		}
+		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
+	}
+
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
@@ -195,7 +204,7 @@ export const triggerCancel = async ({ view, ...options }) => {
 
 export const getUserInteractionPayloadByViewId = (viewId) => {
 	if (!viewId) {
-		return {};
+		throw new Error('No viewId provided when checking for `user interaction payload`');
 	}
 
 	const instance = instances.get(viewId);
