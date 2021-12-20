@@ -1,5 +1,6 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from 'meteor/random';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -39,7 +40,6 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
-
 const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
@@ -71,7 +71,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE].includes(type)) {
+	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -94,13 +94,34 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 				...data,
 			},
 		});
+
 		instances.set(viewId, {
 			close() {
 				instance.close();
 				instances.delete(viewId);
 			},
 		});
+
 		return UIKitInteractionTypes.MODAL_OPEN;
+	}
+
+	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
+		instances.set(viewId, {
+			payload: {
+				type,
+				triggerId,
+				appId,
+				viewId,
+				...data,
+			},
+			close() {
+				instances.delete(viewId);
+			},
+		});
+
+		FlowRouter.setParams({ tab: 'app', context: viewId });
+
+		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
 
 	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
@@ -120,6 +141,15 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			instance.close();
 		}
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
+	}
+
+	if ([UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE].includes(type)) {
+		const instance = instances.get(viewId);
+
+		if (instance) {
+			instance.close();
+		}
+		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
 	}
 
 	return UIKitInteractionTypes.MODAL_ClOSE;
@@ -170,6 +200,20 @@ export const triggerCancel = async ({ view, ...options }) => {
 			instance.close();
 		}
 	}
+};
+
+export const getUserInteractionPayloadByViewId = (viewId) => {
+	if (!viewId) {
+		throw new Error('No viewId provided when checking for `user interaction payload`');
+	}
+
+	const instance = instances.get(viewId);
+
+	if (!instance) {
+		return {};
+	}
+
+	return instance.payload;
 };
 
 Meteor.startup(() =>
