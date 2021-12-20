@@ -85,27 +85,26 @@ const ChannelsTab = (): ReactElement => {
 							</Table.Row>
 						</Table.Head>
 						<Table.Body>
-							{channels &&
-								channels.map(
-									({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
-										<Table.Row key={i}>
-											<Table.Cell>{i + 1}.</Table.Cell>
-											<Table.Cell>
-												<Margins inlineEnd='x4'>
-													{(t === 'd' && <Icon name='at' />) ||
-														(t === 'c' && <Icon name='lock' />) ||
-														(t === 'p' && <Icon name='hashtag' />)}
-												</Margins>
-												{name}
-											</Table.Cell>
-											<Table.Cell>{moment(createdAt).format('L')}</Table.Cell>
-											<Table.Cell>{moment(updatedAt).format('L')}</Table.Cell>
-											<Table.Cell>
-												{messagesCount} <Growth>{messagesVariation}</Growth>
-											</Table.Cell>
-										</Table.Row>
-									),
-								)}
+							{channels?.map(
+								({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
+									<Table.Row key={i}>
+										<Table.Cell>{i + 1}.</Table.Cell>
+										<Table.Cell>
+											<Margins inlineEnd='x4'>
+												{(t === 'd' && <Icon name='at' />) ||
+													(t === 'c' && <Icon name='lock' />) ||
+													(t === 'p' && <Icon name='hashtag' />)}
+											</Margins>
+											{name}
+										</Table.Cell>
+										<Table.Cell>{moment(createdAt).format('L')}</Table.Cell>
+										<Table.Cell>{moment(updatedAt).format('L')}</Table.Cell>
+										<Table.Cell>
+											{messagesCount} <Growth>{messagesVariation}</Growth>
+										</Table.Cell>
+									</Table.Row>
+								),
+							)}
 							{!channels &&
 								Array.from({ length: 5 }, (_, i) => (
 									<Table.Row key={i}>
@@ -136,7 +135,7 @@ const ChannelsTab = (): ReactElement => {
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
 						t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)
 					}
-					count={(data && data.total) || 0}
+					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 				/>

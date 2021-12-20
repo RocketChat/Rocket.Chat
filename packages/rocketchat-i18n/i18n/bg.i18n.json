@@ -2139,7 +2139,7 @@
   "RetentionPolicyRoom_FilesOnly": "Премахвайте само файлове, запазете съобщенията",
   "RetentionPolicyRoom_MaxAge": "Максимално възрастово съобщение в дни (по подразбиране: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Премахване на правилата за общо задържане",
-  "RetentionPolicyRoom_ReadTheDocs": "Внимавай! Изчистването на тези настройки без всякакви грижи може да унищожи цялата история на съобщенията. Моля, прочетете документацията, преди да включите функцията на <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>тук</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Внимавай! Изчистването на тези настройки без всякакви грижи може да унищожи цялата история на съобщенията. Моля, прочетете документацията, преди да включите функцията на <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>тук</a>.",
   "Retry_Count": "Повторен опит",
   "Role": "Роля",
   "Role_Editing": "Редактиране на роли",

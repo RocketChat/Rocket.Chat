@@ -2239,7 +2239,7 @@
   "RetentionPolicyRoom_FilesOnly": "ملفات التقليم فقط ، الاحتفاظ بالرسائل",
   "RetentionPolicyRoom_MaxAge": "الحد الأقصى لعمر الرسالة بالأيام (الافتراضي: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "تجاوز سياسة الاحتفاظ العالمية",
-  "RetentionPolicyRoom_ReadTheDocs": "احترس! يمكن أن يؤدي التغيير والتبديل في هذه الإعدادات دون أقصى قدر من العناية إلى تدمير كل سجل الرسائل. يرجى قراءة الوثائق قبل تشغيل الميزة على <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>هنا</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "احترس! يمكن أن يؤدي التغيير والتبديل في هذه الإعدادات دون أقصى قدر من العناية إلى تدمير كل سجل الرسائل. يرجى قراءة الوثائق قبل تشغيل الميزة على <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>هنا</a>.",
   "Retry_Count": "تعداد إعادة المحاولة",
   "Role": "دور",
   "Role_Editing": "دور التحرير",
