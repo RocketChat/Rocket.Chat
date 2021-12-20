@@ -12,15 +12,14 @@ type AppsProps = {
 	onSubmit: (e: any) => void;
 	onCancel: (e: any) => Promise<void>;
 	onClose: (e: any) => Promise<void>;
-	appName: string;
-	appId: string;
+	appInfo: { name: string; id: string };
 };
 
-const Apps = ({ view, onSubmit, onClose, onCancel, appName, appId }: AppsProps): JSX.Element => (
+const Apps = ({ view, onSubmit, onClose, onCancel, appInfo }: AppsProps): JSX.Element => (
 	<>
 		<VerticalBar.Header>
-			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
-			<VerticalBar.Text>{appName}</VerticalBar.Text>
+			<Avatar url={getURL(`/api/apps/${appInfo.id}/icon`)} />
+			<VerticalBar.Text>{appInfo.name}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>

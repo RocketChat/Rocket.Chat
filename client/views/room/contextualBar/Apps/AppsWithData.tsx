@@ -230,8 +230,7 @@ const AppsWithData = ({
 				onCancel={handleCancel}
 				onSubmit={handleSubmit}
 				view={view}
-				appName={appName}
-				appId={appId}
+				appInfo={{ name: appName, id: appId }}
 			/>
 		</kitContext.Provider>
 	);
