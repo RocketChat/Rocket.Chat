@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactNode, MouseEventHandler, useRef, ReactElement } from 'react';
+import React, { ReactNode, useRef, ReactElement } from 'react';
 
 import { useLayout } from '../../../../../contexts/LayoutContext';
 import { ToolboxDropdownDesktop } from './ToolboxDropdownDesktop';
@@ -12,13 +12,13 @@ const style = css`
 	left: 0;
 	right: 0;
 `;
-export const ToolboxDropdown = <R extends HTMLElement, E extends HTMLElement>({
+export const ToolboxDropdown = <R extends HTMLElement>({
 	onClose,
 	reference,
 	children,
 }: {
 	reference: React.RefObject<R>;
-	onClose: MouseEventHandler<E>;
+	onClose: () => void;
 	children: ReactNode;
 }): ReactElement => {
 	const { isMobile } = useLayout();

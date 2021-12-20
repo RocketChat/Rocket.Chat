@@ -1,4 +1,4 @@
-import { Message, MessageMetricsItem } from '@rocket.chat/fuselage';
+import { Message, MessageMetricsItem, MessageBlock } from '@rocket.chat/fuselage';
 import React, { useCallback, FC } from 'react';
 
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -44,7 +44,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 	);
 
 	return (
-		<Message.Block className={followStyle}>
+		<MessageBlock className={followStyle}>
 			<Message.Metrics>
 				<Message.Metrics.Reply data-rid={rid} data-mid={mid} onClick={openThread}>
 					{t('Reply')}
@@ -79,7 +79,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 					</MessageMetricsItem.Label>
 				</MessageMetricsItem>
 			</Message.Metrics>
-		</Message.Block>
+		</MessageBlock>
 	);
 };
 

@@ -24,7 +24,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 export type UserPresence = Readonly<
-	Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'> &
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'>> &
 		Required<Pick<IUser, '_id' | 'username'>>
 >;
 
