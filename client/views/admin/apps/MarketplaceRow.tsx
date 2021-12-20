@@ -35,7 +35,7 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 	const [isHovered, setHovered] = useState(false);
 	const isStatusVisible = isFocused || isHovered;
 
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const marketplaceRoute = useRoute('admin-apps');
 
 	const handleClick = (): void => {
 		marketplaceRoute.push({

@@ -15,7 +15,7 @@ function AppsWhatIsIt() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 
-	const appsRouter = useRoute('admin-marketplace');
+	const appsRouter = useRoute('admin-apps');
 	const enableAppsEngine = useMethod('apps/go-enable');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 

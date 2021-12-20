@@ -46,8 +46,6 @@ const AppsRoute = () => {
 
 	const context = useRouteParameter('context');
 
-	const isMarketPlace = !context;
-
 	const id = useRouteParameter('id');
 	const version = useRouteParameter('version');
 
@@ -61,9 +59,7 @@ const AppsRoute = () => {
 
 	return (
 		<AppsProvider>
-			{((!context || context === 'installed') && (
-				<AppsPage isMarketPlace={isMarketPlace} context={context} />
-			)) ||
+			{((!context || context === 'marketplace') && <AppsPage context={context} />) ||
 				(context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version} />) ||
 				(context === 'logs' && <AppLogsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}

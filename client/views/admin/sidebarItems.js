@@ -64,7 +64,7 @@ export const {
 	},
 	{
 		icon: 'cube',
-		href: 'admin-marketplace',
+		href: 'admin-apps',
 		i18nLabel: 'Apps',
 		permissionGranted: () => hasPermission(['manage-apps']),
 	},

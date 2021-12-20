@@ -23,7 +23,12 @@ function AppDetailsPage({ id }) {
 
 	const [currentRouteName] = useCurrentRoute();
 	const router = useRoute(currentRouteName);
-	const handleReturn = () => router.push({});
+
+	const isInstalled = data.installed;
+	const handleReturn = useCallback(
+		() => router.push({ context: isInstalled ? '' : 'marketplace' }),
+		[isInstalled, router],
+	);
 
 	const isLoading = Object.values(data).length === 0;
 

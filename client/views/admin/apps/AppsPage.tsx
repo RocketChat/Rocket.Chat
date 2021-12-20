@@ -10,19 +10,20 @@ import AppsTable from './AppsTable';
 import MarketplaceTable from './MarketplaceTable';
 
 type AppsPageProps = {
-	isMarketPlace: boolean;
 	context: string;
 };
 
-const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
+const AppsPage = ({ context }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const marketplaceRoute = useRoute('admin-apps');
 	const appsRoute = useRoute('admin-apps');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
+	const isMarketPlace = context === 'marketplace';
+	const isInstallApps = !context || context === 'installed';
 	const [isLoggedInCloud, setIsLoggedInCloud] = useState();
 
 	useEffect(() => {
@@ -65,18 +66,18 @@ const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
 			<Tabs>
 				<Tabs.Item
 					onClick={(): void => marketplaceRoute.push({ context: '' })}
+					selected={isInstallApps}
+				>
+					{t('Installed')}
+				</Tabs.Item>
+				<Tabs.Item
+					onClick={(): void => marketplaceRoute.push({ context: 'marketplace' })}
 					selected={isMarketPlace}
 				>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
-					selected={context === 'installed'}
-				>
-					{t('Installed')}
-				</Tabs.Item>
 			</Tabs>
-			<Page.Content>{context === 'installed' ? <AppsTable /> : <MarketplaceTable />}</Page.Content>
+			<Page.Content>{isInstallApps ? <AppsTable /> : <MarketplaceTable />}</Page.Content>
 		</Page>
 	);
 };
