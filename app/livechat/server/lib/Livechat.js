@@ -65,7 +65,7 @@ export const Livechat = {
 		});
 	},
 
-	online(department, skipNoAgentSetting = false) {
+	online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
 		Livechat.logger.debug(`Checking online agents ${ department ? `for department ${ department }` : '' }`);
 		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
@@ -82,7 +82,7 @@ export const Livechat = {
 			}
 		}
 
-		const agentsOnline = Livechat.checkOnlineAgents(department);
+		const agentsOnline = Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${ department ? `for department ${ department }` : '' }?: ${ agentsOnline }`);
 		return agentsOnline;
 	},
@@ -110,13 +110,23 @@ export const Livechat = {
 		return Users.findOnlineAgents();
 	},
 
-	checkOnlineAgents(department, agent) {
+	checkOnlineAgents(department, agent, skipFallbackCheck = false) {
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
 		}
 
 		if (department) {
-			return LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			const onlineForDep = LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			if (onlineForDep || skipFallbackCheck) {
+				return onlineForDep;
+			}
+
+			const dep = LivechatDepartment.findOneById(department);
+			if (!dep?.fallbackForwardDepartment) {
+				return onlineForDep;
+			}
+
+			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
 		}
 
 		return Users.checkOnlineAgents();
@@ -634,7 +644,6 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		Livechat.logger.debug(`Saving transfer history for room ${ room._id }`);
-		console.log(JSON.stringify(room, null, 2), JSON.stringify(transferData, null, 2));
 		const { departmentId: previousDepartment } = room;
 		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 

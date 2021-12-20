@@ -11,7 +11,7 @@ import { cbLogger } from '../lib/logger';
 
 callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 	// check here if department has fallback before queueing
-	if (inquiry?.department && !online(inquiry.department, true)) {
+	if (inquiry?.department && !online(inquiry.department, true, true)) {
 		cbLogger.debug('No agents online on selected department. Inquiry will use fallback department');
 		const department = await LivechatDepartment.findOneById(inquiry.department);
 		if (department.fallbackForwardDepartment) {
@@ -23,6 +23,8 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 			// update room
 			await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 			cbLogger.debug(`Inquiry ${ inquiry._id } moved. Continue normal queue process`);
+		} else {
+			cbLogger.debug('No fallback department configured. Skipping');
 		}
 	}
 

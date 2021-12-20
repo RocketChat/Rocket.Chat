@@ -12,7 +12,7 @@ export interface ILivechatDepartment {
 	numAgents: number;
 	_updatedAt?: Date;
 	businessHourId?: string;
-	fallbackForwardDepartment: string;
+	fallbackForwardDepartment?: string;
 	// extra optional fields
 	[k: string]: any;
 }

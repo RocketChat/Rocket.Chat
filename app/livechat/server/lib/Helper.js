@@ -397,7 +397,6 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { departmentId } = transferData;
-	const department = LivechatDepartment.findOneById(departmentId);
 	if (oldDepartmentId === departmentId) {
 		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
 	}
@@ -434,6 +433,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+		const department = LivechatDepartment.findOneById(departmentId);
 		if (!department?.fallbackForwardDepartment) {
 			logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
 			return false;
