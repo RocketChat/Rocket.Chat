@@ -235,7 +235,7 @@ const CurrentChatsRoute: FC = () => {
 				>
 					<Table.Cell withTruncatedText>{fname}</Table.Cell>
 					<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
-					<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
+					<Table.Cell withTruncatedText>{servedBy?.username}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
 					<Table.Cell withTruncatedText>{getStatusText(open, onHold)}</Table.Cell>

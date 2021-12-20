@@ -79,7 +79,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
 		let agentRoom;
-		if (agent && agent.id) {
+		if (agent?.id) {
 			const user = Users.getAgentInfo(agent.id);
 			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
 		}

@@ -8,7 +8,7 @@ addMigration({
 		const mobileNotificationsSetting = await Settings.findOneById('Accounts_Default_User_Preferences_mobileNotifications');
 
 		await Settings.removeById('Accounts_Default_User_Preferences_mobileNotifications');
-		if (mobileNotificationsSetting && mobileNotificationsSetting.value) {
+		if (mobileNotificationsSetting?.value) {
 			Settings.update({
 				_id: 'Accounts_Default_User_Preferences_pushNotifications',
 			}, {
