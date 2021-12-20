@@ -126,6 +126,7 @@ export class AppRoomsConverter {
 			isOpen: 'open',
 			_USERNAMES: '_USERNAMES',
 			description: 'description',
+			source: 'source',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;

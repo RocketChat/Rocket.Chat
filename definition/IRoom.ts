@@ -114,9 +114,9 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		id?: string;
 		// A human readable alias that goes with the ID, for post analytical purposes
 		alias?: string;
-		// The sidebar icon svg
+		// The sidebar icon
 		sidebarIcon?: string;
-		// The default sidebar icon svg
+		// The default sidebar icon
 		defaultIcon?: string;
 	};
 	transcriptRequest?: IRequestTranscript;

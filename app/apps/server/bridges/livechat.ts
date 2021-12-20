@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
@@ -75,8 +76,10 @@ export class AppLivechatBridge extends LivechatBridge {
 		Livechat.updateMessage(data);
 	}
 
-	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, { source }: Pick<ILivechatRoom, 'source'>): Promise<ILivechatRoom> {
+	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
+
+		const { source = {} } = extraParams || {};
 
 		let agentRoom;
 		if (agent && agent.id) {
