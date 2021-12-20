@@ -176,8 +176,6 @@ declare class APIClass<TBasePath extends string = '/'> {
 
 	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 
-	notFound<T>(msg?: T): NotFoundResult<T>;
-
 	defaultFieldsToExclude: {
 		joinCode: 0;
 		members: 0;
