@@ -23,9 +23,11 @@ import {
 import { App } from '../../../admin/apps/types';
 import Apps from './Apps';
 
-type FieldState = { value: string | Array<string> | undefined; blockId: string };
-type InputFieldStateTuple = [string, string | FieldState];
-type InputFieldStateObject = { key: string; value: FieldState };
+type FieldStateValue = string | Array<string> | undefined;
+type FieldState = { value: FieldStateValue; blockId: string };
+type InputFieldStateTuple = [string, FieldState];
+type InputFieldStateObject = { [key: string]: FieldState };
+type InputFieldStateByBlockId = { [blockId: string]: { [actionId: string]: FieldStateValue } };
 type ActionParams = {
 	blockId: string;
 	appId: string;
@@ -82,14 +84,14 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 		return view.blocks
 			.filter(filterInputFields)
 			.map(mapElementToState)
-			.reduce((obj, el: InputFieldStateTuple | InputFieldStateTuple[]) => {
+			.reduce((obj: InputFieldStateObject, el: InputFieldStateTuple | InputFieldStateTuple[]) => {
 				if (Array.isArray(el[0])) {
 					return { ...obj, ...Object.fromEntries(el as InputFieldStateTuple[]) };
 				}
 
 				const [key, value] = el as InputFieldStateTuple;
 				return { ...obj, [key]: value };
-			}, {} as { key: string; value: FieldState });
+			}, {} as InputFieldStateObject);
 	});
 
 	return useReducer(reducer, null, initializer);
@@ -117,7 +119,7 @@ const AppsWithData = ({
 		}: IUIKitContextualBarInteraction | IUIKitErrorInteraction): void => {
 			if (type === 'errors') {
 				const { errors } = data as Omit<IUIKitErrorInteraction, 'type'>;
-				setState((state) => ({ ...state, errors }));
+				setState((state: ViewState) => ({ ...state, errors }));
 				return;
 			}
 
@@ -131,12 +133,15 @@ const AppsWithData = ({
 		};
 	}, [state, viewId]);
 
-	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateTuple =>
-		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
-			obj[blockId] = obj[blockId] || {};
-			obj[blockId][key] = value;
-			return obj;
-		}, {});
+	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateByBlockId =>
+		Object.entries(obj).reduce(
+			(obj: InputFieldStateByBlockId, [key, { blockId, value }]: InputFieldStateTuple) => {
+				obj[blockId] = obj[blockId] || {};
+				obj[blockId][key] = value;
+				return obj;
+			},
+			{} as InputFieldStateByBlockId,
+		);
 
 	const prevent = (e: SyntheticEvent): void => {
 		if (e) {
