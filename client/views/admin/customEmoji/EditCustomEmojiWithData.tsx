@@ -69,8 +69,8 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({
 	}
 
 	const handleChange = (): void => {
-		onChange && onChange();
-		reload && reload();
+		onChange?.();
+		reload?.();
 	};
 
 	return (

@@ -203,14 +203,14 @@ export class LDAPConnection {
 			let count = 0;
 			await this.doPagedSearch<T>(this.options.baseDN, searchOptions, this.options.searchPageSize, (error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 				if (error) {
-					endCallback && endCallback(error);
+					endCallback?.(error);
 					return;
 				}
 
 				count += entries.length;
-				dataCallback && dataCallback(entries);
+				dataCallback?.(entries);
 				if (end) {
-					endCallback && endCallback();
+					endCallback?.();
 				}
 
 				if (next) {
@@ -221,8 +221,8 @@ export class LDAPConnection {
 		}
 
 		await this.doAsyncSearch(this.options.baseDN, searchOptions, (error, result) => {
-			dataCallback && dataCallback(result);
-			endCallback && endCallback(error);
+			dataCallback?.(result);
+			endCallback?.(error);
 		}, entryCallback);
 	}
 
@@ -466,7 +466,7 @@ export class LDAPConnection {
 			next: () => {
 				// Reset idle timer
 				this._updateIdle();
-				next && next();
+				next?.();
 			} });
 	}
 

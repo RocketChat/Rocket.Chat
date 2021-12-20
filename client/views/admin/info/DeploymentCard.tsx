@@ -24,7 +24,7 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 
 	const { commit = {} } = info;
 
-	const appsEngineVersion = info && info.marketplaceApiVersion;
+	const appsEngineVersion = info?.marketplaceApiVersion;
 
 	const handleInstancesModal = useMutableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);

@@ -93,7 +93,7 @@ export class DDPStreamer extends ServiceClass {
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
 		this.onEvent('stream', ([streamer, eventName, args]): void => {
 			const stream = StreamerCentral.instances[streamer];
-			return stream && stream.emitWithoutBroadcast(eventName, ...args);
+			return stream?.emitWithoutBroadcast(eventName, ...args);
 		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
