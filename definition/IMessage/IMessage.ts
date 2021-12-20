@@ -65,14 +65,14 @@ export interface IMessage extends IRocketChatRecord {
 	dcount?: number;
 
 	reactions?: {
-		[key: string]: { usernames: IUser['_id'][] };
+		[key: string]: { names?: (string | undefined)[]; usernames: string[] };
 	};
 
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending';
 
-	urls: {
+	urls?: {
 		url: string;
 		meta: Record<string, string>;
 	}[];
@@ -96,6 +96,9 @@ export interface IMessage extends IRocketChatRecord {
 	sentByEmail?: boolean;
 	webRtcCallEndTs?: Date;
 	role?: string;
+
+	avatar?: string;
+	emoji?: string;
 }
 
 export type MessageSystem = {

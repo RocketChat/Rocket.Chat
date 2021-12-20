@@ -1,9 +1,10 @@
-import { MouseEvent } from 'react';
+import { ComponentProps, MouseEvent } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { Icon } from '@rocket.chat/fuselage';
 
 import { roomTypes } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -55,15 +56,16 @@ type MessageActionConditionProps = {
 
 export type MessageActionConfig = {
 	id: string;
-	icon: string;
+	icon: ComponentProps<typeof Icon>['name'];
+	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
 	order?: number;
 	/* @deprecated */
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: (
-		e: MouseEvent,
+	action: <E extends HTMLOrSVGElement>(
+		e: MouseEvent<E>,
 		{ message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom },
 	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;

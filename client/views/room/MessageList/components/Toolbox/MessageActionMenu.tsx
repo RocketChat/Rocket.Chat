@@ -1,5 +1,5 @@
-import { MessageToolbox, Option } from '@rocket.chat/fuselage';
-import React, { FC, useState, Fragment, useRef } from 'react';
+import { MessageToolboxItem, Option } from '@rocket.chat/fuselage';
+import React, { FC, useState, Fragment, useRef, ComponentProps } from 'react';
 
 import { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { useTranslation, TranslationKey } from '../../../../../contexts/TranslationContext';
@@ -8,7 +8,7 @@ import { ToolboxDropdown } from './ToolboxDropdown';
 type Option = {
 	id: string;
 	label: TranslationKey;
-	icon?: string;
+	icon?: ComponentProps<typeof Option>['icon'];
 	// group?: string;
 	color?: string; // @deprecated
 	variant?: 'danger' | 'success' | 'warning';
@@ -16,12 +16,9 @@ type Option = {
 };
 
 export const MessageActionMenu: FC<{
-	// options: {
-	// 	[key: string]: Option;
-	// };
 	options: MessageActionConfig[];
 }> = ({ options }) => {
-	const ref = useRef<HTMLElement>(null);
+	const ref = useRef(null);
 
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
@@ -39,7 +36,7 @@ export const MessageActionMenu: FC<{
 		}, {} as { [key: string]: Option[] });
 
 	return (
-		<MessageToolbox.Item ref={ref} icon='kebab' onClick={(): void => setVisible(true)}>
+		<MessageToolboxItem ref={ref} icon='kebab' onClick={(): void => setVisible(true)}>
 			{visible && (
 				<ToolboxDropdown
 					reference={ref}
@@ -64,6 +61,6 @@ export const MessageActionMenu: FC<{
 					))}
 				</ToolboxDropdown>
 			)}
-		</MessageToolbox.Item>
+		</MessageToolboxItem>
 	);
 };

@@ -1,7 +1,7 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useEffect, MutableRefObject } from 'react';
+import { useEffect, RefObject } from 'react';
 
-export const useIsVisible = (ref: MutableRefObject<HTMLInputElement | undefined>): [boolean] => {
+export const useIsVisible = (ref: RefObject<HTMLInputElement>): [boolean] => {
 	const [menuVisibility, setMenuVisibility] = useDebouncedState(!!window.DISABLE_ANIMATION, 100);
 
 	useEffect(() => {

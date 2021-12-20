@@ -1,13 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { IUser } from '../../../../../definition/IUser';
+import { IMessage } from '../../../../../definition/IMessage';
 import Emoji from '../../../../components/Emoji';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import ReactionUserTag from './ReactionUserTag';
 
 type ReactionsProps = {
-	reactions: ReactElement;
+	reactions: Required<IMessage>['reactions'];
 	onClick: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
@@ -26,7 +26,7 @@ const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
 				>
 					<Emoji emojiHandle={reaction} />
 					<Box display='flex' flexWrap='wrap' paddingBlock='x4' mis='x4'>
-						{usernames.map((username: IUser['username'], i: number) => (
+						{usernames.map((username, i: number) => (
 							<ReactionUserTag
 								key={username}
 								displayName={useRealName ? names[i] || username : username}

@@ -3,18 +3,18 @@ import type { IPublication, IStreamerConstructor, Connection, IStreamer } from '
 
 import type { IUser } from '../../../../definition/IUser';
 
-export type UserPresenseStreamProps = {
+export type UserPresenceStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
 }
 
-export type UserPresenseStreamArgs = {
+export type UserPresenceStreamArgs = {
 	'uid': string;
 	args: unknown;
 }
 
 const e = new Emitter<{
-	[key: string]: UserPresenseStreamArgs;
+	[key: string]: UserPresenceStreamArgs;
 }>();
 
 
@@ -47,7 +47,7 @@ export class UserPresence {
 		this.listeners.delete(uid);
 	}
 
-	run = (args: UserPresenseStreamArgs): void => {
+	run = (args: UserPresenceStreamArgs): void => {
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
 		(this.publication as any)._session.socket.send(payload);
 	}
@@ -75,7 +75,7 @@ export class StreamPresence {
 	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer {
 		return new class StreamPresence extends Streamer {
 			async _publish(publication: IPublication, _eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
-				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenseStreamProps;
+				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenceStreamProps;
 
 
 				const [client, main] = UserPresence.getClient(publication, this);
@@ -98,6 +98,6 @@ export class StreamPresence {
 }
 
 
-export const emit = (uid: string, args: UserPresenseStreamArgs): void => {
+export const emit = (uid: string, args: UserPresenceStreamArgs): void => {
 	e.emit(uid, { uid, args });
 };

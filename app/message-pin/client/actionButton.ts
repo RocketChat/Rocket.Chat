@@ -21,7 +21,7 @@ Meteor.startup(function() {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			message.pinned = true;
-			Meteor.call('pinMessage', message, function(error) {
+			Meteor.call('pinMessage', message, function(error: Error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			message.pinned = false;
-			Meteor.call('unpinMessage', message, function(error) {
+			Meteor.call('unpinMessage', message, function(error: Error) {
 				if (error) {
 					return handleError(error);
 				}

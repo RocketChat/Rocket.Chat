@@ -1,15 +1,16 @@
 import { Tile } from '@rocket.chat/fuselage';
 import { usePosition } from '@rocket.chat/fuselage-hooks';
-import React, { forwardRef, RefObject, useEffect } from 'react';
+import React, { forwardRef, ReactNode, RefObject, useEffect } from 'react';
 
 export const ToolboxDropdownDesktop = forwardRef<
 	HTMLElement,
 	{
 		onClose: () => void;
-		reference: RefObject<HTMLDivElement>;
+		reference: RefObject<HTMLElement>;
+		children: ReactNode;
 	}
 >(({ onClose, reference, children }, ref) => {
-	const { style: s } = usePosition(reference, ref, {
+	const { style: s } = usePosition(reference, ref as RefObject<HTMLElement>, {
 		watch: true,
 		placement: 'bottom-start',
 	});

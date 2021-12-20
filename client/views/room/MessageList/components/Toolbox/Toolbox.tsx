@@ -1,5 +1,5 @@
-import { MessageToolbox } from '@rocket.chat/fuselage';
-import React, { FC, memo, MouseEvent, useMemo } from 'react';
+import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
+import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { IMessage } from '../../../../../../definition/IMessage';
@@ -14,6 +14,11 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
 
 	const room = useUserRoom(message.rid);
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
@@ -40,9 +45,9 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	return (
 		<MessageToolbox>
 			{messageActions.map((action) => (
-				<MessageToolbox.Item
-					onClick={(e: MouseEvent): void => {
-						action.action(e, { message, tabbar });
+				<MessageToolboxItem
+					onClick={(e): void => {
+						action.action(e, { message, tabbar, room });
 					}}
 					key={action.id}
 					icon={action.icon}
@@ -53,8 +58,8 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 				<MessageActionMenu
 					options={menuActions.map((action) => ({
 						...action,
-						action: (e: MouseEvent): void => {
-							action.action(e, { message, tabbar });
+						action: (e): void => {
+							action.action(e, { message, tabbar, room });
 						},
 					}))}
 				/>

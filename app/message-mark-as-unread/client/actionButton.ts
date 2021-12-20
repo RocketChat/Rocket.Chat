@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { ChatSubscription } from '../../models';
+import { ChatSubscription } from '../../models/client';
 import { roomTypes } from '../../utils/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 

@@ -1,4 +1,14 @@
-import { Skeleton, ThreadMessage as ThreadMessageTemplate } from '@rocket.chat/fuselage';
+import {
+	Skeleton,
+	ThreadMessage as ThreadMessageTemplate,
+	ThreadMessageRow,
+	ThreadMessageLeftContainer,
+	ThreadMessageIconThread,
+	ThreadMessageContainer,
+	ThreadMessageOrigin,
+	ThreadMessageBody,
+	ThreadMessageUnfollow,
+} from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { IThreadMessage } from '../../../../../definition/IMessage';
@@ -22,32 +32,32 @@ export const ThreadMessage: FC<{ message: IThreadMessage; sequential: boolean }>
 	return (
 		<ThreadMessageTemplate {...props}>
 			{!sequential && (
-				<ThreadMessageTemplate.Row>
-					<ThreadMessageTemplate.LeftContainer>
-						<ThreadMessageTemplate.Icon />
-					</ThreadMessageTemplate.LeftContainer>
-					<ThreadMessageTemplate.Container>
-						<ThreadMessageTemplate.Origin>
+				<ThreadMessageRow>
+					<ThreadMessageLeftContainer>
+						<ThreadMessageIconThread />
+					</ThreadMessageLeftContainer>
+					<ThreadMessageContainer>
+						<ThreadMessageOrigin>
 							{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}
-						</ThreadMessageTemplate.Origin>
-						<ThreadMessageTemplate.Unfollow />
-					</ThreadMessageTemplate.Container>
-				</ThreadMessageTemplate.Row>
+						</ThreadMessageOrigin>
+						<ThreadMessageUnfollow />
+					</ThreadMessageContainer>
+				</ThreadMessageRow>
 			)}
-			<ThreadMessageTemplate.Row onClick={openThread(message.tmid, message._id)}>
-				<ThreadMessageTemplate.LeftContainer>
+			<ThreadMessageRow onClick={openThread(message.tmid, message._id)}>
+				<ThreadMessageLeftContainer>
 					<UserAvatar username={message.u.username} size='x18' />
-				</ThreadMessageTemplate.LeftContainer>
-				<ThreadMessageTemplate.Container>
-					<ThreadMessageTemplate.Message>
+				</ThreadMessageLeftContainer>
+				<ThreadMessageContainer>
+					<ThreadMessageBody>
 						{message.md ? (
 							<MessageBodyRender mentions={message.mentions} tokens={message.md} />
 						) : (
 							message.msg
 						)}
-					</ThreadMessageTemplate.Message>
-				</ThreadMessageTemplate.Container>
-			</ThreadMessageTemplate.Row>
+					</ThreadMessageBody>
+				</ThreadMessageContainer>
+			</ThreadMessageRow>
 		</ThreadMessageTemplate>
 	);
 };

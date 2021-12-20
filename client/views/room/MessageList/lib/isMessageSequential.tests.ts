@@ -10,6 +10,7 @@ const baseMessage = {
 	u: {
 		_id: 'userId',
 		name: 'userName',
+		username: 'userName',
 	},
 	msg: 'message',
 	rid: 'roomId',
@@ -35,6 +36,7 @@ describe('isMessageSequential', () => {
 			u: {
 				_id: 'userId2',
 				name: 'userName2',
+				username: 'userName2',
 			},
 		};
 		expect(isMessageSequential(current, previous)).to.be.false;

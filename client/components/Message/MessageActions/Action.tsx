@@ -10,7 +10,7 @@ type ActionOptions = {
 	i18nLabel?: TranslationKey;
 	label?: string;
 	methodId: string;
-	runAction?: RunAction;
+	runAction: RunAction;
 	danger?: boolean;
 };
 

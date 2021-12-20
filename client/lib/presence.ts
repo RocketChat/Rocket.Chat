@@ -42,7 +42,7 @@ const uids = new Set<UserPresence['_id']>();
 
 const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 	if (update?._id) {
-		store.set(update._id, update);
+		store.set(update._id, { ...store.get(update._id), ...update });
 		uids.delete(update._id);
 	}
 };

@@ -3,14 +3,12 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import React, { ComponentProps, FC, memo, useLayoutEffect, useRef } from 'react';
 
-const BlazeTemplate: FC<Omit<ComponentProps<typeof Box>, 'children'> & Record<string, unknown>> = ({
-	name,
-	flexShrink,
-	overflow,
-	onClick,
-	...props
-}) => {
-	const ref = useRef();
+const BlazeTemplate: FC<
+	Omit<ComponentProps<typeof Box>, 'children'> & {
+		name: string;
+	} & Record<string, unknown>
+> = ({ name, flexShrink, overflow, onClick, ...props }) => {
+	const ref = useRef(null!);
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
 			return;

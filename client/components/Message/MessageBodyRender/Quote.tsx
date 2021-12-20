@@ -28,7 +28,7 @@ const Quote: FC<{ value: ASTQuote['value'] }> = ({ value }) => (
 		borderInlineStartColor='neutral-600'
 	>
 		{value.map((item, index) => (
-			<Paragraph key={index} value={item.value} mentions={[]} />
+			<Paragraph key={index} value={item.value} />
 		))}
 	</Box>
 );

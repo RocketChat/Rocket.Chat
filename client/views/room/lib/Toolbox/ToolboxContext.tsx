@@ -13,7 +13,7 @@ export type ToolboxContextValue = {
 	tabBar?: any;
 	context?: any;
 	open: Function;
-	openUserInfo: Function;
+	openUserInfo: (username: string) => void;
 	close: MouseEventHandler<HTMLOrSVGElement>;
 	activeTabBar?: ToolboxActionConfig;
 };

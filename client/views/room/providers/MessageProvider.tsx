@@ -78,7 +78,7 @@ export const MessageProvider = memo(function MessageProvider({
 			  };
 		return {
 			oembedEnabled,
-			oembedMaxWidth: isMobile ? '100%' : '368px',
+			oembedMaxWidth: isMobile ? ('100%' as const) : ('368px' as `${number}px`),
 			broadcast: Boolean(broadcast),
 			actions: {
 				runActionLink,
