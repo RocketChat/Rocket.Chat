@@ -1,0 +1,1160 @@
+Version 9 of Highlight.js has reached EOL and is no longer supported.
+Please upgrade or ask whatever dependency you are using to upgrade.
+https://github.com/highlightjs/highlight.js/issues/2877
+
+
+  Mailer-API
+    replaceVariables
+      single key
+        ✔ should be equal to test value
+      multiple keys
+        ✔ should be equal to test value and value
+      key with a trailing space
+        ✔ should be equal to test value
+      key with a leading space
+        ✔ should be equal to test value
+      key with leading and trailing spaces
+        ✔ should be equal to test value
+      key with multiple words
+        ✔ should be equal to test value
+      key with multiple opening brackets
+        ✔ should be equal to test {value
+      key with multiple closing brackets
+        ✔ should be equal to test value}
+      key with multiple opening and closing brackets
+        ✔ should be equal to test {value}
+
+  The AppMessagesConverter instance
+    when converting a message from Rocket.Chat to the Engine schema
+      ✔ should return `undefined` when `msgObj` is falsy
+      ✔ should return a proper schema
+      ✔ should not mutate the original message object
+      ✔ should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message
+      ✔ should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)
+    when converting a message from the Engine schema back to Rocket.Chat
+      ✔ should return `undefined` when `message` is falsy
+      ✔ should return a proper schema
+      ✔ should merge `_unmappedProperties_` into the returned message
+      ✔ should throw if message has an invalid room
+
+  fromTemplate
+    ✔ returns match from regexp on top-level properties
+    ✔ returns match from regexp on nested properties
+    ✔ returns value from nested prop with plain syntax
+    ✔ returns value from nested prop with template syntax
+    ✔ returns composed value from nested prop with template syntax
+    ✔ returns composed string from multiple template chunks with static parts
+
+  getRegexpMatch
+    ✔ returns nested value when formula is not in the regex::field form
+    ✔ returns undefined when regex doesn't match
+    ✔ throws when regex isn't valid
+
+  renameInvalidProperties
+    ✔ replaces . chars in field names with _
+
+  getNestedValue
+    ✔ returns undefined when nested value doesn't exist
+    ✔ returns nested object property
+
+  helper
+    highlightWords
+      ✔ highlights the correct words
+      handles links
+        ✔ not highlighting one link
+        ✔ not highlighting two links
+        ✔ not highlighting link but keep words on message highlighted
+
+  PasswordPolicyClass
+    Default options
+      ✔ should be disabled
+      ✔ should have minLength = -1
+      ✔ should have maxLength = -1
+      ✔ should have forbidRepeatingCharacters = false
+      ✔ should have forbidRepeatingCharactersCount = 3
+      ✔ should have mustContainAtLeastOneLowercase = false
+      ✔ should have mustContainAtLeastOneUppercase = false
+      ✔ should have mustContainAtLeastOneNumber = false
+      ✔ should have mustContainAtLeastOneSpecialCharacter = false
+      Password tests with default options
+        ✔ should allow all passwords
+    Password tests with options
+      ✔ should not allow non string or empty
+      ✔ should restrict by minLength
+      ✔ should restrict by maxLength
+      ✔ should allow repeated characters
+      ✔ should restrict repeated characters
+      ✔ should restrict repeated characters customized
+      ✔ should contain one lowercase
+      ✔ should contain one uppercase
+      ✔ should contain one number
+      ✔ should contain one special character
+    Password generator
+      ✔ should return a random password
+    Password Policy
+      ✔ should return a correct password policy
+      ✔ should return correct values if policy is disabled
+      ✔ should return correct values if policy is enabled but no specifiers exists
+
+  Original
+    Bold
+      **
+        ✔ should be equal to **
+      * *
+        ✔ should be equal to * *
+      ** *
+        ✔ should be equal to ** *
+      ** **
+        ✔ should be equal to ** **
+      * Hello*
+        ✔ should be equal to * Hello*
+      *Hello *
+        ✔ should be equal to *Hello *
+      :custom*emoji*case:
+        ✔ should be equal to :custom<span class="copyonly">*</span><strong>emoji</strong><span class="copyonly">*</span>case:
+      text*hello*text
+        ✔ should be equal to text<span class="copyonly">*</span><strong>hello</strong><span class="copyonly">*</span>text
+      *hello*text
+        ✔ should be equal to <span class="copyonly">*</span><strong>hello</strong><span class="copyonly">*</span>text
+      text*hello*
+        ✔ should be equal to text<span class="copyonly">*</span><strong>hello</strong><span class="copyonly">*</span>
+      *Hel lo*
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hel lo</strong><span class="copyonly">*</span>
+      *Hello*
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      **Hello**
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      **Hello*
+        ✔ should be equal to *<span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      *Hello**
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>*
+      Hello
+        ✔ should be equal to Hello
+      *Hello
+        ✔ should be equal to *Hello
+      Hello*
+        ✔ should be equal to Hello*
+      He*llo
+        ✔ should be equal to He*llo
+      ***Hello***
+        ✔ should be equal to *<span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>*
+      ***Hello**
+        ✔ should be equal to *<span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      *Hello* this is dog
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span> this is dog
+      Rocket cat says *Hello*
+        ✔ should be equal to Rocket cat says <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      He said *Hello* to her
+        ✔ should be equal to He said <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span> to her
+      **Hello** this is dog
+        ✔ should be equal to <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span> this is dog
+      Rocket cat says **Hello**
+        ✔ should be equal to Rocket cat says <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span>
+      He said **Hello** to her
+        ✔ should be equal to He said <span class="copyonly">*</span><strong>Hello</strong><span class="copyonly">*</span> to her
+      He was a**nn**oyed
+        ✔ should be equal to He was a<span class="copyonly">*</span><strong>nn</strong><span class="copyonly">*</span>oyed
+      There are two o in f*oo*tball
+        ✔ should be equal to There are two o in f<span class="copyonly">*</span><strong>oo</strong><span class="copyonly">*</span>tball
+    Italic
+      __
+        ✔ should be equal to __
+      _ _
+        ✔ should be equal to _ _
+      __ _
+        ✔ should be equal to __ _
+      __ __
+        ✔ should be equal to __ __
+      _ Hello_
+        ✔ should be equal to _ Hello_
+      _Hello _
+        ✔ should be equal to _Hello _
+      :custom_emoji_case:
+        ✔ should be equal to :custom_emoji_case:
+      text_hello_text
+        ✔ should be equal to text_hello_text
+      _hello_text
+        ✔ should be equal to _hello_text
+      text_hello_
+        ✔ should be equal to text_hello_
+      _Hel lo_
+        ✔ should be equal to <span class="copyonly">_</span><em>Hel lo</em><span class="copyonly">_</span>
+      _Hello_
+        ✔ should be equal to <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      __Hello__
+        ✔ should be equal to <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      __Hello_
+        ✔ should be equal to _<span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      _Hello__
+        ✔ should be equal to <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>_
+      Hello
+        ✔ should be equal to Hello
+      _Hello
+        ✔ should be equal to _Hello
+      Hello_
+        ✔ should be equal to Hello_
+      He_llo
+        ✔ should be equal to He_llo
+      ___Hello___
+        ✔ should be equal to _<span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>_
+      ___Hello__
+        ✔ should be equal to _<span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      _Hello_ this is dog
+        ✔ should be equal to <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span> this is dog
+      Rocket cat says _Hello_
+        ✔ should be equal to Rocket cat says <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      He said _Hello_ to her
+        ✔ should be equal to He said <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span> to her
+      __Hello__ this is dog
+        ✔ should be equal to <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span> this is dog
+      Rocket cat says __Hello__
+        ✔ should be equal to Rocket cat says <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span>
+      He said __Hello__ to her
+        ✔ should be equal to He said <span class="copyonly">_</span><em>Hello</em><span class="copyonly">_</span> to her
+    Strike
+      ~~
+        ✔ should be equal to ~~
+      ~ ~
+        ✔ should be equal to ~ ~
+      ~~ ~
+        ✔ should be equal to ~~ ~
+      ~~ ~~
+        ✔ should be equal to ~~ ~~
+      ~ Hello~
+        ✔ should be equal to ~ Hello~
+      ~Hello ~
+        ✔ should be equal to ~Hello ~
+      :custom~emoji~case:
+        ✔ should be equal to :custom<span class="copyonly">~</span><strike>emoji</strike><span class="copyonly">~</span>case:
+      text~hello~text
+        ✔ should be equal to text<span class="copyonly">~</span><strike>hello</strike><span class="copyonly">~</span>text
+      ~hello~text
+        ✔ should be equal to <span class="copyonly">~</span><strike>hello</strike><span class="copyonly">~</span>text
+      text~hello~
+        ✔ should be equal to text<span class="copyonly">~</span><strike>hello</strike><span class="copyonly">~</span>
+      ~Hel lo~
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hel lo</strike><span class="copyonly">~</span>
+      ~Hello~
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      ~~Hello~~
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      ~~Hello~
+        ✔ should be equal to ~<span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      ~Hello~~
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>~
+      Hello
+        ✔ should be equal to Hello
+      ~Hello
+        ✔ should be equal to ~Hello
+      Hello~
+        ✔ should be equal to Hello~
+      He~llo
+        ✔ should be equal to He~llo
+      ~~~Hello~~~
+        ✔ should be equal to ~<span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>~
+      ~~~Hello~~
+        ✔ should be equal to ~<span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      ~Hello~ this is dog
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span> this is dog
+      Rocket cat says ~Hello~
+        ✔ should be equal to Rocket cat says <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      He said ~Hello~ to her
+        ✔ should be equal to He said <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span> to her
+      ~~Hello~~ this is dog
+        ✔ should be equal to <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span> this is dog
+      Rocket cat says ~~Hello~~
+        ✔ should be equal to Rocket cat says <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span>
+      He said ~~Hello~~ to her
+        ✔ should be equal to He said <span class="copyonly">~</span><strike>Hello</strike><span class="copyonly">~</span> to her
+    Headers
+      Level 1
+        # Hello
+          ✔ should be equal to <h1>Hello</h1>
+        # Rocket.Cat
+          ✔ should be equal to <h1>Rocket.Cat</h1>
+        # Hi
+          ✔ should be equal to <h1>Hi</h1>
+        # Hello this is dog
+          ✔ should be equal to <h1>Hello this is dog</h1>
+        # Rocket cat says Hello
+          ✔ should be equal to <h1>Rocket cat says Hello</h1>
+        # He said Hello to her
+          ✔ should be equal to <h1>He said Hello to her</h1>
+        #Hello
+          ✔ should be equal to #Hello
+        #Hello#
+          ✔ should be equal to #Hello#
+        He#llo
+          ✔ should be equal to He#llo
+      Level 2
+        ## Hello
+          ✔ should be equal to <h2>Hello</h2>
+        ## Rocket.Cat
+          ✔ should be equal to <h2>Rocket.Cat</h2>
+        ## Hi
+          ✔ should be equal to <h2>Hi</h2>
+        ## Hello this is dog
+          ✔ should be equal to <h2>Hello this is dog</h2>
+        ## Rocket cat says Hello
+          ✔ should be equal to <h2>Rocket cat says Hello</h2>
+        ## He said Hello to her
+          ✔ should be equal to <h2>He said Hello to her</h2>
+        ##Hello
+          ✔ should be equal to ##Hello
+        ##Hello##
+          ✔ should be equal to ##Hello##
+        He##llo
+          ✔ should be equal to He##llo
+      Level 3
+        ### Hello
+          ✔ should be equal to <h3>Hello</h3>
+        ### Rocket.Cat
+          ✔ should be equal to <h3>Rocket.Cat</h3>
+        ### Hi
+          ✔ should be equal to <h3>Hi</h3>
+        ### Hello this is dog
+          ✔ should be equal to <h3>Hello this is dog</h3>
+        ### Rocket cat says Hello
+          ✔ should be equal to <h3>Rocket cat says Hello</h3>
+        ### He said Hello to her
+          ✔ should be equal to <h3>He said Hello to her</h3>
+        ###Hello
+          ✔ should be equal to ###Hello
+        ###Hello###
+          ✔ should be equal to ###Hello###
+        He###llo
+          ✔ should be equal to He###llo
+      Level 4
+        #### Hello
+          ✔ should be equal to <h4>Hello</h4>
+        #### Rocket.Cat
+          ✔ should be equal to <h4>Rocket.Cat</h4>
+        #### Hi
+          ✔ should be equal to <h4>Hi</h4>
+        #### Hello this is dog
+          ✔ should be equal to <h4>Hello this is dog</h4>
+        #### Rocket cat says Hello
+          ✔ should be equal to <h4>Rocket cat says Hello</h4>
+        #### He said Hello to her
+          ✔ should be equal to <h4>He said Hello to her</h4>
+        ####Hello
+          ✔ should be equal to ####Hello
+        ####Hello####
+          ✔ should be equal to ####Hello####
+        He####llo
+          ✔ should be equal to He####llo
+    Quote
+      &gt;Hello
+        ✔ should be equal to &amp;gt;Hello
+      &gt;Rocket.Cat
+        ✔ should be equal to &amp;gt;Rocket.Cat
+      &gt;Hi
+        ✔ should be equal to &amp;gt;Hi
+      &gt; Hello this is dog
+        ✔ should be equal to &amp;gt; Hello this is dog
+      &gt; Rocket cat says Hello
+        ✔ should be equal to &amp;gt; Rocket cat says Hello
+      &gt; He said Hello to her
+        ✔ should be equal to &amp;gt; He said Hello to her
+      &gt; He said Hello to her 
+        ✔ should be equal to &amp;gt; He said Hello to her 
+      &lt;Hello
+        ✔ should be equal to &amp;lt;Hello
+      &lt;Rocket.Cat&gt;
+        ✔ should be equal to &amp;lt;Rocket.Cat&amp;gt;
+       &gt;Hi
+        ✔ should be equal to  &amp;gt;Hi
+      Hello &gt; this is dog
+        ✔ should be equal to Hello &amp;gt; this is dog
+      Roc&gt;ket cat says Hello
+        ✔ should be equal to Roc&amp;gt;ket cat says Hello
+      He said Hello to her&gt;
+        ✔ should be equal to He said Hello to her&amp;gt;
+      >Hello
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>Hello</blockquote>
+      >Rocket.Cat
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>Rocket.Cat</blockquote>
+      >Hi
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>Hi</blockquote>
+      > Hello this is dog
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span> Hello this is dog</blockquote>
+      > Rocket cat says Hello
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span> Rocket cat says Hello</blockquote>
+      > He said Hello to her
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span> He said Hello to her</blockquote>
+      <Hello
+        ✔ should be equal to &lt;Hello
+      <Rocket.Cat>
+        ✔ should be equal to &lt;Rocket.Cat&gt;
+       >Hi
+        ✔ should be equal to  &gt;Hi
+      Hello > this is dog
+        ✔ should be equal to Hello &gt; this is dog
+      Roc>ket cat says Hello
+        ✔ should be equal to Roc&gt;ket cat says Hello
+      He said Hello to her>
+        ✔ should be equal to He said Hello to her&gt;
+    Link
+      &lt;http://link|Text&gt;
+        ✔ should be equal to &amp;lt;http://link|Text&amp;gt;
+      &lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;
+        ✔ should be equal to &amp;lt;https://open.rocket.chat/|Open Site For Rocket.Chat&amp;gt;
+      &lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;
+        ✔ should be equal to &amp;lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&amp;gt;
+      &lt;https://rocket.chat/|Rocket.Chat Site&gt;
+        ✔ should be equal to &amp;lt;https://rocket.chat/|Rocket.Chat Site&amp;gt;
+      &lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;
+        ✔ should be equal to &amp;lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&amp;gt;
+      &lt;http://linkText&gt;
+        ✔ should be equal to &amp;lt;http://linkText&amp;gt;
+      &lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;
+        ✔ should be equal to &amp;lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&amp;gt;
+      https://open.rocket.chat/|Open Site For Rocket.Chat
+        ✔ should be equal to https://open.rocket.chat/|Open Site For Rocket.Chat
+      &lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;
+        ✔ should be equal to &amp;lt;www.open.rocket.chat/|Open Site For Rocket.Chat&amp;gt;
+      &lt;htps://rocket.chat/|Rocket.Chat Site&gt;
+        ✔ should be equal to &amp;lt;htps://rocket.chat/|Rocket.Chat Site&amp;gt;
+      &lt;ttps://rocket.chat/|Rocket.Chat Site&gt;
+        ✔ should be equal to &amp;lt;ttps://rocket.chat/|Rocket.Chat Site&amp;gt;
+      &lt;tps://rocket.chat/|Rocket.Chat Site&gt;
+        ✔ should be equal to &amp;lt;tps://rocket.chat/|Rocket.Chat Site&amp;gt;
+      &lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;
+        ✔ should be equal to &amp;lt;open.rocket.chat/|Open Site For Rocket.Chat&amp;gt;
+      &lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;
+        ✔ should be equal to &amp;lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&amp;gt;
+      <http://invalid link|Text>
+        ✔ should be equal to &lt;http://invalid link|Text&gt;
+      <http://link|Text>
+        ✔ should be equal to <a data-title="http://link" href="http://link" target="_blank" rel="noopener noreferrer">Text</a>
+      <https://open.rocket.chat/|Open Site For Rocket.Chat>
+        ✔ should be equal to <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer">Open Site For Rocket.Chat</a>
+      <https://open.rocket.chat/ | Open Site For Rocket.Chat>
+        ✔ should be equal to <a data-title="https://open.rocket.chat/%20" href="https://open.rocket.chat/%20" target="_blank" rel="noopener noreferrer"> Open Site For Rocket.Chat</a>
+      <https://rocket.chat/|Rocket.Chat Site>
+        ✔ should be equal to <a data-title="https://rocket.chat/" href="https://rocket.chat/" target="_blank" rel="noopener noreferrer">Rocket.Chat Site</a>
+      <https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>
+        ✔ should be equal to <a data-title="https://rocket.chat/docs/developer-guides/testing/#testing" href="https://rocket.chat/docs/developer-guides/testing/#testing" target="_blank" rel="noopener noreferrer">Testing Entry on Rocket.Chat Docs Site</a>
+      <http://linkText>
+        ✔ should be equal to &lt;http://linkText&gt;
+      <https:open.rocket.chat/ | Open Site For Rocket.Chat>
+        ✔ should be equal to &lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;
+      <www.open.rocket.chat/|Open Site For Rocket.Chat>
+        ✔ should be equal to &lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;
+      <htps://rocket.chat/|Rocket.Chat Site>
+        ✔ should be equal to &lt;htps://rocket.chat/|Rocket.Chat Site&gt;
+      <ttps://rocket.chat/|Rocket.Chat Site>
+        ✔ should be equal to &lt;ttps://rocket.chat/|Rocket.Chat Site&gt;
+      <tps://rocket.chat/|Rocket.Chat Site>
+        ✔ should be equal to &lt;tps://rocket.chat/|Rocket.Chat Site&gt;
+      <open.rocket.chat/|Open Site For Rocket.Chat>
+        ✔ should be equal to &lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;
+      <htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>
+        ✔ should be equal to &lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;
+      [Text](http://invalid link)
+        ✔ should be equal to [Text](http://invalid link)
+      [Text](http://link)
+        ✔ should be equal to <a data-title="http://link" href="http://link" target="_blank" rel="noopener noreferrer">Text</a>
+      [Open Site For Rocket.Chat](https://open.rocket.chat/)
+        ✔ should be equal to <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer">Open Site For Rocket.Chat</a>
+      [ Open Site For Rocket.Chat ](https://open.rocket.chat/)
+        ✔ should be equal to <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer"> Open Site For Rocket.Chat </a>
+      [Rocket.Chat Site](https://rocket.chat/)
+        ✔ should be equal to <a data-title="https://rocket.chat/" href="https://rocket.chat/" target="_blank" rel="noopener noreferrer">Rocket.Chat Site</a>
+      [Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)
+        ✔ should be equal to <a data-title="https://rocket.chat/docs/developer-guides/testing/#testing" href="https://rocket.chat/docs/developer-guides/testing/#testing" target="_blank" rel="noopener noreferrer">Testing Entry on Rocket.Chat Docs Site</a>
+      [](http://linkText)
+        ✔ should be equal to [](http://linkText)
+      [text]
+        ✔ should be equal to [text]
+      [Open Site For Rocket.Chat](https:open.rocket.chat/)
+        ✔ should be equal to [Open Site For Rocket.Chat](https:open.rocket.chat/)
+      [Open Site For Rocket.Chat](www.open.rocket.chat/)
+        ✔ should be equal to [Open Site For Rocket.Chat](www.open.rocket.chat/)
+      [Rocket.Chat Site](htps://rocket.chat/)
+        ✔ should be equal to [Rocket.Chat Site](htps://rocket.chat/)
+      [Rocket.Chat Site](ttps://rocket.chat/)
+        ✔ should be equal to [Rocket.Chat Site](ttps://rocket.chat/)
+      [Rocket.Chat Site](tps://rocket.chat/)
+        ✔ should be equal to [Rocket.Chat Site](tps://rocket.chat/)
+      [Open Site For Rocket.Chat](open.rocket.chat/)
+        ✔ should be equal to [Open Site For Rocket.Chat](open.rocket.chat/)
+      [Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)
+        ✔ should be equal to [Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)
+      [Text](http://link?param1=1&param2=2)
+        ✔ should be equal to <a data-title="http://link?param1=1&amp;param2=2" href="http://link?param1=1&amp;param2=2" target="_blank" rel="noopener noreferrer">Text</a>
+      [Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))
+        ✔ should be equal to <a data-title="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)" href="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)" target="_blank" rel="noopener noreferrer">Testing Double parentheses</a>
+      [Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla)
+        ✔ should be equal to <a data-title="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla" href="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla" target="_blank" rel="noopener noreferrer">Testing data after Double parentheses</a>
+      before (test) &lt;http://link|Text&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;http://link|Text&amp;gt; after (test)
+      before (test) &lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;https://open.rocket.chat/|Open Site For Rocket.Chat&amp;gt; after (test)
+      before (test) &lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&amp;gt; after (test)
+      before (test) &lt;https://rocket.chat/|Rocket.Chat Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;https://rocket.chat/|Rocket.Chat Site&amp;gt; after (test)
+      before (test) &lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&amp;gt; after (test)
+      before (test) &lt;http://linkText&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;http://linkText&amp;gt; after (test)
+      before (test) &lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&amp;gt; after (test)
+      before (test) https://open.rocket.chat/|Open Site For Rocket.Chat after (test)
+        ✔ should be equal to before (test) https://open.rocket.chat/|Open Site For Rocket.Chat after (test)
+      before (test) &lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;www.open.rocket.chat/|Open Site For Rocket.Chat&amp;gt; after (test)
+      before (test) &lt;htps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;htps://rocket.chat/|Rocket.Chat Site&amp;gt; after (test)
+      before (test) &lt;ttps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;ttps://rocket.chat/|Rocket.Chat Site&amp;gt; after (test)
+      before (test) &lt;tps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;tps://rocket.chat/|Rocket.Chat Site&amp;gt; after (test)
+      before (test) &lt;open.rocket.chat/|Open Site For Rocket.Chat&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;open.rocket.chat/|Open Site For Rocket.Chat&amp;gt; after (test)
+      before (test) &lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt; after (test)
+        ✔ should be equal to before (test) &amp;lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&amp;gt; after (test)
+      before (test) <http://invalid link|Text> after (test)
+        ✔ should be equal to before (test) &lt;http://invalid link|Text&gt; after (test)
+      before (test) <http://link|Text> after (test)
+        ✔ should be equal to before (test) <a data-title="http://link" href="http://link" target="_blank" rel="noopener noreferrer">Text</a> after (test)
+      before (test) <https://open.rocket.chat/|Open Site For Rocket.Chat> after (test)
+        ✔ should be equal to before (test) <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer">Open Site For Rocket.Chat</a> after (test)
+      before (test) <https://open.rocket.chat/ | Open Site For Rocket.Chat> after (test)
+        ✔ should be equal to before (test) <a data-title="https://open.rocket.chat/%20" href="https://open.rocket.chat/%20" target="_blank" rel="noopener noreferrer"> Open Site For Rocket.Chat</a> after (test)
+      before (test) <https://rocket.chat/|Rocket.Chat Site> after (test)
+        ✔ should be equal to before (test) <a data-title="https://rocket.chat/" href="https://rocket.chat/" target="_blank" rel="noopener noreferrer">Rocket.Chat Site</a> after (test)
+      before (test) <https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site> after (test)
+        ✔ should be equal to before (test) <a data-title="https://rocket.chat/docs/developer-guides/testing/#testing" href="https://rocket.chat/docs/developer-guides/testing/#testing" target="_blank" rel="noopener noreferrer">Testing Entry on Rocket.Chat Docs Site</a> after (test)
+      before (test) <http://linkText> after (test)
+        ✔ should be equal to before (test) &lt;http://linkText&gt; after (test)
+      before (test) <https:open.rocket.chat/ | Open Site For Rocket.Chat> after (test)
+        ✔ should be equal to before (test) &lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt; after (test)
+      before (test) <www.open.rocket.chat/|Open Site For Rocket.Chat> after (test)
+        ✔ should be equal to before (test) &lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt; after (test)
+      before (test) <htps://rocket.chat/|Rocket.Chat Site> after (test)
+        ✔ should be equal to before (test) &lt;htps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+      before (test) <ttps://rocket.chat/|Rocket.Chat Site> after (test)
+        ✔ should be equal to before (test) &lt;ttps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+      before (test) <tps://rocket.chat/|Rocket.Chat Site> after (test)
+        ✔ should be equal to before (test) &lt;tps://rocket.chat/|Rocket.Chat Site&gt; after (test)
+      before (test) <open.rocket.chat/|Open Site For Rocket.Chat> after (test)
+        ✔ should be equal to before (test) &lt;open.rocket.chat/|Open Site For Rocket.Chat&gt; after (test)
+      before (test) <htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site> after (test)
+        ✔ should be equal to before (test) &lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt; after (test)
+      before (test) [Text](http://invalid link) after (test)
+        ✔ should be equal to before (test) [Text](http://invalid link) after (test)
+      before (test) [Text](http://link) after (test)
+        ✔ should be equal to before (test) <a data-title="http://link" href="http://link" target="_blank" rel="noopener noreferrer">Text</a> after (test)
+      before (test) [Open Site For Rocket.Chat](https://open.rocket.chat/) after (test)
+        ✔ should be equal to before (test) <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer">Open Site For Rocket.Chat</a> after (test)
+      before (test) [ Open Site For Rocket.Chat ](https://open.rocket.chat/) after (test)
+        ✔ should be equal to before (test) <a data-title="https://open.rocket.chat/" href="https://open.rocket.chat/" target="_blank" rel="noopener noreferrer"> Open Site For Rocket.Chat </a> after (test)
+      before (test) [Rocket.Chat Site](https://rocket.chat/) after (test)
+        ✔ should be equal to before (test) <a data-title="https://rocket.chat/" href="https://rocket.chat/" target="_blank" rel="noopener noreferrer">Rocket.Chat Site</a> after (test)
+      before (test) [Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing) after (test)
+        ✔ should be equal to before (test) <a data-title="https://rocket.chat/docs/developer-guides/testing/#testing" href="https://rocket.chat/docs/developer-guides/testing/#testing" target="_blank" rel="noopener noreferrer">Testing Entry on Rocket.Chat Docs Site</a> after (test)
+      before (test) [](http://linkText) after (test)
+        ✔ should be equal to before (test) [](http://linkText) after (test)
+      before (test) [text] after (test)
+        ✔ should be equal to before (test) [text] after (test)
+      before (test) [Open Site For Rocket.Chat](https:open.rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Open Site For Rocket.Chat](https:open.rocket.chat/) after (test)
+      before (test) [Open Site For Rocket.Chat](www.open.rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Open Site For Rocket.Chat](www.open.rocket.chat/) after (test)
+      before (test) [Rocket.Chat Site](htps://rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Rocket.Chat Site](htps://rocket.chat/) after (test)
+      before (test) [Rocket.Chat Site](ttps://rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Rocket.Chat Site](ttps://rocket.chat/) after (test)
+      before (test) [Rocket.Chat Site](tps://rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Rocket.Chat Site](tps://rocket.chat/) after (test)
+      before (test) [Open Site For Rocket.Chat](open.rocket.chat/) after (test)
+        ✔ should be equal to before (test) [Open Site For Rocket.Chat](open.rocket.chat/) after (test)
+      before (test) [Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing) after (test)
+        ✔ should be equal to before (test) [Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing) after (test)
+      before (test) [Text](http://link?param1=1&param2=2) after (test)
+        ✔ should be equal to before (test) <a data-title="http://link?param1=1&amp;param2=2" href="http://link?param1=1&amp;param2=2" target="_blank" rel="noopener noreferrer">Text</a> after (test)
+      before (test) [Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)) after (test)
+        ✔ should be equal to before (test) <a data-title="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)" href="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)" target="_blank" rel="noopener noreferrer">Testing Double parentheses</a> after (test)
+      before (test) [Testing data after Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla) after (test)
+        ✔ should be equal to before (test) <a data-title="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla" href="https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)/blabla/bla" target="_blank" rel="noopener noreferrer">Testing data after Double parentheses</a> after (test)
+    Inline Code
+      `code`
+        ✔ should be equal to <span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span>
+      `code` begin
+        ✔ should be equal to <span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span> begin
+      End `code`
+        ✔ should be equal to End <span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span>
+      Middle `code` middle
+        ✔ should be equal to Middle <span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span> middle
+      `code`begin
+        ✔ should be equal to <span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span>begin
+      End`code`
+        ✔ should be equal to End<span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span>
+      Middle`code`middle
+        ✔ should be equal to Middle<span class="copyonly">`</span><span><code class="code-colors inline">code</code></span><span class="copyonly">`</span>middle
+    Code
+      ```code```
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span><span class='copyonly'><br>```</span></code></pre>
+      ```code
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span>
+<span class='copyonly'><br>```</span></code></pre>
+      ```code
+
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span>
+<span class='copyonly'><br>```</span></code></pre>
+      ```
+code
+```
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span>
+<span class='copyonly'><br>```</span></code></pre>
+      ```code
+```
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span>
+<span class='copyonly'><br>```</span></code></pre>
+      ```
+code```
+        ✔ should be equal to <pre><code class='code-colors hljs clean'><span class='copyonly'>```<br></span><span class="hljs-keyword">code</span><span class='copyonly'><br>```</span></code></pre>
+      ```javascript
+var a = 'log';
+console.log(a);```
+        ✔ should be equal to <pre><code class='code-colors hljs javascript'><span class='copyonly'>```<br></span><span class="hljs-keyword">var</span> a = <span class="hljs-string">'log'</span>;
+<span class="hljs-built_in">console</span>.log(a);<span class='copyonly'><br>```</span></code></pre>
+      ```*code*```
+        ✔ should be equal to <pre><code class='code-colors hljs markdown'><span class='copyonly'>```<br></span><span class="hljs-emphasis">*code*</span><span class='copyonly'><br>```</span></code></pre>
+      ```**code**```
+        ✔ should be equal to <pre><code class='code-colors hljs markdown'><span class='copyonly'>```<br></span><span class="hljs-strong">**code**</span><span class='copyonly'><br>```</span></code></pre>
+      ```__code__```
+        ✔ should be equal to <pre><code class='code-colors hljs markdown'><span class='copyonly'>```<br></span><span class="hljs-strong">__code__</span><span class='copyonly'><br>```</span></code></pre>
+    Nested
+      > some quote
+`window.location.reload();`
+        ✔ should be equal to <blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span> some quote</blockquote><span class="copyonly">`</span><span><code class="code-colors inline">window.location.reload();</code></span><span class="copyonly">`</span>
+
+  Filtered
+    BoldFilter
+      *Hello*
+        ✔ should be equal to Hello
+      **Hello**
+        ✔ should be equal to Hello
+      *Hello**
+        ✔ should be equal to Hello
+      He*llo
+        ✔ should be equal to He*llo
+      *Hello
+        ✔ should be equal to *Hello
+      Hello*
+        ✔ should be equal to Hello*
+      ***Hello***
+        ✔ should be equal to ***Hello***
+      ***Hello**
+        ✔ should be equal to ***Hello**
+      *Hello* there
+        ✔ should be equal to Hello there
+      **Hello** there
+        ✔ should be equal to Hello there
+      Hi, *Hello*
+        ✔ should be equal to Hi, Hello
+      Hi, **Hello**
+        ✔ should be equal to Hi, Hello
+      Hi, *Hello* how are you?
+        ✔ should be equal to Hi, Hello how are you?
+      Hi, **Hello** how are you?
+        ✔ should be equal to Hi, Hello how are you?
+    Italic
+      _Hello_
+        ✔ should be equal to Hello
+      __Hello__
+        ✔ should be equal to Hello
+      _Hello__
+        ✔ should be equal to Hello
+      He_llo
+        ✔ should be equal to He_llo
+      _Hello
+        ✔ should be equal to _Hello
+      __Hello
+        ✔ should be equal to __Hello
+      Hello_
+        ✔ should be equal to Hello_
+      ___Hello___
+        ✔ should be equal to ___Hello___
+      ___Hello__
+        ✔ should be equal to ___Hello__
+      _Hello_ there
+        ✔ should be equal to Hello there
+      __Hello__ there
+        ✔ should be equal to Hello there
+      Hi, _Hello_
+        ✔ should be equal to Hi, Hello
+      Hi, __Hello__
+        ✔ should be equal to Hi, Hello
+      Hi, _Hello_ how are you?
+        ✔ should be equal to Hi, Hello how are you?
+      Hi, __Hello__ how are you?
+        ✔ should be equal to Hi, Hello how are you?
+    StrikeFilter
+      ~Hello~
+        ✔ should be equal to Hello
+      ~~Hello~~
+        ✔ should be equal to Hello
+      ~~Hello
+        ✔ should be equal to ~~Hello
+      ~Hello~~
+        ✔ should be equal to Hello
+      He~llo
+        ✔ should be equal to He~llo
+      ~Hello
+        ✔ should be equal to ~Hello
+      Hello~
+        ✔ should be equal to Hello~
+      ~~~Hello~~~
+        ✔ should be equal to ~~~Hello~~~
+      ~~~Hello~~
+        ✔ should be equal to ~~~Hello~~
+      ~Hello~ there
+        ✔ should be equal to Hello there
+      ~~Hello~~ there
+        ✔ should be equal to Hello there
+      Hi, ~Hello~
+        ✔ should be equal to Hi, Hello
+      Hi, ~~Hello~~
+        ✔ should be equal to Hi, Hello
+      Hi, ~Hello~ how are you?
+        ✔ should be equal to Hi, Hello how are you?
+      Hi, ~~Hello~~ how are you?
+        ✔ should be equal to Hi, Hello how are you?
+    HeadingFilter
+      # Hello
+        ✔ should be equal to Hello
+      ## Hello
+        ✔ should be equal to Hello
+      ### Hello
+        ✔ should be equal to Hello
+      #### Hello
+        ✔ should be equal to Hello
+      #Hello
+        ✔ should be equal to #Hello
+      ##Hello
+        ✔ should be equal to ##Hello
+      ###Hello
+        ✔ should be equal to ###Hello
+      ####Hello
+        ✔ should be equal to ####Hello
+      He#llo
+        ✔ should be equal to He#llo
+      # Hello there
+        ✔ should be equal to Hello there
+      Hi, # Hello
+        ✔ should be equal to Hi, # Hello
+      Hi, # Hello there
+        ✔ should be equal to Hi, # Hello there
+    QuoteFilter
+      >Hello
+        ✔ should be equal to Hello
+      > Hello
+        ✔ should be equal to  Hello
+      >>>
+Hello
+<<<
+        ✔ should be equal to Hello
+      >>>
+Hello there!
+<<<
+        ✔ should be equal to Hello there!
+      >>>
+ Hello there! 
+<<<
+        ✔ should be equal to  Hello there! 
+    LinkFilter
+      [Text](http://link)
+        ✔ should be equal to Text
+      [Open Site For Rocket.Chat](https://open.rocket.chat/)
+        ✔ should be equal to Open Site For Rocket.Chat
+      [ Open Site For Rocket.Chat](https://open.rocket.chat/ )
+        ✔ should be equal to  Open Site For Rocket.Chat
+      [Rocket.Chat Site](https://rocket.chat/)
+        ✔ should be equal to Rocket.Chat Site
+      <http://link|Text>
+        ✔ should be equal to Text
+      <http://link|Text for test>
+        ✔ should be equal to Text for test
+    inlinecodeFilter
+      `code`
+        ✔ should be equal to code
+      `code` begin
+        ✔ should be equal to code begin
+      End `code`
+        ✔ should be equal to End code
+      Middle `code` middle
+        ✔ should be equal to Middle code middle
+      `code`begin
+        ✔ should be equal to codebegin
+      End`code`
+        ✔ should be equal to Endcode
+      Middle`code`middle
+        ✔ should be equal to Middlecodemiddle
+    blockcodeFilter
+      ```code```
+        ✔ should be equal to code
+      ```code
+        ✔ should be equal to code
+      code```
+        ✔ should be equal to code
+      Here ```code``` lies
+        ✔ should be equal to Here code lies
+      Here```code```lies
+        ✔ should be equal to Herecodelies
+
+  Mention
+    get pattern
+      by function
+        ✔ should be equal to [0-9a-zA-Z-_.]+
+      by const
+        ✔ should be equal to [0-9a-zA-Z-_.]+
+    get useRealName
+      by function
+        ✔ should be true
+      by const
+        ✔ should be true
+    get me
+      by function
+        ✔ should be equal to me
+      by const
+        ✔ should be equal to me
+    getUserMentions
+      for simple text, no mentions
+        ✔ should return "[]" from "#rocket.cat"
+        ✔ should return "[]" from "hello rocket.cat how are you?"
+      for one user
+        ✔ should return "["@rocket.cat"]" from "@rocket.cat"
+        ✔ should return "["@rocket.cat"]" from " @rocket.cat "
+        ✔ should return "["@rocket.cat"]" from "hello @rocket.cat"
+        ✔ should return "["@rocket.cat"]" from "@rocket.cat, hello"
+        ✔ should return "["@rocket.cat"]" from "@rocket.cat,hello"
+        ✔ should return "["@rocket.cat"]" from "hello @rocket.cat how are you?"
+        - should return without the "." from "@rocket.cat."
+        - should return without the "_" from "@rocket.cat_"
+        - should return without the "-" from "@rocket.cat-"
+      for two users
+        ✔ should return "["@rocket.cat","@all"]" from "@rocket.cat @all"
+        ✔ should return "["@rocket.cat","@all"]" from " @rocket.cat @all "
+        ✔ should return "["@rocket.cat","@all"]" from "hello @rocket.cat and @all"
+        ✔ should return "["@rocket.cat","@all"]" from "@rocket.cat, hello @all"
+        ✔ should return "["@rocket.cat","@all"]" from "hello @rocket.cat and @all how are you?"
+    getChannelMentions
+      for simple text, no mentions
+        ✔ should return "[]" from "@rocket.cat"
+        ✔ should return "[]" from "hello rocket.cat how are you?"
+      for one channel
+        ✔ should return "["#general"]" from "#general"
+        ✔ should return "["#general"]" from " #general "
+        ✔ should return "["#general"]" from "hello #general"
+        ✔ should return "["#general"]" from "#general, hello"
+        ✔ should return "["#general"]" from "hello #general, how are you?"
+        - should return without the "." from "#general."
+        - should return without the "_" from "#general_"
+        - should return without the "-" from "#general."
+      for two channels
+        ✔ should return "["#general","#other"]" from "#general #other"
+        ✔ should return "["#general","#other"]" from " #general #other"
+        ✔ should return "["#general","#other"]" from "hello #general and #other"
+        ✔ should return "["#general","#other"]" from "#general, hello #other"
+        ✔ should return "["#general","#other"]" from "hello #general #other, how are you?"
+      for url with fragments
+        ✔ should return nothing from "http://localhost/#general"
+      for messages with url and channels
+        ✔ should return "["#general"]" from "http://localhost/#general #general"
+
+  replace methods
+    replaceUsers
+      ✔ should render for @all
+      ✔ should render for "@rocket.cat"
+      ✔ should render for "hello rocket.cat"
+      ✔ should render for unknow/private user "hello @unknow"
+      ✔ should render for me
+    replaceUsers (RealNames)
+      ✔ should render for @all
+      ✔ should render for "@rocket.cat"
+      ✔ should render for "hello @rocket.cat"
+      ✔ should escape special characters in "hello @specialchars"
+      ✔ should render for "hello<br>@rocket.cat <br>"
+      ✔ should render for unknow/private user "hello @unknow"
+      ✔ should render for me
+    replaceChannels
+      ✔ should render for #general
+      ✔ should render for #rocket.cat
+      ✔ should render for "hello #rocket.cat"
+      ✔ should render for unknow/private channel "hello #unknow"
+    parse all
+      ✔ should render for #general
+      ✔ should render for "#general and @rocket.cat
+      ✔ should render for "
+      ✔ should render for "simple text
+    parse all (RealNames)
+      ✔ should render for #general
+      ✔ should render for "#general and @rocket.cat
+      ✔ should render for "
+      ✔ should render for "simple text
+
+  Mention Server
+    getUsersByMentions
+      for @all but the number of users is greater than messageMaxAll
+        ✔ should return nothing
+      for one user
+        ✔ should return "all"
+        ✔ should return "here"
+        ✔ should return "rocket.cat"
+      for two user
+        ✔ should return "all and here"
+        ✔ should return "here and rocket.cat"
+        ✔ should return "here, rocket.cat, jon"
+      for an unknow user
+        ✔ should return "nothing"
+    getChannelbyMentions
+      ✔ should return the channel "general"
+      ✔ should return nothing"
+    execute
+      ✔ should return the channel "general"
+      ✔ should return nothing"
+    getters and setters
+      messageMaxAll
+        constant
+          ✔ should return the informed value
+        function
+          ✔ should return the informed value
+      getUsers
+        constant
+          ✔ should return the informed value
+        function
+          ✔ should return the informed value
+      getChannels
+        constant
+          ✔ should return the informed value
+        function
+          ✔ should return the informed value
+      getChannel
+        constant
+          ✔ should return the informed value
+        function
+          ✔ should return the informed value
+
+  Sessions Aggregates
+Starting mongo version 5.0.0
+Connecting to mongo at mongodb://127.0.0.1:33153/
+    ✔ should have sessions_dates data saved
+    ✔ should match sessions between 2018-12-11 and 2019-1-10
+    ✔ should match sessions between 2019-1-11 and 2019-2-10
+    ✔ should match sessions between 2019-5-1 and 2019-5-31
+    ✔ should match sessions between 2019-4-1 and 2019-4-30
+    ✔ should match sessions between 2019-2-1 and 2019-2-28
+    ✔ should match sessions between 2019-1-28 and 2019-2-27
+    ✔ should have sessions data saved
+    ✔ should generate daily sessions
+    ✔ should have 2 unique users for month 5 of 2019
+    ✔ should have 1 unique user for 1st of month 5 of 2019
+    ✔ should have 1 unique user for 2nd of month 5 of 2019
+    ✔ should have 2 unique devices for month 5 of 2019
+    ✔ should have 2 unique devices for 2nd of month 5 of 2019
+    ✔ should have 2 unique OS for month 5 of 2019
+    ✔ should have 2 unique OS for 2nd of month 5 of 2019
+    ✔ should match sessions between 2018-12-29 and 2019-1-4
+    ✔ should match sessions between 2019-1-29 and 2019-2-4
+    ✔ should match sessions between 2019-5-1 and 2019-5-7
+    ✔ should match sessions between 2019-5-7 and 2019-5-14
+    ✔ should have 0 unique users for the week ending on 5/31 of 2019
+    ✔ should have 2 unique users for the week ending on 5/7 of 2019
+    ✔ should have 2 unique devices for the week ending on 5/7 of 2019
+    ✔ should have 2 unique OS for the week ending on 5/7 of 2019
+
+  Raw Settings
+    ✔ should get the value from database when it isnt in cache
+    ✔ should get the value from cache when its available
+    ✔ should update the value in cache
+    ✔ should not update the setting if the new value is undefined
+
+  getMostImportantRole
+    ✔ should return the same role if only one exists
+    ✔ should return custom roles as `custom-role`
+    ✔ should return auditor, app and bot as `user`
+    ✔ should return `no-role` if no one exists
+    ✔ should return correct role
+
+  UAParserCustom
+    UAParserMobile
+      ✔ should identify mobile UA
+      ✔ should not identify desktop UA
+      ✔ should not identify chrome UA
+      ✔ should parse mobile UA
+    UAParserDesktop
+      ✔ should not identify mobile UA
+      ✔ should identify desktop UA
+      ✔ should not identify chrome UA
+      ✔ should parse desktop UA
+
+  Message Properties
+    Check Message Length
+      ✔ should treat emojis as single characters
+      ✔ should treat emojis as single characters
+      ✔ should treat emojis as single characters
+      ✔ should treat emojis as single characters
+
+  Helpers
+    timeAgo
+      ✔ returns formated time when the passed value is on the same day
+      ✔ returns "yesterday" when the passed value is on the day before
+      ✔ returns formated date when the passed value two or more days before
+
+  getURL
+    getURL with no CDN, no PREFIX for http://localhost:3000/
+      ✔ should return without host by default
+      ✔ should return without cdn prefix if cdn: true
+      ✔ should return with host if full: true
+      ✔ should return with cloud host if full: fase and cdn: false
+      ✔ should return with host if full: true and cdn: true
+      ✔ should return with cloud host if cdn: true
+    getURL with no CDN, no PREFIX for http://localhost:3000
+      ✔ should return without host by default
+      ✔ should return without cdn prefix if cdn: true
+      ✔ should return with host if full: true
+      ✔ should return with cloud host if full: fase and cdn: false
+      ✔ should return with host if full: true and cdn: true
+      ✔ should return with cloud host if cdn: true
+    getURL with CDN, no PREFIX for http://localhost:3000/
+      ✔ should return without host by default
+      ✔ should return with cdn prefix if cdn: true
+      ✔ should return with host if full: true
+      ✔ should return with cloud host if full: fase and cdn: false
+      ✔ should return with cdn prefix if full: true and cdn: true
+    getURL with CDN, PREFIX for http://localhost:3000/
+      ✔ should return without host by default
+      ✔ should return with cdn prefix if cdn: true
+      ✔ should return with host if full: true
+      ✔ should return with cloud host if full: fase and cdn: false
+      ✔ should return with cdn prefix if full: true and cdn: true
+    getURL with CDN, PREFIX for https://localhost:3000/
+      ✔ should return without host by default
+      ✔ should return with cdn prefix if cdn: true
+      ✔ should return with host if full: true
+      ✔ should return with cloud host if full: fase and cdn: false
+      ✔ should return with cdn prefix if full: true and cdn: true
+
+  SAML
+    [AuthorizeRequest]
+      AuthorizeRequest.generate
+        ✔ should use the custom templates to generate the request
+        ✔ should include the unique ID on the request
+        ✔ should include the custom options on the request
+    [LogoutRequest]
+      LogoutRequest.generate
+        ✔ should use the custom template to generate the request
+        ✔ should include the unique ID on the request
+        ✔ should include the custom options on the request
+      LogoutRequest.validate
+        ✔ should extract the idpSession and nameID from the request
+        ✔ should fail to parse an invalid xml
+        ✔ should fail to parse a xml without any LogoutRequest tag
+        ✔ should fail to parse a request with no NameId
+    [LogoutResponse]
+      LogoutResponse.generate
+        ✔ should use the custom template to generate the response
+        ✔ should include the unique ID on the response
+        ✔ should include the custom options on the response
+      LogoutResponse.validate
+        ✔ should extract the inResponseTo from the response
+        ✔ should reject a response with a non-success StatusCode
+        ✔ should fail to parse an invalid xml
+        ✔ should fail to parse a xml without any LogoutResponse tag
+        ✔ should fail to parse a xml without an inResponseTo attribute
+        ✔ should reject a response with no status tag
+    [Metadata]
+      [Metadata.generate]
+        ✔ should generate a simple metadata file when no certificate info is included
+        ✔ should include additional information when a certificate is provided
+    [Response]
+      [Response.validate]
+        ✔ should extract a profile from the response
+        ✔ should respect NotOnOrAfter conditions
+        ✔ should respect NotBefore conditions
+        ✔ should fail to parse an invalid xml
+        ✔ should fail to parse a xml without any Response tag
+        ✔ should reject a xml with multiple responses
+        ✔ should fail to parse a reponse with no Status tag
+        ✔ should fail to parse a reponse with a failed status
+        ✔ should reject a response with multiple assertions
+        ✔ should reject a response with no assertions
+        ✔ should reject a document without signatures if the setting requires at least one
+        ✔ should reject a document with multiple issuers
+        ✔ should decrypt an encrypted response (84ms)
+        ✔ should validate signatures on an encrypted response (51ms)
+      [Validate Signatures]
+        ✔ should reject an unsigned assertion if the setting says so
+        ✔ should reject an unsigned response if the setting says so
+        ✔ should reject an assertion signed with an invalid signature
+        ✔ should accept an assertion with a valid signature
+        ✔ should accept a document with a valid response signature
+        ✔ should reject a document with a valid signature of the wrong type
+        ✔ should accept a document with both valid signatures
+        ✔ should reject a document with a single signature when both are expected
+        ✔ should accept a document with either valid signature
+    [Login]
+      UserMapping
+        ✔ should collect all appropriate data from the profile, respecting the fieldMap
+        ✔ should join array values if username receives an array of values
+        ✔ should support `channels` attribute with multiple values
+        ✔ should reject an userDataFieldMap without an email field
+        ✔ should fail to map a profile that is missing the email field
+        ✔ should load data from the default fields when the field map is lacking
+        ✔ should run custom regexes when one is used
+        ✔ should run custom templates when one is used
+        ✔ should combine regexes and templates when both are used
+        ✔ should support individual array values on templates
+        ✔ should collect the values of every attribute on the field map
+        ✔ should use the immutable property as default identifier
+        ✔ should collect the identifier from the fieldset
+    Response Mapping
+      ✔ should extract a mapped user from the response
+
+  getSettingDefaults
+    ✔ should return based on _id type value
+    ✔ should return a sorter value
+    ✔ should return a private setting
+    ✔ should return a public setting
+    ✔ should return a blocked setting
+    ✔ should return a blocked setting set by env
+    ✔ should return a package value
+    ✔ should not return undefined options
+
+  overrideGenerator
+    ✔ should return a new object with the new value
+    ✔ should return the same object since the value didnt change
+
+  Settings
+    ✔ should not insert the same setting twice
+    ✔ should respect override via environment as int
+    ✔ should respect override via environment as boolean
+    ✔ should respect override via environment as string
+    ✔ should respect initial value via environment
+    ✔ should call `settings.get` callback on setting added
+    ✔ should call `settings.watch` callback on setting changed registering before initialized
+
+  validateSettings
+    ✔ should validate the type string
+    ✔ should throw an error expecting string receiving int
+    ✔ should validate the type int
+    ✔ should throw an error expecting int receiving string
+    ✔ should validate the type boolean
+    ✔ should throw an error expecting boolean receiving string
+    ✔ should validate the type date
+    ✔ should throw an error expecting date receiving string
+    ✔ should validate the type multiSelect
+    ✔ should throw an error expecting multiSelect receiving string
+
+  File utils
+    ✔ should return a valid file name
+    ✔ should return a valid joined path
+
+
+  630 passing (1s)
+  6 pending
+

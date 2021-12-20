@@ -263,6 +263,10 @@ jobs:
         Xvfb -screen 0 1024x768x24 :99 &
         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+    - name: Post Coverage
+      if: matrix.mongodb-version == '5.0'
+      run: npm run codecov
+
 #   notification:
 #     runs-on: ubuntu-20.04
 #     needs: test
