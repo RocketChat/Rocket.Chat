@@ -1,12 +1,12 @@
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
-export const createUser = () => new Promise((resolve) => {
+export const createUser = (userData = {}) => new Promise((resolve) => {
 	const username = `user.test.${ Date.now() }`;
 	const email = `${ username }@rocket.chat`;
 	request.post(api('users.create'))
 		.set(credentials)
-		.send({ email, name: username, username, password })
+		.send({ email, name: username, username, password, ...userData })
 		.end((err, res) => resolve(res.body.user));
 });
 

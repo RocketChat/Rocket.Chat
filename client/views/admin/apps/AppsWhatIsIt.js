@@ -38,7 +38,7 @@ function AppsWhatIsIt() {
 			<Page.Header title={t('Apps_WhatIsIt')} />
 			<Page.ScrollableContent>
 				{error ? (
-					<Box fontScale='s1' maxWidth='x600' alignSelf='center'>
+					<Box fontScale='h4' maxWidth='x600' alignSelf='center'>
 						{error.message}
 					</Box>
 				) : (

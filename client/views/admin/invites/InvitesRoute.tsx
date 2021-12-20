@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import InvitesPage from './InvitesPage';
 
-function InvitesRoute() {
+const InvitesRoute = (): ReactElement => {
 	const canCreateInviteLinks = usePermission('create-invite-links');
 
 	if (!canCreateInviteLinks) {
@@ -12,6 +12,6 @@ function InvitesRoute() {
 	}
 
 	return <InvitesPage />;
-}
+};
 
 export default InvitesRoute;

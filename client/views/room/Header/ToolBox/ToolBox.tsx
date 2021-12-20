@@ -103,7 +103,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					tabIndex={-1}
 					options={hiddenActions}
 					renderItem={({ value, ...props }): ReactNode =>
-						hiddenActionRenderers.current[value](props)
+						value && hiddenActionRenderers.current[value](props)
 					}
 				/>
 			)}

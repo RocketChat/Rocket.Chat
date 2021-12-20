@@ -29,8 +29,8 @@ import {
 	LivechatVisitors,
 	LivechatInquiry,
 } from '../../../models/server';
-import { Logger } from '../../../logger';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
+import { Logger } from '../../../logger/server';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -319,6 +319,8 @@ export const Livechat = {
 
 	setDepartmentForGuest({ token, department } = {}) {
 		check(token, String);
+		check(department, String);
+
 		Livechat.logger.debug(`Switching departments for user with token ${ token } (to ${ department })`);
 
 		const updateUser = {
@@ -529,6 +531,7 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_clear_local_storage_when_chat_ended',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});

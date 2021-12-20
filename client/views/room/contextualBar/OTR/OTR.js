@@ -24,7 +24,7 @@ const OTR = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<Box fontScale='s2'>{t('Off_the_record_conversation')}</Box>
+				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 
 				{!isEstablishing && !isEstablished && isOnline && (
 					<Button onClick={onClickStart} primary>
@@ -34,7 +34,7 @@ const OTR = ({
 				{isEstablishing && !isEstablished && isOnline && (
 					<>
 						{' '}
-						<Box fontScale='p1'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
+						<Box fontScale='p3'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
 						<Throbber inheritColor />{' '}
 					</>
 				)}
@@ -54,7 +54,7 @@ const OTR = ({
 				)}
 
 				{!isOnline && (
-					<Box fontScale='p2'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
+					<Box fontScale='p4'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
 				)}
 			</VerticalBar.ScrollableContent>
 		</>

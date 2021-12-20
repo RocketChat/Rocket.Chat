@@ -32,7 +32,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props
 						<BurgerMenu />
 					</TemplateHeader.ToolBox>
 				)}
-				<Box is='h1' fontScale='h1' flexGrow={1}>
+				<Box is='h2' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>
 				{children}
