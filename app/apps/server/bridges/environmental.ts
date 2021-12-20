@@ -24,7 +24,7 @@ export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge 
 	protected async isReadable(envVarName: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is checking if the environmental variable is readable ${ envVarName }.`);
 
-		return this.allowed.includes(envVarName.toUpperCase());
+		return this.allowed.includes(envVarName.toUpperCase()) || envVarName.toUpperCase().startsWith(`RC_APPS_${ appId }_`);
 	}
 
 	protected async isSet(envVarName: string, appId: string): Promise<boolean> {
