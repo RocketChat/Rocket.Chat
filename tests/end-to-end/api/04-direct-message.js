@@ -8,6 +8,7 @@ import {
 	directMessage,
 	apiUsername,
 	apiEmail,
+	methodCall,
 } from '../../data/api-data.js';
 import { password, adminUsername } from '../../data/user.js';
 import { deleteRoom } from '../../data/rooms.helper';
@@ -571,6 +572,70 @@ describe('[Direct Messages]', function() {
 					roomIds = { ...roomIds, self: res.body.room._id };
 				})
 				.end(done);
+		});
+
+		describe('should create dm with correct notification preferences', () => {
+			let user;
+			let userCredentials;
+			let userPrefRoomId;
+
+			before(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+			});
+
+			after(async () => {
+				if (userPrefRoomId) {
+					await deleteRoom({ type: 'd', roomId: userPrefRoomId });
+				}
+				await deleteUser(user);
+				user = undefined;
+			});
+
+			it('should save user preferences', async () => {
+				await request.post(methodCall('saveUserPreferences'))
+					.set(userCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'saveUserPreferences',
+							params: [{ emailNotificationMode: 'nothing' }],
+						}),
+					})
+					.expect(200);
+			});
+
+			it('should create a DM', (done) => {
+				request.post(api('im.create'))
+					.set(userCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').and.to.be.an('object');
+						expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+						userPrefRoomId = res.body.room._id;
+					})
+					.end(done);
+			});
+
+			it('should return the right user notification preferences in the dm', (done) => {
+				request.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({
+						roomId: userPrefRoomId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').and.to.be.an('object');
+						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
+					})
+					.end(done);
+			});
 		});
 
 		async function testRoomFNameForUser(testCredentials, roomId, fullName) {
