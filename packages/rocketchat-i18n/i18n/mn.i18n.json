@@ -2134,7 +2134,7 @@
   "RetentionPolicyRoom_FilesOnly": "Зөвхөн файлын файлууд, мессежүүдийг хадгал",
   "RetentionPolicyRoom_MaxAge": "Өдрийн хамгийн их зурвасын нас (анхдагч: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Дэлхий дахинд хадгалах бодлогыг хүчингүй болгох",
-  "RetentionPolicyRoom_ReadTheDocs": "Болгоомжтой! Эдгээр тохиргоог сайтар тохироогүйн улмаас бүх зурвасын түүхийг устгаж чадна. Энэ функцыг <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>энд</a>дээрээс асаахаасаа өмнө баримтыг уншина уу.",
+  "RetentionPolicyRoom_ReadTheDocs": "Болгоомжтой! Эдгээр тохиргоог сайтар тохироогүйн улмаас бүх зурвасын түүхийг устгаж чадна. Энэ функцыг <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>энд</a>дээрээс асаахаасаа өмнө баримтыг уншина уу.",
   "Retry_Count": "Дахин оролдох",
   "Role": "Даалгавар",
   "Role_Editing": "Дүрс засварлах",

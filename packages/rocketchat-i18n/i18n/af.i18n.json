@@ -2141,7 +2141,7 @@
   "RetentionPolicyRoom_FilesOnly": "Snoei slegs lêers, hou boodskappe",
   "RetentionPolicyRoom_MaxAge": "Maksimum boodskap ouderdom in dae (standaard: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Hersien globale retensiebeleid",
-  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <a href=\"https: //rocket.chat/docs/administrator-guides/retention-policies/\">h</a>ier</a>verander.",
+  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <a href=\"https://rocket.chat/docs/administrator-guides/retention-policies/\">h</a>ier</a>verander.",
   "Retry_Count": "Probeer weer",
   "Role": "Rol",
   "Role_Editing": "Rolredigering",
