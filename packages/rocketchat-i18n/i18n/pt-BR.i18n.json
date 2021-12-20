@@ -3599,6 +3599,7 @@
   "Same_Origin": "Same origin",
   "Strict_Origin": "Strict origin",
   "Strict_Origin_When_Cross_Origin": "Strict origin when cross origin",
+  "UIKit_Interaction_Timeout": "O app não respondeu à interação. Por favor, tente novamente ou contate o seu administrador",
   "Unsafe_Url": "URL insegura",
   "Rocket_Chat_Alert": "Alerta Rocket.Chat",
   "Role": "Papel",

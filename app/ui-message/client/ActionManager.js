@@ -10,6 +10,8 @@ import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 import { UIKitInteractionTypes } from '../../../definition/UIKit';
 import * as banners from '../../../client/lib/banners';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { t } from '../../utils/client';
 
 const events = new Emitter();
 
@@ -22,6 +24,8 @@ export const off = (...args) => {
 };
 
 const TRIGGER_TIMEOUT = 5000;
+
+const TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
 
 const triggersId = new Map();
 
@@ -160,7 +164,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 	const payload = rest.payload || rest;
 
-	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
+	setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
 
 	const { type: interactionType, ...data } = await APIClient.post(
 		`apps/ui.interaction/${ appId }`,
@@ -171,6 +175,16 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 });
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
+
+export const triggerActionButtonAction = (options) =>
+	triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(async (reason) => {
+		if (Array.isArray(reason) && reason[0] === TRIGGER_TIMEOUT_ERROR) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('UIKit_Interaction_Timeout'),
+			});
+		}
+	});
 
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
