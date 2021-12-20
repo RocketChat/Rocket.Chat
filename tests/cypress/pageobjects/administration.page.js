@@ -210,9 +210,12 @@ class Administration extends Page {
 
 	get generalStreamCastAdressReset() { return browser.element('[data-qa-reset-setting-id="Stream_Cast_Address"]'); }
 
-	get generalUTF8Regex() { return browser.element('[data-qa-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8UsernamesRegex() { return browser.element('[data-qa-setting-id="UTF8_User_Names_Validation"]'); }
 
-	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8ChannelsRegex() { return browser.element('[data-qa-setting-id="UTF8_Channel_Names_Validation"]'); }
+
+	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_User_Names_Validation"]'); }
+
 
 	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
@@ -231,17 +234,13 @@ class Administration extends Page {
 
 	get accountsidleTimeLimitReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
-	get accountsAudioNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }
-
-	get accountsAudioNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_audioNotifications"]'); }
-
 	get accountsDesktopNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
 	get accountsDesktopNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
-	get accountsMobileNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsMobileNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_pushNotifications"]'); }
 
-	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_pushNotifications"]'); }
 
 	get accountsUnreadAlert() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 
@@ -279,9 +278,9 @@ class Administration extends Page {
 
 	get accountsHideFlexTabReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsHideAvatars() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatars() { return browser.element('[data-qa-setting-id="displayAvatars"]'); }
 
-	get accountsHideAvatarsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatarsReset() { return browser.element('[data-qa-reset-setting-id="displayAvatars"]'); }
 
 	get accountsMergeChannels() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 

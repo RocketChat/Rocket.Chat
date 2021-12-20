@@ -8,8 +8,6 @@
 }
 
 .rc-old code {
-	display: block;
-
 	margin: 5px 0;
 	padding: 0.5em;
 
@@ -62,14 +60,6 @@
 		clear: both;
 
 		content: "";
-	}
-
-	&:first-child {
-		margin-top: 0;
-	}
-
-	&:last-child {
-		margin-bottom: 0;
 	}
 
 	&:first-child::before {
@@ -145,18 +135,6 @@
 
 	text-align: center;
 	justify-content: center;
-}
-
-.connection-status > .alert {
-	position: absolute;
-	z-index: 1000000;
-	top: 0;
-
-	width: 100%;
-	margin-top: 0 !important;
-	padding: 2px;
-
-	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
@@ -310,7 +288,6 @@
 
 	&.double-col {
 		& > label {
-
 			width: 30%;
 			margin-bottom: 0;
 			padding: 10px 20px 10px 0;
@@ -321,7 +298,6 @@
 		}
 
 		& > div {
-
 			width: 60%;
 			min-height: 2.5rem;
 
@@ -893,134 +869,6 @@
 	animation: highlight 6s infinite;
 }
 
-.rc-old .fixed-title {
-	display: flex;
-
-	height: calc(var(--header-min-height) + 1px);
-	padding: 0 10px 0 20px;
-
-	border-width: 0 0 1px;
-	align-items: center;
-	flex-flow: row nowrap;
-	flex-shrink: 0;
-
-	&.visible h2 {
-		overflow: visible;
-	}
-
-	& h2 {
-		overflow: hidden;
-		flex: 1;
-
-		width: 100%;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-
-		font-size: 22px;
-		font-weight: 500;
-		line-height: 29px;
-
-		& .icon-at,
-		& .icon-hash,
-		& .icon-lock {
-			margin-right: -7px;
-		}
-
-		& .icon-star,
-		& .icon-star-empty {
-			margin-right: -4px;
-		}
-
-		& .iframe-toolbar {
-			white-space: nowrap;
-			flex-grow: 0;
-		}
-	}
-
-	& .submit {
-		display: flex;
-
-		& .button {
-			margin-left: 1rem;
-
-			white-space: nowrap;
-		}
-	}
-
-	& .animated-hidden {
-		display: none;
-		visibility: hidden;
-	}
-
-	& input[type='text'] {
-		width: calc(100% - 100px);
-		margin-top: -4px;
-		margin-left: -3px;
-
-		vertical-align: top;
-
-		font-size: 20px;
-	}
-
-	& .icon-pencil {
-		display: inline-block;
-
-		margin-top: -7px;
-
-		vertical-align: text-top;
-
-		font-size: 16px;
-	}
-}
-
-.rc-old .announcement {
-	display: flex;
-
-	overflow: hidden;
-
-	height: 40px;
-	padding: 0 20px;
-
-	cursor: pointer;
-	text-align: center;
-
-	color: var(--rc-color-content);
-	background-color: var(--primary-background-color);
-
-	font-size: 1.2em;
-	line-height: 40px;
-	flex-flow: row nowrap;
-
-	&.warning {
-		background-color: var(--rc-color-alert);
-	}
-
-	&.error {
-		background-color: var(--rc-color-alert-message-warning);
-	}
-
-	& ~ .container-bars {
-		top: 45px;
-	}
-
-	a {
-		text-decoration: underline;
-
-		color: currentColor;
-	}
-
-	p {
-		overflow: hidden;
-		flex: auto;
-
-		width: 0; /* Grow via flex. */
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-}
-
 .cms-page {
 	display: flex;
 	flex-direction: column;
@@ -1034,7 +882,6 @@
 	border-radius: var(--border-radius);
 
 	&__content {
-
 		overflow: auto;
 
 		margin: -1rem;
@@ -1042,7 +889,6 @@
 	}
 
 	& .cms-page-close {
-
 		display: flex;
 
 		margin-bottom: 10px;
@@ -1178,14 +1024,12 @@
 		}
 
 		& .settings-description {
-
 			padding-top: 2px;
 
 			line-height: 1.2rem;
 		}
 
 		& .settings-alert {
-
 			margin-top: 0.75rem;
 			padding: 1rem;
 
@@ -1440,16 +1284,15 @@
 }
 
 .rc-old .container-bars {
-	position: absolute;
+	position: relative;
 	z-index: 2;
-	top: 5px; /* --header-height */
-	right: 10px;
-	left: 10px;
 
-	display: flex;
+	display: none;
 	visibility: hidden;
 	overflow: hidden;
 	flex-direction: column;
+
+	margin: 5px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
@@ -1464,6 +1307,7 @@
 	font-weight: bold;
 
 	&.show {
+		display: flex;
 		visibility: visible;
 
 		transform: translateY(0);
@@ -1684,7 +1528,6 @@
 }
 
 .rc-old .rc-message-box .reply-preview {
-
 	position: relative;
 
 	display: flex;
@@ -1708,7 +1551,6 @@
 }
 
 .rc-old .rc-message-box .reply-preview:not(:last-child)::before {
-
 	position: absolute;
 	right: 15px;
 
@@ -2052,7 +1894,7 @@
 		font-family: inherit;
 		font-size: 0.875rem;
 
-		font-weight: 600;
+		font-weight: 700;
 		line-height: inherit;
 	}
 
@@ -2137,9 +1979,6 @@
 
 		& .title {
 			position: absolute;
-			left: 5px;
-
-			width: 60px;
 
 			text-align: right;
 			justify-content: flex-end;
@@ -2170,6 +2009,12 @@
 
 				margin-left: 1px;
 			}
+		}
+
+		&:not(.message--ignored) .title {
+			left: 5px;
+
+			width: 60px;
 		}
 
 		&:hover .edited {
@@ -2836,7 +2681,6 @@
 
 		& input,
 		& select {
-
 			position: relative;
 
 			width: 100%;
@@ -3200,7 +3044,6 @@
 
 .rc-old .dropzone {
 	& .dropzone-overlay {
-
 		position: absolute;
 		z-index: 1000000;
 		top: 0;
@@ -3254,154 +3097,6 @@
 .rc-old .touch .footer {
 	padding-right: 10px;
 	padding-left: 10px;
-}
-
-.webrtc-video {
-	&.webrtc-video-overlay,
-	& .main-video,
-	& .state-overlay::before,
-	& .videos .video-item {
-		color: var(--color-white);
-	}
-
-	&.webrtc-video-overlay {
-		position: fixed;
-		z-index: 1000;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: flex;
-		overflow-y: auto;
-		flex-direction: column;
-
-		padding: var(--default-small-padding);
-
-		background-color: #ffffff;
-
-		& .main-video {
-			display: flex;
-			flex-direction: column;
-
-			min-height: 140px;
-			margin-bottom: 4px;
-			align-items: center;
-			flex-grow: 1;
-
-			.webrtc-video-element {
-				width: auto;
-				max-width: 100%;
-				height: 100%;
-				min-height: 140px;
-			}
-		}
-	}
-
-	& .main-video {
-		text-align: center;
-
-		& .webrtc-video-element {
-			width: 100%;
-			min-height: 299px;
-		}
-
-		& > div {
-			position: relative;
-
-			margin-top: -28px;
-			margin-bottom: 2px;
-			padding: 0 8px;
-
-			text-align: center;
-
-			font-weight: bold;
-			line-height: 25px;
-		}
-	}
-
-	& .video-flip {
-		transform: scaleX(-1);
-		filter: FlipH;
-	}
-
-	& .videos {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-
-		& .video-item {
-			position: relative;
-
-			overflow: hidden;
-
-			width: 93px;
-			margin-right: 3px;
-			margin-bottom: 3px;
-
-			text-align: center;
-
-			line-height: 0;
-
-			& &.state-overlay::before {
-				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-
-				display: flex;
-
-				content: attr(data-state-text);
-
-				font-size: 12px;
-				font-weight: bold;
-				align-items: center;
-				justify-content: center;
-			}
-
-			& .webrtc-video-element {
-				max-width: 100px;
-				height: 70px;
-			}
-
-			& > div {
-				position: relative;
-
-				overflow: hidden;
-
-				margin-top: -16px;
-				padding: 0 2px;
-
-				text-align: center;
-				text-overflow: ellipsis;
-
-				font-size: 12px;
-				font-weight: bold;
-				line-height: 16px;
-			}
-
-			& .video-muted-overlay {
-				position: absolute;
-				top: 16px;
-				right: 0;
-				bottom: 16px;
-				left: 0;
-
-				display: flex;
-
-				text-align: center;
-
-				font-size: 24px;
-				align-items: center;
-				justify-content: center;
-			}
-		}
-	}
-}
-
-.webrtc-video-element {
-	background-color: #000000;
 }
 
 .rc-old .alert-icon {

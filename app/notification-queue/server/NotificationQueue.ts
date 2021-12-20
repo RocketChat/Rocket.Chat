@@ -5,6 +5,7 @@ import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 import { IUser } from '../../../definition/IUser';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
@@ -41,7 +42,14 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(this.worker.bind(this), this.cyclePause);
+		setTimeout(() => {
+			try {
+				this.worker();
+			} catch (e) {
+				SystemLogger.error('Error sending notification', e);
+				this.executeWorkerLater();
+			}
+		}, this.cyclePause);
 	}
 
 	async worker(counter = 0): Promise<void> {
@@ -74,7 +82,7 @@ class NotificationClass {
 
 			NotificationQueue.removeById(notification._id);
 		} catch (e) {
-			console.error(e);
+			SystemLogger.error(e);
 			await NotificationQueue.setErrorById(notification._id, e.message);
 		}
 
@@ -105,7 +113,7 @@ class NotificationClass {
 	}
 
 	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
-		const receiver = user || await Users.findOneById(uid, {
+		const receiver = user || await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
 			projection: {
 				statusConnection: 1,
 			},
@@ -115,7 +123,7 @@ class NotificationClass {
 			return;
 		}
 
-		const { statusConnection } = receiver;
+		const { statusConnection = 'offline' } = receiver;
 
 		let schedule: Date | undefined;
 

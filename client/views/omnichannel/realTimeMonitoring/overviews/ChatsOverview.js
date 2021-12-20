@@ -10,14 +10,15 @@ const initialData = [
 ];
 
 const ChatsOverview = ({ params, reloadRef, ...props }) => {
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/chats-totalizers',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/chats-totalizers', params);
 
 	reloadRef.current.chatsOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props}/>;
+	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
 };
 
 export default ChatsOverview;

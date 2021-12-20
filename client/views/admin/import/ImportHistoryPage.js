@@ -2,12 +2,12 @@ import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useMemo } from 'react';
 
+import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import ImportOperationSummary from './ImportOperationSummary';
 
 function ImportHistoryPage() {
@@ -21,6 +21,7 @@ function ImportHistoryPage() {
 	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
 	const downloadPendingFiles = useEndpoint('POST', 'downloadPendingFiles');
+	const downloadPendingAvatars = useEndpoint('POST', 'downloadPendingAvatars');
 
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
@@ -47,10 +48,20 @@ function ImportHistoryPage() {
 		};
 
 		loadData();
-	}, [dispatchToastMessage, getCurrentImportOperation, getLatestImportOperations, setCurrentOperation, setLatestOperations, setLoading, t]);
+	}, [
+		dispatchToastMessage,
+		getCurrentImportOperation,
+		getLatestImportOperations,
+		setCurrentOperation,
+		setLatestOperations,
+		setLoading,
+		t,
+	]);
 
-	const hasAnySuccessfulSlackImport = useMemo(() =>
-		latestOperations?.some(({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE), [latestOperations]);
+	const hasAnySuccessfulImport = useMemo(
+		() => latestOperations?.some(({ status }) => status === ProgressStep.DONE),
+		[latestOperations],
+	);
 
 	const handleNewImportClick = () => {
 		newImportRoute.push();
@@ -61,7 +72,27 @@ function ImportHistoryPage() {
 			setLoading(true);
 			const { count } = await downloadPendingFiles();
 
-			if (count) {
+			if (!count) {
+				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
+				setLoading(false);
+				return;
+			}
+
+			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
+			importProgressRoute.push();
+		} catch (error) {
+			console.error(error);
+			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
+			setLoading(false);
+		}
+	};
+
+	const handleDownloadPendingAvatarsClick = async () => {
+		try {
+			setLoading(true);
+			const { count } = await downloadPendingAvatars();
+
+			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				setLoading(false);
 				return;
@@ -78,45 +109,94 @@ function ImportHistoryPage() {
 
 	const small = useMediaQuery('(max-width: 768px)');
 
-	return <Page>
-		<Page.Header title={t('Import')}>
-			<ButtonGroup>
-				<Button primary disabled={isLoading} onClick={handleNewImportClick}>{t('Import_New_File')}</Button>
-				{hasAnySuccessfulSlackImport
-					&& <Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Table fixed>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell is='th' rowSpan={2} width='x140'>{t('Import_Type')}</Table.Cell>
-						<Table.Cell is='th' rowSpan={2}>{t('Last_Updated')}</Table.Cell>
-						{!small && <><Table.Cell is='th' rowSpan={2}>{t('Last_Status')}</Table.Cell>
-							<Table.Cell is='th' rowSpan={2}>{t('File')}</Table.Cell>
-							<Table.Cell is='th' align='center' colSpan={4} width='x320'>{t('Counters')}</Table.Cell></>}
-					</Table.Row>
-					{!small && <Table.Row>
-						<Table.Cell is='th' align='center'>{t('Users')}</Table.Cell>
-						<Table.Cell is='th' align='center'>{t('Channels')}</Table.Cell>
-						<Table.Cell is='th' align='center'>{t('Messages')}</Table.Cell>
-						<Table.Cell is='th' align='center'>{t('Total')}</Table.Cell>
-					</Table.Row>}
-				</Table.Head>
-				<Table.Body>
-					{isLoading
-						? Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
-						: <>
-							{currentOperation?.valid && <ImportOperationSummary {...currentOperation} small={small}/>}
-							{latestOperations
-								?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
-								// Forcing valid=false as the current API only accept preparation/progress over currentOperation
-								?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
-						</>}
-				</Table.Body>
-			</Table>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Import')}>
+				<ButtonGroup>
+					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
+						{t('Import_New_File')}
+					</Button>
+					{hasAnySuccessfulImport && (
+						<Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>
+							{t('Download_Pending_Files')}
+						</Button>
+					)}
+					{hasAnySuccessfulImport && (
+						<Button disabled={isLoading} onClick={handleDownloadPendingAvatarsClick}>
+							{t('Download_Pending_Avatars')}
+						</Button>
+					)}
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Table fixed>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell is='th' rowSpan={2} width='x140'>
+								{t('Import_Type')}
+							</Table.Cell>
+							<Table.Cell is='th' rowSpan={2}>
+								{t('Last_Updated')}
+							</Table.Cell>
+							{!small && (
+								<>
+									<Table.Cell is='th' rowSpan={2}>
+										{t('Last_Status')}
+									</Table.Cell>
+									<Table.Cell is='th' rowSpan={2}>
+										{t('File')}
+									</Table.Cell>
+									<Table.Cell is='th' align='center' colSpan={4} width='x320'>
+										{t('Counters')}
+									</Table.Cell>
+								</>
+							)}
+						</Table.Row>
+						{!small && (
+							<Table.Row>
+								<Table.Cell is='th' align='center'>
+									{t('Users')}
+								</Table.Cell>
+								<Table.Cell is='th' align='center'>
+									{t('Channels')}
+								</Table.Cell>
+								<Table.Cell is='th' align='center'>
+									{t('Messages')}
+								</Table.Cell>
+								<Table.Cell is='th' align='center'>
+									{t('Total')}
+								</Table.Cell>
+							</Table.Row>
+						)}
+					</Table.Head>
+					<Table.Body>
+						{isLoading ? (
+							Array.from({ length: 20 }, (_, i) => (
+								<ImportOperationSummary.Skeleton small={small} key={i} />
+							))
+						) : (
+							<>
+								{currentOperation?.valid && (
+									<ImportOperationSummary {...currentOperation} small={small} />
+								)}
+								{latestOperations
+									?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
+									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
+									?.map((operation) => (
+										<ImportOperationSummary
+											key={operation._id}
+											{...operation}
+											valid={false}
+											small={small}
+										/>
+									))}
+							</>
+						)}
+					</Table.Body>
+				</Table>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default ImportHistoryPage;

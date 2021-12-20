@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { removeInvite } from '../../../invites/server/functions/removeInvite';
@@ -9,7 +7,7 @@ import { validateInviteToken } from '../../../invites/server/functions/validateI
 
 API.v1.addRoute('listInvites', { authRequired: true }, {
 	get() {
-		const result = listInvites(this.userId);
+		const result = Promise.await(listInvites(this.userId));
 		return API.v1.success(result);
 	},
 });
@@ -17,7 +15,7 @@ API.v1.addRoute('listInvites', { authRequired: true }, {
 API.v1.addRoute('findOrCreateInvite', { authRequired: true }, {
 	post() {
 		const { rid, days, maxUses } = this.bodyParams;
-		const result = findOrCreateInvite(this.userId, { rid, days, maxUses });
+		const result = Promise.await(findOrCreateInvite(this.userId, { rid, days, maxUses }));
 
 		return API.v1.success(result);
 	},
@@ -26,7 +24,7 @@ API.v1.addRoute('findOrCreateInvite', { authRequired: true }, {
 API.v1.addRoute('removeInvite/:_id', { authRequired: true }, {
 	delete() {
 		const { _id } = this.urlParams;
-		const result = removeInvite(this.userId, { _id });
+		const result = Promise.await(removeInvite(this.userId, { _id }));
 
 		return API.v1.success(result);
 	},
@@ -36,7 +34,7 @@ API.v1.addRoute('useInviteToken', { authRequired: true }, {
 	post() {
 		const { token } = this.bodyParams;
 		// eslint-disable-next-line react-hooks/rules-of-hooks
-		const result = useInviteToken(this.userId, token);
+		const result = Promise.await(useInviteToken(this.userId, token));
 
 		return API.v1.success(result);
 	},
@@ -46,13 +44,9 @@ API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 	post() {
 		const { token } = this.bodyParams;
 
-		if (!token) {
-			throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
-		}
-
 		let valid = true;
 		try {
-			validateInviteToken(token);
+			Promise.await(validateInviteToken(token));
 		} catch (e) {
 			valid = false;
 		}

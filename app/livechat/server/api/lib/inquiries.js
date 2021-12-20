@@ -1,6 +1,6 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
-import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
+import { hasAnyRoleAsync } from '../../../../authorization/server/functions/hasRole';
 
 const agentDepartments = async (userId) => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
@@ -8,7 +8,7 @@ const agentDepartments = async (userId) => {
 };
 
 const applyDepartmentRestrictions = async (userId, filterDepartment) => {
-	if (await hasRoleAsync(userId, 'livechat-manager')) {
+	if (await hasAnyRoleAsync(userId, ['livechat-manager'])) {
 		return filterDepartment;
 	}
 
@@ -43,7 +43,15 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 
 	const filter = {
 		...status && { status },
-		...department && { department },
+		$or: [
+			{
+				$and: [
+					{ defaultAgent: { $exists: true } },
+					{ 'defaultAgent.agentId': userId },
+				],
+			},
+			{ ...department && { department } },
+		],
 	};
 
 	const cursor = LivechatInquiry.find(filter, options);

@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { Logger } from '../../logger';
-import { settings } from '../../settings';
+import { settings, settingsRegistry } from '../../settings/server';
 
-export const logger = new Logger('CAS', {});
+export const logger = new Logger('CAS');
 
 Meteor.startup(function() {
-	settings.addGroup('CAS', function() {
+	settingsRegistry.addGroup('CAS', function() {
 		this.add('CAS_enabled', false, { type: 'boolean', group: 'CAS', public: true });
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
@@ -24,8 +24,8 @@ Meteor.startup(function() {
 		});
 
 		this.section('CAS_Login_Layout', function() {
-			this.add('CAS_popup_width', '810', { type: 'string', group: 'CAS', public: true });
-			this.add('CAS_popup_height', '610', { type: 'string', group: 'CAS', public: true });
+			this.add('CAS_popup_width', '810', { type: 'int', group: 'CAS', public: true });
+			this.add('CAS_popup_height', '610', { type: 'int', group: 'CAS', public: true });
 			this.add('CAS_button_label_text', 'CAS', { type: 'string', group: 'CAS' });
 			this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS' });
 			this.add('CAS_button_color', '#1d74f5', { type: 'color', group: 'CAS' });
@@ -67,6 +67,6 @@ function updateServices(/* record*/) {
 	}, 2000);
 }
 
-settings.get(/^CAS_.+/, (key, value) => {
+settings.watchByRegex(/^CAS_.+/, (key, value) => {
 	updateServices(value);
 });

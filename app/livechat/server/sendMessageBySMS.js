@@ -31,7 +31,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 
 	let extraData;
 	if (message.file) {
-		message = normalizeMessageFileUpload(message);
+		message = Promise.await(normalizeMessageFileUpload(message));
 		const { fileUpload, rid, u: { _id: userId } = {} } = message;
 		extraData = Object.assign({}, { rid, userId, fileUpload });
 	}

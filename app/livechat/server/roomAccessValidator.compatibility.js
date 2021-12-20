@@ -1,6 +1,5 @@
-import { LivechatRooms } from '../../models';
-import { hasPermission, hasRole } from '../../authorization';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
+import { hasPermission, hasRole } from '../../authorization/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 export const validators = [
@@ -41,7 +40,15 @@ export const validators = [
 
 		const filter = {
 			rid: room._id,
-			...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
+			$or: [
+				{
+					$and: [
+						{ defaultAgent: { $exists: true } },
+						{ 'defaultAgent.agentId': user._id },
+					],
+				},
+				{ ...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } } },
+			],
 		};
 
 		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });

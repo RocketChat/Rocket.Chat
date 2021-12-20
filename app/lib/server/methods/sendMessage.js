@@ -11,7 +11,7 @@ import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
@@ -56,6 +56,7 @@ export function executeSendMessage(uid, message) {
 		fields: {
 			username: 1,
 			type: 1,
+			name: 1,
 		},
 	});
 	let { rid } = message;

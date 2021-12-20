@@ -15,8 +15,11 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
+import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
+import { Team } from '../../../../server/sdk';
+import { TEAM_TYPE } from '../../../../definition/ITeam';
 
 const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
@@ -56,12 +59,21 @@ const validators = {
 			});
 		}
 	},
-	encrypted({ value, room }) {
-		if (value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Encrypted',
-			});
+	encrypted({ userId, value, room, rid }) {
+		if (value !== room.encrypted) {
+			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
+
+			if (room.t !== 'd' && !hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
+				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
 		}
 	},
 	retentionEnabled({ userId, value, room, rid }) {
@@ -115,8 +127,14 @@ const validators = {
 };
 
 const settingSavers = {
-	roomName({ value, rid, user }) {
-		saveRoomName(rid, value, user);
+	roomName({ value, rid, user, room }) {
+		if (!Promise.await(saveRoomName(rid, value, user))) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			Team.update(user._id, room.teamId, { name: value, updateRoom: false });
+		}
 	},
 	roomTopic({ value, room, rid, user }) {
 		if (value !== room.topic) {
@@ -139,8 +157,17 @@ const settingSavers = {
 		}
 	},
 	roomType({ value, room, rid, user }) {
-		if (value !== room.t) {
-			saveRoomType(rid, value, user);
+		if (value === room.t) {
+			return;
+		}
+
+		if (!saveRoomType(rid, value, user)) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
 	tokenpass({ value, rid }) {
@@ -198,19 +225,19 @@ const settingSavers = {
 	retentionOverrideGlobal({ value, rid }) {
 		Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, rid }) {
-		Rooms.saveEncryptedById(rid, value);
+	encrypted({ value, room, rid, user }) {
+		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
-	roomAvatar({ value, rid, user }) {
-		setRoomAvatar(rid, value, user);
+	async roomAvatar({ value, rid, user }) {
+		await setRoomAvatar(rid, value, user);
 	},
 };
 
 Meteor.methods({
-	saveRoomSettings(rid, settings, value) {
+	async saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -286,10 +313,10 @@ Meteor.methods({
 		});
 
 		// saving data
-		Object.keys(settings).forEach((setting) => {
+		for await (const setting of Object.keys(settings)) {
 			const value = settings[setting];
 
-			const saver = settingSavers[setting];
+			const saver = await settingSavers[setting];
 			if (saver) {
 				saver({
 					value,
@@ -298,7 +325,7 @@ Meteor.methods({
 					user,
 				});
 			}
-		});
+		}
 
 		Meteor.defer(function() {
 			const room = Rooms.findOneById(rid);

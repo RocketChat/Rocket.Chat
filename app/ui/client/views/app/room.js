@@ -10,45 +10,30 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
+import { t, roomTypes, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	modal,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
-import { settings } from '../../../../settings';
-import { callbacks } from '../../../../callbacks';
-import { hasAllPermission, hasRole } from '../../../../authorization';
+import { settings } from '../../../../settings/client';
+import { callbacks } from '../../../../callbacks/client';
+import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import { Markdown } from '../../../../markdown/client';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
+import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-
-
-export const openProfileTab = (e, tabBar, username) => {
-	e.stopPropagation();
-
-	if (Layout.isEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username });
-		e.preventDefault();
-		return;
-	}
-
-	tabBar.openUserInfo(username);
-};
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -260,14 +245,21 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		const announcement = Template.instance().state.get('announcement');
-		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
+		return Template.instance().state.get('announcement');
+	},
+
+	announcementDetails() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+			return () => callbacks.run(roomData.announcementDetails.callback, this._id);
+		}
 	},
 
 	messageboxData() {
-		const { sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
+		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
@@ -282,7 +274,7 @@ Template.roomOld.helpers({
 
 				chatMessages[rid].initializeInput(input, { rid });
 			},
-			onResize: () => sendToBottomIfNecessaryDebounced && sendToBottomIfNecessaryDebounced(),
+			onResize: () => sendToBottomIfNecessary && sendToBottomIfNecessary(),
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
@@ -346,7 +338,7 @@ Template.roomOld.helpers({
 	},
 
 	hideAvatar() {
-		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
+		return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
 	},
 	canPreview() {
 		const { room, state } = Template.instance();
@@ -427,9 +419,6 @@ Template.roomOld.helpers({
 		};
 	},
 });
-
-let lastScrollTop;
-
 
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
@@ -512,22 +501,6 @@ Meteor.startup(() => {
 	Template.roomOld.events({
 		...getCommonRoomEvents(),
 		...dropzoneEvents,
-		'click .announcement'() {
-			const roomData = Session.get(`roomData${ this._id }`);
-			if (!roomData) { return false; }
-			if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-				return callbacks.run(roomData.announcementDetails.callback, this._id);
-			}
-
-			modal.open({
-				title: t('Announcement'),
-				text: renderMessageBody({ msg: roomData.announcement }),
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
-		},
 		'click .toggle-hidden'(e) {
 			const id = e.currentTarget.dataset.message;
 			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
@@ -564,20 +537,15 @@ Meteor.startup(() => {
 			RoomHistoryManager.clear(template && template.data && template.data._id);
 		},
 		'load .gallery-item'(e, template) {
-			template.sendToBottomIfNecessaryDebounced();
+			template.sendToBottomIfNecessary();
 		},
 
 		'rendered .js-block-wrapper'(e, template) {
-			template.sendToBottomIfNecessaryDebounced();
-		},
-		'click .js-navigate-to-discussion'(event) {
-			event.preventDefault();
-			const { msg: { drid } } = messageArgs(this);
-			FlowRouter.goToRoomById(drid);
+			template.sendToBottomIfNecessary();
 		},
 		'click .new-message'(event, instance) {
 			instance.atBottom = true;
-			instance.sendToBottomIfNecessaryDebounced();
+			instance.sendToBottomIfNecessary();
 			chatMessages[RoomManager.openedRoom].input.focus();
 		},
 		'click .upload-progress-close'(e) {
@@ -601,26 +569,26 @@ Meteor.startup(() => {
 		'scroll .wrapper': _.throttle(function(e, t) {
 			const $roomLeader = $('.room-leader');
 			if ($roomLeader.length) {
-				if (e.target.scrollTop < lastScrollTop) {
+				if (e.target.scrollTop < t.lastScrollTop) {
 					t.hideLeaderHeader.set(false);
 				} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
 					t.hideLeaderHeader.set(true);
 				}
 			}
-			lastScrollTop = e.target.scrollTop;
+			t.lastScrollTop = e.target.scrollTop;
 			const height = e.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(this._id);
 			const hasMore = RoomHistoryManager.hasMore(this._id);
 			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
 
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTop <= height / 3) {
+				if (hasMore === true && t.lastScrollTop <= height / 3) {
 					RoomHistoryManager.getMore(this._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
+				} else if (hasMoreNext === true && Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height) {
 					RoomHistoryManager.getMoreNext(this._id);
 				}
 			}
-		}, 300),
+		}, 100),
 
 		'click .time a'(e) {
 			e.preventDefault();
@@ -782,8 +750,6 @@ Meteor.startup(() => {
 				this.sendToBottom();
 			}
 		};
-
-		this.sendToBottomIfNecessaryDebounced = () => {};
 	}); // Update message to re-render DOM
 
 	Template.roomOld.onDestroyed(function() {
@@ -803,16 +769,40 @@ Meteor.startup(() => {
 		callbacks.remove('streamNewMessage', this.data._id);
 	});
 
+	const isAtBottom = function(element, scrollThreshold = 0) {
+		return element.scrollTop + scrollThreshold >= element.scrollHeight - element.clientHeight;
+	};
+
 	Template.roomOld.onRendered(function() {
 		const { _id: rid } = this.data;
 
 		if (!chatMessages[rid]) {
 			chatMessages[rid] = new ChatMessages();
 		}
+
+		const wrapper = this.find('.wrapper');
+
+		const store = NewRoomManager.getStore(rid);
+
+		const afterMessageGroup = () => {
+			if (store.scroll && !store.atBottom) {
+				wrapper.scrollTop = store.scroll;
+			} else {
+				this.sendToBottom();
+			}
+			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
+
+			wrapper.addEventListener('scroll', _.throttle(() => {
+				store.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
+			}, 30));
+		};
+
+		wrapper.addEventListener('MessageGroup', afterMessageGroup);
+
 		chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 		chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
 
-		const wrapper = this.find('.wrapper');
+
 		const wrapperUl = this.find('.wrapper > ul');
 		const newMessage = this.find('.new-message');
 
@@ -821,7 +811,7 @@ Meteor.startup(() => {
 		const messageBox = $('.messages-box');
 
 		template.isAtBottom = function(scrollThreshold = 0) {
-			if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
+			if (isAtBottom(wrapper, scrollThreshold)) {
 				newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 				return true;
 			}
@@ -829,7 +819,7 @@ Meteor.startup(() => {
 		};
 
 		template.sendToBottom = function() {
-			wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
+			wrapper.scrollTo(30, wrapper.scrollHeight);
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
 
@@ -837,23 +827,14 @@ Meteor.startup(() => {
 			template.atBottom = template.isAtBottom(100);
 		};
 
-		template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
+		template.observer = new ResizeObserver(() => template.sendToBottomIfNecessary());
 
-		if (window.MutationObserver) {
-			template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
-
-			template.observer.observe(wrapperUl, { childList: true });
-		} else {
-			wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
-		}
-
-		template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
-
-		window.addEventListener('resize', template.onWindowResize);
+		template.observer.observe(wrapperUl);
 
 		const wheelHandler = _.throttle(function() {
 			template.checkIfScrollIsAtBottom();
 		}, 100);
+
 		wrapper.addEventListener('mousewheel', wheelHandler);
 
 		wrapper.addEventListener('wheel', wheelHandler);
@@ -867,11 +848,10 @@ Meteor.startup(() => {
 		});
 
 		Tracker.afterFlush(() => {
-			template.sendToBottomIfNecessary();
 			wrapper.addEventListener('scroll', wheelHandler);
 		});
 
-		lastScrollTop = $('.messages-box .wrapper').scrollTop();
+		this.lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 		const rtl = $('html').hasClass('rtl');
 
@@ -913,6 +893,19 @@ Meteor.startup(() => {
 			}
 			readMessage.read(rid);
 		}, 500);
+
+		this.autorun(() => {
+			if (rid !== Session.get('openedRoom')) {
+				return;
+			}
+
+			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
+
+			if (room?.t === 'l') {
+				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
+				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+			}
+		});
 
 		this.autorun(() => {
 			if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
@@ -968,15 +961,12 @@ Meteor.startup(() => {
 		if (webrtc) {
 			this.autorun(() => {
 				const remoteItems = webrtc.remoteItems.get();
-				if (remoteItems && remoteItems.length > 0) {
-					this.tabBar.open('members-list');
-				}
-
-				if (webrtc.localUrl.get()) {
-					this.tabBar.open('members-list');
+				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
+					return this.tabBar.openUserInfo();
 				}
 			});
 		}
+
 		callbacks.add('streamNewMessage', (msg) => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 				return;
@@ -1001,9 +991,6 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			}
 		});
-
-		const observer = new ResizeObserver(template.sendToBottomIfNecessary);
-		observer.observe(this.firstNode.querySelector('.wrapper ul'));
 	});
 });
 

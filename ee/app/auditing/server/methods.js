@@ -3,10 +3,10 @@ import s from 'underscore.string';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { hasPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
@@ -26,7 +26,7 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	}
 
 	if (type === 'l') {
-		console.warning('Deprecation Warning! This method will be removed in the next version (4.0.0)');
+		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
 		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}

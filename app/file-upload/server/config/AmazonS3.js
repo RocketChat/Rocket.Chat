@@ -6,13 +6,14 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function(file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
 
 	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
 		if (err) {
-			return console.error(err);
+			return SystemLogger.error(err);
 		}
 
 		if (!fileUrl) {
@@ -108,4 +109,4 @@ const configure = _.debounce(function() {
 	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
 }, 500);
 
-settings.get(/^FileUpload_S3_/, configure);
+settings.watchByRegex(/^FileUpload_S3_/, configure);

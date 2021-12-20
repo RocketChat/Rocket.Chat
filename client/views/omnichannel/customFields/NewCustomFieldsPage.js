@@ -1,16 +1,16 @@
-import React, { useCallback, useState } from 'react';
 import { Box, Button, Icon, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import CustomFieldsForm from './CustomFieldsForm';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useRoute } from '../../../contexts/RouterContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import { formsSubscription } from '../additionalForms';
+import CustomFieldsForm from './CustomFieldsForm';
 
 const initialValues = {
 	field: '',
@@ -19,7 +19,6 @@ const initialValues = {
 	visibility: true,
 	regexp: '',
 };
-
 
 const NewCustomFieldsPage = ({ reload }) => {
 	const t = useTranslation();
@@ -40,11 +39,15 @@ const NewCustomFieldsPage = ({ reload }) => {
 
 	const save = useMethod('livechat:saveCustomField');
 
-	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
+	const {
+		hasError,
+		data: additionalData,
+		hasUnsavedChanges: additionalFormChanged,
+	} = additionalValues;
 
 	const { label, field } = values;
 
-	const canSave = !hasError && (label && field) && (additionalFormChanged || hasUnsavedChanges);
+	const canSave = !hasError && label && field && (additionalFormChanged || hasUnsavedChanges);
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -66,22 +69,29 @@ const NewCustomFieldsPage = ({ reload }) => {
 		setAdditionalValues({ ...additionalValues, ...val });
 	});
 
-	return <Page>
-		<Page.Header title={t('New_Custom_Field')}>
-			<ButtonGroup>
-				<Button onClick={handleReturn}><Icon size='x16' name='back'/>{t('Back')}</Button>
-				<Button primary onClick={handleSave} disabled={!canSave}>{t('Save')}</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				<FieldGroup>
-					<CustomFieldsForm values={values} handlers={handlers}/>
-					{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values}/>}
-				</FieldGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('New_Custom_Field')}>
+				<ButtonGroup>
+					<Button onClick={handleReturn}>
+						<Icon size='x16' name='back' />
+						{t('Back')}
+					</Button>
+					<Button primary onClick={handleSave} disabled={!canSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Box maxWidth='x600' w='full' alignSelf='center'>
+					<FieldGroup>
+						<CustomFieldsForm values={values} handlers={handlers} />
+						{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values} />}
+					</FieldGroup>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default NewCustomFieldsPage;

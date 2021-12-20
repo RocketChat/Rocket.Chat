@@ -19,11 +19,12 @@ export interface IBusinessHourBehavior {
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
+	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
 }
 
 export interface IBusinessHourType {
 	name: string;
-	getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined>;
+	getBusinessHour(id?: string): Promise<ILivechatBusinessHour | null>;
 	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<ILivechatBusinessHour>;
 	removeBusinessHourById(id: string): Promise<void>;
 }
@@ -44,6 +45,10 @@ export abstract class AbstractBusinessHourBehavior {
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
+
+	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+		return this.UsersRepository.setLivechatStatusIf(agentId, status, { livechatStatusSystemModified: true }, { livechatStatusSystemModified: true });
+	}
 }
 
 export abstract class AbstractBusinessHourType {
@@ -55,7 +60,7 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData = this.convertWorkHours(businessHourData);
 		if (businessHourData._id) {
-			await this.BusinessHourRepository.updateOne(businessHourData._id, businessHourData);
+			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, { $set: businessHourData });
 			return businessHourData._id;
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);

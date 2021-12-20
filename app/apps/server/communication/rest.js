@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import Busboy from 'busboy';
 
 import { API } from '../../../api/server';
+import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
-import { Settings, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
+import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { Settings } from '../../../models/server/raw';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -21,27 +23,6 @@ export class AppsRestApi {
 		this._orch = orch;
 		this._manager = manager;
 		this.loadAPI();
-	}
-
-	_handleFile(request, fileField) {
-		const busboy = new Busboy({ headers: request.headers });
-
-		return Meteor.wrapAsync((callback) => {
-			busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
-				if (fieldname !== fileField) {
-					return callback(new Meteor.Error('invalid-field', `Expected the field "${ fileField }" but got "${ fieldname }" instead.`));
-				}
-
-				const fileData = [];
-				file.on('data', Meteor.bindEnvironment((data) => {
-					fileData.push(data);
-				}));
-
-				file.on('end', Meteor.bindEnvironment(() => callback(undefined, Buffer.concat(fileData))));
-			}));
-
-			request.pipe(busboy);
-		})();
 	}
 
 	async loadAPI() {
@@ -58,13 +39,12 @@ export class AppsRestApi {
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
-		const fileHandler = this._handleFile;
 
 		const handleError = (message, e) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
-				orchestrator.getRocketChatLogger().error(message, e.message);
+				orchestrator.getRocketChatLogger().warn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
@@ -88,7 +68,7 @@ export class AppsRestApi {
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -99,7 +79,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -112,7 +92,7 @@ export class AppsRestApi {
 
 				if (this.queryParams.categories) {
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -158,19 +138,14 @@ export class AppsRestApi {
 					});
 				}
 
-				const apps = manager.get().map((prl) => {
-					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageContent;
-					info.status = prl.getStatus();
-
-					return info;
-				});
+				const apps = manager.get().map(formatAppInstanceForRest);
 
 				return API.v1.success({ apps });
 			},
 			post() {
 				let buff;
 				let marketplaceInfo;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -190,6 +165,10 @@ export class AppsRestApi {
 					}
 
 					buff = result.content;
+
+					if (this.bodyParams.downloadOnly) {
+						return API.v1.success({ buff });
+					}
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
@@ -209,7 +188,7 @@ export class AppsRestApi {
 					});
 
 					const marketplacePromise = new Promise((resolve, reject) => {
-						const token = getWorkspaceAccessToken();
+						const token = Promise.await(getWorkspaceAccessToken());
 
 						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }?appVersion=${ this.bodyParams.version }`, {
 							headers: {
@@ -233,6 +212,7 @@ export class AppsRestApi {
 
 						buff = downloadResult.content;
 						marketplaceInfo = marketplaceResult.data[0];
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} catch (err) {
 						return API.v1.failure(err.message);
 					}
@@ -241,14 +221,27 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
-					buff = fileHandler(this.request, 'app');
+					const formData = Promise.await(getUploadFormData({
+						request: this.request,
+					}));
+					buff = formData?.app?.fileBuffer;
+					permissionsGranted = (() => {
+						try {
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff, true, marketplaceInfo));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -315,7 +308,7 @@ export class AppsRestApi {
 				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				const headers = {};
-				const token = getWorkspaceAccessToken();
+				const token = Promise.await(getWorkspaceAccessToken());
 				if (token) {
 					headers.Authorization = `Bearer ${ token }`;
 				}
@@ -345,7 +338,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -356,7 +349,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -371,7 +364,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -382,7 +375,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App update info from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
@@ -393,24 +386,19 @@ export class AppsRestApi {
 					return API.v1.success({ app: result.data });
 				}
 
-				const prl = manager.getOneById(this.urlParams.id);
+				const app = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({
-						app: {
-							...info,
-							status: prl.getStatus(),
-							licenseValidation: prl.getLatestLicenseValidationResult(),
-						},
-					});
+				if (!app) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				return API.v1.success({
+					app: formatAppInstanceForRest(app),
+				});
 			},
 			post() {
 				let buff;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -428,14 +416,11 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${ token }`;
-					}
+					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						});
@@ -459,14 +444,25 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = fileHandler(this.request, 'app');
+					const formData = Promise.await(getUploadFormData({
+						request: this.request,
+					}));
+					buff = formData?.app?.fileBuffer;
+					permissionsGranted = (() => {
+						try {
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff));
+				const aff = Promise.await(manager.update(buff, permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -496,7 +492,9 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				Promise.await(manager.remove(prl.getID()));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				Promise.await(manager.remove(prl.getID(), { user }));
 
 				const info = prl.getInfo();
 				info.status = prl.getStatus();
@@ -510,12 +508,12 @@ export class AppsRestApi {
 				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				const headers = getDefaultHeaders();
-				const token = getWorkspaceAccessToken();
+				const token = Promise.await(getWorkspaceAccessToken());
 				if (token) {
 					headers.Authorization = `Bearer ${ token }`;
 				}
 
-				const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+				const workspaceIdSetting = Promise.await(Settings.findOneById('Cloud_Workspace_Id'));
 
 				let result;
 				try {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { SHA256 } from 'meteor/sha';
 import s from 'underscore.string';
 
 import { settings } from '../../../settings';
@@ -8,7 +9,7 @@ import { Users } from '../../../models';
 import { deleteUser } from '../functions';
 
 Meteor.methods({
-	deleteUserOwnAccount(password, confirmRelinquish) {
+	async deleteUserOwnAccount(password, confirmRelinquish) {
 		check(password, String);
 
 		if (!Meteor.userId()) {
@@ -34,11 +35,11 @@ Meteor.methods({
 			if (result.error) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', { method: 'deleteUserOwnAccount' });
 			}
-		} else if (user.username !== s.trim(password)) {
+		} else if (SHA256(user.username) !== s.trim(password)) {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'deleteUserOwnAccount' });
 		}
 
-		deleteUser(userId, confirmRelinquish);
+		await deleteUser(userId, confirmRelinquish);
 
 		return true;
 	},

@@ -1,7 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-
 import { API } from '../../../api/server';
-import { Uploads } from '../../../models/server';
+import { Uploads } from '../../../models/server/raw';
 import { FileUpload } from '../../../file-upload/server';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 
@@ -13,15 +11,13 @@ API.v1.addRoute('federation.uploads', { authRequired: false }, {
 
 		const { upload_id } = this.requestParams();
 
-		const upload = Uploads.findOneById(upload_id);
+		const upload = Promise.await(Uploads.findOneById(upload_id));
 
 		if (!upload) {
 			return API.v1.failure('There is no such file in this server');
 		}
 
-		const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
-
-		const buffer = getFileBuffer(upload);
+		const buffer = FileUpload.getBufferSync(upload);
 
 		return API.v1.success({ upload, buffer });
 	},

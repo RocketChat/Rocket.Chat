@@ -1,51 +1,33 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Box, InputBox, Menu, Margins, Field } from '@rocket.chat/fuselage';
+import { Box, InputBox, Menu, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import moment from 'moment';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const date = new Date();
+const formatToDateInput = (date) => date.format('YYYY-MM-DD');
 
-const formatToDateInput = (date) => date.toISOString().slice(0, 10);
+const todayDate = formatToDateInput(moment());
 
-const todayDate = formatToDateInput(date);
+const getMonthRange = (monthsToSubtractFromToday) => ({
+	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
+	end: formatToDateInput(
+		monthsToSubtractFromToday === 0
+			? moment()
+			: moment().subtract(monthsToSubtractFromToday).date(0),
+	),
+});
 
-const getMonthRange = (monthsToSubtractFromToday) => {
-	const date = new Date();
-	return {
-		start: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth() - monthsToSubtractFromToday,
-			1)),
-		end: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth() - monthsToSubtractFromToday + 1,
-			0)),
-	};
-};
-
-const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => {
-	const date = new Date();
-	return {
-		start: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate() - daysToSubtractFromStart)),
-		end: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate() - daysToSubtractFromEnd)),
-	};
-};
+const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => ({
+	start: formatToDateInput(moment().subtract(daysToSubtractFromStart, 'day')),
+	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
+});
 
 const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 	const t = useTranslation();
 	const [range, setRange] = useState({ start: '', end: '' });
 
-	const {
-		start,
-		end,
-	} = range;
+	const { start, end } = range;
 
 	const handleStart = useMutableCallback(({ currentTarget }) => {
 		const rangeObj = {
@@ -77,56 +59,77 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 		});
 	}, [handleRange]);
 
-	const options = useMemo(() => ({
-		today: {
-			icon: 'history',
-			label: t('Today'),
-			action: () => { handleRange(getWeekRange(0, 0)); },
-		},
-		yesterday: {
-			icon: 'history',
-			label: t('Yesterday'),
-			action: () => { handleRange(getWeekRange(1, 1)); },
-		},
-		thisWeek: {
-			icon: 'history',
-			label: t('This_week'),
-			action: () => { handleRange(getWeekRange(7, 0)); },
-		},
-		previousWeek: {
-			icon: 'history',
-			label: t('Previous_week'),
-			action: () => { handleRange(getWeekRange(14, 7)); },
-		},
-		thisMonth: {
-			icon: 'history',
-			label: t('This_month'),
-			action: () => { handleRange(getMonthRange(0)); },
-		},
-		lastMonth: {
-			icon: 'history',
-			label: t('Previous_month'),
-			action: () => { handleRange(getMonthRange(1)); },
-		},
-	}), [handleRange, t]);
+	const options = useMemo(
+		() => ({
+			today: {
+				icon: 'history',
+				label: t('Today'),
+				action: () => {
+					handleRange(getWeekRange(0, 0));
+				},
+			},
+			yesterday: {
+				icon: 'history',
+				label: t('Yesterday'),
+				action: () => {
+					handleRange(getWeekRange(1, 1));
+				},
+			},
+			thisWeek: {
+				icon: 'history',
+				label: t('This_week'),
+				action: () => {
+					handleRange(getWeekRange(7, 0));
+				},
+			},
+			previousWeek: {
+				icon: 'history',
+				label: t('Previous_week'),
+				action: () => {
+					handleRange(getWeekRange(14, 7));
+				},
+			},
+			thisMonth: {
+				icon: 'history',
+				label: t('This_month'),
+				action: () => {
+					handleRange(getMonthRange(0));
+				},
+			},
+			lastMonth: {
+				icon: 'history',
+				label: t('Previous_month'),
+				action: () => {
+					handleRange(getMonthRange(1));
+				},
+			},
+		}),
+		[handleRange, t],
+	);
 
-	return <Box mi='neg-x4' {...props}>
-		<Margins inline='x4'>
-			<Field>
-				<Field.Label>{t('Start')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('End')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
-					<Menu options={options}/>
-				</Field.Row>
-			</Field>
-		</Margins>
-	</Box>;
+	return (
+		<Box {...props}>
+			<Box mi='neg-x4' height='full' display='flex' flexDirection='row'>
+				<Field mi='x4' flexShrink={1} flexGrow={1}>
+					<Field.Label>{t('Start')}</Field.Label>
+					<Field.Row>
+						<Box height='x40' display='flex' width='full'>
+							<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
+						</Box>
+					</Field.Row>
+				</Field>
+				<Field mi='x4' flexShrink={1} flexGrow={1}>
+					<Field.Label>{t('End')}</Field.Label>
+					<Field.Row>
+						<Box height='x40' display='flex' width='full'>
+							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
+						</Box>
+						<Menu mis='x8' options={options} />
+					</Field.Row>
+				</Field>
+			</Box>
+		</Box>
+	);
 };
 
 export default DateRangePicker;

@@ -221,6 +221,17 @@ if (Meteor.isServer) {
 				throw new Meteor.Error('invalid-store', 'The store does not exist');
 			}
 
+			let parsedUrl;
+			try {
+				parsedUrl = new URL(url);
+			} catch (e) {
+				throw new Meteor.Error('invalid-url', 'The url is not valid');
+			}
+
+			if (['localhost', '127.0.0.1', '0.0.0.0'].includes(parsedUrl.hostname)) {
+				throw new Meteor.Error('invalid-url', 'URL cannot reference localhost');
+			}
+
 			// Extract file info
 			if (!file.name) {
 				file.name = url.replace(/\?.*$/, '').split('/').pop();

@@ -72,7 +72,8 @@
       },
       "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "anti-trojan-source"
       ],
       "rules": {
         "func-call-spacing": "off",
@@ -81,9 +82,12 @@
           "prefer-single"
         ],
         "indent": "off",
+        "no-dupe-class-members": "off",
         "no-extra-parens": "off",
         "no-spaced-func": "off",
+        "no-unused-vars": "off",
         "no-useless-constructor": "off",
+        "no-use-before-define": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -99,6 +103,10 @@
             "SwitchCase": 1
           }
         ],
+        "@typescript-eslint/interface-name-prefix": [
+          "error",
+          "always"
+        ],
         "@typescript-eslint/no-extra-parens": [
           "error",
           "all",
@@ -110,11 +118,13 @@
             "enforceForArrowConditionals": false
           }
         ],
+        "@typescript-eslint/no-dupe-class-members": "error",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/interface-name-prefix": [
-          "error",
-          "always"
-        ]
+        "@typescript-eslint/no-unused-vars": ["error", {
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
+        }],
+        "anti-trojan-source/no-bidi": "error"
       },
       "env": {
         "browser": true,
@@ -135,6 +145,16 @@
         "react": {
           "version": "detect"
         }
+      }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
       }
     }
   ]

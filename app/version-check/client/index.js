@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { alerts } from '../../ui-utils';
+import * as banners from '../../../client/lib/banners';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -17,7 +17,8 @@ Meteor.startup(function() {
 
 			firstBanner.textArguments = firstBanner.textArguments || [];
 
-			alerts.open({
+			banners.open({
+				id: firstBanner.id,
 				title: TAPi18n.__(firstBanner.title),
 				text: TAPi18n.__(firstBanner.text, ...firstBanner.textArguments),
 				modifiers: firstBanner.modifiers,

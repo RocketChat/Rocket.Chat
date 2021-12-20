@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isURL } from './isURL';
 import { settings } from '../../settings';
@@ -54,7 +55,7 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	}
 
 	if (full) {
-		return siteUrl + url;
+		return siteUrl.replace(new RegExp(`${ escapeRegExp(pathPrefix) }$`), '') + url;
 	}
 
 	return url;

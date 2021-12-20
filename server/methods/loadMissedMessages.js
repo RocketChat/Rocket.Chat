@@ -1,22 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../app/models';
-import { settings } from '../../app/settings';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	loadMissedMessages(rid, start) {
 		check(rid, String);
 		check(start, Date);
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadMissedMessages',
-			});
+		const fromId = Meteor.userId();
+
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const fromId = Meteor.userId();
-		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
 			return false;
 		}
 

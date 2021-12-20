@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
-import { createEphemeralPortal } from '../../../../client/reactAdapters';
+import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
 
 const Dep = new Tracker.Dependency();
 
@@ -35,7 +35,7 @@ export const closeUserCard = () => {
 	});
 };
 
-export const openUserCard = async (args) => {
+export const openUserCard = (args) => {
 	props = {
 		...args,
 		onClose: closeUserCard,
@@ -45,7 +45,7 @@ export const openUserCard = async (args) => {
 
 	container = container || createContainer();
 
-	unregister = unregister || await createEphemeralPortal(
+	unregister = unregister || createEphemeralPortal(
 		() => import('../../../../client/views/room/UserCard'), () => {
 			Dep.depend();
 			return props;

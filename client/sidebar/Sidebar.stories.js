@@ -1,58 +1,14 @@
 import React from 'react';
 
-import Header from './header';
-import RoomList from './RoomList';
-// import Extended from './Item/Extended';
-// import RoomAvatar from '../avatar/RoomAvatar';
-import { UserContext } from '../contexts/UserContext';
 import { SettingsContext } from '../contexts/SettingsContext';
+import { UserContext } from '../contexts/UserContext';
+import RoomList from './RoomList/index';
+import Header from './header';
 
 export default {
 	title: 'Sidebar',
 	component: '',
 };
-
-// const viewModes = ['extended', 'medium', 'condensed'];
-// const sortBy = ['activity', 'alphabetical'];
-
-/*
-	[] extended
-		[] com avatar
-		[] sem avatar
-		[] unread
-			[] sem badge
-		[] badges
-			[] normal
-			[] mention grupo
-			[] mention direta
-		[] last message
-			[] `You:`
-			[] No messages yet
-			[] Fulano:
-			[] yesterday
-			[] day month
-	[] medium
-		[] sem avatar
-		[] com avatar
-			[] sem avatar
-			[] unread
-				[] sem badge
-			[] badges
-				[] normal
-				[] mention grupo
-				[] mention direta
-	[] condensed
-		[] sem avatar
-		[] com avatar
-			[] sem avatar
-			[] unread
-				[] sem badge
-			[] badges
-				[] normal
-				[] mention grupo
-				[] mention direta
-
-*/
 
 const subscriptions = [
 	{
@@ -101,10 +57,9 @@ const subscriptions = [
 
 const userPreferences = {
 	sidebarViewMode: 'medium',
-	sidebarHideAvatar: false,
+	sidebarDisplayAvatar: true,
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
-	sidebarShowDiscussion: true,
 	sidebarShowUnread: true,
 	sidebarSortby: 'activity',
 };
@@ -145,17 +100,19 @@ const settingContextValue = {
 	dispatch: async () => undefined,
 };
 
-const Sidebar = () => <>
-	<SettingsContext.Provider value={settingContextValue} >
-		<UserContext.Provider value={userContextValue}>
-			<aside class='sidebar sidebar--main' role='navigation'>
-				<Header />
-				<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
-					<RoomList />
-				</div>
-			</aside>
-		</UserContext.Provider>
-	</SettingsContext.Provider>
-</>;
+const Sidebar = () => (
+	<>
+		<SettingsContext.Provider value={settingContextValue}>
+			<UserContext.Provider value={userContextValue}>
+				<aside className='sidebar sidebar--main' role='navigation'>
+					<Header />
+					<div className='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
+						<RoomList />
+					</div>
+				</aside>
+			</UserContext.Provider>
+		</SettingsContext.Provider>
+	</>
+);
 
 export const Default = () => <Sidebar />;

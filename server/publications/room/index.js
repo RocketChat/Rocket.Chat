@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { roomTypes } from '../../../app/utils';
-import { hasPermission } from '../../../app/authorization';
-import { Rooms } from '../../../app/models';
-import { settings } from '../../../app/settings';
+import { roomTypes } from '../../../app/utils/server';
+import { canAccessRoom, hasPermission } from '../../../app/authorization/server';
+import { Rooms } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
 
 const roomMap = (record) => {
@@ -17,9 +17,10 @@ const roomMap = (record) => {
 Meteor.methods({
 	'rooms/get'(updatedAt) {
 		const options = { fields: roomFields };
+		const user = Meteor.userId();
 
-		if (!Meteor.userId()) {
-			if (settings.get('Accounts_AllowAnonymousRead') === true) {
+		if (!user) {
+			if (settings.get('Accounts_AllowAnonymousRead')) {
 				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
 			}
 			return [];
@@ -27,12 +28,12 @@ Meteor.methods({
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
+				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
 				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
-		return Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
+		return Rooms.findBySubscriptionUserId(user, options).fetch();
 	},
 
 	getRoomByTypeAndName(type, name) {
@@ -50,7 +51,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
 		}
 
-		if (!Meteor.call('canAccessRoom', room._id, userId)) {
+		if (!canAccessRoom(room, { _id: userId })) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 

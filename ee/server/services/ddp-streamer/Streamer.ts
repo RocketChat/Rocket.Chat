@@ -1,9 +1,10 @@
 import WebSocket from 'ws';
+import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
-import { Streamer, DDPSubscription, Connection, StreamerCentral, TransformMessage } from '../../../../server/modules/streamer/streamer.module';
+import { Streamer, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
