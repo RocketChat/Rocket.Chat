@@ -3,7 +3,6 @@ import { QueryClientProvider } from 'react-query';
 
 import { OmnichannelRoomIconProvider } from '../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import { queryClient } from '../../lib/queryClient';
-import E2EEProvider from '../e2ee/E2EEProvider';
 import PageLoading from './PageLoading';
 
 const ConnectionStatusBar = lazy(
@@ -13,6 +12,7 @@ const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const BannerRegion = lazy(() => import('../banners/BannerRegion'));
 const AppLayout = lazy(() => import('./AppLayout'));
 const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
+const E2EEProvider = lazy(() => import('../e2ee/E2EEProvider'));
 
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
