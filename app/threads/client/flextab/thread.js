@@ -255,7 +255,7 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove, state } = this;
+	const { Threads, threadsObserve, callbackRemove, state, chatMessages } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
 
@@ -264,6 +264,7 @@ Template.thread.onDestroyed(function() {
 	const tmid = state.get('tmid');
 	const rid = state.get('rid');
 	if (rid && tmid) {
+		chatMessages.onDestroyed && chatMessages.onDestroyed(rid, tmid);
 		delete chatMessages[`${ rid }-${ tmid }`];
 	}
 });

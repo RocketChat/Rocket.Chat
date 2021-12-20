@@ -278,7 +278,14 @@ export class LDAPConnection {
 		Object.keys(values._raw).forEach((key) => {
 			values[key] = this.extractLdapAttribute(values._raw[key]);
 
-			mapLogger.debug({ msg: 'Extracted Attribute', key, type: typeof values[key], value: values[key] });
+			const dataType = typeof values[key];
+			// eslint-disable-next-line no-control-regex
+			if (dataType === 'string' && values[key].length > 100 && /[\x00-\x1F]/.test(values[key])) {
+				mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, length: values[key].length, value: `${ values[key].substr(0, 100) }...` });
+				return;
+			}
+
+			mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, value: values[key] });
 		});
 
 		return values;
@@ -310,11 +317,16 @@ export class LDAPConnection {
 				const entries: T[] = [];
 
 				res.on('searchEntry', (entry) => {
-					const result = entryCallback(entry);
-					if (result) {
-						entries.push(result as T);
+					try {
+						const result = entryCallback(entry);
+						if (result) {
+							entries.push(result as T);
+						}
+						realEntries++;
+					} catch (e) {
+						searchLogger.error(e);
+						throw e;
 					}
-					realEntries++;
 				});
 
 				res.on('end', () => {
@@ -429,8 +441,13 @@ export class LDAPConnection {
 			const entries: T[] = [];
 
 			res.on('searchEntry', (entry) => {
-				const result = entryCallback ? entryCallback(entry) : entry;
-				entries.push(result as T);
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
+				}
 			});
 
 			res.on('end', () => {
@@ -479,16 +496,21 @@ export class LDAPConnection {
 			const internalPageSize = pageSize * 2;
 
 			res.on('searchEntry', (entry) => {
-				const result = entryCallback ? entryCallback(entry) : entry;
-				entries.push(result as T);
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
 
-				if (entries.length >= internalPageSize) {
-					this.processSearchPage<T>({
-						entries,
-						title: 'Internal Page',
-						end: false,
-					}, callback);
-					entries = [];
+					if (entries.length >= internalPageSize) {
+						this.processSearchPage<T>({
+							entries,
+							title: 'Internal Page',
+							end: false,
+						}, callback);
+						entries = [];
+					}
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
 				}
 			});
 

@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, EmojiCustom } from '../../../../models/server';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
@@ -10,8 +12,9 @@ export function online(department) {
 	return Livechat.online(department);
 }
 
-export function findTriggers() {
-	return LivechatTrigger.findEnabled().fetch().map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
+async function findTriggers() {
+	const triggers = await LivechatTrigger.findEnabled().toArray();
+	return triggers.map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
 }
 
 export function findDepartments() {
@@ -55,6 +58,7 @@ export function findOpenRoom(token, departmentId) {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
+			callStatus: 1,
 		},
 	};
 
@@ -86,12 +90,12 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export function settings() {
+export async function settings() {
 	const initSettings = Livechat.getInitSettings();
-	const triggers = findTriggers();
+	const triggers = await findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
-	const emojis = EmojiCustom.find().fetch();
+	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -100,7 +104,7 @@ export function settings() {
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
-			videoCall: initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true,
+			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true,
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
@@ -108,18 +112,25 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
 			limitTextLength: initSettings.Livechat_enable_message_character_limit
-			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+				&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
 			title: initSettings.Livechat_title,
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
-			actionLinks: [
-				{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall', params: '' },
-				{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' },
-			],
+			actionLinks: {
+				webrtc: [
+					{ actionLinksAlignment: 'flex-start', i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall' },
+					{ i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall', danger: true },
+				],
+				jitsi: [
+					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall' },
+					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall' },
+				],
+			},
 		},
 		messages: {
 			offlineMessage: initSettings.Livechat_offline_message,

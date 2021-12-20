@@ -34,6 +34,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
@@ -400,11 +401,18 @@ Template.messageBox.events({
 
 		const files = items
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
-			.map((item) => ({
-				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
-			}))
-			.filter(({ file }) => file !== null);
+			.map((item) => {
+				const fileItem = item.getAsFile();
+
+				const imageExtension = getImageExtensionFromMime(fileItem.type);
+
+				const extension = imageExtension ? `.${ imageExtension }` : '';
+
+				return {
+					file: fileItem,
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }${ extension }`,
+				};
+			}).filter(({ file }) => file !== null);
 
 		if (files.length) {
 			event.preventDefault();
@@ -477,6 +485,7 @@ Template.messageBox.events({
 			data: {
 				rid: this.rid,
 				tmid: this.tmid,
+				prid: this.subscription.prid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -494,6 +503,7 @@ Template.messageBox.events({
 					rid: this.rid,
 					tmid: this.tmid,
 					messageBox: instance.firstNode,
+					prid: this.subscription.prid,
 					event,
 				});
 			});

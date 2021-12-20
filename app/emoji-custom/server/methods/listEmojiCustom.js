@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { EmojiCustom } from '../../../models';
+import { EmojiCustom } from '../../../models/server/raw';
 
 Meteor.methods({
-	listEmojiCustom(options = {}) {
-		return EmojiCustom.find(options).fetch();
+	async listEmojiCustom(options = {}) {
+		return EmojiCustom.find(options).toArray();
 	},
 });

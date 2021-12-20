@@ -1,7 +1,8 @@
 import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
-import { Roles, Rooms } from '../../../../app/models/server';
+import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
+import { Roles } from '../../../../app/models/server/raw';
 
 export const logger = new Logger('OAuth');
 
@@ -34,7 +35,7 @@ export class OAuthEEManager {
 		}
 	}
 
-	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string): void {
+	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string, rolesToSync: string[]): void {
 		if (user && identity && roleClaimName) {
 			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
 
@@ -42,19 +43,15 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val));
+			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val) && rolesToSync.includes(val));
 
-			// loop through roles that user has that sso doesnt have and remove each one
-			toRemove.forEach(function(role: any) {
-				removeUserFromRoles(user._id, role);
-			});
+			// remove all roles that the user has, but sso doesnt
+			removeUserFromRoles(user._id, toRemove);
 
-			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val));
+			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val) && (!rolesToSync.length || rolesToSync.includes(val)));
 
-			// loop through sso roles and add the new ones
-			toAdd.forEach(function(role: any) {
-				addUserRoles(user._id, role);
-			});
+			// add all roles that sso has, but the user doesnt
+			addUserRoles(user._id, toAdd);
 		}
 	}
 
@@ -64,7 +61,7 @@ export class OAuthEEManager {
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
+				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)));
 			}
 		}
 

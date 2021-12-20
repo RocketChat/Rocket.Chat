@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { getSettingDefaults } from './getSettingDefaults';

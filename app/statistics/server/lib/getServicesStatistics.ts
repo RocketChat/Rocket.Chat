@@ -11,7 +11,7 @@ function getCustomOAuthServices(): Record<string, {
 		const name = key.replace('Accounts_OAuth_Custom-', '');
 		return [name, {
 			enabled: Boolean(value),
-			mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
+			mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${ name }-merge_roles`),
 			users: Users.countActiveUsersByService(name),
 		}];
 	}));

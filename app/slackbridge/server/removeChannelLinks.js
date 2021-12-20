@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../models/server';
-import { hasRole } from '../../authorization';
-import { settings } from '../../settings';
+import { hasRole } from '../../authorization/server';
+import { settings } from '../../settings/server';
 
 Meteor.methods({
 	removeSlackBridgeChannelLinks() {

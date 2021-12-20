@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { getUserPreference } from '../../../app/utils/client';
 
 Meteor.startup(() => {

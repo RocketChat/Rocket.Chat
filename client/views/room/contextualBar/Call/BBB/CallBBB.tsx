@@ -33,8 +33,8 @@ const CallBBB: FC<CallBBBProps> = ({
 			<VerticalBar.ScrollableContent {...(props as any)}>
 				{openNewWindow ? (
 					<>
-						<Box fontScale='p2'>{t('Video_Conference')}</Box>
-						<Box fontScale='p1' color='neutral-700'>
+						<Box fontScale='p4'>{t('Video_Conference')}</Box>
+						<Box fontScale='p3' color='neutral-700'>
 							{t('Opened_in_a_new_window')}
 						</Box>
 					</>

@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { callbacks } from '../../../callbacks/server';
-import { LivechatAgentActivity, Sessions, Users } from '../../../models/server';
+import { LivechatAgentActivity, Users } from '../../../models/server';
+import { Sessions } from '../../../models/server/raw';
 
 const formatDate = (dateTime = new Date()) => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),
@@ -12,7 +13,6 @@ const formatDate = (dateTime = new Date()) => ({
 export class LivechatAgentActivityMonitor {
 	constructor() {
 		this._started = false;
-		this._handleMeteorConnection = this._handleMeteorConnection.bind(this);
 		this._handleAgentStatusChanged = this._handleAgentStatusChanged.bind(this);
 		this._handleUserStatusLivechatChanged = this._handleUserStatusLivechatChanged.bind(this);
 		this._name = 'Livechat Agent Activity Monitor';
@@ -41,7 +41,7 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 		this._startMonitoring();
-		Meteor.onConnection(this._handleMeteorConnection);
+		Meteor.onConnection((connection) => this._handleMeteorConnection(connection));
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
 		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
 		this._started = true;
@@ -75,12 +75,12 @@ export class LivechatAgentActivityMonitor {
 		}
 	}
 
-	_handleMeteorConnection(connection) {
+	async _handleMeteorConnection(connection) {
 		if (!this.isRunning()) {
 			return;
 		}
 
-		const session = Sessions.findOne({ sessionId: connection.id });
+		const session = await Sessions.findOne({ sessionId: connection.id });
 		if (!session) {
 			return;
 		}

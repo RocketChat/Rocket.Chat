@@ -3,11 +3,11 @@ import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Logger } from '../../logger';
-import { _setRealName } from '../../lib';
-import { Users } from '../../models';
-import { settings } from '../../settings';
-import { hasRole } from '../../authorization';
+import { Logger } from '../../logger/server';
+import { _setRealName } from '../../lib/server';
+import { Users } from '../../models/server';
+import { settings } from '../../settings/server';
+import { hasRole } from '../../authorization/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
@@ -208,7 +208,7 @@ export class CROWD {
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
 						Meteor.defer(function() {
-							deleteUser(user._id);
+							Promise.await(deleteUser(user._id));
 							logger.info('User removed:', crowd_username);
 						});
 					}

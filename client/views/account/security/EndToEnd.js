@@ -1,16 +1,22 @@
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useEffect } from 'react';
 
+import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
 const EndToEnd = (props) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const homeRoute = useRoute('home');
+	const user = useUser();
 
 	const publicKey = useLocalStorage('public_key');
 	const privateKey = useLocalStorage('private_key');
@@ -30,6 +36,14 @@ const EndToEnd = (props) => {
 			: undefined;
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
+	const handleLogout = useMutableCallback(() => {
+		Meteor.logout(() => {
+			callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user);
+			homeRoute.push({});
+		});
+	});
+
 	const saveNewPassword = useCallback(async () => {
 		try {
 			await e2e.changePassword(password);
@@ -45,11 +59,12 @@ const EndToEnd = (props) => {
 			const result = await resetE2eKey();
 			if (result) {
 				dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
+				handleLogout();
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, resetE2eKey, t]);
+	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
 
 	useEffect(() => {
 		if (password.trim() === '') {
@@ -60,7 +75,7 @@ const EndToEnd = (props) => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
 			<Margins blockEnd='x8'>
-				<Box fontScale='s2'>{t('E2E_Encryption_Password_Change')}</Box>
+				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
 				<FieldGroup w='full'>
 					<Field>
@@ -91,7 +106,7 @@ const EndToEnd = (props) => {
 				<Button primary disabled={!canSave} onClick={saveNewPassword}>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='s2' mbs='x16'>
+				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />

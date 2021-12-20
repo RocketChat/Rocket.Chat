@@ -21,7 +21,7 @@ function IntegrationRow({
 	const handler = useMemo(() => onClick(_id, type), [onClick, _id, type]);
 	return (
 		<Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
-			<Table.Cell style={style} color='default' fontScale='p2'>
+			<Table.Cell style={style} color='default' fontScale='p4'>
 				{name}
 			</Table.Cell>
 			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>

@@ -10,13 +10,14 @@ import {
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { validateEmail as emailValidator } from '../../../../lib/emailValidator';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword } from '../../../contexts/UserContext';
-import { useCallbacks } from '../../../hooks/useCallbacks';
 import { Pager } from '../Pager';
 import { Step } from '../Step';
 import { StepHeader } from '../StepHeader';
@@ -27,7 +28,6 @@ function AdminUserInformationStep({ step, title, active }) {
 	const defineUsername = useMethod('setUsername');
 
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const callbacks = useCallbacks();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const registerAdminUser = async ({
@@ -62,7 +62,6 @@ function AdminUserInformationStep({ step, title, active }) {
 		() => new RegExp(`^${regexpForUsernameValidation}$`),
 		[regexpForUsernameValidation],
 	);
-	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 
 	const [name, setName] = useState('');
 	const [username, setUsername] = useState('');
@@ -84,8 +83,8 @@ function AdminUserInformationStep({ step, title, active }) {
 	}, [username, usernameRegExp]);
 
 	useEffect(() => {
-		validateEmail(email && emailRegExp.test(email));
-	}, [email, emailRegExp]);
+		validateEmail(emailValidator(email));
+	}, [email]);
 
 	const t = useTranslation();
 

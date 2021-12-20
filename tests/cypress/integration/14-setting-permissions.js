@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import { assert } from 'chai';
 
 import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';

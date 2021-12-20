@@ -56,6 +56,15 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		this.add('Livechat_clear_local_storage_when_chat_ended', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			section: 'Livechat',
+			i18nLabel: 'Clear_livechat_session_when_chat_ended',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		this.add('Livechat_validate_offline_email', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -375,16 +384,6 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_videocall_enabled', false, {
-			type: 'boolean',
-			group: 'Omnichannel',
-			section: 'Livechat',
-			public: true,
-			i18nLabel: 'Videocall_enabled',
-			i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
-			enableQuery: [{ _id: 'Jitsi_Enabled', value: true }, omnichannelEnabledQuery],
-		});
-
 		this.add('Livechat_fileupload_enabled', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -614,6 +613,22 @@ Meteor.startup(function() {
 			section: 'Sessions',
 			i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 			i18nDescription: 'Time_in_seconds',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
+		this.add('Omnichannel_call_provider', 'none', {
+			type: 'select',
+			public: true,
+			group: 'Omnichannel',
+			section: 'Video_and_Audio_Call',
+			values: [
+				{ key: 'none', i18nLabel: 'None' },
+				{ key: 'Jitsi', i18nLabel: 'Jitsi' },
+				{ key: 'WebRTC', i18nLabel: 'WebRTC' },
+			],
+			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
+			i18nLabel: 'Call_provider',
+			alert: 'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});

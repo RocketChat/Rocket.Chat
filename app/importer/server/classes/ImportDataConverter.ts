@@ -39,6 +39,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 
 export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
+	skipExistingUsers?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -69,6 +70,7 @@ export class ImportDataConverter {
 	constructor(options?: IConverterOptions) {
 		this._options = options || {
 			flagEmailsAsVerified: false,
+			skipExistingUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -219,11 +221,18 @@ export class ImportDataConverter {
 
 		userData._id = _id;
 
+		if (!userData.roles && !existingUser.roles) {
+			userData.roles = ['user'];
+		}
+		if (!userData.type && !existingUser.type) {
+			userData.type = 'user';
+		}
+
 		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
 			$set: {
-				roles: userData.roles || ['user'],
-				type: userData.type || 'user',
+				...userData.roles && { roles: userData.roles },
+				...userData.type && { type: userData.type },
 				...userData.statusText && { statusText: userData.statusText },
 				...userData.bio && { bio: userData.bio },
 				...userData.services?.ldap && { ldap: true },
@@ -235,7 +244,13 @@ export class ImportDataConverter {
 		this.addUserServices(updateData, userData);
 		this.addUserImportId(updateData, userData);
 		this.addUserEmails(updateData, userData, existingUser.emails || []);
-		Users.update({ _id }, updateData);
+
+		if (Object.keys(updateData.$set).length === 0) {
+			delete updateData.$set;
+		}
+		if (Object.keys(updateData).length > 0) {
+			Users.update({ _id }, updateData);
+		}
 
 		if (userData.utcOffset) {
 			Users.setUtcOffset(_id, userData.utcOffset);
@@ -305,6 +320,11 @@ export class ImportDataConverter {
 				}
 
 				let existingUser = this.findExistingUser(data);
+				if (existingUser && this._options.skipExistingUsers) {
+					this.skipRecord(_id);
+					return;
+				}
+
 				if (!data.username) {
 					data.username = generateUsernameSuggestion({
 						name: data.name,

@@ -20,6 +20,8 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
+		this.tryEnsureIndex({ source: 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -274,6 +276,17 @@ export class LivechatRooms extends Base {
 			t: 'l',
 			open: true,
 			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			departmentId,
 		};
 
 		return this.findOne(query, options);
@@ -719,9 +732,8 @@ export class LivechatRooms extends Base {
 			t: 'l',
 		};
 		const update = {
-			$unset: {
-				servedBy: 1,
-			},
+			$set: { queuedAt: new Date() },
+			$unset: { servedBy: 1 },
 		};
 
 		this.update(query, update);
