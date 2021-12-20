@@ -13,6 +13,7 @@ type AppsContextualBarData = {
 };
 
 export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
+	debugger;
 	const [, params] = useCurrentRoute();
 	const [payload, setPayload] = useState<IUIKitContextualBarInteraction>();
 	const [appInfo, setAppInfo] = useState<App>();
@@ -32,7 +33,12 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 		if (payload?.appId) {
 			getAppData(payload.appId);
 		}
-	}, [viewId, payload]);
+
+		return (): void => {
+			setPayload(undefined);
+			setAppInfo(undefined);
+		};
+	}, [viewId, payload?.appId]);
 
 	if (viewId && payload && appInfo) {
 		return {

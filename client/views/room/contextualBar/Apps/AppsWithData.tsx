@@ -21,6 +21,7 @@ import {
 	off,
 } from '../../../../../app/ui-message/client/ActionManager';
 import { App } from '../../../admin/apps/types';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;
@@ -106,8 +107,9 @@ const AppsWithData = ({
 	payload: IUIKitContextualBarInteraction;
 	appInfo: App;
 }): JSX.Element => {
-	const { id: appId, name: appName } = appInfo;
+	const closeTabBar = useTabBarClose();
 
+	const { id: appId, name: appName } = appInfo;
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
 	const [values, updateValues] = useValues(view);
@@ -176,8 +178,9 @@ const AppsWithData = ({
 		values,
 	};
 
-	const handleSubmit = useMutableCallback((e: SyntheticEvent) => {
+	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
+		closeTabBar(e);
 		triggerSubmitView({
 			viewId,
 			appId,
@@ -191,8 +194,9 @@ const AppsWithData = ({
 		});
 	});
 
-	const handleCancel = useMutableCallback((e: SyntheticEvent) => {
+	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
+		closeTabBar(e);
 		return triggerCancel({
 			appId,
 			viewId,
@@ -204,8 +208,9 @@ const AppsWithData = ({
 		});
 	});
 
-	const handleClose = useMutableCallback((e: SyntheticEvent) => {
+	const handleClose = useMutableCallback((e) => {
 		prevent(e);
+		closeTabBar(e);
 		return triggerCancel({
 			appId,
 			viewId,
