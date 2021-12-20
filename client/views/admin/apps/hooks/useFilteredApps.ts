@@ -27,6 +27,7 @@ export const useFilteredApps = ({
 		if (result.value === undefined) {
 			return undefined;
 		}
+
 		const apps = result.value.apps.filter(filterFunction);
 
 		const filtered = apps
@@ -54,6 +55,7 @@ export const useFilteredApps = ({
 			value,
 		};
 	}
+
 	if (result.phase === AsyncStatePhase.UPDATING) {
 		throw new Error('useFilteredApps - Unexpected state');
 	}
