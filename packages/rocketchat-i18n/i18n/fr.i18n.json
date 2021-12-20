@@ -3000,7 +3000,6 @@
   "Mobex_sms_gateway_restful_address_desc": "IP ou hôte de votre REST API Mobex, par exemple `http://192.168.1.1:8080` ou `https://www.example.com:8080`",
   "Mobex_sms_gateway_username": "Nom d'utilisateur",
   "Mobile": "Mobile",
-  "mobile-download-file": "Autoriser le téléchargement de fichiers sur les appareils mobiles",
   "mobile-upload-file": "Autoriser l'envoi de fichiers sur les appareils mobiles",
   "Mobile_Push_Notifications_Default_Alert": "Alerte par défaut des notifications push",
   "Monday": "Lundi",
