@@ -345,7 +345,7 @@
   "API_Add_Personal_Access_Token": "Dodaj nowy osobisty token dostępowy",
   "API_Allow_Infinite_Count": "Pozwól uzyskać wszystko",
   "API_Allow_Infinite_Count_Description": "Czy połączenia z interfejsem REST API powinny zwracać wszystko w jednym wywołaniu?",
-  "API_Analytics": "Analityka",
+  "API_Analytics": "Analytics",
   "API_CORS_Origin": "CORS Origin",
   "API_Default_Count": "Domyślny licznik",
   "API_Default_Count_Description": "Domyślna liczba dla REST API wynika, jeśli konsument nie podał żadnych.",
@@ -4392,6 +4392,7 @@
   "UTF8_User_Names_Validation_Description": "RegExp, który będzie używany do sprawdzania poprawności nazw użytkowników",
   "UTF8_Channel_Names_Validation": "Walidacja nazw kanałów UTF8",
   "UTF8_Channel_Names_Validation_Description": "RegExp, który będzie używany do sprawdzania poprawności nazw kanałów",
+  "Videocall_enabled": "Rozmowa video uruchomiona",
   "Validate_email_address": "Sprawdź poprawność adresu e-mail",
   "Validation": "Walidacja",
   "Value_messages": "__value__ wiadomości",
@@ -4413,7 +4414,6 @@
   "Video_Conference": "Konferencja wideo",
   "Video_message": "Wiadomość wideo",
   "Videocall_declined": "Rozmowa video odrzucona.",
-  "Videocall_enabled": "Rozmowa video uruchomiona",
   "Videos": "Wideo",
   "View_All": "Pokaż wszystko",
   "View_channels": "Wyświetl kanały",
@@ -4614,7 +4614,7 @@
   "Your_push_was_sent_to_s_devices": "Twój push została wysłany do urządzeń: %s",
   "Your_question": "Twoje pytanie",
   "Your_server_link": "Twój link do serwera",
-  "Your_temporary_password_is_password": "Twoje tymczasowe hasło to <strong>[hasło]</strong>.",
+  "Your_temporary_password_is_password": "Twoje tymczasowe hasło to: <strong>[hasło]</strong>",
   "Your_TOTP_has_been_reset": "Twoje dwuskładnikowe TOTP zostało zresetowane",
   "Your_workspace_is_ready": "Twój obszar roboczy jest gotowy do użycia 🎉"
 }

@@ -294,7 +294,7 @@ export default function IncomingWebhookForm({
 							<Field>
 								<Field.Label>{t('Example_payload')}</Field.Label>
 								<Field.Row>
-									<Box fontScale='p1' withRichContent flexGrow={1}>
+									<Box fontScale='p3' withRichContent flexGrow={1}>
 										<pre>
 											<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
 										</pre>

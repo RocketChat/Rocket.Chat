@@ -186,7 +186,8 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-		Promise.await(Roles.findUsersInRole('admin').toArray()).forEach((adminUser) => {
+		const usersInRole = Promise.await(Roles.findUsersInRole('admin'));
+		Promise.await(usersInRole.toArray()).forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${ adminUser.name }<${ email.address }>`);

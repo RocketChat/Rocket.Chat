@@ -79,10 +79,10 @@ const MarketplaceRow: FC<MarketplaceRowProps> = ({ medium, large, ...props }) =>
 					iconFileData={iconFileData}
 				/>
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
-					<Box color='default' fontScale='p2'>
+					<Box color='default' fontScale='p4'>
 						{name}
 					</Box>
-					<Box color='default' fontScale='p2'>{`${t('By')} ${authorName}`}</Box>
+					<Box color='default' fontScale='p4'>{`${t('By')} ${authorName}`}</Box>
 				</Box>
 			</Table.Cell>
 			{large && (

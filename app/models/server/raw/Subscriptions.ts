@@ -11,8 +11,22 @@ type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
 	constructor(public readonly col: Collection<T>,
 		private readonly models: { Users: UsersRaw },
-		public readonly trash?: Collection<T>) {
+		trash?: Collection<T>) {
 		super(col, trash);
+	}
+
+	async getBadgeCount(uid: string): Promise<number> {
+		const [result] = await this.col.aggregate<{ total: number } | undefined>([
+			{ $match: { 'u._id': uid, archived: { $ne: true } } },
+			{
+				$group: {
+					_id: 'total',
+					total: { $sum: '$unread' },
+				},
+			},
+		]).toArray();
+
+		return result?.total || 0;
 	}
 
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | null> {

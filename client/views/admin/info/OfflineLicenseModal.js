@@ -84,7 +84,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 								is='textarea'
 								height='x108'
 								fontFamily='mono'
-								fontScale='p1'
+								fontScale='p3'
 								color='alternative'
 								style={{ wordBreak: 'break-all', resize: 'none' }}
 								placeholder={t('Paste_here')}

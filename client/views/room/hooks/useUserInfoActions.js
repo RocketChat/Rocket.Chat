@@ -65,7 +65,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
 				<Modal.Close onClick={close} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{text}</Modal.Content>
+			<Modal.Content fontScale='p3'>{text}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button ghost onClick={close}>
@@ -393,7 +393,12 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 					onClose={closeModal}
 					onCancel={closeModal}
 					onConfirm={async (rooms) => {
-						await removeFromTeam({ teamId: room.teamId, userId: uid, rooms: Object.keys(rooms) });
+						const roomKeys = Object.keys(rooms);
+						await removeFromTeam({
+							teamId: room.teamId,
+							userId: uid,
+							...(roomKeys.length && { rooms: roomKeys }),
+						});
 						closeModal();
 						reload && reload();
 					}}
