@@ -1,10 +1,11 @@
 import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
-import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { UiKitComponent, UiKitModal } from '@rocket.chat/fuselage-ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';
 import VerticalBar from '../../../../components/VerticalBar';
+import { modalParser } from '../../../blocks/ModalBlock';
 
 type AppsProps = {
 	view: IUIKitSurface;
