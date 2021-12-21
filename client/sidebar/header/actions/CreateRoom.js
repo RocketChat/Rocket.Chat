@@ -1,8 +1,11 @@
-import { Sidebar } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, Sidebar, Dropdown } from '@rocket.chat/fuselage';
+import React, { useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import { popover } from '../../../../app/ui-utils/client';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
+import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
+import CreateRoomList from './CreateRoomList';
 
 const CREATE_ROOM_PERMISSIONS = [
 	'create-c',
@@ -12,24 +15,29 @@ const CREATE_ROOM_PERMISSIONS = [
 	'start-discussion-other-user',
 ];
 
-const config = (e) => ({
-	template: 'CreateRoomList',
-	data: {
-		options: [],
-	},
-	currentTarget: e.currentTarget,
-	offsetVertical: e.currentTarget.clientHeight + 10,
-});
-
 const CreateRoom = (props) => {
-	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
-	const onClick = (e) => {
-		popover.open(config(e));
-	};
+	const reference = useRef(null);
+	const target = useRef(null);
+	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
-	return showCreate ? (
-		<Sidebar.TopBar.Action {...props} icon='edit-rounded' onClick={onClick} />
-	) : null;
+	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
+
+	return (
+		<>
+			{showCreate && (
+				<Box ref={reference}>
+					<Sidebar.TopBar.Action {...props} icon='edit-rounded' onClick={toggle} />
+				</Box>
+			)}
+			{isVisible &&
+				createPortal(
+					<Dropdown reference={reference} ref={target}>
+						<CreateRoomList closeList={() => toggle(false)} />
+					</Dropdown>,
+					document.body,
+				)}
+		</>
+	);
 };
 
 export default CreateRoom;

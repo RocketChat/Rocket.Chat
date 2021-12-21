@@ -38,7 +38,7 @@ const useReactModal = (Component) => {
 	});
 };
 
-function CreateRoomList() {
+function CreateRoomList({ closeList }) {
 	const t = useTranslation();
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
@@ -54,7 +54,7 @@ function CreateRoomList() {
 	const discussionEnabled = useSetting('Discussion_enabled');
 
 	return (
-		<div className='rc-popover__column'>
+		<Box pi='x16'>
 			<Margins block='x8'>
 				<Box is='p' style={style} fontScale='micro'>
 					{t('Create_new')}
@@ -63,26 +63,48 @@ function CreateRoomList() {
 			<ul className='rc-popover__list'>
 				<Margins block='x8'>
 					{canCreateChannel && (
-						<CreateRoomListItem icon='hashtag' text={t('Channel')} action={createChannel} />
+						<CreateRoomListItem
+							icon='hashtag'
+							text={t('Channel')}
+							action={(e) => {
+								createChannel(e);
+								closeList();
+							}}
+						/>
 					)}
-					{canCreateTeam && <CreateRoomListItem icon='team' text={t('Team')} action={createTeam} />}
+					{canCreateTeam && (
+						<CreateRoomListItem
+							icon='team'
+							text={t('Team')}
+							action={(e) => {
+								createTeam(e);
+								closeList();
+							}}
+						/>
+					)}
 					{canCreateDirectMessages && (
 						<CreateRoomListItem
 							icon='balloon'
 							text={t('Direct_Messages')}
-							action={createDirectMessage}
+							action={(e) => {
+								createDirectMessage(e);
+								closeList();
+							}}
 						/>
 					)}
 					{discussionEnabled && canCreateDiscussion && (
 						<CreateRoomListItem
 							icon='discussion'
 							text={t('Discussion')}
-							action={createDiscussion}
+							action={(e) => {
+								createDiscussion(e);
+								closeList();
+							}}
 						/>
 					)}
 				</Margins>
 			</ul>
-		</div>
+		</Box>
 	);
 }
 
