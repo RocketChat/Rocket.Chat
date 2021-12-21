@@ -40,20 +40,28 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const setStatus = (status: IUser['status']): void => {
-	AccountBox.setStatus(status);
+const isDefaultStatus = (id: string): boolean =>
+	(Object.values(UserStatusEnum) as string[]).includes(id);
+
+const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum =>
+	isDefaultStatus(id);
+
+const setStatus = (status: typeof userStatus.list['']): void => {
+	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
 const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
 
-const translateStatusName = (t: ReturnType<typeof useTranslation>, name: string): string => {
-	const isDefaultStatus = (name: string): name is UserStatusEnum => name in UserStatusEnum;
-	if (isDefaultStatus(name)) {
-		return t(name);
+const translateStatusName = (
+	t: ReturnType<typeof useTranslation>,
+	status: typeof userStatus.list[''],
+): string => {
+	if (isDefaultStatusName(status.name, status.id)) {
+		return t(status.name);
 	}
 
-	return name;
+	return status.name;
 };
 
 type UserDropdownProps = {
@@ -148,14 +156,14 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					.filter(filterInvisibleStatus)
 					.map((key, i) => {
 						const status = userStatus.list[key];
-						const name = status.localizeName ? translateStatusName(t, status.name) : status.name;
+						const name = status.localizeName ? translateStatusName(t, status) : status.name;
 						const modifier = status.statusType || user.status;
 
 						return (
 							<Option
 								key={i}
 								onClick={(): void => {
-									setStatus(status.statusType);
+									setStatus(status);
 									onClose();
 								}}
 							>
