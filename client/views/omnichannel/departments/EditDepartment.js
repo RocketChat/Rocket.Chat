@@ -57,6 +57,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
 	const AutoCompleteDepartment = useSelectForwardDepartment();
 	const [agentList, setAgentList] = useState([]);
+	const [agentsRemoved, setAgentsRemoved] = useState([]);
+	const [agentsAdded, setAgentsAdded] = useState([]);
 
 	const { department } = data || { department: {} };
 
@@ -257,6 +259,33 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		[data.agents, agentList],
 	);
 
+	const agentsHaveChanged = () => {
+		let hasChanges = false;
+		if (agentList.length !== initialAgents.current.length) {
+			hasChanges = true;
+		}
+
+		if (agentsAdded.length > 0 && agentsRemoved.length > 0) {
+			hasChanges = true;
+		}
+
+		agentList.forEach((agent) => {
+			const existingAgent = initialAgents.current.find(
+				(initial) => initial.agentId === agent.agentId,
+			);
+			if (existingAgent) {
+				if (agent.count !== existingAgent.count) {
+					hasChanges = true;
+				}
+				if (agent.order !== existingAgent.order) {
+					hasChanges = true;
+				}
+			}
+		});
+
+		return hasChanges;
+	};
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -265,7 +294,12 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>
+						<Button
+							type='submit'
+							form={formId}
+							primary
+							disabled={invalidForm && hasNewAgent && !(id && agentsHaveChanged())}
+						>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
@@ -480,6 +514,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 								<DepartmentsAgentsTable
 									agents={data && data.agents}
 									setAgentListFinal={setAgentList}
+									setAgentsAdded={setAgentsAdded}
+									setAgentsRemoved={setAgentsRemoved}
 								/>
 							</Box>
 						</Field>
