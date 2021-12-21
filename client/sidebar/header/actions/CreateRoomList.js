@@ -55,53 +55,51 @@ function CreateRoomList({ closeList }) {
 
 	return (
 		<>
-			<OptionTitle style={style}>{t('Create_new')}</OptionTitle>
-			<Box pi='x16'>
-				<ul className='rc-popover__list'>
-					<Margins block='x8'>
-						{canCreateChannel && (
-							<CreateRoomListItem
-								icon='hashtag'
-								text={t('Channel')}
-								action={(e) => {
-									createChannel(e);
-									closeList();
-								}}
-							/>
-						)}
-						{canCreateTeam && (
-							<CreateRoomListItem
-								icon='team'
-								text={t('Team')}
-								action={(e) => {
-									createTeam(e);
-									closeList();
-								}}
-							/>
-						)}
-						{canCreateDirectMessages && (
-							<CreateRoomListItem
-								icon='balloon'
-								text={t('Direct_Messages')}
-								action={(e) => {
-									createDirectMessage(e);
-									closeList();
-								}}
-							/>
-						)}
-						{discussionEnabled && canCreateDiscussion && (
-							<CreateRoomListItem
-								icon='discussion'
-								text={t('Discussion')}
-								action={(e) => {
-									createDiscussion(e);
-									closeList();
-								}}
-							/>
-						)}
-					</Margins>
-				</ul>
-			</Box>
+			<OptionTitle pb='x8' style={style}>
+				{t('Create_new')}
+			</OptionTitle>
+			<ul className='rc-popover__list'>
+				{canCreateChannel && (
+					<CreateRoomListItem
+						icon='hashtag'
+						text={t('Channel')}
+						action={(e) => {
+							createChannel(e);
+							closeList();
+						}}
+					/>
+				)}
+				{canCreateTeam && (
+					<CreateRoomListItem
+						icon='team'
+						text={t('Team')}
+						action={(e) => {
+							createTeam(e);
+							closeList();
+						}}
+					/>
+				)}
+				{canCreateDirectMessages && (
+					<CreateRoomListItem
+						icon='balloon'
+						text={t('Direct_Messages')}
+						action={(e) => {
+							createDirectMessage(e);
+							closeList();
+						}}
+					/>
+				)}
+				{discussionEnabled && canCreateDiscussion && (
+					<CreateRoomListItem
+						icon='discussion'
+						text={t('Discussion')}
+						action={(e) => {
+							createDiscussion(e);
+							closeList();
+						}}
+					/>
+				)}
+			</ul>
 		</>
 	);
 }
