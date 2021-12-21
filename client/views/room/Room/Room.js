@@ -9,6 +9,8 @@ import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
+import AppsContextualBar from '../contextualBar/Apps';
+import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
 import {
 	useTab,
 	useTabBarOpen,
@@ -30,6 +32,8 @@ const Room = () => {
 
 	const hideFlexTab = useUserPreference('hideFlexTab');
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
+
+	const appsContextualBarContext = useAppsContextualBar();
 
 	const tabBar = useMemo(
 		() => ({ open, close, isOpen, openUserInfo }),
@@ -73,6 +77,18 @@ const Room = () => {
 								_id={room._id}
 							/>
 						)}
+					</ErrorBoundary>
+				</RoomTemplate.Aside>
+			)}
+			{appsContextualBarContext && (
+				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
+					<ErrorBoundary>
+						<LazyComponent
+							template={AppsContextualBar}
+							viewId={appsContextualBarContext.viewId}
+							payload={appsContextualBarContext.payload}
+							appInfo={appsContextualBarContext.appInfo}
+						/>
 					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}

@@ -3,10 +3,31 @@ import { settings } from '../../../../../app/settings/server';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
+import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { LivechatDepartment, LivechatInquiry as LivechatInquiryRaw, LivechatRooms } from '../../../../../app/models/server/raw';
+import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
+	// check here if department has fallback before queueing
+	if (inquiry?.department && !online(inquiry.department, true, true)) {
+		cbLogger.debug('No agents online on selected department. Inquiry will use fallback department');
+		const department = await LivechatDepartment.findOneById(inquiry.department);
+		if (department.fallbackForwardDepartment) {
+			cbLogger.debug(`Inquiry ${ inquiry._id } will be moved from department ${ department._id } to fallback department ${ department.fallbackForwardDepartment }`);
+			// update visitor
+			Livechat.setDepartmentForGuest({ token: inquiry?.v?.token, department: department.fallbackForwardDepartment });
+			// update inquiry
+			inquiry = await LivechatInquiryRaw.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
+			// update room
+			await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
+			cbLogger.debug(`Inquiry ${ inquiry._id } moved. Continue normal queue process`);
+		} else {
+			cbLogger.debug('No fallback department configured. Skipping');
+		}
+	}
+
 	if (!settings.get('Livechat_waiting_queue')) {
 		cbLogger.debug('Skipping callback. Waiting queue disabled by setting');
 		return inquiry;
@@ -20,7 +41,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 	const { _id, status, department } = inquiry;
 
 	if (status !== 'ready') {
-		cbLogger.debug(`Skipping callback. Inquiry ${ _id } is ready`);
+		cbLogger.debug(`Skipping callback. Inquiry ${ _id } is not ready`);
 		return inquiry;
 	}
 
