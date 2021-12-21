@@ -1,13 +1,17 @@
-import { RadioButton, Box, Margins, OptionTitle } from '@rocket.chat/fuselage';
+import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference } from '../../contexts/UserContext';
-import SortListItem from './SortListItem';
+import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+};
+
+const checkBoxStyle = {
+	'padding-left': '24px',
 };
 
 function SortModeList() {
@@ -25,22 +29,24 @@ function SortModeList() {
 		<>
 			<OptionTitle style={style}>{t('Sort_By')}</OptionTitle>
 			<ul className='rc-popover__list'>
-				<SortListItem
+				<ListItem
 					icon={'clock'}
 					text={t('Activity')}
 					input={
 						<RadioButton
+						style={checkBoxStyle}
 							name='sidebarSortby'
 							onChange={setToActivity}
 							checked={sidebarSortBy === 'activity'}
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'sort-az'}
 					text={t('Name')}
 					input={
 						<RadioButton
+						style={checkBoxStyle}
 							name='sidebarSortby'
 							onChange={setToAlphabetical}
 							checked={sidebarSortBy === 'alphabetical'}

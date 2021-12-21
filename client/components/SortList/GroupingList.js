@@ -1,13 +1,17 @@
-import { Box, Margins, CheckBox, OptionTitle } from '@rocket.chat/fuselage';
+import { CheckBox, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference } from '../../contexts/UserContext';
-import SortListItem from './SortListItem';
+import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+};
+
+const checkBoxStyle = {
+	'padding-left': '24px',
 };
 
 function GroupingList() {
@@ -25,37 +29,41 @@ function GroupingList() {
 	const handleChangeShowUnread = useHandleChange('sidebarShowUnread', !sidebarShowUnread);
 
 	const t = useTranslation();
+
 	return (
 		<>
 			<OptionTitle style={style}>{t('Group_by')}</OptionTitle>
 			<ul className='rc-popover__list'>
-				<SortListItem
+				<ListItem
 					icon={'flag'}
 					text={t('Unread')}
 					input={
 						<CheckBox
+							style={checkBoxStyle}
 							onChange={handleChangeShowUnread}
 							name='sidebarShowUnread'
 							checked={sidebarShowUnread}
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'star'}
 					text={t('Favorites')}
 					input={
 						<CheckBox
+							style={checkBoxStyle}
 							onChange={handleChangeShoFavorite}
 							name='sidebarShowFavorites'
 							checked={sidebarShowFavorites}
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'group-by-type'}
 					text={t('Types')}
 					input={
 						<CheckBox
+							style={checkBoxStyle}
 							onChange={handleChangeGroupByType}
 							name='sidebarGroupByType'
 							checked={sidebarGroupByType}

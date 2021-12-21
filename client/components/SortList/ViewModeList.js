@@ -1,13 +1,17 @@
-import { ToggleSwitch, RadioButton, Box, Margins, OptionTitle } from '@rocket.chat/fuselage';
+import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference } from '../../contexts/UserContext';
-import SortListItem from './SortListItem';
+import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+};
+
+const checkBoxStyle = {
+	'padding-left': '24px',
 };
 
 function ViewModeList() {
@@ -34,11 +38,12 @@ function ViewModeList() {
 		<>
 			<OptionTitle style={style}>{t('Display')}</OptionTitle>
 			<ul className='rc-popover__list'>
-				<SortListItem
+				<ListItem
 					icon={'extended-view'}
 					text={t('Extended')}
 					input={
 						<RadioButton
+							style={checkBoxStyle}
 							onChange={setToExtended}
 							name='sidebarViewMode'
 							value='extended'
@@ -46,11 +51,12 @@ function ViewModeList() {
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'medium-view'}
 					text={t('Medium')}
 					input={
 						<RadioButton
+							style={checkBoxStyle}
 							onChange={setToMedium}
 							name='sidebarViewMode'
 							value='medium'
@@ -58,11 +64,12 @@ function ViewModeList() {
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'condensed-view'}
 					text={t('Condensed')}
 					input={
 						<RadioButton
+							style={checkBoxStyle}
 							onChange={setToCondensed}
 							name='sidebarViewMode'
 							value='condensed'
@@ -70,11 +77,12 @@ function ViewModeList() {
 						/>
 					}
 				/>
-				<SortListItem
+				<ListItem
 					icon={'user-rounded'}
 					text={t('Avatars')}
 					input={
 						<ToggleSwitch
+							style={checkBoxStyle}
 							onChange={handleChangeSidebarDisplayAvatar}
 							name='sidebarDisplayAvatar'
 							checked={sidebarDisplayAvatar}

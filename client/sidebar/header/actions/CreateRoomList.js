@@ -4,6 +4,7 @@ import React from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
 import CreateDiscussion from '../../../components/CreateDiscussion';
+import ListItem from '../../../components/Sidebar/ListItem';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -11,7 +12,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateDirectMessage from '../CreateDirectMessage';
-import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
@@ -60,7 +60,7 @@ function CreateRoomList({ closeList }) {
 			</OptionTitle>
 			<ul className='rc-popover__list'>
 				{canCreateChannel && (
-					<CreateRoomListItem
+					<ListItem
 						icon='hashtag'
 						text={t('Channel')}
 						action={(e) => {
@@ -70,7 +70,7 @@ function CreateRoomList({ closeList }) {
 					/>
 				)}
 				{canCreateTeam && (
-					<CreateRoomListItem
+					<ListItem
 						icon='team'
 						text={t('Team')}
 						action={(e) => {
@@ -80,7 +80,7 @@ function CreateRoomList({ closeList }) {
 					/>
 				)}
 				{canCreateDirectMessages && (
-					<CreateRoomListItem
+					<ListItem
 						icon='balloon'
 						text={t('Direct_Messages')}
 						action={(e) => {
@@ -90,7 +90,7 @@ function CreateRoomList({ closeList }) {
 					/>
 				)}
 				{discussionEnabled && canCreateDiscussion && (
-					<CreateRoomListItem
+					<ListItem
 						icon='discussion'
 						text={t('Discussion')}
 						action={(e) => {
