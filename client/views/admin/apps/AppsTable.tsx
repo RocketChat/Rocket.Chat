@@ -211,7 +211,7 @@ const AppsTable: FC<{
 						<StatesIcon name='warning' />
 						<StatesTitle>{t('Error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={(): void => appsResult.reset()}>
+							<StatesAction onClick={(): Promise<void> => appsResult.reset()}>
 								{t('Reload_page')}
 							</StatesAction>
 						</StatesActions>

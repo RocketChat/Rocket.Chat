@@ -65,6 +65,7 @@ const AppsProvider: FC = ({ children }) => {
 						),
 					},
 					error: undefined,
+					reset: () => fetchApps(),
 				};
 			case 'update':
 				if (state.phase !== AsyncStatePhase.RESOLVED) {
@@ -83,18 +84,21 @@ const AppsProvider: FC = ({ children }) => {
 						),
 					},
 					error: undefined,
+					reset: () => fetchApps(),
 				};
 			case 'request':
 				return {
 					phase: AsyncStatePhase.LOADING,
 					value: undefined,
 					error: undefined,
+					reset: () => fetchApps(),
 				};
 			case 'success':
 				return {
 					phase: AsyncStatePhase.RESOLVED,
 					value: { apps: sortByName(action.apps) },
 					error: undefined,
+					reset: () => fetchApps(),
 				};
 			case 'failure':
 				return {
@@ -112,6 +116,7 @@ const AppsProvider: FC = ({ children }) => {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
 		error: undefined,
+		reset: (): Promise<void> => fetchApps(),
 	});
 
 	const ref = useRef<App[]>([]);
