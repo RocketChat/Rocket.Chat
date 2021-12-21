@@ -40,85 +40,6 @@ type Action =
 	| { type: 'failure'; error: Error };
 
 const AppsProvider: FC = ({ children }) => {
-	const sortByName = (apps: App[]): App[] =>
-	apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
-
-	const reducer = (
-		state: AsyncState<{ apps: App[] }>,
-		action: Action,
-	): AsyncState<{ apps: App[] }> => {
-		switch (action.type) {
-			case 'invalidate':
-				if (state.phase !== AsyncStatePhase.RESOLVED) {
-					return state;
-				}
-				return {
-					phase: AsyncStatePhase.RESOLVED,
-					value: {
-						apps: sortByName(
-							state.value.apps.map((app) => {
-								if (app.id === action.appId) {
-									return { ...app };
-								}
-								return app;
-							}),
-						),
-					},
-					error: undefined,
-					reset: () => fetchApps(),
-				};
-			case 'update':
-				if (state.phase !== AsyncStatePhase.RESOLVED) {
-					return state;
-				}
-				return {
-					phase: AsyncStatePhase.RESOLVED,
-					value: {
-						apps: sortByName(
-							state.value.apps.map((app) => {
-								if (app.id === action.app.id) {
-									return action.app;
-								}
-								return app;
-							}),
-						),
-					},
-					error: undefined,
-					reset: () => fetchApps(),
-				};
-			case 'request':
-				return {
-					phase: AsyncStatePhase.LOADING,
-					value: undefined,
-					error: undefined,
-					reset: () => fetchApps(),
-				};
-			case 'success':
-				return {
-					phase: AsyncStatePhase.RESOLVED,
-					value: { apps: sortByName(action.apps) },
-					error: undefined,
-					reset: () => fetchApps(),
-				};
-			case 'failure':
-				return {
-					phase: AsyncStatePhase.REJECTED,
-					value: undefined,
-					error: action.error,
-					reset: () => fetchApps(),
-				};
-			default:
-				return state;
-		}
-	};
-
-	const [state, dispatch] = useReducer<Reducer<AsyncState<{ apps: App[] }>, Action>>(reducer, {
-		phase: AsyncStatePhase.LOADING,
-		value: undefined,
-		error: undefined,
-		reset: (): Promise<void> => fetchApps(),
-	});
-
 	const ref = useRef<App[]>([]);
 
 	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
@@ -192,68 +113,144 @@ const AppsProvider: FC = ({ children }) => {
 
 	const unregisterListeners = registerListeners(listeners);
 
-	const fetchApps = useCallback(
-		async (): Promise<void> => {
-			try {
-				const installedApps = await Apps.getApps().then((result: App[]) =>
-					result.map((current: App) => ({
-						...current,
-						installed: true,
-						marketplace: false,
-					})),
-				);
+	const sortByName = (apps: App[]): App[] =>
+		apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
-				const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+	const fetchApps = useCallback(async (): Promise<void> => {
+		try {
+			const installedApps = await Apps.getApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+					marketplace: false,
+				})),
+			);
 
-				const appsData = marketplaceApps.map<App>((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						return {
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						};
-					}
+			const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
 
-					const [installedApp] = installedApps.splice(appIndex, 1);
+			const appsData = marketplaceApps.map<App>((app) => {
+				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+				if (!installedApps[appIndex]) {
 					return {
 						...app,
-						installed: true,
-						...(installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-							licenseValidation: installedApp.licenseValidation,
-						}),
-						bundledIn: app.bundledIn,
+						status: undefined,
 						marketplaceVersion: app.version,
+						bundledIn: app.bundledIn,
 					};
-				});
-
-				if (installedApps.length) {
-					appsData.push(...installedApps);
 				}
 
-				dispatch({
-					type: 'success',
-					apps: appsData,
-				});
-			} catch (e) {
-				dispatch({
-					type: 'failure',
-					error: e,
-				});
-				unregisterListeners();
+				const [installedApp] = installedApps.splice(appIndex, 1);
+				return {
+					...app,
+					installed: true,
+					...(installedApp && {
+						status: installedApp.status,
+						version: installedApp.version,
+						licenseValidation: installedApp.licenseValidation,
+					}),
+					bundledIn: app.bundledIn,
+					marketplaceVersion: app.version,
+				};
+			});
+
+			if (installedApps.length) {
+				appsData.push(...installedApps);
 			}
-		},
-		[unregisterListeners, listeners, handleAppAddedOrUpdated, getDataCopy, ref, dispatch, reducer, sortByName],
-	)
+
+			dispatch({
+				type: 'success',
+				apps: appsData,
+			});
+		} catch (e) {
+			dispatch({
+				type: 'failure',
+				error: e,
+			});
+			unregisterListeners();
+		}
+	}, [unregisterListeners]);
+
+	const reducer = (
+		state: AsyncState<{ apps: App[] }>,
+		action: Action,
+	): AsyncState<{ apps: App[] }> => {
+		switch (action.type) {
+			case 'invalidate':
+				if (state.phase !== AsyncStatePhase.RESOLVED) {
+					return state;
+				}
+				return {
+					phase: AsyncStatePhase.RESOLVED,
+					value: {
+						apps: sortByName(
+							state.value.apps.map((app) => {
+								if (app.id === action.appId) {
+									return { ...app };
+								}
+								return app;
+							}),
+						),
+					},
+					error: undefined,
+					reset: (): Promise<void> => fetchApps(),
+				};
+			case 'update':
+				if (state.phase !== AsyncStatePhase.RESOLVED) {
+					return state;
+				}
+				return {
+					phase: AsyncStatePhase.RESOLVED,
+					value: {
+						apps: sortByName(
+							state.value.apps.map((app) => {
+								if (app.id === action.app.id) {
+									return action.app;
+								}
+								return app;
+							}),
+						),
+					},
+					error: undefined,
+					reset: (): Promise<void> => fetchApps(),
+				};
+			case 'request':
+				return {
+					phase: AsyncStatePhase.LOADING,
+					value: undefined,
+					error: undefined,
+					reset: (): Promise<void> => fetchApps(),
+				};
+			case 'success':
+				return {
+					phase: AsyncStatePhase.RESOLVED,
+					value: { apps: sortByName(action.apps) },
+					error: undefined,
+					reset: (): Promise<void> => fetchApps(),
+				};
+			case 'failure':
+				return {
+					phase: AsyncStatePhase.REJECTED,
+					value: undefined,
+					error: action.error,
+					reset: (): Promise<void> => fetchApps(),
+				};
+			default:
+				return state;
+		}
+	};
+
+	const [state, dispatch] = useReducer<Reducer<AsyncState<{ apps: App[] }>, Action>>(reducer, {
+		phase: AsyncStatePhase.LOADING,
+		value: undefined,
+		error: undefined,
+		reset: (): Promise<void> => fetchApps(),
+	});
 
 	useEffect(() => {
 		fetchApps();
 
 		return unregisterListeners;
-	}, []);
+	}, [fetchApps, unregisterListeners]);
 
 	return <AppsContext.Provider children={children} value={state} />;
 };
