@@ -65,9 +65,9 @@ export const Livechat = {
 		});
 	},
 
-	online(department) {
+	online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
 		Livechat.logger.debug(`Checking online agents ${ department ? `for department ${ department }` : '' }`);
-		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
 			return true;
 		}
@@ -82,7 +82,7 @@ export const Livechat = {
 			}
 		}
 
-		const agentsOnline = Livechat.checkOnlineAgents(department);
+		const agentsOnline = Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${ department ? `for department ${ department }` : '' }?: ${ agentsOnline }`);
 		return agentsOnline;
 	},
@@ -110,13 +110,23 @@ export const Livechat = {
 		return Users.findOnlineAgents();
 	},
 
-	checkOnlineAgents(department, agent) {
+	checkOnlineAgents(department, agent, skipFallbackCheck = false) {
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
 		}
 
 		if (department) {
-			return LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			const onlineForDep = LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			if (onlineForDep || skipFallbackCheck) {
+				return onlineForDep;
+			}
+
+			const dep = LivechatDepartment.findOneById(department);
+			if (!dep?.fallbackForwardDepartment) {
+				return onlineForDep;
+			}
+
+			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
 		}
 
 		return Users.checkOnlineAgents();
@@ -956,6 +966,7 @@ export const Livechat = {
 			showOnOfflineForm: Boolean,
 			requestTagBeforeClosingChat: Match.Optional(Boolean),
 			chatClosingTags: Match.Optional([String]),
+			fallbackForwardDepartment: Match.Optional(String),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -971,7 +982,7 @@ export const Livechat = {
 			remove: Match.Maybe(Array),
 		}));
 
-		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
 			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
 		}
@@ -981,6 +992,10 @@ export const Livechat = {
 			if (!department) {
 				throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartment' });
 			}
+		}
+
+		if (fallbackForwardDepartment === _id) {
+			throw new Meteor.Error('error-fallback-department-circular', 'Cannot save department. Circular reference between fallback department and department');
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
@@ -1019,6 +1034,7 @@ export const Livechat = {
 		const ret = LivechatDepartment.removeById(_id);
 		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id).fetch().map((agent) => agent.agentId);
 		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });

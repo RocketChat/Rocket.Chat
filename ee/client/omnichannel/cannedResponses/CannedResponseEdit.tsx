@@ -130,7 +130,7 @@ const CannedResponseEdit: FC<{
 			reload();
 			totalDataReload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 

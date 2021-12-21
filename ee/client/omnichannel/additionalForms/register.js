@@ -50,4 +50,8 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	registerForm({
 		usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []),
 	});
+	registerForm({
+		useSelectForwardDepartment: () =>
+			useMemo(() => lazy(() => import('../../../../client/components/AutoCompleteDepartment')), []),
+	});
 });

@@ -1847,6 +1847,8 @@
   "Failed_To_Start_Import": "Failed to start import operation",
   "Failed_to_validate_invite_token": "Failed to validate invite token",
   "False": "False",
+  "Fallback_forward_department": "Fallback department for forwarding",
+  "Fallback_forward_department_description": "Allows you to define a fallback department which will receive the chats forwarded to this one in case there's no online agents at the moment",
   "Favorite": "Favorite",
   "Favorite_Rooms": "Enable Favorite Rooms",
   "Favorites": "Favorites",
@@ -2686,6 +2688,7 @@
   "Livechat_transfer_to_agent_with_a_comment": "__from__ transferred the chat to __to__ with a comment: __comment__",
   "Livechat_transfer_to_department": "__from__ transferred the chat to the department __to__",
   "Livechat_transfer_to_department_with_a_comment": "__from__ transferred the chat to the department __to__  with a comment: __comment__",
+  "Livechat_transfer_failed_fallback": "The original department ( __from__ ) doesn't have online agents. Chat succesfully transferred to __to__",
   "Livechat_Triggers": "Livechat Triggers",
   "Livechat_user_sent_chat_transcript_to_visitor": "__agent__ sent the chat transcript to __guest__",
   "Livechat_Users": "Omnichannel Users",
@@ -3055,6 +3058,7 @@
   "New_chat_in_queue": "New chat in queue",
   "New_chat_priority": "Priority Changed: __user__ changed the priority to __priority__",
   "New_chat_transfer": "New Chat Transfer: __transfer__",
+  "New_chat_transfer_fallback": "Transferred to fallback department: __fallback__",
   "New_Contact": "New Contact",
   "New_Custom_Field": "New Custom Field",
   "New_Department": "New Department",
@@ -4764,7 +4768,7 @@
   "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
   "Your_question": "Your question",
   "Your_server_link": "Your server link",
-  "Your_temporary_password_is_password": "Your temporary password is: <strong>[password]</strong>",
+  "Your_temporary_password_is_password": "Your temporary password is <strong>[password]</strong>.",
   "Your_TOTP_has_been_reset": "Your Two Factor TOTP has been reset.",
   "Your_workspace_is_ready": "Your workspace is ready to use 🎉"
 }
