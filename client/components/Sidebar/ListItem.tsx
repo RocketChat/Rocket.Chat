@@ -10,7 +10,7 @@ type ListItemProps = {
 
 const ListItem = ({ text, icon, input, action }: ListItemProps): ReactElement => (
 	<Option onClick={action || undefined}>
-		{icon && <Option.Icon name={icon} size={20} />}
+		{icon && <Option.Icon name={icon} />}
 		<Option.Content>{text}</Option.Content>
 		{input && <OptionColumn>{input}</OptionColumn>}
 	</Option>

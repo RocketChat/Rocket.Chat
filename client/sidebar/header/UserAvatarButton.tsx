@@ -33,7 +33,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 			<Box
 				position='relative'
 				ref={reference}
-				onClick={toggle}
+				onClick={() => toggle()}
 				className={css`
 					cursor: pointer;
 				`}
