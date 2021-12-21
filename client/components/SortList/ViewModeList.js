@@ -33,59 +33,55 @@ function ViewModeList() {
 	return (
 		<>
 			<OptionTitle style={style}>{t('Display')}</OptionTitle>
-			<Box pi='x16'>
-				<ul className='rc-popover__list'>
-					<Margins block='x8'>
-						<SortListItem
-							icon={'extended-view'}
-							text={t('Extended')}
-							input={
-								<RadioButton
-									onChange={setToExtended}
-									name='sidebarViewMode'
-									value='extended'
-									checked={sidebarViewMode === 'extended'}
-								/>
-							}
+			<ul className='rc-popover__list'>
+				<SortListItem
+					icon={'extended-view'}
+					text={t('Extended')}
+					input={
+						<RadioButton
+							onChange={setToExtended}
+							name='sidebarViewMode'
+							value='extended'
+							checked={sidebarViewMode === 'extended'}
 						/>
-						<SortListItem
-							icon={'medium-view'}
-							text={t('Medium')}
-							input={
-								<RadioButton
-									onChange={setToMedium}
-									name='sidebarViewMode'
-									value='medium'
-									checked={sidebarViewMode === 'medium'}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'medium-view'}
+					text={t('Medium')}
+					input={
+						<RadioButton
+							onChange={setToMedium}
+							name='sidebarViewMode'
+							value='medium'
+							checked={sidebarViewMode === 'medium'}
 						/>
-						<SortListItem
-							icon={'condensed-view'}
-							text={t('Condensed')}
-							input={
-								<RadioButton
-									onChange={setToCondensed}
-									name='sidebarViewMode'
-									value='condensed'
-									checked={sidebarViewMode === 'condensed'}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'condensed-view'}
+					text={t('Condensed')}
+					input={
+						<RadioButton
+							onChange={setToCondensed}
+							name='sidebarViewMode'
+							value='condensed'
+							checked={sidebarViewMode === 'condensed'}
 						/>
-						<SortListItem
-							icon={'user-rounded'}
-							text={t('Avatars')}
-							input={
-								<ToggleSwitch
-									onChange={handleChangeSidebarDisplayAvatar}
-									name='sidebarDisplayAvatar'
-									checked={sidebarDisplayAvatar}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'user-rounded'}
+					text={t('Avatars')}
+					input={
+						<ToggleSwitch
+							onChange={handleChangeSidebarDisplayAvatar}
+							name='sidebarDisplayAvatar'
+							checked={sidebarDisplayAvatar}
 						/>
-					</Margins>
-				</ul>
-			</Box>
+					}
+				/>
+			</ul>
 		</>
 	);
 }

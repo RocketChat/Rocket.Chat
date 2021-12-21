@@ -1,4 +1,4 @@
-import { Box, Margins, OptionTitle } from '@rocket.chat/fuselage';
+import { OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 

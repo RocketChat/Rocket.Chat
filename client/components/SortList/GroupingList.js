@@ -28,45 +28,41 @@ function GroupingList() {
 	return (
 		<>
 			<OptionTitle style={style}>{t('Group_by')}</OptionTitle>
-			<Box pi='x16'>
-				<ul className='rc-popover__list'>
-					<Margins block='x8'>
-						<SortListItem
-							icon={'flag'}
-							text={t('Unread')}
-							input={
-								<CheckBox
-									onChange={handleChangeShowUnread}
-									name='sidebarShowUnread'
-									checked={sidebarShowUnread}
-								/>
-							}
+			<ul className='rc-popover__list'>
+				<SortListItem
+					icon={'flag'}
+					text={t('Unread')}
+					input={
+						<CheckBox
+							onChange={handleChangeShowUnread}
+							name='sidebarShowUnread'
+							checked={sidebarShowUnread}
 						/>
-						<SortListItem
-							icon={'star'}
-							text={t('Favorites')}
-							input={
-								<CheckBox
-									onChange={handleChangeShoFavorite}
-									name='sidebarShowFavorites'
-									checked={sidebarShowFavorites}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'star'}
+					text={t('Favorites')}
+					input={
+						<CheckBox
+							onChange={handleChangeShoFavorite}
+							name='sidebarShowFavorites'
+							checked={sidebarShowFavorites}
 						/>
-						<SortListItem
-							icon={'group-by-type'}
-							text={t('Types')}
-							input={
-								<CheckBox
-									onChange={handleChangeGroupByType}
-									name='sidebarGroupByType'
-									checked={sidebarGroupByType}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'group-by-type'}
+					text={t('Types')}
+					input={
+						<CheckBox
+							onChange={handleChangeGroupByType}
+							name='sidebarGroupByType'
+							checked={sidebarGroupByType}
 						/>
-					</Margins>
-				</ul>
-			</Box>
+					}
+				/>
+			</ul>
 		</>
 	);
 }

@@ -24,34 +24,30 @@ function SortModeList() {
 	return (
 		<>
 			<OptionTitle style={style}>{t('Sort_By')}</OptionTitle>
-			<Box pi='x16'>
-				<ul className='rc-popover__list'>
-					<Margins block='x8'>
-						<SortListItem
-							icon={'clock'}
-							text={t('Activity')}
-							input={
-								<RadioButton
-									name='sidebarSortby'
-									onChange={setToActivity}
-									checked={sidebarSortBy === 'activity'}
-								/>
-							}
+			<ul className='rc-popover__list'>
+				<SortListItem
+					icon={'clock'}
+					text={t('Activity')}
+					input={
+						<RadioButton
+							name='sidebarSortby'
+							onChange={setToActivity}
+							checked={sidebarSortBy === 'activity'}
 						/>
-						<SortListItem
-							icon={'sort-az'}
-							text={t('Name')}
-							input={
-								<RadioButton
-									name='sidebarSortby'
-									onChange={setToAlphabetical}
-									checked={sidebarSortBy === 'alphabetical'}
-								/>
-							}
+					}
+				/>
+				<SortListItem
+					icon={'sort-az'}
+					text={t('Name')}
+					input={
+						<RadioButton
+							name='sidebarSortby'
+							onChange={setToAlphabetical}
+							checked={sidebarSortBy === 'alphabetical'}
 						/>
-					</Margins>
-				</ul>
-			</Box>
+					}
+				/>
+			</ul>
 		</>
 	);
 }
