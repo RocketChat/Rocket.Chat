@@ -34,7 +34,7 @@ function SortModeList() {
 					text={t('Activity')}
 					input={
 						<RadioButton
-						style={checkBoxStyle}
+							style={checkBoxStyle}
 							name='sidebarSortby'
 							onChange={setToActivity}
 							checked={sidebarSortBy === 'activity'}
@@ -46,7 +46,7 @@ function SortModeList() {
 					text={t('Name')}
 					input={
 						<RadioButton
-						style={checkBoxStyle}
+							style={checkBoxStyle}
 							name='sidebarSortby'
 							onChange={setToAlphabetical}
 							checked={sidebarSortBy === 'alphabetical'}
