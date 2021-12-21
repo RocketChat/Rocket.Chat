@@ -13,8 +13,8 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string =>
 
 const APP_GROUP = 'Create_new';
 
-// eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void =>
+	// eslint-disable-next-line no-void
 	void messageBox.actions.add(
 		APP_GROUP,
 		t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)),
@@ -35,6 +35,6 @@ export const onAdded = (button: IUIActionButton): void =>
 		},
 	);
 
-// eslint-disable-next-line no-void
 export const onRemoved = (button: IUIActionButton): void =>
+	// eslint-disable-next-line no-void
 	void messageBox.actions.remove(APP_GROUP, new RegExp(getIdForActionButton(button)));

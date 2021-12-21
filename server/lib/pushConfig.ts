@@ -7,6 +7,7 @@ import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
 Meteor.methods({
+	// eslint-disable-next-line @typescript-eslint/camelcase
 	push_test() {
 		const user = Meteor.user();
 

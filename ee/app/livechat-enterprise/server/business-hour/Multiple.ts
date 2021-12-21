@@ -166,9 +166,8 @@ export class MultipleBusinessHoursBehavior
 	): Promise<any> {
 		const agentIdsWithoutDepartment = [];
 		const agentIdsToRemoveCurrentBusinessHour = [];
-		for (const agentId of agentsIds) {
+		for await (const agentId of agentsIds) {
 			if ((await this.DepartmentsAgentsRepository.findByAgentId(agentId).count()) === 0) {
-				// eslint-disable-line no-await-in-loop
 				agentIdsWithoutDepartment.push(agentId);
 			}
 			if (
