@@ -79,7 +79,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
-		const { source = {} } = extraParams || {};
+		const { source } = extraParams || {};
+		// `source` will likely have the properties below, so we tell TS it's alright
+		const { sidebarIcon, defaultIcon } = (source || {}) as { sidebarIcon?: string; defaultIcon?: string };
 
 		let agentRoom;
 		if (agent?.id) {
@@ -93,10 +95,11 @@ export class AppLivechatBridge extends LivechatBridge {
 			rid: Random.id(),
 			roomInfo: {
 				source: {
-					...source,
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+					sidebarIcon,
+					defaultIcon,
 				},
 			},
 			extraParams: undefined,
