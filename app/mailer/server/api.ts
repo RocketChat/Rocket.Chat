@@ -10,6 +10,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { settings } from '../../settings/server';
 import { ISetting } from '../../../definition/ISetting';
 import { replaceVariables } from './replaceVariables';
+import { Apps } from '../../apps/server';
 import { validateEmail } from '../../../lib/emailValidator';
 
 let contentHeader: string | undefined;
@@ -162,7 +163,11 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
+	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', {
+		email: { to, from, replyTo, subject, html, text, headers },
+	}));
+
+	Meteor.defer(() => Email.send(eventResult.email || eventResult));
 };
 
 export const send = ({
