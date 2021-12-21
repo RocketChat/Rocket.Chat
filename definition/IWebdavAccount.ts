@@ -8,6 +8,4 @@ export interface IWebdavAccount extends IRocketChatRecord {
 	name: string;
 }
 
-declare let { userId, _id, _updatedAt, ...rest }: IWebdavAccount;
-
-export type IWebdavAccountPayload = typeof rest
+export type IWebdavAccountPayload = Omit<IWebdavAccount, 'userId' | '_id' | '_updatedAt'>
