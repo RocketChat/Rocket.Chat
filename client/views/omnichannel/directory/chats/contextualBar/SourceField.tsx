@@ -30,8 +30,8 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		widget: t('Livechat'),
 		email: t('Email'),
 		sms: t('SMS'),
-		app: t('Custom_Integration'), // TODO: use app text
-		api: t('Custom_Integration'), // TODO: use app text
+		app: t((roomSource as any) || 'Custom_Integration'),
+		api: t((roomSource as any) || 'Custom_Integration'),
 		other: t('Custom_Integration'),
 	};
 

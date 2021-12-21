@@ -32,8 +32,14 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 					widget: 'livechat',
 					email: 'mail',
 					sms: 'sms',
-					app: 'headset', // TODO: use app icon
-					api: 'headset', // TODO: use api icon
+					app:
+						omnichannelRoom.source?.sidebarIcon ||
+						omnichannelRoom.source?.defaultIcon ||
+						omnichannelRoom.source?.alias,
+					api:
+						omnichannelRoom.source?.sidebarIcon ||
+						omnichannelRoom.source?.defaultIcon ||
+						omnichannelRoom.source?.alias,
 					other: 'headset',
 				}[omnichannelRoom.source?.type as string] || 'headset';
 
