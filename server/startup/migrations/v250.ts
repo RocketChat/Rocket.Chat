@@ -1,10 +1,9 @@
 import { addMigration } from '../../lib/migrations';
-import { WebdavAccounts } from '../../../app/models/server/raw';
+import { Permissions } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 250,
-	async up() {
-		// eslint-disable-next-line quote-props
-		await WebdavAccounts.updateMany({}, { $rename: { 'user_id': 'userId', 'server_url': 'serverURL' } });
+	up() {
+		Permissions.removeById('mobile-download-file');
 	},
 });

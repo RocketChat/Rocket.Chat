@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasRole } from '../../app/authorization';
-import { Users, Rooms, Subscriptions, Messages } from '../../app/models';
-import { settings } from '../../app/settings';
-import { callbacks } from '../../app/callbacks';
+import { hasRole } from '../../app/authorization/server';
+import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
+import { callbacks } from '../../app/callbacks/server';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {

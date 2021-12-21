@@ -1801,6 +1801,7 @@
   "Message_editing": "Redigera meddelande",
   "Message_ErasureType": "Meddelande Erasure Type",
   "Message_ErasureType_Delete": "Ta bort alla meddelanden",
+  "Message_ErasureType_Description": "Bestäm vad som ska göras med meddelanden av användare som tar bort sitt konto.",
   "Message_ErasureType_Keep": "Håll meddelanden och användarnamn",
   "Message_ErasureType_Unlink": "Ta bort länk mellan användare och meddelanden",
   "Message_GlobalSearch": "Global sökning",

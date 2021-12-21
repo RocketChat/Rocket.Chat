@@ -19,7 +19,7 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(userId) as IUser;
-		if (user && user.emails && Array.isArray(user.emails)) {
+		if (user?.emails && Array.isArray(user.emails)) {
 			const verifiedEmail = user.emails.find((email) => email.verified);
 
 			const rolesThatNeedChanges = user.roles.filter((role) => rolesToChangeTo.has(role));
