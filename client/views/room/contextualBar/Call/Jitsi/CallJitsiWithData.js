@@ -124,13 +124,13 @@ const CallJitsiWithData = ({ rid }) => {
 		user.username,
 	]);
 
-	const testAndHandleTimeout = useMutableCallback(async () => {
+	const testAndHandleTimeout = useMutableCallback(() => {
 		if (jitsi.openNewWindow) {
 			if (jitsi.window?.closed) {
 				return jitsi.dispose();
 			}
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -144,7 +144,7 @@ const CallJitsiWithData = ({ rid }) => {
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
 			try {
-				await updateTimeout(rid, false);
+				return updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -155,41 +155,32 @@ const CallJitsiWithData = ({ rid }) => {
 	});
 
 	useEffect(() => {
-		let shouldDispose = false;
-
-		async function fetchData() {
-			if (!accepted || !jitsi) {
-				return;
-			}
-
-			const clear = () => {
-				jitsi.off('HEARTBEAT', testAndHandleTimeout);
-				jitsi.dispose();
-			};
-
-			try {
-				if (jitsi.needsStart) {
-					jitsi.start(ref.current);
-					await updateTimeout(rid, true);
-				} else {
-					await updateTimeout(rid, false);
-				}
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t(error.reason) });
-				clear();
-				handleClose();
-			}
-
-			jitsi.on('HEARTBEAT', testAndHandleTimeout);
-
-			shouldDispose = jitsi.openNewWindow;
+		if (!accepted || !jitsi) {
+			return;
 		}
 
-		fetchData().then(() => {
-			if (shouldDispose) {
-				jitsi.dispose();
+		const clear = () => {
+			jitsi.off('HEARTBEAT', testAndHandleTimeout);
+			jitsi.dispose();
+		};
+
+		try {
+			if (jitsi.needsStart) {
+				jitsi.start(ref.current);
+				updateTimeout(rid, true);
+			} else {
+				updateTimeout(rid, false);
 			}
-		});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t(error.reason) });
+			clear();
+			handleClose();
+		}
+		jitsi.on('HEARTBEAT', testAndHandleTimeout);
+
+		return () => {
+			if (!jitsi.openNewWindow) clear();
+		};
 	}, [
 		accepted,
 		jitsi,
