@@ -1,4 +1,4 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box, Margins, OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -54,57 +54,55 @@ function CreateRoomList({ closeList }) {
 	const discussionEnabled = useSetting('Discussion_enabled');
 
 	return (
-		<Box pi='x16'>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='micro'>
-					{t('Create_new')}
-				</Box>
-			</Margins>
-			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					{canCreateChannel && (
-						<CreateRoomListItem
-							icon='hashtag'
-							text={t('Channel')}
-							action={(e) => {
-								createChannel(e);
-								closeList();
-							}}
-						/>
-					)}
-					{canCreateTeam && (
-						<CreateRoomListItem
-							icon='team'
-							text={t('Team')}
-							action={(e) => {
-								createTeam(e);
-								closeList();
-							}}
-						/>
-					)}
-					{canCreateDirectMessages && (
-						<CreateRoomListItem
-							icon='balloon'
-							text={t('Direct_Messages')}
-							action={(e) => {
-								createDirectMessage(e);
-								closeList();
-							}}
-						/>
-					)}
-					{discussionEnabled && canCreateDiscussion && (
-						<CreateRoomListItem
-							icon='discussion'
-							text={t('Discussion')}
-							action={(e) => {
-								createDiscussion(e);
-								closeList();
-							}}
-						/>
-					)}
-				</Margins>
-			</ul>
-		</Box>
+		<>
+			<OptionTitle style={style}>{t('Create_new')}</OptionTitle>
+			<Box pi='x16'>
+				<ul className='rc-popover__list'>
+					<Margins block='x8'>
+						{canCreateChannel && (
+							<CreateRoomListItem
+								icon='hashtag'
+								text={t('Channel')}
+								action={(e) => {
+									createChannel(e);
+									closeList();
+								}}
+							/>
+						)}
+						{canCreateTeam && (
+							<CreateRoomListItem
+								icon='team'
+								text={t('Team')}
+								action={(e) => {
+									createTeam(e);
+									closeList();
+								}}
+							/>
+						)}
+						{canCreateDirectMessages && (
+							<CreateRoomListItem
+								icon='balloon'
+								text={t('Direct_Messages')}
+								action={(e) => {
+									createDirectMessage(e);
+									closeList();
+								}}
+							/>
+						)}
+						{discussionEnabled && canCreateDiscussion && (
+							<CreateRoomListItem
+								icon='discussion'
+								text={t('Discussion')}
+								action={(e) => {
+									createDiscussion(e);
+									closeList();
+								}}
+							/>
+						)}
+					</Margins>
+				</ul>
+			</Box>
+		</>
 	);
 }
 
