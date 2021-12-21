@@ -8,7 +8,13 @@ import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 const AutoCompleteDepartment = (props) => {
-	const { value, onlyMyDepartments = false, onChange = () => {}, haveAll = false } = props;
+	const {
+		value,
+		onlyMyDepartments = false,
+		onChange = () => {},
+		haveAll = false,
+		haveNone = false,
+	} = props;
 
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -17,8 +23,8 @@ const AutoCompleteDepartment = (props) => {
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, haveAll }),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll],
+			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone }),
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone],
 		),
 	);
 
