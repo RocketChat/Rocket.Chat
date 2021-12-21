@@ -31,7 +31,7 @@ function ViewModeList() {
 	);
 
 	return (
-		<>
+		<Box pi='x16'>
 			<Margins block='x8'>
 				<Box is='p' style={style} fontScale='c1'>
 					{t('Display')}
@@ -88,7 +88,7 @@ function ViewModeList() {
 					/>
 				</Margins>
 			</ul>
-		</>
+		</Box>
 	);
 }
 

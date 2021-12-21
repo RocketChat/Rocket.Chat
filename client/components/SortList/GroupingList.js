@@ -26,7 +26,7 @@ function GroupingList() {
 
 	const t = useTranslation();
 	return (
-		<>
+		<Box pi='x16'>
 			<Margins block='x8'>
 				<Box is='p' style={style} fontScale='c1'>
 					{t('Group_by')}
@@ -69,7 +69,7 @@ function GroupingList() {
 					/>
 				</Margins>
 			</ul>
-		</>
+		</Box>
 	);
 }
 

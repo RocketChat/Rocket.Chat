@@ -22,7 +22,7 @@ function SortModeList() {
 	const setToActivity = useHandleChange('activity');
 
 	return (
-		<>
+		<Box pi='x16'>
 			<Margins block='x8'>
 				<Box is='p' style={style} fontScale='c1'>
 					{t('Sort_By')}
@@ -54,7 +54,7 @@ function SortModeList() {
 					/>
 				</Margins>
 			</ul>
-		</>
+		</Box>
 	);
 }
 

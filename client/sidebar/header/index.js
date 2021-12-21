@@ -1,5 +1,5 @@
-import { Sidebar } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { Box, Sidebar } from '@rocket.chat/fuselage';
+import React, { memo, useRef } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
@@ -16,6 +16,7 @@ const HeaderWithData = () => {
 	const user = useUser();
 	const t = useTranslation();
 	useSidebarPaletteColor();
+
 	return (
 		<>
 			<Sidebar.TopBar.Section className='sidebar--custom-colors'>
