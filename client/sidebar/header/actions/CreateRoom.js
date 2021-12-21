@@ -2,7 +2,6 @@ import { Box, Sidebar, Dropdown } from '@rocket.chat/fuselage';
 import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { popover } from '../../../../app/ui-utils/client';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
 import CreateRoomList from './CreateRoomList';
