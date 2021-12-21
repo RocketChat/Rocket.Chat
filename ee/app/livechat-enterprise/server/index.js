@@ -29,6 +29,7 @@ import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';
 import './hooks/afterOnHold';
+import './hooks/onTransferFailure';
 import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';

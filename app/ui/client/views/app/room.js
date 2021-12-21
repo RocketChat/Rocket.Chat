@@ -20,9 +20,9 @@ import {
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
-import { settings } from '../../../../settings';
-import { callbacks } from '../../../../callbacks';
-import { hasAllPermission, hasRole } from '../../../../authorization';
+import { settings } from '../../../../settings/client';
+import { callbacks } from '../../../../callbacks/client';
+import { hasAllPermission, hasRole } from '../../../../authorization/client';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import './room.html';

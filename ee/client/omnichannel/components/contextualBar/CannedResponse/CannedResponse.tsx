@@ -51,7 +51,7 @@ const CannedResponse: FC<{
 			<VerticalBar.Content>
 				<Box pb='24px'>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p4' mbe='8px'>
 							{t('Shortcut')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -59,7 +59,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p4' mbe='8px'>
 							{t('Content')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -67,7 +67,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p4' mbe='8px'>
 							{t('Sharing')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -75,7 +75,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p4' mbe='8px'>
 							{t('Tags')}:
 						</Box>
 						<Box display='flex' flexDirection='row'>

@@ -57,10 +57,10 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 				<ScrollableContentWrapper>
 					<Box flexGrow={1} marginBlockEnd='x16' paddingInline='x32'>
 						<Margins blockEnd='x16'>
-							<Box is='h2' fontScale='h1' color='default'>
+							<Box is='h2' fontScale='h2' color='default'>
 								{t('Setup_Wizard')}
 							</Box>
-							<Box is='p' color='hint' fontScale='p1'>
+							<Box is='p' color='hint' fontScale='p3'>
 								{t('Setup_Wizard_Info')}
 							</Box>
 						</Margins>
@@ -81,7 +81,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 									marginInline='neg-x8'
 									display='flex'
 									alignItems='center'
-									fontScale='p2'
+									fontScale='p4'
 									color={
 										(step === currentStep && 'primary') ||
 										(step < currentStep && 'default') ||

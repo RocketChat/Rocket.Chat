@@ -209,21 +209,20 @@ const MessagesPerChannelSection = (): ReactElement => {
 												</Table.Row>
 											</Table.Head>
 											<Table.Body>
-												{table &&
-													table.map(({ i, t, name, messages }) => (
-														<Table.Row key={i}>
-															<Table.Cell>{i + 1}.</Table.Cell>
-															<Table.Cell>
-																<Margins inlineEnd='x4'>
-																	{(t === 'd' && <Icon name='at' />) ||
-																		(t === 'c' && <Icon name='lock' />) ||
-																		(t === 'p' && <Icon name='hashtag' />)}
-																</Margins>
-																{name}
-															</Table.Cell>
-															<Table.Cell align='end'>{messages}</Table.Cell>
-														</Table.Row>
-													))}
+												{table?.map(({ i, t, name, messages }) => (
+													<Table.Row key={i}>
+														<Table.Cell>{i + 1}.</Table.Cell>
+														<Table.Cell>
+															<Margins inlineEnd='x4'>
+																{(t === 'd' && <Icon name='at' />) ||
+																	(t === 'c' && <Icon name='lock' />) ||
+																	(t === 'p' && <Icon name='hashtag' />)}
+															</Margins>
+															{name}
+														</Table.Cell>
+														<Table.Cell align='end'>{messages}</Table.Cell>
+													</Table.Row>
+												))}
 												{!table &&
 													Array.from({ length: 5 }, (_, i) => (
 														<Table.Row key={i}>

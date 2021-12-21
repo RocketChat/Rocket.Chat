@@ -316,7 +316,7 @@ export default function UserForm({
 				{hasCustomFields && (
 					<>
 						<Divider />
-						<Box fontScale='s2'>{t('Custom_Fields')}</Box>
+						<Box fontScale='h4'>{t('Custom_Fields')}</Box>
 					</>
 				)}
 				<CustomFieldsForm

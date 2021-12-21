@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-type RoomType = 'c' | 'd' | 'p' | 'l';
+export type RoomType = 'c' | 'd' | 'p' | 'l';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -76,6 +76,19 @@ export interface ICreatedRoom extends IRoom {
 	rid: string;
 }
 
+export interface ITeamRoom extends IRoom {
+	teamMain: boolean;
+	teamId: string;
+}
+
+export const isTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => !!room.teamMain;
+export const isPrivateTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'p';
+export const isPublicTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => isTeamRoom(room) && room.t === 'c';
+
+export const isDiscussion = (room: Partial<IRoom>): room is IRoom => !!room.prid;
+export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'p';
+export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
@@ -83,6 +96,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 }
 
 export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
+export const isMultipleDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => isDirectMessageRoom(room) && room.uids.length > 2;
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',

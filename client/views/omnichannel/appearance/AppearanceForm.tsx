@@ -108,8 +108,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 	} = handlers;
 
 	const onChangeCharacterLimit = useMutableCallback(({ currentTarget: { value } }) => {
-		handleLivechat_message_character_limit &&
-			handleLivechat_message_character_limit(Number(value) < 0 ? 0 : value);
+		handleLivechat_message_character_limit?.(Number(value) < 0 ? 0 : value);
 	});
 
 	return (

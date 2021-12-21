@@ -2,9 +2,9 @@ import './settings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Users, Rooms } from '../../models';
+import { Users, Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasRole } from '../../authorization';
+import { hasRole } from '../../authorization/server';
 
 /**
  * BotHelpers helps bots

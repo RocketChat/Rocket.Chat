@@ -33,7 +33,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		} finally {
 			setLoading(false);
-			onFinish && onFinish();
+			onFinish?.();
 		}
 	};
 
@@ -56,7 +56,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 							is='textarea'
 							height='x108'
 							fontFamily='mono'
-							fontScale='p1'
+							fontScale='p3'
 							color='alternative'
 							style={{ wordBreak: 'break-all', resize: 'none' }}
 							placeholder={t('Paste_here')}

@@ -1,5 +1,5 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
@@ -11,25 +11,25 @@ import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 
-function CustomEmojiRoute() {
+const CustomEmojiRoute = (): ReactElement => {
+	const t = useTranslation();
 	const route = useRoute('emoji-custom');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageEmoji = usePermission('manage-emoji');
 
-	const t = useTranslation();
-	const handleItemClick = (_id) => () => {
+	const handleItemClick = (_id: string) => (): void => {
 		route.push({
 			context: 'edit',
 			id: _id,
 		});
 	};
 
-	const handleNewButtonClick = useCallback(() => {
+	const handleAddEmoji = useCallback(() => {
 		route.push({ context: 'new' });
 	}, [route]);
 
-	const handleClose = () => {
+	const handleClose = (): void => {
 		route.push({});
 	};
 
@@ -47,7 +47,7 @@ function CustomEmojiRoute() {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<Page.Header title={t('Custom_Emoji')}>
-					<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
+					<Button small onClick={handleAddEmoji} aria-label={t('New')}>
 						<Icon name='plus' />
 					</Button>
 				</Page.Header>
@@ -62,7 +62,7 @@ function CustomEmojiRoute() {
 						{context === 'new' && t('Custom_Emoji_Add')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'edit' && (
+					{context === 'edit' && id && (
 						<EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />
 					)}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
@@ -70,6 +70,6 @@ function CustomEmojiRoute() {
 			)}
 		</Page>
 	);
-}
+};
 
 export default CustomEmojiRoute;

@@ -37,7 +37,7 @@ const Item: FC<{
 		>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 				<Box w='full' minWidth={0}>
-					<Box fontScale='p2' withTruncatedText>
+					<Box fontScale='p4' withTruncatedText>
 						!{data.shortcut}
 					</Box>
 					<Box fontScale='c1' color='info' withTruncatedText>
@@ -57,7 +57,7 @@ const Item: FC<{
 					<Icon name='chevron-left' size={24} color='neutral-700' />
 				</Box>
 			</Box>
-			<Box fontScale='p1' mbs='8px' color='info' withTruncatedText>
+			<Box fontScale='p3' mbs='8px' color='info' withTruncatedText>
 				"{data.text}"
 			</Box>
 			{data.tags && data.tags.length > 0 && (
