@@ -1,5 +1,5 @@
 import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC, ReactNode } from 'react';
+import React, { ComponentProps, FC } from 'react';
 
 import { IRoom, isDirectMessageRoom, isOmnichannelRoom } from '../../../definition/IRoom';
 import { ReactiveUserStatus } from '../UserStatus';
