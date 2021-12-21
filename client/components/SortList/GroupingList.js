@@ -1,4 +1,4 @@
-import { Box, Margins, CheckBox } from '@rocket.chat/fuselage';
+import { Box, Margins, CheckBox, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
@@ -26,50 +26,48 @@ function GroupingList() {
 
 	const t = useTranslation();
 	return (
-		<Box pi='x16'>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='c1'>
-					{t('Group_by')}
-				</Box>
-			</Margins>
-			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					<SortListItem
-						icon={'flag'}
-						text={t('Unread')}
-						input={
-							<CheckBox
-								onChange={handleChangeShowUnread}
-								name='sidebarShowUnread'
-								checked={sidebarShowUnread}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'star'}
-						text={t('Favorites')}
-						input={
-							<CheckBox
-								onChange={handleChangeShoFavorite}
-								name='sidebarShowFavorites'
-								checked={sidebarShowFavorites}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'group-by-type'}
-						text={t('Types')}
-						input={
-							<CheckBox
-								onChange={handleChangeGroupByType}
-								name='sidebarGroupByType'
-								checked={sidebarGroupByType}
-							/>
-						}
-					/>
-				</Margins>
-			</ul>
-		</Box>
+		<>
+			<OptionTitle style={style}>{t('Group_by')}</OptionTitle>
+			<Box pi='x16'>
+				<ul className='rc-popover__list'>
+					<Margins block='x8'>
+						<SortListItem
+							icon={'flag'}
+							text={t('Unread')}
+							input={
+								<CheckBox
+									onChange={handleChangeShowUnread}
+									name='sidebarShowUnread'
+									checked={sidebarShowUnread}
+								/>
+							}
+						/>
+						<SortListItem
+							icon={'star'}
+							text={t('Favorites')}
+							input={
+								<CheckBox
+									onChange={handleChangeShoFavorite}
+									name='sidebarShowFavorites'
+									checked={sidebarShowFavorites}
+								/>
+							}
+						/>
+						<SortListItem
+							icon={'group-by-type'}
+							text={t('Types')}
+							input={
+								<CheckBox
+									onChange={handleChangeGroupByType}
+									name='sidebarGroupByType'
+									checked={sidebarGroupByType}
+								/>
+							}
+						/>
+					</Margins>
+				</ul>
+			</Box>
+		</>
 	);
 }
 

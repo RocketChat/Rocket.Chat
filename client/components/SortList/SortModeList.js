@@ -1,4 +1,4 @@
-import { RadioButton, Box, Margins } from '@rocket.chat/fuselage';
+import { RadioButton, Box, Margins, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
@@ -22,39 +22,37 @@ function SortModeList() {
 	const setToActivity = useHandleChange('activity');
 
 	return (
-		<Box pi='x16'>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='c1'>
-					{t('Sort_By')}
-				</Box>
-			</Margins>
-			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					<SortListItem
-						icon={'clock'}
-						text={t('Activity')}
-						input={
-							<RadioButton
-								name='sidebarSortby'
-								onChange={setToActivity}
-								checked={sidebarSortBy === 'activity'}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'sort-az'}
-						text={t('Name')}
-						input={
-							<RadioButton
-								name='sidebarSortby'
-								onChange={setToAlphabetical}
-								checked={sidebarSortBy === 'alphabetical'}
-							/>
-						}
-					/>
-				</Margins>
-			</ul>
-		</Box>
+		<>
+			<OptionTitle style={style}>{t('Sort_By')}</OptionTitle>
+			<Box pi='x16'>
+				<ul className='rc-popover__list'>
+					<Margins block='x8'>
+						<SortListItem
+							icon={'clock'}
+							text={t('Activity')}
+							input={
+								<RadioButton
+									name='sidebarSortby'
+									onChange={setToActivity}
+									checked={sidebarSortBy === 'activity'}
+								/>
+							}
+						/>
+						<SortListItem
+							icon={'sort-az'}
+							text={t('Name')}
+							input={
+								<RadioButton
+									name='sidebarSortby'
+									onChange={setToAlphabetical}
+									checked={sidebarSortBy === 'alphabetical'}
+								/>
+							}
+						/>
+					</Margins>
+				</ul>
+			</Box>
+		</>
 	);
 }
 
