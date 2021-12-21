@@ -10,7 +10,7 @@ import { E2EERoomClient } from './E2EERoomClient';
 import { ISubscription } from '../../../definition/ISubscription';
 import { Notifications } from '../../notifications/client';
 import { NotificationEvent } from '../../../definition/NotificationEvent';
-import { decryptAES, deriveKey, encryptAES, importRawKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, toArrayBuffer, toString } from './helpers';
+import { decryptAES, deriveKey, encryptAES, importRawKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, fromStringToBuffer, fromBufferToString } from './helpers';
 import { APIClient } from '../../utils/client/lib/RestApiClient';
 import { E2EEKeyPair } from '../../../server/sdk/types/e2ee/E2EEKeyPair';
 
@@ -197,7 +197,7 @@ export class E2EEManager extends Emitter {
 	}
 
 	async getMasterKey(password: string): Promise<CryptoKey> {
-		const baseKey = await importRawKey(toArrayBuffer(password));
+		const baseKey = await importRawKey(fromStringToBuffer(password));
 
 		const uid = Meteor.userId();
 
@@ -205,14 +205,14 @@ export class E2EEManager extends Emitter {
 			throw new Error();
 		}
 
-		return deriveKey(toArrayBuffer(uid), baseKey);
+		return deriveKey(fromStringToBuffer(uid), baseKey);
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string> {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
-		const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
+		const encodedPrivateKey = await encryptAES(vector, masterKey, fromStringToBuffer(privateKey));
 
 		return EJSON.stringify(joinVectorAndEncryptedData(vector, encodedPrivateKey));
 	}
@@ -223,6 +223,6 @@ export class E2EEManager extends Emitter {
 		const [vector, cipherText] = splitVectorAndEncryptedData(EJSON.parse(privateKey) as Uint8Array);
 
 		const privKey = await decryptAES(vector, masterKey, cipherText);
-		return toString(privKey);
+		return fromBufferToString(privKey);
 	}
 }

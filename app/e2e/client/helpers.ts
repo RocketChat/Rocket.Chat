@@ -1,14 +1,8 @@
-export const toString = (buffer: ArrayBuffer): string => {
-	const view = new Uint8Array(buffer);
-	return String.fromCharCode(...view);
-};
+export const fromBufferToString = (buffer: ArrayBuffer): string =>
+	String.fromCharCode(...new Uint8Array(buffer));
 
-export const toArrayBuffer = (str: string): ArrayBuffer => {
-	const buffer = new ArrayBuffer(str.length);
-	const view = new Uint8Array(buffer);
-	view.set(Array.from(str, (ch) => ch.charCodeAt(0)));
-	return buffer;
-};
+export const fromStringToBuffer = (str: string): ArrayBuffer =>
+	Uint8Array.from(Array.from(str, (ch) => ch.charCodeAt(0)));
 
 export const joinVectorAndEncryptedData = (vector: Uint8Array, encryptedData: ArrayBuffer): Uint8Array => {
 	const cipherText = new Uint8Array(encryptedData);

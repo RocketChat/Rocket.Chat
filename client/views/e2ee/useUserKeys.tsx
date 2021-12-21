@@ -6,7 +6,7 @@ import { IUser } from '../../../definition/IUser';
 import { useModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import * as banners from '../../lib/banners';
-import { fetchUserKeys } from '../../lib/e2ee/userKeys';
+import { fetchUserKeyPair } from '../../lib/e2ee/fetchUserKeyPair';
 import EnterE2EEPasswordModal from './EnterE2EEPasswordModal';
 import SaveE2EEPasswordModal from './SaveE2EEPasswordModal';
 
@@ -25,7 +25,7 @@ export const useUserKeys = (uid: IUser['_id']): UseQueryResult<CryptoKeyPair, Er
 	return useQuery<CryptoKeyPair, Error>(
 		['e2ee', 'userKeys', uid],
 		({ signal }) =>
-			fetchUserKeys({
+			fetchUserKeyPair({
 				uid,
 				onDecryptingRemoteKeyPair: ({ onConfirm }) => {
 					banners.open({

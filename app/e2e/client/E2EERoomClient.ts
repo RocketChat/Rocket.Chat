@@ -7,7 +7,7 @@ import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
 import { IMessage } from '../../../definition/IMessage';
-import { decryptAES, decryptRSA, encryptAES, encryptRSA, exportJWKKey, generateAESKey, importAESKey, importRSAKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, toArrayBuffer, toString } from './helpers';
+import { decryptAES, decryptRSA, encryptAES, encryptRSA, exportJWKKey, generateAESKey, importAESKey, importRSAKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, fromStringToBuffer, fromBufferToString } from './helpers';
 import { IRoom } from '../../../definition/IRoom';
 import { Messages, Rooms, Subscriptions } from '../../models/client';
 import { ISubscription } from '../../../definition/ISubscription';
@@ -235,7 +235,7 @@ export class E2EERoomClient extends Emitter<{
 
 	async importSubscriptionKey(encryptedSubscriptionKey: string): Promise<void> {
 		const encryptedBody = extractEncryptedBody(encryptedSubscriptionKey);
-		const unencryptedSubscriptionKey = toString(await decryptRSA(this.userPrivateKey, encryptedBody));
+		const unencryptedSubscriptionKey = fromBufferToString(await decryptRSA(this.userPrivateKey, encryptedBody));
 		const jwkSubscriptionKey: JsonWebKey = JSON.parse(unencryptedSubscriptionKey);
 		const subscriptionKey = await importAESKey(jwkSubscriptionKey);
 
@@ -378,7 +378,7 @@ export class E2EERoomClient extends Emitter<{
 			return;
 		}
 
-		const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
+		const encryptedUserKey = await encryptRSA(userKey, fromStringToBuffer(this.sessionKeyExportedString));
 		await APIClient.v1.post('e2e.updateGroupKey', {
 			rid: this.rid,
 			uid: user._id,
