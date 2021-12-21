@@ -144,4 +144,22 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	crmData?: unknown;
 }
 
+export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
+	source: {
+		type: OmnichannelSourceType.APP;
+		id: string;
+		alias?: string;
+		sidebarIcon?: string;
+		defaultIcon?: string;
+	};
+}
+
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+
+export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
+	if (!isOmnichannelRoom(room)) {
+		return false;
+	}
+
+	return room.source.type === OmnichannelSourceType.APP;
+};
