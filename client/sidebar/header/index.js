@@ -1,5 +1,5 @@
-import { Box, Sidebar } from '@rocket.chat/fuselage';
-import React, { memo, useRef } from 'react';
+import { Sidebar } from '@rocket.chat/fuselage';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
