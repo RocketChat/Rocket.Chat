@@ -163,10 +163,10 @@ export const isMessageReactionsNormalized = (
 	message: IMessage,
 ): message is IMessageReactionsNormalized =>
 	Boolean(
-		'reactions' in message &&
-			message.reactions &&
-			message.reactions[0] &&
-			'names' in message.reactions[0],
+		'reactions' in message
+			&& message.reactions
+			&& message.reactions[0]
+			&& 'names' in message.reactions[0],
 	);
 export type IMessageInbox = IMessage & {
 	// email inbox fields
