@@ -1,6 +1,7 @@
 import React, { FC, lazy, Suspense } from 'react';
 import { QueryClientProvider } from 'react-query';
 
+import { OmnichannelRoomIconProvider } from '../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import { queryClient } from '../../lib/queryClient';
 import PageLoading from './PageLoading';
 
@@ -16,10 +17,12 @@ const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
 		<MeteorProvider>
 			<QueryClientProvider client={queryClient}>
-				<ConnectionStatusBar />
-				<BannerRegion />
-				<AppLayout />
-				<PortalsWrapper />
+				<OmnichannelRoomIconProvider>
+					<ConnectionStatusBar />
+					<BannerRegion />
+					<AppLayout />
+					<PortalsWrapper />
+				</OmnichannelRoomIconProvider>
 			</QueryClientProvider>
 		</MeteorProvider>
 	</Suspense>

@@ -2,18 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models/server';
-import { EmojiCustom } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department) {
-	return Livechat.online(department);
+export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {
+	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
-export function findTriggers() {
-	return LivechatTrigger.findEnabled().fetch().map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
+async function findTriggers() {
+	const triggers = await LivechatTrigger.findEnabled().toArray();
+	return triggers.map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
 }
 
 export function findDepartments() {
@@ -91,7 +92,7 @@ export function normalizeHttpHeaderData(headers = {}) {
 }
 export async function settings() {
 	const initSettings = Livechat.getInitSettings();
-	const triggers = findTriggers();
+	const triggers = await findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();

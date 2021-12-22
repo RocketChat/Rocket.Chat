@@ -24,7 +24,7 @@
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
-		"typecheck": "tsc --noEmit --skipLibCheck",
+		"typecheck": "NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
@@ -173,11 +173,11 @@
 		"@nivo/heatmap": "0.73.0",
 		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
-		"@rocket.chat/apps-engine": "^1.29.0-alpha.0.5607",
+		"@rocket.chat/apps-engine": "^1.29.0-alpha.0.5711",
 		"@rocket.chat/css-in-js": "^0.30.1",
 		"@rocket.chat/emitter": "^0.30.1",
-		"@rocket.chat/fuselage": "^0.6.3-dev.368",
-		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.362",
+		"@rocket.chat/fuselage": "^0.6.3-dev.379",
+		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.379",
 		"@rocket.chat/fuselage-polyfills": "^0.30.1",
 		"@rocket.chat/fuselage-tokens": "^0.6.3-dev.362",
 		"@rocket.chat/fuselage-ui-kit": "^0.30.1",
@@ -258,7 +258,7 @@
 		"lodash.clonedeep": "^4.5.0",
 		"lodash.debounce": "^4.0.8",
 		"lodash.get": "^4.4.2",
-		"mailparser": "^3.2.0",
+		"mailparser": "^3.4.0",
 		"marked": "^0.7.0",
 		"mem": "^6.1.1",
 		"meteor-node-stubs": "^1.0.3",
@@ -338,7 +338,7 @@
 		"last 2 versions"
 	],
 	"volta": {
-		"node": "12.22.1",
+		"node": "12.22.8",
 		"npm": "6.14.12"
 	}
 }

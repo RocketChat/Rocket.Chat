@@ -30,4 +30,8 @@ export class AppActivationBridge extends ActivationBridge {
 
 		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
 	}
+
+	protected async actionsChanged(): Promise<void> {
+		await this.orch.getNotifier().actionsChanged();
+	}
 }

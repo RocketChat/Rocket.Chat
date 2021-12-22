@@ -3,22 +3,22 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
-import { hasRole } from '../../../authorization/server';
+import { hasRole } from '../../../authorization';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
-import { Logger } from '../../../logger/server';
-import { settings } from '../../../settings/server';
+import { Logger } from '../../../logger';
+import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 
 const logger = new Logger('LivechatHelper');
-const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -433,8 +433,13 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
-		return false;
+		const department = LivechatDepartment.findOneById(departmentId);
+		if (!department?.fallbackForwardDepartment) {
+			logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
+			return false;
+		}
+		// if a chat has a fallback department, attempt to redirect chat to there [EE]
+		return callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
 	Livechat.saveTransferHistory(room, transferData);
@@ -555,7 +560,7 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 };
 
 export const validateEmail = (email) => {
-	if (!emailValidationRegex.test(email)) {
+	if (!validatorFunc(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'Livechat.validateEmail', email });
 	}
 	return true;

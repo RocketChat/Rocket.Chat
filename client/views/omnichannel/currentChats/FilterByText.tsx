@@ -36,7 +36,7 @@ const FilterByText: FilterByTextType = ({ setFilter, setParams, reload, ...props
 	];
 	const customFieldsOptions: [string, string][] = useMemo(
 		() =>
-			allCustomFields && allCustomFields.customFields
+			allCustomFields?.customFields
 				? allCustomFields.customFields.map(({ _id, label }) => [_id, label])
 				: [],
 		[allCustomFields],
@@ -119,7 +119,7 @@ const FilterByText: FilterByTextType = ({ setFilter, setParams, reload, ...props
 		const onDeleteAll = async (): Promise<void> => {
 			try {
 				await removeClosedChats();
-				reload && reload();
+				reload?.();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: (error as Error).message });

@@ -20,7 +20,7 @@ const resolveLegacyIcon = (legacyIcon: IconProps['name']): IconProps['name'] => 
 		return 'video';
 	}
 
-	return legacyIcon && legacyIcon.replace(/^icon-/, '');
+	return legacyIcon?.replace(/^icon-/, '');
 };
 
 const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction, danger }) => {

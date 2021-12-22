@@ -55,10 +55,8 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 
 	const result = {
 		department: await LivechatDepartment.findOne(query),
+		...includeAgents && canViewLivechatDepartments && { agents: await LivechatDepartmentAgents.find({ departmentId }).toArray() },
 	};
-	if (includeAgents && canViewLivechatDepartments) {
-		result.agents = await LivechatDepartmentAgents.find({ departmentId }).toArray();
-	}
 
 	return result;
 }
