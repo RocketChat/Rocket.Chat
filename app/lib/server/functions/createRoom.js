@@ -4,7 +4,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { Apps } from '../../../apps/server';
-import { addUserRoles } from '../../../authorization';
+import { addUserRolesSync } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
@@ -122,7 +122,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 		Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	Promise.await(addUserRoles(owner._id, ['owner'], room._id));
+	addUserRolesSync(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		Meteor.defer(() => {
