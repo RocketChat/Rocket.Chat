@@ -131,6 +131,7 @@ const AppsProvider: FC = ({ children }) => {
 	});
 
 	const fetch = useCallback(async (): Promise<void> => {
+		dispatch({ type: 'request', reload: async () => undefined });
 		try {
 			const installedApps = await Apps.getApps().then((result: App[]) =>
 				result.map((current: App) => ({

@@ -11,6 +11,7 @@ import {
 	StatesSuggestionText,
 	StatesTitle,
 	Pagination,
+	Icon,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useMemo } from 'react';
@@ -30,6 +31,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
+import { useAppsReload } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import CategoryDropDown from './components/CategoryDropDown';
 import TagList from './components/TagList';
@@ -37,7 +39,6 @@ import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { useAppsReload } from './AppsContext';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -212,9 +213,13 @@ const AppsTable: FC<{
 				<Box mbs='x20'>
 					<States>
 						<StatesIcon variation='danger' name='warning' />
-						<StatesTitle>{t('Error')}</StatesTitle>
+						<StatesTitle>{t('Connection_error')}</StatesTitle>
+						<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
 						<StatesActions>
-							<StatesAction onClick={reload}>{t('Reload_page')}</StatesAction>
+							<StatesAction onClick={reload}>
+								<Icon mie='x4' size='x20' name='reload' />
+								{t('Reload_page')}
+							</StatesAction>
 						</StatesActions>
 					</States>
 				</Box>
