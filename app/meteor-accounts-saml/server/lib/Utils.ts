@@ -9,7 +9,7 @@ import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { ensureArray } from '../../../../server/lib/arrayUtils';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;

@@ -4,7 +4,7 @@ import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
 import { Users } from '../../../app/models/server';
-import { ensureArray } from '../../../server/lib/arrayUtils';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser}) => {

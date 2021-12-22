@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { getRoles } from './getRoles';
 import { IRole, IUser } from '../../../../definition/IUser';
 import { Users, Roles } from '../../../models/server/raw';
-import { ensureArray } from '../../../../server/lib/arrayUtils';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 export const removeUserFromRoles = async (userId: IUser['_id'], roleNames: IRole['name'] | Array<IRole['name']>, scope?: string): Promise<boolean> => {
 	if (!userId || !roleNames) {

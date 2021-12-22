@@ -19,7 +19,7 @@ import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { ensureArray } from '../../../../server/lib/arrayUtils';
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
