@@ -592,7 +592,15 @@ export class ChatMessages {
 		messageBoxState.save({ rid, tmid }, input);
 	}
 
-	onDestroyed(rid) {
+	onDestroyed(rid, tmid) {
 		UserAction.cancel(rid);
+		if (this.input.parentElement.classList.contains('editing') === true) {
+			if (!tmid) {
+				this.clearCurrentDraft();
+				this.clearEditing();
+			}
+			messageBoxState.set(this.input, '');
+			messageBoxState.save({ rid, tmid }, this.$input);
+		}
 	}
 }

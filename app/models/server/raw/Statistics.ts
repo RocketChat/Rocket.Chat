@@ -16,6 +16,6 @@ export class StatisticsRaw extends BaseRaw<T> {
 			limit: 1,
 		};
 		const records = await this.find({}, options).toArray();
-		return records && records[0];
+		return records?.[0];
 	}
 }
