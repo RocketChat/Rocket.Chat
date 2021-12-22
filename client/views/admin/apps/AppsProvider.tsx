@@ -1,5 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import React, { useEffect, useRef, FC, useReducer, Reducer } from 'react';
+import React, { useEffect, useRef, FC, useReducer, Reducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -32,20 +32,24 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 };
 
 type Action =
-	| { type: 'request' }
-	| { type: 'update'; app: App }
-	| { type: 'delete'; appId: string }
-	| { type: 'invalidate'; appId: string }
-	| { type: 'success'; apps: App[] }
-	| { type: 'failure'; error: Error };
+	| { type: 'request'; reload: () => Promise<void> }
+	| { type: 'update'; app: App; reload: () => Promise<void> }
+	| { type: 'delete'; appId: string; reload: () => Promise<void> }
+	| { type: 'invalidate'; appId: string; reload: () => Promise<void> }
+	| { type: 'success'; apps: App[]; reload: () => Promise<void> }
+	| { type: 'failure'; error: Error; reload: () => Promise<void> };
 
 const sortByName = (apps: App[]): App[] =>
 	apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
 const reducer = (
-	state: AsyncState<{ apps: App[] }>,
+	state: AsyncState<{ apps: App[] }> & {
+		reload: () => Promise<void>;
+	},
 	action: Action,
-): AsyncState<{ apps: App[] }> => {
+): AsyncState<{ apps: App[] }> & {
+	reload: () => Promise<void>;
+} => {
 	switch (action.type) {
 		case 'invalidate':
 			if (state.phase !== AsyncStatePhase.RESOLVED) {
@@ -53,6 +57,7 @@ const reducer = (
 			}
 			return {
 				phase: AsyncStatePhase.RESOLVED,
+				reload: action.reload,
 				value: {
 					apps: sortByName(
 						state.value.apps.map((app) => {
@@ -71,6 +76,7 @@ const reducer = (
 			}
 			return {
 				phase: AsyncStatePhase.RESOLVED,
+				reload: async (): Promise<void> => undefined,
 				value: {
 					apps: sortByName(
 						state.value.apps.map((app) => {
@@ -85,18 +91,21 @@ const reducer = (
 			};
 		case 'request':
 			return {
+				reload: async (): Promise<void> => undefined,
 				phase: AsyncStatePhase.LOADING,
 				value: undefined,
 				error: undefined,
 			};
 		case 'success':
 			return {
+				reload: action.reload,
 				phase: AsyncStatePhase.RESOLVED,
 				value: { apps: sortByName(action.apps) },
 				error: undefined,
 			};
 		case 'failure':
 			return {
+				reload: action.reload,
 				phase: AsyncStatePhase.REJECTED,
 				value: undefined,
 				error: action.error,
@@ -107,11 +116,75 @@ const reducer = (
 };
 
 const AppsProvider: FC = ({ children }) => {
-	const [state, dispatch] = useReducer<Reducer<AsyncState<{ apps: App[] }>, Action>>(reducer, {
+	const [state, dispatch] = useReducer<
+		Reducer<
+			AsyncState<{ apps: App[] }> & {
+				reload: () => Promise<void>;
+			},
+			Action
+		>
+	>(reducer, {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
 		error: undefined,
+		reload: async () => undefined,
 	});
+
+	const fetch = useCallback(async (): Promise<void> => {
+		try {
+			const installedApps = await Apps.getApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+					marketplace: false,
+				})),
+			);
+
+			const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+
+			const appsData = marketplaceApps.map<App>((app) => {
+				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+				if (!installedApps[appIndex]) {
+					return {
+						...app,
+						status: undefined,
+						marketplaceVersion: app.version,
+						bundledIn: app.bundledIn,
+					};
+				}
+
+				const [installedApp] = installedApps.splice(appIndex, 1);
+				return {
+					...app,
+					installed: true,
+					...(installedApp && {
+						status: installedApp.status,
+						version: installedApp.version,
+						licenseValidation: installedApp.licenseValidation,
+					}),
+					bundledIn: app.bundledIn,
+					marketplaceVersion: app.version,
+				};
+			});
+
+			if (installedApps.length) {
+				appsData.push(...installedApps);
+			}
+
+			dispatch({
+				type: 'success',
+				apps: appsData,
+				reload: fetch,
+			});
+		} catch (e) {
+			dispatch({
+				type: 'failure',
+				error: e,
+				reload: fetch,
+			});
+			throw e;
+		}
+	}, []);
 
 	const ref = useRef<App[]>([]);
 
@@ -130,12 +203,11 @@ const AppsProvider: FC = ({ children }) => {
 					licenseValidation,
 					marketplaceVersion: app.version,
 				};
-				dispatch({ type: 'update', app: record });
+				dispatch({ type: 'update', app: record, reload: fetch });
 			} catch (error) {
 				handleAPIError(error);
 			}
 		};
-
 		const listeners = {
 			APP_ADDED: handleAppAddedOrUpdated,
 			APP_UPDATED: handleAppAddedOrUpdated,
@@ -147,7 +219,7 @@ const AppsProvider: FC = ({ children }) => {
 				}
 
 				if (updatedData[index].marketplace !== false) {
-					return dispatch({ type: 'delete', appId });
+					return dispatch({ type: 'delete', appId, reload: fetch });
 				}
 
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -155,6 +227,7 @@ const AppsProvider: FC = ({ children }) => {
 
 				return dispatch({
 					type: 'update',
+					reload: fetch,
 					app: {
 						...record,
 						version: marketplaceVersion,
@@ -178,71 +251,22 @@ const AppsProvider: FC = ({ children }) => {
 						...app,
 						status,
 					},
+					reload: fetch,
 				});
 			},
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
-				dispatch({ type: 'invalidate', appId });
+				dispatch({ type: 'invalidate', appId, reload: fetch });
 			},
 		};
-
 		const unregisterListeners = registerListeners(listeners);
 
-		(async (): Promise<void> => {
-			try {
-				const installedApps = await Apps.getApps().then((result: App[]) =>
-					result.map((current: App) => ({
-						...current,
-						installed: true,
-						marketplace: false,
-					})),
-				);
-
-				const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
-
-				const appsData = marketplaceApps.map<App>((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						return {
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						};
-					}
-
-					const [installedApp] = installedApps.splice(appIndex, 1);
-					return {
-						...app,
-						installed: true,
-						...(installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-							licenseValidation: installedApp.licenseValidation,
-						}),
-						bundledIn: app.bundledIn,
-						marketplaceVersion: app.version,
-					};
-				});
-
-				if (installedApps.length) {
-					appsData.push(...installedApps);
-				}
-
-				dispatch({
-					type: 'success',
-					apps: appsData,
-				});
-			} catch (e) {
-				dispatch({
-					type: 'failure',
-					error: e,
-				});
-				unregisterListeners();
-			}
-		})();
-
-		return unregisterListeners;
-	}, []);
+		try {
+			fetch();
+		} finally {
+			// eslint-disable-next-line no-unsafe-finally
+			return unregisterListeners;
+		}
+	}, [fetch]);
 
 	return <AppsContext.Provider children={children} value={state} />;
 };

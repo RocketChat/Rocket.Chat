@@ -37,6 +37,7 @@ import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
+import { useAppsReload } from './AppsContext';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -57,6 +58,8 @@ const AppsTable: FC<{
 	const [text, setText] = useDebouncedState('', 500);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
+
+	const reload = useAppsReload();
 
 	const {
 		current,
@@ -208,12 +211,10 @@ const AppsTable: FC<{
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
-						<StatesIcon name='warning' />
+						<StatesIcon variation='danger' name='warning' />
 						<StatesTitle>{t('Error')}</StatesTitle>
 						<StatesActions>
-							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
-								{t('Reload_page')}
-							</StatesAction>
+							<StatesAction onClick={reload}>{t('Reload_page')}</StatesAction>
 						</StatesActions>
 					</States>
 				</Box>
