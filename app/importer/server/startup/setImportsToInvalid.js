@@ -34,6 +34,6 @@ Meteor.startup(function() {
 		Imports.invalidateAllOperations();
 
 		// Clean up all the raw import data
-		runDrop(() => RawImports.model.rawCollection().drop());
+		runDrop(() => RawImports.model.rawCollection().remove({}));
 	}
 });
