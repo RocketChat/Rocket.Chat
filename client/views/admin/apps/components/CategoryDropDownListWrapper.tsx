@@ -23,7 +23,7 @@ const CategoryDropDownListWrapper = forwardRef<
 	useOutsideClick(target, onClose);
 	const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
 	return (
-		<Box ref={target} style={style} minWidth={224}>
+		<Box ref={target} style={style} minWidth={224} zIndex='99999'>
 			{children}
 		</Box>
 	);

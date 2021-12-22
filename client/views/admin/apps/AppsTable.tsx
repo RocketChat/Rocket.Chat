@@ -212,7 +212,7 @@ const AppsTable: FC<{
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
-						<StatesIcon variation='danger' name='warning' />
+						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>
 						<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
 						<StatesActions>
