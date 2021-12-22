@@ -128,6 +128,10 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		id?: string;
 		// A human readable alias that goes with the ID, for post analytical purposes
 		alias?: string;
+		// The sidebar icon
+		sidebarIcon?: string;
+		// The default sidebar icon
+		defaultIcon?: string;
 	};
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
@@ -154,4 +158,22 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	crmData?: unknown;
 }
 
+export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
+	source: {
+		type: OmnichannelSourceType.APP;
+		id: string;
+		alias?: string;
+		sidebarIcon?: string;
+		defaultIcon?: string;
+	};
+}
+
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+
+export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
+	if (!isOmnichannelRoom(room)) {
+		return false;
+	}
+
+	return room.source.type === OmnichannelSourceType.APP;
+};
