@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
+import { LivechatRooms, Users, LivechatDepartment, LivechatVisitors } from '../../../models/server';
+import { LivechatTrigger } from '../../../models/server/raw';
 import { Livechat } from '../lib/Livechat';
 import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 
 Meteor.methods({
-	'livechat:getInitialData'(visitorToken, departmentId) {
+	async 'livechat:getInitialData'(visitorToken, departmentId) {
 		const info = {
 			enabled: null,
 			title: null,
@@ -89,7 +90,7 @@ Meteor.methods({
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
-		LivechatTrigger.findEnabled().forEach((trigger) => {
+		await LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 

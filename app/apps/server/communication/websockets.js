@@ -13,6 +13,7 @@ export const AppEvents = Object.freeze({
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
 	COMMAND_REMOVED: 'command/removed',
+	ACTIONS_CHANGED: 'actions/changed',
 });
 
 export class AppServerListener {
@@ -26,6 +27,7 @@ export class AppServerListener {
 		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
 		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
+		this.engineStreamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged.bind(this));
 
 		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
@@ -102,6 +104,10 @@ export class AppServerListener {
 	async onCommandRemoved(command) {
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_REMOVED, command);
 	}
+
+	async onActionsChanged() {
+		this.clientStreamer.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
+	}
 }
 
 export class AppServerNotifier {
@@ -176,5 +182,9 @@ export class AppServerNotifier {
 	async commandRemoved(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_REMOVED, command);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_REMOVED, command);
+	}
+
+	async actionsChanged() {
+		this.clientStreamer.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
 	}
 }

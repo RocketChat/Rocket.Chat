@@ -3,7 +3,7 @@ import React, { memo, ComponentProps, ReactElement } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 
-type UserStatusProps = {
+export type UserStatusProps = {
 	small?: boolean;
 } & ComponentProps<typeof StatusBullet>;
 
