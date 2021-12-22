@@ -33,7 +33,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 			<Box
 				position='relative'
 				ref={reference}
-				onClick={() => toggle()}
+				onClick={(): void => toggle()}
 				className={css`
 					cursor: pointer;
 				`}
@@ -61,10 +61,11 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 					<UserStatus small status={status} />
 				</Box>
 			</Box>
-			{isVisible &&
+			{user &&
+				isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target}>
-						<UserDropdown user={user} onClose={() => toggle(false)} />
+						<UserDropdown user={user} onClose={(): void => toggle(false)} />
 					</Dropdown>,
 					document.body,
 				)}

@@ -11,7 +11,8 @@ const style = {
 };
 
 const checkBoxStyle = {
-	'padding-left': '24px',
+	paddingLeft: '24px',
+	paddingInlineStart: '24px',
 };
 
 function SortModeList() {

@@ -66,7 +66,7 @@ const translateStatusName = (
 };
 
 type UserDropdownProps = {
-	user: IUser;
+	user: Pick<IUser, 'username' | 'name' | 'avatarETag' | 'status' | 'statusText'>;
 	onClose: () => void;
 };
 

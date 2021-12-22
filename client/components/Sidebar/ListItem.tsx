@@ -5,11 +5,11 @@ type ListItemProps = {
 	text: string;
 	icon?: ComponentProps<typeof Option.Icon>['name'];
 	input?: any;
-	action?: MouseEventHandler<HTMLOrSVGElement> | undefined;
+	action?: MouseEventHandler<HTMLOrSVGElement>;
 };
 
 const ListItem = ({ text, icon, input, action }: ListItemProps): ReactElement => (
-	<Option onClick={action || undefined}>
+	<Option onClick={action}>
 		{icon && <Option.Icon name={icon} />}
 		<Option.Content>{text}</Option.Content>
 		{input && <OptionColumn>{input}</OptionColumn>}
