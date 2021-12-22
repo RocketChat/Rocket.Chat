@@ -124,7 +124,7 @@ export interface IOmnichannelRoom
 		replyTo: string;
 		subject: string;
 	};
-	source: {
+	source: { // TODO: looks like this is not so required as the definition suggests
 		// The source, or client, which created the Omnichannel room
 		type: OmnichannelSourceType;
 		// An optional identification of external sources, such as an App
@@ -178,5 +178,5 @@ export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichanne
 		return false;
 	}
 
-	return room.source.type === OmnichannelSourceType.APP;
+	return room.source?.type === OmnichannelSourceType.APP;
 };

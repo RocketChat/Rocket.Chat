@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /**
  * Webdav Accounts model
  */
@@ -16,31 +15,31 @@ export class WebdavAccountsRaw extends BaseRaw<T> {
 	) {
 		super(col, trash);
 
-		this.col.createIndex({ user_id: 1 });
+		this.col.createIndex({ userId: 1 });
 	}
 
-	findOneByIdAndUserId(_id: string, user_id: string, options: FindOneOptions<T>): Promise<T | null> {
-		return this.findOne({ _id, user_id }, options);
+	findOneByIdAndUserId(_id: string, userId: string, options: FindOneOptions<T>): Promise<T | null> {
+		return this.findOne({ _id, userId }, options);
 	}
 
 	findOneByUserIdServerUrlAndUsername({
-		user_id,
-		server_url,
+		userId,
+		serverURL,
 		username,
 	}: {
-		user_id: string;
-		server_url: string;
+		userId: string;
+		serverURL: string;
 		username: string;
 	}, options: FindOneOptions<T>): Promise<T | null> {
-		return this.findOne({ user_id, server_url, username }, options);
+		return this.findOne({ userId, serverURL, username }, options);
 	}
 
-	findWithUserId(user_id: string, options: FindOneOptions<T>): Cursor<T> {
-		const query = { user_id };
+	findWithUserId(userId: string, options: FindOneOptions<T>): Cursor<T> {
+		const query = { userId };
 		return this.find(query, options);
 	}
 
-	removeByUserAndId(_id: string, user_id: string): Promise<DeleteWriteOpResultObject> {
-		return this.deleteOne({ _id, user_id });
+	removeByUserAndId(_id: string, userId: string): Promise<DeleteWriteOpResultObject> {
+		return this.deleteOne({ _id, userId });
 	}
 }

@@ -28,7 +28,7 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 				app: 'headset', // TODO: use app icon
 				api: 'headset', // TODO: use api icon
 				other: 'headset',
-			}[room.source.type] || 'headset';
+			}[room.source?.type || 'other'] || 'headset';
 
 		return {
 			name: icon,
