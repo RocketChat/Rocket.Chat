@@ -2139,7 +2139,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune vetëm fotografi, mbani mesazhe",
   "RetentionPolicyRoom_MaxAge": "Mosha Maksimale e mesazhit në ditë (parazgjedhje: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Zvogloje politikën e mbajtjes globale",
-  "RetentionPolicyRoom_ReadTheDocs": "Kujdes! Rregullimi i këtyre cilësimeve pa kujdes maksimal mund të shkatërrojë të gjithë historinë e mesazhit. Ju lutemi lexoni dokumentacionin përpara se ta ktheni funksionin në <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>këtu</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Kujdes! Rregullimi i këtyre cilësimeve pa kujdes maksimal mund të shkatërrojë të gjithë historinë e mesazhit. Ju lutemi lexoni dokumentacionin përpara se ta ktheni funksionin në <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>këtu</a>.",
   "Retry_Count": "Përsëritni Numrin",
   "Role": "rol",
   "Role_Editing": "roli Editing",

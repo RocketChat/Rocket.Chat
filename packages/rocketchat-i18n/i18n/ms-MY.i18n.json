@@ -2145,7 +2145,7 @@
   "RetentionPolicyRoom_FilesOnly": "Fail prune sahaja, simpan mesej",
   "RetentionPolicyRoom_MaxAge": "Umur mesej maksimum dalam hari (lalai: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Mengatasi dasar pengekalan global",
-  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>di sini</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>di sini</a>.",
   "Retry_Count": "Cuba semula",
   "Role": "peranan",
   "Role_Editing": "peranan Editing",

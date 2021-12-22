@@ -57,7 +57,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 
 	useEffect(() => {
 		setName(previousName || '');
-		setAliases((previousAliases && previousAliases.join(', ')) || '');
+		setAliases(previousAliases?.join(', ') || '');
 	}, [previousName, previousAliases, _id]);
 
 	const hasUnsavedChanges = useMemo(
