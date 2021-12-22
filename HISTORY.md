@@ -1,6 +1,26 @@
 
 # 4.3.0 (Under Release Candidate Process)
 
+## 4.3.0-rc.1
+`2021-12-22  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add migration for omni rooms with no source ([#24012](https://github.com/RocketChat/Rocket.Chat/pull/24012))
+
+  Add a migration to add source property to all the omnichannel rooms which don't have it yet. All these rooms will have source type as `other`
+
+- Regression: Let Meteor.absoluteUrl.defaultOptions.rootUrl as baseURI ([#24009](https://github.com/RocketChat/Rocket.Chat/pull/24009))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 4.3.0-rc.0
 `2021-12-22  ·  7 🎉  ·  5 🚀  ·  26 🐛  ·  26 🔍  ·  27 👩‍💻👨‍💻`
 
@@ -293,6 +313,89 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
+
+# 4.2.2
+`2021-12-14  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- creating room with federated member ([#23347](https://github.com/RocketChat/Rocket.Chat/pull/23347) by [@qwertiko](https://github.com/qwertiko))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.2.2 ([#23940](https://github.com/RocketChat/Rocket.Chat/pull/23940) by [@qwertiko](https://github.com/qwertiko))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@qwertiko](https://github.com/qwertiko)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+# 4.2.1
+`2021-12-10  ·  4 🐛  ·  2 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- Error when creating an inactive user in admin panel ([#23859](https://github.com/RocketChat/Rocket.Chat/pull/23859))
+
+  - Fix `usersInRole` array used to send email to activate a user.
+
+- Segmentation fault on CentOS 7 due to outdated `sharp` ([#23796](https://github.com/RocketChat/Rocket.Chat/pull/23796))
+
+  Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.
+
+  Suggested as a fix for versions `4.0.x` and `4.1.x`.
+
+- teams.removeMembers client usage ([#23857](https://github.com/RocketChat/Rocket.Chat/pull/23857))
+
+- Wrong button for non trial apps ([#23861](https://github.com/RocketChat/Rocket.Chat/pull/23861))
+
+  This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  
+  After:
+  ![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Livechat ([#23913](https://github.com/RocketChat/Rocket.Chat/pull/23913))
+
+- Release 4.2.1 ([#23917](https://github.com/RocketChat/Rocket.Chat/pull/23917))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 4.2.0
 `2021-11-30  ·  9 🎉  ·  7 🚀  ·  26 🐛  ·  27 🔍  ·  24 👩‍💻👨‍💻`
@@ -6987,7 +7090,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.0
-`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+`2020-11-14  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`

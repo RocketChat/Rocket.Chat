@@ -68474,6 +68474,148 @@
           ]
         }
       ]
+    },
+    "4.2.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23917",
+          "title": "Release 4.2.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tiagoevanp",
+            "sampaiodiego",
+            "matheusbsilva137",
+            "rique223",
+            "dougfabris",
+            "tassoevan",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23913",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23796",
+          "title": "[FIX] Segmentation fault on CentOS 7 due to outdated `sharp`",
+          "userLogin": "tassoevan",
+          "description": "Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.\r\n\r\nSuggested as a fix for versions `4.0.x` and `4.1.x`.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23857",
+          "title": "[FIX] teams.removeMembers client usage",
+          "userLogin": "dougfabris",
+          "milestone": "4.2.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23861",
+          "title": "[FIX] Wrong button for non trial apps",
+          "userLogin": "rique223",
+          "description": "This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  \r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  \r\nAfter:\r\n![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)",
+          "milestone": "4.2.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "23859",
+          "title": "[FIX] Error when creating an inactive user in admin panel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix `usersInRole` array used to send email to activate a user.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        }
+      ]
+    },
+    "4.2.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23940",
+          "title": "Release 4.2.2",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "qwertiko",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23347",
+          "title": "[FIX] creating room with federated member",
+          "userLogin": "qwertiko",
+          "milestone": "4.2.2",
+          "contributors": [
+            "qwertiko",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.3.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24009",
+          "title": "Regression: Let Meteor.absoluteUrl.defaultOptions.rootUrl as baseURI",
+          "userLogin": "tassoevan",
+          "milestone": "4.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24012",
+          "title": "Regression: Add migration for omni rooms with no source",
+          "userLogin": "murtaza98",
+          "description": "Add a migration to add source property to all the omnichannel rooms which don't have it yet. All these rooms will have source type as `other`",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
