@@ -590,6 +590,25 @@ describe('[Teams]', () => {
 				.catch(done);
 		});
 
+		it('should not be able to remove if rooms is empty', (done) => {
+			request.post(api('teams.removeMember'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					userId: credentials['X-User-Id'],
+					rooms: [],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('invalid-params');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
 		it('should remove one member from a public team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
@@ -700,6 +719,25 @@ describe('[Teams]', () => {
 						})
 						.then(() => done()),
 				)
+				.catch(done);
+		});
+
+		it('should not be able to leave if rooms is empty', (done) => {
+			request.post(api('teams.leave'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					userId: credentials['X-User-Id'],
+					rooms: [],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('invalid-params');
+				})
+				.then(() => done())
 				.catch(done);
 		});
 	});

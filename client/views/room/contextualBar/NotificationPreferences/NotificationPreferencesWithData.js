@@ -23,18 +23,18 @@ const NotificationPreferencesWithData = ({ rid }) => {
 	);
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
-		turnOn: !subscription.disableNotifications,
-		muteGroupMentions: subscription.muteGroupMentions,
-		showCounter: !subscription.hideUnreadStatus,
+		turnOn: !subscription?.disableNotifications,
+		muteGroupMentions: subscription?.muteGroupMentions,
+		showCounter: !subscription?.hideUnreadStatus,
 		desktopAlert:
-			(subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
+			(subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
 			'default',
-		desktopSound: subscription.audioNotificationValue || 'default',
+		desktopSound: subscription?.audioNotificationValue || 'default',
 		mobileAlert:
-			(subscription.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
+			(subscription?.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
 			'default',
 		emailAlert:
-			(subscription.emailPrefOrigin === 'subscription' && subscription.emailNotifications) ||
+			(subscription?.emailPrefOrigin === 'subscription' && subscription.emailNotifications) ||
 			'default',
 	});
 

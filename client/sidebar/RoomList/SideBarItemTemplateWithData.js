@@ -1,10 +1,10 @@
-import { Badge } from '@rocket.chat/fuselage';
+import { Badge, Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
+import { RoomIcon } from '../../components/RoomIcon';
 import { useLayout } from '../../contexts/LayoutContext';
 import RoomMenu from '../RoomMenu';
-import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room, lastMessage, t) => {
@@ -35,7 +35,7 @@ function SideBarItemTemplateWithData({
 	AvatarTemplate,
 	t,
 	style,
-	sidebarViewMode,
+	// sidebarViewMode,
 	isAnonymous,
 }) {
 	const { sidebar } = useLayout();
@@ -59,7 +59,9 @@ function SideBarItemTemplateWithData({
 
 	const highlighted = !hideUnreadStatus && (alert || unread);
 	const icon = (
-		<SidebarIcon highlighted={highlighted} room={room} small={sidebarViewMode !== 'medium'} />
+		<Sidebar.Item.Icon highlighted={highlighted}>
+			<RoomIcon highlighted={highlighted} room={room} placement='sidebar' />
+		</Sidebar.Item.Icon>
 	);
 
 	const isQueued = room.status === 'queued';

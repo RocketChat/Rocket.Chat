@@ -10,8 +10,8 @@ WebApp.connectHandlers.use(DataExport.getPath(), async function(req, res, next) 
 	const match = /^\/([^\/]+)/.exec(req.url);
 
 	if (!settings.get('UserData_EnableDownload')) {
-		res.writeHead(403);
 		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		res.writeHead(403);
 		return res.end(DataExport.getErrorPage(TAPi18n.__('Feature_Disabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
 	}
 

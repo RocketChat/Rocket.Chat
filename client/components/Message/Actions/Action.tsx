@@ -15,12 +15,12 @@ type ActionOptions = {
 	danger?: boolean;
 };
 
-const resolveLegacyIcon = (legacyIcon: string | undefined): string | undefined => {
+const resolveLegacyIcon = (legacyIcon: IconProps['name']): IconProps['name'] => {
 	if (legacyIcon === 'icon-videocam') {
 		return 'video';
 	}
 
-	return legacyIcon && legacyIcon.replace(/^icon-/, '');
+	return legacyIcon?.replace(/^icon-/, '');
 };
 
 const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction, danger }) => {
