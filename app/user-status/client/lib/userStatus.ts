@@ -49,4 +49,4 @@ export const userStatus: UserStatusTypes = {
 			statusType: UserStatus.OFFLINE,
 		},
 	},
-};
+} as const;

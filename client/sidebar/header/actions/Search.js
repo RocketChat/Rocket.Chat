@@ -16,11 +16,9 @@ const Search = (props) => {
 	});
 
 	useOutsideClick(ref, handleCloseSearch);
-
 	const openSearch = useMutableCallback(() => {
 		setSearchOpen(true);
 	});
-
 	useEffect(() => {
 		const unsubscribe = tinykeys(window, {
 			'$mod+K': (event) => {
