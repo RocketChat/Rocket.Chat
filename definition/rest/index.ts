@@ -13,6 +13,7 @@ import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImEndpoints } from './v1/im';
 import type { InstancesEndpoints } from './v1/instances';
+import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
@@ -47,7 +48,8 @@ type CommunityEndpoints = BannersEndpoints &
 	LicensesEndpoints &
 	MiscEndpoints &
 	PermissionsEndpoints &
-	InstancesEndpoints;
+	InstancesEndpoints &
+	InvitesEndpoints;
 
 type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 

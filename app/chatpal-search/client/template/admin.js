@@ -6,11 +6,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../../settings';
 import { hasRole } from '../../../authorization';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { validateEmail } from '../../../../lib/emailValidator';
 
 Template.ChatpalAdmin.onCreated(function() {
-	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-	this.validateEmail = (email) => re.test(email.toLowerCase());
+	this.validateEmail = validateEmail;
 
 	this.apiKey = new ReactiveVar();
 

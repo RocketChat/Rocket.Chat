@@ -18,7 +18,7 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	const me = Users.findOneById(userId, { fields: { username: 1 } });
+	const me = Users.findOneById(userId, { fields: { username: 1, name: 1 } });
 	if (!me?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',

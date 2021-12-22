@@ -33,7 +33,7 @@ Meteor.startup(function() {
 		}
 
 		accounts.forEach((account) => {
-			const name = account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+			const name = account.name || `${ account.username }@${ account.serverURL.replace(/^https?\:\/\//i, '') }`;
 			const title = t('Upload_From', {
 				name,
 			});
