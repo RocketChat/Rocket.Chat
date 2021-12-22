@@ -43,10 +43,10 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		retryCount,
 		retryDelay,
 		triggerWordAnywhere,
+		runOnEdits,
 	} = formValues;
 
 	const {
-		runOnEdits,
 		handleEvent,
 		handleEnabled,
 		handleName,

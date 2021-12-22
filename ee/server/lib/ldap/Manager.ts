@@ -29,18 +29,20 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
+		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
+		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+
 		const options = this.getConverterOptions();
+		options.skipExistingUsers = !updateExistingUsers;
+
 		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
 
 		try {
 			await ldap.connect();
 
-			const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
-			const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
-
 			if (createNewUsers) {
-				await this.importNewUsers(ldap, converter, updateExistingUsers);
+				await this.importNewUsers(ldap, converter);
 			} else if (updateExistingUsers) {
 				await this.updateExistingUsers(ldap, converter);
 			}
@@ -317,8 +319,8 @@ export class LDAPEEManager extends LDAPManager {
 		const notInTeamIds = allTeams.filter(({ name }) => !teamNames.includes(name)).map(({ _id }) => _id);
 
 		const currentTeams = await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } });
-		const currentTeamIds = currentTeams && currentTeams.map(({ teamId }) => teamId);
-		const teamsToRemove = currentTeamIds && currentTeamIds.filter((teamId) => notInTeamIds.includes(teamId));
+		const currentTeamIds = currentTeams?.map(({ teamId }) => teamId);
+		const teamsToRemove = currentTeamIds?.filter((teamId) => notInTeamIds.includes(teamId));
 		const teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
 
 		await Team.insertMemberOnTeams(user._id, teamsToAdd);
@@ -525,7 +527,7 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPDataConverter, updateExistingUsers: boolean): Promise<void> {
+	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
@@ -533,13 +535,6 @@ export class LDAPEEManager extends LDAPManager {
 				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;
-
-					if (!updateExistingUsers) {
-						const existingUser = Promise.await(this.findExistingLDAPUser(data));
-						if (existingUser) {
-							return;
-						}
-					}
 
 					const userData = this.mapUserData(data);
 					converter.addUser(userData);
@@ -552,7 +547,7 @@ export class LDAPEEManager extends LDAPManager {
 						return;
 					}
 
-					logger.info('LDAP finished importing. New users imported:', count);
+					logger.info('LDAP finished loading users. Users added to importer: ', count);
 					resolve();
 				},
 			});

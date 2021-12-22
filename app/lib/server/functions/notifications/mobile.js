@@ -1,32 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../settings';
-import { Subscriptions } from '../../../../models';
+import { Subscriptions } from '../../../../models/server/raw';
 import { roomTypes } from '../../../../utils';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
-
-let SubscriptionRaw;
-Meteor.startup(() => {
-	SubscriptionRaw = Subscriptions.model.rawCollection();
-});
-
-async function getBadgeCount(userId) {
-	const [result = {}] = await SubscriptionRaw.aggregate([
-		{ $match: { 'u._id': userId, archived: { $ne: true } } },
-		{
-			$group: {
-				_id: 'total',
-				total: { $sum: '$unread' },
-			},
-		},
-	]).toArray();
-
-	const { total } = result;
-	return total;
-}
 
 function enableNotificationReplyButton(room, username) {
 	// Some users may have permission to send messages even on readonly rooms, but we're ok with false negatives here in exchange of better perfomance
@@ -68,7 +47,7 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
 		message: messageText,
-		badge: await getBadgeCount(userId),
+		badge: await Subscriptions.getBadgeCount(userId),
 		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }

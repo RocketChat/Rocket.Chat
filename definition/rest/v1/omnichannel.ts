@@ -1,11 +1,15 @@
 import { ILivechatDepartment } from '../../ILivechatDepartment';
+import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
+import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+
+type booleanString = 'true' | 'false';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -39,16 +43,36 @@ export type OmnichannelEndpoints = {
 		GET: (
 			params: PaginatedRequest<{
 				text: string;
-				onlyMyDepartments?: boolean;
+				onlyMyDepartments?: booleanString;
+				enabled?: boolean;
 			}>,
 		) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
+		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
+			department: ILivechatDepartment;
+			agents: any[];
+		};
 	};
 	'livechat/department/:_id': {
-		GET: () => {
-			department: ILivechatDepartment;
+		GET: (params: { onlyMyDepartments?: booleanString; includeAgents?: booleanString }) => {
+			department: ILivechatDepartment | null;
+			agents?: any[];
 		};
+		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
+			department: ILivechatDepartment;
+			agents: any[];
+		};
+		DELETE: () => void;
+	};
+	'livechat/department.autocomplete': {
+		GET: (params: { selector: string; onlyMyDepartments: booleanString }) => {
+			items: ILivechatDepartment[];
+		};
+	};
+	'livechat/department/:departmentId/agents': {
+		GET: (params: { sort: string }) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
+		POST: (params: { upsert: string[]; remove: string[] }) => void;
 	};
 	'livechat/departments.available-by-unit/:id': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
@@ -115,5 +139,29 @@ export type OmnichannelEndpoints = {
 				};
 			}[];
 		}>;
+	};
+
+	'livechat/visitor': {
+		POST: (params: { visitor: ILivechatVisitorDTO }) => { visitor: ILivechatVisitor };
+	};
+
+	'livechat/visitor/:token': {
+		GET: (params: { token: string }) => { visitor: ILivechatVisitor };
+		DELETE: (params: { token: string }) => { visitor: { _id: string; ts: string } };
+	};
+
+	'livechat/visitor/:token/room': {
+		GET: (params: { token: string }) => { rooms: IOmnichannelRoom[] };
+	};
+
+	'livechat/visitor.callStatus': {
+		POST: (params: { token: string; callStatus: string; rid: string; callId: string }) => {
+			token: string;
+			callStatus: string;
+		};
+	};
+
+	'livechat/visitor.status': {
+		POST: (params: { token: string; status: string }) => { token: string; status: string };
 	};
 };

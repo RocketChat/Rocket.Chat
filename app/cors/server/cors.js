@@ -31,6 +31,11 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 			settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX'),
 		].filter(Boolean).join(' ');
 
+		const inlineHashes = [
+			// Hash for `window.close()`, required by the CAS login popup.
+			"'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34='",
+		].filter(Boolean).join(' ');
+
 		res.setHeader(
 			'Content-Security-Policy',
 			[
@@ -40,7 +45,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 				'frame-src *',
 				'img-src * data:',
 				'media-src * data:',
-				`script-src 'self' 'unsafe-eval' ${ cdn_prefixes }`,
+				`script-src 'self' 'unsafe-eval' ${ inlineHashes } ${ cdn_prefixes }`,
 				`style-src 'self' 'unsafe-inline' ${ cdn_prefixes }`,
 			].join('; '),
 		);

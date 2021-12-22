@@ -172,7 +172,7 @@ export class SAMLUtils {
 			const statusNode = statusNodes[0];
 			const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
-			if (statusMessage && statusMessage.firstChild && statusMessage.firstChild.textContent) {
+			if (statusMessage?.firstChild?.textContent) {
 				messageText = statusMessage.firstChild.textContent;
 			}
 
@@ -364,7 +364,7 @@ export class SAMLUtils {
 		if (mapping.regex && mainValue && mainValue.match) {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
-			if (match && match.length) {
+			if (match?.length) {
 				if (match.length >= 2) {
 					regexValue = match[1];
 				} else {
