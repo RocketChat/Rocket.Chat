@@ -13,7 +13,7 @@ import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 const AutoCompleteDepartment = (props) => {
 	const {
 		value,
-		excludeId,
+		excludeDepartmentId,
 		onlyMyDepartments = false,
 		onChange = () => {},
 		haveAll = false,
@@ -27,8 +27,14 @@ const AutoCompleteDepartment = (props) => {
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone }),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone],
+			() => ({
+				filter: debouncedDepartmentsFilter,
+				onlyMyDepartments,
+				haveAll,
+				haveNone,
+				excludeDepartmentId,
+			}),
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId],
 		),
 	);
 
@@ -53,10 +59,6 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
-	const filteredList = excludeId
-		? sortedByName.filter((dep) => dep._id !== excludeId)
-		: sortedByName;
-
 	const findValue = value !== undefined && value !== null ? value : '';
 	const department = sortedByName.find(
 		(dep) => dep._id === (typeof findValue !== 'object' && findValue ? findValue : findValue.value),
@@ -69,7 +71,7 @@ const AutoCompleteDepartment = (props) => {
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
-			options={filteredList}
+			options={sortedByName}
 			placeholder={t('Select_an_option')}
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING

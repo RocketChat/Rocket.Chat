@@ -456,7 +456,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 								<Field.Label>{t('Fallback_forward_department')}</Field.Label>
 								<AutoCompleteDepartment
 									haveNone
-									excludeId={department?._id}
+									excludeDepartmentId={department?._id}
 									value={fallbackForwardDepartment}
 									onChange={handleFallbackForwardDepartment}
 									placeholder={t('Fallback_forward_department')}
