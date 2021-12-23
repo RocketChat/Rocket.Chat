@@ -5,7 +5,7 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models
 import { callbacks } from '../../../../callbacks/server';
 
 
-export async function findDepartments({ userId, onlyMyDepartments = false, text, enabled, pagination: { offset, count, sort } }) {
+export async function findDepartments({ userId, onlyMyDepartments = false, text, enabled, excludeDepartmentId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -17,6 +17,7 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 		],
 		...enabled && { enabled: Boolean(enabled) },
 		...text && { name: new RegExp(escapeRegExp(text), 'i') },
+		...excludeDepartmentId && { _id: { $ne: excludeDepartmentId } },
 	};
 
 	if (onlyMyDepartments) {
