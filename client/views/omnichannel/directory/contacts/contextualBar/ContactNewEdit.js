@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
-import { isEmail } from '../../../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
@@ -112,7 +112,7 @@ function ContactNewEdit({ id, data, close }) {
 	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!isEmail(email)) {
+		if (!validateEmail(email)) {
 			return;
 		}
 		const { contact } = await emailAlreadyExistsAction();
@@ -139,7 +139,7 @@ function ContactNewEdit({ id, data, close }) {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
 	useComponentDidUpdate(() => {
-		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
+		setEmailError(email && !validateEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
 	useComponentDidUpdate(() => {
 		!phone && setPhoneError(null);
@@ -152,7 +152,7 @@ function ContactNewEdit({ id, data, close }) {
 			setNameError(t('The_field_is_required', 'name'));
 			error = true;
 		}
-		if (email && !isEmail(email)) {
+		if (email && !validateEmail(email)) {
 			setEmailError(t('Validate_email_address'));
 			error = true;
 		}

@@ -14,8 +14,8 @@ import {
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
+import { validateEmail } from '../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
-import { isEmail } from '../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
@@ -95,7 +95,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		[t, password, confirmationPassword],
 	);
 	const emailError = useMemo(
-		() => (isEmail(email) ? undefined : 'error-invalid-email-address'),
+		() => (validateEmail(email) ? undefined : 'error-invalid-email-address'),
 		[email],
 	);
 	const checkUsername = useDebouncedCallback(

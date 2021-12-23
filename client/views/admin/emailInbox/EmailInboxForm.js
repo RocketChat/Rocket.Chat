@@ -13,7 +13,7 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
@@ -132,7 +132,7 @@ function EmailInboxForm({ id, data }) {
 	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
 
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : null);
+		setEmailError(!validateEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
 	useComponentDidUpdate(() => {
 		!email && setEmailError(null);
@@ -208,7 +208,7 @@ function EmailInboxForm({ id, data }) {
 	});
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!email && !isEmail(email)) {
+		if (!email && !validateEmail(email)) {
 			return;
 		}
 		const { emailInbox } = await emailAlreadyExistsAction();
@@ -222,7 +222,7 @@ function EmailInboxForm({ id, data }) {
 		hasUnsavedChanges &&
 		name &&
 		email &&
-		isEmail(email) &&
+		validateEmail(email) &&
 		!emailError &&
 		smtpServer &&
 		smtpPort &&

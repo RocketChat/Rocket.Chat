@@ -1,7 +1,7 @@
 import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import VerticalBar from '../../../components/VerticalBar';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -12,7 +12,10 @@ export function InviteUsers({ data, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [text, setText] = useState('');
 	const sendInvites = useMethod('sendInvitationEmail');
-	const getEmails = useCallback((text) => text.split(/[\ ,;]+/i).filter((val) => isEmail(val)), []);
+	const getEmails = useCallback(
+		(text) => text.split(/[\ ,;]+/i).filter((val) => validateEmail(val)),
+		[],
+	);
 	const handleClick = async () => {
 		try {
 			await sendInvites(getEmails(text));
