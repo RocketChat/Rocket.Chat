@@ -22,7 +22,9 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 			pagination: {
 				offset,
 				count,
-				sort,
+				// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+				// or the form { [k: keyof T]: number | string }
+				sort: sort as any,
 			},
 		}));
 
