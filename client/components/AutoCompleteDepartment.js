@@ -13,7 +13,7 @@ import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 const AutoCompleteDepartment = (props) => {
 	const {
 		value,
-		excludeId,
+		excludedId,
 		onlyMyDepartments = false,
 		onChange = () => {},
 		haveAll = false,
@@ -53,8 +53,8 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
-	const filteredList = excludeId
-		? sortedByName.filter((dep) => dep._id !== excludeId)
+	const filteredList = excludedId
+		? sortedByName.filter((dep) => dep._id !== excludedId)
 		: sortedByName;
 
 	const findValue = value !== undefined && value !== null ? value : '';
