@@ -1,5 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import React, { useEffect, useRef, FC, useReducer, Reducer } from 'react';
+import React, { useEffect, useRef, FC, useReducer, Reducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -11,7 +11,6 @@ import { App } from './types';
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
 };
-
 const registerListeners = (listeners: ListenersMapping): (() => void) => {
 	const entries = Object.entries(listeners) as Exclude<
 		{
@@ -19,33 +18,34 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 		}[keyof ListenersMapping],
 		undefined
 	>[];
-
 	for (const [event, callback] of entries) {
 		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
 	}
-
 	return (): void => {
 		for (const [event, callback] of entries) {
 			Apps.getWsListener()?.unregisterListener(AppEvents[event], callback);
 		}
 	};
 };
-
 type Action =
-	| { type: 'request' }
-	| { type: 'update'; app: App }
-	| { type: 'delete'; appId: string }
-	| { type: 'invalidate'; appId: string }
-	| { type: 'success'; apps: App[] }
-	| { type: 'failure'; error: Error };
+	| { type: 'request'; reload: () => Promise<void> }
+	| { type: 'update'; app: App; reload: () => Promise<void> }
+	| { type: 'delete'; appId: string; reload: () => Promise<void> }
+	| { type: 'invalidate'; appId: string; reload: () => Promise<void> }
+	| { type: 'success'; apps: App[]; reload: () => Promise<void> }
+	| { type: 'failure'; error: Error; reload: () => Promise<void> };
 
 const sortByName = (apps: App[]): App[] =>
 	apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
 const reducer = (
-	state: AsyncState<{ apps: App[] }>,
+	state: AsyncState<{ apps: App[] }> & {
+		reload: () => Promise<void>;
+	},
 	action: Action,
-): AsyncState<{ apps: App[] }> => {
+): AsyncState<{ apps: App[] }> & {
+	reload: () => Promise<void>;
+} => {
 	switch (action.type) {
 		case 'invalidate':
 			if (state.phase !== AsyncStatePhase.RESOLVED) {
@@ -53,6 +53,7 @@ const reducer = (
 			}
 			return {
 				phase: AsyncStatePhase.RESOLVED,
+				reload: action.reload,
 				value: {
 					apps: sortByName(
 						state.value.apps.map((app) => {
@@ -71,6 +72,7 @@ const reducer = (
 			}
 			return {
 				phase: AsyncStatePhase.RESOLVED,
+				reload: async (): Promise<void> => undefined,
 				value: {
 					apps: sortByName(
 						state.value.apps.map((app) => {
@@ -85,18 +87,21 @@ const reducer = (
 			};
 		case 'request':
 			return {
+				reload: async (): Promise<void> => undefined,
 				phase: AsyncStatePhase.LOADING,
 				value: undefined,
 				error: undefined,
 			};
 		case 'success':
 			return {
+				reload: action.reload,
 				phase: AsyncStatePhase.RESOLVED,
 				value: { apps: sortByName(action.apps) },
 				error: undefined,
 			};
 		case 'failure':
 			return {
+				reload: action.reload,
 				phase: AsyncStatePhase.REJECTED,
 				value: undefined,
 				error: action.error,
@@ -105,18 +110,74 @@ const reducer = (
 			return state;
 	}
 };
-
 const AppsProvider: FC = ({ children }) => {
-	const [state, dispatch] = useReducer<Reducer<AsyncState<{ apps: App[] }>, Action>>(reducer, {
+	const [state, dispatch] = useReducer<
+		Reducer<
+			AsyncState<{ apps: App[] }> & {
+				reload: () => Promise<void>;
+			},
+			Action
+		>
+	>(reducer, {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
 		error: undefined,
+		reload: async () => undefined,
 	});
 
+	const fetch = useCallback(async (): Promise<void> => {
+		dispatch({ type: 'request', reload: async () => undefined });
+		try {
+			const installedApps = await Apps.getApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+					marketplace: false,
+				})),
+			);
+			const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+			const appsData = marketplaceApps.map<App>((app) => {
+				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+				if (!installedApps[appIndex]) {
+					return {
+						...app,
+						status: undefined,
+						marketplaceVersion: app.version,
+						bundledIn: app.bundledIn,
+					};
+				}
+				const [installedApp] = installedApps.splice(appIndex, 1);
+				return {
+					...app,
+					installed: true,
+					...(installedApp && {
+						status: installedApp.status,
+						version: installedApp.version,
+						licenseValidation: installedApp.licenseValidation,
+					}),
+					bundledIn: app.bundledIn,
+					marketplaceVersion: app.version,
+				};
+			});
+			if (installedApps.length) {
+				appsData.push(...installedApps);
+			}
+			dispatch({
+				type: 'success',
+				apps: appsData,
+				reload: fetch,
+			});
+		} catch (e) {
+			dispatch({
+				type: 'failure',
+				error: e,
+				reload: fetch,
+			});
+			throw e;
+		}
+	}, []);
 	const ref = useRef<App[]>([]);
-
 	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
-
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
@@ -130,12 +191,11 @@ const AppsProvider: FC = ({ children }) => {
 					licenseValidation,
 					marketplaceVersion: app.version,
 				};
-				dispatch({ type: 'update', app: record });
+				dispatch({ type: 'update', app: record, reload: fetch });
 			} catch (error) {
 				handleAPIError(error);
 			}
 		};
-
 		const listeners = {
 			APP_ADDED: handleAppAddedOrUpdated,
 			APP_UPDATED: handleAppAddedOrUpdated,
@@ -145,16 +205,14 @@ const AppsProvider: FC = ({ children }) => {
 				if (index < 0) {
 					return;
 				}
-
 				if (updatedData[index].marketplace !== false) {
-					return dispatch({ type: 'delete', appId });
+					return dispatch({ type: 'delete', appId, reload: fetch });
 				}
-
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { installed, status, marketplaceVersion, ...record } = updatedData[index];
-
 				return dispatch({
 					type: 'update',
+					reload: fetch,
 					app: {
 						...record,
 						version: marketplaceVersion,
@@ -165,88 +223,31 @@ const AppsProvider: FC = ({ children }) => {
 			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
 				const updatedData = getDataCopy();
 				const app = updatedData.find(({ id }: { id: string }) => id === appId);
-
 				if (!app) {
 					return;
 				}
-
 				app.status = status;
-
 				return dispatch({
 					type: 'update',
 					app: {
 						...app,
 						status,
 					},
+					reload: fetch,
 				});
 			},
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
-				dispatch({ type: 'invalidate', appId });
+				dispatch({ type: 'invalidate', appId, reload: fetch });
 			},
 		};
-
 		const unregisterListeners = registerListeners(listeners);
-
-		(async (): Promise<void> => {
-			try {
-				const installedApps = await Apps.getApps().then((result: App[]) =>
-					result.map((current: App) => ({
-						...current,
-						installed: true,
-						marketplace: false,
-					})),
-				);
-
-				const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
-
-				const appsData = marketplaceApps.map<App>((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						return {
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						};
-					}
-
-					const installedApp = installedApps.splice(appIndex, 1).pop();
-					return {
-						...app,
-						installed: true,
-						...(installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-							licenseValidation: installedApp.licenseValidation,
-						}),
-						bundledIn: app.bundledIn,
-						marketplaceVersion: app.version,
-					};
-				});
-
-				if (installedApps.length) {
-					appsData.push(...installedApps);
-				}
-
-				dispatch({
-					type: 'success',
-					apps: appsData.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)),
-				});
-			} catch (e) {
-				dispatch({
-					type: 'failure',
-					error: e,
-				});
-
-				handleAPIError(e);
-				unregisterListeners();
-			}
-		})();
-
-		return unregisterListeners;
-	}, []);
-
+		try {
+			fetch();
+		} finally {
+			// eslint-disable-next-line no-unsafe-finally
+			return unregisterListeners;
+		}
+	}, [fetch]);
 	return <AppsContext.Provider children={children} value={state} />;
 };
-
 export default AppsProvider;

@@ -1,13 +1,18 @@
-import { Box, Margins, CheckBox } from '@rocket.chat/fuselage';
+import { CheckBox, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference } from '../../contexts/UserContext';
-import SortListItem from './SortListItem';
+import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+};
+
+const checkBoxStyle = {
+	paddingLeft: '24px',
+	paddingInlineStart: '24px',
 };
 
 function GroupingList() {
@@ -25,49 +30,47 @@ function GroupingList() {
 	const handleChangeShowUnread = useHandleChange('sidebarShowUnread', !sidebarShowUnread);
 
 	const t = useTranslation();
+
 	return (
 		<>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='c1'>
-					{t('Group_by')}
-				</Box>
-			</Margins>
+			<OptionTitle style={style}>{t('Group_by')}</OptionTitle>
 			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					<SortListItem
-						icon={'flag'}
-						text={t('Unread')}
-						input={
-							<CheckBox
-								onChange={handleChangeShowUnread}
-								name='sidebarShowUnread'
-								checked={sidebarShowUnread}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'star'}
-						text={t('Favorites')}
-						input={
-							<CheckBox
-								onChange={handleChangeShoFavorite}
-								name='sidebarShowFavorites'
-								checked={sidebarShowFavorites}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'group-by-type'}
-						text={t('Types')}
-						input={
-							<CheckBox
-								onChange={handleChangeGroupByType}
-								name='sidebarGroupByType'
-								checked={sidebarGroupByType}
-							/>
-						}
-					/>
-				</Margins>
+				<ListItem
+					icon={'flag'}
+					text={t('Unread')}
+					input={
+						<CheckBox
+							style={checkBoxStyle}
+							onChange={handleChangeShowUnread}
+							name='sidebarShowUnread'
+							checked={sidebarShowUnread}
+						/>
+					}
+				/>
+				<ListItem
+					icon={'star'}
+					text={t('Favorites')}
+					input={
+						<CheckBox
+							style={checkBoxStyle}
+							onChange={handleChangeShoFavorite}
+							name='sidebarShowFavorites'
+							checked={sidebarShowFavorites}
+						/>
+					}
+				/>
+				<ListItem
+					icon={'group-by-type'}
+					text={t('Types')}
+					input={
+						<CheckBox
+							style={checkBoxStyle}
+							onChange={handleChangeGroupByType}
+							name='sidebarGroupByType'
+							checked={sidebarGroupByType}
+						/>
+					}
+				/>
 			</ul>
 		</>
 	);

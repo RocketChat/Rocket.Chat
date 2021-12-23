@@ -2138,7 +2138,7 @@
   "RetentionPolicyRoom_FilesOnly": "Chỉ tập tin Prune, giữ tin nhắn",
   "RetentionPolicyRoom_MaxAge": "Độ tuổi tin nhắn tối đa theo ngày (mặc định: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Ghi đè chính sách lưu giữ toàn cầu",
-  "RetentionPolicyRoom_ReadTheDocs": "Xem ra! Tinh chỉnh các cài đặt này mà không cần chăm sóc tối đa có thể hủy tất cả lịch sử tin nhắn. Vui lòng đọc tài liệu trước khi chuyển tính năng này trên <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>tại đây</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Xem ra! Tinh chỉnh các cài đặt này mà không cần chăm sóc tối đa có thể hủy tất cả lịch sử tin nhắn. Vui lòng đọc tài liệu trước khi chuyển tính năng này trên <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>tại đây</a>.",
   "Retry_Count": "Thử lại đếm",
   "Role": "Vai trò",
   "Role_Editing": "Chỉnh sửa Vai trò",

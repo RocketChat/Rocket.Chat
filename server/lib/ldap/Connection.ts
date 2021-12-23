@@ -203,14 +203,14 @@ export class LDAPConnection {
 			let count = 0;
 			await this.doPagedSearch<T>(this.options.baseDN, searchOptions, this.options.searchPageSize, (error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 				if (error) {
-					endCallback && endCallback(error);
+					endCallback?.(error);
 					return;
 				}
 
 				count += entries.length;
-				dataCallback && dataCallback(entries);
+				dataCallback?.(entries);
 				if (end) {
-					endCallback && endCallback();
+					endCallback?.();
 				}
 
 				if (next) {
@@ -221,8 +221,8 @@ export class LDAPConnection {
 		}
 
 		await this.doAsyncSearch(this.options.baseDN, searchOptions, (error, result) => {
-			dataCallback && dataCallback(result);
-			endCallback && endCallback(error);
+			dataCallback?.(result);
+			endCallback?.(error);
 		}, entryCallback);
 	}
 
@@ -317,11 +317,16 @@ export class LDAPConnection {
 				const entries: T[] = [];
 
 				res.on('searchEntry', (entry) => {
-					const result = entryCallback(entry);
-					if (result) {
-						entries.push(result as T);
+					try {
+						const result = entryCallback(entry);
+						if (result) {
+							entries.push(result as T);
+						}
+						realEntries++;
+					} catch (e) {
+						searchLogger.error(e);
+						throw e;
 					}
-					realEntries++;
 				});
 
 				res.on('end', () => {
@@ -436,8 +441,13 @@ export class LDAPConnection {
 			const entries: T[] = [];
 
 			res.on('searchEntry', (entry) => {
-				const result = entryCallback ? entryCallback(entry) : entry;
-				entries.push(result as T);
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
+				}
 			});
 
 			res.on('end', () => {
@@ -456,7 +466,7 @@ export class LDAPConnection {
 			next: () => {
 				// Reset idle timer
 				this._updateIdle();
-				next && next();
+				next?.();
 			} });
 	}
 
@@ -486,16 +496,21 @@ export class LDAPConnection {
 			const internalPageSize = pageSize * 2;
 
 			res.on('searchEntry', (entry) => {
-				const result = entryCallback ? entryCallback(entry) : entry;
-				entries.push(result as T);
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
 
-				if (entries.length >= internalPageSize) {
-					this.processSearchPage<T>({
-						entries,
-						title: 'Internal Page',
-						end: false,
-					}, callback);
-					entries = [];
+					if (entries.length >= internalPageSize) {
+						this.processSearchPage<T>({
+							entries,
+							title: 'Internal Page',
+							end: false,
+						}, callback);
+						entries = [];
+					}
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
 				}
 			});
 

@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import React, { useState } from 'react';
 
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
-import { useCategoryTagList } from '../hooks/useCategoryTagList';
+import { useCategories } from '../hooks/useCategories';
 import { useCategoryToggle } from '../hooks/useCategoryToggle';
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
@@ -65,10 +65,7 @@ export const List: Story = () => {
 };
 
 export const Default: Story = () => {
-	const [data, setData] = useState(() => testGroup);
-
-	const onSelected = useCategoryToggle(setData);
-	const selectedCategories = useCategoryTagList(data);
+	const [data, , categoryTagList, onSelected] = useCategories();
 
 	return (
 		<>
@@ -77,7 +74,7 @@ export const Default: Story = () => {
 				<CategoryDropDown small data={data} onSelected={onSelected} />
 				<CategoryDropDown data={data} onSelected={onSelected} />
 			</ButtonGroup>
-			<TagList categories={selectedCategories} onClick={onSelected} />
+			<TagList categories={categoryTagList} onClick={onSelected} />
 		</>
 	);
 };

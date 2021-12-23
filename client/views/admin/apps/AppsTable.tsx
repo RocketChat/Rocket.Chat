@@ -11,9 +11,10 @@ import {
 	StatesSuggestionText,
 	StatesTitle,
 	Pagination,
+	Icon,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -30,9 +31,13 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
+import { useAppsReload } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
+import CategoryDropDown from './components/CategoryDropDown';
+import TagList from './components/TagList';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
+import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
 const AppsTable: FC<{
@@ -55,6 +60,8 @@ const AppsTable: FC<{
 
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 
+	const reload = useAppsReload();
+
 	const {
 		current,
 		itemsPerPage,
@@ -63,17 +70,23 @@ const AppsTable: FC<{
 		...paginationProps
 	} = usePagination();
 
+	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
+
 	const appsResult = useFilteredApps({
 		filterFunction,
 		text,
 		current,
 		itemsPerPage,
 		sortDirection,
+		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
 	});
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
+				<CategoryDropDown data={categories} onSelected={onSelected} />
+			</FilterByText>
+			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
 				(appsResult.phase === AsyncStatePhase.RESOLVED && Boolean(appsResult.value.count))) && (
 				<>
@@ -125,7 +138,6 @@ const AppsTable: FC<{
 					)}
 				</>
 			)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				isMarketplace &&
 				appsResult.value.count === 0 && (
@@ -154,7 +166,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total === 0 && (
@@ -171,7 +182,6 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
-
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!isMarketplace &&
 				appsResult.value.total !== 0 &&
@@ -198,6 +208,22 @@ const AppsTable: FC<{
 						</States>
 					</Box>
 				)}
+			{/* TODO: Create error variations for empty search message */}
+			{appsResult.phase === AsyncStatePhase.REJECTED && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon variation='danger' name='circle-exclamation' />
+						<StatesTitle>{t('Connection_error')}</StatesTitle>
+						<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
+						<StatesActions>
+							<StatesAction onClick={reload}>
+								<Icon mie='x4' size='x20' name='reload' />
+								{t('Reload_page')}
+							</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
 		</>
 	);
 };

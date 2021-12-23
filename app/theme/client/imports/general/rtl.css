@@ -135,10 +135,6 @@
 		}
 	}
 
-	& .flex-opened .flex-tab .control .more {
-		transform: translateX(0);
-	}
-
 	& .input-line {
 		&.search {
 			& .icon-spin {

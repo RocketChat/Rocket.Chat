@@ -11,24 +11,28 @@ export const useCategoryToggle = (
 	const onSelected = useCallback(
 		(item: CategoryDropdownItem) =>
 			setData((prev) => {
-				const items = prev.flatMap((group) => group.items);
+				const categories = prev.flatMap((group) => group.items);
 
-				const itemsWithoutAll = items.filter(({ id }) => id !== 'all');
-				const itemAll = items.find(({ id }) => id === 'all');
-				const itemPrev = items.find(({ id }) => id === item.id);
+				const categoriesWithoutAll = categories.filter(({ id }) => id !== 'all');
+				const allCategoriesOption = categories.find(({ id }) => id === 'all');
+				const toggledCategory = categories.find(({ id }) => id === item.id);
 
-				if (item.id === 'all') {
-					itemsWithoutAll.forEach((i) => {
-						i.checked = !item.checked;
+				const isAllCategoriesToggled = item.id === 'all';
+				if (isAllCategoriesToggled) {
+					categoriesWithoutAll.forEach((currentItem) => {
+						currentItem.checked = !item.checked;
 					});
 				}
 
-				if (itemPrev) {
-					itemPrev.checked = !itemPrev.checked;
+				if (toggledCategory) {
+					toggledCategory.checked = !toggledCategory.checked;
 				}
 
-				if (itemAll) {
-					itemAll.checked = itemsWithoutAll.every((i) => i.checked);
+				if (
+					allCategoriesOption &&
+					categoriesWithoutAll.some((currentCategory) => currentCategory.checked === false)
+				) {
+					allCategoriesOption.checked = false;
 				}
 
 				return [...prev];

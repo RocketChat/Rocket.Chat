@@ -8,7 +8,7 @@ const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDro
 	onSelected,
 }) {
 	return (
-		<Tile pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
+		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
 			{groups.map((group, index) => (
 				<Fragment key={index}>
 					{group.label && (

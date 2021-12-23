@@ -33,7 +33,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		} finally {
 			setLoading(false);
-			onFinish && onFinish();
+			onFinish?.();
 		}
 	};
 

@@ -1,8 +1,8 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
-import { AppsContext } from '../AppsContext';
+import { useAppsResult } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { App } from '../types';
 
@@ -21,12 +21,13 @@ export const useFilteredApps = ({
 	itemsPerPage: number;
 	categories?: string[];
 }): AsyncState<{ items: App[] } & PaginatedResult> => {
-	const result = useContext(AppsContext);
+	const result = useAppsResult();
 
 	const value = useMemo(() => {
 		if (result.value === undefined) {
 			return undefined;
 		}
+
 		const apps = result.value.apps.filter(filterFunction);
 
 		const filtered = apps
@@ -54,6 +55,7 @@ export const useFilteredApps = ({
 			value,
 		};
 	}
+
 	if (result.phase === AsyncStatePhase.UPDATING) {
 		throw new Error('useFilteredApps - Unexpected state');
 	}

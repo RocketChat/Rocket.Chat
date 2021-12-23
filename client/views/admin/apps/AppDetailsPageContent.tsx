@@ -99,12 +99,11 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 				<Margins block='x12'>
 					<Box fontScale='h4'>{t('Categories')}</Box>
 					<Box display='flex' flexDirection='row'>
-						{categories &&
-							categories.map((current) => (
-								<Chip key={current} textTransform='uppercase' mie='x8'>
-									<Box color='hint'>{current}</Box>
-								</Chip>
-							))}
+						{categories?.map((current) => (
+							<Chip key={current} textTransform='uppercase' mie='x8'>
+								<Box color='hint'>{current}</Box>
+							</Chip>
+						))}
 					</Box>
 
 					<Box fontScale='h4'>{t('Contact')}</Box>
