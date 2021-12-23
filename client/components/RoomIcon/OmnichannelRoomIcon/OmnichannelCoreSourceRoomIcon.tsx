@@ -27,5 +27,5 @@ export const OmnichannelCoreSourceRoomIcon = ({
 	size: ComponentProps<typeof Icon>['size'];
 }): ReactElement => {
 	const icon = iconMap[room.source?.type || 'other'] || 'headset';
-	return <Icon name={icon} size={size} color={colors[room.v.status || 'offline']} />;
+	return <Icon name={icon} size={size} color={colors[room.v?.status || 'offline']} />;
 };
