@@ -1,3 +1,6 @@
+// Cannot convert this file to ts because PaginatedSelectFiltered is not typed yet
+// Next release we'll add required types and convert this file, since a new
+// fuselage release is OoS of this regression
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
@@ -10,7 +13,7 @@ import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 const AutoCompleteDepartment = (props) => {
 	const {
 		value,
-		exclude,
+		excludeId,
 		onlyMyDepartments = false,
 		onChange = () => {},
 		haveAll = false,
@@ -50,7 +53,9 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
-	const filteredList = exclude ? sortedByName.filter((dep) => dep._id !== exclude) : sortedByName;
+	const filteredList = excludeId
+		? sortedByName.filter((dep) => dep._id !== excludeId)
+		: sortedByName;
 
 	const findValue = value !== undefined && value !== null ? value : '';
 	const department = sortedByName.find(
