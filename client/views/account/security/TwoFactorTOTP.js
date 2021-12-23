@@ -147,7 +147,7 @@ const TwoFactorTOTP = (props) => {
 						<Button primary danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
-						<Box fontScale='p4' mbs='x8'>
+						<Box fontScale='p2m' mbs='x8'>
 							{t('Backup_codes')}
 						</Box>
 						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>

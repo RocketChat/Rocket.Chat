@@ -88,7 +88,7 @@ const GenericTable = forwardRef(function GenericTable<
 				? renderFilter({ ...props, onChange: setFilter } as any) // TODO: ugh
 				: null}
 			{results && !results.length ? (
-				<Tile fontScale='p3' elevation='0' color='info' textAlign='center'>
+				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 			) : (
