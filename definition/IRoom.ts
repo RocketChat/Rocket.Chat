@@ -107,7 +107,7 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
+export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l';
 	v: {
 		_id?: string;
