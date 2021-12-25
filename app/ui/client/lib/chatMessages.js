@@ -594,7 +594,7 @@ export class ChatMessages {
 
 	onDestroyed(rid, tmid) {
 		UserAction.cancel(rid);
-		if (this.input.parentElement?.classList.contains('editing') === true) {
+		if (this.input?.parentElement?.classList.contains('editing') === true) {
 			if (!tmid) {
 				this.clearCurrentDraft();
 				this.clearEditing();
