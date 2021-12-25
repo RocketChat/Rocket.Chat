@@ -36,7 +36,7 @@ export type EventSignatures = {
 	'stream'([streamer, eventName, payload]: [string, string, string]): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
-	'user.deleted'(user: Partial<IUser>): void;
+	'user.deleted'(user: Partial<IUser>, keepMessages: boolean): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
