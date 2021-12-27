@@ -1,7 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { IRegistrationInfo } from '../../definition/voip/IRegistrationInfo';
 import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
@@ -23,7 +22,6 @@ type CallContextEnabled = {
 type CallContextReady = {
 	enabled: true;
 	ready: true;
-	registrationInfo: IRegistrationInfo; // TODO: Remove after delete the example
 	voipClient: VoIPUser;
 	actions: CallActions;
 };
@@ -70,16 +68,6 @@ export const useIsCallReady = (): boolean => {
 export const useIsCallError = (): boolean => {
 	const context = useContext(CallContext);
 	return Boolean(isCallContextError(context));
-};
-
-/* @deprecated */
-export const useCallRegistrationInfo = (): IRegistrationInfo => {
-	const context = useContext(CallContext);
-
-	if (!isCallContextReady(context)) {
-		throw new Error('useCallRegistrationInfo only if Calls are enabled and ready');
-	}
-	return context.registrationInfo;
 };
 
 export const useCallActions = (): CallActions => {

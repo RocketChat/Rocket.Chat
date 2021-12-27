@@ -22,7 +22,6 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
-	// const [registered, setRegistered] = useState(false);
 	const agentAvailable = useOmnichannelAgentAvailable();
 
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();

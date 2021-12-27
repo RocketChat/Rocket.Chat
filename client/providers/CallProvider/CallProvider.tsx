@@ -12,15 +12,7 @@ export const CallProvider: FC = ({ children }) => {
 	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
 
-	// type CallContextReady = {
-	// 	enabled: true;
-	// 	ready: true;
-	// 	registrationInfo: IRegistrationInfo; // TODO: Remove after delete the example
-	// 	voipClient: VoIPUser;
-	// 	actions: CallActions;
-	// };
-
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controlls accessible
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const AudioTagPortal: FC = ({ children }) =>
 		useMemo(() => createPortal(children, document.body), [children]);

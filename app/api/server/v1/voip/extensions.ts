@@ -18,7 +18,6 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
 	async get() {
 		const list = await Voip.getExtensionList();
 		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
-		// this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
 		return API.v1.success({ extensions: result });
 	},
 });
@@ -33,7 +32,6 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 			extension: String,
 		}));
 		const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
-		// this.logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });

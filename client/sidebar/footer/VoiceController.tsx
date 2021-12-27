@@ -16,9 +16,12 @@ import {
 import React, { FC, ReactElement } from 'react';
 
 import { useCallActions, useCallState } from '../../contexts/CallContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+
 // import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 
 const VoiceController: FC = (): ReactElement | null => {
+	const t = useTranslation();
 	const call = useCallState();
 
 	const actions = useCallActions();
@@ -27,12 +30,12 @@ const VoiceController: FC = (): ReactElement | null => {
 		return null;
 	}
 
-	const subtitle = call.state === 'IN_CALL' ? 'Call in Progress' : 'Calling';
+	const subtitle = call.state === 'IN_CALL' ? t('In_progress') : t('Calling');
 
 	return (
 		<SidebarFooter elevated>
 			<SidebarSection>
-				<SidebarSectionTitle>Voice Channel</SidebarSectionTitle>
+				<SidebarSectionTitle>{t('Phone_call')}</SidebarSectionTitle>
 				{/* <SidebarItemActions>
 					{muted ? (
 						<TopBarAction icon='mic-off' onClick={toggleMic} />

@@ -1,1 +1,0 @@
-export { registerVoIPRoutes } from './routes';

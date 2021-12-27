@@ -19,9 +19,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
 	enabled: false,
 	agentAvailable: false,
-	// voipCallAvailable: false,
 	showOmnichannelQueueLink: false,
-	// voipUser: undefined,
 };
 
 const OmnichannelProvider: FC = ({ children }) => {
@@ -136,8 +134,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 				agentAvailable,
 				voipCallAvailable,
 				routeConfig,
-				// voipUser,
-				// registrationConfig: extensionConfig,
 			};
 		}
 
@@ -154,8 +150,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 				  }
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
-			// voipUser,
-			// registrationConfig: extensionConfig,
 		};
 	}, [
 		agentAvailable,

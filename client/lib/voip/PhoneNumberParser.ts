@@ -1,3 +1,5 @@
+// TODO: This file is not yet used since we need to test more the way voip is returning unknown contatcts.
+
 import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 const phoneNumberParser = (

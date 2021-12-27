@@ -99,7 +99,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}
 
-	async getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
+	async getQueuedCallsForThisExtension(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
 		const membershipDetails: IQueueMembershipDetails = {
 			queueCount: 0,
 			callWaitingCount: 0,
@@ -143,7 +143,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return this.commandHandler.executeCommand(Commands.extension_list, undefined);
 	}
 
-	async getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult> { // TODO remove any
+	async getExtensionDetails(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
 		return this.commandHandler.executeCommand(
 			Commands.extension_info,
 			requestParams);
