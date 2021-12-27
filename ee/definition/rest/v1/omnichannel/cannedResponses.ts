@@ -31,7 +31,7 @@ export type OmnichannelCannedResponsesEndpoints = {
 	};
 	'canned-responses/:_id': {
 		GET: () => {
-			cannedResponse: IOmnichannelCannedResponse;
+			cannedResponse: IOmnichannelCannedResponse | null;
 		};
 	};
 };

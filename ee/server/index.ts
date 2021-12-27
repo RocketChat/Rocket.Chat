@@ -3,7 +3,7 @@ import './startup';
 
 import '../app/models';
 import '../app/license/server/index';
-import '../app/api-enterprise/server/index';
+import '../app/api-enterprise/server/index.ts';
 import '../app/auditing/server/index';
 import '../app/authorization/server/index';
 import '../app/canned-responses/server/index';

@@ -1,11 +1,13 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { FindOneOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/raw/CannedResponse';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
+import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
 
-export async function findAllCannedResponses({ userId }) {
+export async function findAllCannedResponses({ userId }: { userId: string }): Promise<IOmnichannelCannedResponse[]> {
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
 		throw new Error('error-not-authorized');
 	}
@@ -40,7 +42,7 @@ export async function findAllCannedResponses({ userId }) {
 	const departments = await LivechatDepartmentAgents.find({
 		agentId: userId,
 	}, {
-		fields: {
+		projection: {
 			departmentId: 1,
 		},
 	}).toArray();
@@ -48,7 +50,7 @@ export async function findAllCannedResponses({ userId }) {
 	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
-		...monitoredDepartments.map((department) => department._id),
+		...monitoredDepartments.map((department: any) => department._id),
 	];
 
 	return CannedResponse.find({
@@ -70,29 +72,30 @@ export async function findAllCannedResponses({ userId }) {
 	}).toArray();
 }
 
-export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
+type FindAllFilteredParams = { userId?: string; shortcut?: string; text?: string; departmentId?: string; scope?: string; createdBy?: string; tags?: string[]; options?: FindOneOptions<IOmnichannelCannedResponse> & { count: number; offset: number } };
+export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options }: FindAllFilteredParams): Promise<{ cannedResponses: IOmnichannelCannedResponse[]; total: number }> {
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
 		throw new Error('error-not-authorized');
 	}
 
-	let extraFilter = [];
+	let extraFilter: any[] = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		const departments = await LivechatDepartmentAgents.find({
 			agentId: userId,
 		}, {
-			fields: {
+			projection: {
 				departmentId: 1,
 			},
 		}).toArray();
 
-		const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+		const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).toArray();
 		const combinedDepartments = [
 			...departments.map((department) => department.departmentId),
-			...monitoredDepartments.map((department) => department._id),
+			...monitoredDepartments.map((department: any) => department._id),
 		];
 
-		const isDepartmentInScope = (departmentId) => !!combinedDepartments.includes(departmentId);
+		const isDepartmentInScope = (departmentId: string): boolean => !!combinedDepartments.includes(departmentId);
 
 		const departmentIds = departmentId && isDepartmentInScope(departmentId)
 			? [departmentId]
@@ -123,9 +126,9 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 		}];
 	}
 
-	const textFilter = new RegExp(escapeRegExp(text), 'i');
+	const textFilter = new RegExp(escapeRegExp(text || ''), 'i');
 
-	let filter = {
+	let filter: { $and?: object[] } = {
 		$and: [
 			...shortcut ? [{ shortcut }] : [],
 			...text ? [{ $or: [{ shortcut: textFilter }, { text: textFilter }] }] : [],
@@ -140,14 +143,14 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 		],
 	};
 
-	if (!filter.$and.length) {
+	if (!filter?.$and?.length) {
 		filter = {};
 	}
 
 	const cursor = CannedResponse.find(filter, {
-		sort: options.sort || { shortcut: 1 },
-		skip: options.offset,
-		limit: options.count,
+		sort: options?.sort || { shortcut: 1 },
+		skip: options?.offset,
+		limit: options?.count,
 	});
 	const total = await cursor.count();
 	const cannedResponses = await cursor.toArray();
@@ -157,7 +160,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	};
 }
 
-export async function findOneCannedResponse({ userId, _id }) {
+export async function findOneCannedResponse({ userId, _id }: { userId: string; _id: string }): Promise<IOmnichannelCannedResponse | null> {
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
 		throw new Error('error-not-authorized');
 	}
@@ -169,7 +172,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 	const departments = await LivechatDepartmentAgents.find({
 		agentId: userId,
 	}, {
-		fields: {
+		projection: {
 			departmentId: 1,
 		},
 	}).toArray();
@@ -177,7 +180,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
-		...monitoredDepartments.map((department) => department._id),
+		...monitoredDepartments.map((department: any) => department._id),
 	];
 
 	const filter = {
