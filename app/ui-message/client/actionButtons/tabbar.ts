@@ -12,6 +12,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 export const onAdded = (button: IUIActionButton): void => void addAction(getIdForActionButton(button), ({ room }) => (applyButtonFilters(button, room) ? {
 	id: button.actionId,
 	icon: '', // Apps won't provide icons for now
+	order: 300, // Make sure the button only shows up inside the room toolbox
 	title: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as any,
 	// Filters were applied in the applyButtonFilters function
 	// if the code made it this far, the button should be shown
