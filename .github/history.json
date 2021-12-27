@@ -68616,6 +68616,38 @@
           ]
         }
       ]
+    },
+    "4.3.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24018",
+          "title": "Regression: Remove self from fallback departments dropdown",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24019",
+          "title": "Regression: addAction verification breaking rooms",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }

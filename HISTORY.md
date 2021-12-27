@@ -1,6 +1,25 @@
 
 # 4.3.0 (Under Release Candidate Process)
 
+## 4.3.0-rc.2
+`2021-12-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: addAction verification breaking rooms ([#24019](https://github.com/RocketChat/Rocket.Chat/pull/24019))
+
+- Regression: Remove self from fallback departments dropdown ([#24018](https://github.com/RocketChat/Rocket.Chat/pull/24018))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dougfabris](https://github.com/dougfabris)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 4.3.0-rc.1
 `2021-12-22  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
