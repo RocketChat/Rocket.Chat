@@ -8,14 +8,10 @@ import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Help
 import { cbLogger } from '../lib/logger';
 import { Livechat } from '../../../../../app/livechat/server';
 
-callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
-	agent,
+callbacks.add('livechat.checkAgentBeforeTakeInquiry', async (agent: { agentId: string }, {
 	inquiry,
 	options,
 }: {
-	agent: {
-		agentId: string;
-	};
 	inquiry: {
 		_id: string;
 		department: string;

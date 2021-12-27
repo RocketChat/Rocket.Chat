@@ -20,7 +20,7 @@ Meteor.startup(function() {
 	});
 });
 
-settings.watch('Enterprise_License', (license) => {
+settings.watch('Enterprise_License', (license: string) => {
 	if (!license || String(license).trim() === '') {
 		return;
 	}

@@ -1,10 +1,10 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import CannedResponse from '../../../models/server/models/CannedResponse';
+import CannedResponse from '../../../models/server/raw/CannedResponse';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 callbacks.add('livechat.removeAgentDepartment', async (options: Record<string, any>): Promise<any> => {
 	const { departmentId, agentsId } = options;
-	CannedResponse.findByDepartmentId(departmentId, { fields: { _id: 1 } }).forEach((response: any) => {
+	CannedResponse.findByDepartmentId(departmentId, { projection: { _id: 1 } }).forEach((response: any) => {
 		const { _id } = response;
 		notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id }, { agentsId });
 	});

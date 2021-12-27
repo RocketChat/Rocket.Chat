@@ -6,28 +6,38 @@ import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatDepartment, Users, LivechatVisitors } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
+import { IUser } from '../../../../../definition/IUser';
+import { IOmnichannelRoom } from '../../../../../definition/IRoom';
 
 export class VisitorInactivityMonitor {
+	private _started: boolean;
+
+	private _name: string;
+
+	private messageCache: Map<string, any>;
+
+	private user: IUser;
+
 	constructor() {
 		this._started = false;
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
 		this.messageCache = new Map();
 	}
 
-	start() {
+	start(): void {
 		this._startMonitoring();
 		this._initializeMessageCache();
 		this.user = Users.findOneById('rocket.cat');
 	}
 
-	_startMonitoring() {
+	_startMonitoring(): void {
 		if (this.isRunning()) {
 			return;
 		}
 		const everyMinute = '* * * * *';
 		SyncedCron.add({
 			name: this._name,
-			schedule: (parser) => parser.cron(everyMinute),
+			schedule: (parser: any) => parser.cron(everyMinute),
 			job: () => {
 				this.handleAbandonedRooms();
 			},
@@ -35,7 +45,7 @@ export class VisitorInactivityMonitor {
 		this._started = true;
 	}
 
-	stop() {
+	stop(): void {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -45,17 +55,17 @@ export class VisitorInactivityMonitor {
 		this._started = false;
 	}
 
-	isRunning() {
+	isRunning(): boolean {
 		return this._started;
 	}
 
-	_initializeMessageCache() {
+	_initializeMessageCache(): void {
 		this.messageCache.clear();
 		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
 	}
 
-	_getDepartmentAbandonedCustomMessage(departmentId) {
-		if (this.messageCache.has('departmentId')) {
+	_getDepartmentAbandonedCustomMessage(departmentId: string): void | string {
+		if (this?.messageCache?.has('departmentId')) {
 			return this.messageCache.get('departmentId');
 		}
 		const department = LivechatDepartment.findOneById(departmentId);
@@ -66,7 +76,7 @@ export class VisitorInactivityMonitor {
 		return department.abandonedRoomsCloseCustomMessage;
 	}
 
-	closeRooms(room) {
+	closeRooms(room: IOmnichannelRoom): void {
 		let comment = this.messageCache.get('default');
 		if (room.departmentId) {
 			comment = this._getDepartmentAbandonedCustomMessage(room.departmentId) || comment;
@@ -75,11 +85,13 @@ export class VisitorInactivityMonitor {
 			comment,
 			room,
 			user: this.user,
+			visitor: undefined,
+			options: undefined,
 		});
 	}
 
-	placeRoomOnHold(room) {
-		const timeout = settings.get('Livechat_visitor_inactivity_timeout');
+	placeRoomOnHold(room: IOmnichannelRoom): void {
+		const timeout: number = settings.get('Livechat_visitor_inactivity_timeout');
 
 		const { v: { _id: visitorId } = {} } = room;
 		const visitor = LivechatVisitors.findOneById(visitorId);
@@ -90,14 +102,16 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
+		// @ts-expect-error
 		LivechatEnterprise.placeRoomOnHold(room, comment, this.user) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 	}
 
-	handleAbandonedRooms() {
+	handleAbandonedRooms(): void {
 		const action = settings.get('Livechat_abandoned_rooms_action');
 		if (!action || action === 'none') {
 			return;
 		}
+		// @ts-expect-error
 		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
 			switch (action) {
 				case 'close': {

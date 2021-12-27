@@ -1,14 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../../../app/authorization';
-import CannedResponse from '../../../models/server/models/CannedResponse';
+import { hasPermission } from '../../../../../app/authorization/server';
+import CannedResponse from '../../../models/server/raw/CannedResponse';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
-import { Users } from '../../../../../app/models';
+import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
+type CannedResponseDTO = {
+	shortcut: string;
+	text: string;
+	scope: string;
+	tags: string[];
+	createdBy: any;
+	userId: string;
+	_createdAt: Date;
+	departmentId?: string;
+}
+
 Meteor.methods({
-	saveCannedResponse(_id, responseData) {
+	async saveCannedResponse(_id: string, responseData: CannedResponseDTO) {
 		const userId = Meteor.userId();
 		if (!userId || !hasPermission(userId, 'save-canned-responses')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
@@ -41,7 +52,7 @@ Meteor.methods({
 		// TODO: check if the department i'm trying to save is a department i can interact with
 
 		// check if the response already exists and we're not updating one
-		const duplicateShortcut = CannedResponse.findOneByShortcut(responseData.shortcut, { fields: { _id: 1 } });
+		const duplicateShortcut = await CannedResponse.findOneByShortcut(responseData.shortcut, { projection: { _id: 1 } });
 		if ((!_id && duplicateShortcut) || (_id && duplicateShortcut && duplicateShortcut._id !== _id)) {
 			throw new Meteor.Error('error-invalid-shortcut', 'Shortcut provided already exists', { method: 'saveCannedResponse' });
 		}
@@ -55,7 +66,7 @@ Meteor.methods({
 		}
 
 		if (_id) {
-			const cannedResponse = CannedResponse.findOneById(_id);
+			const cannedResponse = await CannedResponse.findOneById(_id);
 			if (!cannedResponse) {
 				throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', { method: 'saveCannedResponse' });
 			}
