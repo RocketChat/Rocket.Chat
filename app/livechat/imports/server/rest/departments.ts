@@ -11,17 +11,20 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		const { text, enabled, onlyMyDepartments } = this.queryParams;
+		const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
 		const { departments, total } = Promise.await(findDepartments({
 			userId: this.userId,
 			text,
 			enabled,
 			onlyMyDepartments: onlyMyDepartments === 'true',
+			excludeDepartmentId,
 			pagination: {
 				offset,
 				count,
-				sort,
+				// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+				// or the form { [k: keyof T]: number | string }
+				sort: sort as any,
 			},
 		}));
 
