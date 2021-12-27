@@ -44,8 +44,6 @@ export const loadButtons = (): Promise<void> => APIClient.get('apps/actionButton
 		registeredButtons = [];
 		value.map(addButton);
 		return registeredButtons;
-	})
-	.then(console.log)
-	.catch(console.error);
+	});
 
 Meteor.startup(() => loadButtons());
