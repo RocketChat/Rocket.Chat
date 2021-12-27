@@ -19,13 +19,15 @@ const CannedResponseEditWithData: FC<{
 		error,
 	} = useEndpointData(`canned-responses/${cannedResponseId}`);
 
+	const { cannedResponse } = data || {};
+
 	const t = useTranslation();
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
 
-	if (error) {
+	if (error || !cannedResponse) {
 		return (
 			<Callout m='x16' type='danger'>
 				{t('Not_Available')}
@@ -33,17 +35,23 @@ const CannedResponseEditWithData: FC<{
 		);
 	}
 
-	if (data?.cannedResponse?.scope === 'department') {
+	if (cannedResponse?.scope === 'department') {
 		return (
 			<CannedResponseEditWithDepartmentData
-				data={data}
+				data={{ cannedResponse }}
 				reload={reload}
 				totalDataReload={totalDataReload}
 			/>
 		);
 	}
 
-	return <CannedResponseEdit data={data} reload={reload} totalDataReload={totalDataReload} />;
+	return (
+		<CannedResponseEdit
+			data={{ cannedResponse }}
+			reload={reload}
+			totalDataReload={totalDataReload}
+		/>
+	);
 };
 
 export default CannedResponseEditWithData;

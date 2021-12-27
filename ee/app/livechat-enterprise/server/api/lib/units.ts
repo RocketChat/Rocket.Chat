@@ -4,7 +4,7 @@ import { hasPermissionAsync } from '../../../../../../app/authorization/server/f
 import LivechatUnit from '../../../../models/server/models/LivechatUnit';
 import LivechatUnitMonitors from '../../../../models/server/raw/LivechatUnitMonitors';
 import { IOmnichannelBusinessUnit } from '../../../../../../definition/IOmnichannelBusinessUnit';
-import { ILivechatMonitor } from '../../../../../../definition/ILivechatMonitor';
+import { ILivechatUnitMonitor } from '../../../../../../definition/ILivechatUnitMonitor';
 
 export async function findUnits({ userId, text, pagination: { offset, count, sort } }: {
 	userId: string;
@@ -45,11 +45,11 @@ export async function findUnits({ userId, text, pagination: { offset, count, sor
 	};
 }
 
-export async function findUnitMonitors({ userId, unitId }: { userId: string; unitId: string }): Promise<ILivechatMonitor[]> {
+export async function findUnitMonitors({ userId, unitId }: { userId: string; unitId: string }): Promise<ILivechatUnitMonitor[]> {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-monitors')) {
 		throw new Error('error-not-authorized');
 	}
-	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
+	return LivechatUnitMonitors.find({ unitId }).toArray();
 }
 
 export async function findUnitById({ userId, unitId }: { userId: string; unitId: string }): Promise<IOmnichannelBusinessUnit> {
