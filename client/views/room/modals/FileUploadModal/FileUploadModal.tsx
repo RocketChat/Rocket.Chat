@@ -21,7 +21,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 
-type FilePreviewModalProps = {
+type FileUploadModalProps = {
 	onClose: () => void;
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
@@ -29,13 +29,13 @@ type FilePreviewModalProps = {
 	invalidContentType: boolean;
 };
 
-const FilePreviewModal = ({
+const FileUploadModal = ({
 	onClose,
 	file,
 	fileName,
 	onSubmit,
 	invalidContentType,
-}: FilePreviewModalProps): ReactElement => {
+}: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
@@ -137,4 +137,4 @@ const FilePreviewModal = ({
 	);
 };
 
-export default memo(FilePreviewModal);
+export default memo(FileUploadModal);

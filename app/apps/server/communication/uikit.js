@@ -297,8 +297,47 @@ const appsRoutes = (orch) => (req, res) => {
 			break;
 		}
 
+		case UIKitIncomingInteractionType.ACTION_BUTTON: {
+			const {
+				type,
+				actionId,
+				triggerId,
+				rid,
+				mid,
+				payload: {
+					context,
+				},
+			} = req.body;
+
+			const room = orch.getConverters().get('rooms').convertById(rid);
+			const user = orch.getConverters().get('users').convertToApp(req.user);
+			const message = mid && orch.getConverters().get('messages').convertById(mid);
+
+			const action = {
+				type,
+				appId,
+				actionId,
+				triggerId,
+				user,
+				room,
+				message,
+				payload: {
+					context,
+				},
+			};
+
+			try {
+				const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+
+				res.send(result);
+			} catch (e) {
+				res.status(500).send(e.message);
+			}
+			break;
+		}
+
 		default: {
-			res.status(500).send({ error: 'Unknown action' });
+			res.status(400).send({ error: 'Unknown action' });
 		}
 	}
 

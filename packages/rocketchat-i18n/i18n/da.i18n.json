@@ -3098,7 +3098,7 @@
   "RetentionPolicyRoom_FilesOnly": "Beskær kun filer, hold meddelelser",
   "RetentionPolicyRoom_MaxAge": "Maksimal meddelelsesalder i dage (standard: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Tilsidesæt global opbevaringspolitik",
-  "RetentionPolicyRoom_ReadTheDocs": "OBS! Justering af disse indstillinger uden den yderste omhyggelighed kan slette al meddelelseshistorik. Læs venligst dokumentationen før du aktiverer funktionen <a href=\"https: //rocket.chat/docs/administrator-guides/retention-policies/\">her</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "OBS! Justering af disse indstillinger uden den yderste omhyggelighed kan slette al meddelelseshistorik. Læs venligst dokumentationen før du aktiverer funktionen <a href=\"https://rocket.chat/docs/administrator-guides/retention-policies/\">her</a>.",
   "Retry_Count": "Prøv igen",
   "Return_to_home": "Vend tilbage til home",
   "Return_to_previous_page": "Vend tilbage til forrige side",

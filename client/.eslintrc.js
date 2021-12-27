@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: ['@rocket.chat/eslint-config', 'prettier'],
 	parser: 'babel-eslint',
-	plugins: ['react', 'react-hooks', 'prettier', 'testing-library'],
+	plugins: ['react', 'react-hooks', 'prettier', 'testing-library', 'anti-trojan-source'],
 	rules: {
 		'import/named': 'error',
 		'import/order': [
@@ -35,6 +35,7 @@ module.exports = {
 				additionalHooks: '(useComponentDidUpdate)',
 			},
 		],
+		'anti-trojan-source/no-bidi': 'error',
 	},
 	settings: {
 		'import/resolver': {
@@ -75,6 +76,7 @@ module.exports = {
 						argsIgnorePattern: '^_',
 					},
 				],
+				'@typescript-eslint/prefer-optional-chain': 'warn',
 				'func-call-spacing': 'off',
 				'indent': 'off',
 				'import/order': [
@@ -112,6 +114,7 @@ module.exports = {
 						additionalHooks: '(useComponentDidUpdate)',
 					},
 				],
+				'anti-trojan-source/no-bidi': 'error',
 			},
 			env: {
 				browser: true,

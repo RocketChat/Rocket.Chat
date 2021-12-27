@@ -21,12 +21,14 @@ Meteor.methods({
 		check(formData, Match.ObjectIncluding({
 			serverURL: String,
 			username: String,
-			pass: String,
+			password: String,
+			name: Match.Maybe(String),
 		}));
 
-		const duplicateAccount = await WebdavAccounts.findOneByUserIdServerUrlAndUsername({ user_id: userId, server_url: formData.serverURL, username: formData.username });
-		if (duplicateAccount !== undefined) {
-			throw new Meteor.Error('duplicated-account', {
+		const duplicateAccount = await WebdavAccounts.findOneByUserIdServerUrlAndUsername({ userId, serverURL: formData.serverURL, username: formData.username }, {});
+
+		if (duplicateAccount !== null) {
+			throw new Meteor.Error('duplicated-account', 'Account not found', {
 				method: 'addWebdavAccount',
 			});
 		}
@@ -36,16 +38,16 @@ Meteor.methods({
 				formData.serverURL,
 				{
 					username: formData.username,
-					password: formData.pass,
+					password: formData.password,
 				},
 			);
 
 			const accountData = {
-				user_id: userId,
-				server_url: formData.serverURL,
+				userId,
+				serverURL: formData.serverURL,
 				username: formData.username,
-				password: formData.pass,
-				name: formData.name,
+				password: formData.password,
+				name: formData.name ?? '',
 			};
 
 			await client.stat('/');
@@ -55,7 +57,7 @@ Meteor.methods({
 				account: accountData,
 			});
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', { method: 'addWebdavAccount' });
 		}
 		return true;
 	},
@@ -73,6 +75,8 @@ Meteor.methods({
 
 		check(data, Match.ObjectIncluding({
 			serverURL: String,
+			token: String,
+			name: Match.Maybe(String),
 		}));
 
 		try {
@@ -82,17 +86,17 @@ Meteor.methods({
 			);
 
 			const accountData = {
-				user_id: userId,
-				server_url: data.serverURL,
+				userId,
+				serverURL: data.serverURL,
 				token: data.token,
-				name: data.name,
+				name: data.name ?? '',
 			};
 
 			await client.stat('/');
 			await WebdavAccounts.updateOne({
-				user_id: userId,
-				server_url: data.serverURL,
-				name: data.name,
+				userId,
+				serverURL: data.serverURL,
+				name: data.name ?? '',
 			}, {
 				$set: accountData,
 			}, {
@@ -103,7 +107,7 @@ Meteor.methods({
 				account: accountData,
 			});
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', { method: 'addWebdavAccount' });
 		}
 
 		return true;

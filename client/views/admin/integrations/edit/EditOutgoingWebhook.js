@@ -32,7 +32,7 @@ const getInitialValue = (data) => {
 		retryFailedCalls: data.retryFailedCalls ?? true,
 		retryCount: data.retryCount ?? 5,
 		retryDelay: data.retryDelay ?? 'power-of-ten',
-		triggerrWordAnywhere: data.triggerrWordAnywhere ?? false,
+		triggerWordAnywhere: data.triggerWordAnywhere ?? false,
 		runOnEdits: data.runOnEdits ?? true,
 	};
 	return initialValue;

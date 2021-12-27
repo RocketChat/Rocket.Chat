@@ -25,6 +25,7 @@ import PriorityField from './PriorityField';
 import SourceField from './SourceField';
 import VisitorClientInfo from './VisitorClientInfo';
 
+// TODO: Remove moment we are mixing moment and our own formatters :sadface:
 function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
@@ -54,8 +55,10 @@ function ChatInfo({ id, route }) {
 	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
+	// TODO: use hook instead
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
+	// TODO: use hook instead
 	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
