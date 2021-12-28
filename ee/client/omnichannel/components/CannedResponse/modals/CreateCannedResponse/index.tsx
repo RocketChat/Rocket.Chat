@@ -30,7 +30,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				? data.tags.map((tag: string) => ({ label: tag, value: tag }))
 				: [],
 		scope: data ? data.scope : 'user',
-		departmentId: data && data.departmentId ? data.departmentId : '',
+		departmentId: data?.departmentId ? data.departmentId : '',
 	});
 
 	const { values, handlers, hasUnsavedChanges } = form;
@@ -104,7 +104,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				message: t(_id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
 			});
 			closeModal(null);
-			reloadCannedList && reloadCannedList();
+			reloadCannedList?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

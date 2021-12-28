@@ -7,9 +7,10 @@ import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
+import { Settings } from '../../../models/server/raw';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
-import { Settings } from '../../../models/server/raw';
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -61,6 +62,9 @@ export class AppsRestApi {
 			return API.v1.failure();
 		};
 
+		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+
+		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
