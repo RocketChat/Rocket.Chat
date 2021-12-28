@@ -6,7 +6,7 @@ import { IRole, IUser } from '../../../../definition/IUser';
 import { Users, Roles } from '../../../models/server/raw';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
-export const removeUserFromRoles = async (userId: IUser['_id'], roleNames: IRole['name'] | Array<IRole['name']>, scope?: string): Promise<boolean> => {
+export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleNames: IRole['name'] | Array<IRole['name']>, scope?: string): Promise<boolean> => {
 	if (!userId || !roleNames) {
 		return false;
 	}
@@ -33,4 +33,4 @@ export const removeUserFromRoles = async (userId: IUser['_id'], roleNames: IRole
 	return Roles.removeUserRoles(userId, roleNames, scope);
 };
 
-export const removeUserFromRolesSync = (userId: IUser['_id'], roleNames: IRole['name'] | Array<IRole['name']>, scope?: string): boolean => Promise.await(removeUserFromRoles(userId, roleNames, scope));
+export const removeUserFromRoles = (userId: IUser['_id'], roleNames: IRole['name'] | Array<IRole['name']>, scope?: string): boolean => Promise.await(removeUserFromRolesAsync(userId, roleNames, scope));

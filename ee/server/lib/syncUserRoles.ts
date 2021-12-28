@@ -2,7 +2,7 @@ import type { IUser } from '../../../definition/IUser';
 import type { IRole } from '../../../definition/IRole';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
-import { addUserRolesAsync, removeUserFromRoles } from '../../../app/authorization/server';
+import { addUserRolesAsync, removeUserFromRolesAsync } from '../../../app/authorization/server';
 import { Users } from '../../../app/models/server/raw';
 import { canAddNewUser } from '../../app/license/server/license';
 
@@ -71,7 +71,7 @@ export async function syncUserRoles(uid: IUser['_id'], newRoleList: Array<IRole[
 		return;
 	}
 
-	if (await removeUserFromRoles(uid, rolesToRemove, scope)) {
+	if (await removeUserFromRolesAsync(uid, rolesToRemove, scope)) {
 		broadcastRoleChange('removed', rolesToRemove, user);
 	}
 }

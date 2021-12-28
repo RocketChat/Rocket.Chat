@@ -12,7 +12,7 @@ import {
 	hasPermission,
 } from './functions/hasPermission';
 import { hasRole, subscriptionHasRole } from './functions/hasRole';
-import { removeUserFromRoles, removeUserFromRolesSync } from './functions/removeUserFromRoles';
+import { removeUserFromRoles, removeUserFromRolesAsync } from './functions/removeUserFromRoles';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
@@ -28,7 +28,7 @@ export {
 	hasRole,
 	subscriptionHasRole,
 	removeUserFromRoles,
-	removeUserFromRolesSync,
+	removeUserFromRolesAsync,
 	canSendMessage,
 	validateRoomMessagePermissions,
 	roomAccessValidators,
