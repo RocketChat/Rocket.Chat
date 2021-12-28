@@ -24,15 +24,19 @@ window.addEventListener('Custom_Script_On_Logout', function() {
 })
 
 ${ settings.get('Accounts_ForgetUserSessionOnWindowClose') ? `
-window.addEventListener('load', function() {
-	if (window.localStorage) {
+if (window.localStorage) {
+	Object.keys(window.sessionStorage).forEach(function(key) {
+		window.localStorage.setItem(key, window.sessionStorage.getItem(key));
+	});
+
+	window.addEventListener('load', function() {
+		Meteor._localStorage = window.sessionStorage;
 		Object.keys(window.localStorage).forEach(function(key) {
 			window.sessionStorage.setItem(key, window.localStorage.getItem(key));
 		});
 		window.localStorage.clear();
-		Meteor._localStorage = window.sessionStorage;
-	}
-});
+	});
+}
 ` : '' }`;
 
 settings.watchMultiple(['API_Use_REST_For_DDP_Calls', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose', 'ECDH_Enabled'], () => {
