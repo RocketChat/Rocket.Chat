@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { actionLinks } from '../../action-links/client';
-import { Rooms } from '../../models';
+import { Rooms, Subscriptions } from '../../models';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 actionLinks.register('joinJitsiCall', function(message, params, instance) {
@@ -14,6 +14,12 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 		const username = Meteor.user()?.username;
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
+		const userId = Meteor.userId();
+		const sub = Subscriptions.findOne({ rid, 'u._id': userId });
+
+		if (!sub) {
+			Meteor.runAsUser(userId, () => Meteor.call('joinRoom', rid));
+		}
 
 		if (room && room?.muted?.includes(username)) {
 			dispatchToastMessage({ type: 'error', message: TAPi18n.__('You_have_been_muted', '') });
