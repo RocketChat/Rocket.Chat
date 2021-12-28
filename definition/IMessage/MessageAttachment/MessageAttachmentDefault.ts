@@ -18,6 +18,10 @@ export type MessageAttachmentDefault = {
 	image_url?: string;
 	image_dimensions?: Dimensions;
 
+	video_url?: string;
+
+	audio_url?: string;
+
 	mrkdwn_in?: Array<MarkdownFields>;
 	pretext?: string;
 	text?: string;
