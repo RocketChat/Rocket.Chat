@@ -1,4 +1,83 @@
 
+# 4.2.2
+`2021-12-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- creating room with federated member ([#23347](https://github.com/RocketChat/Rocket.Chat/pull/23347) by [@qwertiko](https://github.com/qwertiko))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@qwertiko](https://github.com/qwertiko)
+
+# 4.2.1
+`2021-12-10  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🎉 New features
+
+
+- Create new setting to clean local storage at end of chats ([#23821](https://github.com/RocketChat/Rocket.Chat/pull/23821))
+
+  Include setting to handle with and clear the localStorage on Livechat widget. 
+
+  ![image](https://user-images.githubusercontent.com/17487063/144171179-95f7cf41-0192-4532-bedf-99e0b01f2c61.png)
+
+  This behavior is only possible to happen when https://github.com/RocketChat/Rocket.Chat.Livechat/pull/666 merged and released.
+
+### 🐛 Bug fixes
+
+
+- Error when creating an inactive user in admin panel ([#23859](https://github.com/RocketChat/Rocket.Chat/pull/23859))
+
+  - Fix `usersInRole` array used to send email to activate a user.
+
+- Segmentation fault on CentOS 7 due to outdated `sharp` ([#23796](https://github.com/RocketChat/Rocket.Chat/pull/23796))
+
+  Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.
+
+  Suggested as a fix for versions `4.0.x` and `4.1.x`.
+
+- teams.removeMembers client usage ([#23857](https://github.com/RocketChat/Rocket.Chat/pull/23857))
+
+- Wrong button for non trial apps ([#23861](https://github.com/RocketChat/Rocket.Chat/pull/23861))
+
+  This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  
+  After:
+  ![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Livechat ([#23913](https://github.com/RocketChat/Rocket.Chat/pull/23913))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 4.2.0
 `2021-11-30  ·  9 🎉  ·  7 🚀  ·  26 🐛  ·  27 🔍  ·  24 👩‍💻👨‍💻`
 
@@ -363,7 +442,7 @@
 ### 🚀 Improvements
 
 
-- Add markdown to custom fields in user Info ([#20947](https://github.com/RocketChat/Rocket.Chat/pull/20947))
+- Add markdown to custom fields in user Info ([#20947](https://github.com/RocketChat/Rocket.Chat/pull/20947) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added markdown to custom fields to render links
 
@@ -591,6 +670,7 @@
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@wolbernd](https://github.com/wolbernd)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -610,7 +690,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.0.5
 `2021-10-25  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
@@ -2808,15 +2887,15 @@
 
 - **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22142](https://github.com/RocketChat/Rocket.Chat/pull/22142))
 
-- Adding Custom Fields to show on user info check ([#20955](https://github.com/RocketChat/Rocket.Chat/pull/20955))
+- Adding Custom Fields to show on user info check ([#20955](https://github.com/RocketChat/Rocket.Chat/pull/20955) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The setting custom fields to show under user info was not being used when rendering fields in user info. This pr adds those checks and only renders the fields mentioned under in admin -> accounts -> Custom Fields to Show in User Info.
 
-- Adding permission 'add-team-channel' for Team Channels Contextual bar ([#21591](https://github.com/RocketChat/Rocket.Chat/pull/21591))
+- Adding permission 'add-team-channel' for Team Channels Contextual bar ([#21591](https://github.com/RocketChat/Rocket.Chat/pull/21591) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added 'add-team-channel' permission to the 2 buttons in team channels contextual bar, for adding channels to teams.
 
-- Adding retentionEnabledDefault check before showing warning message  ([#20692](https://github.com/RocketChat/Rocket.Chat/pull/20692))
+- Adding retentionEnabledDefault check before showing warning message  ([#20692](https://github.com/RocketChat/Rocket.Chat/pull/20692) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added check for retentionEnabledDefault before showing prune warning message.
 
@@ -3078,7 +3157,7 @@
   }
   ```
 
-- Visibility of burger menu on certain width ([#20736](https://github.com/RocketChat/Rocket.Chat/pull/20736))
+- Visibility of burger menu on certain width ([#20736](https://github.com/RocketChat/Rocket.Chat/pull/20736) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Burger was not visible on a certain width, specifically between 600 to   780. if width is more than 780px sidebar is shown, if less than 600 then burger icon was shown. But it wasn't shown between 600px to 780 px.
   It was because for showing burger icon we were only checking for `isMobile` which is lenght only less than   600. So i added one more check for condition if length is less than 780 px.
@@ -3261,6 +3340,7 @@
 - [@siva2204](https://github.com/siva2204)
 - [@sumukhah](https://github.com/sumukhah)
 - [@umakantv](https://github.com/umakantv)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -3281,7 +3361,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.14.5
 `2021-06-06  ·  1 🚀  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -3631,7 +3710,7 @@
 
   ![image](https://user-images.githubusercontent.com/17487063/113359447-2d1b5500-931e-11eb-81fa-86f60fcee3a9.png)
 
-- Checking 'start-discussion' Permission for MessageBox Actions ([#21564](https://github.com/RocketChat/Rocket.Chat/pull/21564))
+- Checking 'start-discussion' Permission for MessageBox Actions ([#21564](https://github.com/RocketChat/Rocket.Chat/pull/21564) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Permissions 'start-discussion-other-user' and 'start-discussion' are checked everywhere before letting anyone start any discussions, this permission check was missing for message box actions, so added it.
 
@@ -3895,6 +3974,7 @@
 - [@sauravjoshi23](https://github.com/sauravjoshi23)
 - [@sumukhah](https://github.com/sumukhah)
 - [@wolbernd](https://github.com/wolbernd)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -3915,7 +3995,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.13.5
 `2021-05-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -4238,7 +4317,7 @@
 
 - Add missing `unreads` field to `users.info` REST endpoint ([#20905](https://github.com/RocketChat/Rocket.Chat/pull/20905))
 
-- Added hideUnreadStatus check before showing unread messages on roomList ([#20867](https://github.com/RocketChat/Rocket.Chat/pull/20867))
+- Added hideUnreadStatus check before showing unread messages on roomList ([#20867](https://github.com/RocketChat/Rocket.Chat/pull/20867) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added hide unread counter check, if the show unread messages is turned off, now unread messages badge won't be shown to user.
 
@@ -4361,7 +4440,7 @@
 
 - Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Reply count of message is decreased after a message from thread is deleted ([#19977](https://github.com/RocketChat/Rocket.Chat/pull/19977))
+- Reply count of message is decreased after a message from thread is deleted ([#19977](https://github.com/RocketChat/Rocket.Chat/pull/19977) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The reply count now is decreased if a message from a thread is deleted.
 
@@ -4578,7 +4657,7 @@
 
 - Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint ([#21322](https://github.com/RocketChat/Rocket.Chat/pull/21322))
 
-- Release 3.13.0 ([#21437](https://github.com/RocketChat/Rocket.Chat/pull/21437) by [@PriyaBihani](https://github.com/PriyaBihani) & [@cuonghuunguyen](https://github.com/cuonghuunguyen) & [@fcecagno](https://github.com/fcecagno) & [@lucassartor](https://github.com/lucassartor) & [@shrinish123](https://github.com/shrinish123))
+- Release 3.13.0 ([#21437](https://github.com/RocketChat/Rocket.Chat/pull/21437) by [@PriyaBihani](https://github.com/PriyaBihani) & [@cuonghuunguyen](https://github.com/cuonghuunguyen) & [@fcecagno](https://github.com/fcecagno) & [@lucassartor](https://github.com/lucassartor) & [@shrinish123](https://github.com/shrinish123) & [@yash-rajpal](https://github.com/yash-rajpal))
 
 - Update Apps-Engine version ([#21398](https://github.com/RocketChat/Rocket.Chat/pull/21398))
 
@@ -4606,6 +4685,7 @@
 - [@shrinish123](https://github.com/shrinish123)
 - [@sumukhah](https://github.com/sumukhah)
 - [@vova-zush](https://github.com/vova-zush)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -4626,7 +4706,6 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.12.7
 `2021-05-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -4702,7 +4781,7 @@
 ### 🚀 Improvements
 
 
-- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004))
+- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.
   So, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.
@@ -4712,16 +4791,19 @@
 
 - Missing spaces on attachment  ([#21020](https://github.com/RocketChat/Rocket.Chat/pull/21020))
 
-- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973))
+- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.
   So removing this dep from useMemo dependencies
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@dougfabris](https://github.com/dougfabris)
 - [@tassoevan](https://github.com/tassoevan)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.12.0
 `2021-02-28  ·  5 🎉  ·  17 🚀  ·  74 🐛  ·  30 🔍  ·  29 👩‍💻👨‍💻`
@@ -4770,15 +4852,15 @@
 
 - Added auto-focus for better user-experience. ([#19954](https://github.com/RocketChat/Rocket.Chat/pull/19954) by [@Darshilp326](https://github.com/Darshilp326))
 
-- Added disable button check for send invite button ([#20337](https://github.com/RocketChat/Rocket.Chat/pull/20337))
+- Added disable button check for send invite button ([#20337](https://github.com/RocketChat/Rocket.Chat/pull/20337) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added Disable check for send invite button. If the text field is empty button would be disabled, and after any valid email is filled, button would get enabled
 
-- Added key prop, removing unwanted warnings ([#20473](https://github.com/RocketChat/Rocket.Chat/pull/20473))
+- Added key prop, removing unwanted warnings ([#20473](https://github.com/RocketChat/Rocket.Chat/pull/20473) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Removes warnings listed on the issue
 
-- Added Markdown links to custom status. ([#20470](https://github.com/RocketChat/Rocket.Chat/pull/20470))
+- Added Markdown links to custom status. ([#20470](https://github.com/RocketChat/Rocket.Chat/pull/20470) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added markdown links to user's custom status.
 
@@ -4804,7 +4886,7 @@
 
   It brings more flexibility, allowing us to use different hooks and different components for each header
 
-- Check Livechat message length through REST API endpoint ([#20366](https://github.com/RocketChat/Rocket.Chat/pull/20366))
+- Check Livechat message length through REST API endpoint ([#20366](https://github.com/RocketChat/Rocket.Chat/pull/20366) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added checks for message length for livechat message api, it shouldn't exceed specified character limit.
 
@@ -4853,21 +4935,21 @@
 
   Added tooltips to "Expand" and "Follow Message"/"Unfollow Message" in ThreadView for coherency.
 
-- Added Bio Structure for UserCard, rendering Skeleton View on loading Instead of [Object][Object]  ([#20305](https://github.com/RocketChat/Rocket.Chat/pull/20305))
+- Added Bio Structure for UserCard, rendering Skeleton View on loading Instead of [Object][Object]  ([#20305](https://github.com/RocketChat/Rocket.Chat/pull/20305) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added Bio Structure for rendering Skeleton View on loading UserCard.
 
-- Added check for view admin permission page ([#20403](https://github.com/RocketChat/Rocket.Chat/pull/20403))
+- Added check for view admin permission page ([#20403](https://github.com/RocketChat/Rocket.Chat/pull/20403) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Admin Permission page was visible to all, if you add admin/permissions after the base url. This should not be visible to all user, only people with certain permissions should be able to see this page.
   I am also able to see permissions page for open workspace of Rocket chat.
   ![image](https://user-images.githubusercontent.com/58601732/105829728-bfd00880-5fea-11eb-9121-6c53a752f140.png)
 
-- Adding the accidentally deleted tag template, used by other templates ([#20772](https://github.com/RocketChat/Rocket.Chat/pull/20772))
+- Adding the accidentally deleted tag template, used by other templates ([#20772](https://github.com/RocketChat/Rocket.Chat/pull/20772) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Adding back accidentally deleted tag Template.
 
-- Admin cannot clear user details like bio or nickname ([#20785](https://github.com/RocketChat/Rocket.Chat/pull/20785))
+- Admin cannot clear user details like bio or nickname ([#20785](https://github.com/RocketChat/Rocket.Chat/pull/20785) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   When the API users.update is called to update user data, it passes data to saveUser function. Here before saving data like bio or nickname we are checking if they are available or not. If data is available then we are saving it, but we are not doing anything when data isn't available.
 
@@ -4875,13 +4957,13 @@
 
 - Admin Panel pages not visible in Safari ([#20912](https://github.com/RocketChat/Rocket.Chat/pull/20912))
 
-- Announcement with multiple lines fixed. ([#20381](https://github.com/RocketChat/Rocket.Chat/pull/20381))
+- Announcement with multiple lines fixed. ([#20381](https://github.com/RocketChat/Rocket.Chat/pull/20381) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Announcements with multiple lines used to break UI for announcements bar. Fixed it by replacing all break lines in announcement with empty space (" ") . The announcement modal would work as usual and show all break lines.
 
 - Atlassian Crowd login with 2FA enabled ([#20834](https://github.com/RocketChat/Rocket.Chat/pull/20834))
 
-- Attachment download from title fixed ([#20585](https://github.com/RocketChat/Rocket.Chat/pull/20585))
+- Attachment download from title fixed ([#20585](https://github.com/RocketChat/Rocket.Chat/pull/20585) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added target = '_self' to attachment link, this seems to fix the problem, without this attribute, error page is displayed.
 
@@ -4972,7 +5054,7 @@
 
   ![image](https://user-images.githubusercontent.com/2493803/106494751-90f9dc80-6499-11eb-901b-5e4dbdc678ba.png)
 
-- Fix Empty highlighted words field ([#20329](https://github.com/RocketChat/Rocket.Chat/pull/20329))
+- Fix Empty highlighted words field ([#20329](https://github.com/RocketChat/Rocket.Chat/pull/20329) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Able to Empty the highlighted text field in preferences
 
@@ -5028,7 +5110,7 @@
   - Add a new setting ("Add Reply-To header") in the Email settings' page to control when the Reply-To header is used in e-mail notifications;  
   - The new setting is turned off (`false` value) by default.
 
-- New Integration page was not being displayed ([#20670](https://github.com/RocketChat/Rocket.Chat/pull/20670))
+- New Integration page was not being displayed ([#20670](https://github.com/RocketChat/Rocket.Chat/pull/20670) by [@yash-rajpal](https://github.com/yash-rajpal))
 
 - Notification worker stopping on error ([#20605](https://github.com/RocketChat/Rocket.Chat/pull/20605))
 
@@ -5242,6 +5324,7 @@
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pierreozoux](https://github.com/pierreozoux)
 - [@rafaelblink](https://github.com/rafaelblink)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -5260,7 +5343,6 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.11.5
 `2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -5323,7 +5405,7 @@
 ### 🐛 Bug fixes
 
 
-- Attachment download from title fixed ([#20585](https://github.com/RocketChat/Rocket.Chat/pull/20585))
+- Attachment download from title fixed ([#20585](https://github.com/RocketChat/Rocket.Chat/pull/20585) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added target = '_self' to attachment link, this seems to fix the problem, without this attribute, error page is displayed.
 
@@ -5342,6 +5424,7 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@lolimay](https://github.com/lolimay)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -5349,7 +5432,6 @@
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.11.0
 `2021-01-31  ·  8 🎉  ·  9 🚀  ·  52 🐛  ·  44 🔍  ·  32 👩‍💻👨‍💻`
@@ -5455,7 +5537,7 @@
 
   Made user avatar change buttons to be descriptive of what they do.
 
-- Tooltip added for Kebab menu on chat header ([#20116](https://github.com/RocketChat/Rocket.Chat/pull/20116))
+- Tooltip added for Kebab menu on chat header ([#20116](https://github.com/RocketChat/Rocket.Chat/pull/20116) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added the missing Tooltip for kebab menu on chat header.
   ![tooltip after](https://user-images.githubusercontent.com/58601732/104031406-b07f4b80-51f2-11eb-87a4-1e8da78a254f.gif)
@@ -5477,12 +5559,12 @@
 
   Users can be removed from channels without any error message.
 
-- Added context check for closing active tabbar for member-list ([#20228](https://github.com/RocketChat/Rocket.Chat/pull/20228))
+- Added context check for closing active tabbar for member-list ([#20228](https://github.com/RocketChat/Rocket.Chat/pull/20228) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   When we click on a username and then click on see user's full profile, a tab gets active and shows us the user's profile, the problem occurs when the tab is still active and we try to see another user's profile. In this case, tabbar gets closed.
   To resolve this, added context check for closing action of active tabbar.
 
-- Added Margin between status bullet and status label ([#20199](https://github.com/RocketChat/Rocket.Chat/pull/20199))
+- Added Margin between status bullet and status label ([#20199](https://github.com/RocketChat/Rocket.Chat/pull/20199) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Added Margins between status bullet and status label
 
@@ -5547,7 +5629,7 @@
   After changes made on https://github.com/RocketChat/Rocket.Chat/pull/19931, the `Livechat.RegisterGuest` method started removing properties from the visitor inappropriately. The properties that did not receive value were removed from the object.
   Those changes were made to support the new Contact Form, but now the form has its own method to deal with Contact data so those changes are no longer necessary.
 
-- Markdown added for Header Room topic ([#20021](https://github.com/RocketChat/Rocket.Chat/pull/20021))
+- Markdown added for Header Room topic ([#20021](https://github.com/RocketChat/Rocket.Chat/pull/20021) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   With the new 3.10.0 version update the Links in topic section below room name were not working, for more info refer issue #20018
 
@@ -5627,7 +5709,7 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)
 
-- Status circle in profile section ([#20016](https://github.com/RocketChat/Rocket.Chat/pull/20016))
+- Status circle in profile section ([#20016](https://github.com/RocketChat/Rocket.Chat/pull/20016) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The Status Circle in status message text input is now centered vertically.
 
@@ -5831,6 +5913,7 @@
 - [@sushant52](https://github.com/sushant52)
 - [@tlskinneriv](https://github.com/tlskinneriv)
 - [@wggdeveloper](https://github.com/wggdeveloper)
+- [@yash-rajpal](https://github.com/yash-rajpal)
 - [@zdumitru](https://github.com/zdumitru)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -5848,7 +5931,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 3.10.5
 `2021-01-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -6689,7 +6771,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.0
-`2020-11-14  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
