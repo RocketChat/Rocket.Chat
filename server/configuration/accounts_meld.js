@@ -14,6 +14,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		'meteor-developer',
 		'linkedin',
 		'twitter',
+		'apple',
 	];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
