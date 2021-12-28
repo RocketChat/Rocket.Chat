@@ -14,6 +14,7 @@ import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRole } from '../../../definition/IRole';
+import type { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
@@ -92,6 +93,24 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
 		return canAccessRoom(...args);
+	}
+
+	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'tokenpass'>>(rid, {
+			projection: {
+				_id: 1,
+				t: 1,
+				teamId: 1,
+				prid: 1,
+				tokenpass: 1,
+			},
+		});
+
+		if (!room) {
+			return false;
+		}
+
+		return this.canAccessRoom(room, { _id: uid });
 	}
 
 	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {

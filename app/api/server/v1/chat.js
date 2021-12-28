@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Messages } from '../../../models';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -405,7 +405,7 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 		}
 
-		if (!canAccessRoom({ _id: roomId }, { _id: this.userId })) {
+		if (!canAccessRoomId(roomId, this.userId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
@@ -440,7 +440,9 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
+		const room = Rooms.findOneById(rid, { fields: roomFields });
+
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
@@ -494,7 +496,9 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
+		const room = Rooms.findOneById(rid, { fields: roomFields });
+
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
@@ -525,7 +529,8 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(thread.rid, { fields: { t: 1, _id: 1 } });
+		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
+		const room = Rooms.findOneById(thread.rid, { fields: roomFields });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
@@ -575,7 +580,8 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(thread.rid, { fields: { t: 1, _id: 1 } });
+		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
+		const room = Rooms.findOneById(thread.rid, { fields: roomFields });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');

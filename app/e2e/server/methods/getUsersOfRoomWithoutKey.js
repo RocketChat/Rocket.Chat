@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomId } from '../../../authorization/server';
 import { Subscriptions, Users } from '../../../models/server';
 
 Meteor.methods({
@@ -17,7 +17,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
 		}
 
-		if (!canAccessRoom({ _id: rid }, { _id: userId })) {
+		if (!canAccessRoomId(rid, userId)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
 		}
 

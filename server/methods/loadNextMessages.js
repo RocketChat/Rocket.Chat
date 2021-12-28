@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
@@ -23,7 +23,7 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
+		if (!canAccessRoomId(rid, fromId)) {
 			return false;
 		}
 

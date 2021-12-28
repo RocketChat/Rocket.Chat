@@ -5,7 +5,7 @@ import { Match, check } from 'meteor/check';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -18,7 +18,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 	}
 
 	const roomOptions = {
-		fields: {
+		fields: Object.assign({
 			t: 1,
 			ro: 1,
 			name: 1,
@@ -26,7 +26,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 			prid: 1,
 			archived: 1,
 			broadcast: 1,
-		},
+		}, roomAccessAttributes),
 	};
 	const room = params.roomId
 		? Rooms.findOneById(params.roomId, roomOptions)

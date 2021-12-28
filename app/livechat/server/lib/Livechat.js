@@ -30,7 +30,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization/server';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -1274,7 +1274,9 @@ export const Livechat = {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1, t: 1 }));
+		const roomFields = Object.assign({ _id: 1, t: 1 }, roomAccessAttributes);
+		const room = Promise.await(LivechatRooms.findOneById(roomId, roomFields));
+
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}

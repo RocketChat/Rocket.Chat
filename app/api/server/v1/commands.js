@@ -4,7 +4,7 @@ import objectPath from 'object-path';
 
 import { slashCommands } from '../../../utils/server';
 import { Messages } from '../../../models/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomId } from '../../../authorization/server';
 import { API } from '../api';
 
 API.v1.addRoute('commands.get', { authRequired: true }, {
@@ -190,7 +190,7 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		if (!canAccessRoom({ _id: body.roomId }, user)) {
+		if (!canAccessRoomId(body.roomId, user._id)) {
 			return API.v1.unauthorized();
 		}
 
@@ -240,7 +240,7 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		if (!canAccessRoom({ _id: query.roomId }, user)) {
+		if (!canAccessRoomId(query.roomId, user._id)) {
 			return API.v1.unauthorized();
 		}
 
@@ -291,7 +291,7 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		if (!canAccessRoom({ _id: body.roomId }, user)) {
+		if (!canAccessRoomId(body.roomId, user._id)) {
 			return API.v1.unauthorized();
 		}
 

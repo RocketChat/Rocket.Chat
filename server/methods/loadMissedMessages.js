@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
+		if (!canAccessRoomId(rid, fromId)) {
 			return false;
 		}
 

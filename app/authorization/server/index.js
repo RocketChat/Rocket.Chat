@@ -1,6 +1,8 @@
 import { addUserRoles } from './functions/addUserRoles';
 import {
 	canAccessRoom,
+	canAccessRoomId,
+	roomAccessAttributes,
 	roomAccessValidators,
 } from './functions/canAccessRoom';
 import { canSendMessage, validateRoomMessagePermissions } from './functions/canSendMessage';
@@ -33,6 +35,8 @@ export {
 	roomAccessValidators,
 	addUserRoles,
 	canAccessRoom,
+	canAccessRoomId,
+	roomAccessAttributes,
 	hasAllPermission,
 	hasAtLeastOnePermission,
 	hasPermission,

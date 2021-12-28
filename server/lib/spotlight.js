@@ -5,6 +5,7 @@ import {
 	hasAllPermission,
 	hasPermission,
 	canAccessRoom,
+	roomAccessAttributes,
 } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
@@ -200,7 +201,13 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
+		const roomFields = Object.assign({
+			_id: 1,
+			t: 1,
+			uids: 1,
+		}, roomAccessAttributes);
+
+		const room = Rooms.findOneById(rid, { fields: roomFields });
 
 		if (rid && !room) {
 			return users;
