@@ -181,7 +181,7 @@ const UsersByTimeOfTheDaySection = ({
 										},
 									}}
 									tooltip={({ value }): ReactElement => (
-										<Box fontScale='p2' color='alternative'>
+										<Box fontScale='p1m' color='alternative'>
 											{t('Value_users', { value })}
 										</Box>
 									)}

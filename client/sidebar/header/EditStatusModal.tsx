@@ -68,7 +68,7 @@ const EditStatusModal = ({
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content fontScale='p3'>
+			<Modal.Content fontScale='p2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('StatusMessage')}</Field.Label>
