@@ -174,7 +174,7 @@ declare class APIClass<TBasePath extends string = '/'> {
 
 	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 
-	notFound<T>(msg?: T): NotFoundResult<T>;
+	notFound(msg?: string): NotFoundResult;
 
 	defaultFieldsToExclude: {
 		joinCode: 0;
@@ -182,8 +182,6 @@ declare class APIClass<TBasePath extends string = '/'> {
 		importIds: 0;
 		e2e: 0;
 	}
-
-	notFound(msg?: string): NotFoundResult;
 }
 
 export declare const API: {
