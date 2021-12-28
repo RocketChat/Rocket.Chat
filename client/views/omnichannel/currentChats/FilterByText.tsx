@@ -18,7 +18,7 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
-	setParams: Dispatch<SetStateAction<any>>;
+	setParams?: Dispatch<SetStateAction<any>>;
 	reload?: () => void;
 }>;
 
@@ -97,7 +97,7 @@ const FilterByText: FilterByTextType = ({ setFilter, setParams, reload, ...props
 			tags: tags.map((tag) => tag.label),
 			customFields: customFields.reduce(reducer, {}),
 		});
-		setParams({
+		setParams?.({
 			guest,
 			servedBy,
 			status,
