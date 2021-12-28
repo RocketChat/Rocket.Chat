@@ -30,7 +30,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { addUserRolesSync, hasPermission, hasRole, removeUserFromRolesSync, canAccessRoom } from '../../../authorization/server';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRolesSync, canAccessRoom } from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -824,7 +824,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (addUserRolesSync(user._id, 'livechat-agent')) {
+		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
@@ -842,7 +842,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addManager' });
 		}
 
-		if (addUserRolesSync(user._id, 'livechat-manager')) {
+		if (addUserRoles(user._id, 'livechat-manager')) {
 			return user;
 		}
 

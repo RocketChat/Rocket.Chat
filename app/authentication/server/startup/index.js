@@ -10,7 +10,7 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Users, Settings } from '../../../models/server';
 import { Roles, Users as UsersRaw } from '../../../models/server/raw';
-import { addUserRolesSync } from '../../../authorization/server';
+import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
 import {
 	isValidAttemptByUser,
@@ -295,7 +295,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		}
 	}
 
-	addUserRolesSync(_id, roles);
+	addUserRoles(_id, roles);
 
 	return _id;
 });

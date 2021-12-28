@@ -5,7 +5,7 @@ import { getRoles } from './getRoles';
 import { IRole, IUser } from '../../../../definition/IUser';
 import { Users, Roles } from '../../../models/server/raw';
 
-export const addUserRoles = async (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): Promise<boolean> => {
+export const addUserRolesAsync = async (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): Promise<boolean> => {
 	if (!userId || !roleNames) {
 		return false;
 	}
@@ -29,4 +29,4 @@ export const addUserRoles = async (userId: IUser['_id'], roleNames: IRole['name'
 	return Roles.addUserRoles(userId, roleNames, scope);
 };
 
-export const addUserRolesSync = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => Promise.await(addUserRoles(userId, roleNames, scope));
+export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => Promise.await(addUserRolesAsync(userId, roleNames, scope));

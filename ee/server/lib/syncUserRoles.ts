@@ -2,7 +2,7 @@ import type { IUser } from '../../../definition/IUser';
 import type { IRole } from '../../../definition/IRole';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
-import { addUserRoles, removeUserFromRoles } from '../../../app/authorization/server';
+import { addUserRolesAsync, removeUserFromRoles } from '../../../app/authorization/server';
 import { Users } from '../../../app/models/server/raw';
 import { canAddNewUser } from '../../app/license/server/license';
 
@@ -63,7 +63,7 @@ export async function syncUserRoles(uid: IUser['_id'], newRoleList: Array<IRole[
 		throw new Error('error-license-user-limit-reached');
 	}
 
-	if (await addUserRoles(uid, rolesToAdd, scope)) {
+	if (await addUserRolesAsync(uid, rolesToAdd, scope)) {
 		broadcastRoleChange('added', rolesToAdd, user);
 	}
 

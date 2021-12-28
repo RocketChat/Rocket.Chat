@@ -1,4 +1,4 @@
-import { addUserRoles, addUserRolesSync } from './functions/addUserRoles';
+import { addUserRolesAsync, addUserRoles } from './functions/addUserRoles';
 import {
 	canAccessRoom,
 	roomAccessValidators,
@@ -32,8 +32,8 @@ export {
 	canSendMessage,
 	validateRoomMessagePermissions,
 	roomAccessValidators,
+	addUserRolesAsync,
 	addUserRoles,
-	addUserRolesSync,
 	canAccessRoom,
 	hasAllPermission,
 	hasAtLeastOnePermission,
