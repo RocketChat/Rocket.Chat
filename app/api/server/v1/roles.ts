@@ -216,7 +216,7 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 		}
 
-		const existingUsers = await Roles.findUsersInRole(role.name, role.scope);
+		const existingUsers = await Roles.findUsersInRole(role.name);
 
 		if (existingUsers && await existingUsers.count() > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
