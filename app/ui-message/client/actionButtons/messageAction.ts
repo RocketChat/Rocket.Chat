@@ -6,15 +6,21 @@ import { t } from '../../../utils/client';
 import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 
-const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${ appId }/${ actionId }`;
+const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string =>
+	`${ appId }/${ actionId }`;
 
 // eslint-disable-next-line no-void
-export const onAdded = (button: IUIActionButton): void => void MessageAction.addButton({
+export const onAdded = (button: IUIActionButton): void => MessageAction.addButton({
 	id: getIdForActionButton(button),
-	// icon: button.icon || '',
+	icon: '',
 	label: t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)),
-	context: button.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred'],
-	condition({ room }: any) {
+	context: button.when?.messageActionContext || [
+		'message',
+		'message-mobile',
+		'threads',
+		'starred',
+	],
+	condition({ room }) {
 		return applyButtonFilters(button, room);
 	},
 	async action() {
@@ -29,4 +35,5 @@ export const onAdded = (button: IUIActionButton): void => void MessageAction.add
 	},
 });
 
-export const onRemoved = (button: IUIActionButton): void => MessageAction.removeButton(getIdForActionButton(button));
+export const onRemoved = (button: IUIActionButton): void =>
+	MessageAction.removeButton(getIdForActionButton(button));
