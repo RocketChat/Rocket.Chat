@@ -202,7 +202,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											},
 										}}
 										tooltip={({ value, indexValue }): ReactElement => (
-											<Box fontScale='p2' color='alternative'>
+											<Box fontScale='p1m' color='alternative'>
 												{t('Value_users', { value })}, {formatDate(indexValue)}
 											</Box>
 										)}

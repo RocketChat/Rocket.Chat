@@ -5,7 +5,7 @@ const Wrapper = (text) => (
 	<Box
 		fontFamily='mono'
 		alignSelf='center'
-		fontScale='p3'
+		fontScale='p2'
 		style={{ wordBreak: 'break-all' }}
 		mie='x4'
 		flexGrow={1}

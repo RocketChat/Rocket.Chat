@@ -39,7 +39,7 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 			pi='x24'
 			alignItems='center'
 			display='flex'
-			fontScale='p4'
+			fontScale='p2m'
 			textAlign='center'
 			className={announcementBar}
 		>

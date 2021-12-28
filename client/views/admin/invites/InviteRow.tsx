@@ -72,7 +72,7 @@ const InviteRow = ({
 	return (
 		<GenericTableRow>
 			<GenericTableCell>
-				<Box color='hint' fontScale='p3'>
+				<Box color='hint' fontScale='p2'>
 					{_id}
 				</Box>
 			</GenericTableCell>

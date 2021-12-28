@@ -126,7 +126,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					display='flex'
 					overflow='hidden'
 					flexDirection='column'
-					fontScale='p3'
+					fontScale='p2'
 					mb='neg-x4'
 					flexGrow={1}
 					flexShrink={1}
