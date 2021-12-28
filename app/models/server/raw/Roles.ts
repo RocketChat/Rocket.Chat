@@ -1,6 +1,7 @@
 import type { Collection, Cursor, FilterQuery, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
 import { IRole, IUser } from '../../../../definition/IUser';
+import type { IRoom } from '../../../../definition/IRoom';
 import { BaseRaw } from './BaseRaw';
 import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';
@@ -26,7 +27,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	createOrUpdate(name: IRole['name'], scope: 'Users' | 'Subscriptions' = 'Users', description = '', protectedRole = true, mandatory2fa = false): Promise<UpdateWriteOpResult> {
+	createOrUpdate(name: IRole['name'], scope: IRole['scope'] = 'Users', description = '', protectedRole = true, mandatory2fa = false): Promise<UpdateWriteOpResult> {
 		const queryData = {
 			name,
 			scope,
@@ -38,7 +39,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.updateOne({ _id: name }, { $set: queryData }, { upsert: true });
 	}
 
-	async addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
+	async addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
@@ -64,7 +65,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
+	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (!Array.isArray(roles)) { // TODO: remove this check
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.isUserInRoles: roles should be an array');
@@ -93,7 +94,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return false;
 	}
 
-	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
+	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (!Array.isArray(roles)) { // TODO: remove this check
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
@@ -147,13 +148,13 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	findUsersInRole(name: IRole['name'], scope?: string): Promise<Cursor<IUser>>;
+	findUsersInRole(name: IRole['name'], scope?: IRoom['_id']): Promise<Cursor<IUser>>;
 
-	findUsersInRole(name: IRole['name'], scope: string | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
+	findUsersInRole(name: IRole['name'], scope: IRoom['_id'] | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
 
-	findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P extends IUser ? IUser : P>>;
+	findUsersInRole<P>(name: IRole['name'], scope: IRoom['_id'] | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P extends IUser ? IUser : P>>;
 
-	async findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
+	async findUsersInRole<P>(name: IRole['name'], scope: IRoom['_id'] | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
 		if (!role) {
@@ -170,7 +171,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	createWithRandomId(name: IRole['name'], scope: 'Users' | 'Subscriptions' = 'Users', description = '', protectedRole = true, mandatory2fa = false): Promise<InsertOneWriteOpResult<WithId<IRole>>> {
+	createWithRandomId(name: IRole['name'], scope: IRole['scope'] = 'Users', description = '', protectedRole = true, mandatory2fa = false): Promise<InsertOneWriteOpResult<WithId<IRole>>> {
 		const role = {
 			name,
 			scope,
@@ -183,7 +184,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	async canAddUserToRole(uid: IUser['_id'], name: IRole['name'], scope?: string): Promise<boolean> {
+	async canAddUserToRole(uid: IUser['_id'], name: IRole['name'], scope?: IRoom['_id']): Promise<boolean> {
 		const role = await this.findOne({ name }, { fields: { scope: 1 } } as FindOneOptions<IRole>);
 		if (!role) {
 			return false;
