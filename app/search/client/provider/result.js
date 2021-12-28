@@ -22,7 +22,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
+				return FlowRouter.go('channel', {
 					tab: 'thread',
 					context: message.tmid,
 					rid: message.rid,
