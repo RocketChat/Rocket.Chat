@@ -28,8 +28,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const fields = Object.assign({ lastMessage: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(message.rid, { fields });
+		const room = Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
 
 		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });

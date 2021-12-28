@@ -1274,8 +1274,7 @@ export const Livechat = {
 			throw new Error('error-not-authorized');
 		}
 
-		const roomFields = Object.assign({ _id: 1, t: 1 }, roomAccessAttributes);
-		const room = Promise.await(LivechatRooms.findOneById(roomId, roomFields));
+		const room = Promise.await(LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 }));
 
 		if (!room) {
 			throw new Meteor.Error('invalid-room');

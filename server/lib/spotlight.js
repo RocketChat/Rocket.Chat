@@ -201,13 +201,7 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const roomFields = Object.assign({
-			_id: 1,
-			t: 1,
-			uids: 1,
-		}, roomAccessAttributes);
-
-		const room = Rooms.findOneById(rid, { fields: roomFields });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
 
 		if (rid && !room) {
 			return users;

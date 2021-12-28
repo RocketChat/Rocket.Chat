@@ -18,7 +18,8 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 	}
 
 	const roomOptions = {
-		fields: Object.assign({
+		fields: {
+			...roomAccessAttributes,
 			t: 1,
 			ro: 1,
 			name: 1,
@@ -26,7 +27,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 			prid: 1,
 			archived: 1,
 			broadcast: 1,
-		}, roomAccessAttributes),
+		},
 	};
 	const room = params.roomId
 		? Rooms.findOneById(params.roomId, roomOptions)

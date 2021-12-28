@@ -18,8 +18,7 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		const roomFields = Object.assign({ t: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(rid, { fields: roomFields });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}

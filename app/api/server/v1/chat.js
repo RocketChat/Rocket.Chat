@@ -440,8 +440,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(rid, { fields: roomFields });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
@@ -496,8 +495,7 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(rid, { fields: roomFields });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
@@ -529,8 +527,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(thread.rid, { fields: roomFields });
+		const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
@@ -580,8 +577,7 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const roomFields = Object.assign({ t: 1, _id: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(thread.rid, { fields: roomFields });
+		const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');

@@ -15,8 +15,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const roomFields = Object.assign({ broadcast: 1 }, roomAccessAttributes);
-		const room = Rooms.findOneById(rid, { fields: roomFields });
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, broadcast: 1 } });
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
