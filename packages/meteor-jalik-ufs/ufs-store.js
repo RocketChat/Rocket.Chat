@@ -253,9 +253,6 @@ export class Store {
 						size += data.length;
 					}));
 					readStream.on('end', Meteor.bindEnvironment(function() {
-						if (file.complete) {
-							return;
-						}
 						// Set file attribute
 						file.complete = true;
 						file.etag = UploadFS.generateEtag();
