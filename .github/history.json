@@ -68648,6 +68648,58 @@
           ]
         }
       ]
+    },
+    "4.3.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24035",
+          "title": "Regression: Ensure room action buttons only appear inside menu",
+          "userLogin": "d-gubert",
+          "description": "Currently, action buttons registered by apps to appear in the ROOM_ACTION context show in the first position of the list, but since they don't have an icon they are effectively invisible in the tab bar.\r\n\r\nHere we change the order configuration of the button so we make sure it only shows inside the room menu",
+          "milestone": "4.3.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24030",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-12-27Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24033",
+          "title": "Regression: Add optional chaining to possibly undefined fields",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24034",
+          "title": "Regression: Remove dangling console.log",
+          "userLogin": "tassoevan",
+          "description": "A empty array have been printed to console due to a promise chained to `console.log` and `console.error` calls, probably for debugging purposes.",
+          "milestone": "4.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
