@@ -19,12 +19,11 @@ import { GenericTableHeader } from './V2/GenericTableHeader';
 import { GenericTableLoadingTable } from './V2/GenericTableLoadingTable';
 import { usePagination } from './hooks/usePagination';
 
-const defaultParamsValue = { text: '', types: undefined, current: 0, itemsPerPage: 25 } as const;
+const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
 
 type GenericTableParams = {
 	text?: string;
-	types?: string[];
 	current?: number;
 	itemsPerPage?: 25 | 50 | 100;
 };
@@ -80,7 +79,7 @@ const GenericTable = forwardRef(function GenericTable<
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ text: params.text || '', types: params.types, current, itemsPerPage });
+		setParams({ ...params, text: params.text || '', current, itemsPerPage });
 	}, [params, current, itemsPerPage, setParams]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
