@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
+import { hasPermission } from '../../../../authorization/server';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete, findDepartmentsBetweenIds, findDepartmentAgents } from '../../../server/api/lib/departments';
 
@@ -11,17 +11,20 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		const { text, enabled, onlyMyDepartments } = this.queryParams;
+		const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
 		const { departments, total } = Promise.await(findDepartments({
 			userId: this.userId,
 			text,
 			enabled,
 			onlyMyDepartments: onlyMyDepartments === 'true',
+			excludeDepartmentId,
 			pagination: {
 				offset,
 				count,
-				sort,
+				// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+				// or the form { [k: keyof T]: number | string }
+				sort: sort as any,
 			},
 		}));
 
@@ -52,7 +55,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 				});
 			}
 
-			API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -74,10 +77,10 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			onlyMyDepartments: onlyMyDepartments === 'true',
 		}));
 
-		const result = { department };
-		if (agents) {
-			result.agents = agents;
-		}
+		// TODO: return 404 when department is not found
+		// Currently, FE relies on the fact that this endpoint returns an empty payload
+		// to show the "new" view. Returning 404 breaks it
+		const result = { department, agents };
 
 		return API.v1.success(result);
 	},
@@ -136,7 +139,6 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			if (Livechat.removeDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
-
 			return API.v1.failure();
 		} catch (e) {
 			return API.v1.failure(e);
@@ -159,8 +161,8 @@ API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true }, {
-	get() {
+API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true }>('livechat/department/:departmentId/agents', { authRequired: true }, {
+	async get() {
 		check(this.urlParams, {
 			departmentId: String,
 		});
@@ -168,7 +170,7 @@ API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		const agents = Promise.await(findDepartmentAgents({
+		const agents = await findDepartmentAgents({
 			userId: this.userId,
 			departmentId: this.urlParams.departmentId,
 			pagination: {
@@ -176,7 +178,7 @@ API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true
 				count,
 				sort,
 			},
-		}));
+		});
 
 		return API.v1.success(agents);
 	},
@@ -193,6 +195,8 @@ API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true
 			remove: Array,
 		}));
 		Livechat.saveDepartmentAgents(this.urlParams.departmentId, this.bodyParams);
+
+		return API.v1.success();
 	},
 });
 

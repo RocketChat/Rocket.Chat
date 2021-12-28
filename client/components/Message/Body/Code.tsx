@@ -10,7 +10,7 @@ type hljsResult = {
 	value: string;
 };
 
-const isHljsResult = (result: any): result is hljsResult => result && result.value;
+const isHljsResult = (result: any): result is hljsResult => result?.value;
 
 const Code: FC<ASTCode> = ({ value = [], language }) => {
 	const [code, setCode] = useState<(JSX.Element | null)[] | { language: string; code: string }>(

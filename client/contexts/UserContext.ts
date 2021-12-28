@@ -43,7 +43,7 @@ type UserContextValue = {
 	) => Subscription<T | undefined>;
 	querySubscription: (
 		query: FilterQuery<ISubscription>,
-		fields: Fields,
+		fields?: Fields,
 		sort?: Sort,
 	) => Subscription<ISubscription | undefined>;
 	queryRoom: (
@@ -82,6 +82,7 @@ export const UserContext = createContext<UserContextValue>({
 
 export const useUserId = (): string | null => useContext(UserContext).userId;
 
+// TODO: Use IUser instead
 export const useUser = (): Meteor.User | null => useContext(UserContext).user;
 
 export const useLoginWithPassword = (): ((
@@ -110,7 +111,7 @@ export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefin
 	return useSubscription(subscription);
 };
 
-export const useUserSubscription = (rid: string, fields: Fields): ISubscription | undefined => {
+export const useUserSubscription = (rid: string, fields?: Fields): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
 	const subscription = useMemo(
 		() => querySubscription({ rid }, fields),

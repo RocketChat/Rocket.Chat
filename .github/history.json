@@ -67861,6 +67861,103 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.2.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23913",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23796",
+          "title": "[FIX] Segmentation fault on CentOS 7 due to outdated `sharp`",
+          "userLogin": "tassoevan",
+          "description": "Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.\r\n\r\nSuggested as a fix for versions `4.0.x` and `4.1.x`.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23857",
+          "title": "[FIX] teams.removeMembers client usage",
+          "userLogin": "dougfabris",
+          "milestone": "4.2.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23861",
+          "title": "[FIX] Wrong button for non trial apps",
+          "userLogin": "rique223",
+          "description": "This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  \r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  \r\nAfter:\r\n![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)",
+          "milestone": "4.2.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "23859",
+          "title": "[FIX] Error when creating an inactive user in admin panel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix `usersInRole` array used to send email to activate a user.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23821",
+          "title": "[NEW] Create new setting to clean local storage at end of chats",
+          "userLogin": "tiagoevanp",
+          "description": "Include setting to handle with and clear the localStorage on Livechat widget. \r\n\r\n![image](https://user-images.githubusercontent.com/17487063/144171179-95f7cf41-0192-4532-bedf-99e0b01f2c61.png)\r\n\r\nThis behavior is only possible to happen when https://github.com/RocketChat/Rocket.Chat.Livechat/pull/666 merged and released.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        }
+      ]
+    },
+    "4.2.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23347",
+          "title": "[FIX] creating room with federated member",
+          "userLogin": "qwertiko",
+          "milestone": "4.2.2",
+          "contributors": [
+            "qwertiko",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
