@@ -233,3 +233,7 @@ createTemplateForComponent(
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
 
 createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
+
+createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomNotFound'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
+});
