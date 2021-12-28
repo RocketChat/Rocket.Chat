@@ -1,8 +1,8 @@
 import { Box, Tile, Button, Icon } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ComponentProps, FC } from 'react';
 
 type NoResultsProps = {
-	icon: string;
+	icon: ComponentProps<typeof Icon>['name'];
 	title: string;
 	description: string;
 	buttonTitle?: string;
