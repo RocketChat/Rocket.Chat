@@ -30,10 +30,7 @@ const EndToEnd = (props) => {
 	const keysExist = publicKey && privateKey;
 
 	const hasTypedPassword = password.trim().length > 0;
-	const passwordError =
-		password !== passwordConfirm && passwordConfirm.length > 0
-			? t('Passwords_do_not_match')
-			: undefined;
+	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
 	const handleLogout = useMutableCallback(() => {
@@ -81,12 +78,7 @@ const EndToEnd = (props) => {
 					<Field>
 						<Field.Label>{t('New_encryption_password')}</Field.Label>
 						<Field.Row>
-							<PasswordInput
-								value={password}
-								onChange={handlePassword}
-								placeholder={t('New_Password_Placeholder')}
-								disabled={!keysExist}
-							/>
+							<PasswordInput value={password} onChange={handlePassword} placeholder={t('New_Password_Placeholder')} disabled={!keysExist} />
 						</Field.Row>
 						{!keysExist && <Field.Hint>{t('EncryptionKey_Change_Disabled')}</Field.Hint>}
 					</Field>

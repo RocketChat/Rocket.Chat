@@ -1,12 +1,14 @@
 import { settingsRegistry } from '../../../settings/server';
 
-settingsRegistry.addGroup('Email', function() {
-	this.section('Style', function() {
+settingsRegistry.addGroup('Email', function () {
+	this.section('Style', function () {
 		this.add('email_plain_text_only', false, {
 			type: 'boolean',
 		});
 
-		this.add('email_style', `html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
+		this.add(
+			'email_style',
+			`html, body, .body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
 	body, .body {
 		width: 100%;
@@ -101,20 +103,22 @@ settingsRegistry.addGroup('Email', function() {
 	.social {
 		font-size: 12px
 	}
-			`, {
-			type: 'code',
-			code: 'css',
-			multiline: true,
-			i18nLabel: 'email_style_label',
-			i18nDescription: 'email_style_description',
-			enableQuery: {
-				_id: 'email_plain_text_only',
-				value: false,
+			`,
+			{
+				type: 'code',
+				code: 'css',
+				multiline: true,
+				i18nLabel: 'email_style_label',
+				i18nDescription: 'email_style_description',
+				enableQuery: {
+					_id: 'email_plain_text_only',
+					value: false,
+				},
 			},
-		});
+		);
 	});
 
-	this.section('Subject', function() {
+	this.section('Subject', function () {
 		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
 			type: 'code',
 			code: 'text',
@@ -137,19 +141,27 @@ settingsRegistry.addGroup('Email', function() {
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
 	});
-	this.section('Header_and_Footer', function() {
-		this.add('Email_Header', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Header',
-		});
-		this.add('Email_Footer', '</td></tr></table></div></td></tr></table><!-- /BODY --></td></tr><tr style="margin: 0; padding: 0;"><td style="margin: 0; padding: 0;"><!-- FOOTER --><table class="wrap"><tr><td class="container"><!-- content --><div class="content"><table width="100%"><tr><td align="center" class="social"><a href="https://rocket.chat/blog">Blog</a> | <a href="https://github.com/RocketChat">Github</a> | <a href="https://www.facebook.com/RocketChatApp">Facebook</a> | <a href="https://www.instagram.com/rocket.chat">Instagram</a></td></tr><tr><td align="center"><h6>© Rocket.Chat Technologies Corp.</h6><h6>Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸 </h6></td></tr></table></div><!-- /content --></td></tr></table><!-- /FOOTER --></td></tr></table></body></html>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Footer',
-		});
+	this.section('Header_and_Footer', function () {
+		this.add(
+			'Email_Header',
+			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Header',
+			},
+		);
+		this.add(
+			'Email_Footer',
+			'</td></tr></table></div></td></tr></table><!-- /BODY --></td></tr><tr style="margin: 0; padding: 0;"><td style="margin: 0; padding: 0;"><!-- FOOTER --><table class="wrap"><tr><td class="container"><!-- content --><div class="content"><table width="100%"><tr><td align="center" class="social"><a href="https://rocket.chat/blog">Blog</a> | <a href="https://github.com/RocketChat">Github</a> | <a href="https://www.facebook.com/RocketChatApp">Facebook</a> | <a href="https://www.instagram.com/rocket.chat">Instagram</a></td></tr><tr><td align="center"><h6>© Rocket.Chat Technologies Corp.</h6><h6>Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸 </h6></td></tr></table></div><!-- /content --></td></tr></table><!-- /FOOTER --></td></tr></table></body></html>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Footer',
+			},
+		);
 		this.add('Email_Footer_Direct_Reply', '<p class="advice">{Direct_Reply_Advice}</p>', {
 			type: 'code',
 			code: 'text/html',
@@ -157,7 +169,7 @@ settingsRegistry.addGroup('Email', function() {
 			i18nLabel: 'Footer_Direct_Reply',
 		});
 	});
-	this.section('Direct_Reply', function() {
+	this.section('Direct_Reply', function () {
 		this.add('Direct_Reply_Enable', false, {
 			type: 'boolean',
 			env: true,
@@ -175,7 +187,8 @@ settingsRegistry.addGroup('Email', function() {
 				{
 					key: 'IMAP',
 					i18nLabel: 'IMAP',
-				}, {
+				},
+				{
 					key: 'POP',
 					i18nLabel: 'POP',
 				},
@@ -222,58 +235,76 @@ settingsRegistry.addGroup('Email', function() {
 				{
 					key: '!',
 					i18nLabel: '!',
-				}, {
+				},
+				{
 					key: '#',
 					i18nLabel: '#',
-				}, {
+				},
+				{
 					key: '$',
 					i18nLabel: '$',
-				}, {
+				},
+				{
 					key: '%',
 					i18nLabel: '%',
-				}, {
+				},
+				{
 					key: '&',
 					i18nLabel: '&',
-				}, {
-					key: '\'',
-					i18nLabel: '\'',
-				}, {
+				},
+				{
+					key: "'",
+					i18nLabel: "'",
+				},
+				{
 					key: '*',
 					i18nLabel: '*',
-				}, {
+				},
+				{
 					key: '+',
 					i18nLabel: '+',
-				}, {
+				},
+				{
 					key: '-',
 					i18nLabel: '-',
-				}, {
+				},
+				{
 					key: '/',
 					i18nLabel: '/',
-				}, {
+				},
+				{
 					key: '=',
 					i18nLabel: '=',
-				}, {
+				},
+				{
 					key: '?',
 					i18nLabel: '?',
-				}, {
+				},
+				{
 					key: '^',
 					i18nLabel: '^',
-				}, {
+				},
+				{
 					key: '_',
 					i18nLabel: '_',
-				}, {
+				},
+				{
 					key: '`',
 					i18nLabel: '`',
-				}, {
+				},
+				{
 					key: '{',
 					i18nLabel: '{',
-				}, {
+				},
+				{
 					key: '|',
 					i18nLabel: '|',
-				}, {
+				},
+				{
 					key: '}',
 					i18nLabel: '}',
-				}, {
+				},
+				{
 					key: '~',
 					i18nLabel: '~',
 				},
@@ -301,14 +332,15 @@ settingsRegistry.addGroup('Email', function() {
 			secret: true,
 		});
 	});
-	this.section('SMTP', function() {
+	this.section('SMTP', function () {
 		this.add('SMTP_Protocol', 'smtp', {
 			type: 'select',
 			values: [
 				{
 					key: 'smtp',
 					i18nLabel: 'smtp',
-				}, {
+				},
+				{
 					key: 'smtps',
 					i18nLabel: 'smtps',
 				},
@@ -364,114 +396,142 @@ settingsRegistry.addGroup('Email', function() {
 		});
 	});
 
-	this.section('Registration', function() {
+	this.section('Registration', function () {
 		this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Site_name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_Enrollment_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-		});
+		this.add(
+			'Accounts_Enrollment_Email',
+			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+			},
+		);
 	});
 
-	this.section('Registration_via_Admin', function() {
+	this.section('Registration_via_Admin', function () {
 		this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_UserAddedEmail_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Accounts_UserAddedEmail_Description',
-		});
+		this.add(
+			'Accounts_UserAddedEmail_Email',
+			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Accounts_UserAddedEmail_Description',
+			},
+		);
 	});
 
-	this.section('Verification', function() {
+	this.section('Verification', function () {
 		this.add('Verification_Email_Subject', '{Verification_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Verification_Email', '<h2>{Hi_username}</h2><p>{Verification_email_body}</p><a class="btn" target="_blank" href="[Verification_Url]">{Verify_your_email}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Verification_Description',
-		});
+		this.add(
+			'Verification_Email',
+			'<h2>{Hi_username}</h2><p>{Verification_email_body}</p><a class="btn" target="_blank" href="[Verification_Url]">{Verify_your_email}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Verification_Description',
+			},
+		);
 	});
 
-	this.section('Offline_Message', function() {
+	this.section('Offline_Message', function () {
 		this.add('Offline_Message_Use_DeepLink', true, {
 			type: 'boolean',
 		});
 	});
 
-	this.section('Invitation', function() {
+	this.section('Invitation', function () {
 		this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Invitation_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Invitation_Email_Description',
-		});
+		this.add(
+			'Invitation_Email',
+			'<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Invitation_Email_Description',
+			},
+		);
 	});
 
-	this.section('Forgot_password_section', function() {
+	this.section('Forgot_password_section', function () {
 		this.add('Forgot_Password_Email_Subject', '{Forgot_Password_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Forgot_Password_Description',
-		});
+		this.add(
+			'Forgot_Password_Email',
+			'<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Forgot_Password_Description',
+			},
+		);
 	});
 
-	this.section('Email_changed_section', function() {
+	this.section('Email_changed_section', function () {
 		this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Email_Changed_Email', '<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Email_Changed_Description',
-		});
+		this.add(
+			'Email_Changed_Email',
+			'<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Email_Changed_Description',
+			},
+		);
 	});
 
-	this.section('Password_changed_section', function() {
+	this.section('Password_changed_section', function () {
 		this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Password_Changed_Email', '<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Password_Changed_Description',
-		});
+		this.add(
+			'Password_Changed_Email',
+			'<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>',
+			{
+				type: 'code',
+				code: 'text/html',
+				multiline: true,
+				i18nLabel: 'Body',
+				i18nDescription: 'Password_Changed_Description',
+			},
+		);
 	});
 
-	this.section('Privacy', function() {
+	this.section('Privacy', function () {
 		this.add('Email_notification_show_message', true, {
 			type: 'boolean',
 			public: true,

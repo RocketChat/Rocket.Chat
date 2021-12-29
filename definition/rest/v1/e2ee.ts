@@ -118,11 +118,7 @@ export type E2EEEndpoints = {
 	 *                $ref: '#/components/schemas/ApiFailureV1'
 	 */
 	'/v1/e2e.updateGroupKey': {
-		POST: (params: {
-			uid: IUser['_id'];
-			rid: IRoom['_id'];
-			key: Exclude<IRoom['e2eKeyId'], undefined>;
-		}) => ISubscription | null;
+		POST: (params: { uid: IUser['_id']; rid: IRoom['_id']; key: Exclude<IRoom['e2eKeyId'], undefined> }) => ISubscription | null;
 	};
 
 	'/v1/e2e.requestSubscriptionKeys': {

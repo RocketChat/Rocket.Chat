@@ -50,10 +50,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'setAvatarFromService',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'setAvatarFromService',
+		userId() {
+			return true;
+		},
 	},
-}, 1, 5000);
+	1,
+	5000,
+);

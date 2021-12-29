@@ -39,8 +39,7 @@ type EncryptableMessage = {
 
 const extractEncryptedKeyId = (encryptedData: string): string => encryptedData.slice(0, 12);
 
-const extractEncryptedBody = (encryptedData: string): Uint8Array =>
-	Base64.decode(encryptedData.slice(12));
+const extractEncryptedBody = (encryptedData: string): Uint8Array => Base64.decode(encryptedData.slice(12));
 
 interface ICipher {
 	encrypt(input: EncryptableMessage, key: CryptoKey, keyID: string): Promise<string>;
@@ -251,9 +250,7 @@ export class E2EERoomClient extends Emitter<{
 
 	async importSubscriptionKey(encryptedSubscriptionKey: string): Promise<void> {
 		const encryptedBody = extractEncryptedBody(encryptedSubscriptionKey);
-		const unencryptedSubscriptionKey = fromBufferToString(
-			await decryptRSA(this.userPrivateKey, encryptedBody),
-		);
+		const unencryptedSubscriptionKey = fromBufferToString(await decryptRSA(this.userPrivateKey, encryptedBody));
 		const jwkSubscriptionKey: JsonWebKey = JSON.parse(unencryptedSubscriptionKey);
 		const subscriptionKey = await importAESKey(jwkSubscriptionKey);
 
@@ -377,19 +374,14 @@ export class E2EERoomClient extends Emitter<{
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		return Messages.find({ rid: this.rid, t: 'e2e', e2e: 'pending' }).forEach(
-			async (message: IMessage) => {
-				const { _id, ...rest } = await this.decryptMessage(message);
-				Messages.direct.update({ _id }, rest);
-			},
-		);
+		return Messages.find({ rid: this.rid, t: 'e2e', e2e: 'pending' }).forEach(async (message: IMessage) => {
+			const { _id, ...rest } = await this.decryptMessage(message);
+			Messages.direct.update({ _id }, rest);
+		});
 	}
 
 	async encryptKeyForOtherParticipants(): Promise<void> {
-		const { users } = await APIClient.v1.get<{ rid: IRoom['_id'] }, { users: IUser[] }>(
-			'e2e.getUsersOfRoomWithoutKey',
-			{ rid: this.rid },
-		);
+		const { users } = await APIClient.v1.get<{ rid: IRoom['_id'] }, { users: IUser[] }>('e2e.getUsersOfRoomWithoutKey', { rid: this.rid });
 		users.forEach((user) => {
 			this.encryptForParticipant(user);
 		});
@@ -406,10 +398,7 @@ export class E2EERoomClient extends Emitter<{
 			return;
 		}
 
-		const encryptedUserKey = await encryptRSA(
-			userKey,
-			fromStringToBuffer(this.sessionKeyExportedString),
-		);
+		const encryptedUserKey = await encryptRSA(userKey, fromStringToBuffer(this.sessionKeyExportedString));
 		await APIClient.v1.post('e2e.updateGroupKey', {
 			rid: this.rid,
 			uid: user._id,
@@ -450,9 +439,7 @@ export class E2EERoomClient extends Emitter<{
 		};
 	}
 
-	async encryptMessage<T extends Pick<IMessage, '_id' | 't' | 'e2e' | 'msg'>>(
-		message: T,
-	): Promise<T> {
+	async encryptMessage<T extends Pick<IMessage, '_id' | 't' | 'e2e' | 'msg'>>(message: T): Promise<T> {
 		const metadata = this.getMetadata();
 
 		if (metadata === undefined) {

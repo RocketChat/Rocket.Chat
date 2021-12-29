@@ -28,9 +28,8 @@ type RoomSettings = {
 
 export type SaveRoomSettingsMethod = {
 	(rid: IRoom['_id'], settings: Partial<RoomSettings>): { result: true; rid: IRoom['_id'] };
-	<RoomSettingName extends keyof RoomSettings>(
-		rid: IRoom['_id'],
-		setting: RoomSettingName,
-		value: RoomSettings[RoomSettingName],
-	): { result: true; rid: IRoom['_id'] };
+	<RoomSettingName extends keyof RoomSettings>(rid: IRoom['_id'], setting: RoomSettingName, value: RoomSettings[RoomSettingName]): {
+		result: true;
+		rid: IRoom['_id'];
+	};
 };

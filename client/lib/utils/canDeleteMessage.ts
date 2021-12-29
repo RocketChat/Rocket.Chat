@@ -6,15 +6,7 @@ import { settings } from '../../../app/settings/client';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 
-export const canDeleteMessage = ({
-	rid,
-	ts,
-	uid,
-}: {
-	rid: IRoom['_id'];
-	ts: MomentInput;
-	uid: IUser['_id'];
-}): boolean => {
+export const canDeleteMessage = ({ rid, ts, uid }: { rid: IRoom['_id']; ts: MomentInput; uid: IUser['_id'] }): boolean => {
 	const userId = Meteor.userId();
 
 	const forceDelete = hasPermission('force-delete-message', rid);
@@ -34,9 +26,7 @@ export const canDeleteMessage = ({
 		return false;
 	}
 
-	const blockDeleteInMinutes: number | undefined = settings.get(
-		'Message_AllowDeleting_BlockDeleteInMinutes',
-	);
+	const blockDeleteInMinutes: number | undefined = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 	if (blockDeleteInMinutes && blockDeleteInMinutes !== 0) {
 		if (!ts) {
 			return false;

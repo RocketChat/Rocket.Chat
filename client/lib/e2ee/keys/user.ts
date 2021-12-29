@@ -34,9 +34,7 @@ const stringifyKey = async (key: CryptoKey): Promise<string> => {
 
 export const createKeyPair = async (): Promise<CryptoKeyPair> => generateRSAKey();
 
-export const fetchKeyPair = async (
-	signal: AbortSignal | undefined,
-): Promise<CryptoKeyPair | undefined> => {
+export const fetchKeyPair = async (signal: AbortSignal | undefined): Promise<CryptoKeyPair | undefined> => {
 	assertAbortSignal(signal);
 
 	const publicKeyString = Meteor._localStorage.getItem('public_key');
@@ -54,10 +52,7 @@ export const fetchKeyPair = async (
 	return { publicKey, privateKey };
 };
 
-export const persistKeyPair = async (
-	{ publicKey, privateKey }: CryptoKeyPair,
-	signal: AbortSignal | undefined,
-): Promise<void> => {
+export const persistKeyPair = async ({ publicKey, privateKey }: CryptoKeyPair, signal: AbortSignal | undefined): Promise<void> => {
 	assertAbortSignal(signal);
 
 	const publicKeyString = await stringifyKey(publicKey);
@@ -74,15 +69,12 @@ export type RemoteKeyPair = {
 	privateKey: string;
 };
 
-export const fetchRemoteKeyPair = async (
-	signal: AbortSignal | undefined,
-): Promise<RemoteKeyPair | undefined> => {
+export const fetchRemoteKeyPair = async (signal: AbortSignal | undefined): Promise<RemoteKeyPair | undefined> => {
 	assertAbortSignal(signal);
 
-	const { public_key: publicKeyString, private_key: encryptedPrivateKey } = await APIClient.v1.get<
-		{},
-		Partial<E2EEKeyPair>
-	>('e2e.fetchMyKeys');
+	const { public_key: publicKeyString, private_key: encryptedPrivateKey } = await APIClient.v1.get<{}, Partial<E2EEKeyPair>>(
+		'e2e.fetchMyKeys',
+	);
 
 	assertAbortSignal(signal);
 
@@ -96,10 +88,7 @@ export const fetchRemoteKeyPair = async (
 	};
 };
 
-export const persistRemoteKeyPair = async (
-	{ publicKey, privateKey }: RemoteKeyPair,
-	signal: AbortSignal | undefined,
-): Promise<void> => {
+export const persistRemoteKeyPair = async ({ publicKey, privateKey }: RemoteKeyPair, signal: AbortSignal | undefined): Promise<void> => {
 	assertAbortSignal(signal);
 
 	await APIClient.v1.post<E2EEKeyPair, void>('e2e.setUserPublicAndPrivateKeys', {
@@ -110,10 +99,7 @@ export const persistRemoteKeyPair = async (
 	});
 };
 
-export const encryptKeyPair = async (
-	{ publicKey, privateKey }: CryptoKeyPair,
-	masterKey: CryptoKey,
-): Promise<RemoteKeyPair> => {
+export const encryptKeyPair = async ({ publicKey, privateKey }: CryptoKeyPair, masterKey: CryptoKey): Promise<RemoteKeyPair> => {
 	const publicKeyString = await stringifyKey(publicKey);
 	const privateKeyString = await stringifyKey(privateKey);
 	const privateKeyBuffer = fromStringToBuffer(privateKeyString);

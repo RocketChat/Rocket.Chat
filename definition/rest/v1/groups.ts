@@ -10,13 +10,7 @@ export type GroupsEndpoints = {
 		};
 	};
 	'groups.members': {
-		GET: (params: {
-			roomId: IRoom['_id'];
-			offset?: number;
-			count?: number;
-			filter?: string;
-			status?: string[];
-		}) => {
+		GET: (params: { roomId: IRoom['_id']; offset?: number; count?: number; filter?: string; status?: string[] }) => {
 			count: number;
 			offset: number;
 			members: IUser[];

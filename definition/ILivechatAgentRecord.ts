@@ -1,6 +1,5 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 
-
 export interface ILivechatAgentRecord extends IRocketChatRecord {
 	_id: string;
 	emails: {

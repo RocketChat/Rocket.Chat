@@ -12,7 +12,7 @@ import { roomTypes } from '../../utils/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'pin-message',
 		icon: 'pin',
@@ -21,7 +21,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = true;
-			Meteor.call('pinMessage', message, function(error) {
+			Meteor.call('pinMessage', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = false;
-			Meteor.call('unpinMessage', message, function(error) {
+			Meteor.call('unpinMessage', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -77,15 +77,19 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},

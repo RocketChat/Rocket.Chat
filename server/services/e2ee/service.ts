@@ -49,60 +49,76 @@ export class E2EEService extends ServiceClass implements IE2EEService {
 	}
 
 	async setUserKeys(uid: IUser['_id'], keyPair: E2EEKeyPair): Promise<void> {
-		await this.Users.update({ _id: uid }, {
-			$set: {
-				'e2e.public_key': keyPair.public_key,
-				'e2e.private_key': keyPair.private_key,
+		await this.Users.update(
+			{ _id: uid },
+			{
+				$set: {
+					'e2e.public_key': keyPair.public_key,
+					'e2e.private_key': keyPair.private_key,
+				},
 			},
-		});
+		);
 	}
 
 	async resetUserKeys(uid: IUser['_id']): Promise<void> {
-		await this.Users.update({ _id: uid }, {
-			$unset: {
-				e2e: '',
+		await this.Users.update(
+			{ _id: uid },
+			{
+				$unset: {
+					e2e: '',
+				},
 			},
-		});
+		);
 
-		await this.Subscriptions.update({ 'u._id': uid }, {
-			$unset: {
-				E2EKey: '',
+		await this.Subscriptions.update(
+			{ 'u._id': uid },
+			{
+				$unset: {
+					E2EKey: '',
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 
 		await this.Users.unsetLoginTokens(uid);
 	}
 
 	async getRoomMembersWithoutPublicKey(uid: IUser['_id'], rid: IRoom['_id']): Promise<IUser[]> {
-		if (!await canAccessRoom({ _id: rid }, { _id: uid })) {
+		if (!(await canAccessRoom({ _id: rid }, { _id: uid }))) {
 			throw new Error('error-invalid-room');
 		}
 
-		const uids = await this.Subscriptions.find<{ u: Pick<ISubscription['u'], '_id'> }>({
-			rid,
-			E2EKey: {
-				$exists: false,
+		const uids = await this.Subscriptions.find<{ u: Pick<ISubscription['u'], '_id'> }>(
+			{
+				rid,
+				E2EKey: {
+					$exists: false,
+				},
 			},
-		}, { projection: { 'u._id': 1 } })
+			{ projection: { 'u._id': 1 } },
+		)
 			.map((doc) => doc.u._id)
 			.toArray();
 
-		const users = await this.Users.find<IUser>({
-			_id: {
-				$in: uids,
+		const users = await this.Users.find<IUser>(
+			{
+				'_id': {
+					$in: uids,
+				},
+				'e2e.public_key': {
+					$exists: 1,
+				},
 			},
-			'e2e.public_key': {
-				$exists: 1,
-			},
-		}, { projection: { 'e2e.public_key': 1 } }).toArray();
+			{ projection: { 'e2e.public_key': 1 } },
+		).toArray();
 
 		return users;
 	}
 
 	async setRoomKeyId(uid: IUser['_id'], rid: IRoom['_id'], keyId: Exclude<IRoom['e2eKeyId'], undefined>): Promise<void> {
-		if (!await canAccessRoom({ _id: rid }, { _id: uid })) {
+		if (!(await canAccessRoom({ _id: rid }, { _id: uid }))) {
 			throw new Error('error-invalid-room');
 		}
 
@@ -119,11 +135,14 @@ export class E2EEService extends ServiceClass implements IE2EEService {
 		await this.Rooms.update({ _id: rid }, { $set: { e2eKeyId: keyId } });
 	}
 
-	async updateGroupKey(uid: IUser['_id'], params: {
-		uid: IUser['_id'];
-		rid: IRoom['_id'];
-		keyId: Exclude<ISubscription['E2EKey'], undefined>;
-	}): Promise<ISubscription | null> {
+	async updateGroupKey(
+		uid: IUser['_id'],
+		params: {
+			uid: IUser['_id'];
+			rid: IRoom['_id'];
+			keyId: Exclude<ISubscription['E2EKey'], undefined>;
+		},
+	): Promise<ISubscription | null> {
 		const mySubscription = await this.Subscriptions.findOneByRoomIdAndUserId(params.rid, uid);
 		if (!mySubscription) {
 			return null;
@@ -142,7 +161,7 @@ export class E2EEService extends ServiceClass implements IE2EEService {
 	async requestSubscriptionKeys(uid: IUser['_id']): Promise<void> {
 		const roomIds = await this.Subscriptions.find({
 			'u._id': uid,
-			E2EKey: {
+			'E2EKey': {
 				$exists: false,
 			},
 		})

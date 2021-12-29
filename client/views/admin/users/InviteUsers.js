@@ -30,13 +30,7 @@ export function InviteUsers({ data, ...props }) {
 				{t('Send_invitation_email_info')}
 			</Box>
 			<TextAreaInput rows={5} flexGrow={0} onChange={(e) => setText(e.currentTarget.value)} />
-			<Button
-				primary
-				onClick={handleClick}
-				disabled={!getEmails(text).length}
-				alignItems='stretch'
-				mb='x8'
-			>
+			<Button primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb='x8'>
 				<Icon name='send' size='x16' />
 				{t('Send')}
 			</Button>

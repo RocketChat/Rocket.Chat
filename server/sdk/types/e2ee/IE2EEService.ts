@@ -10,10 +10,13 @@ export interface IE2EEService extends IServiceClass {
 	resetUserKeys(uid: IUser['_id']): Promise<void>;
 	getRoomMembersWithoutPublicKey(uid: IUser['_id'], rid: IRoom['_id']): Promise<IUser[]>;
 	setRoomKeyId(uid: IUser['_id'], rid: IRoom['_id'], keyId: Exclude<IRoom['e2eKeyId'], undefined>): Promise<void>;
-	updateGroupKey(uid: IUser['_id'], params: {
-		uid: IUser['_id'];
-		rid: IRoom['_id'];
-		keyId: Exclude<ISubscription['E2EKey'], undefined>;
-	}): Promise<ISubscription | null>;
+	updateGroupKey(
+		uid: IUser['_id'],
+		params: {
+			uid: IUser['_id'];
+			rid: IRoom['_id'];
+			keyId: Exclude<ISubscription['E2EKey'], undefined>;
+		},
+	): Promise<ISubscription | null>;
 	requestSubscriptionKeys(uid: IUser['_id']): Promise<void>;
 }

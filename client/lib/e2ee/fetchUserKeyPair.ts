@@ -18,10 +18,7 @@ type FetchUserKeyPairContext = {
 	/** a callback triggered when the (remote) key pair should be fetched (from the server) */
 	onDecryptingRemoteKeyPair: (options: { onConfirm: () => void }) => void;
 	/** a callback triggered when the user should input the master key */
-	onPromptingForPassword: (options: {
-		onInput: (password: string) => void;
-		onCancel: () => void;
-	}) => void;
+	onPromptingForPassword: (options: { onInput: (password: string) => void; onCancel: () => void }) => void;
 	/** a callback triggered when the decryption of the remote key pair fails */
 	onFailureToDecrypt: (options: { onRetry: () => void; onAccept: () => void }) => void;
 	/** a callback triggered when a random master key is generated */
@@ -30,10 +27,7 @@ type FetchUserKeyPairContext = {
 	signal?: AbortSignal;
 };
 
-const pushKeyPair = async (
-	keyPair: CryptoKeyPair,
-	context: FetchUserKeyPairContext,
-): Promise<void> => {
+const pushKeyPair = async (keyPair: CryptoKeyPair, context: FetchUserKeyPairContext): Promise<void> => {
 	const { uid, onGenerateRandomPassword, signal } = context;
 
 	const password = generateRandomPassword();
@@ -43,13 +37,9 @@ const pushKeyPair = async (
 	onGenerateRandomPassword(password);
 };
 
-const pullKeyPair = async (
-	remoteKeyPair: RemoteKeyPair,
-	context: FetchUserKeyPairContext,
-): Promise<CryptoKeyPair> =>
+const pullKeyPair = async (remoteKeyPair: RemoteKeyPair, context: FetchUserKeyPairContext): Promise<CryptoKeyPair> =>
 	new Promise((resolve) => {
-		const { uid, onDecryptingRemoteKeyPair, onPromptingForPassword, onFailureToDecrypt, signal } =
-			context;
+		const { uid, onDecryptingRemoteKeyPair, onPromptingForPassword, onFailureToDecrypt, signal } = context;
 
 		const states = {
 			informingKeyDecryption(): void {
@@ -103,9 +93,7 @@ const pullKeyPair = async (
 /**
  * @return the user key pair
  */
-export const fetchUserKeyPair = async (
-	context: FetchUserKeyPairContext,
-): Promise<CryptoKeyPair> => {
+export const fetchUserKeyPair = async (context: FetchUserKeyPairContext): Promise<CryptoKeyPair> => {
 	const { signal } = context;
 
 	const keyPair = await fetchKeyPair(signal);

@@ -70,10 +70,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 								<Box
 									key={step}
 									is='li'
-									className={[
-										'SetupWizard__SideBar-step',
-										step < currentStep && 'SetupWizard__SideBar-step--past',
-									]
+									className={['SetupWizard__SideBar-step', step < currentStep && 'SetupWizard__SideBar-step--past']
 										.filter(Boolean)
 										.join(' ')}
 									data-number={step}
@@ -82,11 +79,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 									display='flex'
 									alignItems='center'
 									fontScale='p2m'
-									color={
-										(step === currentStep && 'primary') ||
-										(step < currentStep && 'default') ||
-										'disabled'
-									}
+									color={(step === currentStep && 'primary') || (step < currentStep && 'default') || 'disabled'}
 									style={{ position: 'relative' }}
 								>
 									{title}

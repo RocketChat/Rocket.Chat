@@ -11,13 +11,10 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
-export const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${baseName}_trash`);
 try {
 	trash._ensureIndex({ __collection__: 1 });
-	trash._ensureIndex(
-		{ _deletedAt: 1 },
-		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
-	);
+	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
@@ -63,15 +60,10 @@ export class BaseDbWatch extends EventEmitter {
 				`);
 			}
 
-			_oplogHandle.onOplogEntry(
-				query,
-				this.processOplogRecord.bind(this),
-			);
+			_oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
 			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
 			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				_oplogHandle._defineTooFarBehind(
-					Number.MAX_SAFE_INTEGER,
-				);
+				_oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
 			}
 		};
 
@@ -150,7 +142,6 @@ export class BaseDbWatch extends EventEmitter {
 	}
 }
 
-
 export class BaseDb extends BaseDbWatch {
 	constructor(model, baseModel, options = {}) {
 		const collectionName = Match.test(model, String) ? baseName + model : model._name;
@@ -207,15 +198,15 @@ export class BaseDb extends BaseDbWatch {
 		};
 		const self = this;
 
-		this.model.insert = function(...args) {
+		this.model.insert = function (...args) {
 			return self.insert(...args);
 		};
 
-		this.model.update = function(...args) {
+		this.model.update = function (...args) {
 			return self.update(...args);
 		};
 
-		this.model.remove = function(...args) {
+		this.model.remove = function (...args) {
 			return self.remove(...args);
 		};
 	}
@@ -278,10 +269,7 @@ export class BaseDb extends BaseDbWatch {
 
 	updateHasPositionalOperator(update) {
 		return Object.keys(update).some(
-			(key) =>
-				key.includes('.$')
-				|| (Match.test(update[key], Object)
-					&& this.updateHasPositionalOperator(update[key])),
+			(key) => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])),
 		);
 	}
 

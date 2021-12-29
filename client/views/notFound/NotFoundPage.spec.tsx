@@ -16,12 +16,8 @@ describe('views/notFound/NotFoundPage', () => {
 				name: 'Sorry_page_you_requested_does_not_exist_or_was_deleted',
 			}),
 		).to.exist;
-		expect(
-			screen.getByRole('button', { name: 'Return_to_previous_page' }),
-		).to.exist.and.to.not.match(':disabled');
-		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.exist.and.to.not.match(
-			':disabled',
-		);
+		expect(screen.getByRole('button', { name: 'Return_to_previous_page' })).to.exist.and.to.not.match(':disabled');
+		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.exist.and.to.not.match(':disabled');
 	});
 
 	it('should have correct tab order', () => {

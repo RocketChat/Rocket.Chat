@@ -47,7 +47,7 @@ class MessageBoxActions {
 	getById(id) {
 		const messageActions = this.actions;
 		let actions = [];
-		Object.keys(messageActions).forEach(function(action) {
+		Object.keys(messageActions).forEach(function (action) {
 			actions = actions.concat(messageActions[action]);
 		});
 

@@ -16,17 +16,10 @@ const AutoCompleteDepartmentMultiple = (props) => {
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }),
-			[debouncedDepartmentsFilter, onlyMyDepartments],
-		),
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }), [debouncedDepartmentsFilter, onlyMyDepartments]),
 	);
 
-	const {
-		phase: departmentsPhase,
-		items: departmentsItems,
-		itemCount: departmentsTotal,
-	} = useRecordList(departmentsList);
+	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const sortedByName = departmentsItems.sort((a, b) => {
 		if (a.name > b.name) {
@@ -52,9 +45,7 @@ const AutoCompleteDepartmentMultiple = (props) => {
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING
-					? () => {}
-					: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+				departmentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
 			}
 		/>
 	);

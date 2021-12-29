@@ -14,12 +14,8 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 		if (e2ee.isReady()) {
 			detachKeyRequestHandler = e2ee.watchKeyRequests();
 			detachSubscriptionWatcher = e2ee.watchSubscriptions();
-			detachMessageReceivedTransform = onClientMessageReceived.use((msg) =>
-				e2ee.transformReceivedMessage(msg),
-			);
-			detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) =>
-				e2ee.transformSendingMessage(msg),
-			);
+			detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2ee.transformReceivedMessage(msg));
+			detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) => e2ee.transformSendingMessage(msg));
 			return;
 		}
 

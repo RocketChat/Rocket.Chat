@@ -17,11 +17,7 @@ function AdministrationRouter({ renderRoute }) {
 	return (
 		<AdministrationLayout>
 			<SettingsProvider privileged>
-				{renderRoute ? (
-					<Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense>
-				) : (
-					<PageSkeleton />
-				)}
+				{renderRoute ? <Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense> : <PageSkeleton />}
 			</SettingsProvider>
 		</AdministrationLayout>
 	);

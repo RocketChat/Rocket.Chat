@@ -3,7 +3,11 @@ import { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
 
 const status = 'online';
 
-export async function newConnection(uid: string, session: string, context?: IServiceContext): Promise<{uid: string; connectionId: string} | undefined> {
+export async function newConnection(
+	uid: string,
+	session: string,
+	context?: IServiceContext,
+): Promise<{ uid: string; connectionId: string } | undefined> {
 	const instanceId = context?.nodeID;
 
 	if (!instanceId) {
@@ -15,7 +19,6 @@ export async function newConnection(uid: string, session: string, context?: ISer
 	};
 
 	const now = new Date();
-
 
 	const update = {
 		$push: {

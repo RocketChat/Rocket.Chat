@@ -80,17 +80,11 @@ export type Method = Operations['method'];
 
 export type Path = Operations['path'];
 
-export type MethodFor<TPath extends Path> = TPath extends any
-	? Extract<Operations, { path: TPath }>['method']
-	: never;
+export type MethodFor<TPath extends Path> = TPath extends any ? Extract<Operations, { path: TPath }>['method'] : never;
 
-export type PathFor<TMethod extends Method> = TMethod extends any
-	? Extract<Operations, { method: TMethod }>['path']
-	: never;
+export type PathFor<TMethod extends Method> = TMethod extends any ? Extract<Operations, { method: TMethod }>['path'] : never;
 
-export type MatchPathPattern<TPath extends Path> = TPath extends any
-	? Extract<Operations, { path: TPath }>['pathPattern']
-	: never;
+export type MatchPathPattern<TPath extends Path> = TPath extends any ? Extract<Operations, { path: TPath }>['pathPattern'] : never;
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
 	PathPattern,
@@ -103,21 +97,13 @@ type GetParams<TOperation> = TOperation extends (...args: any) => any
 		: Parameters<TOperation>[0]
 	: never;
 
-type GetResult<TOperation> = TOperation extends (...args: any) => any
-	? ReturnType<TOperation>
-	: never;
+type GetResult<TOperation> = TOperation extends (...args: any) => any ? ReturnType<TOperation> : never;
 
-export type OperationParams<
-	TMethod extends Method,
-	TPathPattern extends PathPattern,
-> = TMethod extends keyof Endpoints[TPathPattern]
+export type OperationParams<TMethod extends Method, TPathPattern extends PathPattern> = TMethod extends keyof Endpoints[TPathPattern]
 	? GetParams<Endpoints[TPathPattern][TMethod]>
 	: never;
 
-export type OperationResult<
-	TMethod extends Method,
-	TPathPattern extends PathPattern,
-> = TMethod extends keyof Endpoints[TPathPattern]
+export type OperationResult<TMethod extends Method, TPathPattern extends PathPattern> = TMethod extends keyof Endpoints[TPathPattern]
 	? GetResult<Endpoints[TPathPattern][TMethod]>
 	: never;
 
@@ -129,6 +115,4 @@ export type UrlParams<T extends string> = string extends T
 	? { [k in Param]: string }
 	: {};
 
-export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any
-	? keyof Endpoints[TPathPattern]
-	: never;
+export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
