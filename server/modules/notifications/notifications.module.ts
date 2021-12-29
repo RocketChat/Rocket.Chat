@@ -73,31 +73,26 @@ export class NotificationsModule {
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
-		this.streamRoomMessage.on(
-			'_afterPublish',
-			async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
-				const { userId } = publication._session;
-				if (!userId) {
-					return;
+		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+			const { userId } = publication._session;
+			if (!userId) {
+				return;
+			}
+
+			const userEvent = (clientAction: string, { rid }: { rid: string }): void => {
+				switch (clientAction) {
+					case 'removed':
+						streamer.removeListener(userId, userEvent);
+						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+						sub && streamer.removeSubscription(sub, eventName);
+						break;
 				}
+			};
 
-				const userEvent = (clientAction: string, { rid }: { rid: string }): void => {
-					switch (clientAction) {
-						case 'removed':
-							streamer.removeListener(userId, userEvent);
-							const sub = [...streamer.subscriptions].find(
-								(sub) => sub.eventName === rid && sub.subscription.userId === userId,
-							);
-							sub && streamer.removeSubscription(sub, eventName);
-							break;
-					}
-				};
+			streamer.on(userId, userEvent);
 
-				streamer.on(userId, userEvent);
-
-				publication.onStop(() => streamer.removeListener(userId, userEvent));
-			},
-		);
+			publication.onStop(() => streamer.removeListener(userId, userEvent));
+		});
 
 		this.streamUser = new this.Streamer('notify-user');
 
@@ -114,11 +109,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			const canAccess = await Authorization.canAccessRoom(
-				room,
-				{ _id: this.userId || '' },
-				extraData,
-			);
+			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
 			if (!canAccess) {
 				// verify if can preview messages from public channels
 				if (room.t === 'c' && this.userId) {
@@ -246,12 +237,7 @@ export class NotificationsModule {
 		}
 
 		const { streamRoom } = this;
-		this.streamRoom.allowWrite(async function (
-			eventName,
-			username,
-			_activity,
-			extraData,
-		): Promise<boolean> {
+		this.streamRoom.allowWrite(async function (eventName, username, _activity, extraData): Promise<boolean> {
 			const [rid, e] = eventName.split('/');
 
 			// TODO should this use WEB_RTC_EVENTS enum?
@@ -271,19 +257,10 @@ export class NotificationsModule {
 
 			// DEPRECATED
 			// Keep compatibility between old and new events
-			if (
-				e === 'user-activity' &&
-				Array.isArray(_activity) &&
-				(_activity.length === 0 || _activity.includes('user-typing'))
-			) {
+			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
 				streamRoom.emit(`${rid}/typing`, username, _activity.includes('user-typing'));
 			} else if (e === 'typing') {
-				streamRoom.emit(
-					`${rid}/user-activity`,
-					username,
-					_activity ? ['user-typing'] : [],
-					extraData,
-				);
+				streamRoom.emit(`${rid}/user-activity`, username, _activity ? ['user-typing'] : [], extraData);
 			}
 
 			return true;
@@ -301,21 +278,16 @@ export class NotificationsModule {
 					return false;
 				}
 			} else if ((await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
-				const livechatSubscriptions: ISubscription[] =
-					await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, {
-						projection: { 'v._id': 1, '_id': 0 },
-					}).toArray();
+				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, {
+					projection: { 'v._id': 1, '_id': 0 },
+				}).toArray();
 				if (livechatSubscriptions && e === 'webrtc') {
-					livechatSubscriptions.forEach(
-						(subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args),
-					);
+					livechatSubscriptions.forEach((subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args));
 					return false;
 				}
-				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(
-					roomId,
-					this.userId,
-					{ projection: { 'u._id': 1, '_id': 0 } },
-				).toArray();
+				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
+					projection: { 'u._id': 1, '_id': 0 },
+				}).toArray();
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
@@ -367,10 +339,7 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
-			return Authorization.hasAtLeastOnePermission(this.userId, [
-				'manage-outgoing-integrations',
-				'manage-own-outgoing-integrations',
-			]);
+			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
 		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
@@ -428,66 +397,60 @@ export class NotificationsModule {
 		this.streamRoles.allowWrite('none');
 		this.streamRoles.allowRead('logged');
 
-		this.streamUser.on(
-			'_afterPublish',
-			async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
-				const { userId } = publication._session;
-				if (!userId) {
-					return;
-				}
+		this.streamUser.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+			const { userId } = publication._session;
+			if (!userId) {
+				return;
+			}
 
-				if (/rooms-changed/.test(eventName)) {
-					// TODO: change this to serialize only once
-					const roomEvent = (...args: any[]): void => {
-						// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
-						const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
-							eventName: `${userId}/rooms-changed`,
-							args,
-						});
-
-						payload && publication._session.socket?.send(payload);
-					};
-
-					const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
-						{ 'u._id': userId },
-						{ projection: { rid: 1 } },
-					).toArray();
-
-					subscriptions.forEach(({ rid }) => {
-						streamer.on(rid, roomEvent);
+			if (/rooms-changed/.test(eventName)) {
+				// TODO: change this to serialize only once
+				const roomEvent = (...args: any[]): void => {
+					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
+					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
+						eventName: `${userId}/rooms-changed`,
+						args,
 					});
 
-					const userEvent = async (
-						clientAction: string,
-						{ rid }: Partial<ISubscription> = {},
-					): Promise<void> => {
-						if (!rid) {
-							return;
-						}
+					payload && publication._session.socket?.send(payload);
+				};
 
-						switch (clientAction) {
-							case 'inserted':
-								subscriptions.push({ rid });
-								streamer.on(rid, roomEvent);
+				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
+					{ 'u._id': userId },
+					{ projection: { rid: 1 } },
+				).toArray();
 
-								// after a subscription is added need to emit the room again
-								roomEvent('inserted', await Rooms.findOneById(rid));
-								break;
+				subscriptions.forEach(({ rid }) => {
+					streamer.on(rid, roomEvent);
+				});
 
-							case 'removed':
-								streamer.removeListener(rid, roomEvent);
-								break;
-						}
-					};
-					streamer.on(userId, userEvent);
+				const userEvent = async (clientAction: string, { rid }: Partial<ISubscription> = {}): Promise<void> => {
+					if (!rid) {
+						return;
+					}
 
-					publication.onStop(() => {
-						streamer.removeListener(userId, userEvent);
-						subscriptions.forEach(({ rid }) => streamer.removeListener(rid, roomEvent));
-					});
-				}
-			},
-		);
+					switch (clientAction) {
+						case 'inserted':
+							subscriptions.push({ rid });
+							streamer.on(rid, roomEvent);
+
+							// after a subscription is added need to emit the room again
+							roomEvent('inserted', await Rooms.findOneById(rid));
+							break;
+
+						case 'removed':
+							streamer.removeListener(rid, roomEvent);
+							break;
+					}
+				};
+				streamer.on(userId, userEvent);
+
+				publication.onStop(() => {
+					streamer.removeListener(userId, userEvent);
+					subscriptions.forEach(({ rid }) => streamer.removeListener(rid, roomEvent));
+				});
+			}
+		});
 
 		this.streamLocal.serverOnly = true;
 		this.streamLocal.allowRead('none');

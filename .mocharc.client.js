@@ -22,11 +22,7 @@ Object.assign(
 
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
-	require: [
-		...base.require,
-		'./tests/setup/registerWebApiMocks.ts',
-		'./tests/setup/cleanupTestingLibrary.ts',
-	],
+	require: [...base.require, './tests/setup/registerWebApiMocks.ts', './tests/setup/cleanupTestingLibrary.ts'],
 	exit: false,
 	slow: 200,
 	spec: ['client/**/*.spec.ts', 'client/**/*.spec.tsx'],

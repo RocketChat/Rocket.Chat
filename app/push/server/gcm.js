@@ -3,13 +3,7 @@ import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
 
-export const sendGCM = function ({
-	userTokens,
-	notification,
-	_replaceToken,
-	_removeToken,
-	options,
-}) {
+export const sendGCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }) {
 	if (typeof notification.gcm === 'object') {
 		notification = Object.assign({}, notification, notification.gcm);
 	}

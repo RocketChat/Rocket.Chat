@@ -13,12 +13,7 @@ export const setRoomAvatar = async function (rid, dataURI, user) {
 
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-			'room_changed_avatar',
-			rid,
-			'',
-			user,
-		);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 		api.broadcast('room.avatarUpdate', { _id: rid });
 
 		return Rooms.unsetAvatarData(rid);
@@ -45,12 +40,7 @@ export const setRoomAvatar = async function (rid, dataURI, user) {
 				fileStore.deleteById(current._id);
 			}
 			Rooms.setAvatarData(rid, 'upload', result.etag);
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-				'room_changed_avatar',
-				rid,
-				'',
-				user,
-			);
+			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 			api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);
 	});

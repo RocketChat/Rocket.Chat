@@ -31,10 +31,7 @@ async function afterCreateDirectRoom(room, extras) {
 		const normalizedRoom = normalizers.normalizeRoom(room);
 
 		// Ensure a genesis event for this room
-		const genesisEvent = await FederationRoomEvents.createGenesisEvent(
-			getFederationDomain(),
-			normalizedRoom,
-		);
+		const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
 		const events = await Promise.all(
 			extras.members.map((member) => {

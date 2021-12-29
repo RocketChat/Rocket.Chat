@@ -42,11 +42,7 @@ export class AppUploadBridge extends UploadBridge {
 		});
 	}
 
-	protected async createUpload(
-		details: IUploadDetails,
-		buffer: Buffer,
-		appId: string,
-	): Promise<IUpload> {
+	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
 		this.orch.debugLog(`The App ${appId} is creating an upload "${details.name}"`);
 
 		if (!details.userId && !details.visitorToken) {
@@ -64,12 +60,7 @@ export class AppUploadBridge extends UploadBridge {
 						const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
 						this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
 						if (details.visitorToken) {
-							Meteor.call(
-								'sendFileLivechatMessage',
-								details.rid,
-								details.visitorToken,
-								uploadedFile,
-							);
+							Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
 						} else {
 							Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
 						}

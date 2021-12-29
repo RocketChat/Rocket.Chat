@@ -222,11 +222,7 @@ export class AppMessagesConverter {
 				return { name, link, icon };
 			},
 			title: (attachment) => {
-				const {
-					title: value,
-					title_link: link,
-					title_link_download: displayDownloadLink,
-				} = attachment;
+				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
 				delete attachment.title_link;

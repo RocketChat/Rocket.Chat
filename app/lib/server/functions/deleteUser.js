@@ -7,10 +7,7 @@ import { FederationServers, Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import {
-	getSubscribedRoomsForUserWithDetails,
-	shouldRemoveOrChangeOwner,
-} from './getRoomsWithSingleOwner';
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
 

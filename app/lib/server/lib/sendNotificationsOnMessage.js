@@ -44,12 +44,7 @@ export const sendNotification = async ({
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
-	if (
-		!hasMentionToUser &&
-		!hasReplyToThread &&
-		subscription.muteGroupMentions &&
-		(hasMentionToAll || hasMentionToHere)
-	) {
+	if (!hasMentionToUser && !hasReplyToThread && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
 	}
 
@@ -250,17 +245,13 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
 	const roomMembersCount = Subscriptions.findByRoomId(room._id).count();
-	const disableAllMessageNotifications =
-		roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
+	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
-		$or: [
-			{ 'userHighlights.0': { $exists: 1 } },
-			...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : []),
-		],
+		$or: [{ 'userHighlights.0': { $exists: 1 } }, ...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [])],
 	};
 
 	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
@@ -289,8 +280,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${serverField}`);
 		if (
 			(room.t === 'd' && serverPreference !== 'nothing') ||
-			(!disableAllMessageNotifications &&
-				(serverPreference === 'all' || hasMentionToAll || hasMentionToHere))
+			(!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))
 		) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
@@ -358,14 +348,8 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	const {
-		sender,
-		hasMentionToAll,
-		hasMentionToHere,
-		notificationMessage,
-		mentionIds,
-		mentionIdsWithoutGroups,
-	} = await sendMessageNotifications(message, room);
+	const { sender, hasMentionToAll, hasMentionToHere, notificationMessage, mentionIds, mentionIdsWithoutGroups } =
+		await sendMessageNotifications(message, room);
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {

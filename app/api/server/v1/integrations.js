@@ -63,12 +63,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			if (
-				!hasAtLeastOnePermission(this.userId, [
-					'manage-outgoing-integrations',
-					'manage-own-outgoing-integrations',
-				])
-			) {
+			if (!hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
 				return API.v1.unauthorized();
 			}
 
@@ -79,10 +74,7 @@ API.v1.addRoute(
 			const { id } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
-			const ourQuery = Object.assign(
-				mountIntegrationHistoryQueryBasedOnPermissions(this.userId, id),
-				query,
-			);
+			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, id), query);
 
 			const cursor = IntegrationHistory.find(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
@@ -180,9 +172,7 @@ API.v1.addRoute(
 					if (this.bodyParams.target_url) {
 						integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
 					} else if (this.bodyParams.integrationId) {
-						integration = Promise.await(
-							Integrations.findOne({ _id: this.bodyParams.integrationId }),
-						);
+						integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
 					}
 
 					if (!integration) {
@@ -274,9 +264,7 @@ API.v1.addRoute(
 					if (this.bodyParams.target_url) {
 						integration = Promise.await(Integrations.findOne({ urls: this.bodyParams.target_url }));
 					} else if (this.bodyParams.integrationId) {
-						integration = Promise.await(
-							Integrations.findOne({ _id: this.bodyParams.integrationId }),
-						);
+						integration = Promise.await(Integrations.findOne({ _id: this.bodyParams.integrationId }));
 					}
 
 					if (!integration) {

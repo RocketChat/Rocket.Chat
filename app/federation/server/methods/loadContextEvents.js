@@ -15,9 +15,6 @@ Meteor.methods({
 			});
 		}
 
-		return FederationRoomEvents.find(
-			{ timestamp: { $gt: new Date(latestEventTimestamp) } },
-			{ sort: { timestamp: 1 } },
-		).fetch();
+		return FederationRoomEvents.find({ timestamp: { $gt: new Date(latestEventTimestamp) } }, { sort: { timestamp: 1 } }).fetch();
 	},
 });

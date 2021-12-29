@@ -110,9 +110,7 @@ export class MediaService extends ServiceClass implements IMediaService {
 	private streamToBuffer(stream: stream.Stream): Promise<Buffer> {
 		return new Promise((resolve) => {
 			const chunks: Array<Buffer> = [];
-			stream
-				.on('data', (data) => chunks.push(data))
-				.on('end', () => resolve(Buffer.concat(chunks)));
+			stream.on('data', (data) => chunks.push(data)).on('end', () => resolve(Buffer.concat(chunks)));
 		});
 	}
 }

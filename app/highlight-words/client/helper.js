@@ -6,10 +6,7 @@ export const removeHighlightedUrls = (msg, highlight, urlMatches) => {
 	const highlightRegex = new RegExp(highlight, 'gmi');
 
 	return urlMatches.reduce((msg, match) => {
-		const withTemplate = match.replace(
-			highlightRegex,
-			`<span class="highlight-text">${highlight}</span>`,
-		);
+		const withTemplate = match.replace(highlightRegex, `<span class="highlight-text">${highlight}</span>`);
 		const regexWithTemplate = new RegExp(withTemplate, 'i');
 		return msg.replace(regexWithTemplate, match);
 	}, msg);
@@ -19,9 +16,7 @@ const highlightTemplate = '$1<span class="highlight-text">$2</span>$3';
 
 export const getRegexHighlight = (highlight) =>
 	new RegExp(
-		`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${escapeRegExp(
-			highlight,
-		)})($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`,
+		`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${escapeRegExp(highlight)})($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`,
 		'gmi',
 	);
 

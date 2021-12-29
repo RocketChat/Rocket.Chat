@@ -8,10 +8,7 @@ Meteor.methods({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
 
-		if (
-			hasPermission(this.userId, 'manage-outgoing-integrations') ||
-			hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')
-		) {
+		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
 			integration = await Integrations.findOneById(integrationId);
 		} else if (
 			hasPermission(this.userId, 'manage-own-outgoing-integrations') ||
@@ -33,10 +30,7 @@ Meteor.methods({
 			});
 		}
 
-		const history = await IntegrationHistory.findOneByIntegrationIdAndHistoryId(
-			integration._id,
-			historyId,
-		);
+		const history = await IntegrationHistory.findOneByIntegrationIdAndHistoryId(integration._id, historyId);
 
 		if (!history) {
 			throw new Meteor.Error('error-invalid-integration-history', 'Invalid Integration History', {

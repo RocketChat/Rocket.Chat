@@ -1,10 +1,7 @@
 import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import {
-	ILivechatBusinessHour,
-	LivechatBusinessHourTypes,
-} from '../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
 export interface IWorkHoursCronJobsItem {
 	day: string;
@@ -33,10 +30,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
-	findActiveAndOpenBusinessHoursByDay(
-		day: string,
-		options?: any,
-	): Promise<ILivechatBusinessHour[]> {
+	findActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
 		return this.find(
 			{
 				active: true,
@@ -51,10 +45,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 		).toArray();
 	}
 
-	findDefaultActiveAndOpenBusinessHoursByDay(
-		day: string,
-		options?: any,
-	): Promise<ILivechatBusinessHour[]> {
+	findDefaultActiveAndOpenBusinessHoursByDay(day: string, options?: any): Promise<ILivechatBusinessHour[]> {
 		return this.find(
 			{
 				type: LivechatBusinessHourTypes.DEFAULT,

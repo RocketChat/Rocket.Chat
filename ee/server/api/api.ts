@@ -5,12 +5,8 @@ import { isEnterprise } from '../../app/license/server/license';
 // Overwrites two factor method to enforce 2FA check for enterprise APIs when
 // no license was provided to prevent abuse on enterprise APIs.
 
-export const isNonEnterpriseTwoFactorOptions = (
-	options?: Options,
-): options is NonEnterpriseTwoFactorOptions =>
-	!!options &&
-	'forceTwoFactorAuthenticationForNonEnterprise' in options &&
-	Boolean(options.forceTwoFactorAuthenticationForNonEnterprise);
+export const isNonEnterpriseTwoFactorOptions = (options?: Options): options is NonEnterpriseTwoFactorOptions =>
+	!!options && 'forceTwoFactorAuthenticationForNonEnterprise' in options && Boolean(options.forceTwoFactorAuthenticationForNonEnterprise);
 
 API.v1.processTwoFactor = use(API.v1.processTwoFactor, function ([params, ...context], next) {
 	if (isNonEnterpriseTwoFactorOptions(params.options) && !isEnterprise()) {

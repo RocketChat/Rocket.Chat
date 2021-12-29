@@ -1,19 +1,11 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) =>
-	`${prefix}<a class="${className}" data-${type}="${mention}"${
-		title ? ` title="${title}"` : ''
-	}>${label}</a>`;
+	`${prefix}<a class="${className}" data-${type}="${mention}"${title ? ` title="${title}"` : ''}>${label}</a>`;
 const roomTemplateDefault = ({ prefix, reference, mention }) =>
 	`${prefix}<a class="mention-link mention-link--room" data-channel="${reference}">${`#${mention}`}</a>`;
 export class MentionsParser {
-	constructor({
-		pattern,
-		useRealName,
-		me,
-		roomTemplate = roomTemplateDefault,
-		userTemplate = userTemplateDefault,
-	}) {
+	constructor({ pattern, useRealName, me, roomTemplate = roomTemplateDefault, userTemplate = userTemplateDefault }) {
 		this.pattern = pattern;
 		this.useRealName = useRealName;
 		this.me = me;
@@ -83,10 +75,7 @@ export class MentionsParser {
 
 			const label = temp
 				? mention && escapeHTML(mention)
-				: mentionObj &&
-				  escapeHTML(
-						mentionObj.type === 'team' || this.useRealName ? mentionObj.name : mentionObj.username,
-				  );
+				: mentionObj && escapeHTML(mentionObj.type === 'team' || this.useRealName ? mentionObj.name : mentionObj.username);
 
 			if (!label) {
 				return match;

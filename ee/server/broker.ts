@@ -154,8 +154,7 @@ class NetworkBroker implements IBroker {
 			actions: {},
 			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
 				if (this.isEventWhitelisted(eventName)) {
-					map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): void =>
-						instance.emit(eventName, ...data);
+					map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): void => instance.emit(eventName, ...data);
 					return map;
 				}
 
@@ -221,20 +220,14 @@ class NetworkBroker implements IBroker {
 		this.broker.createService(service);
 	}
 
-	async broadcast<T extends keyof EventSignatures>(
-		event: T,
-		...args: Parameters<EventSignatures[T]>
-	): Promise<void> {
+	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		if (!(this.isEventWhitelisted(event) || (await this.allowed))) {
 			return this.localBroker.broadcast(event, ...args);
 		}
 		return this.broker.broadcast(event, args);
 	}
 
-	async broadcastLocal<T extends keyof EventSignatures>(
-		event: T,
-		...args: Parameters<EventSignatures[T]>
-	): Promise<void> {
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.broker.broadcastLocal(event, args);
 	}
 

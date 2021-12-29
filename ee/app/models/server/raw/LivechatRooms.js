@@ -18,9 +18,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 		const query = {
 			_id,
 		};
-		const update = departmentAncestors
-			? { $set: { departmentAncestors } }
-			: { $unset: { departmentAncestors: 1 } };
+		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
 		return this.update(query, update);
 	},
 });

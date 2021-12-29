@@ -131,9 +131,7 @@ slashCommands.add(
 							elements: [
 								{
 									type: 'mrkdwn',
-									text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${
-										room.email.subject
-									}`,
+									text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
 								},
 							],
 						},
@@ -231,9 +229,7 @@ callbacks.add(
 				elements: [
 					{
 						type: 'mrkdwn',
-						text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${
-							room.email.subject
-						}`,
+						text: `**${t('To')}:** ${room.email.replyTo}\n**${t('Subject')}:** ${room.email.subject}`,
 					},
 				],
 			},
@@ -261,10 +257,7 @@ callbacks.add(
 	'ReplyEmail',
 );
 
-export async function sendTestEmailToInbox(
-	emailInboxRecord: IEmailInbox,
-	user: IUser,
-): Promise<void> {
+export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: IUser): Promise<void> {
 	const inbox = inboxes.get(emailInboxRecord.email);
 
 	if (!inbox) {

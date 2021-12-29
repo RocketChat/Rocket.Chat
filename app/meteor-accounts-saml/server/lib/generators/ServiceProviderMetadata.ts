@@ -1,10 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	defaultIdentifierFormat,
-	defaultMetadataCertificateTemplate,
-	defaultMetadataTemplate,
-} from '../constants';
+import { defaultIdentifierFormat, defaultMetadataCertificateTemplate, defaultMetadataTemplate } from '../constants';
 import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { IMetadataVariables } from '../../definition/IMetadataVariables';
@@ -26,9 +22,7 @@ export class ServiceProviderMetadata {
 		}
 
 		if (!serviceProviderOptions.privateCert) {
-			throw new Error(
-				'Missing certificate while generating metadata for decrypting service provider',
-			);
+			throw new Error('Missing certificate while generating metadata for decrypting service provider');
 		}
 
 		return serviceProviderOptions.metadataCertificateTemplate || defaultMetadataCertificateTemplate;
@@ -45,9 +39,7 @@ export class ServiceProviderMetadata {
 
 	private static getData(serviceProviderOptions: IServiceProviderOptions): IMetadataVariables {
 		if (!serviceProviderOptions.callbackUrl) {
-			throw new Error(
-				'Unable to generate service provider metadata when callbackUrl option is not set',
-			);
+			throw new Error('Unable to generate service provider metadata when callbackUrl option is not set');
 		}
 
 		return {

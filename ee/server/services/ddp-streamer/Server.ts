@@ -32,12 +32,7 @@ export class Server extends EventEmitter {
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._methods.has(packet.method)) {
-				const result = await MeteorService.callMethodWithToken(
-					client.userId,
-					client.userToken,
-					packet.method,
-					packet.params,
-				);
+				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
 				if (result?.result) {
 					return this.result(client, packet, result.result);
 				}

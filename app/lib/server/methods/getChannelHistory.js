@@ -9,16 +9,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
 Meteor.methods({
-	getChannelHistory({
-		rid,
-		latest,
-		oldest,
-		inclusive,
-		offset = 0,
-		count = 20,
-		unreads,
-		showThreadMessages = true,
-	}) {
+	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {

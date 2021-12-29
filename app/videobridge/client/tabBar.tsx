@@ -22,13 +22,9 @@ addAction('bbb_video', ({ room }) => {
 	const enabledTeams = useSetting('bigbluebutton_enable_teams');
 
 	const groups = useStableArray(
-		[
-			enabledDirect && 'direct',
-			'direct_multiple',
-			enabledGroup && 'group',
-			enabledTeams && 'team',
-			enabledChannel && 'channel',
-		].filter(Boolean) as ToolboxActionConfig['groups'],
+		[enabledDirect && 'direct', 'direct_multiple', enabledGroup && 'group', enabledTeams && 'team', enabledChannel && 'channel'].filter(
+			Boolean,
+		) as ToolboxActionConfig['groups'],
 	);
 	const user = useUser();
 	const username = user ? user.username : '';
@@ -77,14 +73,9 @@ addAction('video', ({ room }) => {
 	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
 
 	const groups = useStableArray(
-		[
-			'direct',
-			'direct_multiple',
-			'group',
-			enabledLiveChat && 'live',
-			enabledTeams && 'team',
-			enabledChannel && 'channel',
-		].filter(Boolean) as ToolboxActionConfig['groups'],
+		['direct', 'direct_multiple', 'group', enabledLiveChat && 'live', enabledTeams && 'team', enabledChannel && 'channel'].filter(
+			Boolean,
+		) as ToolboxActionConfig['groups'],
 	);
 
 	const currentTime = new Date().getTime();

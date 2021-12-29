@@ -48,9 +48,8 @@ type UIKitUserInteractionResultError = UIKitUserInteraction & {
 	errors?: Array<{ [key: string]: string }>;
 };
 
-export const isErrorType = (
-	result: UIKitUserInteractionResult,
-): result is UIKitUserInteractionResultError => result.type === UIKitInteractionTypeApi.ERRORS;
+export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError =>
+	result.type === UIKitInteractionTypeApi.ERRORS;
 
 export type UIKitActionEvent = {
 	blockId: string;

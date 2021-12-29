@@ -118,16 +118,12 @@ export class LDAPManager {
 
 	protected static getConverterOptions(): IConverterOptions {
 		return {
-			flagEmailsAsVerified:
-				settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
+			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
 		};
 	}
 
-	protected static mapUserData(
-		ldapUser: ILDAPEntry,
-		usedUsername?: string | undefined,
-	): IImportUser {
+	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined): IImportUser {
 		const uniqueId = this.getLdapUserUniqueID(ldapUser);
 		if (!uniqueId) {
 			throw new Error('Failed to generate unique identifier for ldap entry');
@@ -160,11 +156,7 @@ export class LDAPManager {
 		callbacks.run('mapLDAPUserData', userData, ldapUser);
 	}
 
-	private static async findUser(
-		ldap: LDAPConnection,
-		username: string,
-		password: string,
-	): Promise<ILDAPEntry | undefined> {
+	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
 		const escapedUsername = ldapEscape.filter`${username}`;
 
 		try {
@@ -236,19 +228,9 @@ export class LDAPManager {
 		};
 	}
 
-	private static onLogin(
-		ldapUser: ILDAPEntry,
-		user: IUser,
-		password: string | undefined,
-		ldap: LDAPConnection,
-		isNewUser: boolean,
-	): void {
+	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
 		logger.debug('running onLDAPLogin');
-		if (
-			settings.get<boolean>('LDAP_Login_Fallback') &&
-			typeof password === 'string' &&
-			password.trim() !== ''
-		) {
+		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
 			Accounts.setPassword(user._id, password, { logout: false });
 		}
 
@@ -314,9 +296,7 @@ export class LDAPManager {
 	}
 
 	private static getLdapUserUniqueID(ldapUser: ILDAPEntry): ILDAPUniqueIdentifierField | undefined {
-		let uniqueIdentifierField: string | string[] | undefined = settings.get<string>(
-			'LDAP_Unique_Identifier_Field',
-		);
+		let uniqueIdentifierField: string | string[] | undefined = settings.get<string>('LDAP_Unique_Identifier_Field');
 
 		if (uniqueIdentifierField) {
 			uniqueIdentifierField = uniqueIdentifierField.replace(/\s/g, '').split(',');
@@ -324,8 +304,7 @@ export class LDAPManager {
 			uniqueIdentifierField = [];
 		}
 
-		let userSearchField: string | string[] | undefined =
-			getLDAPConditionalSetting<string>('LDAP_User_Search_Field');
+		let userSearchField: string | string[] | undefined = getLDAPConditionalSetting<string>('LDAP_User_Search_Field');
 
 		if (userSearchField) {
 			userSearchField = userSearchField.replace(/\s/g, '').split(',');
@@ -358,10 +337,7 @@ export class LDAPManager {
 		return ldapUser[key.trim()];
 	}
 
-	private static getLdapDynamicValue(
-		ldapUser: ILDAPEntry,
-		attributeSetting: string | undefined,
-	): string | undefined {
+	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string | undefined): string | undefined {
 		if (!attributeSetting) {
 			return;
 		}
@@ -444,10 +420,7 @@ export class LDAPManager {
 	}
 
 	// This method will find existing users by LDAP id or by username.
-	private static async findExistingUser(
-		ldapUser: ILDAPEntry,
-		slugifiedUsername: string,
-	): Promise<IUser | undefined> {
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
 		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;
@@ -456,10 +429,7 @@ export class LDAPManager {
 		return UsersRaw.findOneByUsername(slugifiedUsername);
 	}
 
-	private static fallbackToDefaultLogin(
-		username: LoginUsername,
-		password: string,
-	): LDAPLoginResult {
+	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {
 		if (typeof username === 'string') {
 			if (username.indexOf('@') === -1) {
 				username = { username };

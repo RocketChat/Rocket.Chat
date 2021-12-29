@@ -20,12 +20,7 @@ export const saveRoomAnnouncement = function (rid, roomAnnouncement, user, sendM
 
 	const updated = Rooms.setAnnouncementById(rid, message, announcementDetails);
 	if (updated && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-			'room_changed_announcement',
-			rid,
-			message,
-			user,
-		);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_announcement', rid, message, user);
 	}
 
 	return updated;

@@ -63,9 +63,7 @@ export const getSamlConfigs = function (service: string): Record<string, any> {
 	return configs;
 };
 
-export const configureSamlService = function (
-	samlConfigs: Record<string, any>,
-): IServiceProviderOptions {
+export const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
 	let privateKey = null;
 
@@ -155,30 +153,18 @@ export const addSettings = function (name: string): void {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Provider',
 				});
-				this.add(
-					`SAML_Custom_${name}_entry_point`,
-					'https://example.com/simplesaml/saml2/idp/SSOService.php',
-					{
-						type: 'string',
-						i18nLabel: 'SAML_Custom_Entry_point',
-					},
-				);
-				this.add(
-					`SAML_Custom_${name}_idp_slo_redirect_url`,
-					'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php',
-					{
-						type: 'string',
-						i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
-					},
-				);
-				this.add(
-					`SAML_Custom_${name}_issuer`,
-					'https://your-rocket-chat/_saml/metadata/provider-name',
-					{
-						type: 'string',
-						i18nLabel: 'SAML_Custom_Issuer',
-					},
-				);
+				this.add(`SAML_Custom_${name}_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
+					type: 'string',
+					i18nLabel: 'SAML_Custom_Entry_point',
+				});
+				this.add(`SAML_Custom_${name}_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
+					type: 'string',
+					i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
+				});
+				this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
+					type: 'string',
+					i18nLabel: 'SAML_Custom_Issuer',
+				});
 				this.add(`SAML_Custom_${name}_debug`, false, {
 					type: 'boolean',
 					i18nLabel: 'SAML_Custom_Debug',
@@ -302,16 +288,12 @@ export const addSettings = function (name: string): void {
 
 				this.section('SAML_Section_5_Mapping', function () {
 					// Data Mapping Settings
-					this.add(
-						`SAML_Custom_${name}_user_data_fieldmap`,
-						'{"username":"username", "email":"email", "name": "cn"}',
-						{
-							type: 'string',
-							i18nLabel: 'SAML_Custom_user_data_fieldmap',
-							i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
-							multiline: true,
-						},
-					);
+					this.add(`SAML_Custom_${name}_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
+						type: 'string',
+						i18nLabel: 'SAML_Custom_user_data_fieldmap',
+						i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+						multiline: true,
+					});
 				});
 			},
 		);

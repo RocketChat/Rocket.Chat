@@ -27,9 +27,7 @@ API.v1.addRoute(
 			}
 
 			if (room.lastMessage?.token) {
-				return API.v1.failure(
-					'You cannot place chat on-hold, when the Contact has sent the last message',
-				);
+				return API.v1.failure('You cannot place chat on-hold, when the Contact has sent the last message');
 			}
 
 			if (room.onHold) {

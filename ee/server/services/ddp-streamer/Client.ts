@@ -58,14 +58,9 @@ export class Client extends EventEmitter {
 
 		this.once('message', ({ msg }) => {
 			if (msg !== DDP_EVENTS.CONNECT) {
-				return this.ws.close(
-					WS_ERRORS.CLOSE_PROTOCOL_ERROR,
-					WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR,
-				);
+				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 			}
-			return this.send(
-				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }),
-			);
+			return this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }));
 		});
 
 		this.send(SERVER_ID);
@@ -127,15 +122,11 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(
-			server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }),
-		);
+		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
 
 	pong(id?: string): void {
-		this.send(
-			server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }),
-		);
+		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
 
 	handleIdle = (): void => {
@@ -153,9 +144,7 @@ export class Client extends EventEmitter {
 			const packet = server.parse(payload);
 			this.emit('message', packet);
 			if (this.wait) {
-				return new Promise((resolve) =>
-					this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))),
-				);
+				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {

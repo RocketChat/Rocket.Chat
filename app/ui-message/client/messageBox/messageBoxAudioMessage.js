@@ -68,9 +68,7 @@ Template.messageBoxAudioMessage.onCreated(async function () {
 	}
 
 	try {
-		if (
-			!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')
-		) {
+		if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
 			this.isMicrophoneDenied.set(true);
 			return;
 		}
@@ -93,10 +91,8 @@ Template.messageBoxAudioMessage.helpers({
 			!Template.instance().isMicrophoneDenied.get() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
-			(!settings.get('FileUpload_MediaTypeBlackList') ||
-				!settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i)) &&
-			(!settings.get('FileUpload_MediaTypeWhiteList') ||
-				settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i))
+			(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i)) &&
+			(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i))
 		);
 	},
 
@@ -133,9 +129,7 @@ Template.messageBoxAudioMessage.events({
 					const distance = (now.getTime() - startTime.getTime()) / 1000;
 					const minutes = Math.floor(distance / 60);
 					const seconds = Math.floor(distance % 60);
-					instance.time.set(
-						`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
-					);
+					instance.time.set(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
 				}, 1000),
 			);
 			recordingRoomId.set(this.rid);
@@ -160,10 +154,6 @@ Template.messageBoxAudioMessage.events({
 		const { rid, tmid } = this;
 		const blob = await cancelRecording(instance, rid, tmid);
 
-		await fileUpload(
-			[{ file: blob, type: 'video', name: `${t('Audio record')}.mp3` }],
-			{ input: blob },
-			{ rid, tmid },
-		);
+		await fileUpload([{ file: blob, type: 'video', name: `${t('Audio record')}.mp3` }], { input: blob }, { rid, tmid });
 	},
 });

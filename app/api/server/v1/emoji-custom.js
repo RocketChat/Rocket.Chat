@@ -16,18 +16,13 @@ API.v1.addRoute(
 			let updatedSinceDate;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error(
-						'error-roomId-param-invalid',
-						'The "updatedSince" query parameter must be a valid date.',
-					);
+					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 				} else {
 					updatedSinceDate = new Date(updatedSince);
 				}
 				return API.v1.success({
 					emojis: {
-						update: Promise.await(
-							EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).toArray(),
-						),
+						update: Promise.await(EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).toArray()),
 						remove: Promise.await(EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray()),
 					},
 				});
@@ -84,10 +79,7 @@ API.v1.addRoute(
 
 			const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
 			if (!isUploadable) {
-				throw new Meteor.Error(
-					'emoji-is-not-image',
-					"Emoji file provided cannot be uploaded since it's not an image",
-				);
+				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 			}
 
 			const [, extension] = emoji.mimetype.split('/');
@@ -132,10 +124,7 @@ API.v1.addRoute(
 			if (fields.newFile) {
 				const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
 				if (!isUploadable) {
-					throw new Meteor.Error(
-						'emoji-is-not-image',
-						"Emoji file provided cannot be uploaded since it's not an image",
-					);
+					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
 
 				const [, extension] = emoji.mimetype.split('/');

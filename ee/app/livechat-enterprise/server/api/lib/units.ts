@@ -49,26 +49,14 @@ export async function findUnits({
 	};
 }
 
-export async function findUnitMonitors({
-	userId,
-	unitId,
-}: {
-	userId: string;
-	unitId: string;
-}): Promise<ILivechatMonitor[]> {
+export async function findUnitMonitors({ userId, unitId }: { userId: string; unitId: string }): Promise<ILivechatMonitor[]> {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
 		throw new Error('error-not-authorized');
 	}
 	return LivechatUnitMonitors.find({ unitId }).toArray() as Promise<ILivechatMonitor[]>;
 }
 
-export async function findUnitById({
-	userId,
-	unitId,
-}: {
-	userId: string;
-	unitId: string;
-}): Promise<IOmnichannelBusinessUnit> {
+export async function findUnitById({ userId, unitId }: { userId: string; unitId: string }): Promise<IOmnichannelBusinessUnit> {
 	if (!(await hasPermissionAsync(userId, 'manage-livechat-units'))) {
 		throw new Error('error-not-authorized');
 	}

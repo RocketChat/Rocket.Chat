@@ -14,9 +14,7 @@ addAction('push-notifications', ({ room }) => {
 						id: 'push-notifications',
 						title: 'Notifications_Preferences',
 						icon: 'bell',
-						template: lazy(
-							() => import('../../../client/views/room/contextualBar/NotificationPreferences'),
-						),
+						template: lazy(() => import('../../../client/views/room/contextualBar/NotificationPreferences')),
 						order: 8,
 				  }
 				: null,

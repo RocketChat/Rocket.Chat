@@ -22,8 +22,7 @@ function GroupingList() {
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const useHandleChange = (key, value) =>
-		useCallback(() => saveUserPreferences({ [key]: value }), [key, value]);
+	const useHandleChange = (key, value) => useCallback(() => saveUserPreferences({ [key]: value }), [key, value]);
 
 	const handleChangeGroupByType = useHandleChange('sidebarGroupByType', !sidebarGroupByType);
 	const handleChangeShoFavorite = useHandleChange('sidebarShowFavorites', !sidebarShowFavorites);
@@ -38,37 +37,20 @@ function GroupingList() {
 				<ListItem
 					icon={'flag'}
 					text={t('Unread')}
-					input={
-						<CheckBox
-							style={checkBoxStyle}
-							onChange={handleChangeShowUnread}
-							name='sidebarShowUnread'
-							checked={sidebarShowUnread}
-						/>
-					}
+					input={<CheckBox style={checkBoxStyle} onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />}
 				/>
 				<ListItem
 					icon={'star'}
 					text={t('Favorites')}
 					input={
-						<CheckBox
-							style={checkBoxStyle}
-							onChange={handleChangeShoFavorite}
-							name='sidebarShowFavorites'
-							checked={sidebarShowFavorites}
-						/>
+						<CheckBox style={checkBoxStyle} onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />
 					}
 				/>
 				<ListItem
 					icon={'group-by-type'}
 					text={t('Types')}
 					input={
-						<CheckBox
-							style={checkBoxStyle}
-							onChange={handleChangeGroupByType}
-							name='sidebarGroupByType'
-							checked={sidebarGroupByType}
-						/>
+						<CheckBox style={checkBoxStyle} onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />
 					}
 				/>
 			</ul>

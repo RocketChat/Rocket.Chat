@@ -100,9 +100,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			Promise.await(
-				Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined),
-			);
+			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined));
 		}
 
 		let file;
@@ -176,28 +174,13 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			Meteor.defer(() => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						Meteor.call(
-							'livechat:setCustomField',
-							sendMessage.message.token,
-							'country',
-							sms.extra.fromCountry,
-						);
+						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						Meteor.call(
-							'livechat:setCustomField',
-							sendMessage.message.token,
-							'state',
-							sms.extra.fromState,
-						);
+						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						Meteor.call(
-							'livechat:setCustomField',
-							sendMessage.message.token,
-							'city',
-							sms.extra.fromCity,
-						);
+						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
 				}
 			});

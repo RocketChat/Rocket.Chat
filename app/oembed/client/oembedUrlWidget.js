@@ -14,8 +14,7 @@ const getDescription = function (self) {
 	if (self.meta == null) {
 		return;
 	}
-	const description =
-		self.meta.ogDescription || self.meta.twitterDescription || self.meta.description;
+	const description = self.meta.ogDescription || self.meta.twitterDescription || self.meta.description;
 	if (description == null) {
 		return;
 	}

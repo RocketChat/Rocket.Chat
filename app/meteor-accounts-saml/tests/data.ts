@@ -13,8 +13,7 @@ export const serviceProviderOptions = {
 	signatureValidationType: 'All',
 	identifierFormat: 'email',
 	nameIDPolicyTemplate: '<NameID IdentifierFormat="__identifierFormat__"/>',
-	authnContextTemplate:
-		'<authnContext Comparison="__authnContextComparison__">__authnContext__</authnContext>',
+	authnContextTemplate: '<authnContext Comparison="__authnContextComparison__">__authnContext__</authnContext>',
 	authRequestTemplate: '<authRequest>__identifierFormatTag__ __authnContextTag__ </authRequest>',
 	logoutResponseTemplate: '[logout-response-template]',
 	logoutRequestTemplate: '[logout-request-template]',

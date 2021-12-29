@@ -8,10 +8,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
-import {
-	shouldRemoveOrChangeOwner,
-	getSubscribedRoomsForUserWithDetails,
-} from './getRoomsWithSingleOwner';
+import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
 function reactivateDirectConversations(userId) {
@@ -50,14 +47,10 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		const userAdmin = Users.findOneAdmin(userId);
 		const adminsCount = Users.findActiveUsersInRoles(['admin']).count();
 		if (userAdmin && adminsCount === 1) {
-			throw new Meteor.Error(
-				'error-action-not-allowed',
-				'Leaving the app without an active admin is not allowed',
-				{
-					method: 'removeUserFromRole',
-					action: 'Remove_last_admin',
-				},
-			);
+			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+				method: 'removeUserFromRole',
+				action: 'Remove_last_admin',
+			});
 		}
 
 		const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
@@ -106,9 +99,7 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		return true;
 	}
 
-	const destinations =
-		Array.isArray(user.emails) &&
-		user.emails.map((email) => `${user.name || user.username}<${email.address}>`);
+	const destinations = Array.isArray(user.emails) && user.emails.map((email) => `${user.name || user.username}<${email.address}>`);
 
 	const email = {
 		to: destinations,

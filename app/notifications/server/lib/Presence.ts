@@ -1,10 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import type {
-	IPublication,
-	IStreamerConstructor,
-	Connection,
-	IStreamer,
-} from 'meteor/rocketchat:streamer';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 
 import type { IUser } from '../../../../definition/IUser';
 
@@ -85,9 +80,7 @@ export class StreamPresence {
 				_eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,
 			): Promise<void> {
-				const { added, removed } = (typeof options !== 'boolean'
-					? options
-					: {}) as unknown as UserPresenseStreamProps;
+				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenseStreamProps;
 
 				const [client, main] = UserPresence.getClient(publication, this);
 

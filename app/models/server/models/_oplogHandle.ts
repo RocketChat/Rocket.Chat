@@ -27,11 +27,7 @@ class CustomOplogHandle {
 		try {
 			const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
 
-			if (
-				!storageEngine ||
-				storageEngine.name !== 'wiredTiger' ||
-				!semver.satisfies(semver.coerce(version) || '', '>=3.6.0')
-			) {
+			if (!storageEngine || storageEngine.name !== 'wiredTiger' || !semver.satisfies(semver.coerce(version) || '', '>=3.6.0')) {
 				return false;
 			}
 
@@ -103,15 +99,10 @@ class CustomOplogHandle {
 
 		const oplogCollection = this.db.collection('oplog.rs');
 
-		const lastOplogEntry = await oplogCollection.findOne<{ ts: Timestamp }>(
-			{},
-			{ sort: { $natural: -1 }, projection: { _id: 0, ts: 1 } },
-		);
+		const lastOplogEntry = await oplogCollection.findOne<{ ts: Timestamp }>({}, { sort: { $natural: -1 }, projection: { _id: 0, ts: 1 } });
 
 		const oplogSelector = {
-			ns: new RegExp(
-				`^(?:${[escapeRegExp(`${this.dbName}.`), escapeRegExp('admin.$cmd')].join('|')})`,
-			),
+			ns: new RegExp(`^(?:${[escapeRegExp(`${this.dbName}.`), escapeRegExp('admin.$cmd')].join('|')})`),
 
 			op: { $in: ['i', 'u', 'd'] },
 			...(lastOplogEntry && { ts: { $gt: lastOplogEntry.ts } }),

@@ -21,10 +21,7 @@ Meteor.startup(function () {
 	// If the operation is ready to start, or already started but failed
 	// And there's still data for it on the temp collection
 	// Then we can keep the data there to let the user try again
-	if (
-		lastOperation &&
-		[ProgressStep.USER_SELECTION, ProgressStep.ERROR].includes(lastOperation.status)
-	) {
+	if (lastOperation && [ProgressStep.USER_SELECTION, ProgressStep.ERROR].includes(lastOperation.status)) {
 		idToKeep = lastOperation._id;
 	}
 

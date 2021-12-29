@@ -3,5 +3,4 @@ import { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
 
 export const canAccessRoomAsync = Authorization.canAccessRoom;
 
-export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean =>
-	Promise.await(canAccessRoomAsync(...args));
+export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean => Promise.await(canAccessRoomAsync(...args));

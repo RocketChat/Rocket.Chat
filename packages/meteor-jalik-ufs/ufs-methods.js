@@ -146,8 +146,7 @@ if (Meteor.isServer) {
 			// Set default info
 			file.complete = false;
 			file.uploading = false;
-			file.extension =
-				file.name && file.name.substr((~-file.name.lastIndexOf('.') >>> 0) + 2).toLowerCase();
+			file.extension = file.name && file.name.substr((~-file.name.lastIndexOf('.') >>> 0) + 2).toLowerCase();
 			// Assign file MIME type based on the extension
 			if (file.extension && !file.type) {
 				file.type = UploadFS.getMimeType(file.extension) || 'application/octet-stream';
@@ -244,8 +243,7 @@ if (Meteor.isServer) {
 				file.name = url.replace(/\?.*$/, '').split('/').pop();
 			}
 			if (file.name && !file.extension) {
-				file.extension =
-					file.name && file.name.substr((~-file.name.lastIndexOf('.') >>> 0) + 2).toLowerCase();
+				file.extension = file.name && file.name.substr((~-file.name.lastIndexOf('.') >>> 0) + 2).toLowerCase();
 			}
 			if (file.extension && !file.type) {
 				// Assign file MIME type based on the extension
@@ -257,9 +255,7 @@ if (Meteor.isServer) {
 			}
 
 			if (file.originalUrl) {
-				console.warn(
-					'ufs: The "originalUrl" attribute is automatically set when importing a file from a URL',
-				);
+				console.warn('ufs: The "originalUrl" attribute is automatically set when importing a file from a URL');
 			}
 
 			// Add original URL

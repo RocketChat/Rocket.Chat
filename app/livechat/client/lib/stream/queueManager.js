@@ -24,22 +24,15 @@ const newInquirySound = () => {
 const events = {
 	added: (inquiry) => {
 		delete inquiry.type;
-		departments.has(inquiry.department) &&
-			LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		newInquirySound();
 	},
 	changed: (inquiry) => {
-		if (
-			inquiry.status !== 'queued' ||
-			(inquiry.department && !departments.has(inquiry.department))
-		) {
+		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		const saveResult = LivechatInquiry.upsert(
-			{ _id: inquiry._id },
-			{ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) },
-		);
+		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		if (saveResult?.insertedId) {
 			newInquirySound();
 		}
@@ -72,17 +65,10 @@ const addListenerForeachDepartment = async (departments = []) => {
 };
 
 const updateInquiries = async (inquiries = []) =>
-	inquiries.forEach((inquiry) =>
-		LivechatInquiry.upsert(
-			{ _id: inquiry._id },
-			{ ...inquiry, _updatedAt: new Date(inquiry._updatedAt) },
-		),
-	);
+	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId) => {
-	const { departments } = await APIClient.v1.get(
-		`livechat/agents/${userId}/departments?enabledDepartmentsOnly=true`,
-	);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${userId}/departments?enabledDepartmentsOnly=true`);
 	return departments;
 };
 
@@ -99,13 +85,9 @@ const subscribe = async (userId) => {
 		return;
 	}
 
-	const agentDepartments = (await getAgentsDepartments(userId)).map(
-		(department) => department.departmentId,
-	);
+	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 
-	const cleanUp = agentDepartments.length
-		? await addListenerForeachDepartment(agentDepartments)
-		: addGlobalListener();
+	const cleanUp = agentDepartments.length ? await addListenerForeachDepartment(agentDepartments) : addGlobalListener();
 
 	updateInquiries(await getInquiriesFromAPI());
 

@@ -1,11 +1,7 @@
 import ldapjs from 'ldapjs';
 
 import { settings } from '../../../app/settings/server';
-import type {
-	ILDAPConnectionOptions,
-	LDAPEncryptionType,
-	LDAPSearchScope,
-} from '../../../definition/ldap/ILDAPOptions';
+import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
@@ -75,17 +71,13 @@ export class LDAPConnection {
 			groupFilterEnabled: settings.get<boolean>('LDAP_Group_Filter_Enable') ?? false,
 			groupFilterObjectClass: settings.get<string>('LDAP_Group_Filter_ObjectClass'),
 			groupFilterGroupIdAttribute: settings.get<string>('LDAP_Group_Filter_Group_Id_Attribute'),
-			groupFilterGroupMemberAttribute: settings.get<string>(
-				'LDAP_Group_Filter_Group_Member_Attribute',
-			),
+			groupFilterGroupMemberAttribute: settings.get<string>('LDAP_Group_Filter_Group_Member_Attribute'),
 			groupFilterGroupMemberFormat: settings.get<string>('LDAP_Group_Filter_Group_Member_Format'),
 			groupFilterGroupName: settings.get<string>('LDAP_Group_Filter_Group_Name'),
 			authentication: settings.get<boolean>('LDAP_Authentication') ?? false,
 			authenticationUserDN: settings.get<string>('LDAP_Authentication_UserDN') ?? '',
 			authenticationPassword: settings.get<string>('LDAP_Authentication_Password') ?? '',
-			attributesToQuery: this.parseAttributeList(
-				settings.get<string>('LDAP_User_Search_AttributesToQuery'),
-			),
+			attributesToQuery: this.parseAttributeList(settings.get<string>('LDAP_User_Search_AttributesToQuery')),
 		};
 
 		if (!this.options.host) {
@@ -172,9 +164,7 @@ export class LDAPConnection {
 			});
 		} else if (this.options.uniqueIdentifierField) {
 			// If we don't know what attribute the id came from, we have to look for all of them.
-			const possibleFields = this.options.uniqueIdentifierField
-				.split(',')
-				.concat(this.options.userSearchField.split(','));
+			const possibleFields = this.options.uniqueIdentifierField.split(',').concat(this.options.userSearchField.split(','));
 			const filters = [];
 			for (const field of possibleFields) {
 				if (!field) {
@@ -274,22 +264,14 @@ export class LDAPConnection {
 	}
 
 	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ILDAPEntry[]> {
-		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) =>
-			this.extractLdapEntryData(entry),
-		);
+		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) => this.extractLdapEntryData(entry));
 	}
 
-	public async searchRaw(
-		baseDN: string,
-		searchOptions: ldapjs.SearchOptions,
-	): Promise<ldapjs.SearchEntry[]> {
+	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ldapjs.SearchEntry[]> {
 		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry);
 	}
 
-	public async searchAndCount(
-		baseDN: string,
-		searchOptions: ldapjs.SearchOptions,
-	): Promise<number> {
+	public async searchAndCount(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<number> {
 		let count = 0;
 		await this.doCustomSearch(baseDN, searchOptions, () => {
 			count++;
@@ -337,11 +319,7 @@ export class LDAPConnection {
 		return values;
 	}
 
-	public async doCustomSearch<T>(
-		baseDN: string,
-		searchOptions: ldapjs.SearchOptions,
-		entryCallback: ILDAPEntryCallback<T>,
-	): Promise<T[]> {
+	public async doCustomSearch<T>(baseDN: string, searchOptions: ldapjs.SearchOptions, entryCallback: ILDAPEntryCallback<T>): Promise<T[]> {
 		await this.runBeforeSearch(searchOptions);
 
 		if (!searchOptions.scope) {
@@ -380,9 +358,7 @@ export class LDAPConnection {
 				});
 
 				res.on('end', () => {
-					searchLogger.info(
-						`LDAP Search found ${realEntries} entries and loaded the data of ${entries.length}.`,
-					);
+					searchLogger.info(`LDAP Search found ${realEntries} entries and loaded the data of ${entries.length}.`);
 					resolve(entries);
 				});
 			});
@@ -397,9 +373,7 @@ export class LDAPConnection {
 
 		this.addUserFilters(filter, username);
 
-		const usernameFilter = this.options.userSearchField
-			.split(',')
-			.map((item) => `(${item}=${username})`);
+		const usernameFilter = this.options.userSearchField.split(',').map((item) => `(${item}=${username})`);
 
 		if (usernameFilter.length === 0) {
 			logger.error('LDAP_LDAP_User_Search_Field not defined');
@@ -424,15 +398,11 @@ export class LDAPConnection {
 		}
 
 		if (this.options.groupFilterGroupMemberAttribute) {
-			filter.push(
-				`(${this.options.groupFilterGroupMemberAttribute}=${this.options.groupFilterGroupMemberFormat})`,
-			);
+			filter.push(`(${this.options.groupFilterGroupMemberAttribute}=${this.options.groupFilterGroupMemberFormat})`);
 		}
 
 		if (this.options.groupFilterGroupIdAttribute) {
-			filter.push(
-				`(${this.options.groupFilterGroupIdAttribute}=${this.options.groupFilterGroupName})`,
-			);
+			filter.push(`(${this.options.groupFilterGroupIdAttribute}=${this.options.groupFilterGroupName})`);
 		}
 		filter.push(')');
 
@@ -492,39 +462,35 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(
-			baseDN,
-			searchOptions,
-			(error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
-				if (error) {
-					searchLogger.error(error);
-					callback(error);
-					return;
+		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+			if (error) {
+				searchLogger.error(error);
+				callback(error);
+				return;
+			}
+
+			res.on('error', (error) => {
+				searchLogger.error(error);
+				callback(error);
+			});
+
+			const entries: T[] = [];
+
+			res.on('searchEntry', (entry) => {
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
 				}
+			});
 
-				res.on('error', (error) => {
-					searchLogger.error(error);
-					callback(error);
-				});
-
-				const entries: T[] = [];
-
-				res.on('searchEntry', (entry) => {
-					try {
-						const result = entryCallback ? entryCallback(entry) : entry;
-						entries.push(result as T);
-					} catch (e) {
-						searchLogger.error(e);
-						throw e;
-					}
-				});
-
-				res.on('end', () => {
-					searchLogger.info({ msg: 'Search result count', count: entries.length });
-					callback(null, entries);
-				});
-			},
-		);
+			res.on('end', () => {
+				searchLogger.info({ msg: 'Search result count', count: entries.length });
+				callback(null, entries);
+			});
+		});
 	}
 
 	private processSearchPage<T>(
@@ -561,87 +527,83 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(
-			baseDN,
-			searchOptions,
-			(error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
-				if (error) {
-					searchLogger.error(error);
-					callback(error);
-					return;
-				}
+		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+			if (error) {
+				searchLogger.error(error);
+				callback(error);
+				return;
+			}
 
-				res.on('error', (error) => {
-					searchLogger.error(error);
-					callback(error);
-				});
+			res.on('error', (error) => {
+				searchLogger.error(error);
+				callback(error);
+			});
 
-				let entries: T[] = [];
-				const internalPageSize = pageSize * 2;
+			let entries: T[] = [];
+			const internalPageSize = pageSize * 2;
 
-				res.on('searchEntry', (entry) => {
-					try {
-						const result = entryCallback ? entryCallback(entry) : entry;
-						entries.push(result as T);
+			res.on('searchEntry', (entry) => {
+				try {
+					const result = entryCallback ? entryCallback(entry) : entry;
+					entries.push(result as T);
 
-						if (entries.length >= internalPageSize) {
-							this.processSearchPage<T>(
-								{
-									entries,
-									title: 'Internal Page',
-									end: false,
-								},
-								callback,
-							);
-							entries = [];
-						}
-					} catch (e) {
-						searchLogger.error(e);
-						throw e;
-					}
-				});
-
-				res.on('page', (_result, next) => {
-					if (!next) {
-						this._updateIdle(true);
+					if (entries.length >= internalPageSize) {
 						this.processSearchPage<T>(
 							{
 								entries,
-								title: 'Final Page',
-								end: true,
-							},
-							callback,
-						);
-						entries = [];
-					} else if (entries.length) {
-						this.processSearchPage<T>(
-							{
-								entries,
-								title: 'Page',
+								title: 'Internal Page',
 								end: false,
-								next,
 							},
 							callback,
 						);
 						entries = [];
 					}
-				});
+				} catch (e) {
+					searchLogger.error(e);
+					throw e;
+				}
+			});
 
-				res.on('end', () => {
-					if (entries.length) {
-						this.processSearchPage<T>(
-							{
-								entries,
-								title: 'Final Page',
-								end: true,
-							},
-							callback,
-						);
-						entries = [];
-					}
-				});
-			},
-		);
+			res.on('page', (_result, next) => {
+				if (!next) {
+					this._updateIdle(true);
+					this.processSearchPage<T>(
+						{
+							entries,
+							title: 'Final Page',
+							end: true,
+						},
+						callback,
+					);
+					entries = [];
+				} else if (entries.length) {
+					this.processSearchPage<T>(
+						{
+							entries,
+							title: 'Page',
+							end: false,
+							next,
+						},
+						callback,
+					);
+					entries = [];
+				}
+			});
+
+			res.on('end', () => {
+				if (entries.length) {
+					this.processSearchPage<T>(
+						{
+							entries,
+							title: 'Final Page',
+							end: true,
+						},
+						callback,
+					);
+					entries = [];
+				}
+			});
+		});
 	}
 
 	private _updateIdle(override?: boolean): void {

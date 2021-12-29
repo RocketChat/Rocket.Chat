@@ -207,12 +207,8 @@ Template.messageBox.helpers({
 			return false;
 		}
 
-		const isReadOnly = roomTypes.readOnly(
-			rid,
-			Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }),
-		);
-		const isArchived =
-			roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
 		return !isReadOnly && !isArchived;
 	},
@@ -229,9 +225,7 @@ Template.messageBox.helpers({
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	maxMessageLength() {
-		return settings.get('Message_AllowConvertLongMessagesToAttachment')
-			? null
-			: settings.get('Message_MaxAllowedSize');
+		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
 	isSendIconVisible() {
 		return Template.instance().isSendIconVisible.get();
@@ -246,10 +240,7 @@ Template.messageBox.helpers({
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
-		return Object.values(actionGroups).reduce(
-			(actions, actionGroup) => [...actions, ...actionGroup],
-			[],
-		);
+		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	formattingButtons() {
 		return formattingButtons.filter(({ condition }) => !condition || condition());
@@ -277,10 +268,7 @@ const handleFormattingShortcut = (event, instance) => {
 
 	const key = event.key.toLowerCase();
 
-	const { pattern } =
-		formattingButtons
-			.filter(({ condition }) => !condition || condition())
-			.find(({ command }) => command === key) || {};
+	const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ command }) => command === key) || {};
 
 	if (!pattern) {
 		return false;
@@ -296,10 +284,7 @@ let sendOnEnterActive;
 
 Tracker.autorun(() => {
 	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	sendOnEnterActive =
-		sendOnEnter == null ||
-		sendOnEnter === 'normal' ||
-		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 });
 
 const handleSubmit = (event, instance) => {
@@ -356,9 +341,7 @@ Template.messageBox.events({
 
 			input.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				instance.set(
-					textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos),
-				);
+				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 				input.focus();
 			}
 
@@ -370,8 +353,7 @@ Template.messageBox.events({
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
 	'keydown .js-input-message'(event, instance) {
-		const isEventHandled =
-			handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
+		const isEventHandled = handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
 
 		if (isEventHandled) {
 			event.preventDefault();
@@ -413,9 +395,7 @@ Template.messageBox.events({
 
 				return {
 					file: fileItem,
-					name: `Clipboard - ${moment().format(
-						settings.get('Message_TimeAndDateFormat'),
-					)}${extension}`,
+					name: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
 				};
 			})
 			.filter(({ file }) => file !== null);
@@ -519,10 +499,7 @@ Template.messageBox.events({
 		event.stopPropagation();
 
 		const { id } = event.currentTarget.dataset;
-		const { pattern } =
-			formattingButtons
-				.filter(({ condition }) => !condition || condition())
-				.find(({ label }) => label === id) || {};
+		const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ label }) => label === id) || {};
 
 		if (!pattern) {
 			return;

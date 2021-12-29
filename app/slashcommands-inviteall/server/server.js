@@ -26,8 +26,7 @@ function inviteAll(type) {
 		const userId = Meteor.userId();
 		const currentUser = Meteor.users.findOne(userId);
 		const baseChannel = type === 'to' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
-		const targetChannel =
-			type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
+		const targetChannel = type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
 			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
@@ -75,8 +74,7 @@ function inviteAll(type) {
 				msg: TAPi18n.__('Users_added', null, currentUser.language),
 			});
 		} catch (e) {
-			const msg =
-				e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
+			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__(msg, null, currentUser.language),
 			});

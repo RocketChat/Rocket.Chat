@@ -27,13 +27,10 @@ const loadPostcssConfig = async () => {
 	}
 };
 
-const isImportFile = ({ _source: { url } }) =>
-	/\.import\.css$/.test(url) || /(?:^|\/)imports\//.test(url);
+const isImportFile = ({ _source: { url } }) => /\.import\.css$/.test(url) || /(?:^|\/)imports\//.test(url);
 
 const isInExcludedPackages = (pathInBundle) =>
-	postcssConfigExcludedPackages.some(
-		(packageName) => pathInBundle.indexOf(`packages/${packageName.replace(':', '_')}/`) > -1,
-	);
+	postcssConfigExcludedPackages.some((packageName) => pathInBundle.indexOf(`packages/${packageName.replace(':', '_')}/`) > -1);
 
 const handleFileError = (file, error) => {
 	if (error.name === 'CssSyntaxError') {
@@ -89,9 +86,7 @@ const getAbstractSyntaxTree = async (file) => {
 		);
 	} catch (error) {
 		if (error.name === 'CssSyntaxError') {
-			error.message = `${error.message}\n\nCss Syntax Error.\n\n${
-				error.message
-			}${error.showSourceCode()}`;
+			error.message = `${error.message}\n\nCss Syntax Error.\n\n${error.message}${error.showSourceCode()}`;
 		}
 
 		handleFileError(file, error);
@@ -132,9 +127,7 @@ const mergeCssFiles = async (files) => {
 		{},
 	);
 
-	map.sourcesContent = map.sources.map((filename) =>
-		mapFilenameToFile[filename].getContentsAsString(),
-	);
+	map.sourcesContent = map.sources.map((filename) => mapFilenameToFile[filename].getContentsAsString());
 
 	// yes, this await is needed
 	const consumer = await new SourceMapConsumer(map);

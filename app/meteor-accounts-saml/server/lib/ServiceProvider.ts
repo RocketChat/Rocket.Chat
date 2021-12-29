@@ -15,11 +15,7 @@ import { ResponseParser } from './parsers/Response';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLRequest } from '../definition/ISAMLRequest';
 import { ILogoutResponse } from '../definition/ILogoutResponse';
-import {
-	ILogoutRequestValidateCallback,
-	ILogoutResponseValidateCallback,
-	IResponseValidateCallback,
-} from '../definition/callbacks';
+import { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
@@ -56,31 +52,17 @@ export class SAMLServiceProvider {
 		sessionIndex: string;
 		inResponseToId: string;
 	}): ILogoutResponse {
-		return LogoutResponse.generate(
-			this.serviceProviderOptions,
-			nameID,
-			sessionIndex,
-			inResponseToId,
-		);
+		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
 	}
 
-	public generateLogoutRequest({
-		nameID,
-		sessionIndex,
-	}: {
-		nameID: string;
-		sessionIndex: string;
-	}): ISAMLRequest {
+	public generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): ISAMLRequest {
 		return LogoutRequest.generate(this.serviceProviderOptions, nameID, sessionIndex);
 	}
 
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	public logoutResponseToUrl(
-		response: string,
-		callback: (err: string | object | null, url?: string) => void,
-	): void {
+	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -121,11 +103,7 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public requestToUrl(
-		request: string,
-		operation: string,
-		callback: (err: string | object | null, url?: string) => void,
-	): void {
+	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
 		zlib.deflateRaw(request, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -189,10 +167,7 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	public validateLogoutRequest(
-		samlRequest: string,
-		callback: ILogoutRequestValidateCallback,
-	): void {
+	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
 		SAMLUtils.inflateXml(
 			samlRequest,
 			(xml: string) => {
@@ -205,10 +180,7 @@ export class SAMLServiceProvider {
 		);
 	}
 
-	public validateLogoutResponse(
-		samlResponse: string,
-		callback: ILogoutResponseValidateCallback,
-	): void {
+	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
 		SAMLUtils.inflateXml(
 			samlResponse,
 			(xml: string) => {

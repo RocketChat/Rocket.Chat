@@ -145,9 +145,7 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
-					console.error(
-						`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`,
-					);
+					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -215,11 +213,7 @@ class LicenseClass {
 const License = new LicenseClass();
 
 export function addLicense(encryptedLicense: string): boolean {
-	if (
-		!encryptedLicense ||
-		String(encryptedLicense).trim() === '' ||
-		License.isLicenseDuplicate(encryptedLicense)
-	) {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
 		return false;
 	}
 
@@ -388,11 +382,7 @@ export interface IOverrideClassProperties {
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(
-	license: BundleFeature,
-	original: Class,
-	overwrite: IOverrideClassProperties,
-): void {
+export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
 	onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];

@@ -14,11 +14,7 @@ const variablesContent = Assets.getText('client/imports/general/variables.css');
 
 const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//gim;
 
-for (
-	let matches = regionRegex.exec(variablesContent);
-	matches;
-	matches = regionRegex.exec(variablesContent)
-) {
+for (let matches = regionRegex.exec(variablesContent); matches; matches = regionRegex.exec(variablesContent)) {
 	const [, type, section, content] = matches;
 	[...content.match(/--(.*?):\s*(.*?);/gim)].forEach((entry) => {
 		const matches = /--(.*?):\s*(.*?);/im.exec(entry);
@@ -32,10 +28,7 @@ for (
 		if (type === 'colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, variableName, section, true, 'expression', [
-					'color',
-					'expression',
-				]);
+				theme.addVariable('color', name, variableName, section, true, 'expression', ['color', 'expression']);
 				return;
 			}
 
@@ -46,10 +39,7 @@ for (
 		if (type === 'less-colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression', [
-					'color',
-					'expression',
-				]);
+				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression', ['color', 'expression']);
 				return;
 			}
 

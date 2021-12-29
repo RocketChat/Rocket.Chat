@@ -19,10 +19,7 @@ Template.agentInfo.helpers({
 	canEdit() {
 		const availableDepartments = [...Template.instance().availableDepartments.get()];
 		const hasCustomFields = customFieldsTemplate() !== null;
-		return (
-			(availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) ||
-			hasCustomFields
-		);
+		return (availableDepartments.length > 0 && hasPermission('add-livechat-department-agents')) || hasCustomFields;
 	},
 	uid() {
 		return Template.instance().agent.get()._id;

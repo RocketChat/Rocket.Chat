@@ -35,9 +35,7 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 
-	const sortedMembers = members.sort((u1, u2) =>
-		(u1.name || u1.username).localeCompare(u2.name || u2.username),
-	);
+	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
 
 	const usernames = sortedMembers.map(({ username }) => username);
 	const uids = members.map(({ _id }) => _id).sort();
@@ -74,10 +72,7 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 			}),
 		);
 		if (prevent) {
-			throw new Meteor.Error(
-				'error-app-prevented',
-				'A Rocket.Chat App prevented the room creation.',
-			);
+			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		let result;
@@ -99,21 +94,15 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 			{ rid, 'u._id': members[0]._id },
 			{
 				$set: { open: true },
-				$setOnInsert: generateSubscription(
-					members[0].name || members[0].username,
-					members[0].username,
-					members[0],
-					{ ...options.subscriptionExtra },
-				),
+				$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], {
+					...options.subscriptionExtra,
+				}),
 			},
 			{ upsert: true },
 		);
 	} else {
 		const memberIds = members.map((member) => member._id);
-		const membersWithPreferences = Users.find(
-			{ _id: { $in: memberIds } },
-			{ 'username': 1, 'settings.preferences': 1 },
-		);
+		const membersWithPreferences = Users.find({ _id: { $in: memberIds } }, { 'username': 1, 'settings.preferences': 1 });
 
 		membersWithPreferences.forEach((member) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
@@ -121,15 +110,10 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 				{ rid, 'u._id': member._id },
 				{
 					...(options.creator === member._id && { $set: { open: true } }),
-					$setOnInsert: generateSubscription(
-						getFname(otherMembers),
-						getName(otherMembers),
-						member,
-						{
-							...options.subscriptionExtra,
-							...(options.creator !== member._id && { open: members.length > 2 }),
-						},
-					),
+					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
+						...options.subscriptionExtra,
+						...(options.creator !== member._id && { open: members.length > 2 }),
+					}),
 				},
 				{ upsert: true },
 			);

@@ -1,12 +1,4 @@
-import type {
-	JoinPathPattern,
-	Method,
-	MethodOf,
-	OperationParams,
-	OperationResult,
-	PathPattern,
-	UrlParams,
-} from '../../../definition/rest';
+import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
 import type { IUser } from '../../../definition/IUser';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
@@ -27,9 +19,7 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				errorType: TErrorType;
 				details: TErrorDetails;
 		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
-				(undefined extends TErrorDetails
-					? {}
-					: { details: TErrorDetails extends string ? unknown : TErrorDetails });
+				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
 type UnauthorizedResult<T> = {
@@ -78,13 +68,9 @@ type Request = {
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	urlParams: UrlParams<TPathPattern>;
 	// TODO make it unsafe
-	readonly queryParams: TMethod extends 'GET'
-		? Partial<OperationParams<TMethod, TPathPattern>>
-		: Record<string, string>;
+	readonly queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
 	// TODO make it unsafe
-	readonly bodyParams: TMethod extends 'GET'
-		? Record<string, unknown>
-		: Partial<OperationParams<TMethod, TPathPattern>>;
+	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 	requestParams(): OperationParams<TMethod, TPathPattern>;
 	getPaginationItems(): {
@@ -113,9 +99,7 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| UnauthorizedResult<unknown>;
 
 type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
-	| ((
-			this: ActionThis<TMethod, TPathPattern, TOptions>,
-	  ) => Promise<ResultFor<TMethod, TPathPattern>>)
+	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
 
 type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
@@ -148,10 +132,10 @@ declare class APIClass<TBasePath extends string = '/'> {
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
 	): void;
 
-	addRoute<
-		TSubPathPattern extends string,
-		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
-	>(subpaths: TSubPathPattern[], operations: Operations<TPathPattern>): void;
+	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>>(
+		subpaths: TSubPathPattern[],
+		operations: Operations<TPathPattern>,
+	): void;
 
 	addRoute<TSubPathPattern extends string, TOptions extends Options>(
 		subpath: TSubPathPattern,
@@ -159,11 +143,7 @@ declare class APIClass<TBasePath extends string = '/'> {
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>,
 	): void;
 
-	addRoute<
-		TSubPathPattern extends string,
-		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
-		TOptions extends Options,
-	>(
+	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>, TOptions extends Options>(
 		subpaths: TSubPathPattern[],
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,

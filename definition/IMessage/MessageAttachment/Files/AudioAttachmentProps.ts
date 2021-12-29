@@ -9,6 +9,5 @@ export type AudioAttachmentProps = {
 	file?: FileProp;
 } & MessageAttachmentBase;
 
-export const isFileAudioAttachment = (
-	attachment: FileAttachmentProps,
-): attachment is AudioAttachmentProps & { type: 'file' } => 'audio_url' in attachment;
+export const isFileAudioAttachment = (attachment: FileAttachmentProps): attachment is AudioAttachmentProps & { type: 'file' } =>
+	'audio_url' in attachment;

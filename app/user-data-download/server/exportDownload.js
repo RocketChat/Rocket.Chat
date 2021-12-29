@@ -11,12 +11,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), async function (req, res, next)
 	if (!settings.get('UserData_EnableDownload')) {
 		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
 		res.writeHead(403);
-		return res.end(
-			DataExport.getErrorPage(
-				TAPi18n.__('Feature_Disabled'),
-				TAPi18n.__('UserDataDownload_FeatureDisabled'),
-			),
-		);
+		return res.end(DataExport.getErrorPage(TAPi18n.__('Feature_Disabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
 	}
 
 	if (match && match[1]) {
@@ -25,9 +20,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), async function (req, res, next)
 			if (!DataExport.requestCanAccessFiles(req, file.userId)) {
 				res.setHeader('Content-Type', 'text/html; charset=UTF-8');
 				res.writeHead(403);
-				return res.end(
-					DataExport.getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')),
-				);
+				return res.end(DataExport.getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')));
 			}
 
 			res.setHeader('Content-Security-Policy', "default-src 'none'");

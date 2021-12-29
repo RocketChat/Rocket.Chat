@@ -4,10 +4,7 @@ import { hasPermissionAsync } from '../../../../../../app/authorization/server/f
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
 
 export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {
-	if (
-		!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) &&
-		!(await hasPermissionAsync(userId, 'view-l-room'))
-	) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -34,10 +31,7 @@ export async function findPriorities({ userId, text, pagination: { offset, count
 }
 
 export async function findPriorityById({ userId, priorityId }) {
-	if (
-		!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) &&
-		!(await hasPermissionAsync(userId, 'view-l-room'))
-	) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	return LivechatPriority.findOneById(priorityId);

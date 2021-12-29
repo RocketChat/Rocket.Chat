@@ -208,9 +208,4 @@ Template.popout.events({
 	},
 });
 
-callbacks.add(
-	'afterLogoutCleanUp',
-	() => popout.close(),
-	callbacks.priority.MEDIUM,
-	'popout-close-after-logout-cleanup',
-);
+callbacks.add('afterLogoutCleanUp', () => popout.close(), callbacks.priority.MEDIUM, 'popout-close-after-logout-cleanup');

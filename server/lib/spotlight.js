@@ -41,10 +41,7 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(
-				userId,
-				Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch(),
-			);
+			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());
 		}
 
 		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
@@ -63,10 +60,7 @@ export class Spotlight {
 			roomIds.push(exactRoom.rid);
 		}
 
-		return this.fetchRooms(
-			userId,
-			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch(),
-		);
+		return this.fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch());
 	}
 
 	mapOutsiders(u) {
@@ -87,30 +81,13 @@ export class Spotlight {
 		usernames.push(...users.map((u) => u.username).filter((u) => !usernames.includes(u)));
 	}
 
-	_searchInsiderUsers({
-		rid,
-		text,
-		usernames,
-		options,
-		users,
-		insiderExtraQuery,
-		match = { startsWith: false, endsWith: false },
-	}) {
+	_searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
 		// Get insiders first
 		if (rid) {
 			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 
 			users.push(
-				...Promise.await(
-					Users.findByActiveUsersExcept(
-						text,
-						usernames,
-						options,
-						searchFields,
-						insiderExtraQuery,
-						match,
-					).toArray(),
-				),
+				...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, insiderExtraQuery, match).toArray()),
 			);
 
 			// If the limit was reached, return
@@ -120,28 +97,14 @@ export class Spotlight {
 		}
 	}
 
-	_searchOutsiderUsers({
-		text,
-		usernames,
-		options,
-		users,
-		canListOutsiders,
-		match = { startsWith: false, endsWith: false },
-	}) {
+	_searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
 			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 			users.push(
-				...Promise.await(
-					Users.findByActiveUsersExcept(
-						text,
-						usernames,
-						options,
-						searchFields,
-						undefined,
-						match,
-					).toArray(),
-				).map(this.mapOutsiders),
+				...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(
+					this.mapOutsiders,
+				),
 			);
 
 			// If the limit was reached, return

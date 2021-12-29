@@ -47,9 +47,7 @@ async function runFederation(): Promise<void> {
 	// Load SRV info
 	try {
 		// If there is a protocol entry on DNS, we use it
-		const protocol = (settings.get('FEDERATION_ResolvedProtocolTXT') as string)
-			? 'tcp'
-			: rocketChatProtocol;
+		const protocol = (settings.get('FEDERATION_ResolvedProtocolTXT') as string) ? 'tcp' : rocketChatProtocol;
 
 		const resolvedSRV = await resolveSRV(`_rocketchat._${protocol}.${federationDomain}`);
 		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));

@@ -39,11 +39,9 @@ Meteor.methods({
 
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error(
-				'error-importer-not-defined',
-				`The importer (${importerKey}) has no import class defined.`,
-				{ method: 'downloadPublicImportFile' },
-			);
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
+				method: 'downloadPublicImportFile',
+			});
 		}
 
 		const isUrl = fileUrl.startsWith('http');

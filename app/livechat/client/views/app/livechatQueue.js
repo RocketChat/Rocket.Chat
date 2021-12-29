@@ -22,11 +22,7 @@ Template.livechatQueue.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${
-				f.length === 0
-					? text
-					: text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)
-			}`;
+			return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	selectedAgents() {
@@ -118,9 +114,7 @@ Template.livechatQueue.onCreated(async function () {
 		if (filter.department) {
 			query += `&departmentId=${filter.department}`;
 		}
-		const { queue, total } = await APIClient.v1.get(
-			`livechat/queue?${query}&count=${QUEUE_COUNT}&offset=${offset}`,
-		);
+		const { queue, total } = await APIClient.v1.get(`livechat/queue?${query}&count=${QUEUE_COUNT}&offset=${offset}`);
 		this.total.set(total);
 		this.queue.set(this.queue.get().concat(queue));
 		this.isLoading.set(false);

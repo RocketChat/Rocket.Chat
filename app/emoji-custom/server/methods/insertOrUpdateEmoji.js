@@ -34,20 +34,20 @@ Meteor.methods({
 		emojiData.aliases = emojiData.aliases.replace(/:/g, '');
 
 		if (nameValidation.test(emojiData.name)) {
-			throw new Meteor.Error(
-				'error-input-is-not-a-valid-field',
-				`${emojiData.name} is not a valid name`,
-				{ method: 'insertOrUpdateEmoji', input: emojiData.name, field: 'Name' },
-			);
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.name} is not a valid name`, {
+				method: 'insertOrUpdateEmoji',
+				input: emojiData.name,
+				field: 'Name',
+			});
 		}
 
 		if (emojiData.aliases) {
 			if (aliasValidation.test(emojiData.aliases)) {
-				throw new Meteor.Error(
-					'error-input-is-not-a-valid-field',
-					`${emojiData.aliases} is not a valid alias set`,
-					{ method: 'insertOrUpdateEmoji', input: emojiData.aliases, field: 'Alias_Set' },
-				);
+				throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.aliases} is not a valid alias set`, {
+					method: 'insertOrUpdateEmoji',
+					input: emojiData.aliases,
+					field: 'Alias_Set',
+				});
 			}
 			emojiData.aliases = emojiData.aliases.split(/[\s,]/);
 			emojiData.aliases = emojiData.aliases.filter(Boolean);
@@ -61,21 +61,14 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (emojiData._id) {
-			matchingResults = await EmojiCustom.findByNameOrAliasExceptID(
-				emojiData.name,
-				emojiData._id,
-			).toArray();
+			matchingResults = await EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).toArray();
 			for await (const alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(
-					await EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).toArray(),
-				);
+				matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).toArray());
 			}
 		} else {
 			matchingResults = await EmojiCustom.findByNameOrAlias(emojiData.name).toArray();
 			for await (const alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(
-					await EmojiCustom.findByNameOrAlias(alias).toArray(),
-				);
+				matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAlias(alias).toArray());
 			}
 		}
 
@@ -109,18 +102,10 @@ Meteor.methods({
 		}
 		// update emoji
 		if (emojiData.newFile) {
-			RocketChatFileEmojiCustomInstance.deleteFile(
-				encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
-			);
-			RocketChatFileEmojiCustomInstance.deleteFile(
-				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
-			);
-			RocketChatFileEmojiCustomInstance.deleteFile(
-				encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`),
-			);
-			RocketChatFileEmojiCustomInstance.deleteFile(
-				encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
-			);
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
+			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 
 			await EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 		} else if (emojiData.name !== emojiData.previousName) {
@@ -128,9 +113,7 @@ Meteor.methods({
 				encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 			);
 			if (rs !== null) {
-				RocketChatFileEmojiCustomInstance.deleteFile(
-					encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
-				);
+				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 				const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 					encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
 					rs.contentType,
@@ -138,9 +121,7 @@ Meteor.methods({
 				ws.on(
 					'end',
 					Meteor.bindEnvironment(() =>
-						RocketChatFileEmojiCustomInstance.deleteFile(
-							encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
-						),
+						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
 					),
 				);
 				rs.readStream.pipe(ws);

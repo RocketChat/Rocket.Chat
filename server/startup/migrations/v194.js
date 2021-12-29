@@ -16,9 +16,7 @@ async function updateFieldMap() {
 	// if it's using the old default value, simply switch to the new default
 	if (setting.value === '{"username":"username", "email":"email", "cn": "name"}') {
 		// include de eppn identifier if it was used
-		const value = `{"username":"username", "email":"email", "name": "cn"${
-			usedEppn ? ', "__identifier__": "eppn"' : ''
-		}}`;
+		const value = `{"username":"username", "email":"email", "name": "cn"${usedEppn ? ', "__identifier__": "eppn"' : ''}}`;
 		await Settings.update(
 			{ _id },
 			{
@@ -87,11 +85,7 @@ async function updateFieldMap() {
 }
 
 function updateIdentifierLocation() {
-	Users.update(
-		{ eppn: { $exists: 1 } },
-		{ $rename: { eppn: 'services.saml.eppn' } },
-		{ multi: true },
-	);
+	Users.update({ eppn: { $exists: 1 } }, { $rename: { eppn: 'services.saml.eppn' } }, { multi: true });
 }
 
 function setOldLogoutResponseTemplate() {

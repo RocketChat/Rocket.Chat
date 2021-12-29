@@ -6,11 +6,7 @@ import { Template } from 'meteor/templating';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { settings } from '../../../settings/client';
 
-const getMedia = () =>
-	navigator.getUserMedia ||
-	navigator.webkitGetUserMedia ||
-	navigator.mozGetUserMedia ||
-	navigator.msGetUserMedia;
+const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
 	if (!('WebSocket' in window)) {
 		// eslint-disable-line no-negated-in-lhs
@@ -70,9 +66,7 @@ const waitForBroadcastStatus = async (id, status) => {
 
 Template.broadcastView.helpers({
 	broadcastSource() {
-		return Template.instance().mediaStream.get()
-			? window.URL.createObjectURL(Template.instance().mediaStream.get())
-			: '';
+		return Template.instance().mediaStream.get() ? window.URL.createObjectURL(Template.instance().mediaStream.get()) : '';
 	},
 	mediaRecorder() {
 		Template.instance().mediaRecorder.get();
@@ -80,9 +74,7 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function () {
-	const connection = createAndConnect(
-		`${settings.get('Broadcasting_media_server_url')}/${this.data.id}`,
-	);
+	const connection = createAndConnect(`${settings.get('Broadcasting_media_server_url')}/${this.data.id}`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);
@@ -108,9 +100,7 @@ Template.broadcastView.onRendered(async function () {
 	if (!navigator.getMedia) {
 		return alert('getUserMedia() is not supported in your browser!');
 	}
-	const localMediaStream = await new Promise((resolve, reject) =>
-		navigator.getMedia({ video: true, audio: true }, resolve, reject),
-	);
+	const localMediaStream = await new Promise((resolve, reject) => navigator.getMedia({ video: true, audio: true }, resolve, reject));
 
 	const connection = this.connection.get();
 

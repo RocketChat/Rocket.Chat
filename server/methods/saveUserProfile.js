@@ -85,26 +85,15 @@ function saveUserProfile(settings, customFields) {
 		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
 			// don't let user change to same password
 			if (compareUserPassword(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error(
-					'error-password-same-as-current',
-					'Entered password same as current password',
-					{
-						method: 'saveUserProfile',
-					},
-				);
+				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+					method: 'saveUserProfile',
+				});
 			}
 
-			if (
-				user.services?.passwordHistory &&
-				!compareUserPasswordHistory(user, { plain: settings.newPassword })
-			) {
-				throw new Meteor.Error(
-					'error-password-in-history',
-					'Entered password has been previously used',
-					{
-						method: 'saveUserProfile',
-					},
-				);
+			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
+					method: 'saveUserProfile',
+				});
 			}
 
 			passwordPolicy.validate(settings.newPassword);

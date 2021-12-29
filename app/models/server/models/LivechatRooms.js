@@ -20,10 +20,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
-		this.tryEnsureIndex(
-			{ t: 1, departmentId: 1, closedAt: 1 },
-			{ partialFilterExpression: { closedAt: { $exists: true } } },
-		);
+		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
 		this.tryEnsureIndex({ source: 1 }, { sparse: true });
 	}
 
@@ -201,12 +198,7 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByVisitorTokenAndEmailThreadAndDepartment(
-		visitorToken,
-		emailThread,
-		departmentId,
-		options,
-	) {
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
@@ -357,8 +349,7 @@ export class LivechatRooms extends Base {
 			t: 'l',
 			open: { $exists: false },
 			closedAt: { $exists: true },
-			...(Array.isArray(departmentIds) &&
-				departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
+			...(Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
 		};
 
 		return this.find(query, options);
@@ -439,8 +430,7 @@ export class LivechatRooms extends Base {
 
 		// livechat analytics : update last message timestamps
 		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
-		const agentLastReply =
-			room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (message.token) {
 			// update visitor timestamp, only if its new inquiry and not continuing message
@@ -640,8 +630,7 @@ export class LivechatRooms extends Base {
 	}
 
 	closeByRoomId(roomId, closeInfo) {
-		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } =
-			closeInfo;
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
 		return this.update(
 			{

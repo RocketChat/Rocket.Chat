@@ -108,10 +108,7 @@ Template.contactChatHistory.onRendered(function () {
 
 Template.contactChatHistory.events({
 	'scroll .js-list': _.throttle(function (e, instance) {
-		if (
-			e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 &&
-			instance.hasMore.get()
-		) {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),

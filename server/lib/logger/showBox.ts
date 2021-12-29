@@ -28,8 +28,8 @@ export function showBox(title: string, message: string, color?: LogColors): void
 	}
 	lines.push(separator);
 
-	[...lines, ...msgLines.map((line) => `|  ${s.rpad(line, len)}  |`), separator, topLine].forEach(
-		(line) => console.log(color ? colors[color](line) : line),
+	[...lines, ...msgLines.map((line) => `|  ${s.rpad(line, len)}  |`), separator, topLine].forEach((line) =>
+		console.log(color ? colors[color](line) : line),
 	);
 }
 

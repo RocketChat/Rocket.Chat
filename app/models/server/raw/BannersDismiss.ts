@@ -27,10 +27,7 @@ export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {
 	findByUserIdAndBannerId<P>(
 		userId: string,
 		bannerIds: string[],
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<IBannerDismiss>>
-			| FindOneOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<IBannerDismiss>> | FindOneOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
 	): Cursor<P> | Cursor<IBannerDismiss> {
 		const query = {
 			userId,

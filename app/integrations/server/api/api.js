@@ -144,9 +144,7 @@ function removeIntegration(options, user) {
 		return API.v1.failure('integration-not-found');
 	}
 
-	Meteor.runAsUser(user._id, () =>
-		Meteor.call('deleteOutgoingIntegration', integrationToRemove._id),
-	);
+	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
 	return API.v1.success();
 }
@@ -169,11 +167,7 @@ function executeIntegrationRest() {
 		emoji: this.integration.emoji,
 	};
 
-	if (
-		this.integration.scriptEnabled &&
-		this.integration.scriptCompiled &&
-		this.integration.scriptCompiled.trim() !== ''
-	) {
+	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
 		let script;
 		try {
 			script = getIntegrationScript(this.integration);
@@ -354,17 +348,14 @@ class WebHookAPI extends APIClass {
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
 			!process.env.TEST_MODE &&
-			Boolean(
-				defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS,
-			)
+			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
 	}
 
 	shouldVerifyRateLimit(/* route */) {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' ||
-				settings.get('API_Enable_Rate_Limiter_Dev') === true)
+			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 
@@ -403,12 +394,8 @@ const Api = new WebHookAPI({
 	auth: {
 		user() {
 			const payloadKeys = Object.keys(this.bodyParams);
-			const payloadIsWrapped =
-				this.bodyParams && this.bodyParams.payload && payloadKeys.length === 1;
-			if (
-				payloadIsWrapped &&
-				this.request.headers['content-type'] === 'application/x-www-form-urlencoded'
-			) {
+			const payloadIsWrapped = this.bodyParams && this.bodyParams.payload && payloadKeys.length === 1;
+			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
 				try {
 					this.bodyParams = JSON.parse(this.bodyParams.payload);
 				} catch ({ message }) {
@@ -432,9 +419,7 @@ const Api = new WebHookAPI({
 			);
 
 			if (!this.integration) {
-				incomingLogger.info(
-					`Invalid integration id ${this.request.params.integrationId} or token ${this.request.params.token}`,
-				);
+				incomingLogger.info(`Invalid integration id ${this.request.params.integrationId} or token ${this.request.params.token}`);
 
 				return {
 					error: {

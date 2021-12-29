@@ -18,10 +18,7 @@ Template.invite.helpers({
 	ready() {
 		const instance = Template.instance();
 		return (
-			typeof instance.subscriptionsReady === 'function' &&
-			instance.subscriptionsReady() &&
-			instance.hashReady &&
-			instance.hashReady.get()
+			typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get()
 		);
 	},
 });

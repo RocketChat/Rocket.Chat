@@ -20,12 +20,8 @@ export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean 
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
 	const hasAllPermissionsResult = hasAllPermissions ? hasPermission(hasAllPermissions) : true;
-	const hasOnePermissionResult = hasOnePermission
-		? hasAtLeastOnePermission(hasOnePermission)
-		: true;
-	const hasAllRolesResult = hasAllRoles
-		? hasAllRoles.every((role) => hasRole(Meteor.userId(), role, room?._id))
-		: true;
+	const hasOnePermissionResult = hasOnePermission ? hasAtLeastOnePermission(hasOnePermission) : true;
+	const hasAllRolesResult = hasAllRoles ? hasAllRoles.every((role) => hasRole(Meteor.userId(), role, room?._id)) : true;
 	const hasOneRoleResult = hasOneRole ? hasRole(Meteor.userId(), hasOneRole, room?._id) : true;
 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;

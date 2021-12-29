@@ -25,9 +25,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find(
-			(attachment) => attachment.title || attachment.description,
-		);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
 			return escapeHTML(attachment.description);
@@ -55,10 +53,7 @@ export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper'
 		});
 	});
 
-export const upsertMessage = async (
-	{ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) },
-	collection = ChatMessage,
-) => {
+export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
@@ -195,23 +190,11 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = subscription.t + subscription.name;
 		} else {
 			const curRoomDoc = ChatRoom.findOne({ _id: rid });
-			typeName =
-				(curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const showMessageInMainThread = getUserPreference(
-			Meteor.userId(),
-			'showMessageInMainThread',
-			false,
-		);
-		const result = await callWithErrorHandling(
-			'loadHistory',
-			rid,
-			ts,
-			limit,
-			ls,
-			showMessageInMainThread,
-		);
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
 
 		this.unqueue();
 
@@ -237,9 +220,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = messages.filter(
-			(msg) => !msg.tmid || showMessageInMainThread || msg.tshow,
-		);
+		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
 
 		room.loaded += visibleMessages.length;
 
@@ -285,8 +266,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = subscription.t + subscription.name;
 		} else {
 			const curRoomDoc = ChatRoom.findOne({ _id: rid });
-			typeName =
-				(curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
 		const { ts } = lastMessage;
@@ -350,8 +330,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 			typeName = subscription.t + subscription.name;
 		} else {
 			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
-			typeName =
-				(curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
 		return Meteor.call('loadSurroundingMessages', message, limit, function (err, result) {
@@ -382,8 +361,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 				msgElement.addClass('highlight');
 				room.isLoading.set(false);
 				const messages = wrapper[0];
-				instance.atBottom =
-					!result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
+				instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 				setTimeout(() => msgElement.removeClass('highlight'), 500);
 			});
 

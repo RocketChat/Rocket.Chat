@@ -62,10 +62,7 @@ Template.channelSettings__tokenpass.events({
 		e.preventDefault();
 		const instance = Template.instance();
 		const { balance, token, list } = instance;
-		list.set([
-			...list.get().filter((t) => t.token !== token),
-			{ token: token.get(), balance: balance.get() },
-		]);
+		list.set([...list.get().filter((t) => t.token !== token), { token: token.get(), balance: balance.get() }]);
 
 		[...i.findAll('input')].forEach((el) => {
 			el.value = '';

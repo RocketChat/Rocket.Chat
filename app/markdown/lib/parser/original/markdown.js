@@ -58,8 +58,7 @@ const parseItalic = getRegexReplacer(
 		const finalMarkerCount = getParseableMarkersCount(p2, p4);
 		return wrapper(p2.substring(finalMarkerCount), p3, p4.substring(finalMarkerCount));
 	},
-	() =>
-		new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
+	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
 )('_', 'em');
 
 const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
@@ -131,68 +130,55 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(
-		new RegExp(`!\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'),
-		(match, title, url) => {
-			if (!validateUrl(url, message)) {
-				return match;
-			}
-			if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
-				return match;
-			}
-			url = encodeURI(url);
+	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
+		if (!validateUrl(url, message)) {
+			return match;
+		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
+		url = encodeURI(url);
 
-			const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-			return addAsToken(
-				message,
-				`<a data-title="${url}" href="${url}" title="${title}" target="${target}" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${url});"></div></a>`,
-				'link',
-			);
-		},
-	);
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
+		return addAsToken(
+			message,
+			`<a data-title="${url}" href="${url}" title="${title}" target="${target}" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${url});"></div></a>`,
+			'link',
+		);
+	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(
-		new RegExp(`\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'),
-		(match, title, url) => {
-			if (!validateUrl(url, message)) {
-				return match;
-			}
-			if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
-				return match;
-			}
-			const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-			title = title.replace(/&amp;/g, '&');
+	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
+		if (!validateUrl(url, message)) {
+			return match;
+		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
+		title = title.replace(/&amp;/g, '&');
 
-			const escapedUrl = encodeURI(url);
+		const escapedUrl = encodeURI(url);
 
-			return addAsToken(
-				message,
-				`<a data-title="${escapedUrl}" href="${escapedUrl}" target="${target}" rel="noopener noreferrer">${title}</a>`,
-				'link',
-			);
-		},
-	);
+		return addAsToken(
+			message,
+			`<a data-title="${escapedUrl}" href="${escapedUrl}" target="${target}" rel="noopener noreferrer">${title}</a>`,
+			'link',
+		);
+	});
 
 	// Support <http://link|Text>
-	msg = msg.replace(
-		new RegExp(`(?:<|&lt;)((?:${schemes}):\\\/\\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'),
-		(match, url, title) => {
-			if (!validateUrl(url, message)) {
-				return match;
-			}
-			if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
-				return match;
-			}
-			url = encodeURI(url);
-			const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-			return addAsToken(
-				message,
-				`<a data-title="${url}" href="${url}" target="${target}" rel="noopener noreferrer">${title}</a>`,
-				'link',
-			);
-		},
-	);
+	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${schemes}):\\\/\\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
+		if (!validateUrl(url, message)) {
+			return match;
+		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
+		url = encodeURI(url);
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
+		return addAsToken(message, `<a data-title="${url}" href="${url}" target="${target}" rel="noopener noreferrer">${title}</a>`, 'link');
+	});
 	return msg;
 };
 

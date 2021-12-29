@@ -5,10 +5,7 @@ import { ISetting, ISettingColor, ISettingSelectOption } from '../../../../defin
 
 export class SettingsRaw extends BaseRaw<ISetting> {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
-		const setting = await this.findOne<Pick<ISetting, 'value'>>(
-			{ _id },
-			{ projection: { value: 1 } },
-		);
+		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
 
 		return setting?.value;
 	}
@@ -48,10 +45,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.find(query);
 	}
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(
-		_id: string,
-		value: T,
-	): Promise<WriteOpResult> {
+	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -67,10 +61,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateOptionsById<T extends ISetting = ISetting>(
-		_id: ISetting['_id'],
-		options: UpdateQuery<T>['$set'],
-	): Promise<WriteOpResult> {
+	updateOptionsById<T extends ISetting = ISetting>(_id: ISetting['_id'], options: UpdateQuery<T>['$set']): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			_id,
@@ -81,10 +72,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(
-		_id: ISetting['_id'],
-		value: T,
-	): Promise<WriteOpResult> {
+	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(_id: ISetting['_id'], value: T): Promise<WriteOpResult> {
 		const query = {
 			_id,
 			hidden: { $ne: true },
@@ -125,16 +113,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		ids: ISetting['_id'][] = [],
 	): Cursor<
 		T extends ISettingColor
-			? Pick<
-					T,
-					| '_id'
-					| 'value'
-					| 'editor'
-					| 'enterprise'
-					| 'invalidValue'
-					| 'modules'
-					| 'requiredOnWizard'
-			  >
+			? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
 			: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
 	> {
 		const filter: FilterQuery<ISetting> = {

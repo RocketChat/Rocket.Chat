@@ -24,9 +24,7 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 		return inquiry;
 	}
 
-	cbLogger.debug(
-		`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`,
-	);
+	cbLogger.debug(`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
 	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
 
 	return inquiry;
@@ -90,16 +88,6 @@ settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
 		callbacks.priority.MEDIUM,
 		'livechat-auto-transfer-job-inquiry',
 	);
-	callbacks.add(
-		'afterSaveMessage',
-		handleAfterSaveMessage,
-		callbacks.priority.HIGH,
-		'livechat-cancel-auto-transfer-job-after-message',
-	);
-	callbacks.add(
-		'livechat.closeRoom',
-		handleAfterCloseRoom,
-		callbacks.priority.HIGH,
-		'livechat-cancel-auto-transfer-on-close-room',
-	);
+	callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-job-after-message');
+	callbacks.add('livechat.closeRoom', handleAfterCloseRoom, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-on-close-room');
 });

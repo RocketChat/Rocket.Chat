@@ -45,14 +45,8 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (
-				this.bodyParams.asUser &&
-				msg.u._id !== this.userId &&
-				!hasPermission(this.userId, 'force-delete-message', msg.rid)
-			) {
-				return API.v1.failure(
-					'Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.',
-				);
+			if (this.bodyParams.asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
+				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
 			Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, () => {
@@ -76,22 +70,13 @@ API.v1.addRoute(
 			const { roomId, lastUpdate } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-roomId-param-not-provided',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
 			if (!lastUpdate) {
-				throw new Meteor.Error(
-					'error-lastUpdate-param-not-provided',
-					'The required "lastUpdate" query param is missing.',
-				);
+				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
 			} else if (isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error(
-					'error-roomId-param-invalid',
-					'The "lastUpdate" query parameter must be a valid date.',
-				);
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
 
 			let result;
@@ -146,19 +131,13 @@ API.v1.addRoute(
 	{
 		post() {
 			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error(
-					'error-messageid-param-not-provided',
-					'The required "messageId" param is missing.',
-				);
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
 			}
 
 			const msg = Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error(
-					'error-message-not-found',
-					'The provided "messageId" does not match any existing message.',
-				);
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			let pinnedMessage;
@@ -206,17 +185,11 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-roomId-param-not-provided',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
 			if (!searchText) {
-				throw new Meteor.Error(
-					'error-searchText-param-not-provided',
-					'The required "searchText" query param is missing.',
-				);
+				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 			}
 
 			let result;
@@ -259,19 +232,13 @@ API.v1.addRoute(
 	{
 		post() {
 			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error(
-					'error-messageid-param-not-provided',
-					'The required "messageId" param is required.',
-				);
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 			}
 
 			const msg = Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error(
-					'error-message-not-found',
-					'The provided "messageId" does not match any existing message.',
-				);
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			Meteor.runAsUser(this.userId, () =>
@@ -293,19 +260,13 @@ API.v1.addRoute(
 	{
 		post() {
 			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error(
-					'error-messageid-param-not-provided',
-					'The required "messageId" param is required.',
-				);
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 			}
 
 			const msg = Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error(
-					'error-message-not-found',
-					'The provided "messageId" does not match any existing message.',
-				);
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			Meteor.runAsUser(this.userId, () => Meteor.call('unpinMessage', msg));
@@ -321,19 +282,13 @@ API.v1.addRoute(
 	{
 		post() {
 			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error(
-					'error-messageid-param-not-provided',
-					'The required "messageId" param is required.',
-				);
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 			}
 
 			const msg = Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error(
-					'error-message-not-found',
-					'The provided "messageId" does not match any existing message.',
-				);
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			Meteor.runAsUser(this.userId, () =>
@@ -394,33 +349,22 @@ API.v1.addRoute(
 	{
 		post() {
 			if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
-				throw new Meteor.Error(
-					'error-messageid-param-not-provided',
-					'The required "messageId" param is missing.',
-				);
+				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
 			}
 
 			const msg = Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error(
-					'error-message-not-found',
-					'The provided "messageId" does not match any existing message.',
-				);
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			const emoji = this.bodyParams.emoji || this.bodyParams.reaction;
 
 			if (!emoji) {
-				throw new Meteor.Error(
-					'error-emoji-param-not-provided',
-					'The required "emoji" param is missing.',
-				);
+				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Promise.await(executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact)),
-			);
+			Meteor.runAsUser(this.userId, () => Promise.await(executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact)));
 
 			return API.v1.success();
 		},
@@ -440,9 +384,7 @@ API.v1.addRoute(
 			}
 
 			try {
-				const messageReadReceipts = Meteor.runAsUser(this.userId, () =>
-					Meteor.call('getReadReceipts', { messageId }),
-				);
+				const messageReadReceipts = Meteor.runAsUser(this.userId, () => Meteor.call('getReadReceipts', { messageId }));
 				return API.v1.success({
 					receipts: messageReadReceipts,
 				});
@@ -487,17 +429,11 @@ API.v1.addRoute(
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
 
 			if (!rid || !rid.trim()) {
-				throw new Meteor.Error(
-					'error-room-id-param-not-provided',
-					'The required "rid" param is missing.',
-				);
+				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
 			}
 
 			if (!userId || !userId.trim()) {
-				throw new Meteor.Error(
-					'error-user-id-param-not-provided',
-					'The required "userId" param is missing.',
-				);
+				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
 			}
 
 			Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
@@ -557,10 +493,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-roomId-param-not-provided',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
 			if (!canAccessRoom({ _id: roomId }, { _id: this.userId })) {
@@ -651,22 +584,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
 			if (!rid) {
-				throw new Meteor.Error(
-					'error-room-id-param-not-provided',
-					'The required "rid" query param is missing.',
-				);
+				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" query param is missing.');
 			}
 			if (!updatedSince) {
-				throw new Meteor.Error(
-					'error-updatedSince-param-invalid',
-					'The required param "updatedSince" is missing.',
-				);
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
 			}
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error(
-					'error-updatedSince-param-invalid',
-					'The "updatedSince" query parameter must be a valid date.',
-				);
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
@@ -678,10 +602,7 @@ API.v1.addRoute(
 			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
 			return API.v1.success({
 				threads: {
-					update: Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
-						{ fields, sort },
-					).fetch(),
+					update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
 					remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
 						fields,
 						sort,
@@ -705,10 +626,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
 			if (!tmid) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "tmid" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
 			}
 			const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
 			if (!thread || !thread.rid) {
@@ -757,22 +675,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
 			if (!tmid) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "tmid" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
 			}
 			if (!updatedSince) {
-				throw new Meteor.Error(
-					'error-updatedSince-param-invalid',
-					'The required param "updatedSince" is missing.',
-				);
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
 			}
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error(
-					'error-updatedSince-param-invalid',
-					'The "updatedSince" query parameter must be a valid date.',
-				);
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
@@ -788,15 +697,8 @@ API.v1.addRoute(
 			}
 			return API.v1.success({
 				messages: {
-					update: Messages.find(
-						{ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } },
-						{ fields, sort },
-					).fetch(),
-					remove: Messages.trashFindDeletedAfter(
-						updatedSinceDate,
-						{ ...query, tmid },
-						{ fields, sort },
-					).fetch(),
+					update: Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
+					remove: Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { fields, sort }).fetch(),
 				},
 			});
 		},
@@ -844,10 +746,7 @@ API.v1.addRoute(
 			const { sort } = this.parseJsonQuery();
 			const { offset, count } = this.getPaginationItems();
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
 			const messages = Promise.await(
 				findMentionedMessages({
@@ -875,10 +774,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
 			const messages = Promise.await(
 				findStarredMessages({
@@ -907,10 +803,7 @@ API.v1.addRoute(
 			const { messageId } = this.queryParams;
 
 			if (!messageId) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "messageId" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "messageId" query param is missing.');
 			}
 			const message = Promise.await(
 				findSnippetedMessageById({
@@ -933,10 +826,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
 			const messages = Promise.await(
 				findSnippetedMessages({
@@ -964,10 +854,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 
 			if (!roomId) {
-				throw new Meteor.Error(
-					'error-invalid-params',
-					'The required "roomId" query param is missing.',
-				);
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
 			const messages = await findDiscussionsFromRoom({
 				uid: this.userId,

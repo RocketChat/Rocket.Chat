@@ -31,9 +31,7 @@ class SettingsClass {
 	}
 
 	findOne(query: Dictionary): any {
-		return [...this.data.values()].find((data) =>
-			Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)),
-		);
+		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)));
 	}
 
 	insert(doc: any): void {

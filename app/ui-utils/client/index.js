@@ -7,11 +7,7 @@ export { messageBox } from './lib/messageBox';
 export { popover } from './lib/popover';
 export { readMessage } from './lib/readMessages';
 export { RoomManager } from './lib/RoomManager';
-export {
-	upsertMessage,
-	RoomHistoryManager,
-	normalizeThreadMessage,
-} from './lib/RoomHistoryManager';
+export { upsertMessage, RoomHistoryManager, normalizeThreadMessage } from './lib/RoomHistoryManager';
 export { mainReady } from './lib/mainReady';
 export { IframeLogin, iframeLogin } from './lib/IframeLogin';
 export { popout } from './lib/popout';

@@ -102,14 +102,7 @@ export class Store {
 		// Public attributes
 		self.options = options;
 		self.permissions = options.permissions;
-		[
-			'onCopyError',
-			'onFinishUpload',
-			'onRead',
-			'onReadError',
-			'onWriteError',
-			'onValidate',
-		].forEach((method) => {
+		['onCopyError', 'onFinishUpload', 'onRead', 'onReadError', 'onWriteError', 'onValidate'].forEach((method) => {
 			if (typeof options[method] === 'function') {
 				self[method] = options[method];
 			}
@@ -605,15 +598,7 @@ export class Store {
 	 */
 	transformRead(readStream, writeStream, fileId, file, request, headers) {
 		if (typeof this.options.transformRead === 'function') {
-			this.options.transformRead.call(
-				this,
-				readStream,
-				writeStream,
-				fileId,
-				file,
-				request,
-				headers,
-			);
+			this.options.transformRead.call(this, readStream, writeStream, fileId, file, request, headers);
 		} else {
 			readStream.pipe(writeStream);
 		}

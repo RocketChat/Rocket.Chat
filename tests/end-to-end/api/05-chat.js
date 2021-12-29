@@ -528,10 +528,7 @@ describe('[Chat]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						"The 'rid' property on the message object is missing.",
-					);
+					expect(res.body).to.have.property('error', "The 'rid' property on the message object is missing.");
 				})
 				.end(done);
 		});
@@ -767,15 +764,9 @@ describe('[Chat]', function () {
 					emoji: ':smirk:',
 				};
 
-				const ytPostResponse = await request
-					.post(api('chat.sendMessage'))
-					.set(credentials)
-					.send({ message: ytEmbedMsgPayload });
+				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
 
-				const imgUrlResponse = await request
-					.post(api('chat.sendMessage'))
-					.set(credentials)
-					.send({ message: imgUrlMsgPayload });
+				const imgUrlResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: imgUrlMsgPayload });
 
 				ytEmbedMsgId = ytPostResponse.body.message._id;
 				imgUrlMsgId = imgUrlResponse.body.message._id;
@@ -793,10 +784,7 @@ describe('[Chat]', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
-							expect(res.body)
-								.to.have.property('message')
-								.to.have.property('urls')
-								.to.be.an('array').that.is.not.empty;
+							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
 							expect(res.body.message.urls[0])
 								.to.have.property('meta')
@@ -818,14 +806,9 @@ describe('[Chat]', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
-							expect(res.body)
-								.to.have.property('message')
-								.to.have.property('urls')
-								.to.be.an('array').that.is.not.empty;
+							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0])
-								.to.have.property('headers')
-								.to.have.property('contentType', 'image/jpeg');
+							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
 				}, 200);
@@ -1011,10 +994,7 @@ describe('[Chat]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property(
-						'message.msg',
-						'This message was edited via API',
-					);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 				})
 				.end(done);
 		});
@@ -1546,9 +1526,7 @@ describe('[Chat]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal(
-							'The "since" query parameter must be a valid date.',
-						);
+						expect(res.body.errorType).to.be.equal('The "since" query parameter must be a valid date.');
 					})
 					.end(done);
 			});
@@ -2444,10 +2422,7 @@ describe('Threads', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
-						expect(res.body).to.have.property(
-							'error',
-							'The required "rid" query param is missing. [error-room-id-param-not-provided]',
-						);
+						expect(res.body).to.have.property('error', 'The required "rid" query param is missing. [error-room-id-param-not-provided]');
 					})
 					.end(done);
 			});
@@ -2466,10 +2441,7 @@ describe('Threads', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
 					})
 					.end(done);
 			});
@@ -2693,10 +2665,7 @@ describe('Threads', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-						expect(res.body).to.have.property(
-							'error',
-							'The required "tmid" query param is missing. [error-invalid-params]',
-						);
+						expect(res.body).to.have.property('error', 'The required "tmid" query param is missing. [error-invalid-params]');
 					})
 					.end(done);
 			});
@@ -2715,10 +2684,7 @@ describe('Threads', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
 					})
 					.end(done);
 			});
@@ -2800,24 +2766,22 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.follow.${Date.now()}` }).end(
-				(err, res) => {
-					testChannel = res.body.channel;
+			createRoom({ type: 'c', name: `channel.test.threads.follow.${Date.now()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Message to create thread',
+				}).end((err, message) => {
 					sendSimpleMessage({
 						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
+						text: 'Thread Message',
+						tmid: message.body.message._id,
+					}).end((err, res) => {
+						threadMessage = res.body.message;
+						done();
 					});
-				},
-			);
+				});
+			});
 		});
 
 		it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
@@ -2903,24 +2867,22 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.unfollow.${Date.now()}` }).end(
-				(err, res) => {
-					testChannel = res.body.channel;
+			createRoom({ type: 'c', name: `channel.test.threads.unfollow.${Date.now()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Message to create thread',
+				}).end((err, message) => {
 					sendSimpleMessage({
 						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
+						text: 'Thread Message',
+						tmid: message.body.message._id,
+					}).end((err, res) => {
+						threadMessage = res.body.message;
+						done();
 					});
-				},
-			);
+				});
+			});
 		});
 
 		it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {

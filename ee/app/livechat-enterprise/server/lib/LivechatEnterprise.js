@@ -144,8 +144,7 @@ export const LivechatEnterprise = {
 			dueTimeInMinutes: String,
 		});
 
-		const oldPriority =
-			_id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
+		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
 		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
 		if (!oldPriority) {
 			return priority;
@@ -293,9 +292,7 @@ function shouldQueueStart() {
 
 	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
 	queueLogger.debug(
-		`Routing method ${
-			RoutingManager.methodName
-		} supports auto assignment: ${routingSupportsAutoAssign}. ${
+		`Routing method ${RoutingManager.methodName} supports auto assignment: ${routingSupportsAutoAssign}. ${
 			routingSupportsAutoAssign ? 'Starting' : 'Stopping'
 		} queue`,
 	);

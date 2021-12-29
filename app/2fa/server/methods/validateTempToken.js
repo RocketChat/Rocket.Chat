@@ -23,11 +23,7 @@ Meteor.methods({
 		if (verified) {
 			const { codes, hashedCodes } = TOTP.generateCodes();
 
-			Users.enable2FAAndSetSecretAndCodesByUserId(
-				Meteor.userId(),
-				user.services.totp.tempSecret,
-				hashedCodes,
-			);
+			Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
 			return { codes };
 		}
 	},

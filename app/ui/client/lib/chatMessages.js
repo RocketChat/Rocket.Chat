@@ -61,12 +61,7 @@ const messageBoxState = {
 	},
 };
 
-callbacks.add(
-	'afterLogoutCleanUp',
-	messageBoxState.purgeAll,
-	callbacks.priority.MEDIUM,
-	'chatMessages-after-logout-cleanup',
-);
+callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 
 export class ChatMessages {
 	constructor(collection = ChatMessage) {
@@ -151,11 +146,7 @@ export class ChatMessages {
 			return message && this.edit(message, false);
 		}
 
-		for (
-			let previous = element.previousElementSibling;
-			previous;
-			previous = previous.previousElementSibling
-		) {
+		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
 			if (previous.matches('.own:not(.system)')) {
 				return this.edit(previous, false);
 			}
@@ -274,10 +265,7 @@ export class ChatMessages {
 		}
 
 		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-		const originalMessage = this.collection.findOne(
-			{ _id: this.editing.id },
-			{ fields: { tmid: 1 }, reactive: false },
-		);
+		const originalMessage = this.collection.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
 		if (originalMessage && tmid && !originalMessage.tmid) {
 			tmid = undefined;
 			tshow = undefined;
@@ -306,8 +294,7 @@ export class ChatMessages {
 
 		if (this.editing.id) {
 			const message = this.collection.findOne(this.editing.id);
-			const isDescription =
-				message.attachments && message.attachments[0] && message.attachments[0].description;
+			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
 
 			try {
 				if (isDescription) {
@@ -360,28 +347,18 @@ export class ChatMessages {
 			return false;
 		}
 
-		const lastMessage = this.collection.findOne(
-			{ rid, tmid },
-			{ fields: { ts: 1 }, sort: { ts: -1 } },
-		);
+		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
 
 	async processTooLongMessage({ msg, rid, tmid }) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
-		if (
-			messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') &&
-			msg
-		) {
+		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
 		}
 
-		if (
-			!settings.get('FileUpload_Enabled') ||
-			!settings.get('Message_AllowConvertLongMessagesToAttachment') ||
-			this.editing.id
-		) {
+		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
 			throw new Error({ error: 'Message_too_long' });
 		}
 
@@ -441,26 +418,19 @@ export class ChatMessages {
 					command = match[1];
 					const param = match[2] || '';
 
-					if (
-						!commandOptions.permission ||
-						hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))
-					) {
+					if (!commandOptions.permission || hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
-							Meteor.call(
-								'slashCommand',
-								{ cmd: command, params: param, msg: msgObject, triggerId },
-								(err, result) => {
-									typeof commandOptions.result === 'function' &&
-										commandOptions.result(err, result, {
-											cmd: command,
-											params: param,
-											msg: msgObject,
-										});
-								},
-							);
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
+								typeof commandOptions.result === 'function' &&
+									commandOptions.result(err, result, {
+										cmd: command,
+										params: param,
+										msg: msgObject,
+									});
+							});
 						}
 
 						return true;
@@ -527,9 +497,7 @@ export class ChatMessages {
 			component: GenericModal,
 			props: {
 				title: t('Are_you_sure'),
-				children: room
-					? t('The_message_is_a_discussion_you_will_not_be_able_to_recover')
-					: t('You_will_not_be_able_to_recover'),
+				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
 				variant: 'danger',
 				confirmText: t('Yes_delete_it'),
 				onConfirm,

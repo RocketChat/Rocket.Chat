@@ -43,10 +43,7 @@ export class POP3Intercepter {
 		this.pop3.on(
 			'connect',
 			Meteor.bindEnvironment(() => {
-				this.pop3.login(
-					settings.get('Direct_Reply_Username'),
-					settings.get('Direct_Reply_Password'),
-				);
+				this.pop3.login(settings.get('Direct_Reply_Username'), settings.get('Direct_Reply_Password'));
 			}),
 		);
 

@@ -2,14 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { memoizeDebounce } from './debounceByParams';
-import {
-	LivechatDepartment,
-	Users,
-	LivechatInquiry,
-	LivechatRooms,
-	Messages,
-	LivechatCustomField,
-} from '../../../../../app/models/server';
+import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms, Messages, LivechatCustomField } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -48,13 +41,8 @@ const getWaitingQueueMessage = (departmentId) => {
 };
 
 const getQueueInfo = async (department) => {
-	const numberMostRecentChats = settings.get(
-		'Livechat_number_most_recent_chats_estimate_wait_time',
-	);
-	const statistics = await RoomRaw.getMostRecentAverageChatDurationTime(
-		numberMostRecentChats,
-		department,
-	);
+	const numberMostRecentChats = settings.get('Livechat_number_most_recent_chats_estimate_wait_time');
+	const statistics = await RoomRaw.getMostRecentAverageChatDurationTime(numberMostRecentChats, department);
 	const text = getWaitingQueueMessage(department);
 	const message = {
 		text,
@@ -80,11 +68,7 @@ export const normalizeQueueInfo = async ({ position, queueInfo, department }) =>
 
 	const { message, numberMostRecentChats, statistics: { avgChatDuration } = {} } = queueInfo;
 	const spot = position + 1;
-	const estimatedWaitTimeSeconds = getSpotEstimatedWaitTime(
-		spot,
-		numberMostRecentChats,
-		avgChatDuration,
-	);
+	const estimatedWaitTimeSeconds = getSpotEstimatedWaitTime(spot, numberMostRecentChats, avgChatDuration);
 	return { spot, message, estimatedWaitTimeSeconds };
 };
 
@@ -104,10 +88,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
-	if (
-		!settings.get('Livechat_waiting_queue') &&
-		!settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
-	) {
+	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		return;
 	}
 
@@ -126,10 +107,7 @@ export const dispatchWaitingQueueStatus = async (department) => {
 
 // When dealing with lots of queued items we need to make sure to notify their position
 // but we don't need to notify _each_ change that takes place, just their final position
-export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(
-	dispatchWaitingQueueStatus,
-	1200,
-);
+export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
 export const processWaitingQueue = async (department) => {
 	const queue = department || 'Public';
@@ -181,22 +159,15 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 		return;
 	}
 
-	const willBeAbandonedAt = moment(room.v.lastMessageTs)
-		.add(Number(secondsToAdd), 'seconds')
-		.toDate();
+	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
 	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
 };
 
 export const updatePredictedVisitorAbandonment = () => {
-	if (
-		!settings.get('Livechat_abandoned_rooms_action') ||
-		settings.get('Livechat_abandoned_rooms_action') === 'none'
-	) {
+	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
 	} else {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) =>
-			setPredictedVisitorAbandonmentTime(room),
-		);
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
 
@@ -217,10 +188,7 @@ export const updateQueueInactivityTimeout = () => {
 	LivechatInquiry.getQueuedInquiries({ fields: { _updatedAt: 1 } }).forEach((inq) => {
 		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
 		try {
-			return OmnichannelQueueInactivityMonitor.scheduleInquiry(
-				inq._id,
-				new Date(aggregatedDate.format()),
-			);
+			return OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, new Date(aggregatedDate.format()));
 		} catch (e) {
 			// this will usually happen if other instance attempts to re-create a job
 			logger.error({ err: e });
@@ -253,9 +221,7 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 		const { dueTimeInMinutes } = priority;
 		queueOrder = 0;
 		estimatedWaitingTimeQueue = dueTimeInMinutes;
-		estimatedServiceTimeAt = new Date(
-			estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes),
-		);
+		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
 
 	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
@@ -290,17 +256,15 @@ export const getLivechatCustomFields = () => {
 		scope: 'visitor',
 		public: true,
 	}).fetch();
-	return customFields.map(
-		({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({
-			_id,
-			label,
-			regexp,
-			required,
-			type,
-			defaultValue,
-			...(options && options !== '' && { options: options.split(',') }),
-		}),
-	);
+	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({
+		_id,
+		label,
+		regexp,
+		required,
+		type,
+		defaultValue,
+		...(options && options !== '' && { options: options.split(',') }),
+	}));
 };
 
 export const getLivechatQueueInfo = async (room) => {

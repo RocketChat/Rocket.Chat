@@ -29,10 +29,7 @@ function getCloudUrl(path, _site_url, cloudRoute, cloudParams = {}) {
 	return `${cloudBaseUrl}/${cloudRoute}?${params}`;
 }
 
-export const _getURL = (
-	path,
-	{ cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url },
-) => {
+export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }) => {
 	if (isURL(path)) {
 		return path;
 	}
@@ -66,10 +63,7 @@ export const _getURL = (
 	return url;
 };
 
-export const getURL = (
-	path,
-	{ cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} } = {},
-) =>
+export const getURL = (path, { cdn = true, full = false, cloud = false, cloud_route = '', cloud_params = {} } = {}) =>
 	_getURL(path, {
 		cdn,
 		full,

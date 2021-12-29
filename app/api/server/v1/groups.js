@@ -5,12 +5,7 @@ import { Match, check } from 'meteor/check';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import {
-	hasPermission,
-	hasAtLeastOnePermission,
-	canAccessRoom,
-	hasAllPermission,
-} from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -19,10 +14,7 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
-		throw new Meteor.Error(
-			'error-room-param-not-provided',
-			'The parameter "roomId" or "roomName" is required',
-		);
+		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const roomOptions = {
@@ -36,24 +28,16 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 			broadcast: 1,
 		},
 	};
-	const room = params.roomId
-		? Rooms.findOneById(params.roomId, roomOptions)
-		: Rooms.findOneByName(params.roomName, roomOptions);
+	const room = params.roomId ? Rooms.findOneById(params.roomId, roomOptions) : Rooms.findOneByName(params.roomName, roomOptions);
 
 	if (!room || room.t !== 'p') {
-		throw new Meteor.Error(
-			'error-room-not-found',
-			'The required "roomId" or "roomName" param provided does not match any group',
-		);
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	const user = Users.findOneById(userId, { fields: { username: 1 } });
 
 	if (!canAccessRoom(room, user)) {
-		throw new Meteor.Error(
-			'error-room-not-found',
-			'The required "roomId" or "roomName" param provided does not match any group',
-		);
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	// discussions have their names saved on `fname` property
@@ -90,10 +74,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -192,9 +173,7 @@ API.v1.addRoute(
 			});
 
 			if (!findResult.open) {
-				return API.v1.failure(
-					`The private group, ${findResult.name}, is already closed to the sender`,
-				);
+				return API.v1.failure(`The private group, ${findResult.name}, is already closed to the sender`);
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -223,14 +202,8 @@ API.v1.addRoute(
 			let latest = null;
 			let members = null;
 
-			if (
-				(!params.roomId || !params.roomId.trim()) &&
-				(!params.roomName || !params.roomName.trim())
-			) {
-				throw new Meteor.Error(
-					'error-room-param-not-provided',
-					'The parameter "roomId" or "roomName" is required',
-				);
+			if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
+				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 			}
 
 			if (params.roomId) {
@@ -240,17 +213,11 @@ API.v1.addRoute(
 			}
 
 			if (!room || room.t !== 'p') {
-				throw new Meteor.Error(
-					'error-room-not-found',
-					'The required "roomId" or "roomName" param provided does not match any group',
-				);
+				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
 			if (room.archived) {
-				throw new Meteor.Error(
-					'error-room-archived',
-					`The private group, ${room.name}, is archived`,
-				);
+				throw new Meteor.Error('error-room-archived', `The private group, ${room.name}, is archived`);
 			}
 
 			if (params.userId) {
@@ -263,11 +230,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (typeof subscription !== 'undefined' && subscription.open) {
-				unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(
-					subscription.rid,
-					subscription.ls || subscription.ts,
-					lm,
-				);
+				unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;
@@ -317,8 +280,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body param "extraData" must be an object if provided');
 			}
 
-			const readOnly =
-				typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
+			const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 			let id;
 
@@ -334,10 +296,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(id.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(id.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -531,10 +490,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -548,39 +504,25 @@ API.v1.addRoute(
 			const { roomId = '', roomName = '' } = this.requestParams();
 			const idOrName = roomId || roomName;
 			if (!idOrName.trim()) {
-				throw new Meteor.Error(
-					'error-room-param-not-provided',
-					'The parameter "roomId" or "roomName" is required',
-				);
+				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 			}
 
 			const { _id: rid, t: type } = Rooms.findOneByIdOrName(idOrName) || {};
 
 			if (!rid || type !== 'p') {
-				throw new Meteor.Error(
-					'error-room-not-found',
-					'The required "roomId" or "roomName" param provided does not match any group',
-				);
+				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
 			const users = this.getUserListFromParams();
 
 			if (!users.length) {
-				throw new Meteor.Error(
-					'error-empty-invite-list',
-					'Cannot invite if no valid users are provided',
-				);
+				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('addUsersToRoom', { rid, users: users.map((u) => u.username) }),
-			);
+			Meteor.runAsUser(this.userId, () => Meteor.call('addUsersToRoom', { rid, users: users.map((u) => u.username) }));
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -829,9 +771,7 @@ API.v1.addRoute(
 			});
 
 			if (findResult.open) {
-				return API.v1.failure(
-					`The private group, ${findResult.name}, is already open for the sender`,
-				);
+				return API.v1.failure(`The private group, ${findResult.name}, is already open for the sender`);
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -925,10 +865,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -949,19 +886,11 @@ API.v1.addRoute(
 			});
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult.rid,
-					'roomCustomFields',
-					this.bodyParams.customFields,
-				);
+				Meteor.call('saveRoomSettings', findResult.rid, 'roomCustomFields', this.bodyParams.customFields);
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -982,12 +911,7 @@ API.v1.addRoute(
 			});
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult.rid,
-					'roomDescription',
-					this.bodyParams.description,
-				);
+				Meteor.call('saveRoomSettings', findResult.rid, 'roomDescription', this.bodyParams.description);
 			});
 
 			return API.v1.success({
@@ -1037,9 +961,7 @@ API.v1.addRoute(
 			});
 
 			if (findResult.ro === this.bodyParams.readOnly) {
-				return API.v1.failure(
-					'The private group read only setting is the same as what it would be changed to.',
-				);
+				return API.v1.failure('The private group read only setting is the same as what it would be changed to.');
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -1047,10 +969,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -1104,10 +1023,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -1128,12 +1044,7 @@ API.v1.addRoute(
 			});
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult.rid,
-					'roomAnnouncement',
-					this.bodyParams.announcement,
-				);
+				Meteor.call('saveRoomSettings', findResult.rid, 'roomAnnouncement', this.bodyParams.announcement);
 			});
 
 			return API.v1.success({
@@ -1173,9 +1084,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			const roles = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getRoomRoles', findResult.rid),
-			);
+			const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult.rid));
 
 			return API.v1.success({
 				roles,
@@ -1224,10 +1133,7 @@ API.v1.addRoute(
 			Meteor.call('saveRoomSettings', findResult.rid, 'encrypted', this.bodyParams.encrypted);
 
 			return API.v1.success({
-				group: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},

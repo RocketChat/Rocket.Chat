@@ -22,11 +22,7 @@ Template.visitorForward.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${
-				f.length === 0
-					? text
-					: text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)
-			}`;
+			return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	agentConditions() {
@@ -44,11 +40,7 @@ Template.visitorForward.helpers({
 	departmentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `${
-				f.length === 0
-					? text
-					: text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)
-			}`;
+			return `${f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	onClickTagDepartment() {

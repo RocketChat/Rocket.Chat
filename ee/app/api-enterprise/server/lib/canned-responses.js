@@ -73,16 +73,7 @@ export async function findAllCannedResponses({ userId }) {
 	}).toArray();
 }
 
-export async function findAllCannedResponsesFilter({
-	userId,
-	shortcut,
-	text,
-	departmentId,
-	scope,
-	createdBy,
-	tags = [],
-	options = {},
-}) {
+export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
 	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -109,8 +100,7 @@ export async function findAllCannedResponsesFilter({
 
 		const isDepartmentInScope = (departmentId) => !!combinedDepartments.includes(departmentId);
 
-		const departmentIds =
-			departmentId && isDepartmentInScope(departmentId) ? [departmentId] : combinedDepartments;
+		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : combinedDepartments;
 
 		extraFilter = [
 			{

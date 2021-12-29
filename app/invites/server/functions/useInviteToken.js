@@ -24,11 +24,10 @@ export const useInviteToken = async (userId, token) => {
 	const { inviteData, room } = await validateInviteToken(token);
 
 	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
-		throw new Meteor.Error(
-			'error-room-type-not-allowed',
-			"Can't join room of this type via invite",
-			{ method: 'useInviteToken', field: 'token' },
-		);
+		throw new Meteor.Error('error-room-type-not-allowed', "Can't join room of this type via invite", {
+			method: 'useInviteToken',
+			field: 'token',
+		});
 	}
 
 	const user = Users.findOneById(userId);

@@ -84,26 +84,20 @@ Template.closeRoom.events({
 			return;
 		}
 
-		Meteor.call(
-			'livechat:closeRoom',
-			this.rid,
-			comment,
-			{ clientAction: true, tags },
-			function (error /* , result*/) {
-				if (error) {
-					console.log(error);
-					return handleError(error);
-				}
+		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function (error /* , result*/) {
+			if (error) {
+				console.log(error);
+				return handleError(error);
+			}
 
-				modal.open({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			},
-		);
+			modal.open({
+				title: t('Chat_closed'),
+				text: t('Chat_closed_successfully'),
+				type: 'success',
+				timer: 1000,
+				showConfirmButton: false,
+			});
+		});
 	},
 	'click .remove-tag'(e, instance) {
 		e.stopPropagation();
@@ -170,17 +164,14 @@ Template.closeRoom.onCreated(async function () {
 	this.availableUserTags = new ReactiveVar([]);
 	this.agentDepartments = new ReactiveVar([]);
 
-	this.onEnterTag = () =>
-		this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
+	this.onEnterTag = () => this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
 
 	const { rid } = Template.currentData();
 	const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
 	this.tags.set(room?.tags || []);
 
 	if (room?.departmentId) {
-		const { department } = await APIClient.v1.get(
-			`livechat/department/${room.departmentId}?includeAgents=false`,
-		);
+		const { department } = await APIClient.v1.get(`livechat/department/${room.departmentId}?includeAgents=false`);
 		this.tagsRequired.set(department?.requestTagBeforeClosingChat);
 	}
 
@@ -193,12 +184,7 @@ Template.closeRoom.onCreated(async function () {
 		this.availableTags.set(tagsList);
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const availableTags = tagsList
-			.filter(
-				({ departments }) =>
-					isAdmin ||
-					departments.length === 0 ||
-					departments.some((i) => agentDepartments.includes(i)),
-			)
+			.filter(({ departments }) => isAdmin || departments.length === 0 || departments.some((i) => agentDepartments.includes(i)))
 			.map(({ name }) => name);
 		this.availableUserTags.set(availableTags);
 	});

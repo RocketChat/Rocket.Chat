@@ -31,14 +31,7 @@ export async function buildWorkspaceRegistrationData() {
 
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 
-	const {
-		organizationType,
-		industry,
-		size: orgSize,
-		country,
-		language,
-		serverType: workspaceType,
-	} = stats.wizard;
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
 	const seats = Users.getActiveLocalUserCount();
 
 	return {

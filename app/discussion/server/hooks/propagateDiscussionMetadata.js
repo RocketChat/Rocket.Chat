@@ -48,11 +48,7 @@ callbacks.add(
 	'afterRoomNameChange',
 	(roomConfig) => {
 		const { rid, name, oldName } = roomConfig;
-		Rooms.update(
-			{ prid: rid, ...(oldName && { topic: oldName }) },
-			{ $set: { topic: name } },
-			{ multi: true },
-		);
+		Rooms.update({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } }, { multi: true });
 		return roomConfig;
 	},
 	callbacks.priority.LOW,

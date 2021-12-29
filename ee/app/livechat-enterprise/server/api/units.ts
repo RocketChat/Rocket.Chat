@@ -43,9 +43,7 @@ API.v1.addRoute(
 				unitId,
 			});
 
-			return API.v1.success(
-				deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }),
-			);
+			return API.v1.success(deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }));
 		},
 	},
 );

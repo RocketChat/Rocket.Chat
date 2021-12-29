@@ -4,15 +4,7 @@ import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
-const whitelistedFields = [
-	'id',
-	'name',
-	'description',
-	'profile_image_url',
-	'profile_image_url_https',
-	'lang',
-	'email',
-];
+const whitelistedFields = ['id', 'name', 'description', 'profile_image_url', 'profile_image_url_https', 'lang', 'email'];
 
 const getIdentity = function (accessToken, appId, appSecret, accessTokenSecret) {
 	const Twitter = new Twit({
@@ -44,12 +36,7 @@ registerAccessTokenService('twitter', function (options) {
 		}),
 	);
 
-	const identity = getIdentity(
-		options.accessToken,
-		options.appId,
-		options.appSecret,
-		options.accessTokenSecret,
-	);
+	const identity = getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
 
 	const serviceData = {
 		accessToken: options.accessToken,

@@ -1,10 +1,5 @@
 import { hasPermission, hasRole } from '../../authorization/server';
-import {
-	LivechatDepartment,
-	LivechatDepartmentAgents,
-	LivechatInquiry,
-	LivechatRooms,
-} from '../../models/server';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 export const validators = [
@@ -20,10 +15,7 @@ export const validators = [
 		}
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return (
-			userId === agentId ||
-			(!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'))
-		);
+		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
 	function (room, user, extraData) {
 		if (extraData && extraData.rid) {
@@ -69,10 +61,7 @@ export const validators = [
 		if (!room.departmentId || room.open || !user?._id) {
 			return;
 		}
-		const agentOfDepartment = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(
-			user._id,
-			room.departmentId,
-		);
+		const agentOfDepartment = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
 		if (!agentOfDepartment) {
 			return;
 		}

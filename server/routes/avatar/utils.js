@@ -49,9 +49,7 @@ function isUserAuthenticated({ headers, query }) {
 }
 
 const warnUnauthenticatedAccess = throttle(() => {
-	console.warn(
-		'The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.',
-	);
+	console.warn('The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.');
 }, 60000 * 30); // 30 minutes
 
 export function userCanAccessAvatar({ headers = {}, query = {} }) {

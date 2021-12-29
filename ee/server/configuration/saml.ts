@@ -6,26 +6,23 @@ import { addSettings } from '../settings/saml';
 import { Users } from '../../../app/models/server';
 
 onLicense('saml-enterprise', () => {
-	SAMLUtils.events.on(
-		'mapUser',
-		({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {
-			const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
-			const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
+	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {
+		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
+		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
-			if (!roleAttributeSync) {
-				return;
+		if (!roleAttributeSync) {
+			return;
+		}
+
+		if (roleAttributeName && profile[roleAttributeName]) {
+			let value = profile[roleAttributeName] || '';
+			if (typeof value === 'string') {
+				value = value.split(',');
 			}
 
-			if (roleAttributeName && profile[roleAttributeName]) {
-				let value = profile[roleAttributeName] || '';
-				if (typeof value === 'string') {
-					value = value.split(',');
-				}
-
-				userObject.roles = SAMLUtils.ensureArray<string>(value);
-			}
-		},
-	);
+			userObject.roles = SAMLUtils.ensureArray<string>(value);
+		}
+	});
 
 	SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, any>): void => {
 		// Include ee settings on the configs object so that they can be copied to the login service too
@@ -43,34 +40,27 @@ onLicense('saml-enterprise', () => {
 		});
 	});
 
-	SAMLUtils.events.on(
-		'updateCustomFields',
-		(loginResult: Record<string, any>, updatedUser: { userId: string; token: string }) => {
-			const userDataCustomFieldMap = settings.get(
-				'SAML_Custom_Default_user_data_custom_fieldmap',
-			) as string;
-			const customMap: Record<string, any> = JSON.parse(userDataCustomFieldMap);
+	SAMLUtils.events.on('updateCustomFields', (loginResult: Record<string, any>, updatedUser: { userId: string; token: string }) => {
+		const userDataCustomFieldMap = settings.get('SAML_Custom_Default_user_data_custom_fieldmap') as string;
+		const customMap: Record<string, any> = JSON.parse(userDataCustomFieldMap);
 
-			const customFieldsList: Record<string, any> = {};
+		const customFieldsList: Record<string, any> = {};
 
-			for (const spCustomFieldName in customMap) {
-				if (!customMap.hasOwnProperty(spCustomFieldName)) {
-					continue;
-				}
-
-				const customAttribute = customMap[spCustomFieldName];
-				const value = SAMLUtils.getProfileValue(loginResult.profile, {
-					fieldName: spCustomFieldName,
-				});
-				customFieldsList[customAttribute] = value;
+		for (const spCustomFieldName in customMap) {
+			if (!customMap.hasOwnProperty(spCustomFieldName)) {
+				continue;
 			}
 
-			Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
-		},
-	);
+			const customAttribute = customMap[spCustomFieldName];
+			const value = SAMLUtils.getProfileValue(loginResult.profile, {
+				fieldName: spCustomFieldName,
+			});
+			customFieldsList[customAttribute] = value;
+		}
+
+		Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
+	});
 });
 
 // For setting creation we add the listener first because the event is emmited during startup
-SAMLUtils.events.on('addSettings', (name: string): void =>
-	onLicense('saml-enterprise', () => addSettings(name)),
-);
+SAMLUtils.events.on('addSettings', (name: string): void => onLicense('saml-enterprise', () => addSettings(name)));

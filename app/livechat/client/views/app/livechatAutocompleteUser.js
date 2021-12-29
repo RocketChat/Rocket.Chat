@@ -40,10 +40,7 @@ Template.livechatAutocompleteUser.events({
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
-		document.activeElement === input &&
-			e &&
-			/input/i.test(e.type) &&
-			(input.selectionEnd = position + input.value.length - length);
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.filter.set(input.value);
 	},
 	'click .rc-popup-list__item'(e, t) {
@@ -93,14 +90,7 @@ Template.livechatAutocompleteUser.onCreated(function () {
 		filter.conditions = conditions;
 	});
 
-	const {
-		collection,
-		endpoint,
-		field,
-		sort,
-		onSelect,
-		selector = (match) => ({ term: match }),
-	} = this.data;
+	const { collection, endpoint, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
 	this.ac = new AutoComplete({
 		selector: {
 			anchor: '.rc-input__label',

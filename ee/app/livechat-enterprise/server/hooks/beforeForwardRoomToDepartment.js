@@ -26,18 +26,12 @@ callbacks.add(
 		const { departmentsAllowedToForward } = currentDepartment;
 		const isAllowedToTransfer =
 			!departmentsAllowedToForward ||
-			(Array.isArray(departmentsAllowedToForward) &&
-				departmentsAllowedToForward.includes(departmentToTransfer._id));
+			(Array.isArray(departmentsAllowedToForward) && departmentsAllowedToForward.includes(departmentToTransfer._id));
 		if (isAllowedToTransfer) {
-			cbLogger.debug(
-				`Callback success. Room ${room._id} can be forwarded to department ${departmentToTransfer._id}`,
-			);
+			cbLogger.debug(`Callback success. Room ${room._id} can be forwarded to department ${departmentToTransfer._id}`);
 			return options;
 		}
-		throw new Meteor.Error(
-			'error-forwarding-department-target-not-allowed',
-			'The forwarding to the target department is not allowed.',
-		);
+		throw new Meteor.Error('error-forwarding-department-target-not-allowed', 'The forwarding to the target department is not allowed.');
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-forward-room-to-department',

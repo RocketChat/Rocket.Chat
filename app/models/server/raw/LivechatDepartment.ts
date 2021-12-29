@@ -5,10 +5,7 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
-	findInIds(
-		departmentsIds: string[],
-		options: FindOneOptions<ILivechatDepartmentRecord>,
-	): Cursor<ILivechatDepartmentRecord> {
+	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
 	}
@@ -36,10 +33,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	findByBusinessHourId(
-		businessHourId: string,
-		options: FindOneOptions<ILivechatDepartmentRecord>,
-	): Cursor<ILivechatDepartmentRecord> {
+	findByBusinessHourId(businessHourId: string, options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId };
 		return this.find(query, options);
 	}
@@ -52,10 +46,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	addBusinessHourToDepartmentsByIds(
-		ids: string[] = [],
-		businessHourId: string,
-	): Promise<WriteOpResult> {
+	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
 		const query = {
 			_id: { $in: ids },
 		};
@@ -69,10 +60,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(
-		ids: string[] = [],
-		businessHourId: string,
-	): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
 		const query = {
 			_id: { $in: ids },
 			businessHourId,
@@ -87,9 +75,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsByBusinessHourId(
-		businessHourId: string,
-	): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<WriteOpResult> {
 		const query = {
 			businessHourId,
 		};

@@ -72,9 +72,7 @@ export class LivechatDepartmentAgents extends Base {
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = Promise.await(
-			Users.getUnavailableAgents(departmentId, extraQuery),
-		).map((u) => u.username);
+		const currentUnavailableAgents = Promise.await(Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
 
 		const query = {
 			departmentId,

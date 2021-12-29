@@ -25,11 +25,7 @@ class AutoSelection {
 			...(department ? { departmentId: department } : {}),
 		});
 		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(
-				department,
-				ignoreAgentId,
-				extraQuery,
-			);
+			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery);
 		}
 
 		return Users.getNextAgent(ignoreAgentId, extraQuery);

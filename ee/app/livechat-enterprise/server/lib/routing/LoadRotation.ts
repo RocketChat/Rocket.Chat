@@ -25,10 +25,7 @@ class LoadRotation {
 		return this._config;
 	}
 
-	public async getNextAgent(
-		department?: string,
-		ignoreAgentId?: string,
-	): Promise<IOmnichannelCustomAgent | undefined> {
+	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
 		const nextAgent = await Users.getLastAvailableAgentRouted(department, ignoreAgentId);
 		if (!nextAgent) {
 			return;

@@ -116,12 +116,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findDiscussionsFromRoom({
-	uid,
-	roomId,
-	text,
-	pagination: { offset, count, sort },
-}) {
+export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
 
 	if (!(await canAccessRoomAsync(room, { _id: uid }))) {

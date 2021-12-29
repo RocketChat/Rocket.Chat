@@ -18,9 +18,7 @@ API.v1.addRoute(
 			const departments = Promise.await(
 				findAgentDepartments({
 					userId: this.userId,
-					enabledDepartmentsOnly:
-						this.queryParams.enabledDepartmentsOnly &&
-						this.queryParams.enabledDepartmentsOnly === 'true',
+					enabledDepartmentsOnly: this.queryParams.enabledDepartmentsOnly && this.queryParams.enabledDepartmentsOnly === 'true',
 					agentId: this.urlParams.agentId,
 				}),
 			);

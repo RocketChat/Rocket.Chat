@@ -95,12 +95,7 @@ export const normalizers = {
 
 	// Fix when authenticating from a meteor app with 'emails' field
 	meteor(identity) {
-		if (
-			!identity.email &&
-			identity.emails &&
-			Array.isArray(identity.emails) &&
-			identity.emails.length >= 1
-		) {
+		if (!identity.email && identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1) {
 			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 		}
 	},

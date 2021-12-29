@@ -4,12 +4,7 @@ import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import {
-	canAccessRoom,
-	hasPermission,
-	hasAtLeastOnePermission,
-	hasAllPermission,
-} from '../../../authorization/server';
+import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -20,10 +15,7 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
-		throw new Meteor.Error(
-			'error-roomid-param-not-provided',
-			'The parameter "roomId" or "roomName" is required',
-		);
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const fields = { ...API.v1.defaultFieldsToExclude };
@@ -36,10 +28,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 	}
 
 	if (!room || (room.t !== 'c' && room.t !== 'l')) {
-		throw new Meteor.Error(
-			'error-room-not-found',
-			'The required "roomId" or "roomName" param provided does not match any channel',
-		);
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
 	if (checkedArchived && room.archived) {
@@ -182,11 +171,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (typeof subscription !== 'undefined' && subscription.open) {
-				unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(
-					subscription.rid,
-					subscription.ls,
-					lm,
-				);
+				unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;
@@ -226,11 +211,7 @@ function createChannelValidator(params) {
 		throw new Error(`Param "${params.members.key}" must be an array if provided`);
 	}
 
-	if (
-		params.customFields &&
-		params.customFields.value &&
-		!(typeof params.customFields.value === 'object')
-	) {
+	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
 		throw new Error(`Param "${params.customFields.key}" must be an object if provided`);
 	}
 
@@ -242,14 +223,7 @@ function createChannelValidator(params) {
 function createChannel(userId, params) {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
 	const id = Meteor.runAsUser(userId, () =>
-		Meteor.call(
-			'createChannel',
-			params.name,
-			params.members ? params.members : [],
-			readOnly,
-			params.customFields,
-			params.extraData,
-		),
+		Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields, params.extraData),
 	);
 
 	return {
@@ -429,11 +403,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			ourQuery = Object.assign(
-				mountIntegrationQueryBasedOnPermissions(this.userId),
-				query,
-				ourQuery,
-			);
+			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 			const cursor = Integrations.find(ourQuery, {
 				sort: sort || { _createdAt: 1 },
 				skip: offset,
@@ -977,12 +947,7 @@ API.v1.addRoute(
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult._id,
-					'roomCustomFields',
-					this.bodyParams.customFields,
-				);
+				Meteor.call('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
 			});
 
 			return API.v1.success({
@@ -998,10 +963,7 @@ API.v1.addRoute(
 	{
 		post() {
 			if (typeof this.bodyParams.default === 'undefined') {
-				return API.v1.failure(
-					'The bodyParam "default" is required',
-					'error-channels-setdefault-is-same',
-				);
+				return API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
 			}
 
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
@@ -1041,18 +1003,11 @@ API.v1.addRoute(
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 			if (findResult.description === this.bodyParams.description) {
-				return API.v1.failure(
-					'The channel description is the same as what it would be changed to.',
-				);
+				return API.v1.failure('The channel description is the same as what it would be changed to.');
 			}
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult._id,
-					'roomDescription',
-					this.bodyParams.description,
-				);
+				Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
 			});
 
 			return API.v1.success({
@@ -1096,9 +1051,7 @@ API.v1.addRoute(
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 			if (findResult.description === this.bodyParams.purpose) {
-				return API.v1.failure(
-					'The channel purpose (description) is the same as what it would be changed to.',
-				);
+				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -1124,9 +1077,7 @@ API.v1.addRoute(
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 			if (findResult.ro === this.bodyParams.readOnly) {
-				return API.v1.failure(
-					'The channel read only setting is the same as what it would be changed to.',
-				);
+				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -1178,12 +1129,7 @@ API.v1.addRoute(
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call(
-					'saveRoomSettings',
-					findResult._id,
-					'roomAnnouncement',
-					this.bodyParams.announcement,
-				);
+				Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
 			});
 
 			return API.v1.success({
@@ -1213,10 +1159,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				channel: this.composeRoomWithLastMessage(
-					Rooms.findOneById(findResult._id, { fields: API.v1.defaultFieldsToExclude }),
-					this.userId,
-				),
+				channel: this.composeRoomWithLastMessage(Rooms.findOneById(findResult._id, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 			});
 		},
 	},
@@ -1293,9 +1236,7 @@ API.v1.addRoute(
 		get() {
 			const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
-			const roles = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('getRoomRoles', findResult._id),
-			);
+			const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
 
 			return API.v1.success({
 				roles,

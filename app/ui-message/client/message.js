@@ -138,10 +138,7 @@ Template.message.helpers({
 			'u._id': msg.u._id,
 			'rid': msg.rid,
 		});
-		const roles = [
-			...((userRoles && userRoles.roles) || []),
-			...((roomRoles && roomRoles.roles) || []),
-		];
+		const roles = [...((userRoles && userRoles.roles) || []), ...((roomRoles && roomRoles.roles) || [])];
 		return Roles.find(
 			{
 				_id: {
@@ -253,18 +250,11 @@ Template.message.helpers({
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
-		if (
-			settings.AutoTranslate_Enabled &&
-			msg.u &&
-			msg.u._id !== u._id &&
-			!MessageTypes.isSystemMessage(msg)
-		) {
+		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return (
 				msg.autoTranslateFetching ||
-				(!!autoTranslate !== !!msg.autoTranslateShowInverse &&
-					msg.translations &&
-					msg.translations[settings.translateLanguage])
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage])
 			);
 		}
 	},
@@ -328,9 +318,7 @@ Template.message.helpers({
 		return Object.entries(reactions).map(([emoji, reaction]) => {
 			const myDisplayName = reaction.names ? myName : `@${myUsername}`;
 			const displayNames = reaction.names || reaction.usernames.map((username) => `@${username}`);
-			const selectedDisplayNames = displayNames
-				.slice(0, 15)
-				.filter((displayName) => displayName !== myDisplayName);
+			const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 			if (displayNames.some((displayName) => displayName === myDisplayName)) {
 				selectedDisplayNames.unshift(t('You'));
@@ -343,9 +331,7 @@ Template.message.helpers({
 					length: displayNames.length - 15,
 				}).toLowerCase()}`;
 			} else if (displayNames.length > 1) {
-				usernames = `${selectedDisplayNames.slice(0, -1).join(', ')} ${t('and')} ${
-					selectedDisplayNames[selectedDisplayNames.length - 1]
-				}`;
+				usernames = `${selectedDisplayNames.slice(0, -1).join(', ')} ${t('and')} ${selectedDisplayNames[selectedDisplayNames.length - 1]}`;
 			} else {
 				usernames = selectedDisplayNames[0];
 			}
@@ -475,9 +461,7 @@ Template.message.helpers({
 			msg: { tmid, t, groupable: _groupable },
 			settings: { showreply },
 		} = this;
-		return (
-			!(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'))
-		);
+		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
 	},
 	shouldHideBody() {
 		const {
@@ -493,8 +477,7 @@ Template.message.helpers({
 			settings: { showreply },
 			shouldCollapseReplies,
 		} = this;
-		const isCollapsedThreadReply =
-			shouldCollapseReplies && tmid && showreply && collapsed !== false;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
@@ -539,10 +522,7 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 	if (currentNode.previousElementSibling != null) {
 		let previousValid = currentNode.previousElementSibling;
-		while (
-			previousValid != null &&
-			(hasTempClass(previousValid) || !previousValid.classList.contains('message'))
-		) {
+		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
 			previousValid = previousValid.previousElementSibling;
 		}
 		return previousValid;
@@ -570,14 +550,7 @@ const isNewDay = (currentNode, previousNode, forceDate, showDateSeparator) => {
 	return false;
 };
 
-const isSequential = (
-	currentNode,
-	previousNode,
-	forceDate,
-	period,
-	showDateSeparator,
-	shouldCollapseReplies,
-) => {
+const isSequential = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
 	if (!previousNode) {
 		return false;
 	}
@@ -591,17 +564,12 @@ const isSequential = (
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (
-		showDateSeparator &&
-		previousMessageDate.toDateString() !== currentMessageDate.toDateString()
-	) {
+	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
 		return false;
 	}
 
 	if (!shouldCollapseReplies && currentDataset.tmid) {
-		return (
-			previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid
-		);
+		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
 	}
 
 	if (previousDataset.tmid && !currentDataset.tmid) {
@@ -627,15 +595,7 @@ const isSequential = (
 	return false;
 };
 
-const processSequentials = ({
-	index,
-	currentNode,
-	settings,
-	forceDate,
-	showDateSeparator = true,
-	groupable,
-	shouldCollapseReplies,
-}) => {
+const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
@@ -648,16 +608,7 @@ const processSequentials = ({
 			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
 		}, 100);
 	}
-	if (
-		isSequential(
-			currentNode,
-			previousNode,
-			forceDate,
-			settings.Message_GroupingPeriod,
-			showDateSeparator,
-			shouldCollapseReplies,
-		)
-	) {
+	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 		currentNode.classList.add('sequential');
 	} else {
 		currentNode.classList.remove('sequential');
@@ -670,16 +621,7 @@ const processSequentials = ({
 	}
 
 	if (nextNode && nextNode.dataset) {
-		if (
-			isSequential(
-				nextNode,
-				currentNode,
-				forceDate,
-				settings.Message_GroupingPeriod,
-				showDateSeparator,
-				shouldCollapseReplies,
-			)
-		) {
+		if (isSequential(nextNode, currentNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 			nextNode.classList.add('sequential');
 		} else {
 			nextNode.classList.remove('sequential');

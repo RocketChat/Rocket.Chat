@@ -34,11 +34,9 @@ callbacks.add(
 		const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
 		const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
 		if (!checkRoomTags || !checkDepartmentTags) {
-			throw new Meteor.Error(
-				'error-tags-must-be-assigned-before-closing-chat',
-				'Tag(s) must be assigned before closing the chat',
-				{ method: 'livechat.beforeCloseRoom' },
-			);
+			throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', {
+				method: 'livechat.beforeCloseRoom',
+			});
 		}
 
 		return normalizeParams({ ...originalParams }, extraRoomTags);

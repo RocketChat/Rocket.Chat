@@ -26,18 +26,13 @@ program
 	.parse(process.argv);
 
 wait.launchFiber(function () {
-	const db = wait.forMethod(
-		MongoClient,
-		'connect',
-		`mongodb://${program.mongoDb}/${program.dbName}`,
-		{
-			replSet: {
-				socketOptions: {
-					connectTimeoutMS: 300000,
-				},
+	const db = wait.forMethod(MongoClient, 'connect', `mongodb://${program.mongoDb}/${program.dbName}`, {
+		replSet: {
+			socketOptions: {
+				connectTimeoutMS: 300000,
 			},
 		},
-	);
+	});
 
 	const User = db.collection('users');
 	return lineReader.eachLine('./unsubscribe.csv', function (line, last) {

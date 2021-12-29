@@ -8,10 +8,6 @@ const roleName = 'guest';
 addMigration({
 	version: 188,
 	up() {
-		return Permissions.update(
-			{ _id: { $in: newRolePermissions } },
-			{ $addToSet: { roles: roleName } },
-			{ multi: true },
-		);
+		return Permissions.update({ _id: { $in: newRolePermissions } }, { $addToSet: { roles: roleName } }, { multi: true });
 	},
 });

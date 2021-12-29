@@ -61,10 +61,7 @@ export interface ICachedSettings {
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
 	 */
-	watchMultiple<T extends SettingValue = SettingValue>(
-		_id: ISetting['_id'][],
-		callback: (settings: T[]) => void,
-	): () => void;
+	watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void;
 
 	/*
 	 * Get the current value of the setting, and keep track of changes
@@ -75,11 +72,7 @@ export interface ICachedSettings {
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
 	 */
-	watch<T extends SettingValue = SettingValue>(
-		_id: ISetting['_id'],
-		cb: (args: T) => void,
-		config?: OverCustomSettingsConfig,
-	): () => void;
+	watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
 
 	/*
 	 * Get the current value of the setting, or wait until the initialized
@@ -160,18 +153,10 @@ export interface ICachedSettings {
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
 	/* @deprecated */
-	watchByRegex(
-		regex: RegExp,
-		cb: (...args: [string, SettingValue]) => void,
-		config?: OverCustomSettingsConfig,
-	): () => void;
+	watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
 
 	/* @deprecated */
-	changeByRegex(
-		regex: RegExp,
-		callback: (...args: [string, SettingValue]) => void,
-		config?: OverCustomSettingsConfig,
-	): () => void;
+	changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
 
 	/*
 	 * @description: Wait until the settings get ready then run the callback
@@ -259,9 +244,7 @@ export class CachedSettings
 			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
 		}
 
-		return [...this.store.entries()]
-			.filter(([key]) => _id.test(key))
-			.map(([key, setting]) => [key, setting.value]) as [string, T][];
+		return [...this.store.entries()].filter(([key]) => _id.test(key)).map(([key, setting]) => [key, setting.value]) as [string, T][];
 	}
 
 	/*
@@ -273,10 +256,7 @@ export class CachedSettings
 	 * @param callback - The callback to run
 	 * @returns {() => void} - A function that can be used to cancel the observe
 	 */
-	public watchMultiple<T extends SettingValue = SettingValue>(
-		_id: ISetting['_id'][],
-		callback: (settings: T[]) => void,
-	): () => void {
+	public watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void {
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
 
@@ -458,11 +438,7 @@ export class CachedSettings
 	});
 
 	/* @deprecated */
-	public watchByRegex(
-		regex: RegExp,
-		cb: (...args: [string, SettingValue]) => void,
-		config?: OverCustomSettingsConfig,
-	): () => void {
+	public watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
 			cancel.add(
@@ -485,11 +461,7 @@ export class CachedSettings
 	}
 
 	/* @deprecated */
-	public changeByRegex(
-		regex: RegExp,
-		callback: (...args: [string, SettingValue]) => void,
-		config?: OverCustomSettingsConfig,
-	): () => void {
+	public changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
 		const store: Map<string, (...args: [string, SettingValue]) => void> = new Map();
 		return this.on('*', ([_id, value]) => {
 			if (regex.test(_id)) {

@@ -1,14 +1,6 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-	apiPublicChannelName,
-	channel,
-	reservedWords,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -671,10 +663,7 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property(
-						'description',
-						'this is a description for a channel for api tests',
-					);
+					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
 				})
 				.end(done);
 		});
@@ -709,10 +698,7 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property(
-						'topic',
-						'this is a topic of a channel for api tests',
-					);
+					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
 				})
 				.end(done);
 		});
@@ -747,10 +733,7 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property(
-						'announcement',
-						'this is an announcement of a channel for api tests',
-					);
+					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
 				})
 				.end(done);
 		});
@@ -785,10 +768,7 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property(
-						'purpose',
-						'this is a purpose of a channel for api tests',
-					);
+					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
 				})
 				.end(done);
 		});
@@ -882,10 +862,7 @@ describe('[Channels]', function () {
 			.expect(400)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property(
-					'error',
-					`The channel, ${apiPublicChannelName}, is already closed to the sender`,
-				);
+				expect(res.body).to.have.property('error', `The channel, ${apiPublicChannelName}, is already closed to the sender`);
 			})
 			.end(done);
 	});
@@ -994,10 +971,7 @@ describe('[Channels]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property(
-							'error',
-							`${name} is already in use :( [error-field-unavailable]`,
-						);
+						expect(res.body).to.have.property('error', `${name} is already in use :( [error-field-unavailable]`);
 					})
 					.end(done);
 			});
@@ -1608,20 +1582,14 @@ describe('[Channels]', function () {
 
 					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[0]).to.have.a.property('rid').that.is.equal(testChannel._id);
-					expect(res.body.roles[0])
-						.to.have.a.property('roles')
-						.that.is.an('array')
-						.that.includes('moderator', 'leader');
+					expect(res.body.roles[0]).to.have.a.property('roles').that.is.an('array').that.includes('moderator', 'leader');
 					expect(res.body.roles[0]).to.have.a.property('u').that.is.an('object');
 					expect(res.body.roles[0].u).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[0].u).to.have.a.property('username').that.is.a('string');
 
 					expect(res.body.roles[1]).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[1]).to.have.a.property('rid').that.is.equal(testChannel._id);
-					expect(res.body.roles[1])
-						.to.have.a.property('roles')
-						.that.is.an('array')
-						.that.includes('owner');
+					expect(res.body.roles[1]).to.have.a.property('roles').that.is.an('array').that.includes('owner');
 					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
 					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
@@ -1675,10 +1643,7 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body)
-						.to.have.a.property('moderators')
-						.that.is.an('array')
-						.that.has.lengthOf(1);
+					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
@@ -1850,10 +1815,7 @@ describe('[Channels]', function () {
 				.expect(200);
 			expect(resAutojoin.body).to.have.a.property('success', true);
 
-			const channelInfoResponse = await request
-				.get(api('channels.info'))
-				.set(credentials)
-				.query({ roomId: testChannel._id });
+			const channelInfoResponse = await request.get(api('channels.info')).set(credentials).query({ roomId: testChannel._id });
 			const { channel } = channelInfoResponse.body;
 
 			console.log('channel: ', channel);

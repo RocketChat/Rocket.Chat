@@ -5,9 +5,7 @@ import { Subscriptions } from '../../../models/server';
 import { getUserNotificationPreference } from '../../../utils/server';
 
 const saveAudioNotificationValue = (subId, value) =>
-	value === 'default'
-		? Subscriptions.clearAudioNotificationValueById(subId)
-		: Subscriptions.updateAudioNotificationValueById(subId, value);
+	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
 
 Meteor.methods({
 	saveNotificationSettings(roomId, field, value) {
@@ -57,20 +55,16 @@ Meteor.methods({
 					),
 			},
 			unreadAlert: {
-				updateMethod: (subscription, value) =>
-					Subscriptions.updateUnreadAlertById(subscription._id, value),
+				updateMethod: (subscription, value) => Subscriptions.updateUnreadAlertById(subscription._id, value),
 			},
 			disableNotifications: {
-				updateMethod: (subscription, value) =>
-					Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
+				updateMethod: (subscription, value) => Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
 			},
 			hideUnreadStatus: {
-				updateMethod: (subscription, value) =>
-					Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
+				updateMethod: (subscription, value) => Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
 			},
 			muteGroupMentions: {
-				updateMethod: (subscription, value) =>
-					Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
+				updateMethod: (subscription, value) => Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
 			},
 			audioNotificationValue: {
 				updateMethod: (subscription, value) => saveAudioNotificationValue(subscription._id, value),
@@ -78,11 +72,7 @@ Meteor.methods({
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
 		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];
-		const fieldsMustHaveBasicValues = [
-			'emailNotifications',
-			'mobilePushNotifications',
-			'desktopNotifications',
-		];
+		const fieldsMustHaveBasicValues = ['emailNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 		if (isInvalidNotification) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', {

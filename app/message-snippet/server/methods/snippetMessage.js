@@ -42,24 +42,9 @@ Meteor.methods({
 		message = callbacks.run('beforeSaveMessage', message);
 
 		// Create the SnippetMessage
-		Messages.setSnippetedByIdAndUserId(
-			message,
-			filename,
-			message.snippetedBy,
-			message.snippeted,
-			Date.now,
-			filename,
-		);
+		Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy, message.snippeted, Date.now, filename);
 		if (isTheLastMessage(room, message)) {
-			Rooms.setLastMessageSnippeted(
-				room._id,
-				message,
-				filename,
-				message.snippetedBy,
-				message.snippeted,
-				Date.now,
-				filename,
-			);
+			Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy, message.snippeted, Date.now, filename);
 		}
 
 		Messages.createWithTypeRoomIdMessageAndUser('message_snippeted', message.rid, '', me, {

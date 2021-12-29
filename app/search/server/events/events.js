@@ -12,12 +12,7 @@ class EventService {
 	}
 
 	promoteEvent(name, value, payload) {
-		if (
-			!(
-				searchProviderService.activeProvider &&
-				searchProviderService.activeProvider.on(name, value, payload)
-			)
-		) {
+		if (!(searchProviderService.activeProvider && searchProviderService.activeProvider.on(name, value, payload))) {
 			this._pushError(name, value, payload);
 		}
 	}
@@ -42,18 +37,8 @@ settings.get(
 	'Search.Provider',
 	_.debounce(() => {
 		if (searchProviderService.activeProvider?.on) {
-			callbacks.add(
-				'afterSaveMessage',
-				afterSaveMessage,
-				callbacks.priority.MEDIUM,
-				'search-events',
-			);
-			callbacks.add(
-				'afterDeleteMessage',
-				afterDeleteMessage,
-				callbacks.priority.MEDIUM,
-				'search-events-delete',
-			);
+			callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
+			callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
 		} else {
 			callbacks.remove('afterSaveMessage', 'search-events');
 			callbacks.remove('afterDeleteMessage', 'search-events-delete');

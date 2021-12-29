@@ -31,9 +31,7 @@ describe('[Commands]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal(
-						'There is no command in the system by the name of: invalid-command',
-					);
+					expect(res.body.error).to.be.equal('There is no command in the system by the name of: invalid-command');
 				})
 				.end(done);
 		});
@@ -119,9 +117,7 @@ describe('[Commands]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal(
-						'The parameters for the command must be a single string.',
-					);
+					expect(res.body.error).to.be.equal('The parameters for the command must be a single string.');
 				})
 				.end(done);
 		});
@@ -136,9 +132,7 @@ describe('[Commands]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal(
-						"The room's id where to execute this command must be provided and be a string.",
-					);
+					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
 				})
 				.end(done);
 		});
@@ -171,9 +165,7 @@ describe('[Commands]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal(
-						'The command provided does not exist (or is disabled).',
-					);
+					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
 				})
 				.end(done);
 		});

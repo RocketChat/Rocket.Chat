@@ -43,9 +43,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(
-				`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`,
-			);
+			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');

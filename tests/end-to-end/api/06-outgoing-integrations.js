@@ -254,9 +254,7 @@ describe('[Outgoing Integrations]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const integrationCreatedByAdmin = res.body.integrations.find(
-						(createdIntegration) => createdIntegration._id === integration._id,
-					);
+					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
 					expect(integrationCreatedByAdmin).to.be.an('object');
 					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
 					expect(res.body).to.have.property('offset');
@@ -363,10 +361,7 @@ describe('[Outgoing Integrations]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						'The query parameter "integrationId" is required.',
-					);
+					expect(res.body).to.have.property('error', 'The query parameter "integrationId" is required.');
 				})
 				.end(done);
 		});

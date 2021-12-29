@@ -43,13 +43,7 @@ export async function federationRequestToPeer(method, peerDomain, uri, body, opt
 	try {
 		httpLogger.debug({ msg: 'federationRequestToPeer', url: `${baseUrl}${uri}` });
 
-		result = await federationRequest(
-			method,
-			`${baseUrl}${uri}`,
-			body,
-			options.headers || {},
-			peerKey,
-		);
+		result = await federationRequest(method, `${baseUrl}${uri}`, body, options.headers || {}, peerKey);
 	} catch (err) {
 		httpLogger.error({ msg: `${ignoreErrors ? '[IGNORED] ' : ''}Error`, err });
 

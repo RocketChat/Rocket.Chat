@@ -6,10 +6,7 @@ addMigration({
 	async up() {
 		const oldPermission = await Permissions.findOne('view-livechat-queue');
 		if (oldPermission) {
-			return Permissions.update(
-				{ _id: 'view-livechat-queue' },
-				{ $addToSet: { roles: 'livechat-agent' } },
-			);
+			return Permissions.update({ _id: 'view-livechat-queue' }, { $addToSet: { roles: 'livechat-agent' } });
 		}
 	},
 });

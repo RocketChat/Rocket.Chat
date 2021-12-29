@@ -13,10 +13,7 @@ export const createAutolinkerMessageRenderer =
 		let msgParts;
 		let regexTokens;
 		if (message.tokens && message.tokens.length) {
-			regexTokens = new RegExp(
-				`(${(message.tokens || []).map(({ token }) => escapeRegExp(token))})`,
-				'g',
-			);
+			regexTokens = new RegExp(`(${(message.tokens || []).map(({ token }) => escapeRegExp(token))})`, 'g');
 			msgParts = message.html.split(regexTokens);
 		} else {
 			msgParts = [message.html];

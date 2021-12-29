@@ -19,9 +19,7 @@ API.v1.addRoute(
 			}
 
 			try {
-				const jitsiTimeout = Meteor.runAsUser(this.userId, () =>
-					Meteor.call('jitsi:updateTimeout', roomId, Boolean(joiningNow)),
-				);
+				const jitsiTimeout = Meteor.runAsUser(this.userId, () => Meteor.call('jitsi:updateTimeout', roomId, Boolean(joiningNow)));
 				return API.v1.success({ jitsiTimeout });
 			} catch (error) {
 				return API.v1.failure(error.message);

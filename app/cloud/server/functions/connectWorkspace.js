@@ -38,9 +38,7 @@ export function connectWorkspace(token) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(
-				`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`,
-			);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);
 		}

@@ -5,23 +5,11 @@ import { RouterContext } from '../../../client/contexts/RouterContext';
 
 type RouterContextMockProps = {
 	children?: ReactNode;
-	pushRoute?: (
-		name: string,
-		parameters?: Record<string, string>,
-		queryStringParameters?: Record<string, string>,
-	) => void;
-	replaceRoute?: (
-		name: string,
-		parameters?: Record<string, string>,
-		queryStringParameters?: Record<string, string>,
-	) => void;
+	pushRoute?: (name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) => void;
+	replaceRoute?: (name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) => void;
 };
 
-const RouterContextMock = ({
-	children,
-	pushRoute,
-	replaceRoute,
-}: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({ children, pushRoute, replaceRoute }: RouterContextMockProps): ReactElement => {
 	const value = useMemo<ContextType<typeof RouterContext>>(
 		() => ({
 			queryRoutePath: (): Subscription<undefined> => ({

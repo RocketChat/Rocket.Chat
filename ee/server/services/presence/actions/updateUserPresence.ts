@@ -27,10 +27,7 @@ export async function updateUserPresence(uid: string): Promise<void> {
 
 	const userSessions = (await UserSession.findOne(query)) || { connections: [] };
 	const { statusDefault = UserStatus.OFFLINE } = user;
-	const { status, statusConnection } = processPresenceAndStatus(
-		userSessions.connections,
-		statusDefault,
-	);
+	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 	const result = await User.updateOne(query, {
 		$set: { status, statusConnection },
 	});

@@ -13,13 +13,7 @@ import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import {
-	CachedChatRoom,
-	ChatMessage,
-	ChatSubscription,
-	CachedChatSubscription,
-	ChatRoom,
-} from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
@@ -115,10 +109,7 @@ export const RoomManager = new (function () {
 									}
 									// Do not load command messages into channel
 									if (msg.t !== 'command') {
-										const subscription = ChatSubscription.findOne(
-											{ rid: record.rid },
-											{ reactive: false },
-										);
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
 										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 										upsertMessage({ msg, subscription });
 
@@ -164,11 +155,7 @@ export const RoomManager = new (function () {
 				if (openedRooms[typeName].rid != null) {
 					msgStream.removeAllListeners(openedRooms[typeName].rid);
 					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-					Notifications.unRoom(
-						openedRooms[typeName].rid,
-						'deleteMessageBulk',
-						onDeleteMessageBulkStream,
-					); // eslint-disable-line no-use-before-define
+					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 				}
 
 				openedRooms[typeName].ready = false;
@@ -198,9 +185,7 @@ export const RoomManager = new (function () {
 				return;
 			}
 
-			const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen')
-				.reverse()
-				.slice(maxRoomsOpen);
+			const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen);
 			return Array.from(roomsToClose).map((roomToClose) => this.close(roomToClose.typeName));
 		}
 
@@ -295,10 +280,7 @@ export const RoomManager = new (function () {
 })();
 
 const loadMissedMessages = async function (rid) {
-	const lastMessage = ChatMessage.findOne(
-		{ rid, _hidden: { $ne: true }, temp: { $exists: false } },
-		{ sort: { ts: -1 }, limit: 1 },
-	);
+	const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
 
 	if (lastMessage == null) {
 		return;
@@ -342,9 +324,7 @@ Meteor.startup(() => {
 			const { roomTypes: types } = roomTypes;
 
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(types).find(
-				(key) => types[key].route && types[key].route.name === FlowRouter.current().route.name,
-			);
+			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
@@ -379,12 +359,7 @@ Tracker.autorun(function () {
 	}
 });
 
-callbacks.add(
-	'afterLogoutCleanUp',
-	() => RoomManager.closeAllRooms(),
-	callbacks.priority.MEDIUM,
-	'roommanager-after-logout-cleanup',
-);
+callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {

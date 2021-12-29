@@ -12,10 +12,7 @@ export const addUserToRoom = function (rid, user, inviter, silenced) {
 	const room = Rooms.findOneById(rid);
 
 	const roomConfig = roomTypes.getConfig(room.t);
-	if (
-		!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) &&
-		!roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)
-	) {
+	if (!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) && !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)) {
 		return;
 	}
 

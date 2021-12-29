@@ -2,12 +2,7 @@ import { Random } from 'meteor/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import {
-	setUserAvatar,
-	checkUsernameAvailability,
-	deleteUser,
-	_setStatusTextPromise,
-} from '../../../lib/server/functions';
+import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
@@ -38,11 +33,7 @@ export class AppUserBridge extends UserBridge {
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
 
-	protected async create(
-		userDescriptor: Partial<IUser>,
-		appId: string,
-		options?: IUserCreationOptions,
-	): Promise<string> {
+	protected async create(userDescriptor: Partial<IUser>, appId: string, options?: IUserCreationOptions): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is requesting to create a new user.`);
 		const user = this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
 
@@ -57,9 +48,7 @@ export class AppUserBridge extends UserBridge {
 		switch (user.type) {
 			case 'app':
 				if (!checkUsernameAvailability(user.username)) {
-					throw new Error(
-						`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`,
-					);
+					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
 				Users.insert(user);
@@ -94,11 +83,7 @@ export class AppUserBridge extends UserBridge {
 		return true;
 	}
 
-	protected async update(
-		user: IUser & { id: string },
-		fields: Partial<IUser>,
-		appId: string,
-	): Promise<boolean> {
+	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
 
 		if (!user) {

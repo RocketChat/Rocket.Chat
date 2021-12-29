@@ -11,9 +11,7 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 	};
 	const getUserPreferences = () => {
 		const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-		const allDefaultUserSettings = settings.getByRegexp(
-			new RegExp(`^${defaultUserSettingPrefix}.*$`),
-		);
+		const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
 		return allDefaultUserSettings.reduce((accumulator, [key]) => {
 			const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();

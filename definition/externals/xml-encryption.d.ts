@@ -5,15 +5,8 @@ declare module 'xml-encryption' {
 		key: string;
 	}
 
-	export function decrypt(
-		xml: string | Element | Document,
-		options: IDecryptOptions,
-		callback: (err: Error, result: any) => void,
-	): string;
-	export function decryptKeyInfo(
-		doc: string | Element | Document,
-		options: IDecryptOptions,
-	): string;
+	export function decrypt(xml: string | Element | Document, options: IDecryptOptions, callback: (err: Error, result: any) => void): string;
+	export function decryptKeyInfo(doc: string | Element | Document, options: IDecryptOptions): string;
 
 	export interface IEncryptOptions {
 		rsa_pub: string;
@@ -25,14 +18,6 @@ declare module 'xml-encryption' {
 		warnInsecureAlgorithm: boolean;
 	}
 
-	export function encrypt(
-		content: string,
-		options: IEncryptOptions,
-		callback: (err: Error, result: any) => void,
-	): string;
-	export function encryptKeyInfo(
-		symmetricKey: string,
-		options: IEncryptOptions,
-		callback: (err: Error, result: any) => void,
-	): string;
+	export function encrypt(content: string, options: IEncryptOptions, callback: (err: Error, result: any) => void): string;
+	export function encryptKeyInfo(symmetricKey: string, options: IEncryptOptions, callback: (err: Error, result: any) => void): string;
 }

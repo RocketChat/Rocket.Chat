@@ -13,19 +13,11 @@ Meteor.methods({
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 		const room = LivechatRooms.findOneById(visitorRoom);
 
-		if (
-			visitor !== undefined &&
-			room !== undefined &&
-			room.v !== undefined &&
-			room.v.token === visitor.token
-		) {
+		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};
 			for (const item of formData) {
 				if (
-					_.contains(
-						['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],
-						item.name,
-					) &&
+					_.contains(['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'], item.name) &&
 					_.contains(['1', '2', '3', '4', '5'], item.value)
 				) {
 					updateData[item.name] = item.value;

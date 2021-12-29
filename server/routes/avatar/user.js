@@ -1,11 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	renderSVGLetters,
-	serveAvatar,
-	wasFallbackModified,
-	setCacheAndDispositionHeaders,
-} from './utils';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload';
 import { settings } from '../../../app/settings/server';
 import { Users } from '../../../app/models/server';
@@ -38,10 +33,7 @@ export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
 	if (file) {
 		res.setHeader('Content-Security-Policy', "default-src 'none'");
 
-		if (
-			reqModifiedHeader &&
-			reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())
-		) {
+		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();

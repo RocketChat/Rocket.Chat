@@ -4,10 +4,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 
 import { settingsRegistry } from '../../../settings/server';
 
-export function addOAuthService(
-	name: string,
-	values: { [k: string]: string | boolean | undefined } = {},
-): void {
+export function addOAuthService(name: string, values: { [k: string]: string | boolean | undefined } = {}): void {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
 	name = capitalize(name);
 	settingsRegistry.add(`Accounts_OAuth_Custom-${name}`, values.enabled || false, {
@@ -24,70 +21,50 @@ export function addOAuthService(
 		i18nLabel: 'URL',
 		persistent: true,
 	});
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-token_path`,
-		values.tokenPath || '/oauth/token',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Token_Path',
-			persistent: true,
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-token_sent_via`,
-		values.tokenSentVia || 'payload',
-		{
-			type: 'select',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Token_Sent_Via',
-			persistent: true,
-			values: [
-				{ key: 'header', i18nLabel: 'Header' },
-				{ key: 'payload', i18nLabel: 'Payload' },
-			],
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-identity_token_sent_via`,
-		values.identityTokenSentVia || 'default',
-		{
-			type: 'select',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Identity_Token_Sent_Via',
-			persistent: true,
-			values: [
-				{ key: 'default', i18nLabel: 'Same_As_Token_Sent_Via' },
-				{ key: 'header', i18nLabel: 'Header' },
-				{ key: 'payload', i18nLabel: 'Payload' },
-			],
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-identity_path`,
-		values.identityPath || '/me',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Identity_Path',
-			persistent: true,
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-authorize_path`,
-		values.authorizePath || '/oauth/authorize',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Authorize_Path',
-			persistent: true,
-		},
-	);
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-token_path`, values.tokenPath || '/oauth/token', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Token_Path',
+		persistent: true,
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-token_sent_via`, values.tokenSentVia || 'payload', {
+		type: 'select',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Token_Sent_Via',
+		persistent: true,
+		values: [
+			{ key: 'header', i18nLabel: 'Header' },
+			{ key: 'payload', i18nLabel: 'Payload' },
+		],
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-identity_token_sent_via`, values.identityTokenSentVia || 'default', {
+		type: 'select',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Identity_Token_Sent_Via',
+		persistent: true,
+		values: [
+			{ key: 'default', i18nLabel: 'Same_As_Token_Sent_Via' },
+			{ key: 'header', i18nLabel: 'Header' },
+			{ key: 'payload', i18nLabel: 'Payload' },
+		],
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-identity_path`, values.identityPath || '/me', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Identity_Path',
+		persistent: true,
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-authorize_path`, values.authorizePath || '/oauth/authorize', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Authorize_Path',
+		persistent: true,
+	});
 	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-scope`, values.scope || 'openid', {
 		type: 'string',
 		group: 'OAuth',
@@ -95,17 +72,13 @@ export function addOAuthService(
 		i18nLabel: 'Accounts_OAuth_Custom_Scope',
 		persistent: true,
 	});
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-access_token_param`,
-		values.accessTokenParam || 'access_token',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Access_Token_Param',
-			persistent: true,
-		},
-	);
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-access_token_param`, values.accessTokenParam || 'access_token', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Access_Token_Param',
+		persistent: true,
+	});
 	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-id`, values.clientId || '', {
 		type: 'string',
 		group: 'OAuth',
@@ -132,39 +105,27 @@ export function addOAuthService(
 			{ key: '', i18nLabel: 'Default' },
 		],
 	});
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-button_label_text`,
-		values.buttonLabelText || '',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
-			persistent: true,
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-button_label_color`,
-		values.buttonLabelColor || '#FFFFFF',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
-			persistent: true,
-		},
-	);
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-button_color`,
-		values.buttonColor || '#1d74f5',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
-			persistent: true,
-		},
-	);
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_text`, values.buttonLabelText || '', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
+		persistent: true,
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_color`, values.buttonLabelColor || '#FFFFFF', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+		persistent: true,
+	});
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_color`, values.buttonColor || '#1d74f5', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+		persistent: true,
+	});
 	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-key_field`, values.keyField || 'username', {
 		type: 'select',
 		group: 'OAuth',
@@ -213,31 +174,23 @@ export function addOAuthService(
 		invalidValue: 'roles',
 		modules: ['oauth-enterprise'],
 	});
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-groups_claim`,
-		values.groupsClaim || 'groups',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim',
-			enterprise: true,
-			invalidValue: 'groups',
-			modules: ['oauth-enterprise'],
-		},
-	);
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-groups_claim`, values.groupsClaim || 'groups', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim',
+		enterprise: true,
+		invalidValue: 'groups',
+		modules: ['oauth-enterprise'],
+	});
 
-	settingsRegistry.add(
-		`Accounts_OAuth_Custom-${name}-channels_admin`,
-		values.channelsAdmin || 'rocket.cat',
-		{
-			type: 'string',
-			group: 'OAuth',
-			section: `Custom OAuth: ${name}`,
-			i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin',
-			persistent: true,
-		},
-	);
+	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-channels_admin`, values.channelsAdmin || 'rocket.cat', {
+		type: 'string',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin',
+		persistent: true,
+	});
 	settingsRegistry.add(`Accounts_OAuth_Custom-${name}-map_channels`, values.mapChannels || false, {
 		type: 'boolean',
 		group: 'OAuth',

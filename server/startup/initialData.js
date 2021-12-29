@@ -78,9 +78,7 @@ Meteor.startup(async function () {
 
 						console.log(`Email: ${process.env.ADMIN_EMAIL}`.green);
 					} else {
-						console.log(
-							'Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red,
-						);
+						console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
 					}
 				} else {
 					console.log('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red);
@@ -100,14 +98,10 @@ Meteor.startup(async function () {
 					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
-						console.log(
-							'Username provided already exists; Ignoring environment variables ADMIN_USERNAME'.red,
-						);
+						console.log('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'.red);
 					}
 				} else {
-					console.log(
-						'Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red,
-					);
+					console.log('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red);
 				}
 			}
 
@@ -121,9 +115,7 @@ Meteor.startup(async function () {
 
 			addUserRoles(id, 'admin');
 		} else {
-			console.log(
-				'Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red,
-			);
+			console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
 		}
 	}
 
@@ -148,11 +140,7 @@ Meteor.startup(async function () {
 
 		if (oldestUser) {
 			addUserRoles(oldestUser._id, ['admin']);
-			console.log(
-				`No admins are found. Set ${
-					oldestUser.username || oldestUser.name
-				} as admin for being the oldest user`,
-			);
+			console.log(`No admins are found. Set ${oldestUser.username || oldestUser.name} as admin for being the oldest user`);
 		}
 	}
 
@@ -191,17 +179,11 @@ Meteor.startup(async function () {
 		console.log(`Password: ${adminUser._id}`.green);
 
 		if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
-			throw new Meteor.Error(
-				`Email ${adminUser.emails[0].address} already exists`,
-				"Rocket.Chat can't run in test mode",
-			);
+			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		if (!checkUsernameAvailability(adminUser.username)) {
-			throw new Meteor.Error(
-				`Username ${adminUser.username} already exists`,
-				"Rocket.Chat can't run in test mode",
-			);
+			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		Users.create(adminUser);

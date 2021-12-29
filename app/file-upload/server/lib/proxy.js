@@ -75,9 +75,7 @@ WebApp.connectHandlers.stack.unshift({
 			instance.extraInformation.host = 'localhost';
 		}
 
-		logger.debug(
-			`Wrong instance, proxing to ${instance.extraInformation.host}:${instance.extraInformation.port}`,
-		);
+		logger.debug(`Wrong instance, proxing to ${instance.extraInformation.host}:${instance.extraInformation.port}`);
 
 		const options = {
 			hostname: instance.extraInformation.host,

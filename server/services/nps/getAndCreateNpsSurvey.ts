@@ -18,9 +18,7 @@ type NpsSurveyData = {
 	expireAt: Date;
 };
 
-export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNpsSurvey(
-	npsId: string,
-) {
+export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNpsSurvey(npsId: string) {
 	const token: string = getWorkspaceAccessToken();
 	if (!token) {
 		return false;

@@ -1,21 +1,10 @@
-import {
-	Cursor,
-	FindOneOptions,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
+import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { IEmojiCustom as T } from '../../../../definition/IEmojiCustom';
 
 export class EmojiCustomRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { name: 1 } },
-		{ key: { aliases: 1 } },
-		{ key: { extension: 1 } },
-	];
+	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 
 	// find
 	findByNameOrAlias(emojiName: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
@@ -32,11 +21,7 @@ export class EmojiCustomRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByNameOrAliasExceptID(
-		name: string,
-		except: string,
-		options: WithoutProjection<FindOneOptions<T>>,
-	): Cursor<T> {
+	findByNameOrAliasExceptID(name: string, except: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],

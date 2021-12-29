@@ -68,11 +68,7 @@ function AppDetailsPage({ id }) {
 							<AppDetailsPageContent data={data} />
 							{!!showApis && <APIsDisplay apis={apis} />}
 							{!!showSettings && (
-								<SettingsDisplay
-									settings={settings}
-									setHasUnsavedChanges={setHasUnsavedChanges}
-									settingsRef={settingsRef}
-								/>
+								<SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef} />
 							)}
 						</>
 					)}

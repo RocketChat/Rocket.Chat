@@ -19,9 +19,7 @@ export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolea
 	}
 
 	const currentPassword = user.services.password.bcrypt;
-	const passwordHistory = user.services.passwordHistory.slice(
-		-Number(settings.get('Accounts_Password_History_Amount')),
-	);
+	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
 	for (const password of passwordHistory) {
 		if (!password.trim()) {

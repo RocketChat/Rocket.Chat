@@ -9,15 +9,7 @@ import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartme
 
 callbacks.add(
 	'livechat:onTransferFailure',
-	async ({
-		room,
-		guest,
-		transferData,
-	}: {
-		room: IRoom;
-		guest: ILivechatVisitor;
-		transferData: { [k: string]: string | any };
-	}) => {
+	async ({ room, guest, transferData }: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		cbLogger.debug(`Attempting to transfer room ${room._id} using fallback departments`);
 		const { departmentId } = transferData;
 		const department = (await LivechatDepartment.findOneById(departmentId, {
@@ -28,9 +20,7 @@ callbacks.add(
 			return false;
 		}
 
-		cbLogger.debug(
-			`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Redirecting`,
-		);
+		cbLogger.debug(`Fallback department ${department.fallbackForwardDepartment} found for department ${department._id}. Redirecting`);
 		const transferDataFallback = {
 			...transferData,
 			prevDepartment: department.name,
@@ -45,12 +35,7 @@ callbacks.add(
 			const { _id, username } = transferData.transferredBy;
 			// The property is injected dynamically on ee folder
 			// @ts-expect-error
-			Messages.createTransferFailedHistoryMessage(
-				room._id,
-				'',
-				{ _id, username },
-				{ transferData: transferDataFallback },
-			);
+			Messages.createTransferFailedHistoryMessage(room._id, '', { _id, username }, { transferData: transferDataFallback });
 		}
 
 		return forwardSuccess;

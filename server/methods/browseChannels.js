@@ -53,45 +53,36 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	const publicTeamIds = teams.map(({ _id }) => _id);
 
 	const userTeamsIds =
-		Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(
-			({ teamId }) => teamId,
-		) || [];
+		Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
-	const cursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(
-		searchTerm,
-		[...userTeamsIds, ...publicTeamIds],
-		userRooms,
-		{
-			...pagination,
-			sort: {
-				featured: -1,
-				...sort,
-			},
-			fields: {
-				t: 1,
-				description: 1,
-				topic: 1,
-				name: 1,
-				fname: 1,
-				lastMessage: 1,
-				ts: 1,
-				archived: 1,
-				default: 1,
-				featured: 1,
-				usersCount: 1,
-				prid: 1,
-				teamId: 1,
-			},
+	const cursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
+		...pagination,
+		sort: {
+			featured: -1,
+			...sort,
 		},
-	);
+		fields: {
+			t: 1,
+			description: 1,
+			topic: 1,
+			name: 1,
+			fname: 1,
+			lastMessage: 1,
+			ts: 1,
+			archived: 1,
+			default: 1,
+			featured: 1,
+			usersCount: 1,
+			prid: 1,
+			teamId: 1,
+		},
+	});
 	const total = cursor.count(); // count ignores the `skip` and `limit` options
 	const result = cursor.fetch();
 
 	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(
-		Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }),
-	);
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
 
 	const results = result.map((room) => {
 		if (room.teamId) {
@@ -109,12 +100,9 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	};
 };
 
-const getChannelsCountForTeam = mem(
-	(teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()),
-	{
-		maxAge: 2000,
-	},
-);
+const getChannelsCountForTeam = mem((teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
+	maxAge: 2000,
+});
 
 const getTeams = (user, searchTerm, sort, pagination) => {
 	if (!user) {
@@ -159,11 +147,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 };
 
 const getUsers = async (user, text, workspace, sort, pagination) => {
-	if (
-		!user ||
-		!hasPermission(user._id, 'view-outside-room') ||
-		!hasPermission(user._id, 'view-d-room')
-	) {
+	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 		return;
 	}
 
@@ -190,21 +174,9 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 	if (workspace === 'all') {
 		result = Users.findByActiveUsersExcept(text, [], options, forcedSearchFields);
 	} else if (workspace === 'external') {
-		result = Users.findByActiveExternalUsersExcept(
-			text,
-			[],
-			options,
-			forcedSearchFields,
-			getFederationDomain(),
-		);
+		result = Users.findByActiveExternalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 	} else {
-		result = Users.findByActiveLocalUsersExcept(
-			text,
-			[],
-			options,
-			forcedSearchFields,
-			getFederationDomain(),
-		);
+		result = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 	}
 
 	const total = result.count(); // count ignores the `skip` and `limit` options
@@ -239,16 +211,7 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 };
 
 Meteor.methods({
-	async browseChannels({
-		text = '',
-		workspace = '',
-		type = 'channels',
-		sortBy = 'name',
-		sortDirection = 'asc',
-		page,
-		offset,
-		limit = 10,
-	}) {
+	async browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const searchTerm = s.trim(escapeRegExp(text));
 
 		if (
@@ -281,13 +244,7 @@ Meteor.methods({
 
 		switch (type) {
 			case 'channels':
-				return getChannelsAndGroups(
-					user,
-					canViewAnonymous,
-					searchTerm,
-					sortChannels(sortBy, sortDirection),
-					pagination,
-				);
+				return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'teams':
 				return getTeams(user, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'users':

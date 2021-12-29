@@ -1,21 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
-import {
-	LivechatBusinessHours,
-	LivechatDepartment,
-	LivechatDepartmentAgents,
-	Users,
-} from '../../../../../app/models/server/raw';
-import {
-	ILivechatBusinessHour,
-	LivechatBusinessHourTypes,
-} from '../../../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '../../../../../app/models/server/raw';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (
-		await LivechatDepartmentAgents.find({}, { projection: { agentId: 1 } }).toArray()
-	).map((dept: any) => dept.agentId);
+	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { projection: { agentId: 1 } }).toArray()).map(
+		(dept: any) => dept.agentId,
+	);
 	const agentIdsWithoutDepartment = (
 		await Users.findUsersInRolesWithQuery(
 			'livechat-agent',
@@ -56,10 +48,7 @@ export const closeBusinessHour = async (businessHour: Record<string, any>): Prom
 	Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const removeBusinessHourByAgentIds = async (
-	agentIds: string[],
-	businessHourId: string,
-): Promise<void> => {
+export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
 	if (!agentIds.length) {
 		return;
 	}
@@ -75,9 +64,9 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		if (isEnterprise) {
 			return;
 		}
-		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<
-			Pick<ILivechatBusinessHour, '_id'>
-		>({ projection: { _id: 1 } });
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({
+			projection: { _id: 1 },
+		});
 		if (!defaultBusinessHour) {
 			return;
 		}

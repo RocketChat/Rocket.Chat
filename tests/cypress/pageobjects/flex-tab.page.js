@@ -176,9 +176,7 @@ class FlexTab extends Page {
 
 	// Files Tab
 	get filesTab() {
-		return browser.element(
-			'.rc-popover__item[data-id=uploaded-files-list], .tab-button[data-id=uploaded-files-list]',
-		);
+		return browser.element('.rc-popover__item[data-id=uploaded-files-list], .tab-button[data-id=uploaded-files-list]');
 	}
 
 	get fileItem() {
@@ -212,9 +210,7 @@ class FlexTab extends Page {
 
 	// Starred Tab
 	get starredTab() {
-		return browser.element(
-			'.rc-popover__item[data-id=starred-messages], .tab-button[data-id=starred-messages]',
-		);
+		return browser.element('.rc-popover__item[data-id=starred-messages], .tab-button[data-id=starred-messages]');
 	}
 
 	get starredTabContent() {
@@ -223,9 +219,7 @@ class FlexTab extends Page {
 
 	// Pinned Tab
 	get pinnedTab() {
-		return browser.element(
-			'.rc-popover__item[data-id=pinned-messages], .tab-button[data-id=pinned-messages]',
-		);
+		return browser.element('.rc-popover__item[data-id=pinned-messages], .tab-button[data-id=pinned-messages]');
 	}
 
 	get pinnedTabContent() {

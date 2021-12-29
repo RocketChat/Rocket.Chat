@@ -32,13 +32,10 @@ Meteor.methods({
 			const cred = getWebdavCredentials(account);
 			const client = createClient(account.serverURL, cred);
 			const serverURL = settings.get('Accounts_OAuth_Nextcloud_URL');
-			const res = await client.customRequest(
-				`${serverURL}/index.php/core/preview.png?file=${path}&x=64&y=64`,
-				{
-					method: 'GET',
-					responseType: 'arraybuffer',
-				},
-			);
+			const res = await client.customRequest(`${serverURL}/index.php/core/preview.png?file=${path}&x=64&y=64`, {
+				method: 'GET',
+				responseType: 'arraybuffer',
+			});
 			return { success: true, data: res.data };
 		} catch (error) {
 			// ignore error

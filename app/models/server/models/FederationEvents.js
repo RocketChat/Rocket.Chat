@@ -51,9 +51,9 @@ export class FederationEventsModel extends Base {
 
 	getEventHash(contextQuery, event) {
 		return SHA256(
-			`${event.origin}${JSON.stringify(contextQuery)}${event.parentIds.join(',')}${event.type}${
-				event.timestamp
-			}${JSON.stringify(event.data)}`,
+			`${event.origin}${JSON.stringify(contextQuery)}${event.parentIds.join(',')}${event.type}${event.timestamp}${JSON.stringify(
+				event.data,
+			)}`,
 		);
 	}
 
@@ -62,10 +62,7 @@ export class FederationEventsModel extends Base {
 
 		// If it is not a GENESIS event, we need to get the previous events
 		if (type !== eventTypes.GENESIS) {
-			const previousEvents = await this.model
-				.rawCollection()
-				.find({ context: contextQuery, hasChildren: false })
-				.toArray();
+			const previousEvents = await this.model.rawCollection().find({ context: contextQuery, hasChildren: false }).toArray();
 
 			// if (!previousEvents.length) {
 			// 	throw new Error('Could not create event, the context does not exist');
@@ -89,29 +86,17 @@ export class FederationEventsModel extends Base {
 		// this.insert(event);
 
 		// Clear the "hasChildren" of those events
-		await this.update(
-			{ _id: { $in: previousEventsIds } },
-			{ $unset: { hasChildren: '' } },
-			{ multi: 1 },
-		);
+		await this.update({ _id: { $in: previousEventsIds } }, { $unset: { hasChildren: '' } }, { multi: 1 });
 
 		return event;
 	}
 
 	async createGenesisEvent(origin, contextQuery, data) {
 		// Check if genesis event already exists, if so, do not create
-		const genesisEvent = await this.model
-			.rawCollection()
-			.findOne({ context: contextQuery, type: eventTypes.GENESIS });
+		const genesisEvent = await this.model.rawCollection().findOne({ context: contextQuery, type: eventTypes.GENESIS });
 
 		if (genesisEvent) {
-			throw new Error(
-				`A GENESIS event for this context query already exists: ${JSON.stringify(
-					contextQuery,
-					null,
-					2,
-				)}`,
-			);
+			throw new Error(`A GENESIS event for this context query already exists: ${JSON.stringify(contextQuery, null, 2)}`);
 		}
 
 		return this.createEvent(origin, contextQuery, eventTypes.GENESIS, data);
@@ -135,10 +120,7 @@ export class FederationEventsModel extends Base {
 				const { origin } = event;
 
 				// Get the latest events for that context and origin
-				const latestEvents = await this.model
-					.rawCollection()
-					.find({ context: contextQuery, origin }, { _id: 1 })
-					.toArray();
+				const latestEvents = await this.model.rawCollection().find({ context: contextQuery, origin }, { _id: 1 }).toArray();
 				const latestEventIds = latestEvents.map(({ _id }) => _id);
 
 				return {

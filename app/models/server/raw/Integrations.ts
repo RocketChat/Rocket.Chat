@@ -8,10 +8,7 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> {
 		return this.findOne({ url });
 	}
 
-	updateRoomName(
-		oldRoomName: string,
-		newRoomName: string,
-	): ReturnType<BaseRaw<IIntegration>['updateMany']> {
+	updateRoomName(oldRoomName: string, newRoomName: string): ReturnType<BaseRaw<IIntegration>['updateMany']> {
 		const hashedOldRoomName = `#${oldRoomName}`;
 		const hashedNewRoomName = `#${newRoomName}`;
 

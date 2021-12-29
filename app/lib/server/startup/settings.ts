@@ -217,14 +217,10 @@ settingsRegistry.addGroup('Accounts', function () {
 			],
 		});
 
-		this.add(
-			'Accounts_RegistrationForm_LinkReplacementText',
-			'New user registration is currently disabled',
-			{
-				type: 'string',
-				public: true,
-			},
-		);
+		this.add('Accounts_RegistrationForm_LinkReplacementText', 'New user registration is currently disabled', {
+			type: 'string',
+			public: true,
+		});
 		this.add('Accounts_Registration_AuthenticationServices_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -811,8 +807,7 @@ settingsRegistry.addGroup('General', function () {
 	// eslint-disable-next-line @typescript-eslint/camelcase
 	this.add(
 		'Site_Url',
-		typeof (global as any).__meteor_runtime_config__ !== 'undefined' &&
-			(global as any).__meteor_runtime_config__ !== null
+		typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null
 			? (global as any).__meteor_runtime_config__.ROOT_URL
 			: null,
 		{
@@ -1257,14 +1252,10 @@ settingsRegistry.addGroup('Message', function () {
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
-	this.add(
-		'API_EmbedIgnoredHosts',
-		'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16',
-		{
-			type: 'string',
-			i18nDescription: 'API_EmbedIgnoredHosts_Description',
-		},
-	);
+	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
+		type: 'string',
+		i18nDescription: 'API_EmbedIgnoredHosts_Description',
+	});
 	this.add('API_EmbedSafePorts', '80, 443', {
 		type: 'string',
 	});
@@ -1525,16 +1516,12 @@ settingsRegistry.addGroup('Layout', function () {
 				public: true,
 			},
 		);
-		this.add(
-			'Layout_Terms_of_Service',
-			'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.',
-			{
-				type: 'code',
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
+		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
 		this.add(
 			'Layout_Login_Terms',
 			'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.',
@@ -1544,36 +1531,24 @@ settingsRegistry.addGroup('Layout', function () {
 				public: true,
 			},
 		);
-		this.add(
-			'Layout_Privacy_Policy',
-			'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.',
-			{
-				type: 'code',
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
-		this.add(
-			'Layout_Legal_Notice',
-			'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.',
-			{
-				type: 'code',
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
-		return this.add(
-			'Layout_Sidenav_Footer',
-			'<a href="/home"><img src="assets/logo.png" alt="Home" /></a>',
-			{
-				type: 'code',
-				code: 'text/html',
-				public: true,
-				i18nDescription: 'Layout_Sidenav_Footer_description',
-			},
-		);
+		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
+		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
+			type: 'code',
+			code: 'text/html',
+			public: true,
+			i18nDescription: 'Layout_Sidenav_Footer_description',
+		});
 	});
 	this.section('Custom_Scripts', function () {
 		this.add('Custom_Script_On_Logout', '//Add your script', {

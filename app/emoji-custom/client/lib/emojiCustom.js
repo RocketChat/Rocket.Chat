@@ -65,9 +65,7 @@ export const updateEmojiCustom = function (emojiData) {
 	}
 
 	if (previousExists && emojiData.name !== emojiData.previousName) {
-		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(
-			emojiData.previousName,
-		);
+		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
 		if (arrayIndex !== -1) {
 			emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
 		}
@@ -78,18 +76,12 @@ export const updateEmojiCustom = function (emojiData) {
 		delete emoji.list[`:${emojiData.previousName}:`];
 	}
 
-	const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(
-		`${emojiData.name}`,
-	);
+	const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(`${emojiData.name}`);
 	if (categoryIndex === -1) {
 		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
 		emoji.packages.emojiCustom.list.push(`:${emojiData.name}:`);
 	}
-	emoji.list[`:${emojiData.name}:`] = Object.assign(
-		{ emojiPackage: 'emojiCustom' },
-		emoji.list[`:${emojiData.name}:`],
-		emojiData,
-	);
+	emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, emoji.list[`:${emojiData.name}:`], emojiData);
 	if (currentAliases) {
 		for (const alias of emojiData.aliases) {
 			emoji.packages.emojiCustom.list.push(`:${alias}:`);
@@ -108,9 +100,7 @@ export const updateEmojiCustom = function (emojiData) {
 			.css('background-image', `url('${url})'`)
 			.attr('data-emoji', `${emojiData.name}`);
 	} else {
-		$(document)
-			.find(`.emojiAdminPreview-image[data-emoji='${emojiData.name}']`)
-			.css('background-image', `url('${url}')`);
+		$(document).find(`.emojiAdminPreview-image[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
 	}
 
 	// update in picker
@@ -124,9 +114,7 @@ export const updateEmojiCustom = function (emojiData) {
 			.attr('data-emoji', `${emojiData.name}`)
 			.attr('class', `emoji-${emojiData.name}`);
 	} else {
-		$(document)
-			.find(`li[data-emoji='${emojiData.name}'] span`)
-			.css('background-image', `url('${url}')`);
+		$(document).find(`li[data-emoji='${emojiData.name}'] span`).css('background-image', `url('${url}')`);
 	}
 
 	// update in picker and opened rooms
@@ -139,9 +127,7 @@ export const updateEmojiCustom = function (emojiData) {
 					.css('background-image', `url('${url}')`)
 					.attr('data-emoji', `${emojiData.name}`);
 			} else {
-				$(room.dom)
-					.find(`span[data-emoji='${emojiData.name}']`)
-					.css('background-image', `url('${url}')`);
+				$(room.dom).find(`span[data-emoji='${emojiData.name}']`).css('background-image', `url('${url}')`);
 			}
 		}
 	}
@@ -160,11 +146,7 @@ const customRender = (html) => {
 	}
 
 	html = html.replace(emoji.packages.emojiCustom._regexp, (shortname) => {
-		if (
-			typeof shortname === 'undefined' ||
-			shortname === '' ||
-			emoji.packages.emojiCustom.list.indexOf(shortname) === -1
-		) {
+		if (typeof shortname === 'undefined' || shortname === '' || emoji.packages.emojiCustom.list.indexOf(shortname) === -1) {
 			return shortname;
 		}
 

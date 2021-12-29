@@ -31,14 +31,10 @@ const _sendEmailChangeNotification = function (to, newEmail) {
 	try {
 		Mailer.send(email);
 	} catch (error) {
-		throw new Meteor.Error(
-			'error-email-send-failed',
-			`Error trying to send email: ${error.message}`,
-			{
-				function: 'setEmail',
-				message: error.message,
-			},
-		);
+		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+			function: 'setEmail',
+			message: error.message,
+		});
 	}
 };
 

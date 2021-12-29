@@ -45,9 +45,7 @@ export function getMentions(message) {
 	const userMentions = mentions.filter((mention) => !mention.type || mention.type === 'user');
 	const otherMentions = mentions.filter((mention) => mention?.type !== 'user');
 
-	const filteredMentions = userMentions
-		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
-		.map(({ _id }) => _id);
+	const filteredMentions = userMentions.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id)).map(({ _id }) => _id);
 
 	const mentionIds = callbacks.run('beforeGetMentions', filteredMentions, {
 		userMentions,
@@ -63,22 +61,14 @@ export function getMentions(message) {
 }
 
 const incGroupMentions = (rid, roomType, excludeUserId, unreadCount) => {
-	const incUnreadByGroup = [
-		'all_messages',
-		'group_mentions_only',
-		'user_and_group_mentions_only',
-	].includes(unreadCount);
+	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || incUnreadByGroup ? 1 : 0;
 
 	Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
 const incUserMentions = (rid, roomType, uids, unreadCount) => {
-	const incUnreadByUser = [
-		'all_messages',
-		'user_mentions_only',
-		'user_and_group_mentions_only',
-	].includes(unreadCount);
+	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || incUnreadByUser ? 1 : 0;
 
 	Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
@@ -90,10 +80,7 @@ const getUserIdsFromHighlights = (rid, message) => {
 
 	return subs
 		.filter(
-			({ userHighlights, u: { _id: uid } }) =>
-				userHighlights &&
-				messageContainsHighlight(message, userHighlights) &&
-				uid !== message.u._id,
+			({ userHighlights, u: { _id: uid } }) => userHighlights && messageContainsHighlight(message, userHighlights) && uid !== message.u._id,
 		)
 		.map(({ u: { _id: uid } }) => uid);
 };
@@ -177,21 +164,11 @@ export function notifyUsersOnMessage(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	Rooms.incMsgCountAndSetLastMessageById(
-		message.rid,
-		1,
-		message.ts,
-		settings.get('Store_Last_Message') && message,
-	);
+	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	updateUsersSubscriptions(message, room);
 
 	return message;
 }
 
-callbacks.add(
-	'afterSaveMessage',
-	notifyUsersOnMessage,
-	callbacks.priority.LOW,
-	'notifyUsersOnMessage',
-);
+callbacks.add('afterSaveMessage', notifyUsersOnMessage, callbacks.priority.LOW, 'notifyUsersOnMessage');

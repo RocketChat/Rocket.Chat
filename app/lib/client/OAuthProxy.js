@@ -12,9 +12,7 @@ OAuth.launchLogin = _.wrap(OAuth.launchLogin, function (func, options) {
 			`$1${encodeURIComponent(settings.get('Accounts_OAuth_Proxy_host'))}/oauth_redirect`,
 		);
 		options.loginUrl = options.loginUrl.replace(/(&state=)([^&]+|$)/, `$1${redirect_uri}!$2`);
-		options.loginUrl = `${settings.get('Accounts_OAuth_Proxy_host')}/redirect/${encodeURIComponent(
-			options.loginUrl,
-		)}`;
+		options.loginUrl = `${settings.get('Accounts_OAuth_Proxy_host')}/redirect/${encodeURIComponent(options.loginUrl)}`;
 	}
 
 	return func(options);

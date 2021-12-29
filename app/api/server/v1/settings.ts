@@ -7,12 +7,7 @@ import { hasPermission } from '../../../authorization/server';
 import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
-import {
-	ISetting,
-	ISettingColor,
-	isSettingAction,
-	isSettingColor,
-} from '../../../../definition/ISetting';
+import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '../../../../definition/ISetting';
 import {
 	isOauthCustomConfiguration,
 	isSettingsUpdatePropDefault,
@@ -70,9 +65,7 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		get() {
-			const oAuthServicesEnabled = ServiceConfiguration.configurations
-				.find({}, { fields: { secret: 0 } })
-				.fetch();
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
@@ -80,10 +73,7 @@ API.v1.addRoute(
 						return service;
 					}
 
-					if (
-						service.custom ||
-						(service.service && ['saml', 'cas', 'wordpress'].includes(service.service))
-					) {
+					if (service.custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
 						return { ...service };
 					}
 
@@ -180,11 +170,7 @@ API.v1.addRoute(
 					return API.v1.failure();
 				}
 
-				if (
-					isSettingAction(setting) &&
-					isSettingsUpdatePropsActions(this.bodyParams) &&
-					this.bodyParams.execute
-				) {
+				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
 					Meteor.call(setting.value);
 					return API.v1.success();
@@ -223,9 +209,7 @@ API.v1.addRoute(
 	{
 		get() {
 			return API.v1.success({
-				configurations: ServiceConfiguration.configurations
-					.find({}, { fields: { secret: 0 } })
-					.fetch(),
+				configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
 			});
 		},
 	},

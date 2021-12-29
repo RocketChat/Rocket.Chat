@@ -3,16 +3,7 @@ import React, { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 const CounterRow = ({ children, ...props }) => (
-	<Box
-		pb='x28'
-		pi='x20'
-		display='flex'
-		flexDirection='row'
-		justifyContent='space-around'
-		alignItems='center'
-		flexGrow={1}
-		{...props}
-	>
+	<Box pb='x28' pi='x20' display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' flexGrow={1} {...props}>
 		{children &&
 			flattenChildren(children).reduce((acc, child, i) => {
 				acc =

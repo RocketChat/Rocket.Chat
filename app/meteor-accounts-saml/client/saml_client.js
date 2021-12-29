@@ -28,10 +28,7 @@ Meteor.logout = function (...args) {
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
-			if (
-				samlService.logoutBehaviour == null ||
-				samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML
-			) {
+			if (samlService.logoutBehaviour == null || samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
 				if (samlService.idpSLORedirectURL) {
 					console.info('SAML session terminated via SLO');
 					return Meteor.logoutWithSaml({ provider });
@@ -39,9 +36,7 @@ Meteor.logout = function (...args) {
 			}
 
 			if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
-				console.info(
-					'SAML session not terminated, only the Rocket.Chat session is going to be killed',
-				);
+				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 			}
 		}
 	}
@@ -69,11 +64,7 @@ Meteor.logoutWithSaml = function (options /* , callback*/) {
 		Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
 
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-		window.location.replace(
-			Meteor.absoluteUrl(
-				`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`,
-			),
-		);
+		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`));
 	});
 };
 

@@ -23,10 +23,7 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 100);
 	}
 
-	async newConnection(
-		uid: string,
-		session: string,
-	): Promise<{ uid: string; connectionId: string } | undefined> {
+	async newConnection(uid: string, session: string): Promise<{ uid: string; connectionId: string } | undefined> {
 		const result = await newConnection(uid, session, this.context);
 		await updateUserPresence(uid);
 		return result;

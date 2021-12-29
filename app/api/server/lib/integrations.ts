@@ -3,10 +3,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { IIntegration } from '../../../../definition/IIntegration';
 import { IUser } from '../../../../definition/IUser';
 
-const hasIntegrationsPermission = async (
-	userId: string,
-	integration: IIntegration,
-): Promise<boolean> => {
+const hasIntegrationsPermission = async (userId: string, integration: IIntegration): Promise<boolean> => {
 	const type = integration.type === 'webhook-incoming' ? 'incoming' : 'outgoing';
 
 	if (await hasPermissionAsync(userId, `manage-${type}-integrations`)) {

@@ -6,14 +6,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-	api.use([
-		'ecmascript',
-		'http',
-		'rocketchat:settings',
-		'rocketchat:callbacks',
-		'rocketchat:models',
-		'templating',
-	]);
+	api.use(['ecmascript', 'http', 'rocketchat:settings', 'rocketchat:callbacks', 'rocketchat:models', 'templating']);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

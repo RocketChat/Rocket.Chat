@@ -1,11 +1,7 @@
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import {
-	findEmailInboxes,
-	findOneEmailInbox,
-	insertOneOrUpdateEmailInbox,
-} from '../lib/emailInbox';
+import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
@@ -18,9 +14,7 @@ API.v1.addRoute(
 		get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
-			const emailInboxes = Promise.await(
-				findEmailInboxes({ userId: this.userId, query, pagination: { offset, count, sort } }),
-			);
+			const emailInboxes = Promise.await(findEmailInboxes({ userId: this.userId, query, pagination: { offset, count, sort } }));
 
 			return API.v1.success(emailInboxes);
 		},

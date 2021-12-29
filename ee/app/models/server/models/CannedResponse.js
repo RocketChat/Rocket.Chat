@@ -13,10 +13,7 @@ export class CannedResponse extends Base {
 		});
 	}
 
-	createOrUpdateCannedResponse(
-		_id,
-		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt },
-	) {
+	createOrUpdateCannedResponse(_id, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }) {
 		const record = {
 			shortcut,
 			text,

@@ -77,10 +77,7 @@ export class Base {
 	}
 
 	findUsersInRoles() {
-		throw new Meteor.Error(
-			'overwrite-function',
-			'You must overwrite this function in the extended classes',
-		);
+		throw new Meteor.Error('overwrite-function', 'You must overwrite this function in the extended classes');
 	}
 
 	arrayToCursor(data) {

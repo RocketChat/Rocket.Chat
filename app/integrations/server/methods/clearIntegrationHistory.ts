@@ -8,10 +8,7 @@ Meteor.methods({
 	async clearIntegrationHistory(integrationId) {
 		let integration;
 
-		if (
-			hasPermission(this.userId, 'manage-outgoing-integrations') ||
-			hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')
-		) {
+		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
 			integration = await Integrations.findOneById(integrationId);
 		} else if (
 			hasPermission(this.userId, 'manage-own-outgoing-integrations') ||

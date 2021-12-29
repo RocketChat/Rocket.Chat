@@ -78,11 +78,7 @@ function getGuestByEmail(email: string, name: string, department = ''): any {
 	throw new Error('Error getting guest');
 }
 
-async function uploadAttachment(
-	attachment: Attachment,
-	rid: string,
-	visitorToken: string,
-): Promise<FileAttachment> {
+async function uploadAttachment(attachment: Attachment, rid: string, visitorToken: string): Promise<FileAttachment> {
 	const details = {
 		name: attachment.filename,
 		size: attachment.size,
@@ -129,14 +125,8 @@ async function uploadAttachment(
 	});
 }
 
-export async function onEmailReceived(
-	email: ParsedMail,
-	inbox: string,
-	department = '',
-): Promise<void> {
-	logger.debug(
-		`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`,
-	);
+export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
+	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -148,16 +138,9 @@ export async function onEmailReceived(
 	logger.debug(`Fetching guest for visitor ${email.from.value[0].address}`);
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
-	logger.debug(
-		`Guest ${guest._id} obtained. Attempting to find or create a room on department ${department}`,
-	);
+	logger.debug(`Guest ${guest._id} obtained. Attempting to find or create a room on department ${department}`);
 
-	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(
-		guest.token,
-		thread,
-		department,
-		{},
-	);
+	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
 
 	logger.debug({
 		msg: 'Room found for guest',
@@ -180,9 +163,7 @@ export async function onEmailReceived(
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
-	logger.debug(
-		`Sending email message to room ${rid} for visitor ${guest._id}. Conversation assigned to department ${department}`,
-	);
+	logger.debug(`Sending email message to room ${rid} for visitor ${guest._id}. Conversation assigned to department ${department}`);
 	Livechat.sendMessage({
 		guest,
 		message: {

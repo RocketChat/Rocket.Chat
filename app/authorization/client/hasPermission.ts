@@ -7,16 +7,11 @@ import { IUser } from '../../../definition/IUser';
 import { IRole } from '../../../definition/IRole';
 import { IPermission } from '../../../definition/IPermission';
 
-const isValidScope = (scope: IRole['scope']): boolean =>
-	typeof scope === 'string' && scope in Models;
+const isValidScope = (scope: IRole['scope']): boolean => typeof scope === 'string' && scope in Models;
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(
-		permissionIds: IPermission['_id'][],
-		scope: string | undefined,
-		userId: IUser['_id'],
-	): boolean => {
+	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
 		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
@@ -54,11 +49,7 @@ const all = createPermissionValidator(Array.prototype.every);
 const validatePermissions = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope: string | undefined,
-	predicate: (
-		permissionIds: IPermission['_id'][],
-		scope: string | undefined,
-		userId: IUser['_id'],
-	) => boolean,
+	predicate: (permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']) => boolean,
 	userId?: IUser['_id'] | null,
 ): boolean => {
 	userId = userId ?? Meteor.userId();
@@ -74,15 +65,11 @@ const validatePermissions = (
 	return predicate(([] as IPermission['_id'][]).concat(permissions), scope, userId);
 };
 
-export const hasAllPermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: string,
-): boolean => validatePermissions(permissions, scope, all);
+export const hasAllPermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, all);
 
-export const hasAtLeastOnePermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: string,
-): boolean => validatePermissions(permissions, scope, atLeastOne);
+export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, atLeastOne);
 
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],

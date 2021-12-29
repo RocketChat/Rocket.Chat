@@ -68,11 +68,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return banner;
 	}
 
-	async getBannersForUser(
-		userId: string,
-		platform: BannerPlatform,
-		bannerId?: string,
-	): Promise<IBanner[]> {
+	async getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
 		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, {
 			projection: { roles: 1 },
 		});
@@ -83,9 +79,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId<
-			Pick<IBannerDismiss, 'bannerId'>
-		>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, {
+			projection: { bannerId: 1, _id: 0 },
+		}).toArray();
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 

@@ -35,9 +35,7 @@ export const normalizeMessagesForUser = (messages, uid) => {
 			usernames.add(username);
 		});
 
-		Object.values(message.reactions || {}).forEach((reaction) =>
-			reaction.usernames.forEach((username) => usernames.add(username)),
-		);
+		Object.values(message.reactions || {}).forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
 	});
 
 	const names = new Map();
@@ -62,9 +60,7 @@ export const normalizeMessagesForUser = (messages, uid) => {
 		});
 
 		Object.keys(message.reactions || {}).forEach((reaction) => {
-			message.reactions[reaction].names = message.reactions[reaction].usernames.map((username) =>
-				getNameOfUsername(names, username),
-			);
+			message.reactions[reaction].names = message.reactions[reaction].usernames.map((username) => getNameOfUsername(names, username));
 		});
 	});
 

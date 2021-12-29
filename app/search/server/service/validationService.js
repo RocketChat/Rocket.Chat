@@ -42,11 +42,7 @@ class ValidationService {
 					msg.r = { name: subscription.name, t: subscription.t };
 					msg.username = user?.username;
 					msg.valid = true;
-					SearchLogger.debug(
-						`user ${uid} can access ${msg.rid} ( ${
-							subscription.t === 'd' ? subscription.username : subscription.name
-						} )`,
-					);
+					SearchLogger.debug(`user ${uid} can access ${msg.rid} ( ${subscription.t === 'd' ? subscription.username : subscription.name} )`);
 				} else {
 					SearchLogger.debug(`user ${uid} can NOT access ${msg.rid}`);
 				}
@@ -63,9 +59,7 @@ class ValidationService {
 					room.t = subscription.t;
 					room.name = subscription.name;
 					SearchLogger.debug(
-						`user ${uid} can access ${room._id} ( ${
-							subscription.t === 'd' ? subscription.username : subscription.name
-						} )`,
+						`user ${uid} can access ${room._id} ( ${subscription.t === 'd' ? subscription.username : subscription.name} )`,
 					);
 				} else {
 					SearchLogger.debug(`user ${uid} can NOT access ${room._id}`);

@@ -58,11 +58,7 @@ addMigration({
 
 		return Settings.deleteMany({
 			_id: {
-				$in: [
-					'RetentionPolicy_DoNotExcludeDiscussion',
-					'RetentionPolicy_DoNotExcludeThreads',
-					'RetentionPolicy_ExcludePinned',
-				],
+				$in: ['RetentionPolicy_DoNotExcludeDiscussion', 'RetentionPolicy_DoNotExcludeThreads', 'RetentionPolicy_ExcludePinned'],
 			},
 		});
 	},

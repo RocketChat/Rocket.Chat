@@ -6,16 +6,10 @@ callbacks.add(
 	'livechat.removeAgentDepartment',
 	async (options: Record<string, any>): Promise<any> => {
 		const { departmentId, agentsId } = options;
-		CannedResponse.findByDepartmentId(departmentId, { fields: { _id: 1 } }).forEach(
-			(response: any) => {
-				const { _id } = response;
-				notifications.streamCannedResponses.emit(
-					'canned-responses',
-					{ type: 'removed', _id },
-					{ agentsId },
-				);
-			},
-		);
+		CannedResponse.findByDepartmentId(departmentId, { fields: { _id: 1 } }).forEach((response: any) => {
+			const { _id } = response;
+			notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id }, { agentsId });
+		});
 
 		return options;
 	},

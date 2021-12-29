@@ -16,9 +16,7 @@ addAction('canned-responses', () => {
 						id: 'canned-responses',
 						title: 'Canned_Responses',
 						icon: 'canned-response',
-						template: lazy(
-							() => import('../../../client/omnichannel/components/contextualBar/CannedResponse'),
-						),
+						template: lazy(() => import('../../../client/omnichannel/components/contextualBar/CannedResponse')),
 						order: 0,
 				  }
 				: null,

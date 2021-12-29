@@ -82,9 +82,7 @@ Meteor.methods({
 		function filterBeforeDate(_, day, month, year) {
 			month--;
 			const beforeDate = new Date(year, month, day);
-			beforeDate.setHours(
-				beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset,
-			);
+			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
 			query.ts = {
 				$lte: beforeDate,
 			};
@@ -95,9 +93,7 @@ Meteor.methods({
 			month--;
 			day++;
 			const afterDate = new Date(year, month, day);
-			afterDate.setUTCHours(
-				afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset,
-			);
+			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
 			if (query.ts) {
 				query.ts.$gte = afterDate;
 			} else {
@@ -111,9 +107,7 @@ Meteor.methods({
 		function filterOnDate(_, day, month, year) {
 			month--;
 			const date = new Date(year, month, day);
-			date.setUTCHours(
-				date.getUTCHours() + date.getTimezoneOffset() / 60 + currentUserTimezoneOffset,
-			);
+			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset() / 60 + currentUserTimezoneOffset);
 			const dayAfter = new Date(date);
 			dayAfter.setDate(dayAfter.getDate() + 1);
 			delete query.ts;
@@ -205,10 +199,7 @@ Meteor.methods({
 		text = text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterAfterDate);
 		text = text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, filterOnDate);
 		// Sort order
-		text = text.replace(
-			/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g,
-			sortByTimestamp,
-		);
+		text = text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, sortByTimestamp);
 
 		// Query in message text
 		text = text.trim().replace(/\s\s/g, ' ');

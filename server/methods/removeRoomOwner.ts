@@ -39,10 +39,7 @@ Meteor.methods({
 			});
 		}
 
-		if (
-			Array.isArray(subscription.roles) === false ||
-			subscription.roles.includes('owner') === false
-		) {
+		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('owner') === false) {
 			throw new Meteor.Error('error-user-not-owner', 'User is not an owner', {
 				method: 'removeRoomOwner',
 			});
@@ -51,13 +48,9 @@ Meteor.methods({
 		const numOwners = await (await getUsersInRole('owner', rid)).count();
 
 		if (numOwners === 1) {
-			throw new Meteor.Error(
-				'error-remove-last-owner',
-				'This is the last owner. Please set a new owner before removing this one.',
-				{
-					method: 'removeRoomOwner',
-				},
-			);
+			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {
+				method: 'removeRoomOwner',
+			});
 		}
 
 		Subscriptions.removeRoleById(subscription._id, 'owner');

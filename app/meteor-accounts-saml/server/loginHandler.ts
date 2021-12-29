@@ -13,11 +13,7 @@ const makeError = (message: string): Record<string, any> => ({
 });
 
 Accounts.registerLoginHandler('saml', function (loginRequest) {
-	if (
-		!loginRequest.saml ||
-		!loginRequest.credentialToken ||
-		typeof loginRequest.credentialToken !== 'string'
-	) {
+	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
 		return undefined;
 	}
 

@@ -100,9 +100,7 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
-			const { customField } = Promise.await(
-				findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }),
-			);
+			const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
 
 			return API.v1.success({
 				customField,

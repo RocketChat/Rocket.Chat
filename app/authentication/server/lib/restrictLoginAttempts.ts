@@ -11,11 +11,7 @@ import { Logger } from '../../../logger/server';
 
 const logger = new Logger('LoginProtection');
 
-export const notifyFailedLogin = async (
-	ipOrUsername: string,
-	blockedUntil: Date,
-	failedAttempts: number,
-): Promise<void> => {
+export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
@@ -66,15 +62,10 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	if (!lastLogin || !lastLogin.loginAt) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(
-			ip,
-			new Date(lastLogin.loginAt),
-		);
+		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
 	}
 
-	const attemptsUntilBlock = settings.get(
-		'Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip',
-	);
+	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
@@ -86,9 +77,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get(
-		'Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes',
-	) as number;
+	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
@@ -100,15 +89,11 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
-	if (
-		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
-		!settings.get('Block_Multiple_Failed_Logins_By_User')
-	) {
+	if (!settings.get('Block_Multiple_Failed_Logins_Enabled') || !settings.get('Block_Multiple_Failed_Logins_By_User')) {
 		return true;
 	}
 
-	const user =
-		login.user || (await Users.findOneByUsername(login.methodArguments[0].user?.username));
+	const user = login.user || (await Users.findOneByUsername(login.methodArguments[0].user?.username));
 
 	if (!user?.username) {
 		return true;
@@ -119,31 +104,22 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	if (!user?.lastLogin) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsername(user.username);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(
-			user.username,
-			new Date(user.lastLogin),
-		);
+		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
 	}
 
-	const attemptsUntilBlock = settings.get(
-		'Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User',
-	);
+	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
 	}
 
-	const lastAttemptAt = (
-		await ServerEvents.findLastFailedAttemptByUsername(user.username as string)
-	)?.ts;
+	const lastAttemptAt = (await ServerEvents.findLastFailedAttemptByUsername(user.username as string))?.ts;
 
 	if (!lastAttemptAt) {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get(
-		'Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes',
-	) as number;
+	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 

@@ -220,18 +220,10 @@ export const upsertPermissions = async (): Promise<void> => {
 	];
 
 	for await (const role of defaultRoles) {
-		await Roles.createOrUpdate(
-			role.name,
-			role.scope as 'Users' | 'Subscriptions',
-			role.description,
-			true,
-			false,
-		);
+		await Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
 	}
 
-	const getPreviousPermissions = async function (
-		settingId?: string,
-	): Promise<Record<string, IPermission>> {
+	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {
 		const previousSettingPermissions: {
 			[key: string]: IPermission;
 		} = {};
@@ -261,10 +253,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			roles: [],
 		};
 		// copy previously assigned roles if available
-		if (
-			previousSettingPermissions[permissionId] &&
-			previousSettingPermissions[permissionId].roles
-		) {
+		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
 			permission.roles = previousSettingPermissions[permissionId].roles;
 		}
 		if (setting.group) {

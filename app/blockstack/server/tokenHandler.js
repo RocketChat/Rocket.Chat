@@ -37,10 +37,7 @@ export const handleAccessToken = (loginRequest) => {
 	if (!iss) {
 		return {
 			type: 'blockstack',
-			error: new Meteor.Error(
-				Accounts.LoginCancelledError.numericError,
-				'Insufficient data in auth response token',
-			),
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token'),
 		};
 	}
 

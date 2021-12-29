@@ -136,10 +136,7 @@ class E2E extends Emitter {
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('e2e.setUserPublicAndPrivateKeys', {
 				public_key: Meteor._localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(
-					Meteor._localStorage.getItem('private_key'),
-					this.createRandomPassword(),
-				),
+				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
 		}
 
@@ -195,10 +192,7 @@ class E2E extends Emitter {
 	async changePassword(newPassword) {
 		await call('e2e.setUserPublicAndPrivateKeys', {
 			public_key: Meteor._localStorage.getItem('public_key'),
-			private_key: await this.encodePrivateKey(
-				Meteor._localStorage.getItem('private_key'),
-				newPassword,
-			),
+			private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), newPassword),
 		});
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {

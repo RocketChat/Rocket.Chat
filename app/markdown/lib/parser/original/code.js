@@ -41,12 +41,8 @@ const codeblocks = (message) => {
 			if (codeMatch) {
 				// Process highlight if this part is code
 				const singleLine = codeMatch[0].indexOf('\n') === -1;
-				const lang =
-					!singleLine && Array.from(hljs.listLanguages()).includes(codeMatch[1].trim())
-						? codeMatch[1].trim()
-						: '';
-				const emptyLanguage =
-					lang === '' ? unescapeHTML(codeMatch[1] + codeMatch[2]) : unescapeHTML(codeMatch[2]);
+				const lang = !singleLine && Array.from(hljs.listLanguages()).includes(codeMatch[1].trim()) ? codeMatch[1].trim() : '';
+				const emptyLanguage = lang === '' ? unescapeHTML(codeMatch[1] + codeMatch[2]) : unescapeHTML(codeMatch[2]);
 				const code = singleLine ? unescapeHTML(codeMatch[1]) : emptyLanguage;
 
 				const result = (() => {

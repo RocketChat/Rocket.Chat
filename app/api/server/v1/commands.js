@@ -21,9 +21,7 @@ API.v1.addRoute(
 			const cmd = slashCommands.commands[params.command.toLowerCase()];
 
 			if (!cmd) {
-				return API.v1.failure(
-					`There is no command in the system by the name of: ${params.command}`,
-				);
+				return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
 			}
 
 			return API.v1.success({ command: cmd });
@@ -118,9 +116,7 @@ const processQueryOptionsOnResult = (result, options = {}) => {
 		if (Array.isArray(result)) {
 			result = result.map((record) => {
 				if (fieldsToRemove.length > 0) {
-					return Object.fromEntries(
-						Object.entries(record).filter(([key]) => !fieldsToRemove.includes(key)),
-					);
+					return Object.fromEntries(Object.entries(record).filter(([key]) => !fieldsToRemove.includes(key)));
 				}
 
 				if (fieldsToGet.length > 0) {
@@ -131,9 +127,7 @@ const processQueryOptionsOnResult = (result, options = {}) => {
 			});
 		} else {
 			if (fieldsToRemove.length > 0) {
-				return Object.fromEntries(
-					Object.entries(result).filter(([key]) => !fieldsToRemove.includes(key)),
-				);
+				return Object.fromEntries(Object.entries(result).filter(([key]) => !fieldsToRemove.includes(key)));
 			}
 
 			if (fieldsToGet.length > 0) {
@@ -195,9 +189,7 @@ API.v1.addRoute(
 			}
 
 			if (typeof body.roomId !== 'string') {
-				return API.v1.failure(
-					"The room's id where to execute this command must be provided and be a string.",
-				);
+				return API.v1.failure("The room's id where to execute this command must be provided and be a string.");
 			}
 
 			if (body.tmid && typeof body.tmid !== 'string') {
@@ -230,9 +222,7 @@ API.v1.addRoute(
 
 			const { triggerId } = body;
 
-			const result = Meteor.runAsUser(user._id, () =>
-				slashCommands.run(cmd, params, message, triggerId),
-			);
+			const result = Meteor.runAsUser(user._id, () => slashCommands.run(cmd, params, message, triggerId));
 
 			return API.v1.success({ result });
 		},
@@ -257,9 +247,7 @@ API.v1.addRoute(
 			}
 
 			if (typeof query.roomId !== 'string') {
-				return API.v1.failure(
-					"The room's id where the previews are being displayed must be provided and be a string.",
-				);
+				return API.v1.failure("The room's id where the previews are being displayed must be provided and be a string.");
 			}
 
 			const cmd = query.command.toLowerCase();
@@ -298,20 +286,14 @@ API.v1.addRoute(
 			}
 
 			if (typeof body.roomId !== 'string') {
-				return API.v1.failure(
-					"The room's id where the preview is being executed in must be provided and be a string.",
-				);
+				return API.v1.failure("The room's id where the preview is being executed in must be provided and be a string.");
 			}
 
 			if (typeof body.previewItem === 'undefined') {
 				return API.v1.failure('The preview item being executed must be provided.');
 			}
 
-			if (
-				!body.previewItem.id ||
-				!body.previewItem.type ||
-				typeof body.previewItem.value === 'undefined'
-			) {
+			if (!body.previewItem.id || !body.previewItem.type || typeof body.previewItem.value === 'undefined') {
 				return API.v1.failure('The preview item being executed is in the wrong format.');
 			}
 

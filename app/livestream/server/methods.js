@@ -1,12 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	createLiveStream,
-	statusLiveStream,
-	statusStreamLiveStream,
-	getBroadcastStatus,
-	setBroadcastStatus,
-} from './functions/livestream';
+import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 

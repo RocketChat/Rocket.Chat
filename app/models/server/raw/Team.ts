@@ -24,22 +24,13 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findByNames(names: Array<string>): Cursor<ITeam>;
 
-	findByNames(
-		names: Array<string>,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-	): Cursor<ITeam>;
+	findByNames(names: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+
+	findByNames<P>(names: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
 
 	findByNames<P>(
 		names: Array<string>,
-		options: FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P>;
-
-	findByNames<P>(
-		names: Array<string>,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Cursor<P> | Cursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({ name: { $in: names } });
@@ -49,24 +40,13 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findByIds(ids: Array<string>, query?: FilterQuery<ITeam>): Cursor<ITeam>;
 
-	findByIds(
-		ids: Array<string>,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-		query?: FilterQuery<ITeam>,
-	): Cursor<ITeam>;
+	findByIds(ids: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>, query?: FilterQuery<ITeam>): Cursor<ITeam>;
+
+	findByIds<P>(ids: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>, query?: FilterQuery<ITeam>): Cursor<P>;
 
 	findByIds<P>(
 		ids: Array<string>,
-		options: FindOneOptions<P extends ITeam ? ITeam : P>,
-		query?: FilterQuery<ITeam>,
-	): Cursor<P>;
-
-	findByIds<P>(
-		ids: Array<string>,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 		query?: FilterQuery<ITeam>,
 	): Cursor<P> | Cursor<ITeam> {
 		if (options === undefined) {
@@ -78,25 +58,14 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): Cursor<ITeam>;
 
-	findByIdsAndType(
-		ids: Array<string>,
-		type: TEAM_TYPE,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-	): Cursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+
+	findByIdsAndType<P>(ids: Array<string>, type: TEAM_TYPE, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
 
 	findByIdsAndType<P>(
 		ids: Array<string>,
 		type: TEAM_TYPE,
-		options: FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P>;
-
-	findByIdsAndType<P>(
-		ids: Array<string>,
-		type: TEAM_TYPE,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Cursor<P> | Cursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({ _id: { $in: ids }, type });
@@ -112,10 +81,7 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findByType<P>(
 		type: number,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Cursor<ITeam> | Cursor<P> {
 		if (options === undefined) {
 			return this.col.find({ type }, options);
@@ -125,25 +91,14 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): Cursor<ITeam>;
 
-	findByNameAndTeamIds(
-		name: string | RegExp,
-		teamIds: Array<string>,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-	): Cursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: WithoutProjection<FindOneOptions<ITeam>>): Cursor<ITeam>;
+
+	findByNameAndTeamIds<P>(name: string | RegExp, teamIds: Array<string>, options: FindOneOptions<P extends ITeam ? ITeam : P>): Cursor<P>;
 
 	findByNameAndTeamIds<P>(
 		name: string | RegExp,
 		teamIds: Array<string>,
-		options: FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Cursor<P>;
-
-	findByNameAndTeamIds<P>(
-		name: string | RegExp,
-		teamIds: Array<string>,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Cursor<P> | Cursor<ITeam> {
 		if (options === undefined) {
 			return this.col.find({
@@ -180,19 +135,13 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findOneByName(name: string | RegExp): Promise<ITeam | null>;
 
-	findOneByName(
-		name: string | RegExp,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-	): Promise<ITeam | null>;
+	findOneByName(name: string | RegExp, options: WithoutProjection<FindOneOptions<ITeam>>): Promise<ITeam | null>;
 
 	findOneByName<P>(name: string | RegExp, options: FindOneOptions<P>): Promise<P | null>;
 
 	findOneByName<P>(
 		name: string | RegExp,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {
 		if (options === undefined) {
 			return this.col.findOne({ name });
@@ -202,19 +151,13 @@ export class TeamRaw extends BaseRaw<ITeam> {
 
 	findOneByMainRoomId(roomId: string): Promise<ITeam | null>;
 
-	findOneByMainRoomId(
-		roomId: string,
-		options: WithoutProjection<FindOneOptions<ITeam>>,
-	): Promise<ITeam | null>;
+	findOneByMainRoomId(roomId: string, options: WithoutProjection<FindOneOptions<ITeam>>): Promise<ITeam | null>;
 
 	findOneByMainRoomId<P>(roomId: string, options: FindOneOptions<P>): Promise<P | null>;
 
 	findOneByMainRoomId<P>(
 		roomId: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeam>>
-			| FindOneOptions<P extends ITeam ? ITeam : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeam>> | FindOneOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {
 		return options ? this.col.findOne({ roomId }, options) : this.col.findOne({ roomId });
 	}
@@ -242,10 +185,7 @@ export class TeamRaw extends BaseRaw<ITeam> {
 		return this.col.deleteOne({ name });
 	}
 
-	updateNameAndType(
-		teamId: string,
-		nameAndType: { name?: string; type?: TEAM_TYPE },
-	): Promise<UpdateWriteOpResult> {
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateWriteOpResult> {
 		const query = {
 			_id: teamId,
 		};

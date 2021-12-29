@@ -86,15 +86,11 @@ Template.thread.helpers({
 			onSend: (...args) => {
 				instance.sendToBottom();
 				instance.state.set('sendToChannel', false);
-				return (
-					instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args)
-				);
+				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
-			onKeyUp: (...args) =>
-				instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
+			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
 			onKeyDown: (...args) => {
-				const result =
-					instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args);
+				const result = instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args);
 				const [event] = args;
 
 				const { which: keyCode } = event;
@@ -164,12 +160,7 @@ Template.thread.onRendered(function () {
 		callbacks.add(
 			'streamNewMessage',
 			_.debounce((msg) => {
-				if (
-					Session.get('openedRoom') !== msg.rid ||
-					rid !== msg.rid ||
-					msg.editedAt ||
-					msg.tmid !== tmid
-				) {
+				if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 					return;
 				}
 				Meteor.call('readThreads', tmid);

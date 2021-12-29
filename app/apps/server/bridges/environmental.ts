@@ -12,9 +12,7 @@ export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge 
 	}
 
 	protected async getValueByName(envVarName: string, appId: string): Promise<string | undefined> {
-		this.orch.debugLog(
-			`The App ${appId} is getting the environmental variable value ${envVarName}.`,
-		);
+		this.orch.debugLog(`The App ${appId} is getting the environmental variable value ${envVarName}.`);
 
 		if (!(await this.isReadable(envVarName, appId))) {
 			throw new Error(`The environmental variable "${envVarName}" is not readable.`);
@@ -24,17 +22,13 @@ export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge 
 	}
 
 	protected async isReadable(envVarName: string, appId: string): Promise<boolean> {
-		this.orch.debugLog(
-			`The App ${appId} is checking if the environmental variable is readable ${envVarName}.`,
-		);
+		this.orch.debugLog(`The App ${appId} is checking if the environmental variable is readable ${envVarName}.`);
 
 		return this.allowed.includes(envVarName.toUpperCase());
 	}
 
 	protected async isSet(envVarName: string, appId: string): Promise<boolean> {
-		this.orch.debugLog(
-			`The App ${appId} is checking if the environmental variable is set ${envVarName}.`,
-		);
+		this.orch.debugLog(`The App ${appId} is checking if the environmental variable is set ${envVarName}.`);
 
 		if (!(await this.isReadable(envVarName, appId))) {
 			throw new Error(`The environmental variable "${envVarName}" is not readable.`);

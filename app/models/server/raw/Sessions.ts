@@ -23,10 +23,7 @@ type DestructuredRange = { start: DestructuredDate; end: DestructuredDate };
 type DateRange = { start: Date; end: Date };
 type FullReturn = { year: number; month: number; day: number; data: ISession[] };
 
-const matchBasedOnDate = (
-	start: DestructuredDate,
-	end: DestructuredDate,
-): FilterQuery<ISession> => {
+const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<ISession> => {
 	if (start.year === end.year && start.month === end.month) {
 		return {
 			year: start.year,
@@ -117,10 +114,7 @@ const getGroupSessionsByHour = (
 				$addToSet: {
 					$cond: [
 						{
-							$or: [
-								{ $and: [isOpenSession, isAfterLoginAt] },
-								{ $and: [isAfterLoginAt, isBeforeClosedAt] },
-							],
+							$or: [{ $and: [isOpenSession, isAfterLoginAt] }, { $and: [isAfterLoginAt, isBeforeClosedAt] }],
 						},
 						'$session.userId',
 						'$$REMOVE',
@@ -274,10 +268,7 @@ export const aggregates = {
 		);
 	},
 
-	async getUniqueUsersOfYesterday(
-		collection: Collection<ISession>,
-		{ year, month, day }: DestructuredDate,
-	): Promise<ISession[]> {
+	async getUniqueUsersOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
 		return collection
 			.aggregate([
 				{
@@ -431,12 +422,7 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getMatchOfLastMonthOrWeek({
-		year,
-		month,
-		day,
-		type = 'month',
-	}: DestructuredDateWithType): FilterQuery<ISession> {
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): FilterQuery<ISession> {
 		let startOfPeriod;
 
 		if (type === 'month') {
@@ -586,10 +572,7 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getUniqueDevicesOfYesterday(
-		collection: Collection<ISession>,
-		{ year, month, day }: DestructuredDate,
-	): Promise<ISession[]> {
+	getUniqueDevicesOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
 		return collection
 			.aggregate([
 				{
@@ -690,10 +673,7 @@ export const aggregates = {
 			.toArray();
 	},
 
-	getUniqueOSOfYesterday(
-		collection: Collection<ISession>,
-		{ year, month, day }: DestructuredDate,
-	): Promise<ISession[]> {
+	getUniqueOSOfYesterday(collection: Collection<ISession>, { year, month, day }: DestructuredDate): Promise<ISession[]> {
 		return collection
 			.aggregate([
 				{
@@ -758,11 +738,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 
 	private secondaryCollection: Collection<ISession>;
 
-	constructor(
-		public readonly col: Collection<ISession>,
-		public readonly colSecondary: Collection<ISession>,
-		trash?: Collection<ISession>,
-	) {
+	constructor(public readonly col: Collection<ISession>, public readonly colSecondary: Collection<ISession>, trash?: Collection<ISession>) {
 		super(col, trash);
 
 		this.secondaryCollection = colSecondary;
@@ -862,11 +838,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			.toArray();
 	}
 
-	async getBusiestTimeWithinHoursPeriod({
-		start,
-		end,
-		groupSize,
-	}: DateRange & { groupSize: number }): Promise<
+	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DateRange & { groupSize: number }): Promise<
 		{
 			hour: number;
 			users: number;
@@ -906,15 +878,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			.aggregate<{
 				hour: number;
 				users: number;
-			}>([
-				match,
-				rangeProject,
-				unwind,
-				groups.listGroup,
-				groups.countGroup,
-				presentationProject,
-				sort,
-			])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
@@ -1016,15 +980,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				month: number;
 				year: number;
 				users: number;
-			}>([
-				match,
-				rangeProject,
-				unwind,
-				groups.listGroup,
-				groups.countGroup,
-				presentationProject,
-				sort,
-			])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
@@ -1228,10 +1184,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		);
 	}
 
-	async closeByInstanceIdAndSessionId(
-		instanceId: string,
-		sessionId: string,
-	): Promise<UpdateWriteOpResult> {
+	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1271,11 +1224,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return this.updateMany(query, update);
 	}
 
-	async logoutByInstanceIdAndSessionIdAndUserId(
-		instanceId: string,
-		sessionId: string,
-		userId: string,
-	): Promise<UpdateWriteOpResult> {
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -1293,9 +1242,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		return this.updateMany(query, update);
 	}
 
-	async createBatch(
-		sessions: ModelOptionalId<ISession>[],
-	): Promise<BulkWriteOpResultObject | undefined> {
+	async createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteOpResultObject | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;
 		}

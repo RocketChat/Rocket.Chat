@@ -40,18 +40,14 @@ addMigration({
 
 		const id = 'push-gateway-disabled';
 		const title = 'Action_required';
-		const text =
-			'The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again';
+		const text = 'The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again';
 		const link = '/admin/Push';
 
 		Meteor.startup(() => {
 			sendMessagesToAdmins({
 				msgs: ({ adminUser }) => [
 					{
-						msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(
-							text,
-							adminUser.language,
-						)}`,
+						msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, adminUser.language)}`,
 					},
 				],
 				banners: [

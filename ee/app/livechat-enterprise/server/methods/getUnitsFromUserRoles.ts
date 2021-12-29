@@ -10,9 +10,6 @@ Meteor.methods({
 			return;
 		}
 
-		return (
-			(await hasAnyRoleAsync(user._id, ['livechat-monitor'])) &&
-			LivechatUnit.findByMonitorId(user._id)
-		);
+		return (await hasAnyRoleAsync(user._id, ['livechat-monitor'])) && LivechatUnit.findByMonitorId(user._id);
 	},
 });

@@ -33,18 +33,10 @@ const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
-	[E2ERoomState.NOT_STARTED]: [
-		E2ERoomState.ESTABLISHING,
-		E2ERoomState.DISABLED,
-		E2ERoomState.KEYS_RECEIVED,
-	],
+	[E2ERoomState.NOT_STARTED]: [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED],
 	[E2ERoomState.READY]: [E2ERoomState.DISABLED],
 	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
-	[E2ERoomState.WAITING_KEYS]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.ERROR,
-		E2ERoomState.DISABLED,
-	],
+	[E2ERoomState.WAITING_KEYS]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED],
 	[E2ERoomState.ESTABLISHING]: [
 		E2ERoomState.READY,
 		E2ERoomState.KEYS_RECEIVED,
@@ -186,8 +178,7 @@ export class E2ERoom extends Emitter {
 	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({ rid: this.roomId });
 
-		const data = await (subscription.lastMessage?.msg &&
-			this.decrypt(subscription.lastMessage.msg));
+		const data = await (subscription.lastMessage?.msg && this.decrypt(subscription.lastMessage.msg));
 		if (!data?.text) {
 			this.log('decryptSubscriptions nothing to do');
 			return;
@@ -208,11 +199,9 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(
-			async ({ _id, ...msg }) => {
-				Messages.direct.update({ _id }, await this.decryptMessage(msg));
-			},
-		);
+		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
+			Messages.direct.update({ _id }, await this.decryptMessage(msg));
+		});
 	}
 
 	// Initiates E2E Encryption
@@ -330,17 +319,9 @@ export class E2ERoom extends Emitter {
 
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await encryptRSA(
-				userKey,
-				toArrayBuffer(this.sessionKeyExportedString),
-			);
+			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call(
-				'e2e.updateGroupKey',
-				this.roomId,
-				user._id,
-				this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)),
-			);
+			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
@@ -389,9 +370,7 @@ export class E2ERoom extends Emitter {
 	// Encrypts messages
 	async encryptText(data) {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(
-				EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }),
-			);
+			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {

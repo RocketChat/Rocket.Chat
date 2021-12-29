@@ -119,16 +119,7 @@ API.v1.addRoute(
 
 				if (user.roles.indexOf(role) !== -1) {
 					return API.v1.success({
-						user: _.pick(
-							user,
-							'_id',
-							'username',
-							'name',
-							'status',
-							'statusLivechat',
-							'emails',
-							'livechat',
-						),
+						user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
 					});
 				}
 

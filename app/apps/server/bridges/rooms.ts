@@ -101,10 +101,7 @@ export class AppRoomBridge extends RoomBridge {
 		);
 	}
 
-	protected async getDirectByUsernames(
-		usernames: Array<string>,
-		appId: string,
-	): Promise<IRoom | undefined> {
+	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting direct room by usernames: "${usernames}"`);
 		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames, {});
 		if (!room) {

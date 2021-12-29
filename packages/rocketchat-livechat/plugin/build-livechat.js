@@ -4,18 +4,8 @@ import fs from 'fs';
 
 import UglifyJS from 'uglify-js';
 
-const livechatSource = path.resolve(
-	'packages',
-	'rocketchat-livechat',
-	'assets',
-	'rocket-livechat.js',
-);
-const livechatTarget = path.resolve(
-	'packages',
-	'rocketchat-livechat',
-	'assets',
-	'rocketchat-livechat.min.js',
-);
+const livechatSource = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js');
+const livechatTarget = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocketchat-livechat.min.js');
 
 fs.writeFileSync(livechatTarget, UglifyJS.minify(livechatSource).code);
 

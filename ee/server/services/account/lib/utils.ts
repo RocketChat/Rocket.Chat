@@ -60,5 +60,4 @@ export const validatePassword = (password: string, bcryptPassword: string): Prom
 	bcrypt.compare(getPassword(password), bcryptPassword);
 
 const expiryDaysInMS = 15 * 60 * 60 * 24 * 1000;
-export const _tokenExpiration = (when: string | Date): Date =>
-	new Date(new Date(when).getTime() + expiryDaysInMS);
+export const _tokenExpiration = (when: string | Date): Date => new Date(new Date(when).getTime() + expiryDaysInMS);

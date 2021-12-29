@@ -201,10 +201,7 @@ Meteor.methods({
 			resultTemplate: searchProviderService.activeProvider.resultTemplate,
 			supportsSuggestions: searchProviderService.activeProvider.supportsSuggestions,
 			suggestionItemTemplate: searchProviderService.activeProvider.suggestionItemTemplate,
-			settings: _.mapObject(
-				searchProviderService.activeProvider.settingsAsMap,
-				(setting) => setting.value,
-			),
+			settings: _.mapObject(searchProviderService.activeProvider.settingsAsMap, (setting) => setting.value),
 		};
 	},
 });

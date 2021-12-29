@@ -3,14 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatDepartment } from '../../../../../app/models/server/raw';
 
-export const findAllDepartmentsAvailable = async (
-	uid,
-	unitId,
-	offset,
-	count,
-	text,
-	onlyMyDepartments = false,
-) => {
+export const findAllDepartmentsAvailable = async (uid, unitId, offset, count, text, onlyMyDepartments = false) => {
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 
 	let query = {

@@ -14,46 +14,32 @@ import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(
-		'last 7 days',
-		'last 30 days',
-		'last 90 days',
-	);
+	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
 	const t = useTranslation();
 
 	const { data } = useMessagesSent({ period });
 
-	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
-		useMemo(() => {
-			if (!data) {
-				return [];
+	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] = useMemo(() => {
+		if (!data) {
+			return [];
+		}
+
+		const values = Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => ({
+			date: moment(data.start).add(i, 'days').toISOString(),
+			newMessages: 0,
+		}));
+
+		for (const { day, messages } of data.days ?? []) {
+			const i = moment(day).diff(data.start, 'days');
+			if (i >= 0) {
+				values[i].newMessages += messages;
 			}
+		}
 
-			const values = Array.from(
-				{ length: moment(data.end).diff(data.start, 'days') + 1 },
-				(_, i) => ({
-					date: moment(data.start).add(i, 'days').toISOString(),
-					newMessages: 0,
-				}),
-			);
-
-			for (const { day, messages } of data.days ?? []) {
-				const i = moment(day).diff(data.start, 'days');
-				if (i >= 0) {
-					values[i].newMessages += messages;
-				}
-			}
-
-			return [
-				data.period?.count,
-				data.period?.variation,
-				data.yesterday?.count,
-				data.yesterday?.variation,
-				values,
-			];
-		}, [data]);
+		return [data.period?.count, data.period?.variation, data.yesterday?.count, data.yesterday?.variation, values];
+	}, [data]);
 
 	return (
 		<Section
@@ -65,9 +51,7 @@ const MessagesSentSection = (): ReactElement => {
 						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Messages']}
 						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined =>
-							values?.map(({ date, newMessages }) => [date, newMessages])
-						}
+						dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
 					/>
 				</>
 			}
@@ -150,8 +134,7 @@ const MessagesSentSection = (): ReactElement => {
 											tooltip: {
 												container: {
 													backgroundColor: colors.n900,
-													boxShadow:
-														'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+													boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 													borderRadius: 2,
 												},
 											},

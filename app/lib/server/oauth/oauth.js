@@ -45,18 +45,11 @@ Accounts.registerLoginHandler(function (options) {
 		// unregisterService was called on it.
 		return {
 			type: 'oauth',
-			error: new Meteor.Error(
-				Accounts.LoginCancelledError.numericError,
-				`No registered oauth service found for: ${service.serviceName}`,
-			),
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, `No registered oauth service found for: ${service.serviceName}`),
 		};
 	}
 
 	const oauthResult = service.handleAccessTokenRequest(options);
 
-	return Accounts.updateOrCreateUserFromExternalService(
-		service.serviceName,
-		oauthResult.serviceData,
-		oauthResult.options,
-	);
+	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
 });

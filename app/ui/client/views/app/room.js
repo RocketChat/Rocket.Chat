@@ -29,8 +29,7 @@ import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
-const userCanDrop = (_id) =>
-	!roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -133,9 +132,7 @@ async function createFileFromUrl(url) {
 	const { mime } = await import('../../../../utils/lib/mimeTypes');
 	const file = new File(
 		[data],
-		`File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(
-			data.type,
-		)}`,
+		`File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(data.type)}`,
 		metadata,
 	);
 	return file;
@@ -158,9 +155,7 @@ export const dropzoneHelpers = {
 	},
 
 	isDropzoneDisabled() {
-		return settings.get('FileUpload_Enabled')
-			? 'dropzone-overlay--enabled'
-			: 'dropzone-overlay--disabled';
+		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
 	},
 
 	dragAndDropLabel() {
@@ -190,13 +185,7 @@ Template.roomOld.helpers({
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room?.sysMes) ? room.sysMes : hideSettings.value || [];
 		const hideMessagesOfType = new Set(
-			settingValues.reduce(
-				(array, value) => [
-					...array,
-					...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]),
-				],
-				[],
-			),
+			settingValues.reduce((array, value) => [...array, ...(value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value])], []),
 		);
 		const query = {
 			rid,
@@ -246,14 +235,11 @@ Template.roomOld.helpers({
 			'u._id': { $ne: Meteor.userId() },
 		});
 		if (roles) {
-			const leader =
-				Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
+			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1, statusText: 1 } }) || {};
 
 			return {
 				...roles.u,
-				name: settings.get('UI_Use_Real_Name')
-					? roles.u.name || roles.u.username
-					: roles.u.username,
+				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
 				statusDisplay: leader.statusText || t(leader.status || 'offline'),
 			};
@@ -297,12 +283,9 @@ Template.roomOld.helpers({
 				chatMessages[rid].initializeInput(input, { rid });
 			},
 			onResize: () => sendToBottomIfNecessary && sendToBottomIfNecessary(),
-			onKeyUp: (...args) =>
-				chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
-			onKeyDown: (...args) =>
-				chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
-			onSend: (...args) =>
-				chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
+			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
+			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
+			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
 	},
 
@@ -311,9 +294,7 @@ Template.roomOld.helpers({
 		if (!room) {
 			return '';
 		}
-		return room.announcementDetails && room.announcementDetails.style !== undefined
-			? room.announcementDetails.style
-			: '';
+		return room.announcementDetails && room.announcementDetails.style !== undefined ? room.announcementDetails.style : '';
 	},
 
 	maxMessageLength() {
@@ -391,12 +372,7 @@ Template.roomOld.helpers({
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
 	},
 	hasLeader() {
-		if (
-			RoomRoles.findOne(
-				{ 'rid': this._id, 'roles': 'leader', 'u._id': { $ne: Meteor.userId() } },
-				{ fields: { _id: 1 } },
-			)
-		) {
+		if (RoomRoles.findOne({ 'rid': this._id, 'roles': 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
 	},
@@ -460,19 +436,12 @@ Template.roomOld.helpers({
 
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
-		const types =
-			e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
+		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
 		if (
 			types != null &&
 			types.length > 0 &&
-			_.some(
-				types,
-				(type) =>
-					type.indexOf('text/') === -1 ||
-					type.indexOf('text/uri-list') !== -1 ||
-					type.indexOf('text/plain') !== -1,
-			) &&
+			_.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) &&
 			userCanDrop(this._id)
 		) {
 			e.currentTarget.classList.add('over');
@@ -518,9 +487,7 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const url = e.dataTransfer
-					.getData('text/html')
-					.match('<img.+src=(?:"|\')(.+?)(?:"|\')(?:.+?)>');
+				const url = e.dataTransfer.getData('text/html').match('<img.+src=(?:"|\')(.+?)(?:"|\')(?:.+?)>');
 				const imgURL = url && url[1];
 
 				if (!imgURL) {
@@ -533,10 +500,7 @@ export const dropzoneEvents = {
 				}
 				files = [file];
 			}
-			if (
-				e.dataTransfer.types.includes('text/plain') &&
-				!e.dataTransfer.types.includes('text/x-moz-url')
-			) {
+			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
 				return addToInput(transferData.trim());
 			}
 		}
@@ -564,9 +528,7 @@ Meteor.startup(() => {
 		'click .message'(e, template) {
 			if (template.selectable.get()) {
 				(document.selection != null ? document.selection.empty() : undefined) ||
-					(typeof window.getSelection === 'function'
-						? window.getSelection().removeAllRanges()
-						: undefined);
+					(typeof window.getSelection === 'function' ? window.getSelection().removeAllRanges() : undefined);
 				const data = Blaze.getData(e.currentTarget);
 				const {
 					msg: { _id },
@@ -584,9 +546,7 @@ Meteor.startup(() => {
 
 				template.selectMessages(_id);
 
-				const selectedMessages = $('.messages-box .message.selected').map(
-					(i, message) => message.id,
-				);
+				const selectedMessages = $('.messages-box .message.selected').map((i, message) => message.id);
 				const removeClass = _.difference(selectedMessages, template.getSelectedMessages());
 				const addClass = _.difference(template.getSelectedMessages(), selectedMessages);
 				removeClass.forEach((message) => $(`.messages-box #${message}`).removeClass('selected'));
@@ -649,10 +609,7 @@ Meteor.startup(() => {
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
 				if (hasMore === true && t.lastScrollTop <= height / 3) {
 					RoomHistoryManager.getMore(this._id);
-				} else if (
-					hasMoreNext === true &&
-					Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height
-				) {
+				} else if (hasMoreNext === true && Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height) {
 					RoomHistoryManager.getMoreNext(this._id);
 				}
 			}
@@ -706,10 +663,7 @@ Meteor.startup(() => {
 			}
 			const usernames = Array.from(new Set(room.usernames));
 			this.userDetail.set(
-				this.userDetail.get() ||
-					(usernames.length === 1
-						? usernames[0]
-						: usernames.filter((username) => username !== user.username)[0]),
+				this.userDetail.get() || (usernames.length === 1 ? usernames[0] : usernames.filter((username) => username !== user.username)[0]),
 			);
 		});
 
@@ -762,10 +716,7 @@ Meteor.startup(() => {
 				const minTs = _.min([message1.ts, message2.ts]);
 				const maxTs = _.max([message1.ts, message2.ts]);
 
-				this.selectedRange = _.pluck(
-					ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(),
-					'_id',
-				);
+				this.selectedRange = _.pluck(ChatMessage.find({ rid: message1.rid, ts: { $gte: minTs, $lte: maxTs } }).fetch(), '_id');
 			}
 		};
 
@@ -811,31 +762,19 @@ Meteor.startup(() => {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update(
-					{ 'rid': this.data._id, 'u._id': role.u._id },
-					{ $addToSet: { roles: role._id } },
-					{ multi: true },
-				);
+				ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 			}, // Update message to re-render DOM
 			changed: (role) => {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update(
-					{ 'rid': this.data._id, 'u._id': role.u._id },
-					{ $inc: { rerender: 1 } },
-					{ multi: true },
-				);
+				ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
 			}, // Update message to re-render DOM
 			removed: (role) => {
 				if (!role.u || !role.u._id) {
 					return;
 				}
-				ChatMessage.update(
-					{ 'rid': this.data._id, 'u._id': role.u._id },
-					{ $pull: { roles: role._id } },
-					{ multi: true },
-				);
+				ChatMessage.update({ 'rid': this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 			},
 		});
 
@@ -908,8 +847,7 @@ Meteor.startup(() => {
 
 		template.isAtBottom = function (scrollThreshold = 0) {
 			if (isAtBottom(wrapper, scrollThreshold)) {
-				newMessage.className =
-					'new-message background-primary-action-color color-content-background-color not';
+				newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 				return true;
 			}
 			return false;
@@ -917,8 +855,7 @@ Meteor.startup(() => {
 
 		template.sendToBottom = function () {
 			wrapper.scrollTo(30, wrapper.scrollHeight);
-			newMessage.className =
-				'new-message background-primary-action-color color-content-background-color not';
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
 
 		template.checkIfScrollIsAtBottom = function () {
@@ -960,15 +897,9 @@ Meteor.startup(() => {
 
 			let element;
 			if (rtl) {
-				element = document.elementFromPoint(
-					messageBoxOffset.left + messageBox.width() - 1,
-					messageBoxOffset.top + topOffset + 1,
-				);
+				element = document.elementFromPoint(messageBoxOffset.left + messageBox.width() - 1, messageBoxOffset.top + topOffset + 1);
 			} else {
-				element = document.elementFromPoint(
-					messageBoxOffset.left + 1,
-					messageBoxOffset.top + topOffset + 1,
-				);
+				element = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + topOffset + 1);
 			}
 
 			if (element && element.classList.contains('message')) {
@@ -978,8 +909,7 @@ Meteor.startup(() => {
 
 		const updateUnreadCount = _.throttle(() => {
 			Tracker.afterFlush(() => {
-				const lastInvisibleMessageOnScreen =
-					getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
+				const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
 				if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
 					return this.unreadCount.set(0);
@@ -1030,11 +960,7 @@ Meteor.startup(() => {
 
 			const subscription = Subscriptions.findOne({ rid }, { fields: { alert: 1, unread: 1 } });
 			read();
-			return (
-				subscription &&
-				(subscription.alert || subscription.unread) &&
-				readMessage.refreshUnreadMark(rid)
-			);
+			return subscription && (subscription.alert || subscription.unread) && readMessage.refreshUnreadMark(rid);
 		});
 
 		this.autorun(() => {

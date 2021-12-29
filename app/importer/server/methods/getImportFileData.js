@@ -34,11 +34,9 @@ Meteor.methods({
 
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error(
-				'error-importer-not-defined',
-				`The importer (${importerKey}) has no import class defined.`,
-				{ method: 'getImportFileData' },
-			);
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
+				method: 'getImportFileData',
+			});
 		}
 
 		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
@@ -60,21 +58,14 @@ Meteor.methods({
 			});
 		}
 
-		const readySteps = [
-			ProgressStep.USER_SELECTION,
-			ProgressStep.DONE,
-			ProgressStep.CANCELLED,
-			ProgressStep.ERROR,
-		];
+		const readySteps = [ProgressStep.USER_SELECTION, ProgressStep.DONE, ProgressStep.CANCELLED, ProgressStep.ERROR];
 
 		if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
 			return importer.instance.buildSelection();
 		}
 
 		const fileName = importer.instance.importRecord.file;
-		const fullFilePath = fs.existsSync(fileName)
-			? fileName
-			: path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
 
 		if (promise && promise instanceof Promise) {

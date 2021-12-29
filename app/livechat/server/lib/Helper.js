@@ -101,14 +101,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 	return roomId;
 };
 
-export const createLivechatInquiry = ({
-	rid,
-	name,
-	guest,
-	message,
-	initialStatus,
-	extraData = {},
-}) => {
+export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus, extraData = {} }) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -242,9 +235,7 @@ export const parseAgentCustomFields = (customFields) => {
 
 		try {
 			const parseCustomFields = JSON.parse(accountCustomFields);
-			return Object.keys(parseCustomFields).filter(
-				(customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true,
-			);
+			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
 			Livechat.logger.error(error);
 			return [];
@@ -340,11 +331,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: TAPi18n.__(
-				'User_started_a_new_conversation',
-				{ username: notificationUserName },
-				language,
-			),
+			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
 			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
@@ -377,11 +364,9 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	if (oldServedBy && agentId === oldServedBy._id) {
-		throw new Meteor.Error(
-			'error-selected-agent-room-agent-are-same',
-			'The selected agent and the room agent are the same',
-			{ function: 'forwardRoomToAgent' },
-		);
+		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', {
+			function: 'forwardRoomToAgent',
+		});
 	}
 
 	const { username } = user;
@@ -483,11 +468,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		}
 		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
 		if (!user) {
-			throw new Meteor.Error(
-				'error-user-not-belong-to-department',
-				'The selected user does not belong to this department',
-				{ function: 'forwardRoomToDepartment' },
-			);
+			throw new Meteor.Error('error-user-not-belong-to-department', 'The selected user does not belong to this department', {
+				function: 'forwardRoomToDepartment',
+			});
 		}
 		const { username } = user;
 		agent = { agentId, username };
@@ -517,9 +500,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		const department = LivechatDepartment.findOneById(departmentId);
 		if (!department?.fallbackForwardDepartment) {
-			logger.debug(
-				`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`,
-			);
+			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			return false;
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]

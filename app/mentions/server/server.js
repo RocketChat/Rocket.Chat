@@ -10,10 +10,7 @@ import { api } from '../../../server/sdk/api';
 export class MentionQueries {
 	getUsers(usernames) {
 		const users = Meteor.users
-			.find(
-				{ username: { $in: [...new Set(usernames)] } },
-				{ fields: { _id: true, username: true, name: 1 } },
-			)
+			.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } })
 			.fetch();
 
 		return users.map((user) => ({
@@ -31,10 +28,7 @@ export class MentionQueries {
 	}
 
 	getChannels(channels) {
-		return Rooms.find(
-			{ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } },
-			{ fields: { _id: 1, name: 1 } },
-		).fetch();
+		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
 	}
 }
 
@@ -50,11 +44,7 @@ const mention = new MentionsServer({
 	onMaxRoomMembersExceeded({ sender, rid }) {
 		// Get the language of the user for the error notification.
 		const { language } = this.getUser(sender._id);
-		const msg = TAPi18n.__(
-			'Group_mentions_disabled_x_members',
-			{ total: this.messageMaxAll },
-			language,
-		);
+		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
 		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
@@ -67,9 +57,4 @@ const mention = new MentionsServer({
 		});
 	},
 });
-callbacks.add(
-	'beforeSaveMessage',
-	(message) => mention.execute(message),
-	callbacks.priority.HIGH,
-	'mentions',
-);
+callbacks.add('beforeSaveMessage', (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');

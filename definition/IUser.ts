@@ -142,8 +142,7 @@ export interface IRegisterUser extends IUser {
 	username: string;
 	name: string;
 }
-export const isRegisterUser = (user: IUser): user is IRegisterUser =>
-	user.username !== undefined && user.name !== undefined;
+export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;

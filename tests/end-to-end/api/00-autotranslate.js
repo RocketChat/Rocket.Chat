@@ -36,9 +36,7 @@ describe('AutoTranslate', function () {
 							.expect((res) => {
 								expect(res.body).to.have.a.property('success', false);
 								expect(res.body.errorType).to.be.equal('error-action-not-allowed');
-								expect(res.body.error).to.be.equal(
-									'Auto-Translate is not allowed [error-action-not-allowed]',
-								);
+								expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
 							})
 							.end(done);
 					});
@@ -90,9 +88,7 @@ describe('AutoTranslate', function () {
 							.expect((res) => {
 								expect(res.body).to.have.a.property('success', false);
 								expect(res.body.errorType).to.be.equal('error-action-not-allowed');
-								expect(res.body.error).to.be.equal(
-									'Auto-Translate is not allowed [error-action-not-allowed]',
-								);
+								expect(res.body.error).to.be.equal('Auto-Translate is not allowed [error-action-not-allowed]');
 							})
 							.end(done);
 					});
@@ -174,9 +170,7 @@ describe('AutoTranslate', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body.error).to.be.equal(
-							'The bodyParam "autoTranslateLanguage" must be a string.',
-						);
+						expect(res.body.error).to.be.equal('The bodyParam "autoTranslateLanguage" must be a string.');
 					})
 					.end(done);
 			});

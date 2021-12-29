@@ -56,8 +56,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 				rid,
 				domain: rcSettings.get('Jitsi_Domain'),
 				provider: 'jitsi',
-				room:
-					rcSettings.get('Jitsi_URL_Room_Prefix') + rname + rcSettings.get('Jitsi_URL_Room_Suffix'),
+				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rname + rcSettings.get('Jitsi_URL_Room_Suffix'),
 				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 
@@ -91,9 +90,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('invalid-room');
 				}
 
-				const webrtcCallingAllowed =
-					rcSettings.get('WebRTC_Enabled') === true &&
-					rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
+				const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
 				if (!webrtcCallingAllowed) {
 					throw new Meteor.Error('webRTC calling not enabled');
 				}

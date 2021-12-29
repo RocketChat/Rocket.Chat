@@ -93,9 +93,7 @@ describe('LIVECHAT - Agents', function () {
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('total');
 							expect(res.body).to.have.property('count');
-							const managerRecentlyCreated = res.body.users.find(
-								(user) => manager._id === user._id,
-							);
+							const managerRecentlyCreated = res.body.users.find((user) => manager._id === user._id);
 							expect(managerRecentlyCreated._id).to.be.equal(manager._id);
 						})
 						.end(done);

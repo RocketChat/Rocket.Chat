@@ -31,10 +31,7 @@ Meteor.methods({
 		}
 
 		if (!currentIntegration) {
-			throw new Meteor.Error(
-				'invalid_integration',
-				'[methods] updateOutgoingIntegration -> integration not found',
-			);
+			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 		if (integration.scriptCompiled) {
 			await Integrations.updateOne(

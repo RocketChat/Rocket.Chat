@@ -55,9 +55,7 @@ const denormalizeAllMessages = (resources) => resources.map(denormalizeMessage);
 const normalizeMessage = (originalResource) => {
 	const resource = { ...originalResource };
 
-	resource.u.username = !isFullyQualified(resource.u.username)
-		? `${resource.u.username}@${getFederationDomain()}`
-		: resource.u.username;
+	resource.u.username = !isFullyQualified(resource.u.username) ? `${resource.u.username}@${getFederationDomain()}` : resource.u.username;
 
 	// Federation
 	resource.federation = resource.federation || {

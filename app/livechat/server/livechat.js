@@ -31,10 +31,7 @@ WebApp.connectHandlers.use(
 				return next();
 			}
 
-			res.setHeader(
-				'Content-Security-Policy',
-				`frame-ancestors ${referer.protocol}//${referer.host}`,
-			);
+			res.setHeader('Content-Security-Policy', `frame-ancestors ${referer.protocol}//${referer.host}`);
 		} else {
 			// TODO need to remove inline scripts from this route to be able to enable CSP here as well
 			res.removeHeader('Content-Security-Policy');

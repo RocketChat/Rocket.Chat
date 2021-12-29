@@ -118,20 +118,12 @@ Template.RocketSearch.events = {
 		const suggestionActive = t.suggestionActive.get();
 
 		if (evt.keyCode === 40 && suggestions) {
-			t.suggestionActive.set(
-				suggestionActive !== undefined && suggestionActive < suggestions.length - 1
-					? suggestionActive + 1
-					: 0,
-			);
+			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive < suggestions.length - 1 ? suggestionActive + 1 : 0);
 			return;
 		}
 
 		if (evt.keyCode === 38 && suggestions) {
-			t.suggestionActive.set(
-				suggestionActive !== undefined && suggestionActive === 0
-					? suggestions.length - 1
-					: suggestionActive - 1,
-			);
+			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive === 0 ? suggestions.length - 1 : suggestionActive - 1);
 		}
 	},
 	'keyup #message-search': _.debounce(function (evt, t) {

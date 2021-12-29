@@ -6,10 +6,7 @@ const getUserMedia = ((navigator) => {
 	}
 
 	const legacyGetUserMedia =
-		navigator.getUserMedia ||
-		navigator.webkitGetUserMedia ||
-		navigator.mozGetUserMedia ||
-		navigator.msGetUserMedia;
+		navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 	if (legacyGetUserMedia) {
 		return (options) =>

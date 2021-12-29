@@ -1,10 +1,6 @@
 import _ from 'underscore';
 
-const {
-	LOG_METHOD_PAYLOAD = 'false',
-	LOG_REST_PAYLOAD = 'false',
-	LOG_REST_METHOD_PAYLOADS = 'false',
-} = process.env;
+const { LOG_METHOD_PAYLOAD = 'false', LOG_REST_PAYLOAD = 'false', LOG_REST_METHOD_PAYLOADS = 'false' } = process.env;
 
 export const getMethodArgs =
 	LOG_METHOD_PAYLOAD === 'false' && LOG_REST_METHOD_PAYLOADS === 'false'
@@ -21,11 +17,7 @@ export const getMethodArgs =
 				}
 
 				return {
-					arguments: params.map((arg) =>
-						typeof arg !== 'object'
-							? arg
-							: _.omit(arg, 'password', 'msg', 'pass', 'username', 'message'),
-					),
+					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : _.omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
 				};
 		  };
 

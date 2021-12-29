@@ -32,13 +32,9 @@ Meteor.methods({
 
 		// Can't add to direct room ever
 		if (room.t === 'd') {
-			throw new Meteor.Error(
-				'error-cant-invite-for-direct-room',
-				"Can't invite user to direct rooms",
-				{
-					method: 'addUsersToRoom',
-				},
-			);
+			throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
+				method: 'addUsersToRoom',
+			});
 		}
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission

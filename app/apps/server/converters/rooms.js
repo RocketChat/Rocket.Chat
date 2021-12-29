@@ -83,8 +83,7 @@ export class AppRoomsConverter {
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
-			waitingResponse:
-				typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
+			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
 			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,

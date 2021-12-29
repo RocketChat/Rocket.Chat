@@ -94,9 +94,7 @@ Template.livechatReadOnly.onCreated(function () {
 
 	this.autorun(() => this.loadInquiry(this.rid));
 	this.autorun(() => {
-		this.room.set(
-			ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1, servedBy: 1 } }),
-		);
+		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1, servedBy: 1 } }));
 	});
 });
 

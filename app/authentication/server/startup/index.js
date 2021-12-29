@@ -133,12 +133,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	const { localized: lastNameLocalized } = lastName;
 
 	// LinkedIn new format
-	if (
-		preferredLocale &&
-		firstNameLocalized &&
-		preferredLocale.language &&
-		preferredLocale.country
-	) {
+	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
 		const locale = `${preferredLocale.language}_${preferredLocale.country}`;
 
 		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
@@ -160,8 +155,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
-	user.active =
-		user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {
 		if (options.profile) {
@@ -230,9 +224,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	delete user.globalRoles;
 
 	if (user.services && !user.services.password) {
-		const defaultAuthServiceRoles = String(
-			settings.get('Accounts_Registration_AuthenticationServices_Default_Roles'),
-		).split(',');
+		const defaultAuthServiceRoles = String(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
 			globalRoles.push(...defaultAuthServiceRoles.map((s) => s.trim()));
 		}
@@ -318,23 +310,15 @@ Accounts.validateLoginAttempt(function (login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
 	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
-		throw new Meteor.Error(
-			'error-login-blocked-for-ip',
-			'Login has been temporarily blocked For IP',
-			{
-				function: 'Accounts.validateLoginAttempt',
-			},
-		);
+		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
+			function: 'Accounts.validateLoginAttempt',
+		});
 	}
 
 	if (!Promise.await(isValidAttemptByUser(login))) {
-		throw new Meteor.Error(
-			'error-login-blocked-for-user',
-			'Login has been temporarily blocked For User',
-			{
-				function: 'Accounts.validateLoginAttempt',
-			},
-		);
+		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
+			function: 'Accounts.validateLoginAttempt',
+		});
 	}
 
 	if (login.allowed !== true) {
@@ -346,13 +330,9 @@ Accounts.validateLoginAttempt(function (login) {
 	}
 
 	if (login.user.type === 'app') {
-		throw new Meteor.Error(
-			'error-app-user-is-not-allowed-to-login',
-			'App user is not allowed to login',
-			{
-				function: 'Accounts.validateLoginAttempt',
-			},
-		);
+		throw new Meteor.Error('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
+			function: 'Accounts.validateLoginAttempt',
+		});
 	}
 
 	if (!!login.user.active !== true) {
@@ -367,11 +347,7 @@ Accounts.validateLoginAttempt(function (login) {
 		});
 	}
 
-	if (
-		login.user.roles.includes('admin') === false &&
-		login.type === 'password' &&
-		settings.get('Accounts_EmailVerification') === true
-	) {
+	if (login.user.roles.includes('admin') === false && login.type === 'password' && settings.get('Accounts_EmailVerification') === true) {
 		const validEmail = login.user.emails.filter((email) => email.verified === true);
 		if (validEmail.length === 0) {
 			throw new Meteor.Error('error-invalid-email', 'Invalid email __email__');
@@ -398,10 +374,7 @@ Accounts.validateNewUser(function (user) {
 		settings.get('LDAP_Enable') === false &&
 		!(user.services && user.services.password)
 	) {
-		throw new Meteor.Error(
-			'registration-disabled-authentication-services',
-			'User registration is disabled for authentication services',
-		);
+		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
 	}
 
 	return true;

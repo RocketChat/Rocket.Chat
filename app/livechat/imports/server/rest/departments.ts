@@ -85,8 +85,7 @@ API.v1.addRoute(
 				findDepartmentById({
 					userId: this.userId,
 					departmentId: this.urlParams._id,
-					includeAgents:
-						this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+					includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
 					onlyMyDepartments: onlyMyDepartments === 'true',
 				}),
 			);
@@ -141,10 +140,7 @@ API.v1.addRoute(
 			}
 		},
 		delete() {
-			if (
-				!hasPermission(this.userId, 'manage-livechat-departments') &&
-				!hasPermission(this.userId, 'remove-livechat-department')
-			) {
+			if (!hasPermission(this.userId, 'manage-livechat-departments') && !hasPermission(this.userId, 'remove-livechat-department')) {
 				return API.v1.unauthorized();
 			}
 
@@ -212,10 +208,7 @@ API.v1.addRoute<'livechat/department/:departmentId/agents', { authRequired: true
 			return API.v1.success(agents);
 		},
 		post() {
-			if (
-				!hasPermission(this.userId, 'manage-livechat-departments') ||
-				!hasPermission(this.userId, 'add-livechat-department-agents')
-			) {
+			if (!hasPermission(this.userId, 'manage-livechat-departments') || !hasPermission(this.userId, 'add-livechat-department-agents')) {
 				return API.v1.unauthorized();
 			}
 			check(this.urlParams, {

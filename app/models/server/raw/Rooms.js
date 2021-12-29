@@ -47,14 +47,7 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(
-		name,
-		types,
-		discussion = false,
-		teams = false,
-		showOnlyTeams = false,
-		options = {},
-	) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -118,9 +111,7 @@ export class RoomsRaw extends BaseRaw {
 					},
 			  };
 
-		const onlyTeamsCondition = onlyTeams
-			? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] }
-			: {};
+		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -308,14 +299,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({
-		start,
-		end,
-		startOfLastWeek,
-		endOfLastWeek,
-		onlyCount = false,
-		options = {},
-	}) {
+	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -341,10 +325,7 @@ export class RoomsRaw extends BaseRaw {
 						input: '$messages',
 						as: 'message',
 						cond: {
-							$and: [
-								{ $gte: ['$$message.date', startOfLastWeek] },
-								{ $lte: ['$$message.date', endOfLastWeek] },
-							],
+							$and: [{ $gte: ['$$message.date', startOfLastWeek] }, { $lte: ['$$message.date', endOfLastWeek] }],
 						},
 					},
 				},

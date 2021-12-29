@@ -11,11 +11,6 @@ export const saveRoomDescription = function (rid, roomDescription, user) {
 	}
 
 	const update = Rooms.setDescriptionById(rid, roomDescription);
-	Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-		'room_changed_description',
-		rid,
-		roomDescription,
-		user,
-	);
+	Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', rid, roomDescription, user);
 	return update;
 };

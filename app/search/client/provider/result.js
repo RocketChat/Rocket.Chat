@@ -85,9 +85,7 @@ Template.DefaultSearchResultTemplate.onCreated(function () {
 
 	this.autorun(() => {
 		const result = this.data.result.get();
-		this.hasMore.set(
-			!(result && result.message.docs.length < (this.data.payload.limit || this.pageSize)),
-		);
+		this.hasMore.set(!(result && result.message.docs.length < (this.data.payload.limit || this.pageSize)));
 	});
 });
 

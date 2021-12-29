@@ -12,10 +12,7 @@ const validChannelChars = ['@', '#'];
 
 Meteor.methods({
 	async addIncomingIntegration(integration) {
-		if (
-			!hasPermission(this.userId, 'manage-incoming-integrations') &&
-			!hasPermission(this.userId, 'manage-own-incoming-integrations')
-		) {
+		if (!hasPermission(this.userId, 'manage-incoming-integrations') && !hasPermission(this.userId, 'manage-own-incoming-integrations')) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
 				method: 'addIncomingIntegration',
 			});
@@ -37,11 +34,9 @@ Meteor.methods({
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {
-				throw new Meteor.Error(
-					'error-invalid-channel-start-with-chars',
-					'Invalid channel. Start with @ or #',
-					{ method: 'updateIncomingIntegration' },
-				);
+				throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+					method: 'updateIncomingIntegration',
+				});
 			}
 		}
 
@@ -50,11 +45,7 @@ Meteor.methods({
 				method: 'addIncomingIntegration',
 			});
 		}
-		if (
-			integration.scriptEnabled === true &&
-			integration.script &&
-			integration.script.trim() !== ''
-		) {
+		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
 				let babelOptions = Babel.getDefaultOptions({ runtime: false });
 				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
@@ -92,10 +83,7 @@ Meteor.methods({
 			}
 
 			if (
-				!hasAllPermission(this.userId, [
-					'manage-incoming-integrations',
-					'manage-own-incoming-integrations',
-				]) &&
+				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
 				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {

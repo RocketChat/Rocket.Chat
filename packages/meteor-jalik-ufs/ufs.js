@@ -169,9 +169,7 @@ export const UploadFS = {
 	 * @param callback
 	 */
 	readAsArrayBuffer() {
-		console.error(
-			'UploadFS.readAsArrayBuffer is deprecated, see https://github.com/jalik/jalik-ufs#uploading-from-a-file',
-		);
+		console.error('UploadFS.readAsArrayBuffer is deprecated, see https://github.com/jalik/jalik-ufs#uploading-from-a-file');
 	},
 
 	/**

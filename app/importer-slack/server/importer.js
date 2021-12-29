@@ -20,9 +20,7 @@ export class SlackImporter extends Base {
 
 	prepareChannelsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter(
-			(channel) => channel.creator != null,
-		);
+		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} channels.`);
 
@@ -50,9 +48,7 @@ export class SlackImporter extends Base {
 
 	prepareGroupsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter(
-			(channel) => channel.creator != null,
-		);
+		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} groups.`);
 
@@ -79,9 +75,7 @@ export class SlackImporter extends Base {
 
 	prepareMpimpsFile(entry) {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-		const data = JSON.parse(entry.getData().toString()).filter(
-			(channel) => channel.creator != null,
-		);
+		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} mpims.`);
 
@@ -240,11 +234,7 @@ export class SlackImporter extends Base {
 						return this.logger.debug(`Ignoring the file: ${entry.entryName}`);
 					}
 
-					if (
-						['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(
-							entry.entryName,
-						)
-					) {
+					if (['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(entry.entryName)) {
 						return;
 					}
 
@@ -464,8 +454,7 @@ export class SlackImporter extends Base {
 
 			const regularTypes = ['me_message', 'thread_broadcast'];
 
-			const isBotMessage =
-				message.subtype && ['bot_message', 'slackbot_response'].includes(message.subtype);
+			const isBotMessage = message.subtype && ['bot_message', 'slackbot_response'].includes(message.subtype);
 
 			if (message.subtype && !regularTypes.includes(message.subtype) && !isBotMessage) {
 				if (this.processMessageSubType(message, slackChannelId, newMessage, missedTypes)) {
@@ -505,9 +494,7 @@ export class SlackImporter extends Base {
 								newMessage.replies = Array.from(replies);
 							}
 						} else {
-							this.logger.warn(
-								`Failed to import the parent comment, message: ${newMessage._id}. Missing replies/reply_users field`,
-							);
+							this.logger.warn(`Failed to import the parent comment, message: ${newMessage._id}. Missing replies/reply_users field`);
 						}
 
 						newMessage.tcount = message.reply_count;

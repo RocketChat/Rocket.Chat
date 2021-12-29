@@ -17,20 +17,12 @@ import './main.html';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
-callbacks.add(
-	'afterLogoutCleanUp',
-	() => fireGlobalEvent('Custom_Script_On_Logout'),
-	callbacks.priority.LOW,
-	'custom-script-on-logout',
-);
+callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.main.helpers({
 	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
-		if (
-			!!Meteor.userId() ||
-			(settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)
-		) {
+		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			document.documentElement.classList.add('noscroll');
 			document.documentElement.classList.remove('scroll');
 			return true;

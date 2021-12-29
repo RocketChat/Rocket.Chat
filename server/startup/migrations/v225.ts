@@ -5,12 +5,8 @@ import { Settings } from '../../../app/models/server/raw';
 addMigration({
 	version: 225,
 	async up() {
-		const hideAvatarsSetting = await Settings.findOneById(
-			'Accounts_Default_User_Preferences_hideAvatars',
-		);
-		const hideAvatarsSidebarSetting = await Settings.findOneById(
-			'Accounts_Default_User_Preferences_sidebarHideAvatar',
-		);
+		const hideAvatarsSetting = await Settings.findOneById('Accounts_Default_User_Preferences_hideAvatars');
+		const hideAvatarsSidebarSetting = await Settings.findOneById('Accounts_Default_User_Preferences_sidebarHideAvatar');
 
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarShowDiscussion');
 

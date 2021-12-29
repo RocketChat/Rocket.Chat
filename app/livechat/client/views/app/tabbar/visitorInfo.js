@@ -95,12 +95,7 @@ Template.visitorInfo.helpers({
 
 	customVisitorFields() {
 		const customFields = Template.instance().customFields.get();
-		if (
-			!hasAtLeastOnePermission([
-				'view-livechat-room-customfields',
-				'edit-livechat-room-customfields',
-			])
-		) {
+		if (!hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields'])) {
 			return;
 		}
 		if (!customFields || customFields.length === 0) {
@@ -165,11 +160,7 @@ Template.visitorInfo.helpers({
 	roomOpen() {
 		const room = Template.instance().room.get();
 		const uid = Meteor.userId();
-		return (
-			room &&
-			room.open &&
-			((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'))
-		);
+		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
 	},
 
 	canReturnQueue() {
@@ -285,25 +276,19 @@ Template.visitorInfo.events({
 
 		if (!closingDialogRequired(instance.department.get())) {
 			const comment = TAPi18n.__('Chat_closed_by_agent');
-			return Meteor.call(
-				'livechat:closeRoom',
-				this.rid,
-				comment,
-				{ clientAction: true },
-				function (error /* , result*/) {
-					if (error) {
-						return handleError(error);
-					}
+			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function (error /* , result*/) {
+				if (error) {
+					return handleError(error);
+				}
 
-					modal.open({
-						title: t('Chat_closed'),
-						text: t('Chat_closed_successfully'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false,
-					});
-				},
-			);
+				modal.open({
+					title: t('Chat_closed'),
+					text: t('Chat_closed_successfully'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+			});
 		}
 
 		modal.open({
@@ -434,9 +419,7 @@ Template.visitorInfo.onCreated(function () {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.v1.get(
-				`livechat/department/${this.departmentId.get()}?includeAgents=false`,
-			);
+			const { department } = await APIClient.v1.get(`livechat/department/${this.departmentId.get()}?includeAgents=false`);
 			this.department.set(department);
 		}
 	});

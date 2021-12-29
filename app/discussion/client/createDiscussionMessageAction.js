@@ -54,9 +54,7 @@ Meteor.startup(function () {
 					return false;
 				}
 
-				return uid !== u._id
-					? hasPermission('start-discussion-other-user')
-					: hasPermission('start-discussion');
+				return uid !== u._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
 			},
 			order: 1,
 			group: 'menu',

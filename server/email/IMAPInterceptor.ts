@@ -117,11 +117,7 @@ export class IMAPInterceptor extends EventEmitter {
 						}
 
 						simpleParser(stream, (_err, email) => {
-							if (
-								this.options.rejectBeforeTS &&
-								email.date &&
-								email.date < this.options.rejectBeforeTS
-							) {
+							if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
 								this.log('Rejecting email', email.subject);
 								return;
 							}

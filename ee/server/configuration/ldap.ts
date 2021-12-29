@@ -18,12 +18,7 @@ Meteor.startup(() =>
 		addSettings();
 
 		// Configure background sync cronjob
-		function configureBackgroundSync(
-			jobName: string,
-			enableSetting: string,
-			intervalSetting: string,
-			cb: () => {},
-		): () => void {
+		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
 			let lastSchedule: string;
 			return function addCronJobDebounced(): void {
 				if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {
@@ -47,12 +42,7 @@ Meteor.startup(() =>
 			};
 		}
 
-		const addCronJob = configureBackgroundSync(
-			'LDAP_Sync',
-			'LDAP_Background_Sync',
-			'LDAP_Background_Sync_Interval',
-			() => LDAPEE.sync(),
-		);
+		const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => LDAPEE.sync());
 		const addAvatarCronJob = configureBackgroundSync(
 			'LDAP_AvatarSync',
 			'LDAP_Background_Sync_Avatars',
@@ -67,14 +57,8 @@ Meteor.startup(() =>
 		);
 
 		settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
-		settings.watchMultiple(
-			['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'],
-			addAvatarCronJob,
-		);
-		settings.watchMultiple(
-			['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'],
-			addLogoutCronJob,
-		);
+		settings.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
+		settings.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
 
 		settings.watch('LDAP_Enable', () => {
 			addCronJob();
@@ -102,10 +86,7 @@ Meteor.startup(() =>
 
 		callbacks.add(
 			'onLDAPLogin',
-			(
-				{ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean },
-				ldap: LDAPConnection,
-			) => {
+			({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap: LDAPConnection) => {
 				Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
 			},
 			callbacks.priority.MEDIUM,

@@ -24,13 +24,7 @@ Meteor.methods({
 			roleData.scope = 'Users';
 		}
 
-		const update = await Roles.createOrUpdate(
-			roleData.name,
-			roleData.scope,
-			roleData.description,
-			false,
-			roleData.mandatory2fa,
-		);
+		const update = await Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'changed',

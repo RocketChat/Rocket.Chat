@@ -218,10 +218,7 @@ export class HipChatEnterpriseImporter extends Base {
 			} else if (m.GuestAccessMessage) {
 				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
-				this.logger.error(
-					"HipChat Enterprise importer isn't configured to handle this message:",
-					m,
-				);
+				this.logger.error("HipChat Enterprise importer isn't configured to handle this message:", m);
 			}
 		}
 
@@ -242,9 +239,7 @@ export class HipChatEnterpriseImporter extends Base {
 			case 'rooms':
 				return this.prepareRoomMessagesFile(file, id);
 			default:
-				this.logger.error(
-					`HipChat Enterprise importer isn't configured to handle "${type}" files (${info.dir}).`,
-				);
+				this.logger.error(`HipChat Enterprise importer isn't configured to handle "${type}" files (${info.dir}).`);
 				return 0;
 		}
 	}
@@ -269,9 +264,7 @@ export class HipChatEnterpriseImporter extends Base {
 			case 'metadata.json':
 				break;
 			default:
-				this.logger.error(
-					`HipChat Enterprise importer doesn't know what to do with the file "${fileName}"`,
-				);
+				this.logger.error(`HipChat Enterprise importer doesn't know what to do with the file "${fileName}"`);
 				break;
 		}
 

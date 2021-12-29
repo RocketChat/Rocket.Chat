@@ -106,13 +106,7 @@ export async function deriveKey(salt, baseKey, keyUsages = ['encrypt', 'decrypt'
 	const iterations = 1000;
 	const hash = 'SHA-256';
 
-	return crypto.subtle.deriveKey(
-		{ name: 'PBKDF2', salt, iterations, hash },
-		baseKey,
-		{ name: 'AES-CBC', length: 256 },
-		true,
-		keyUsages,
-	);
+	return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
 }
 
 export async function readFileAsArrayBuffer(file) {

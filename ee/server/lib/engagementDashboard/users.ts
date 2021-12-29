@@ -1,12 +1,7 @@
 import moment from 'moment';
 
 import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
-import {
-	convertDateToInt,
-	diffBetweenDaysInclusive,
-	getTotalOfWeekItems,
-	convertIntToDate,
-} from './date';
+import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 import { IUser } from '../../../../definition/IUser';
 
 export const handleUserCreated = (user: IUser): IUser => {
@@ -75,8 +70,7 @@ export const findWeeklyUsersRegisteredData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayUsers =
-		(currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
+	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
 	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
 	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
 	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');

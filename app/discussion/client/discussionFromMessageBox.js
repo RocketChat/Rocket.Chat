@@ -15,8 +15,7 @@ Meteor.startup(function () {
 		messageBox.actions.add('Create_new', 'Discussion', {
 			id: 'start-discussion',
 			icon: 'discussion',
-			condition: () =>
-				hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
+			condition: () => hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
 			action(data) {
 				imperativeModal.open({
 					component: CreateDiscussion,

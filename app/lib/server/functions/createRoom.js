@@ -11,15 +11,7 @@ import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 
-export const createRoom = function (
-	type,
-	name,
-	owner,
-	members = [],
-	readOnly,
-	{ teamId, ...extraData } = {},
-	options = {},
-) {
+export const createRoom = function (type, name, owner, members = [], readOnly, { teamId, ...extraData } = {}, options = {}) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {

@@ -34,11 +34,7 @@ export const roomTypes = new (class roomTypesServer extends RoomTypesCommon {
 	}
 
 	getRoomName(roomType, roomData) {
-		return (
-			this.roomTypes[roomType] &&
-			this.roomTypes[roomType].roomName &&
-			this.roomTypes[roomType].roomName(roomData)
-		);
+		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
 	}
 
 	/**
@@ -49,11 +45,7 @@ export const roomTypes = new (class roomTypesServer extends RoomTypesCommon {
 	 * @param identifier identifier of the room
 	 */
 	runPublish(scope, roomType, identifier) {
-		return (
-			this.roomTypes[roomType] &&
-			this.roomTypes[roomType].publish &&
-			this.roomTypes[roomType].publish.call(scope, identifier)
-		);
+		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
 	}
 })();
 

@@ -20,11 +20,7 @@ type ScopedModelRoles = {
 };
 
 export class RolesRaw extends BaseRaw<IRole> {
-	constructor(
-		public readonly col: Collection<IRole>,
-		private readonly models: ScopedModelRoles,
-		trash?: Collection<IRole>,
-	) {
+	constructor(public readonly col: Collection<IRole>, private readonly models: ScopedModelRoles, trash?: Collection<IRole>) {
 		super(col, trash);
 	}
 
@@ -54,23 +50,17 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.updateOne({ _id: name }, { $set: queryData }, { upsert: true });
 	}
 
-	async addUserRoles(
-		userId: IUser['_id'],
-		roles: IRole['_id'][],
-		scope?: string,
-	): Promise<boolean> {
+	async addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' &&
-				console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
 		}
 
 		for await (const name of roles) {
 			const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
 			if (!role) {
-				process.env.NODE_ENV === 'development' &&
-					console.warn(`[WARN] RolesRaw.addUserRoles: role: ${name} not found`);
+				process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${name} not found`);
 				continue;
 			}
 			switch (role.scope) {
@@ -85,16 +75,11 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return true;
 	}
 
-	async isUserInRoles(
-		userId: IUser['_id'],
-		roles: IRole['_id'][],
-		scope?: string,
-	): Promise<boolean> {
+	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
 		if (!Array.isArray(roles)) {
 			// TODO: remove this check
 			roles = [roles];
-			process.env.NODE_ENV === 'development' &&
-				console.warn('[WARN] RolesRaw.isUserInRoles: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.isUserInRoles: roles should be an array');
 		}
 
 		for await (const roleName of roles) {
@@ -120,16 +105,11 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return false;
 	}
 
-	async removeUserRoles(
-		userId: IUser['_id'],
-		roles: IRole['_id'][],
-		scope?: string,
-	): Promise<boolean> {
+	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: string): Promise<boolean> {
 		if (!Array.isArray(roles)) {
 			// TODO: remove this check
 			roles = [roles];
-			process.env.NODE_ENV === 'development' &&
-				console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
 		}
 		for await (const roleName of roles) {
 			const role = await this.findOne({ name: roleName }, { scope: 1 } as FindOneOptions<IRole>);
@@ -150,10 +130,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return true;
 	}
 
-	async findOneByIdOrName(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options?: undefined,
-	): Promise<IRole | null>;
+	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
 
 	async findOneByIdOrName(
 		_idOrName: IRole['_id'] | IRole['name'],
@@ -165,10 +142,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		options: FindOneOptions<P extends IRole ? IRole : P>,
 	): Promise<P | null>;
 
-	findOneByIdOrName<P>(
-		_idOrName: IRole['_id'] | IRole['name'],
-		options?: any,
-	): Promise<IRole | P | null> {
+	findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options?: any): Promise<IRole | P | null> {
 		const query: FilterQuery<IRole> = {
 			$or: [
 				{
@@ -214,11 +188,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		options: FindOneOptions<P extends IUser ? IUser : P>,
 	): Promise<Cursor<P extends IUser ? IUser : P>>;
 
-	async findUsersInRole<P>(
-		name: IRole['name'],
-		scope: string | undefined,
-		options?: any | undefined,
-	): Promise<Cursor<IUser> | Cursor<P>> {
+	async findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
 		if (!role) {

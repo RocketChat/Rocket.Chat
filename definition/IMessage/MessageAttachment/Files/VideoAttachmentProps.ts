@@ -9,6 +9,5 @@ export type VideoAttachmentProps = {
 	file?: FileProp;
 } & MessageAttachmentBase;
 
-export const isFileVideoAttachment = (
-	attachment: FileAttachmentProps,
-): attachment is VideoAttachmentProps & { type: 'file' } => 'video_url' in attachment;
+export const isFileVideoAttachment = (attachment: FileAttachmentProps): attachment is VideoAttachmentProps & { type: 'file' } =>
+	'video_url' in attachment;

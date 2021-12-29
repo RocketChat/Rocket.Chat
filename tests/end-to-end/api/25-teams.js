@@ -1505,10 +1505,7 @@ describe('[Teams]', () => {
 
 			expect(updateResponse.body).to.have.property('success', true);
 
-			const infoResponse = await request
-				.get(api('teams.info'))
-				.set(credentials)
-				.query({ teamId: testTeam._id });
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
 
 			expect(infoResponse.body).to.have.property('success', true);
 
@@ -1529,10 +1526,7 @@ describe('[Teams]', () => {
 
 			expect(updateResponse.body).to.have.property('success', true);
 
-			const infoResponse = await request
-				.get(api('teams.info'))
-				.set(credentials)
-				.query({ teamId: testTeam._id });
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam._id });
 
 			expect(infoResponse.body).to.have.property('success', true);
 
@@ -1555,10 +1549,7 @@ describe('[Teams]', () => {
 
 			expect(updateResponse.body).to.have.property('success', true);
 
-			const infoResponse = await request
-				.get(api('teams.info'))
-				.set(credentials)
-				.query({ teamId: testTeam2._id });
+			const infoResponse = await request.get(api('teams.info')).set(credentials).query({ teamId: testTeam2._id });
 
 			expect(infoResponse.body).to.have.property('success', true);
 

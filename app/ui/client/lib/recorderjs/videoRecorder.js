@@ -21,16 +21,10 @@ export const VideoRecorder = new (class VideoRecorder {
 			cb && cb.call(this, false);
 		};
 
-		const oldGetUserMedia =
-			navigator.getUserMedia ||
-			navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia;
+		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 		if (navigator.mediaDevices) {
-			navigator.mediaDevices
-				.getUserMedia({ audio: true, video: true })
-				.then(handleSuccess, handleError);
+			navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(handleSuccess, handleError);
 			return;
 		}
 		if (oldGetUserMedia) {

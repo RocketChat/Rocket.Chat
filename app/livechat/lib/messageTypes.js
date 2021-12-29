@@ -13,10 +13,7 @@ MessageTypes.registerType({
 			return;
 		}
 		return {
-			history: `${
-				(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') +
-				message.navigation.page.location.href
-			}`,
+			history: `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`,
 		};
 	},
 });
@@ -33,16 +30,13 @@ MessageTypes.registerType({
 		const { comment } = message.transferData;
 		const commentLabel = comment && comment !== '' ? '_with_a_comment' : '';
 		const from =
-			message.transferData.transferredBy &&
-			(message.transferData.transferredBy.name || message.transferData.transferredBy.username);
+			message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
 			agent: () =>
 				TAPi18n.__(`Livechat_transfer_to_agent${commentLabel}`, {
 					from,
 					to:
-						message.transferData.transferredTo &&
-						(message.transferData.transferredTo.name ||
-							message.transferData.transferredTo.username),
+						message.transferData.transferredTo && (message.transferData.transferredTo.name || message.transferData.transferredTo.username),
 					...(comment && { comment }),
 				}),
 			department: () =>

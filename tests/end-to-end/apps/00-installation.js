@@ -28,9 +28,7 @@ describe('Apps - Installation', function () {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal(
-								'User does not have the permissions required for this action [error-unauthorized]',
-							);
+							expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 						})
 						.end(done);
 				});

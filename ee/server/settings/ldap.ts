@@ -113,15 +113,11 @@ export function addSettings(): void {
 						invalidValue: false,
 					});
 
-					this.add(
-						'LDAP_Sync_User_Data_Roles_Filter',
-						'(&(cn=#{groupName})(memberUid=#{username}))',
-						{
-							type: 'string',
-							enableQuery: syncRolesQuery,
-							invalidValue: '',
-						},
-					);
+					this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+						type: 'string',
+						enableQuery: syncRolesQuery,
+						invalidValue: '',
+					});
 
 					this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
 						type: 'string',
@@ -129,18 +125,14 @@ export function addSettings(): void {
 						invalidValue: '',
 					});
 
-					this.add(
-						'LDAP_Sync_User_Data_RolesMap',
-						'{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}',
-						{
-							type: 'code',
-							multiline: true,
-							public: false,
-							code: 'application/json',
-							enableQuery: syncRolesQuery,
-							invalidValue: '',
-						},
-					);
+					this.add('LDAP_Sync_User_Data_RolesMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
+						type: 'code',
+						multiline: true,
+						public: false,
+						code: 'application/json',
+						enableQuery: syncRolesQuery,
+						invalidValue: '',
+					});
 				});
 
 				this.section('LDAP_DataSync_Channels', function () {
@@ -150,10 +142,7 @@ export function addSettings(): void {
 						invalidValue: false,
 					});
 
-					const syncChannelsQuery = [
-						enableQuery,
-						{ _id: 'LDAP_Sync_User_Data_Channels', value: true },
-					];
+					const syncChannelsQuery = [enableQuery, { _id: 'LDAP_Sync_User_Data_Channels', value: true }];
 
 					this.add('LDAP_Sync_User_Data_Channels_Admin', 'rocket.cat', {
 						type: 'string',
@@ -161,15 +150,11 @@ export function addSettings(): void {
 						invalidValue: 'rocket.cat',
 					});
 
-					this.add(
-						'LDAP_Sync_User_Data_Channels_Filter',
-						'(&(cn=#{groupName})(memberUid=#{username}))',
-						{
-							type: 'string',
-							enableQuery: syncChannelsQuery,
-							invalidValue: '',
-						},
-					);
+					this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+						type: 'string',
+						enableQuery: syncChannelsQuery,
+						invalidValue: '',
+					});
 
 					this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
 						type: 'string',

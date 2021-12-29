@@ -12,9 +12,7 @@ API.v1.addRoute(
 		post() {
 			const { binaryContent, contentType, fileName, importerKey } = this.bodyParams;
 
-			return API.v1.success(
-				Meteor.call('uploadImportFile', binaryContent, contentType, fileName, importerKey),
-			);
+			return API.v1.success(Meteor.call('uploadImportFile', binaryContent, contentType, fileName, importerKey));
 		},
 	},
 );
@@ -113,11 +111,9 @@ API.v1.addRoute(
 
 			const importer = Importers.get('pending-files');
 			if (!importer) {
-				throw new Meteor.Error(
-					'error-importer-not-defined',
-					'The Pending File Importer was not found.',
-					{ method: 'downloadPendingFiles' },
-				);
+				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
+					method: 'downloadPendingFiles',
+				});
 			}
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
@@ -148,11 +144,9 @@ API.v1.addRoute(
 
 			const importer = Importers.get('pending-avatars');
 			if (!importer) {
-				throw new Meteor.Error(
-					'error-importer-not-defined',
-					'The Pending File Importer was not found.',
-					{ method: 'downloadPendingAvatars' },
-				);
+				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
+					method: 'downloadPendingAvatars',
+				});
 			}
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap

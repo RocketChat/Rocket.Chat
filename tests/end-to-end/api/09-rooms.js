@@ -45,12 +45,10 @@ describe('[Rooms]', function () {
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end(
-				(err, res) => {
-					testChannel = res.body.channel;
-					done();
-				},
-			);
+			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				done();
+			});
 		});
 		it('/rooms.saveNotification:', (done) => {
 			request
@@ -709,9 +707,7 @@ describe('[Rooms]', function () {
 						})
 						.end(() => {
 							updatePermission('start-discussion', ['admin', 'user', 'guest'])
-								.then(() =>
-									updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']),
-								)
+								.then(() => updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']))
 								.then(done);
 						});
 				});
@@ -803,9 +799,7 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
-					expect(res.body.discussion)
-						.to.have.property('fname')
-						.and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 				})
 				.end(done);
 		});
@@ -823,9 +817,7 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
-					expect(res.body.discussion)
-						.to.have.property('fname')
-						.and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 				})
 				.end(done);
 		});
@@ -844,9 +836,7 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
-					expect(res.body.discussion)
-						.to.have.property('fname')
-						.and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 				})
 				.end(done);
 		});
@@ -866,9 +856,7 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
 					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
-					expect(res.body.discussion)
-						.to.have.property('fname')
-						.and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 				})
 				.end(done);
 		});
@@ -903,10 +891,7 @@ describe('[Rooms]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						'The parameter "roomId" or "roomName" is required [error-roomid-param-not-provided]',
-					);
+					expect(res.body).to.have.property('error', 'The parameter "roomId" or "roomName" is required [error-roomid-param-not-provided]');
 				})
 				.end(done);
 		});
@@ -921,9 +906,7 @@ describe('[Rooms]', function () {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Not Allowed');
 					})
-					.end(() =>
-						updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done),
-					);
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
 			});
 		});
 		it('should return a list of discussions with ONE discussion', (done) => {
@@ -1124,9 +1107,7 @@ describe('[Rooms]', function () {
 							.query({ roomId })
 							.end((err, res) => {
 								const { subscription } = res.body;
-								expect(subscription.name).to.equal(
-									`rocket.cat,changed.username.${testUser.username}`,
-								);
+								expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
 								done();
 							});
 					});
@@ -1151,9 +1132,7 @@ describe('[Rooms]', function () {
 							.query({ roomId })
 							.end((err, res) => {
 								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(
-									`changed.name.${testUser.username}, Rocket.Cat`,
-								);
+								expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
 								done();
 							});
 					});

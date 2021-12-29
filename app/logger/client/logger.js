@@ -29,10 +29,7 @@ if (Template.log) {
 					dict[name] = function (...args) {
 						const result = fn.apply(this, args);
 						if (Template.log === true) {
-							const completeName = `${prefix}:${template.viewName.replace(
-								'Template.',
-								'',
-							)}.${name}`;
+							const completeName = `${prefix}:${template.viewName.replace('Template.', '')}.${name}`;
 							if (Template.logMatch.test(completeName)) {
 								console.log(`%c${completeName}`, `color: ${color}`, {
 									args,
@@ -83,15 +80,7 @@ if (Template.log) {
 
 	Template.prototype.onCreated = wrapLifeCycle(Template.prototype.onCreated, 'onCreated', 'blue');
 
-	Template.prototype.onRendered = wrapLifeCycle(
-		Template.prototype.onRendered,
-		'onRendered',
-		'green',
-	);
+	Template.prototype.onRendered = wrapLifeCycle(Template.prototype.onRendered, 'onRendered', 'green');
 
-	Template.prototype.onDestroyed = wrapLifeCycle(
-		Template.prototype.onDestroyed,
-		'onDestroyed',
-		'red',
-	);
+	Template.prototype.onDestroyed = wrapLifeCycle(Template.prototype.onDestroyed, 'onDestroyed', 'red');
 }

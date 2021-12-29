@@ -49,10 +49,7 @@ Template.loginForm.helpers({
 	},
 	registrationAllowed() {
 		const validSecretUrl = Template.instance().validSecretURL;
-		return (
-			settings.get('Accounts_RegistrationForm') === 'Public' ||
-			(validSecretUrl && validSecretUrl.get())
-		);
+		return settings.get('Accounts_RegistrationForm') === 'Public' || (validSecretUrl && validSecretUrl.get());
 	},
 	linkReplacementText() {
 		return settings.get('Accounts_RegistrationForm_LinkReplacementText');
@@ -235,10 +232,7 @@ Template.loginForm.onCreated(function () {
 			if (settings.get('Accounts_RequireNameForSignUp') && !formObj.name) {
 				validationObj.name = t('Invalid_name');
 			}
-			if (
-				settings.get('Accounts_RequirePasswordConfirmation') &&
-				formObj['confirm-pass'] !== formObj.pass
-			) {
+			if (settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj.pass) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
 			}
 			if (settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
@@ -254,9 +248,7 @@ Template.loginForm.onCreated(function () {
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
 				$(`#login-card input[name=${key}], #login-card select[name=${key}]`).addClass('error');
-				$(
-					`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`,
-				).text(value);
+				$(`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`).text(value);
 			});
 			instance.loading.set(false);
 			return false;
@@ -264,9 +256,7 @@ Template.loginForm.onCreated(function () {
 		return formObj;
 	};
 	if (FlowRouter.getParam('hash')) {
-		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () =>
-			this.validSecretURL.set(true),
-		);
+		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () => this.validSecretURL.set(true));
 	}
 });
 

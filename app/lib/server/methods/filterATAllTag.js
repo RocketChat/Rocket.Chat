@@ -18,15 +18,9 @@ callbacks.add(
 		}
 
 		// Test if the message mentions include @all.
-		if (
-			message.mentions != null &&
-			_.pluck(message.mentions, '_id').some((item) => item === 'all')
-		) {
+		if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 			// Check if the user has permissions to use @all in both global and room scopes.
-			if (
-				!hasPermission(message.u._id, 'mention-all') &&
-				!hasPermission(message.u._id, 'mention-all', message.rid)
-			) {
+			if (!hasPermission(message.u._id, 'mention-all') && !hasPermission(message.u._id, 'mention-all', message.rid)) {
 				// Get the language of the user for the error notification.
 				const { language } = Users.findOneById(message.u._id);
 				const action = TAPi18n.__('Notify_all_in_this_room', {}, language);

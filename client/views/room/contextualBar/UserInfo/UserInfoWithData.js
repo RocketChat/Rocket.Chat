@@ -18,17 +18,7 @@ import UserInfo from './UserInfo';
 import UserWebRTCWithData from './UserWebRTC';
 import UserActions from './actions/UserActions';
 
-function UserInfoWithData({
-	uid,
-	username,
-	tabBar,
-	rid,
-	onClickClose,
-	onClose = onClickClose,
-	video,
-	onClickBack,
-	...props
-}) {
+function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const getRoles = useRolesDescription();
@@ -41,10 +31,7 @@ function UserInfoWithData({
 		error,
 	} = useEndpointData(
 		'users.info',
-		useMemo(
-			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
-			[uid, username],
-		),
+		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [uid, username]),
 	);
 
 	const isLoading = state === AsyncStatePhase.LOADING;
@@ -52,27 +39,14 @@ function UserInfoWithData({
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
 
-		const {
-			_id,
-			name,
-			username,
-			roles = [],
-			statusText,
-			bio,
-			utcOffset,
-			lastLogin,
-			nickname,
-			canViewAllInfo,
-		} = user;
+		const { _id, name, username, roles = [], statusText, bio, utcOffset, lastLogin, nickname, canViewAllInfo } = user;
 
 		return {
 			_id,
 			name: showRealNames && name ? name : username,
 			username,
 			lastLogin,
-			roles:
-				roles &&
-				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			canViewAllInfo,
 			phone: user.phone,
@@ -108,18 +82,10 @@ function UserInfoWithData({
 				</VerticalBar.Content>
 			)}
 
-			{!isLoading && showUserWebRTC && (
-				<UserWebRTCWithData rid={openedRoom} peerName={user?.name} {...props} />
-			)}
+			{!isLoading && showUserWebRTC && <UserWebRTCWithData rid={openedRoom} peerName={user?.name} {...props} />}
 
 			{!isLoading && !error && !showUserWebRTC && (
-				<UserInfo
-					{...user}
-					data={user}
-					actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
-					{...props}
-					p='x24'
-				/>
+				<UserInfo {...user} data={user} actions={<UserActions user={user} rid={rid} backToList={onClickBack} />} {...props} p='x24' />
 			)}
 		</>
 	);

@@ -24,8 +24,7 @@ export type InactiveBanner = IBanner & {
 	inactivedAt: Date;
 };
 
-export const isInactiveBanner = (banner: IBanner): banner is InactiveBanner =>
-	banner.active === false;
+export const isInactiveBanner = (banner: IBanner): banner is InactiveBanner => banner.active === false;
 
 export interface IBannerDismiss extends IRocketChatRecord {
 	userId: IUser['_id']; // user receiving the banner dismissed

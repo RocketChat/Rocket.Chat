@@ -11,13 +11,7 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import {
-	checkEmailAvailability,
-	checkUsernameAvailability,
-	setUserAvatar,
-	setEmail,
-	setStatusText,
-} from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 
@@ -52,14 +46,10 @@ function _sendUserEmail(subject, html, userData) {
 	try {
 		Mailer.send(email);
 	} catch (error) {
-		throw new Meteor.Error(
-			'error-email-send-failed',
-			`Error trying to send email: ${error.message}`,
-			{
-				function: 'RocketChat.saveUser',
-				message: error.message,
-			},
-		);
+		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+			function: 'RocketChat.saveUser',
+			message: error.message,
+		});
 	}
 }
 
@@ -81,21 +71,13 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
-		throw new Meteor.Error(
-			'error-action-not-allowed',
-			'The field Roles consist invalid role name',
-			{
-				method: 'insertOrUpdateUser',
-				action: 'Assign_role',
-			},
-		);
+		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', {
+			method: 'insertOrUpdateUser',
+			action: 'Assign_role',
+		});
 	}
 
-	if (
-		userData.roles &&
-		_.indexOf(userData.roles, 'admin') >= 0 &&
-		!hasPermission(userId, 'assign-admin-role')
-	) {
+	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_admin',
@@ -129,15 +111,11 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.username && !nameValidation.test(userData.username)) {
-		throw new Meteor.Error(
-			'error-input-is-not-a-valid-field',
-			`${_.escape(userData.username)} is not a valid username`,
-			{
-				method: 'insertOrUpdateUser',
-				input: userData.username,
-				field: 'Username',
-			},
-		);
+		throw new Meteor.Error('error-input-is-not-a-valid-field', `${_.escape(userData.username)} is not a valid username`, {
+			method: 'insertOrUpdateUser',
+			input: userData.username,
+			field: 'Username',
+		});
 	}
 
 	if (!userData._id && !userData.password && !userData.setRandomPassword) {
@@ -149,25 +127,17 @@ function validateUserData(userId, userData) {
 
 	if (!userData._id) {
 		if (!checkUsernameAvailability(userData.username)) {
-			throw new Meteor.Error(
-				'error-field-unavailable',
-				`${_.escape(userData.username)} is already in use :(`,
-				{
-					method: 'insertOrUpdateUser',
-					field: userData.username,
-				},
-			);
+			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
+				method: 'insertOrUpdateUser',
+				field: userData.username,
+			});
 		}
 
 		if (userData.email && !checkEmailAvailability(userData.email)) {
-			throw new Meteor.Error(
-				'error-field-unavailable',
-				`${_.escape(userData.email)} is already in use :(`,
-				{
-					method: 'insertOrUpdateUser',
-					field: userData.email,
-				},
-			);
+			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.email)} is already in use :(`, {
+				method: 'insertOrUpdateUser',
+				field: userData.email,
+			});
 		}
 	}
 }
@@ -187,8 +157,7 @@ export function validateUserEditing(userId, userData) {
 
 	const isEditingUserRoles = (previousRoles, newRoles) =>
 		typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
-	const isEditingField = (previousValue, newValue) =>
-		typeof newValue !== 'undefined' && newValue !== previousValue;
+	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !hasPermission(userId, 'assign-roles')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
@@ -197,11 +166,7 @@ export function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (
-		!settings.get('Accounts_AllowUserProfileChange') &&
-		!canEditOtherUserInfo &&
-		!canEditOtherUserPassword
-	) {
+	if (!settings.get('Accounts_AllowUserProfileChange') && !canEditOtherUserInfo && !canEditOtherUserPassword) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
@@ -253,11 +218,7 @@ export function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (
-		userData.password &&
-		!settings.get('Accounts_AllowPasswordChange') &&
-		(!canEditOtherUserPassword || editingMyself)
-	) {
+	if (userData.password && !settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

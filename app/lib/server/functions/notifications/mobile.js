@@ -30,9 +30,7 @@ export async function getPushData({
 	receiver,
 	shouldOmitMessage = true,
 }) {
-	const username =
-		(settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) ||
-		senderUsername;
+	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 
@@ -62,9 +60,7 @@ export async function getPushData({
 		username,
 		message: messageText,
 		badge: await Subscriptions.getBadgeCount(userId),
-		category: enableNotificationReplyButton(room, receiver.username)
-			? CATEGORY_MESSAGE
-			: CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }
 
@@ -82,13 +78,7 @@ export function shouldNotifyMobile({
 		return false;
 	}
 
-	if (
-		disableAllMessageNotifications &&
-		mobilePushNotifications == null &&
-		!isHighlighted &&
-		!hasMentionToUser &&
-		!hasReplyToThread
-	) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -97,10 +87,7 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (
-			settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' &&
-			(!isThread || hasReplyToThread)
-		) {
+		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'nothing') {

@@ -2,11 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
-import {
-	findAllCannedResponses,
-	findAllCannedResponsesFilter,
-	findOneCannedResponse,
-} from './lib/canned-responses';
+import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 
 API.v1.addRoute(
 	'canned-responses.get',

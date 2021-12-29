@@ -35,15 +35,13 @@ const mountPopover = (e, i, outerContext) => {
 	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map(
-			(item) => ({
-				icon: item.icon,
-				name: t(item.label),
-				type: 'message-action',
-				id: item.id,
-				modifier: item.color,
-			}),
-		);
+		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
+			icon: item.icon,
+			name: t(item.label),
+			type: 'message-action',
+			id: item.id,
+			modifier: item.color,
+		}));
 
 		menuItems = menuItems.concat(messageItems);
 	}
@@ -199,10 +197,7 @@ export const getCommonRoomEvents = () => ({
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
-		ChatMessage.update(
-			{ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') },
-			{ $set: { 'urls.$.downloadImages': true } },
-		);
+		ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update(
 			{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
 			{ $set: { 'attachments.$.downloadImages': true } },

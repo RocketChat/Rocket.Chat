@@ -149,9 +149,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.data.translations) &&
 					result.data.data.translations.length > 0
 				) {
-					const txt = result.data.data.translations
-						.map((translation) => translation.translatedText)
-						.join('\n');
+					const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
 			} catch (e) {
@@ -195,9 +193,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					Array.isArray(result.data.data.translations) &&
 					result.data.data.translations.length > 0
 				) {
-					translations[language] = result.data.data.translations
-						.map((translation) => translation.translatedText)
-						.join('\n');
+					translations[language] = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);

@@ -19,12 +19,7 @@ type TokenExtra = {
 	noHtml?: string;
 };
 
-export const addAsToken = (
-	message: IMessage & { tokens: Token[] },
-	html: string,
-	type: TokenType,
-	extra?: TokenExtra,
-): string => {
+export const addAsToken = (message: IMessage & { tokens: Token[] }, html: string, type: TokenType, extra?: TokenExtra): string => {
 	if (!message.tokens) {
 		message.tokens = [];
 	}
@@ -41,26 +36,14 @@ export const addAsToken = (
 
 export const isToken = (msg: string): boolean => /=!=[.a-z0-9]{17}=!=/gim.test(msg.trim());
 
-export const validateAllowedTokens = (
-	message: IMessage & { tokens: Token[] },
-	id: string,
-	desiredTokens: TokenType[],
-): boolean => {
+export const validateAllowedTokens = (message: IMessage & { tokens: Token[] }, id: string, desiredTokens: TokenType[]): boolean => {
 	const tokens = id.match(/=!=[.a-z0-9]{17}=!=/gim) || [];
 	const tokensFound = message.tokens.filter(({ token }) => tokens.includes(token));
-	return (
-		tokensFound.length === 0 || tokensFound.every((token) => desiredTokens.includes(token.type))
-	);
+	return tokensFound.length === 0 || tokensFound.every((token) => desiredTokens.includes(token.type));
 };
 
-export const validateForbiddenTokens = (
-	message: IMessage & { tokens: Token[] },
-	id: string,
-	desiredTokens: TokenType[],
-): boolean => {
+export const validateForbiddenTokens = (message: IMessage & { tokens: Token[] }, id: string, desiredTokens: TokenType[]): boolean => {
 	const tokens = id.match(/=!=[.a-z0-9]{17}=!=/gim) || [];
 	const tokensFound = message.tokens.filter(({ token }) => tokens.includes(token));
-	return (
-		tokensFound.length === 0 || !tokensFound.some((token) => desiredTokens.includes(token.type))
-	);
+	return tokensFound.length === 0 || !tokensFound.some((token) => desiredTokens.includes(token.type));
 };

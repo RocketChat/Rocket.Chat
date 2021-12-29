@@ -81,11 +81,6 @@ Meteor.startup(async () => {
 		({ user }) =>
 			user?.roles?.includes('livechat-agent') &&
 			!user?.roles?.includes('bot') &&
-			Livechat.setUserStatusLivechatIf(
-				user._id,
-				'not-available',
-				{},
-				{ livechatStatusSystemModified: true },
-			),
+			Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }),
 	);
 });

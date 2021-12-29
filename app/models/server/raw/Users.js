@@ -14,8 +14,7 @@ export class UsersRaw extends BaseRaw {
 	addRolesByUserId(uid, roles) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' &&
-				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
 		}
 
 		const query = {
@@ -85,14 +84,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByActiveUsersExcept(
-		searchTerm,
-		exceptions,
-		options,
-		searchFields,
-		extraQuery = [],
-		{ startsWith = false, endsWith = false } = {},
-	) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -118,10 +110,7 @@ export class UsersRaw extends BaseRaw {
 			return this.find(query, options);
 		}
 
-		const termRegex = new RegExp(
-			(startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''),
-			'i',
-		);
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -381,11 +370,7 @@ export class UsersRaw extends BaseRaw {
 								input: '$subs',
 								as: 'sub',
 								cond: {
-									$and: [
-										{ $eq: ['$$sub.t', 'l'] },
-										{ $eq: ['$$sub.open', true] },
-										{ $ne: ['$$sub.onHold', true] },
-									],
+									$and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }],
 								},
 							},
 						},
@@ -427,12 +412,7 @@ export class UsersRaw extends BaseRaw {
 			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
-		termRegex,
-		exceptions,
-		conditions,
-		options,
-	) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -495,10 +475,7 @@ export class UsersRaw extends BaseRaw {
 							{
 								$or: [
 									{
-										$and: [
-											{ $eq: ['$status', 'offline'] },
-											{ $eq: ['$statusLivechat', 'available'] },
-										],
+										$and: [{ $eq: ['$status', 'offline'] }, { $eq: ['$statusLivechat', 'available'] }],
 									},
 									{ $eq: ['$statusLivechat', 'not-available'] },
 								],
@@ -583,11 +560,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$group: {
 					_id: {
-						$concat: [
-							{ $substr: ['$createdAt', 0, 4] },
-							{ $substr: ['$createdAt', 5, 2] },
-							{ $substr: ['$createdAt', 8, 2] },
-						],
+						$concat: [{ $substr: ['$createdAt', 0, 4] }, { $substr: ['$createdAt', 5, 2] }, { $substr: ['$createdAt', 8, 2] }],
 					},
 					users: { $sum: 1 },
 				},

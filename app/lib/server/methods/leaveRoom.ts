@@ -22,10 +22,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		if (
-			(room.t === 'c' && !hasPermission(user._id, 'leave-c')) ||
-			(room.t === 'p' && !hasPermission(user._id, 'leave-p'))
-		) {
+		if ((room.t === 'c' && !hasPermission(user._id, 'leave-c')) || (room.t === 'p' && !hasPermission(user._id, 'leave-p'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
@@ -43,11 +40,9 @@ Meteor.methods({
 			const cursor = await Roles.findUsersInRole('owner', room._id);
 			const numOwners = Promise.await(cursor.count());
 			if (numOwners === 1) {
-				throw new Meteor.Error(
-					'error-you-are-last-owner',
-					'You are the last owner. Please set new owner before leaving the room.',
-					{ method: 'leaveRoom' },
-				);
+				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
+					method: 'leaveRoom',
+				});
 			}
 		}
 

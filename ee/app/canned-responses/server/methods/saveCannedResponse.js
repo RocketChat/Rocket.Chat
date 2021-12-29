@@ -26,20 +26,16 @@ Meteor.methods({
 
 		const canSaveAll = hasPermission(userId, 'save-all-canned-responses');
 		if (!canSaveAll && ['global'].includes(responseData.scope)) {
-			throw new Meteor.Error(
-				'error-not-allowed',
-				'Not allowed to modify canned responses on *global* scope',
-				{ method: 'saveCannedResponse' },
-			);
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', {
+				method: 'saveCannedResponse',
+			});
 		}
 
 		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
 		if (!canSaveAll && !canSaveDepartment && ['department'].includes(responseData.scope)) {
-			throw new Meteor.Error(
-				'error-not-allowed',
-				'Not allowed to modify canned responses on *department* scope',
-				{ method: 'saveCannedResponse' },
-			);
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', {
+				method: 'saveCannedResponse',
+			});
 		}
 
 		// to avoid inconsistencies
@@ -52,10 +48,7 @@ Meteor.methods({
 		const duplicateShortcut = CannedResponse.findOneByShortcut(responseData.shortcut, {
 			fields: { _id: 1 },
 		});
-		if (
-			(!_id && duplicateShortcut) ||
-			(_id && duplicateShortcut && duplicateShortcut._id !== _id)
-		) {
+		if ((!_id && duplicateShortcut) || (_id && duplicateShortcut && duplicateShortcut._id !== _id)) {
 			throw new Meteor.Error('error-invalid-shortcut', 'Shortcut provided already exists', {
 				method: 'saveCannedResponse',
 			});

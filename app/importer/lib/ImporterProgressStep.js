@@ -24,11 +24,7 @@ export const ProgressStep = Object.freeze({
 	CANCELLED: 'importer_import_cancelled',
 });
 
-export const ImportWaitingStates = [
-	ProgressStep.NEW,
-	ProgressStep.UPLOADING,
-	ProgressStep.DOWNLOADING_FILE,
-];
+export const ImportWaitingStates = [ProgressStep.NEW, ProgressStep.UPLOADING, ProgressStep.DOWNLOADING_FILE];
 
 export const ImportFileReadyStates = [ProgressStep.FILE_LOADED];
 

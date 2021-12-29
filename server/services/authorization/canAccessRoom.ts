@@ -78,11 +78,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	canAccessRoomTokenpass,
 ];
 
-export const canAccessRoom: RoomAccessValidator = async (
-	room,
-	user,
-	extraData,
-): Promise<boolean> => {
+export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// TODO livechat can send both as null, so they we need to validate nevertheless
 	// if (!room || !user) {
 	// 	return false;

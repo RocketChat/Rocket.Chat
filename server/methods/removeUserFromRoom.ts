@@ -1,12 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import {
-	hasPermission,
-	hasRole,
-	getUsersInRole,
-	removeUserFromRoles,
-} from '../../app/authorization/server';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization/server';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../app/callbacks/server';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
@@ -38,10 +33,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (
-			!room ||
-			!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER)
-		) {
+		if (!room || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
@@ -64,13 +56,9 @@ Meteor.methods({
 			const numOwners = await (await getUsersInRole('owner', room._id)).count();
 
 			if (numOwners === 1) {
-				throw new Meteor.Error(
-					'error-you-are-last-owner',
-					'You are the last owner. Please set new owner before leaving the room.',
-					{
-						method: 'removeUserFromRoom',
-					},
-				);
+				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
+					method: 'removeUserFromRoom',
+				});
 			}
 		}
 

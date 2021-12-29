@@ -57,20 +57,16 @@ settingsRegistry.addGroup('SMS', function () {
 			i18nLabel: 'FileUpload_Enabled',
 			secret: true,
 		});
-		this.add(
-			'SMS_Twilio_FileUpload_MediaTypeWhiteList',
-			'image/*,audio/*,video/*,text/*,application/pdf',
-			{
-				type: 'string',
-				enableQuery: {
-					_id: 'SMS_Service',
-					value: 'twilio',
-				},
-				i18nLabel: 'FileUpload_MediaTypeWhiteList',
-				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
-				secret: true,
+		this.add('SMS_Twilio_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SMS_Service',
+				value: 'twilio',
 			},
-		);
+			i18nLabel: 'FileUpload_MediaTypeWhiteList',
+			i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+			secret: true,
+		});
 	});
 
 	this.section('Voxtelesys', function () {
@@ -101,20 +97,16 @@ settingsRegistry.addGroup('SMS', function () {
 			i18nLabel: 'FileUpload_Enabled',
 			secret: true,
 		});
-		this.add(
-			'SMS_Voxtelesys_FileUpload_MediaTypeWhiteList',
-			'image/*,audio/*,video/*,text/*,application/pdf',
-			{
-				type: 'string',
-				enableQuery: {
-					_id: 'SMS_Service',
-					value: 'voxtelesys',
-				},
-				i18nLabel: 'FileUpload_MediaTypeWhiteList',
-				i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
-				secret: true,
+		this.add('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,text/*,application/pdf', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SMS_Service',
+				value: 'voxtelesys',
 			},
-		);
+			i18nLabel: 'FileUpload_MediaTypeWhiteList',
+			i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
+			secret: true,
+		});
 	});
 
 	this.section('Mobex', function () {

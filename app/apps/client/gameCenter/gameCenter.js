@@ -55,10 +55,7 @@ Template.GameCenter.helpers({
 			return;
 		}
 		return function (currentTarget) {
-			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
-			) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
 				return instance.page.set(instance.page.get() + 1);
 			}
 		};

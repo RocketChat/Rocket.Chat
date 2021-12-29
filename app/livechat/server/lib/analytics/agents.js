@@ -57,7 +57,6 @@ const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, op
 
 export const findAllAverageServiceTime = ({ start, end, options }) =>
 	Promise.await(findAllAverageServiceTimeAsync({ start, end, options }));
-export const findAllServiceTime = ({ start, end, options }) =>
-	Promise.await(findAllServiceTimeAsync({ start, end, options }));
+export const findAllServiceTime = ({ start, end, options }) => Promise.await(findAllServiceTimeAsync({ start, end, options }));
 export const findAvailableServiceTimeHistory = ({ start, end, fullReport, options }) =>
 	Promise.await(findAvailableServiceTimeHistoryAsync({ start, end, fullReport, options }));

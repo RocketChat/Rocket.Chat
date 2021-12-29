@@ -63,9 +63,7 @@ Template.visitorTranscript.helpers({
 			return room.transcriptRequest.subject;
 		}
 
-		return (
-			t('Transcript_of_your_livechat_conversation') || (room && roomTypes.getRoomName(room.t, room))
-		);
+		return t('Transcript_of_your_livechat_conversation') || (room && roomTypes.getRoomName(room.t, room));
 	},
 	errorEmail() {
 		const instance = Template.instance();
@@ -170,9 +168,7 @@ Template.visitorTranscript.onCreated(async function () {
 	this.infoMessage = new ReactiveVar('');
 
 	this.autorun(async () => {
-		const { visitor } = await APIClient.v1.get(
-			`livechat/visitors.info?visitorId=${Template.currentData().visitorId}`,
-		);
+		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${Template.currentData().visitorId}`);
 		this.visitor.set(visitor);
 	});
 

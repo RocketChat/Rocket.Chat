@@ -44,9 +44,7 @@ class CachedCollectionManagerClass extends Emitter {
 		// on first connection the `reconnect` callbacks will run
 
 		Tracker.autorun(() => {
-			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [
-				0, 1, 2,
-			];
+			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
 			this.step = this.step || WAITING_FIRST_CONNECTION;
 			const { connected } = Meteor.status();
 			switch (this.step) {
@@ -114,11 +112,7 @@ class CachedCollectionManagerClass extends Emitter {
 export const CachedCollectionManager = new CachedCollectionManagerClass();
 
 const debug = (name) =>
-	[
-		getConfig(`debugCachedCollection-${name}`),
-		getConfig('debugCachedCollection'),
-		getConfig('debug'),
-	].includes('true');
+	[getConfig(`debugCachedCollection-${name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
 
 const nullLog = function () {};
 
@@ -216,15 +210,11 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = new Map(
-			data.records.map((record) => [record._id, record]),
-		);
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
-		Object.values(this.collection._collection.queries).forEach((query) =>
-			this.collection._collection._recomputeResults(query),
-		);
+		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
 
 		return true;
 	}
@@ -325,11 +315,7 @@ export class CachedCollection extends Emitter {
 	}
 
 	async sync() {
-		if (
-			!this.updatedAt ||
-			this.updatedAt.valueOf() === 0 ||
-			Meteor.connection._outstandingMethodBlocks.length !== 0
-		) {
+		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
 

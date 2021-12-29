@@ -41,13 +41,7 @@ function UserTable({ workspace = 'local' }) {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && canViewFullOtherUserInfo && (
@@ -107,14 +101,7 @@ function UserTable({ workspace = 'local' }) {
 
 	const renderRow = useCallback(
 		({ createdAt, emails, _id, username, name, domain, bio, avatarETag, nickname }) => (
-			<Table.Row
-				key={_id}
-				onKeyDown={onClick(username)}
-				onClick={onClick(username)}
-				tabIndex={0}
-				role='link'
-				action
-			>
+			<Table.Row key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 				<Table.Cell>
 					<Flex.Container>
 						<Box>
@@ -157,12 +144,7 @@ function UserTable({ workspace = 'local' }) {
 		<GenericTable
 			header={header}
 			renderFilter={({ onChange, ...props }) => (
-				<FilterByText
-					placeholder={t('Search_Users')}
-					inputRef={refAutoFocus}
-					onChange={onChange}
-					{...props}
-				/>
+				<FilterByText placeholder={t('Search_Users')} inputRef={refAutoFocus} onChange={onChange} {...props} />
 			)}
 			renderRow={renderRow}
 			results={data.result}

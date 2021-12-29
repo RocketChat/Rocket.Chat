@@ -47,9 +47,7 @@ Meteor.startup(function () {
 				return;
 			}
 
-			const file = RocketChatFileEmojiCustomInstance.getFileWithReadStream(
-				encodeURIComponent(params.emoji),
-			);
+			const file = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
 
 			res.setHeader('Content-Disposition', 'inline');
 

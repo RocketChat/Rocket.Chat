@@ -22,13 +22,7 @@ const createDiscussionMessage = (rid, user, drid, msg, message_embedded) => {
 		drid,
 		attachments: [message_embedded].filter((e) => e),
 	};
-	return Messages.createWithTypeRoomIdMessageAndUser(
-		'discussion-created',
-		rid,
-		'',
-		user,
-		welcomeMessage,
-	);
+	return Messages.createWithTypeRoomIdMessageAndUser('discussion-created', rid, '', user, welcomeMessage);
 };
 
 const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
@@ -90,13 +84,9 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	}
 
 	if (encrypted && reply) {
-		throw new Meteor.Error(
-			'error-invalid-arguments',
-			'Encrypted discussions must not receive an initial reply.',
-			{
-				method: 'DiscussionCreation',
-			},
-		);
+		throw new Meteor.Error('error-invalid-arguments', 'Encrypted discussions must not receive an initial reply.', {
+			method: 'DiscussionCreation',
+		});
 	}
 
 	if (pmid) {
@@ -151,13 +141,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		}
 		mentionMessage(discussion._id, user, attachMessage(message, p_room));
 
-		discussionMsg = createDiscussionMessage(
-			message.rid,
-			user,
-			discussion._id,
-			t_name,
-			attachMessage(message, p_room),
-		);
+		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
 	} else {
 		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
 	}
@@ -183,11 +167,7 @@ Meteor.methods({
 	 */
 	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }) {
 		if (!settings.get('Discussion_enabled')) {
-			throw new Meteor.Error(
-				'error-action-not-allowed',
-				'You are not allowed to create a discussion',
-				{ method: 'createDiscussion' },
-			);
+			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
 		const uid = Meteor.userId();
@@ -198,11 +178,7 @@ Meteor.methods({
 		}
 
 		if (!hasAtLeastOnePermission(uid, ['start-discussion', 'start-discussion-other-user'])) {
-			throw new Meteor.Error(
-				'error-action-not-allowed',
-				'You are not allowed to create a discussion',
-				{ method: 'createDiscussion' },
-			);
+			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
 		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user(), encrypted });

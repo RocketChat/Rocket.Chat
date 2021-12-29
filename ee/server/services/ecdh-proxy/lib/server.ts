@@ -34,10 +34,8 @@ async function getSession(clientPublicKey: string): Promise<ServerSession> {
 
 const getSessionCached = mem(getSession, { maxAge: 1000 });
 
-const _processRequest = async (session: ServerSession, requestData: Buffer): Promise<string> =>
-	session.decrypt(requestData);
-const _processResponse = async (session: ServerSession, responseData: Buffer): Promise<string> =>
-	session.encrypt(responseData);
+const _processRequest = async (session: ServerSession, requestData: Buffer): Promise<string> => session.decrypt(requestData);
+const _processResponse = async (session: ServerSession, responseData: Buffer): Promise<string> => session.encrypt(responseData);
 
 const proxyHostname = process.env.PROXY_HOST || 'localhost';
 const proxyPort = process.env.PROXY_PORT || 3000;
@@ -154,14 +152,10 @@ wss.on('connection', async (ws, req) => {
 
 	const session = await getSessionCached(cookies.ecdhSession);
 
-	const proxy = new WebSocket(
-		`ws://${proxyHostname}:${proxyPort}${req.url}` /* , { agent: req.agent } */,
-	);
+	const proxy = new WebSocket(`ws://${proxyHostname}:${proxyPort}${req.url}` /* , { agent: req.agent } */);
 
 	ws.on('message', async (data: string) => {
-		const decrypted = JSON.stringify([
-			await session.decrypt(data.replace('["', '').replace('"]', '')),
-		]);
+		const decrypted = JSON.stringify([await session.decrypt(data.replace('["', '').replace('"]', ''))]);
 		proxy.send(decrypted);
 	});
 

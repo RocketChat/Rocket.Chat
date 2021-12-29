@@ -42,14 +42,7 @@ export function generateUsernameSuggestion(user) {
 	}
 
 	if (Array.isArray(user.services)) {
-		const services = new Set(
-			user.services.flatMap(({ name, username, firstName, lastName }) => [
-				name,
-				username,
-				firstName,
-				lastName,
-			]),
-		);
+		const services = new Set(user.services.flatMap(({ name, username, firstName, lastName }) => [name, username, firstName, lastName]));
 		usernames.push(...services.map(name));
 	}
 

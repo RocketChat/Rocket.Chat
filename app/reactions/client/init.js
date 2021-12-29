@@ -72,9 +72,7 @@ Meteor.startup(function () {
 		action(event) {
 			event.stopPropagation();
 			const { msg } = messageArgs(this);
-			EmojiPicker.open(event.currentTarget, (emoji) =>
-				Meteor.call('setReaction', `:${emoji}:`, msg._id),
-			);
+			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${emoji}:`, msg._id));
 		},
 		condition({ msg: message, u: user, room, subscription }) {
 			if (!room) {

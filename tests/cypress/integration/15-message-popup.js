@@ -104,22 +104,16 @@ describe('[Message Popup]', () => {
 		const mentionableUsers = users.filter(({ isMentionable }) => isMentionable);
 		for (let i = 1; i <= 5; ++i) {
 			it(`should show mentionable user #${5 - i + 1} as message popup bar item #${i}`, () => {
-				mainContent.messagePopUpItems
-					.find(`.popup-item:nth-child(${i}) strong`)
-					.should('contain', mentionableUsers[5 - i].username);
+				mainContent.messagePopUpItems.find(`.popup-item:nth-child(${i}) strong`).should('contain', mentionableUsers[5 - i].username);
 			});
 		}
 
 		it('should show "all" as message popup bar item #6', () => {
-			mainContent.messagePopUpItems
-				.find('.popup-item:nth-child(6) strong')
-				.should('contain', 'all');
+			mainContent.messagePopUpItems.find('.popup-item:nth-child(6) strong').should('contain', 'all');
 		});
 
 		it('should show "here" as message popup bar item #7', () => {
-			mainContent.messagePopUpItems
-				.find('.popup-item:nth-child(7) strong')
-				.should('contain', 'here');
+			mainContent.messagePopUpItems.find('.popup-item:nth-child(7) strong').should('contain', 'here');
 		});
 	});
 });

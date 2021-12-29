@@ -66,23 +66,13 @@ declare module 'meteor/rocketchat:streamer' {
 
 		__emit(...data: any[]): void;
 
-		_emit(
-			eventName: string,
-			args: any[],
-			origin: Connection | undefined,
-			broadcast: boolean,
-			transform?: TransformMessage,
-		): boolean;
+		_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean;
 
 		emitWithoutBroadcast(event: string, ...data: any[]): void;
 
 		changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 
-		_publish(
-			publication: IPublication,
-			eventName: string,
-			options: boolean | { useCollection?: boolean; args?: any },
-		): Promise<void>;
+		_publish(publication: IPublication, eventName: string, options: boolean | { useCollection?: boolean; args?: any }): Promise<void>;
 	}
 
 	interface IStreamerConstructor {

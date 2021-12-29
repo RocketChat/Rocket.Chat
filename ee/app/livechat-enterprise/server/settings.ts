@@ -26,10 +26,7 @@ export const createSettings = (): void => {
 		group: 'Omnichannel',
 		section: 'Sessions',
 		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
-		enableQuery: [
-			{ _id: 'Livechat_abandoned_rooms_action', value: 'close' },
-			omnichannelEnabledQuery,
-		],
+		enableQuery: [{ _id: 'Livechat_abandoned_rooms_action', value: 'close' }, omnichannelEnabledQuery],
 		enterprise: true,
 		invalidValue: '',
 		modules: ['livechat-enterprise'],
@@ -181,10 +178,7 @@ export const createSettings = (): void => {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		enableQuery: [
-			{ _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } },
-			omnichannelEnabledQuery,
-		],
+		enableQuery: [{ _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } }, omnichannelEnabledQuery],
 		enterprise: true,
 		invalidValue: '',
 		modules: ['livechat-enterprise'],

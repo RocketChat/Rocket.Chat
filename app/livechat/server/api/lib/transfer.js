@@ -2,11 +2,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { Messages } from '../../../../models/server/raw';
 
 const normalizeTransferHistory = ({ transferData }) => transferData;
-export async function findLivechatTransferHistory({
-	userId,
-	rid,
-	pagination: { offset, count, sort },
-}) {
+export async function findLivechatTransferHistory({ userId, rid, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-rooms'))) {
 		throw new Error('error-not-authorized');
 	}

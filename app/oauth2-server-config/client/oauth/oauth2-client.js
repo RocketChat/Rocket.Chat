@@ -56,12 +56,7 @@ Template.authorize.events({
 
 Template.authorize.onRendered(function () {
 	const user = Meteor.user();
-	if (
-		user &&
-		user.oauth &&
-		user.oauth.authorizedClients &&
-		user.oauth.authorizedClients.includes(this.data.client_id())
-	) {
+	if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
 		$('button[type=submit]').click();
 	}
 });

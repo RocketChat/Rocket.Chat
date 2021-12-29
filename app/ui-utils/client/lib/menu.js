@@ -6,8 +6,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
-const map = (x, in_min, in_max, out_min, out_max) =>
-	((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+const map = (x, in_min, in_max, out_min, out_max) => ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
 export const menu = new (class extends Emitter {
 	constructor() {

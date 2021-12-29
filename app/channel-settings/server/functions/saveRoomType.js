@@ -32,8 +32,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 		});
 	}
 
-	const result =
-		Rooms.setTypeById(rid, roomType) && Subscriptions.updateTypeByRoomId(rid, roomType);
+	const result = Rooms.setTypeById(rid, roomType) && Subscriptions.updateTypeByRoomId(rid, roomType);
 	if (!result) {
 		return result;
 	}
@@ -49,12 +48,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 				lng: (user && user.language) || settings.get('Language') || 'en',
 			});
 		}
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-			'room_changed_privacy',
-			rid,
-			message,
-			user,
-		);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);
 	}
 	return result;
 };

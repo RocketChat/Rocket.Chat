@@ -16,10 +16,7 @@ API.v1.addRoute(
 			let updatedSinceDate: Date | undefined;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error(
-						'error-roomId-param-invalid',
-						'The "updatedSince" query parameter must be a valid date.',
-					);
+					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 				}
 				updatedSinceDate = new Date(updatedSince);
 			}
@@ -47,10 +44,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!hasPermission(this.userId, 'access-permissions')) {
-				return API.v1.failure(
-					'Editing permissions is not allowed',
-					'error-edit-permissions-not-allowed',
-				);
+				return API.v1.failure('Editing permissions is not allowed', 'error-edit-permissions-not-allowed');
 			}
 
 			const { bodyParams } = this;

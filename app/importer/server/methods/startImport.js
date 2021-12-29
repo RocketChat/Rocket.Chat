@@ -27,34 +27,18 @@ Meteor.methods({
 		const { importerKey } = operation;
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error(
-				'error-importer-not-defined',
-				`The importer (${importerKey}) has no import class defined.`,
-				{ method: 'startImport' },
-			);
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
+				method: 'startImport',
+			});
 		}
 
 		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 		const usersSelection = input.users.map(
-			(user) =>
-				new SelectionUser(
-					user.user_id,
-					user.username,
-					user.email,
-					user.is_deleted,
-					user.is_bot,
-					user.do_import,
-				),
+			(user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import),
 		);
 		const channelsSelection = input.channels.map(
-			(channel) =>
-				new SelectionChannel(
-					channel.channel_id,
-					channel.name,
-					channel.is_archived,
-					channel.do_import,
-				),
+			(channel) => new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import),
 		);
 
 		const selection = new Selection(importer.name, usersSelection, channelsSelection);

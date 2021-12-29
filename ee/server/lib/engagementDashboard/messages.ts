@@ -2,12 +2,7 @@ import moment from 'moment';
 
 import { roomTypes } from '../../../../app/utils/server';
 import { Messages, Analytics } from '../../../../app/models/server/raw';
-import {
-	convertDateToInt,
-	diffBetweenDaysInclusive,
-	convertIntToDate,
-	getTotalOfWeekItems,
-} from './date';
+import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 import { IMessage } from '../../../../definition/IMessage';
 
@@ -93,10 +88,8 @@ export const findWeeklyMessagesSentData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayMessages =
-		(currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
-	const todayMessages =
-		(currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
+	const yesterdayMessages = (currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
+	const todayMessages = (currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
 	const lastPeriodTotalOfMessages = getTotalOfWeekItems(lastPeriodMessages, 'messages');
 	return {
@@ -133,9 +126,7 @@ export const findMessagesSentOrigin = async ({
 	}).toArray();
 	const roomTypesToShow: IRoom['t'][] = roomTypes.getTypesToShowOnDashboard() as IRoom['t'][];
 	const responseTypes = origins.map((origin) => origin.t);
-	const missingTypes = roomTypesToShow.filter(
-		(type): type is IRoom['t'] => !responseTypes.includes(type),
-	);
+	const missingTypes = roomTypesToShow.filter((type): type is IRoom['t'] => !responseTypes.includes(type));
 	if (missingTypes.length) {
 		missingTypes.forEach((type) => origins.push({ messages: 0, t: type }));
 	}

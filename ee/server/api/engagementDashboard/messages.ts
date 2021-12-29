@@ -74,9 +74,7 @@ API.v1.addRoute(
 
 			const { start, end } = this.queryParams;
 
-			const data = await findTopFivePopularChannelsByMessageSentQuantity(
-				transformDatesForAPI(start, end),
-			);
+			const data = await findTopFivePopularChannelsByMessageSentQuantity(transformDatesForAPI(start, end));
 			return API.v1.success(data);
 		},
 	},

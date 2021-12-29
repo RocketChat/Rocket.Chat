@@ -20,12 +20,7 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import {
-	findUsersToAutocomplete,
-	getInclusiveFields,
-	getNonEmptyFields,
-	getNonEmptyQuery,
-} from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
@@ -241,10 +236,7 @@ API.v1.addRoute(
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
-			if (
-				fields.userRooms === 1 &&
-				(myself || hasPermission(this.userId, 'view-other-user-channels'))
-			) {
+			if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 				user.rooms = Subscriptions.findByUserId(user._id, {
 					fields: {
 						rid: 1,
@@ -284,8 +276,7 @@ API.v1.addRoute(
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const actualSort =
-				sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+			const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
 			const limit =
 				count !== 0
@@ -461,10 +452,7 @@ API.v1.addRoute(
 				}
 
 				if (!user) {
-					throw new Meteor.Error(
-						'error-invalid-user',
-						'The optional "userId" or "username" param provided does not match any users',
-					);
+					throw new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
 				}
 
 				const isAnotherUser = this.userId !== user._id;
@@ -558,13 +546,9 @@ API.v1.addRoute(
 
 						setUserStatus(user, status);
 					} else {
-						throw new Meteor.Error(
-							'error-invalid-status',
-							'Valid status types include online, away, offline, and busy.',
-							{
-								method: 'users.setStatus',
-							},
-						);
+						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+							method: 'users.setStatus',
+						});
 					}
 				}
 			});
@@ -661,9 +645,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 				  };
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions),
-			);
+			Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions));
 
 			return API.v1.success({
 				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
@@ -701,9 +683,7 @@ API.v1.addRoute(
 					preferences,
 				});
 			}
-			return API.v1.failure(
-				TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase(),
-			);
+			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
 	},
 );
@@ -749,19 +729,12 @@ API.v1.addRoute(
 					muteFocusedConversations: Match.Optional(Boolean),
 				}),
 			});
-			if (
-				this.bodyParams.userId &&
-				this.bodyParams.userId !== this.userId &&
-				!hasPermission(this.userId, 'edit-other-user-info')
-			) {
+			if (this.bodyParams.userId && this.bodyParams.userId !== this.userId && !hasPermission(this.userId, 'edit-other-user-info')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
 			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 			if (!Users.findOneById(userId)) {
-				throw new Meteor.Error(
-					'error-invalid-user',
-					'The optional "userId" param provided does not match any users',
-				);
+				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
 			Meteor.runAsUser(userId, () => Meteor.call('saveUserPreferences', this.bodyParams.data));
@@ -823,9 +796,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }),
-			);
+			const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor }));
 
 			return API.v1.success({ token });
 		},
@@ -841,9 +812,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('personalAccessTokens:regenerateToken', { tokenName }),
-			);
+			const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:regenerateToken', { tokenName }));
 
 			return API.v1.success({ token });
 		},
@@ -962,10 +931,7 @@ API.v1.addRoute(
 
 			if (ids) {
 				return API.v1.success({
-					users: Users.findNotOfflineByIds(
-						Array.isArray(ids) ? ids : ids.split(','),
-						options,
-					).fetch(),
+					users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
 					full: false,
 				});
 			}
@@ -996,9 +962,7 @@ API.v1.addRoute(
 	{
 		get() {
 			const { fullExport = false } = this.queryParams;
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }),
-			);
+			const result = Meteor.runAsUser(this.userId, () => Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }));
 
 			return API.v1.success({
 				requested: result.requested,

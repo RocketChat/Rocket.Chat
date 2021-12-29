@@ -1,13 +1,7 @@
 import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
-const removed = [
-	'advocacy',
-	'industry',
-	'publicRelations',
-	'healthcarePharmaceutical',
-	'helpCenter',
-];
+const removed = ['advocacy', 'industry', 'publicRelations', 'healthcarePharmaceutical', 'helpCenter'];
 
 addMigration({
 	version: 215,

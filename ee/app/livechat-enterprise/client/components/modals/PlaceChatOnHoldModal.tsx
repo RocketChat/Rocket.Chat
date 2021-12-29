@@ -9,12 +9,7 @@ type PlaceChatOnHoldModalProps = {
 	onCancel: () => void;
 };
 
-const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
-	onCancel,
-	onOnHoldChat,
-	confirm = onOnHoldChat,
-	...props
-}) => {
+const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }) => {
 	const t = useTranslation();
 
 	return (

@@ -12,30 +12,19 @@ type SettingsProviderProps = {
 	readonly privileged?: boolean;
 };
 
-const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
-	children,
-	privileged = false,
-}) => {
+const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, privileged = false }) => {
 	const hasPrivilegedPermission = useAtLeastOnePermission(
-		useMemo(
-			() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'],
-			[],
-		),
+		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
 	);
 
 	const hasPrivateAccess = privileged && hasPrivilegedPermission;
 
 	const cachedCollection = useMemo(
-		() =>
-			hasPrivateAccess
-				? PrivateSettingsCachedCollection.get()
-				: PublicSettingsCachedCollection.get(),
+		() => (hasPrivateAccess ? PrivateSettingsCachedCollection.get() : PublicSettingsCachedCollection.get()),
 		[hasPrivateAccess],
 	);
 
-	const [isLoading, setLoading] = useState(() =>
-		Tracker.nonreactive(() => !cachedCollection.ready.get()),
-	);
+	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
 
 	useEffect(() => {
 		let mounted = true;
@@ -60,8 +49,7 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	}, [cachedCollection]);
 
 	const querySetting = useMemo(
-		() =>
-			createReactiveSubscriptionFactory((_id) => ({ ...cachedCollection.collection.findOne(_id) })),
+		() => createReactiveSubscriptionFactory((_id) => ({ ...cachedCollection.collection.findOne(_id) })),
 		[cachedCollection],
 	);
 

@@ -125,12 +125,7 @@ export class AppServerNotifier {
 		this.clientStreamer = notifications.streamApps;
 
 		this.received = new Map();
-		this.listener = new AppServerListener(
-			orch,
-			this.engineStreamer,
-			this.clientStreamer,
-			this.received,
-		);
+		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
 	}
 
 	async appAdded(appId) {

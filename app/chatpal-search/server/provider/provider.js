@@ -185,11 +185,8 @@ class ChatpalProvider extends SearchProvider {
 			this._indexConfig.backendtype !== this._settings.get('Backend') ||
 			(this._indexConfig.backendtype === 'onsite' &&
 				this._indexConfig.baseurl !==
-					(this._settings.get('Base_URL').endsWith('/')
-						? this._settings.get('Base_URL').slice(0, -1)
-						: this._settings.get('Base_URL'))) ||
-			(this._indexConfig.backendtype === 'cloud' &&
-				this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
+					(this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL'))) ||
+			(this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
 			this._indexConfig.language !== this._settings.get('Main_Language')
 		);
 	}
@@ -312,11 +309,7 @@ class ChatpalProvider extends SearchProvider {
 			ChatpalLogger.debug({ config: this._indexConfig });
 			ChatpalLogger.debug({ stats: this._stats });
 
-			this.index = new Index(
-				this._indexConfig,
-				this.indexFail || clear,
-				this._stats.message.oldest || new Date().valueOf(),
-			);
+			this.index = new Index(this._indexConfig, this.indexFail || clear, this._stats.message.oldest || new Date().valueOf());
 
 			resolve();
 		}, reject);
@@ -380,13 +373,7 @@ class ChatpalProvider extends SearchProvider {
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
 
-		this.index.suggest(
-			text,
-			this._settings.get('Main_Language'),
-			this._getAcl(context),
-			type,
-			callback,
-		);
+		this.index.suggest(text, this._settings.get('Main_Language'), this._getAcl(context), type, callback);
 	}
 }
 

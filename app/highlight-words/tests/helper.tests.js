@@ -28,14 +28,11 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal(
-					'here we go https://somedomain.com/here-some.word/pulls more words after',
-				);
+				expect(res).to.be.equal('here we go https://somedomain.com/here-some.word/pulls more words after');
 			});
 
 			it('not highlighting two links', () => {
-				const msg =
-					'here https://somedomain.com/here-some-foo/pulls more words after http://www.domain.com/some.foo/bar words after';
+				const msg = 'here https://somedomain.com/here-some-foo/pulls more words after http://www.domain.com/some.foo/bar words after';
 				const res = highlightWords(
 					msg,
 					['foo'].map((highlight) => ({
@@ -58,9 +55,7 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal(
-					'here we go https://somedomain.com/here-some.foo/pulls more <span class="highlight-text">foo</span> after',
-				);
+				expect(res).to.be.equal('here we go https://somedomain.com/here-some.foo/pulls more <span class="highlight-text">foo</span> after');
 			});
 		});
 	});

@@ -10,10 +10,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			action: () => {
 				typeof actionCallback === 'function' && actionCallback('online');
 				$('input[name=statusType]').val('online');
-				$(currentTarget).prop(
-					'class',
-					'rc-input__icon js-status-type edit-status-type-icon--online',
-				);
+				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--online');
 			},
 		},
 		{
@@ -46,10 +43,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			action: () => {
 				typeof actionCallback === 'function' && actionCallback('offline');
 				$('input[name=statusType]').val('offline');
-				$(currentTarget).prop(
-					'class',
-					'rc-input__icon js-status-type edit-status-type-icon--offline',
-				);
+				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--offline');
 			},
 		});
 	}

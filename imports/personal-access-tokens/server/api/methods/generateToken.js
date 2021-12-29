@@ -7,10 +7,7 @@ import { Users } from '../../../../../app/models';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
-	'personalAccessTokens:generateToken': twoFactorRequired(function ({
-		tokenName,
-		bypassTwoFactor,
-	}) {
+	'personalAccessTokens:generateToken': twoFactorRequired(function ({ tokenName, bypassTwoFactor }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
@@ -28,11 +25,9 @@ Meteor.methods({
 			tokenName,
 		});
 		if (tokenExist) {
-			throw new Meteor.Error(
-				'error-token-already-exists',
-				'A token with this name already exists',
-				{ method: 'personalAccessTokens:generateToken' },
-			);
+			throw new Meteor.Error('error-token-already-exists', 'A token with this name already exists', {
+				method: 'personalAccessTokens:generateToken',
+			});
 		}
 
 		Users.addPersonalAccessTokenToUser({

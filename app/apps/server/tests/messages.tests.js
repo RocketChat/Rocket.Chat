@@ -54,9 +54,7 @@ describe('The AppMessagesConverter instance', function () {
 		});
 
 		it('should return a proper schema', function () {
-			const appMessage = messagesConverter.convertMessage(
-				messagesMock.findOneById('SimpleMessageMock'),
-			);
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
 
 			expect(appMessage).to.have.property('id', 'SimpleMessageMock');
 			expect(appMessage).to.have.property('createdAt').which.equalTime(createdAt);
@@ -95,17 +93,13 @@ describe('The AppMessagesConverter instance', function () {
 		});
 
 		it('should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message', function () {
-			const appMessage = messagesConverter.convertMessage(
-				messagesMock.findOneById('SimpleMessageMock'),
-			);
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
 
 			expect(appMessage).to.have.property('_unmappedProperties_').which.has.property('t', 'uj');
 		});
 
 		it("should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)", function () {
-			const appMessage = messagesConverter.convertMessage(
-				messagesMock.findOneById('LivechatGuestMessageMock'),
-			);
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
 
 			expect(appMessage).to.have.property('sender').which.includes({
 				id: 'guest1234',
@@ -145,10 +139,7 @@ describe('The AppMessagesConverter instance', function () {
 		});
 
 		it('should throw if message has an invalid room', function () {
-			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw(
-				Error,
-				'Invalid room provided on the message.',
-			);
+			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw(Error, 'Invalid room provided on the message.');
 		});
 	});
 });

@@ -87,11 +87,7 @@ export class PendingFileImporter extends Base {
 				try {
 					const { _importFile } = message;
 
-					if (
-						!_importFile ||
-						_importFile.downloaded ||
-						downloadedFileIds.includes(_importFile.id)
-					) {
+					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
 						this.addCountCompleted(1);
 						return;
 					}
@@ -168,8 +164,7 @@ export class PendingFileImporter extends Base {
 												attachment.image_url = url;
 												attachment.image_type = file.type;
 												attachment.image_size = file.size;
-												attachment.image_dimensions =
-													file.identify != null ? file.identify.size : undefined;
+												attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
 											}
 
 											if (/^audio\/.+/.test(file.type)) {

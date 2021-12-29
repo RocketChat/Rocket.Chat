@@ -26,8 +26,7 @@ API.v1.addRoute(
 				return API.v1.failure('Could not decrypt payload');
 			}
 
-			const { fromDomain, contextType, contextQuery, latestEventIds } =
-				EJSON.fromJSONValue(payload);
+			const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(payload);
 
 			serverLogger.debug({
 				msg: 'federation.events.requestFromLatest',
@@ -49,10 +48,7 @@ API.v1.addRoute(
 
 			if (latestEventIds.length) {
 				// Get the oldest event from the latestEventIds
-				const oldestEvent = EventsModel.findOne(
-					{ _id: { $in: latestEventIds } },
-					{ $sort: { timestamp: 1 } },
-				);
+				const oldestEvent = EventsModel.findOne({ _id: { $in: latestEventIds } }, { $sort: { timestamp: 1 } });
 
 				if (!oldestEvent) {
 					return;
@@ -69,10 +65,7 @@ API.v1.addRoute(
 				).fetch();
 			} else {
 				// If there are no latest events, send all of them
-				missingEvents = EventsModel.find(
-					{ context: contextQuery },
-					{ sort: { timestamp: 1 } },
-				).fetch();
+				missingEvents = EventsModel.find({ context: contextQuery }, { sort: { timestamp: 1 } }).fetch();
 			}
 
 			// Dispatch all the events, on the same request

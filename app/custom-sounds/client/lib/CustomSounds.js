@@ -39,9 +39,7 @@ class CustomSoundsClass {
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
-		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append(
-			$('<source />', { src: sound.src }),
-		);
+		const audio = $('<audio />', { id: getCustomSoundId(sound._id), preload: true }).append($('<source />', { src: sound.src }));
 		const list = this.list.get();
 		list[sound._id] = sound;
 		this.list.set(list);

@@ -82,9 +82,7 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 		return;
 	}
 	const gateways =
-		settings.get('Push_enable_gateway') &&
-		settings.get('Register_Server') &&
-		settings.get('Cloud_Service_Agree_PrivacyTerms')
+		settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms')
 			? settings.get<string>('Push_gateway').split('\n')
 			: undefined;
 
@@ -129,12 +127,7 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 			apn = undefined;
 		}
 
-		if (
-			!gcm.apiKey ||
-			gcm.apiKey.trim() === '' ||
-			!gcm.projectNumber ||
-			gcm.projectNumber.trim() === ''
-		) {
+		if (!gcm.apiKey || gcm.apiKey.trim() === '' || !gcm.projectNumber || gcm.projectNumber.trim() === '') {
 			gcm = undefined;
 		}
 	}

@@ -20,10 +20,7 @@ export class AnalyticsService extends ServiceClass implements IAnalyticsService 
 	}
 
 	async getSeatRequestCount(): Promise<number> {
-		const result = await this.Analytics.findOne<IAnalyticsSeatRequest>(
-			{ type: 'seat-request' },
-			{},
-		);
+		const result = await this.Analytics.findOne<IAnalyticsSeatRequest>({ type: 'seat-request' }, {});
 		return result?.count ? result.count : 0;
 	}
 

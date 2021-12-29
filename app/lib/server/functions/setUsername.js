@@ -40,12 +40,7 @@ export const _setUsername = function (userId, u, fullUser) {
 	}
 	// If first time setting username, send Enrollment Email
 	try {
-		if (
-			!previousUsername &&
-			user.emails &&
-			user.emails.length > 0 &&
-			settings.get('Accounts_Enrollment_Email')
-		) {
+		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
 			Meteor.defer(() => {
 				Accounts.sendEnrollmentEmail(user._id);
 			});

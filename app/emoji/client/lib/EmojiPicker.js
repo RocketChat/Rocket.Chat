@@ -28,9 +28,7 @@ export const EmojiPicker = {
 
 		this.initiated = true;
 
-		this.recent = Meteor._localStorage.getItem('emoji.recent')
-			? Meteor._localStorage.getItem('emoji.recent').split(',')
-			: [];
+		this.recent = Meteor._localStorage.getItem('emoji.recent') ? Meteor._localStorage.getItem('emoji.recent').split(',') : [];
 		this.tone = Meteor._localStorage.getItem('emoji.tone') || 0;
 
 		Blaze.render(Template.emojiPicker, document.body);
@@ -39,10 +37,7 @@ export const EmojiPicker = {
 			if (!this.opened) {
 				return;
 			}
-			if (
-				!$(event.target).closest('.emoji-picker').length &&
-				!$(event.target).is('.emoji-picker')
-			) {
+			if (!$(event.target).closest('.emoji-picker').length && !$(event.target).is('.emoji-picker')) {
 				if (this.opened) {
 					this.close();
 				}

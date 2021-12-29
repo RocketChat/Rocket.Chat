@@ -20,18 +20,11 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 		if (!roomData || !roomData.t || !this.roomTypes[roomData.t]) {
 			return;
 		}
-		return (
-			(this.roomTypes[roomData.t].getIcon && this.roomTypes[roomData.t].getIcon(roomData)) ||
-			this.roomTypes[roomData.t].icon
-		);
+		return (this.roomTypes[roomData.t].getIcon && this.roomTypes[roomData.t].getIcon(roomData)) || this.roomTypes[roomData.t].icon;
 	}
 
 	getRoomName(roomType, roomData) {
-		return (
-			this.roomTypes[roomType] &&
-			this.roomTypes[roomType].roomName &&
-			this.roomTypes[roomType].roomName(roomData)
-		);
+		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
 	}
 
 	getSecondaryRoomName(roomType, roomData) {
@@ -73,9 +66,7 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 
 	isLivechatRoom(roomType) {
 		return (
-			this.roomTypes[roomType] &&
-			typeof this.roomTypes[roomType].isLivechatRoom === 'function' &&
-			this.roomTypes[roomType].isLivechatRoom()
+			this.roomTypes[roomType] && typeof this.roomTypes[roomType].isLivechatRoom === 'function' && this.roomTypes[roomType].isLivechatRoom()
 		);
 	}
 
@@ -171,10 +162,7 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 	}
 
 	verifyShowJoinLink(rid) {
-		const room = ChatRoom.findOne(
-			{ _id: rid, t: { $exists: true, $ne: null } },
-			{ fields: { t: 1 } },
-		);
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -186,10 +174,7 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 	}
 
 	getNotSubscribedTpl(rid) {
-		const room = ChatRoom.findOne(
-			{ _id: rid, t: { $exists: true, $ne: null } },
-			{ fields: { t: 1 } },
-		);
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -201,10 +186,7 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 	}
 
 	getReadOnlyTpl(rid) {
-		const room = ChatRoom.findOne(
-			{ _id: rid, t: { $exists: true, $ne: null } },
-			{ fields: { t: 1 } },
-		);
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -218,11 +200,7 @@ export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon 
 		}
 
 		let routeData = {};
-		if (
-			this.roomTypes[roomType] &&
-			this.roomTypes[roomType].route &&
-			this.roomTypes[roomType].route.link
-		) {
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {

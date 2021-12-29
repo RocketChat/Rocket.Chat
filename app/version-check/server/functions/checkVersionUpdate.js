@@ -77,9 +77,7 @@ export default () => {
 							msg: `*${TAPi18n.__('Rocket_Chat_Alert', adminUser.language)}:*\n\n*${TAPi18n.__(
 								alert.title,
 								adminUser.language,
-							)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${
-								alert.infoUrl
-							}`,
+							)}*\n${TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language)}\n${alert.infoUrl}`,
 						})),
 				banners: alerts.map((alert) => ({
 					id: `alert-${alert.id}`.replace(/\./g, '_'),

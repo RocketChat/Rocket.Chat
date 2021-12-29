@@ -35,12 +35,7 @@ async function afterLeaveRoom(user, room) {
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(user);
 
-		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(
-			localDomain,
-			room._id,
-			normalizedSourceUser,
-			domainsAfterLeave,
-		);
+		const userLeftEvent = await FederationRoomEvents.createUserLeftEvent(localDomain, room._id, normalizedSourceUser, domainsAfterLeave);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeLeft, userLeftEvent);

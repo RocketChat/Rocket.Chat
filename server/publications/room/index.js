@@ -29,11 +29,7 @@ Meteor.methods({
 		if (updatedAt instanceof Date) {
 			return {
 				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
-				remove: Rooms.trashFindDeletedAfter(
-					updatedAt,
-					{},
-					{ fields: { _id: 1, _deletedAt: 1 } },
-				).fetch(),
+				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 

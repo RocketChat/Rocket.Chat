@@ -30,10 +30,7 @@ const loginWithGoogleAndTOTP = function (options, code, callback) {
 		options.loginUrlParameters.hd = Accounts._options.restrictCreationByEmailDomain;
 	}
 
-	const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(
-		callback,
-		code,
-	);
+	const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
 	Google.requestCredential(options, credentialRequestCompleteCallback);
 };
 

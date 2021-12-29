@@ -128,9 +128,7 @@ API.v1.addRoute(
 			check(
 				this.urlParams,
 				Match.ObjectIncluding({
-					id: Match.Where(
-						(id: unknown): id is string => typeof id === 'string' && Boolean(id.trim()),
-					),
+					id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
 				}),
 			);
 			check(
@@ -249,9 +247,7 @@ API.v1.addRoute(
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
-					bannerId: Match.Where(
-						(id: unknown): id is string => typeof id === 'string' && Boolean(id.trim()),
-					),
+					bannerId: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
 				}),
 			);
 

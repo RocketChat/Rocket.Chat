@@ -8,16 +8,7 @@ import { call } from '../../utils.js';
 
 import './audit.html';
 
-const loadMessages = async function ({
-	rid,
-	users,
-	startDate,
-	endDate = new Date(),
-	msg,
-	type,
-	visitor,
-	agent,
-}) {
+const loadMessages = async function ({ rid, users, startDate, endDate = new Date(), msg, type, visitor, agent }) {
 	this.messages = this.messages || new ReactiveVar([]);
 	this.loading = this.loading || new ReactiveVar(true);
 	try {
@@ -79,9 +70,7 @@ Template.audit.onCreated(async function () {
 	this.autorun(() => {
 		const messagesContext = this.messagesContext.get();
 
-		this.hasResults.set(
-			messagesContext && messagesContext.messages && messagesContext.messages.length > 0,
-		);
+		this.hasResults.set(messagesContext && messagesContext.messages && messagesContext.messages.length > 0);
 	});
 
 	this.loadMessages = loadMessages.bind(this);

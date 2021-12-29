@@ -5,13 +5,7 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatAgentActivity } from '../../../../definition/ILivechatAgentActivity';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
-	findAllAverageAvailableServiceTime({
-		date,
-		departmentId,
-	}: {
-		date: Date;
-		departmentId: string;
-	}): Promise<ILivechatAgentActivity[]> {
+	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {
 		const match = { $match: { date } };
 		const lookup = {
 			$lookup: {
@@ -40,11 +34,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 				_id: null,
 				allAvailableTimeInSeconds: {
 					$sum: {
-						$cond: [
-							{ $ifNull: ['$lastStoppedAt', false] },
-							'$availableTime',
-							sumAvailableTimeWithCurrentTime,
-						],
+						$cond: [{ $ifNull: ['$lastStoppedAt', false] }, '$availableTime', sumAvailableTimeWithCurrentTime],
 					},
 				},
 				rooms: { $sum: 1 },
@@ -54,11 +44,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 			$project: {
 				averageAvailableServiceTimeInSeconds: {
 					$trunc: {
-						$cond: [
-							{ $eq: ['$rooms', 0] },
-							0,
-							{ $divide: ['$allAvailableTimeInSeconds', '$rooms'] },
-						],
+						$cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allAvailableTimeInSeconds', '$rooms'] }],
 					},
 				},
 			},

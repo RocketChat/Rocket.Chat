@@ -47,10 +47,7 @@ WebApp.connectHandlers.use('/snippet/download', function (req, res) {
 			return false;
 		}
 
-		res.setHeader(
-			'Content-Disposition',
-			`attachment; filename*=UTF-8''${encodeURIComponent(snippet.snippetName)}`,
-		);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(snippet.snippetName)}`);
 		res.setHeader('Content-Type', 'application/octet-stream');
 
 		// Removing the ``` contained in the msg.

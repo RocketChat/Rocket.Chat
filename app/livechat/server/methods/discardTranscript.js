@@ -22,11 +22,9 @@ Meteor.methods({
 		}
 
 		if (!room.transcriptRequest) {
-			throw new Meteor.Error(
-				'error-transcript-not-requested',
-				'No transcript requested for this chat',
-				{ method: 'livechat:requestTranscript' },
-			);
+			throw new Meteor.Error('error-transcript-not-requested', 'No transcript requested for this chat', {
+				method: 'livechat:requestTranscript',
+			});
 		}
 
 		return LivechatRooms.removeTranscriptRequestByRoomId(rid);

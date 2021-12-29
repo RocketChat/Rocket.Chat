@@ -1,12 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-const lineChartConfiguration = ({
-	legends = false,
-	anim = false,
-	smallTicks = false,
-	displayColors = false,
-	tooltipCallbacks = {},
-}) => {
+const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false, displayColors = false, tooltipCallbacks = {} }) => {
 	const config = {
 		layout: {
 			padding: {
@@ -135,14 +129,7 @@ const doughnutChartConfiguration = (title, tooltipCallbacks = {}) => ({
  * @param {Array(String)} dataLabels
  * @param {Array(Array(Double))} dataPoints
  */
-export const drawLineChart = async (
-	chart,
-	chartContext,
-	chartLabels,
-	dataLabels,
-	dataSets,
-	options = {},
-) => {
+export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels, dataSets, options = {}) => {
 	if (!chart) {
 		console.log('No chart element');
 		return;

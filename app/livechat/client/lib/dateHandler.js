@@ -14,28 +14,19 @@ export const checkDaterangeValue = (value, from, to) => {
 	if (moment().startOf('day').isSame(from) && moment().startOf('day').isSame(to)) {
 		return 'today';
 	}
-	if (
-		moment().startOf('day').subtract(1, 'days').isSame(from) &&
-		moment().startOf('day').subtract(1, 'days').isSame(to)
-	) {
+	if (moment().startOf('day').subtract(1, 'days').isSame(from) && moment().startOf('day').subtract(1, 'days').isSame(to)) {
 		return 'yesterday';
 	}
 	if (moment().startOf('week').isSame(from) && moment().endOf('week').isSame(to)) {
 		return 'this-week';
 	}
-	if (
-		moment().subtract(1, 'weeks').startOf('week').isSame(from) &&
-		moment().subtract(1, 'weeks').endOf('week').isSame(to)
-	) {
+	if (moment().subtract(1, 'weeks').startOf('week').isSame(from) && moment().subtract(1, 'weeks').endOf('week').isSame(to)) {
 		return 'prev-week';
 	}
 	if (moment().startOf('month').isSame(from) && moment().endOf('month').isSame(to)) {
 		return 'this-month';
 	}
-	if (
-		moment().subtract(1, 'months').startOf('month').isSame(from) &&
-		moment().subtract(1, 'months').endOf('month').isSame(to)
-	) {
+	if (moment().subtract(1, 'months').startOf('month').isSame(from) && moment().subtract(1, 'months').endOf('month').isSame(to)) {
 		return 'prev-month';
 	}
 	return value;

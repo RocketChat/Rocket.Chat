@@ -25,11 +25,7 @@ export class AppUsersConverter {
 		}
 
 		const type = this._convertUserTypeToEnum(user.type);
-		const statusConnection = this._convertStatusConnectionToEnum(
-			user.username,
-			user._id,
-			user.statusConnection,
-		);
+		const statusConnection = this._convertStatusConnectionToEnum(user.username, user._id, user.statusConnection);
 
 		return {
 			id: user._id,

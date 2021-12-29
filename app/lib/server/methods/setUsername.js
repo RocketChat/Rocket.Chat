@@ -24,10 +24,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (
-			user.username === username ||
-			(user.username && user.username.toLowerCase() === username.toLowerCase())
-		) {
+		if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
 			return username;
 		}
 
@@ -41,18 +38,15 @@ Meteor.methods({
 		if (!nameValidation.test(username)) {
 			throw new Meteor.Error(
 				'username-invalid',
-				`${_.escape(
-					username,
-				)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
+				`${_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
 			);
 		}
 
 		if (!checkUsernameAvailability(username)) {
-			throw new Meteor.Error(
-				'error-field-unavailable',
-				`<strong>${_.escape(username)}</strong> is already in use :(`,
-				{ method: 'setUsername', field: username },
-			);
+			throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
+				method: 'setUsername',
+				field: username,
+			});
 		}
 
 		if (!saveUserIdentity({ _id: user._id, username })) {
@@ -62,9 +56,7 @@ Meteor.methods({
 		}
 
 		if (!user.username) {
-			Meteor.runAsUser(user._id, () =>
-				Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced),
-			);
+			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
 				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});

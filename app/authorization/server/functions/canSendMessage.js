@@ -10,11 +10,7 @@ const subscriptionOptions = {
 	},
 };
 
-export const validateRoomMessagePermissionsAsync = async (
-	room,
-	{ uid, username, type },
-	extraData,
-) => {
+export const validateRoomMessagePermissionsAsync = async (room, { uid, username, type }, extraData) => {
 	if (!room) {
 		throw new Error('error-invalid-room');
 	}
@@ -24,11 +20,7 @@ export const validateRoomMessagePermissionsAsync = async (
 	}
 
 	if (roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.BLOCK)) {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(
-			room._id,
-			uid,
-			subscriptionOptions,
-		);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, subscriptionOptions);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			throw new Error('room_is_blocked');
 		}

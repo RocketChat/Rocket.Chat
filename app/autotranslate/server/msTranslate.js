@@ -28,10 +28,8 @@ class MsAutoTranslate extends AutoTranslate {
 		this.name = 'microsoft-translate';
 		this.apiEndPointUrl = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
 		this.apiDetectText = 'https://api.cognitive.microsofttranslator.com/detect?api-version=3.0';
-		this.apiGetLanguages =
-			'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
-		this.breakSentence =
-			'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
+		this.apiGetLanguages = 'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
+		this.breakSentence = 'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
 		// Get the service provide API key.
 		settings.watch('AutoTranslate_MicrosoftAPIKey', (value) => {
 			this.apiKey = value;
@@ -117,11 +115,7 @@ class MsAutoTranslate extends AutoTranslate {
 			translations = Object.assign(
 				{},
 				...targetLanguages.map((language) => ({
-					[language]: result.data
-						.map(
-							(line) => line.translations.find((translation) => translation.to === language).text,
-						)
-						.join('\n'),
+					[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
 				})),
 			);
 		}

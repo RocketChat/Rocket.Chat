@@ -47,9 +47,7 @@ Meteor.startup(function () {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
 			if (!connectWorkspace(process.env.REG_TOKEN)) {
-				throw new Error(
-					"Couldn't register with token.  Please make sure token is valid or hasn't already been used",
-				);
+				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
@@ -59,10 +57,4 @@ Meteor.startup(function () {
 	}
 });
 
-export {
-	getWorkspaceAccessToken,
-	getWorkspaceAccessTokenWithScope,
-	getWorkspaceLicense,
-	getWorkspaceKey,
-	getUserCloudAccessToken,
-};
+export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };

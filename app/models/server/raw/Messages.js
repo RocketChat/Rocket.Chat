@@ -149,11 +149,7 @@ export class MessagesRaw extends BaseRaw {
 							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
 						date: {
-							$concat: [
-								{ $substr: ['$ts', 0, 4] },
-								{ $substr: ['$ts', 5, 2] },
-								{ $substr: ['$ts', 8, 2] },
-							],
+							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
 						},
 					},
 					messages: { $sum: 1 },

@@ -53,10 +53,7 @@ API.v1.addRoute('livechat/visitor', {
 					return;
 				}
 				const { key, value, overwrite } = field;
-				if (
-					customField.scope === 'visitor' &&
-					!LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)
-				) {
+				if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
 					return API.v1.failure();
 				}
 			});

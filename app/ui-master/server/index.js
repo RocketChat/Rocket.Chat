@@ -58,8 +58,7 @@ Meteor.startup(() => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead(
 			'theme-color-sidebar-background',
-			`<meta name="msapplication-TileColor" content="${escapedValue}" />` +
-				`<meta name="theme-color" content="${escapedValue}" />`,
+			`<meta name="msapplication-TileColor" content="${escapedValue}" /><meta name="theme-color" content="${escapedValue}" />`,
 		);
 	});
 
@@ -77,8 +76,7 @@ Meteor.startup(() => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead(
 			'Meta_language',
-			`<meta http-equiv="content-language" content="${escapedValue}">` +
-				`<meta name="language" content="${escapedValue}">`,
+			`<meta http-equiv="content-language" content="${escapedValue}"><meta name="language" content="${escapedValue}">`,
 		);
 	});
 
@@ -94,10 +92,7 @@ Meteor.startup(() => {
 
 	settings.watch('Meta_google-site-verification', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(
-			'Meta_google-site-verification',
-			`<meta name="google-site-verification" content="${escapedValue}">`,
-		);
+		injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${escapedValue}">`);
 	});
 
 	settings.watch('Meta_fb_app_id', (value = '') => {

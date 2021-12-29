@@ -29,11 +29,7 @@ export const DataExport = {
 		}
 
 		if (headers['x-user-id'] && headers['x-auth-token'] && headers['x-user-id'] === userId) {
-			return !!Users.findOneByIdAndLoginToken(
-				headers['x-user-id'],
-				headers['x-auth-token'],
-				options,
-			);
+			return !!Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token'], options);
 		}
 
 		return false;

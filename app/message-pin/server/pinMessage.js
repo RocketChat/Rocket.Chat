@@ -18,9 +18,7 @@ const recursiveRemove = (msg, deep = 1) => {
 		return msg;
 	}
 
-	msg.attachments = Array.isArray(msg.attachments)
-		? msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1))
-		: null;
+	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1)) : null;
 
 	return msg;
 };
@@ -54,11 +52,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(
-			originalMessage.rid,
-			Meteor.userId(),
-			{ fields: { _id: 1 } },
-		);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
@@ -92,11 +86,7 @@ Meteor.methods({
 
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		Messages.setPinnedByIdAndUserId(
-			originalMessage._id,
-			originalMessage.pinnedBy,
-			originalMessage.pinned,
-		);
+		Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
@@ -111,23 +101,17 @@ Meteor.methods({
 			});
 		}
 
-		return Messages.createWithTypeRoomIdMessageAndUser(
-			'message_pinned',
-			originalMessage.rid,
-			'',
-			me,
-			{
-				attachments: [
-					{
-						text: originalMessage.msg,
-						author_name: originalMessage.u.username,
-						author_icon: getUserAvatarURL(originalMessage.u.username),
-						ts: originalMessage.ts,
-						attachments: recursiveRemove(attachments),
-					},
-				],
-			},
-		);
+		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
+			attachments: [
+				{
+					text: originalMessage.msg,
+					author_name: originalMessage.u.username,
+					author_icon: getUserAvatarURL(originalMessage.u.username),
+					ts: originalMessage.ts,
+					attachments: recursiveRemove(attachments),
+				},
+			],
+		});
 	},
 	unpinMessage(message) {
 		check(message._id, String);
@@ -153,11 +137,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(
-			originalMessage.rid,
-			Meteor.userId(),
-			{ fields: { _id: 1 } },
-		);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
 			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
@@ -193,10 +173,6 @@ Meteor.methods({
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
 
-		return Messages.setPinnedByIdAndUserId(
-			originalMessage._id,
-			originalMessage.pinnedBy,
-			originalMessage.pinned,
-		);
+		return Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	},
 });

@@ -41,13 +41,7 @@ export async function getUserByUsername(query) {
 	return user;
 }
 
-export async function requestEventsFromLatest(
-	domain,
-	fromDomain,
-	contextType,
-	contextQuery,
-	latestEventIds,
-) {
+export async function requestEventsFromLatest(domain, fromDomain, contextType, contextQuery, latestEventIds) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.requestEventsFromLatest');
 	}
@@ -93,11 +87,7 @@ export async function dispatchEvent(domains, event) {
 export async function getUpload(domain, fileId) {
 	const {
 		data: { upload, buffer },
-	} = await federationRequestToPeer(
-		'GET',
-		domain,
-		`/api/v1/federation.uploads?${qs.stringify({ upload_id: fileId })}`,
-	);
+	} = await federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${qs.stringify({ upload_id: fileId })}`);
 
 	return { upload, buffer: Buffer.from(buffer) };
 }

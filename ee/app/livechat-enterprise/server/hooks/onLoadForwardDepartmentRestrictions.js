@@ -19,9 +19,7 @@ callbacks.add(
 		}
 		const { departmentsAllowedToForward, _id } = department;
 		if (!departmentsAllowedToForward) {
-			cbLogger.debug(
-				`Skipping callback. Department ${_id} doesnt allow forwarding to other departments`,
-			);
+			cbLogger.debug(`Skipping callback. Department ${_id} doesnt allow forwarding to other departments`);
 			return options;
 		}
 		return Object.assign({ restrictions: { _id: { $in: departmentsAllowedToForward } } }, options);

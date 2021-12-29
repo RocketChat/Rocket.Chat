@@ -22,10 +22,7 @@ const commands = {
 			return ret;
 		}, {});
 
-		const newPath = newUrl.pathname.replace(
-			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
-			'',
-		);
+		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
 		FlowRouter.go(newPath, null, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 

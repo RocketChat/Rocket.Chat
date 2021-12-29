@@ -27,34 +27,22 @@ const emojiParser = (message) => {
 
 	checkEmojiOnly.innerHTML = html;
 
-	const emojis = Array.from(
-		checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'),
-	);
+	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
 	let hasText = false;
 
 	if (!isIE11) {
 		const filter = (node) => {
-			if (
-				node.nodeType === Node.ELEMENT_NODE &&
-				(node.classList.contains('emojione') || node.classList.contains('emoji'))
-			) {
+			if (node.nodeType === Node.ELEMENT_NODE && (node.classList.contains('emojione') || node.classList.contains('emoji'))) {
 				return NodeFilter.FILTER_REJECT;
 			}
 			return NodeFilter.FILTER_ACCEPT;
 		};
 
-		const walker = document.createTreeWalker(
-			checkEmojiOnly,
-			NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-			filter,
-		);
+		const walker = document.createTreeWalker(checkEmojiOnly, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, filter);
 
 		while (walker.nextNode()) {
-			if (
-				walker.currentNode.nodeType === Node.TEXT_NODE &&
-				walker.currentNode.nodeValue.trim() !== ''
-			) {
+			if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
 				hasText = true;
 				break;
 			}

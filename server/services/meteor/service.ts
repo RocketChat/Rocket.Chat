@@ -76,12 +76,7 @@ if (disableOplog) {
 		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
-			const records = Promise.await(
-				mongo
-					.rawCollection(collectionName)
-					.find(selector, { projection: options.fields })
-					.toArray(),
-			);
+			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
 			for (const { _id, ...fields } of records) {
 				callbacks.added(_id, fields);
 			}
@@ -232,8 +227,7 @@ export class MeteorService extends ServiceClass implements IMeteor {
 							statusLivechat: 1,
 						},
 					});
-					const serviceOnline =
-						agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
+					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
 
 					if (serviceOnline) {
 						return onlineAgents.add(id);
@@ -288,12 +282,7 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 	}
 
-	async callMethodWithToken(
-		userId: string,
-		token: string,
-		method: string,
-		args: any[],
-	): Promise<void | any> {
+	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
 		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, {
 			projection: { _id: 1 },
 		});

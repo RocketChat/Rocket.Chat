@@ -47,11 +47,9 @@ Meteor.methods({
 		if (!_id) {
 			const customField = LivechatCustomField.findOneById(customFieldData.field);
 			if (customField) {
-				throw new Meteor.Error(
-					'error-custom-field-name-already-exists',
-					'Custom field name already exists',
-					{ method: 'livechat:saveCustomField' },
-				);
+				throw new Meteor.Error('error-custom-field-name-already-exists', 'Custom field name already exists', {
+					method: 'livechat:saveCustomField',
+				});
 			}
 		}
 

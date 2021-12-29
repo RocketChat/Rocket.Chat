@@ -25,10 +25,7 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 	}
 
 	if (settings.get('Enable_CSP')) {
-		const cdn_prefixes = [
-			settings.get('CDN_PREFIX'),
-			settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX'),
-		]
+		const cdn_prefixes = [settings.get('CDN_PREFIX'), settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX')]
 			.filter(Boolean)
 			.join(' ');
 
@@ -88,11 +85,8 @@ WebApp.httpServer.addListener('request', function (req, res, ...args) {
 
 	const isLocal =
 		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] ||
-			_.all(req.headers['x-forwarded-for'].split(','), localhostTest));
-	const isSsl =
-		req.connection.pair ||
-		(req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
+		(!req.headers['x-forwarded-for'] || _.all(req.headers['x-forwarded-for'].split(','), localhostTest));
+	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
 	logger.debug('req.url', req.url);
 	logger.debug('remoteAddress', remoteAddress);

@@ -39,10 +39,7 @@ export const KonchatNotification = {
 				notification: true,
 			};
 			return onClientMessageReceived(message).then(function (message) {
-				const requireInteraction = getUserPreference(
-					Meteor.userId(),
-					'desktopNotificationRequireInteraction',
-				);
+				const requireInteraction = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction');
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
 					body: s.stripTags(message.msg),

@@ -23,9 +23,7 @@ export class RocketChatIntegrationHandler {
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		Promise.await(
-			Integrations.find({ type: 'webhook-outgoing' }).forEach((data) => this.addIntegration(data)),
-		);
+		Promise.await(Integrations.find({ type: 'webhook-outgoing' }).forEach((data) => this.addIntegration(data)));
 	}
 
 	addIntegration(record) {
@@ -36,9 +34,7 @@ export class RocketChatIntegrationHandler {
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
 		} else if (_.isEmpty(record.channel)) {
-			outgoingLogger.debug(
-				'The integration had an empty channel property, so it is going on all the public channels.',
-			);
+			outgoingLogger.debug('The integration had an empty channel property, so it is going on all the public channels.');
 			channels = ['all_public_channels'];
 		} else {
 			outgoingLogger.debug('The integration is going on these channels:', record.channel);
@@ -206,9 +202,7 @@ export class RocketChatIntegrationHandler {
 			return;
 		}
 
-		outgoingLogger.debug(
-			`Found a room for ${trigger.name} which is: ${tmpRoom.name} with a type of ${tmpRoom.t}`,
-		);
+		outgoingLogger.debug(`Found a room for ${trigger.name} which is: ${tmpRoom.name} with a type of ${tmpRoom.t}`);
 
 		message.bot = { i: trigger._id };
 
@@ -309,11 +303,7 @@ export class RocketChatIntegrationHandler {
 	}
 
 	hasScriptAndMethod(integration, method) {
-		if (
-			integration.scriptEnabled !== true ||
-			!integration.scriptCompiled ||
-			integration.scriptCompiled.trim() === ''
-		) {
+		if (integration.scriptEnabled !== true || !integration.scriptCompiled || integration.scriptCompiled.trim() === '') {
 			return false;
 		}
 
@@ -642,9 +632,7 @@ export class RocketChatIntegrationHandler {
 			}
 		}
 
-		outgoingLogger.debug(
-			`Found ${triggersToExecute.length} to iterate over and see if the match the event.`,
-		);
+		outgoingLogger.debug(`Found ${triggersToExecute.length} to iterate over and see if the match the event.`);
 
 		for (const triggerToExecute of triggersToExecute) {
 			outgoingLogger.debug(
@@ -664,9 +652,7 @@ export class RocketChatIntegrationHandler {
 
 	executeTriggerUrl(url, trigger, { event, message, room, owner, user }, theHistoryId, tries = 0) {
 		if (!this.isTriggerEnabled(trigger)) {
-			outgoingLogger.warn(
-				`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`,
-			);
+			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
 			return;
 		}
 
@@ -688,18 +674,14 @@ export class RocketChatIntegrationHandler {
 
 				// Stop if there are triggerWords but none match
 				if (!word) {
-					outgoingLogger.debug(
-						`The trigger word which "${trigger.name}" was expecting could not be found, not executing.`,
-					);
+					outgoingLogger.debug(`The trigger word which "${trigger.name}" was expecting could not be found, not executing.`);
 					return;
 				}
 			}
 		}
 
 		if (message && message.editedAt && !trigger.runOnEdits) {
-			outgoingLogger.debug(
-				`The trigger "${trigger.name}"'s run on edits is disabled and the message was edited.`,
-			);
+			outgoingLogger.debug(`The trigger "${trigger.name}"'s run on edits is disabled and the message was edited.`);
 			return;
 		}
 
@@ -735,8 +717,7 @@ export class RocketChatIntegrationHandler {
 				strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
 			},
 			headers: {
-				'User-Agent':
-					'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
+				'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
 			},
 		};
 
@@ -775,9 +756,7 @@ export class RocketChatIntegrationHandler {
 			if (!result) {
 				outgoingLogger.warn(`Result for the Integration ${trigger.name} to ${url} is empty`);
 			} else {
-				outgoingLogger.info(
-					`Status code for the Integration ${trigger.name} to ${url} is ${result.statusCode}`,
-				);
+				outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${result.statusCode}`);
 			}
 
 			this.updateHistory({
@@ -799,12 +778,7 @@ export class RocketChatIntegrationHandler {
 					},
 				};
 
-				const scriptResult = this.executeScript(
-					trigger,
-					'process_outgoing_response',
-					sandbox,
-					historyId,
-				);
+				const scriptResult = this.executeScript(trigger, 'process_outgoing_response', sandbox, historyId);
 
 				if (scriptResult && scriptResult.content) {
 					const resultMessage = this.sendMessage({
@@ -845,12 +819,8 @@ export class RocketChatIntegrationHandler {
 
 					if (result.statusCode === 410) {
 						this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
-						outgoingLogger.error(
-							`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`,
-						);
-						Promise.await(
-							Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } }),
-						);
+						outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
+						Promise.await(Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } }));
 						return;
 					}
 
@@ -894,17 +864,9 @@ export class RocketChatIntegrationHandler {
 								return;
 						}
 
-						outgoingLogger.info(
-							`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`,
-						);
+						outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 						Meteor.setTimeout(() => {
-							this.executeTriggerUrl(
-								url,
-								trigger,
-								{ event, message, room, owner, user },
-								historyId,
-								tries + 1,
-							);
+							this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 						}, waitTime);
 					} else {
 						this.updateHistory({ historyId, step: 'too-many-retries', error: true });
@@ -937,17 +899,11 @@ export class RocketChatIntegrationHandler {
 
 	replay(integration, history) {
 		if (!integration || integration.type !== 'webhook-outgoing') {
-			throw new Meteor.Error(
-				'integration-type-must-be-outgoing',
-				'The integration type to replay must be an outgoing webhook.',
-			);
+			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
 
 		if (!history || !history.data) {
-			throw new Meteor.Error(
-				'history-data-must-be-defined',
-				'The history data must be defined to replay an integration.',
-			);
+			throw new Meteor.Error('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
 		}
 
 		const { event } = history;

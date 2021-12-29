@@ -2,12 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { isEqual } from 'underscore';
 
 import type SettingsModel from '../../models/server/models/Settings';
-import {
-	ISetting,
-	ISettingGroup,
-	isSettingEnterprise,
-	SettingValue,
-} from '../../../definition/ISetting';
+import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '../../../definition/ISetting';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { overwriteSetting } from './functions/overwriteSetting';
 import { overrideSetting } from './functions/overrideSetting';
@@ -20,21 +15,15 @@ export const hiddenSettings = new Set<string>();
 export const wizardRequiredSettings = new Set<string>();
 
 if (process.env.SETTINGS_BLOCKED) {
-	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) =>
-		blockedSettings.add(settingId.trim()),
-	);
+	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
 }
 
 if (process.env.SETTINGS_HIDDEN) {
-	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) =>
-		hiddenSettings.add(settingId.trim()),
-	);
+	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings.add(settingId.trim()));
 }
 
 if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
-	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) =>
-		wizardRequiredSettings.add(settingId.trim()),
-	);
+	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
@@ -108,11 +97,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting
 	 */
-	add(
-		_id: string,
-		value: SettingValue,
-		{ sorter, section, group, ...options }: ISettingAddOptions = {},
-	): void {
+	add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): void {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -167,9 +152,7 @@ export class SettingsRegistry {
 			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
 
 			const overwrittenKeys = Object.keys(settingOverwritten);
-			const removedKeys = Object.keys(settingStored).filter(
-				(key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key),
-			);
+			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 			this.model.upsert(
 				{ _id },
@@ -194,8 +177,7 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT &&
-					SystemLogger.error(`Invalid setting stored ${_id}: ${(e as Error).message}`);
+				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${_id}: ${(e as Error).message}`);
 			}
 			return;
 		}
@@ -215,11 +197,7 @@ export class SettingsRegistry {
 	addGroup(_id: string, cb: addGroupCallback): void;
 
 	// eslint-disable-next-line no-dupe-class-members
-	addGroup(
-		_id: string,
-		groupOptions: ISettingAddGroupOptions | addGroupCallback = {},
-		cb?: addGroupCallback,
-	): void {
+	addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): void {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
 		}

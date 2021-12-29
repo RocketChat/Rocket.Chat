@@ -1,13 +1,6 @@
 import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
-import {
-	ITeam,
-	IRecordsWithTotal,
-	IPaginationOptions,
-	IQueryOptions,
-	ITeamMember,
-	TEAM_TYPE,
-} from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
@@ -65,21 +58,13 @@ export type ITeamUpdateData = { updateRoom?: boolean } & (
 	  }
 );
 
-export type ITeamAutocompleteResult = Pick<
-	IRoom,
-	'_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'
->;
+export type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
 	removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean): Promise<IRoom>;
-	listRooms(
-		uid: string,
-		teamId: string,
-		filter: IListRoomsFilter,
-		pagination: IPaginationOptions,
-	): Promise<IRecordsWithTotal<IRoom>>;
+	listRooms(uid: string, teamId: string, filter: IListRoomsFilter, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
 	listRoomsOfUser(
 		uid: string,
 		teamId: string,
@@ -88,17 +73,8 @@ export interface ITeamService {
 		showCanDeleteOnly: boolean,
 		pagination: IPaginationOptions,
 	): Promise<IRecordsWithTotal<IRoom>>;
-	updateRoom(
-		uid: string,
-		rid: string,
-		isDefault: boolean,
-		canUpdateAnyRoom: boolean,
-	): Promise<IRoom>;
-	list(
-		uid: string,
-		paginationOptions?: IPaginationOptions,
-		queryOptions?: IQueryOptions<ITeam>,
-	): Promise<IRecordsWithTotal<ITeam>>;
+	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
+	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
@@ -120,25 +96,16 @@ export interface ITeamService {
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
-	getOneById<P>(
-		teamId: string,
-		options?: FindOneOptions<P extends ITeam ? ITeam : P>,
-	): Promise<ITeam | P | null>;
+	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
 	getAllPublicTeams(options?: WithoutProjection<FindOneOptions<ITeam>>): Promise<Array<ITeam>>;
-	getMembersByTeamIds(
-		teamIds: Array<string>,
-		options: FindOneOptions<ITeamMember>,
-	): Promise<Array<ITeamMember>>;
+	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
-	listTeamsBySubscriberUserId(
-		uid: string,
-		options?: FindOneOptions<ITeamMember>,
-	): Promise<Array<ITeamMember> | null>;
+	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;

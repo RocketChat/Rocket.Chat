@@ -20,8 +20,7 @@ import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
-	const user =
-		Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
 	if (!rid || !user) {
 		return;
 	}
@@ -65,13 +64,7 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
-	const { users } = await callWithErrorHandling(
-		'spotlight',
-		filterText,
-		usernames,
-		{ users: true, mentions: true },
-		rid,
-	);
+	const { users } = await callWithErrorHandling('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
 
 	if (!users || users.length <= 0) {
 		return;
@@ -105,13 +98,7 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		return;
 	}
 
-	const { rooms } = await callWithErrorHandling(
-		'spotlight',
-		filterText,
-		null,
-		{ rooms: true, mentions: true },
-		rid,
-	);
+	const { rooms } = await callWithErrorHandling('spotlight', filterText, null, { rooms: true, mentions: true }, rid);
 
 	if (!rooms || rooms.length <= 0) {
 		return;
@@ -170,11 +157,7 @@ const getEmojis = (collection, filter) => {
 			return { _id, data };
 		})
 		.filter(
-			({ _id }) =>
-				regExp.test(_id) &&
-				(exactFinalTone.test(_id.substring(key.length)) ||
-					seeColor.test(key) ||
-					!colorBlind.test(_id)),
+			({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
 		)
 		.sort(emojiSort(recents))
 		.slice(0, 10);

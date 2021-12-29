@@ -73,9 +73,7 @@ async function showWebdavFileList() {
 		webdavNodes: [],
 	});
 	try {
-		const response = await call('getWebdavFileList', accountId, directory).catch((err) =>
-			console.log(err),
-		);
+		const response = await call('getWebdavFileList', accountId, directory).catch((err) => console.log(err));
 		if (!response || !response.success) {
 			instance.isLoading.set(false);
 			modal.close();
@@ -111,12 +109,7 @@ Template.webdavFilePicker.helpers({
 		} else if (this.mime.match(/application\/pdf/)) {
 			icon = 'file-pdf';
 			type = 'pdf';
-		} else if (
-			[
-				'application/vnd.oasis.opendocument.text',
-				'application/vnd.oasis.opendocument.presentation',
-			].includes(this.mime)
-		) {
+		} else if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
 			icon = 'file-document';
 			type = 'document';
 		} else if (
@@ -128,11 +121,7 @@ Template.webdavFilePicker.helpers({
 		) {
 			icon = 'file-sheets';
 			type = 'sheets';
-		} else if (
-			['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(
-				this.mime,
-			)
-		) {
+		} else if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
 			icon = 'file-sheets';
 			type = 'ppt';
 		}
@@ -285,14 +274,12 @@ Template.webdavFilePicker.events({
 		const text = `
 			<div class='upload-preview-title'>
 				<div class="rc-input__wrapper">
-					<input class="rc-input__element" id='file-name' style='display: inherit;' value='${Handlebars._escape(
-						blob.name,
-					)}' placeholder='${t('Upload_file_name')}'>
+					<input class="rc-input__element" id='file-name' style='display: inherit;' value='${Handlebars._escape(blob.name)}' placeholder='${t(
+			'Upload_file_name',
+		)}'>
 				</div>
 				<div class="rc-input__wrapper">
-					<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${t(
-						'Upload_file_description',
-					)}'>
+					<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${t('Upload_file_description')}'>
 				</div>
 			</div>`;
 		return modal.open(
@@ -401,9 +388,7 @@ Template.webdavFilePicker.onRendered(async function () {
 		}
 		const input = this.searchText.get();
 		const regex = new RegExp(`\\b${input}`, 'i');
-		const data = this.state
-			.get('unfilteredWebdavNodes')
-			.filter(({ basename }) => basename.match(regex));
+		const data = this.state.get('unfilteredWebdavNodes').filter(({ basename }) => basename.match(regex));
 		this.state.set('webdavNodes', data);
 	});
 });

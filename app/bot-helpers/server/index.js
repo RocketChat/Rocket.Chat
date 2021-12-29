@@ -29,10 +29,7 @@ class BotHelpers {
 			this.userFields[n.trim()] = 1;
 		});
 		this._allUsers = Users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Users.find(
-			{ $and: [this.queries.users, this.queries.online] },
-			{ fields: this.userFields },
-		);
+		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call

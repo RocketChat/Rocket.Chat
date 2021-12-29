@@ -18,12 +18,7 @@ export class SlackAPI {
 			},
 		});
 
-		if (
-			response &&
-			response.data &&
-			Array.isArray(response.data.channels) &&
-			response.data.channels.length > 0
-		) {
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
 			channels = channels.concat(response.data.channels);
 			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
 				const nextChannels = this.getChannels(response.data.response_metadata.next_cursor);
@@ -46,12 +41,7 @@ export class SlackAPI {
 			},
 		});
 
-		if (
-			response &&
-			response.data &&
-			Array.isArray(response.data.channels) &&
-			response.data.channels.length > 0
-		) {
+		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
 			groups = groups.concat(response.data.channels);
 			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
 				const nextGroups = this.getGroups(response.data.response_metadata.next_cursor);
@@ -70,13 +60,7 @@ export class SlackAPI {
 				include_num_members: true,
 			},
 		});
-		return (
-			response &&
-			response.data &&
-			response.statusCode === 200 &&
-			response.data.ok &&
-			response.data.channel
-		);
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.channel;
 	}
 
 	getMembers(channelId) {
@@ -93,16 +77,9 @@ export class SlackAPI {
 					cursor: currentCursor,
 				},
 			});
-			if (
-				response &&
-				response.data &&
-				response.statusCode === 200 &&
-				response.data.ok &&
-				Array.isArray(response.data.members)
-			) {
+			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
 				members = members.concat(response.data.members);
-				const hasMoreItems =
-					response.data.response_metadata && response.data.response_metadata.next_cursor;
+				const hasMoreItems = response.data.response_metadata && response.data.response_metadata.next_cursor;
 				if (hasMoreItems) {
 					currentCursor = response.data.response_metadata.next_cursor;
 				}
@@ -149,13 +126,7 @@ export class SlackAPI {
 				channel: channelId,
 			},
 		});
-		return (
-			response &&
-			response.data &&
-			response.statusCode === 200 &&
-			response.data.ok &&
-			response.data.items
-		);
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.items;
 	}
 
 	getUser(userId) {
@@ -165,12 +136,6 @@ export class SlackAPI {
 				user: userId,
 			},
 		});
-		return (
-			response &&
-			response.data &&
-			response.statusCode === 200 &&
-			response.data.ok &&
-			response.data.user
-		);
+		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.user;
 	}
 }

@@ -30,10 +30,7 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			fields: { _id: 1 },
 		}).fetch();
-		return (
-			rooms &&
-			rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') }
-		);
+		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}
 };
 
@@ -50,8 +47,7 @@ Meteor.methods({
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, {
 			fields: { _id: 1 },
 		}).fetch();
-		const roomsData = rooms &&
-			rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
+		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 
 		const { rids, name } = roomsData;
 

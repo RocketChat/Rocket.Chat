@@ -1,12 +1,6 @@
 import { expect } from 'chai';
 
-import {
-	normalizers,
-	fromTemplate,
-	renameInvalidProperties,
-	getNestedValue,
-	getRegexpMatch,
-} from './transform_helpers';
+import { normalizers, fromTemplate, renameInvalidProperties, getNestedValue, getRegexpMatch } from './transform_helpers';
 
 const data = {
 	'id': '123456',
@@ -69,8 +63,7 @@ describe('fromTemplate', () => {
 	});
 
 	it('returns composed string from multiple template chunks with static parts', () => {
-		const template =
-			'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar.(.+)/::email}}-from-template';
+		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar.(.+)/::email}}-from-template';
 		const expected = 'composed-foo-at-baz-dot-com-from-template';
 		const result = fromTemplate(template, normalizedData);
 		expect(result).to.equal(expected);

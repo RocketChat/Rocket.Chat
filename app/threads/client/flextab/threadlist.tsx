@@ -16,9 +16,7 @@ const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['vari
 	return 'primary';
 };
 
-const template = lazy(
-	() => import('../../../../client/views/room/contextualBar/Threads'),
-) as LazyExoticComponent<FC>;
+const template = lazy(() => import('../../../../client/views/room/contextualBar/Threads')) as LazyExoticComponent<FC>;
 
 addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription;

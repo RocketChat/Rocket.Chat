@@ -1,9 +1,6 @@
 type Next<T extends (...args: any[]) => any> = (...args: Parameters<T>) => ReturnType<T>;
 
-type Middleware<T extends (...args: any[]) => any> = (
-	context: Parameters<T>,
-	next: Next<T>,
-) => ReturnType<T>;
+type Middleware<T extends (...args: any[]) => any> = (context: Parameters<T>, next: Next<T>) => ReturnType<T>;
 
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>

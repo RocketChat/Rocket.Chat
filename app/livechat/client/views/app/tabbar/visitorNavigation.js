@@ -26,10 +26,7 @@ Template.visitorNavigation.helpers({
 	onTableScroll() {
 		const instance = Template.instance();
 		return function (currentTarget) {
-			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
-			) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
 		};

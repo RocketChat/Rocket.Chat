@@ -1,11 +1,5 @@
-import {
-	AbstractBusinessHourType,
-	IBusinessHourType,
-} from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import {
-	ILivechatBusinessHour,
-	LivechatBusinessHourTypes,
-} from '../../../../../definition/ILivechatBusinessHour';
+import { AbstractBusinessHourType, IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
@@ -33,16 +27,13 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			return null;
 		}
 
-		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(
-			businessHour._id,
-			{ projection: { name: 1 } },
-		).toArray();
+		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, {
+			projection: { name: 1 },
+		}).toArray();
 		return businessHour;
 	}
 
-	async saveBusinessHour(
-		businessHour: ILivechatBusinessHour & IBusinessHoursExtraProperties,
-	): Promise<ILivechatBusinessHour> {
+	async saveBusinessHour(businessHour: ILivechatBusinessHour & IBusinessHoursExtraProperties): Promise<ILivechatBusinessHour> {
 		const existingBusinessHour = (await this.BusinessHourRepository.findOne(
 			{ name: businessHour.name },
 			{ projection: { _id: 1 } },
@@ -79,9 +70,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		}
 		await this.BusinessHourRepository.removeById(businessHourId);
 		await this.removeBusinessHourFromAgents(businessHourId);
-		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(
-			businessHourId,
-		);
+		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 	}
 
@@ -99,30 +88,18 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
-	private async removeBusinessHourFromDepartmentsIfNeeded(
-		businessHourId: string,
-		departmentsToRemove: string[],
-	): Promise<void> {
+	private async removeBusinessHourFromDepartmentsIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {
 		if (!departmentsToRemove.length) {
 			return;
 		}
-		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(
-			departmentsToRemove,
-			businessHourId,
-		);
+		await this.DepartmentsRepository.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(departmentsToRemove, businessHourId);
 	}
 
-	private async addBusinessHourToDepartmentsIfNeeded(
-		businessHourId: string,
-		departmentsToAdd: string[],
-	): Promise<void> {
+	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {
 		if (!departmentsToAdd.length) {
 			return;
 		}
-		await this.DepartmentsRepository.addBusinessHourToDepartmentsByIds(
-			departmentsToAdd,
-			businessHourId,
-		);
+		await this.DepartmentsRepository.addBusinessHourToDepartmentsByIds(departmentsToAdd, businessHourId);
 	}
 }
 

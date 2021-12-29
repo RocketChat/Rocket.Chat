@@ -111,10 +111,7 @@ export class SlackUsersImporter extends Base {
 
 			this.userMap.set(user.user_id, u);
 		}
-		this.collection.update(
-			{ _id: this.users._id },
-			{ $set: { users: Array.from(this.userMap.values()) } },
-		);
+		this.collection.update({ _id: this.users._id }, { $set: { users: Array.from(this.userMap.values()) } });
 
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
@@ -127,9 +124,7 @@ export class SlackUsersImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser =
-							Users.findOneByEmailAddress(u.email) ||
-							Users.findOneByUsernameIgnoringCase(u.username);
+						const existantUser = Users.findOneByEmailAddress(u.email) || Users.findOneByUsernameIgnoringCase(u.username);
 
 						let userId;
 						if (existantUser) {

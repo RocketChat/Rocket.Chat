@@ -15,9 +15,7 @@ function getUsersWhoAreInTheSameGroupDMsAs(user) {
 
 	rooms.forEach((room) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
 
-	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user) =>
-		users.set(user._id, user),
-	);
+	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user) => users.set(user._id, user));
 
 	return users;
 }

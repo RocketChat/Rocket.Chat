@@ -16,18 +16,14 @@ settings.watch('Accounts_BlockedUsernameList', (value) => {
 });
 
 const usernameIsBlocked = (username, usernameBlackList) =>
-	usernameBlackList.length &&
-	usernameBlackList.some((restrictedUsername) =>
-		restrictedUsername.test(s.trim(escapeRegExp(username))),
-	);
+	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(escapeRegExp(username))));
 
 export const checkUsernameAvailability = function (username) {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
-		throw new Meteor.Error(
-			'error-blocked-username',
-			`${_.escape(username)} is blocked and can't be used!`,
-			{ method: 'checkUsernameAvailability', field: username },
-		);
+		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
+			method: 'checkUsernameAvailability',
+			field: username,
+		});
 	}
 
 	// Make sure no users are using this username
@@ -42,9 +38,7 @@ export const checkUsernameAvailability = function (username) {
 	}
 
 	// Make sure no teams are using this username
-	const existingTeam = Promise.await(
-		Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }),
-	);
+	const existingTeam = Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
 	if (existingTeam) {
 		return false;
 	}

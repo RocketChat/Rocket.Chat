@@ -30,11 +30,7 @@ Tracker.autorun(() => {
 	const isConnected = Meteor.status().connected;
 	if (!Meteor.userId() || !isConnected) {
 		Presence.reset();
-		return Meteor.users.update(
-			{ status: { $exists: true } },
-			{ $unset: { status: true } },
-			{ multi: true },
-		);
+		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
 	}
 
 	Presence.restart();

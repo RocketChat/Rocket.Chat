@@ -1,12 +1,7 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import {
-	LivechatRooms,
-	LivechatInquiry,
-	LivechatVisitors,
-	Users,
-} from '../../../../../app/models/server';
+import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -21,10 +16,7 @@ const normalizeDefaultAgent = (agent) => {
 };
 
 const getDefaultAgent = (username) =>
-	username &&
-	normalizeDefaultAgent(
-		Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }),
-	);
+	username && normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
 
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
@@ -64,9 +56,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	const {
 		servedBy: { username: usernameByRoom },
 	} = room;
-	const lastRoomAgent = normalizeDefaultAgent(
-		Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }),
-	);
+	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }));
 	return lastRoomAgent || defaultAgent;
 };
 
@@ -106,20 +96,12 @@ const afterTakeInquiry = (inquiry, agent) => {
 settings.watch('Livechat_last_chatted_agent_routing', function (value) {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
-		callbacks.remove(
-			'livechat.onMaxNumberSimultaneousChatsReached',
-			'livechat-on-max-number-simultaneous-chats-reached',
-		);
+		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
 		return;
 	}
 
-	callbacks.add(
-		'livechat.afterTakeInquiry',
-		afterTakeInquiry,
-		callbacks.priority.MEDIUM,
-		'livechat-save-default-agent-after-take-inquiry',
-	);
+	callbacks.add('livechat.afterTakeInquiry', afterTakeInquiry, callbacks.priority.MEDIUM, 'livechat-save-default-agent-after-take-inquiry');
 	callbacks.add(
 		'livechat.onMaxNumberSimultaneousChatsReached',
 		onMaxNumberSimultaneousChatsReached,

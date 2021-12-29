@@ -127,10 +127,7 @@ export class AppListenerBridge {
 					.getListenerManager()
 					.executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
 			case AppInterface.IPostLivechatRoomSaved:
-				return this.orch
-					.getManager()
-					.getListenerManager()
-					.executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
 			default:
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 

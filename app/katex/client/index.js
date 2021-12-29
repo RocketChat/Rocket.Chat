@@ -132,10 +132,7 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return (
-				`<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">` +
-				`${escapeHTML(message)}</div>`
-			);
+			return `<div class="katex-error katex-${displayMode ? 'block' : 'inline'}-error">${escapeHTML(message)}</div>`;
 		}
 	};
 

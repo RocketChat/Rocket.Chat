@@ -14,10 +14,7 @@ API.v1.addRoute(
 			let updatedSinceDate;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error(
-						'error-roomId-param-invalid',
-						'The "lastUpdate" query parameter must be a valid date.',
-					);
+					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 				} else {
 					updatedSinceDate = new Date(updatedSince);
 				}
@@ -91,14 +88,10 @@ API.v1.addRoute(
 		post() {
 			const { roomId, firstUnreadMessage } = this.bodyParams;
 			if (!roomId && firstUnreadMessage && !firstUnreadMessage._id) {
-				return API.v1.failure(
-					'At least one of "roomId" or "firstUnreadMessage._id" params is required',
-				);
+				return API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('unreadMessages', firstUnreadMessage, roomId),
-			);
+			Meteor.runAsUser(this.userId, () => Meteor.call('unreadMessages', firstUnreadMessage, roomId));
 
 			return API.v1.success();
 		},

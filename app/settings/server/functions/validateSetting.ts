@@ -1,10 +1,6 @@
 import { ISetting } from '../../../../definition/ISetting';
 
-export const validateSetting = <T extends ISetting>(
-	_id: T['_id'],
-	type: T['type'],
-	value: T['value'] | unknown,
-): boolean => {
+export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type'], value: T['value'] | unknown): boolean => {
 	switch (type) {
 		case 'asset':
 			if (typeof value !== 'object') {

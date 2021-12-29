@@ -3,14 +3,7 @@ import { Session } from 'meteor/session';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import {
-	getUserPreference,
-	RoomTypeConfig,
-	RoomTypeRouteConfig,
-	RoomSettingsEnum,
-	RoomMemberActions,
-	UiTextContext,
-} from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -71,10 +64,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		// this function can receive different types of data
 		// if it doesn't have fname and name properties, should be a Room object
 		// so, need to find the related subscription
-		const subscription =
-			roomData && (roomData.fname || roomData.name)
-				? roomData
-				: Subscriptions.findOne({ rid: roomData._id });
+		const subscription = roomData && (roomData.fname || roomData.name) ? roomData : Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
 			return;
@@ -179,9 +169,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		if (this.isGroupChat(room)) {
 			return {
 				title: this.roomName(room),
-				text: `${
-					(settings.get('UI_Use_Real_Name') && user.name) || user.username
-				}: ${notificationMessage}`,
+				text: `${(settings.get('UI_Use_Real_Name') && user.name) || user.username}: ${notificationMessage}`,
 			};
 		}
 
@@ -208,10 +196,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 
 		if (sub && sub.name) {
-			const user = Meteor.users.findOne(
-				{ username: sub.name },
-				{ fields: { username: 1, avatarETag: 1 } },
-			);
+			const user = Meteor.users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
 			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
 		}
 

@@ -33,8 +33,7 @@ const wrapCallback =
 		const time = Date.now();
 		const result = callback(...args);
 		const currentTime = Date.now() - time;
-		let stack =
-			callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
+		let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
 		stack = stack && stack[2] && (stack[2].match(/\(.+\)/) || [])[0];
 		console.log(String(currentTime), callback.hook, callback.id, stack);
 		return result;
@@ -63,8 +62,7 @@ const pipe =
 		g(f(e, ...constants), ...constants);
 const createCallback = (hook, callbacks) => callbacks.map(handleResult).reduce(pipe, identity);
 
-const createCallbackTimed = (hook, callbacks) =>
-	wrapRun(hook, callbacks.map(wrapCallback).map(handleResult).reduce(pipe, identity));
+const createCallbackTimed = (hook, callbacks) => wrapRun(hook, callbacks.map(wrapCallback).map(handleResult).reduce(pipe, identity));
 
 const create = (hook, cbs) => (timed ? createCallbackTimed(hook, cbs) : createCallback(hook, cbs));
 const combinedCallbacks = new Map();
@@ -99,10 +97,7 @@ callbacks.add = function (hook, callback, priority = callbacks.priority.MEDIUM, 
 	callback.stack = new Error().stack;
 
 	callbacks[hook].push(callback);
-	callbacks[hook] = _.sortBy(
-		callbacks[hook],
-		(callback) => callback.priority || callbacks.priority.MEDIUM,
-	);
+	callbacks[hook] = _.sortBy(callbacks[hook], (callback) => callback.priority || callbacks.priority.MEDIUM);
 	combinedCallbacks.set(hook, create(hook, callbacks[hook]));
 };
 

@@ -5,14 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { MongoInternals } from 'meteor/mongo';
 
-import {
-	Settings,
-	Users,
-	Rooms,
-	Subscriptions,
-	Messages,
-	LivechatVisitors,
-} from '../../../models/server';
+import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -32,15 +25,7 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 
-const wizardFields = [
-	'Organization_Type',
-	'Industry',
-	'Size',
-	'Country',
-	'Language',
-	'Server_Type',
-	'Register_Server',
-];
+const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = (totalUsers) => {
 	const result = Promise.await(UsersRaw.getUserLanguages());
@@ -100,8 +85,7 @@ export const statistics = {
 		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
-		statistics.offlineUsers =
-			statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
 		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
@@ -126,14 +110,12 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(
-			({ _id: { id, alias, type }, count }) => ({
-				id,
-				alias,
-				type,
-				count,
-			}),
-		);
+		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
+			id,
+			alias,
+			type,
+			count,
+		}));
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
@@ -263,19 +245,13 @@ export const statistics = {
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
-			totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming')
+			totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
+			totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming')
 				.length,
-			totalIncomingActive: integrations.filter(
-				(integration) => integration.enabled === true && integration.type === 'webhook-incoming',
-			).length,
-			totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing')
+			totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
+			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing')
 				.length,
-			totalOutgoingActive: integrations.filter(
-				(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
-			).length,
-			totalWithScriptEnabled: integrations.filter(
-				(integration) => integration.scriptEnabled === true,
-			).length,
+			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());

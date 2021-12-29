@@ -43,9 +43,7 @@ const fillSettings = _.debounce(
 				}
 
 				if (settings.get('Accounts_OAuth_Wordpress_identity_token_sent_via')) {
-					config.identityTokenSentVia = settings.get(
-						'Accounts_OAuth_Wordpress_identity_token_sent_via',
-					);
+					config.identityTokenSentVia = settings.get('Accounts_OAuth_Wordpress_identity_token_sent_via');
 				}
 
 				if (settings.get('Accounts_OAuth_Wordpress_token_path')) {
@@ -98,9 +96,7 @@ const fillSettings = _.debounce(
 
 if (Meteor.isServer) {
 	Meteor.startup(function () {
-		return settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () =>
-			fillSettings(),
-		);
+		return settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
 	});
 } else {
 	Meteor.startup(function () {

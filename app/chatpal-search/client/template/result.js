@@ -81,10 +81,7 @@ Template.ChatpalSearchResultTemplate.helpers({
 		}
 	},
 	resultMessagesOnly() {
-		return (
-			Template.instance().resultType.get() === 'Messages' ||
-			Template.instance().resultType.get() === 'Room'
-		);
+		return Template.instance().resultType.get() === 'Messages' || Template.instance().resultType.get() === 'Room';
 	},
 	resultPaging() {
 		const result = Template.instance().data.result.get();

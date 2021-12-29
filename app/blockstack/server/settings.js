@@ -45,12 +45,7 @@ const getSettings = () =>
 
 // Add settings to auth provider configs on startup
 settings.watchMultiple(
-	[
-		'Blockstack_Enable',
-		'Blockstack_Auth_Description',
-		'Blockstack_ButtonLabelText',
-		'Blockstack_Generate_Username',
-	],
+	['Blockstack_Enable', 'Blockstack_Auth_Description', 'Blockstack_ButtonLabelText', 'Blockstack_Generate_Username'],
 	() => {
 		const serviceConfig = getSettings();
 

@@ -21,12 +21,7 @@ Template.body.onRendered(function () {
 
 	$(document.body).on('keydown', function (e) {
 		const unread = Session.get('unread');
-		if (
-			e.keyCode === 27 &&
-			(e.shiftKey === true || e.ctrlKey === true) &&
-			unread != null &&
-			unread !== ''
-		) {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && unread != null && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -94,8 +89,7 @@ Template.body.onRendered(function () {
 			return;
 		}
 
-		const inputMessage =
-			chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
 		if (!inputMessage) {
 			return;
 		}
@@ -104,10 +98,7 @@ Template.body.onRendered(function () {
 
 	const handleMessageLinkClick = (event) => {
 		const link = event.currentTarget;
-		if (
-			link.origin === s.rtrim(Meteor.absoluteUrl(), '/') &&
-			/msg=([a-zA-Z0-9]+)/.test(link.search)
-		) {
+		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
 			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
 		}
 	};

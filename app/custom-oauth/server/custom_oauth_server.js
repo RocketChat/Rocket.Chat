@@ -132,9 +132,7 @@ export class CustomOAuth {
 		try {
 			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
-			const error = new Error(
-				`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`,
-			);
+			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 
@@ -147,9 +145,7 @@ export class CustomOAuth {
 
 		if (data.error) {
 			// if the http response was a json object with an error attribute
-			throw new Error(
-				`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${data.error}`,
-			);
+			throw new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${data.error}`);
 		} else {
 			return data;
 		}
@@ -186,9 +182,7 @@ export class CustomOAuth {
 
 			return this.normalizeIdentity(data);
 		} catch (err) {
-			const error = new Error(
-				`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`,
-			);
+			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 	}
@@ -269,11 +263,7 @@ export class CustomOAuth {
 			const value = fromTemplate(this.usernameField, data);
 
 			if (!value) {
-				throw new Meteor.Error(
-					'field_not_found',
-					`Username field "${this.usernameField}" not found in data`,
-					data,
-				);
+				throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`, data);
 			}
 			return value;
 		} catch (error) {
@@ -286,11 +276,7 @@ export class CustomOAuth {
 			const value = fromTemplate(this.emailField, data);
 
 			if (!value) {
-				throw new Meteor.Error(
-					'field_not_found',
-					`Email field "${this.emailField}" not found in data`,
-					data,
-				);
+				throw new Meteor.Error('field_not_found', `Email field "${this.emailField}" not found in data`, data);
 			}
 			return value;
 		} catch (error) {
@@ -347,17 +333,9 @@ export class CustomOAuth {
 				let user = undefined;
 
 				if (this.keyField === 'username') {
-					user = Users.findOneByUsernameAndServiceNameIgnoringCase(
-						serviceData.username,
-						serviceData._id,
-						serviceName,
-					);
+					user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				} else if (this.keyField === 'email') {
-					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(
-						serviceData.email,
-						serviceData._id,
-						serviceName,
-					);
+					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
 				}
 
 				if (!user) {
@@ -377,10 +355,7 @@ export class CustomOAuth {
 				}
 
 				if (this.mergeUsers !== true) {
-					throw new Meteor.Error(
-						'CustomOAuth',
-						`User with username ${user.username} already exists`,
-					);
+					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
 				}
 
 				const serviceIdKey = `services.${serviceName}.id`;
@@ -458,9 +433,7 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-Accounts.updateOrCreateUserFromExternalService = function (
-	...args /* serviceName, serviceData, options*/
-) {
+Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		hook.apply(this, args);
 	}

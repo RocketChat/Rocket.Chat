@@ -55,11 +55,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	protected addObject(
-		type: IImportRecordType,
-		data: IImportData,
-		options: Record<string, any> = {},
-	): void {
+	protected addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
 		}

@@ -15,9 +15,7 @@ addAction('autotranslate', () => {
 						id: 'autotranslate',
 						title: 'Auto_Translate',
 						icon: 'language',
-						template: lazy(
-							() => import('../../../../client/views/room/contextualBar/AutoTranslate'),
-						),
+						template: lazy(() => import('../../../../client/views/room/contextualBar/AutoTranslate')),
 						order: 20,
 						full: true,
 				  }

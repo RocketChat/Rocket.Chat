@@ -206,10 +206,7 @@ export const RocketChatAssets = new (class {
 					function: 'Invalid file width',
 				});
 			}
-			if (
-				assets[asset].constraints.height &&
-				assets[asset].constraints.height !== dimensions.height
-			) {
+			if (assets[asset].constraints.height && assets[asset].constraints.height !== dimensions.height) {
 				throw new Meteor.Error('error-invalid-file-height');
 			}
 		}
@@ -471,10 +468,7 @@ WebApp.connectHandlers.use(
 	'/assets/',
 	Meteor.bindEnvironment(function (req, res, next) {
 		const params = {
-			asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(
-				/\.[^.]*$/,
-				'',
-			),
+			asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
 		};
 
 		const file = assets[params.asset] && assets[params.asset].cache;
@@ -492,10 +486,7 @@ WebApp.connectHandlers.use(
 		if (!file) {
 			const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
 			if (defaultUrl) {
-				const assetUrl =
-					format && ['png', 'svg'].includes(format)
-						? defaultUrl.replace(/(svg|png)$/, format)
-						: defaultUrl;
+				const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
 				req.url = `/${assetUrl}`;
 				WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
 			} else {
@@ -525,10 +516,7 @@ WebApp.connectHandlers.use(
 			return;
 		}
 
-		res.setHeader(
-			'Last-Modified',
-			(file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString(),
-		);
+		res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
 		res.setHeader('Content-Type', file.contentType);
 		res.setHeader('Content-Length', file.size);
 		res.writeHead(200);

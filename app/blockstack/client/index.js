@@ -4,8 +4,7 @@ import { check, Match } from 'meteor/check';
 import { Session } from 'meteor/session';
 import './routes';
 
-const handleError = (error) =>
-	error && Session.set('errorMessage', error.reason || 'Unknown error');
+const handleError = (error) => error && Session.set('errorMessage', error.reason || 'Unknown error');
 
 // TODO: allow serviceConfig.loginStyle == popup
 Meteor.loginWithBlockstack = (options, callback = handleError) => {
@@ -14,9 +13,7 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 			service: 'blockstack',
 		});
 
-		options.blockstackIDHost = Meteor.Device.isDesktop()
-			? 'http://localhost:8888/auth'
-			: 'https://blockstack.org/auth';
+		options.blockstackIDHost = Meteor.Device.isDesktop() ? 'http://localhost:8888/auth' : 'https://blockstack.org/auth';
 
 		options.scopes = ['store_write'];
 	}
@@ -49,9 +46,7 @@ Meteor.logout = (...args) => {
 
 	if (serviceConfig && blockstackAuth) {
 		Session.delete('blockstack_auth');
-		import('blockstack/dist/blockstack').then(({ signUserOut }) =>
-			signUserOut(window.location.href),
-		);
+		import('blockstack/dist/blockstack').then(({ signUserOut }) => signUserOut(window.location.href));
 	}
 
 	return meteorLogout(...args);

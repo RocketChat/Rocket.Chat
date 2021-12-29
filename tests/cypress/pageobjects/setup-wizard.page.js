@@ -3,9 +3,7 @@ import { adminEmail, adminPassword } from '../../data/user';
 
 class SetupWizard extends Page {
 	get nextStep() {
-		return browser.element(
-			'[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]',
-		);
+		return browser.element('[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]');
 	}
 
 	get goToWorkspace() {

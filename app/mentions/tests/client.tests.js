@@ -139,13 +139,7 @@ describe('Mention', function () {
 
 		describe('for one channel', () => {
 			const result = ['#general'];
-			[
-				'#general',
-				' #general ',
-				'hello #general',
-				'#general, hello',
-				'hello #general, how are you?',
-			].forEach((text) => {
+			['#general', ' #general ', 'hello #general', '#general, hello', 'hello #general, how are you?'].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
 					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
 				});
@@ -216,25 +210,19 @@ describe('replace methods', function () {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			expect(result).to.be.equal(
-				'<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>',
-			);
+			expect(result).to.be.equal('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
 
 		it(`should render for "@${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`@${str2}`, message, 'me');
-			expect(result).to.be.equal(
-				`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`,
-			);
+			expect(result).to.be.equal(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
 		});
 
 		it(`should render for "hello ${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`hello @${str2}`, message, 'me');
-			expect(result).to.be.equal(
-				`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`,
-			);
+			expect(result).to.be.equal(`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
 		});
 
 		it('should render for unknow/private user "hello @unknow"', () => {
@@ -244,9 +232,7 @@ describe('replace methods', function () {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			expect(result).to.be.equal(
-				'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>',
-			);
+			expect(result).to.be.equal('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
 		});
 	});
 
@@ -257,9 +243,7 @@ describe('replace methods', function () {
 
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			expect(result).to.be.equal(
-				'<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>',
-			);
+			expect(result).to.be.equal('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -267,9 +251,7 @@ describe('replace methods', function () {
 
 		it(`should render for "@${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`@${str2}`, message, 'me');
-			expect(result).to.be.equal(
-				`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`,
-			);
+			expect(result).to.be.equal(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`);
 		});
 
 		it(`should render for "hello @${str2}"`, () => {
@@ -303,35 +285,26 @@ describe('replace methods', function () {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			expect(result).to.be.equal(
-				'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>',
-			);
+			expect(result).to.be.equal('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
 		});
 	});
 
 	describe('replaceChannels', () => {
 		it('should render for #general', () => {
 			const result = mentionsParser.replaceChannels('#general', message);
-			expect(
-				'<).to.be.equal(class="mention-link mention-link--room" data-channel="42">#general</a>',
-				result,
-			);
+			expect('<).to.be.equal(class="mention-link mention-link--room" data-channel="42">#general</a>', result);
 		});
 
 		const str2 = '#rocket.cat';
 
 		it(`should render for ${str2}`, () => {
 			const result = mentionsParser.replaceChannels(str2, message);
-			expect(result).to.be.equal(
-				`<a class="mention-link mention-link--room" data-channel="169">${str2}</a>`,
-			);
+			expect(result).to.be.equal(`<a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
 		});
 
 		it(`should render for "hello ${str2}"`, () => {
 			const result = mentionsParser.replaceChannels(`hello ${str2}`, message);
-			expect(result).to.be.equal(
-				`hello <a class="mention-link mention-link--room" data-channel="169">${str2}</a>`,
-			);
+			expect(result).to.be.equal(`hello <a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
 		});
 
 		it('should render for unknow/private channel "hello #unknow"', () => {
@@ -344,9 +317,7 @@ describe('replace methods', function () {
 		it('should render for #general', () => {
 			message.html = '#general';
 			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal(
-				'<a class="mention-link mention-link--room" data-channel="42">#general</a>',
-			);
+			expect(result.html).to.be.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
 		it('should render for "#general and @rocket.cat', () => {
@@ -378,9 +349,7 @@ describe('replace methods', function () {
 		it('should render for #general', () => {
 			message.html = '#general';
 			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal(
-				'<a class="mention-link mention-link--room" data-channel="42">#general</a>',
-			);
+			expect(result.html).to.be.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
 		it('should render for "#general and @rocket.cat', () => {

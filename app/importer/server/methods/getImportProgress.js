@@ -26,11 +26,9 @@ Meteor.methods({
 		const { importerKey } = operation;
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error(
-				'error-importer-not-defined',
-				`The importer (${importerKey}) has no import class defined.`,
-				{ method: 'getImportProgress' },
-			);
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, {
+				method: 'getImportProgress',
+			});
 		}
 
 		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap

@@ -48,10 +48,7 @@ export class Config {
 		);
 
 		// Check options
-		if (
-			options.defaultStorePermissions &&
-			!(options.defaultStorePermissions instanceof StorePermissions)
-		) {
+		if (options.defaultStorePermissions && !(options.defaultStorePermissions instanceof StorePermissions)) {
 			throw new TypeError('Config: defaultStorePermissions is not an instance of StorePermissions');
 		}
 		if (typeof options.https !== 'boolean') {

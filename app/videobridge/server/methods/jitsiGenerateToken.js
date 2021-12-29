@@ -26,8 +26,7 @@ Meteor.methods({
 		} else {
 			rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
 		}
-		const jitsiRoom =
-			settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
+		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
 		const jitsiApplicationSecret = settings.get('Jitsi_Application_Secret');

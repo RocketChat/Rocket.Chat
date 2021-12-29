@@ -31,11 +31,7 @@ export const ChannelSettings = new (class {
 			_.map(allOptions, function (option) {
 				const ret = { ...option };
 				if (option.validation == null || option.validation(currentData)) {
-					ret.data = Object.assign(
-						{},
-						typeof option.data === 'function' ? option.data() : option.data,
-						currentData,
-					);
+					ret.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
 					return ret;
 				}
 			}),

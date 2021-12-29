@@ -18,9 +18,7 @@ Object.assign(Subscriptions, {
 
 			const subscription = this.findOne(query, { fields: { roles: 1 } });
 
-			return (
-				subscription && Array.isArray(subscription.roles) && subscription.roles.includes(roleName)
-			);
+			return subscription && Array.isArray(subscription.roles) && subscription.roles.includes(roleName);
 		},
 		{ maxAge: 1000, cacheKey: JSON.stringify },
 	),

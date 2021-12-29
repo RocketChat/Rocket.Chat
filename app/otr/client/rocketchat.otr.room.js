@@ -171,9 +171,7 @@ OTR.Room = class {
 
 	encryptText(data) {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(
-				EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }),
-			);
+			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(12));
 

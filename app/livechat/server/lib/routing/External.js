@@ -25,21 +25,15 @@ class ExternalQueue {
 				let queryString = department ? `?departmentId=${department}` : '';
 				if (ignoreAgentId) {
 					const ignoreAgentIdParam = `ignoreAgentId=${ignoreAgentId}`;
-					queryString = queryString.startsWith('?')
-						? `${queryString}&${ignoreAgentIdParam}`
-						: `?${ignoreAgentIdParam}`;
+					queryString = queryString.startsWith('?') ? `${queryString}&${ignoreAgentIdParam}` : `?${ignoreAgentIdParam}`;
 				}
-				const result = HTTP.call(
-					'GET',
-					`${settings.get('Livechat_External_Queue_URL')}${queryString}`,
-					{
-						headers: {
-							'User-Agent': 'RocketChat Server',
-							'Accept': 'application/json',
-							'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
-						},
+				const result = HTTP.call('GET', `${settings.get('Livechat_External_Queue_URL')}${queryString}`, {
+					headers: {
+						'User-Agent': 'RocketChat Server',
+						'Accept': 'application/json',
+						'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 					},
-				);
+				});
 
 				if (result && result.data && result.data.username) {
 					const agent = Users.findOneOnlineAgentByUserList(result.data.username);

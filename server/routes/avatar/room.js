@@ -1,11 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	renderSVGLetters,
-	serveAvatar,
-	wasFallbackModified,
-	setCacheAndDispositionHeaders,
-} from './utils';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload';
 import { Rooms } from '../../../app/models/server';
 import { Avatars } from '../../../app/models/server/raw';

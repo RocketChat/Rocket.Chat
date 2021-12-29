@@ -39,9 +39,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
-					expect(res.body.error).to.be.equal(
-						'The command provided does not exist (or is disabled).',
-					);
+					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
 				})
 				.end(done);
 		});
@@ -69,9 +67,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					const message = res.body.messages.find(
-						(message) => message.msg === "Slashcommand 'test-simple' successfully executed",
-					);
+					const message = res.body.messages.find((message) => message.msg === "Slashcommand 'test-simple' successfully executed");
 					expect(message).to.not.be.equal(undefined);
 				})
 				.end(done);

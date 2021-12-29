@@ -1,13 +1,7 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../../models/server/raw';
 
-export async function findQueueMetrics({
-	userId,
-	agentId,
-	includeOfflineAgents,
-	departmentId,
-	pagination: { offset, count, sort },
-}) {
+export async function findQueueMetrics({ userId, agentId, includeOfflineAgents, departmentId, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -22,9 +16,7 @@ export async function findQueueMetrics({
 			count,
 		},
 	});
-	const total = (
-		await LivechatRooms.getQueueMetrics({ departmentId, agentId, includeOfflineAgents })
-	).length;
+	const total = (await LivechatRooms.getQueueMetrics({ departmentId, agentId, includeOfflineAgents })).length;
 
 	return {
 		queue,

@@ -9,10 +9,7 @@ async function getAffectedUsers(model: Collection, query: object): Promise<strin
 }
 
 // TODO: Change this to use find and modify
-export async function removeLostConnections(
-	nodeID?: string,
-	context?: IServiceContext,
-): Promise<string[]> {
+export async function removeLostConnections(nodeID?: string, context?: IServiceContext): Promise<string[]> {
 	const UserSession = await getCollection(Collections.UserSession);
 
 	if (nodeID) {

@@ -36,9 +36,7 @@ export class TranslationProviderRegistry {
 	 * Return the active Translation provider
 	 */
 	static getActiveProvider() {
-		return TranslationProviderRegistry.enabled
-			? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]]
-			: undefined;
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]] : undefined;
 	}
 
 	static getSupportedLanguages(...args) {
@@ -48,9 +46,7 @@ export class TranslationProviderRegistry {
 	}
 
 	static translateMessage(...args) {
-		return TranslationProviderRegistry.enabled
-			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args)
-			: undefined;
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args) : undefined;
 	}
 
 	static getProviders() {
@@ -84,12 +80,7 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		callbacks.add(
-			'afterSaveMessage',
-			provider.translateMessage.bind(provider),
-			callbacks.priority.MEDIUM,
-			'autotranslate',
-		);
+		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
 	}
 }
 
@@ -267,10 +258,7 @@ export class AutoTranslate {
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
-			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(
-				room._id,
-				message.u && message.u._id,
-			);
+			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
 		}
 		if (message.msg) {
 			Meteor.defer(() => {
@@ -280,11 +268,7 @@ export class AutoTranslate {
 
 				const translations = this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
-					Messages.addTranslations(
-						message._id,
-						translations,
-						TranslationProviderRegistry[Provider],
-					);
+					Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 				}
 			});
 		}
@@ -295,10 +279,7 @@ export class AutoTranslate {
 					if (message.attachments.hasOwnProperty(index)) {
 						const attachment = message.attachments[index];
 						if (attachment.description || attachment.text) {
-							const translations = this._translateAttachmentDescriptions(
-								attachment,
-								targetLanguages,
-							);
+							const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
 							if (!_.isEmpty(translations)) {
 								Messages.addAttachmentTranslations(message._id, index, translations);
 							}
@@ -355,12 +336,7 @@ export class AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		Logger.warn(
-			'must be implemented by subclass!',
-			'_translateAttachmentDescriptions',
-			attachment,
-			targetLanguages,
-		);
+		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 

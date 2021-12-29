@@ -46,10 +46,7 @@ Template.messageBoxNotSubscribed.events({
 
 		await call('joinRoom', this.rid, joinCode);
 
-		if (
-			hasAllPermission('preview-c-room') === false &&
-			RoomHistoryManager.getRoom(this.rid).loaded === 0
-		) {
+		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
 			RoomManager.getOpenedRoomByRid(this.rid).streamActive = false;
 			RoomManager.getOpenedRoomByRid(this.rid).ready = false;
 			RoomHistoryManager.getRoom(this.rid).loaded = null;

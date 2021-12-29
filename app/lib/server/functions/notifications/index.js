@@ -14,9 +14,7 @@ export function parseMessageTextPerUser(messageText, message, receiver) {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
 	if (!message.msg && message.attachments && message.attachments[0]) {
-		return message.attachments[0].image_type
-			? TAPi18n.__('User_uploaded_image', { lng })
-			: TAPi18n.__('User_uploaded_file', { lng });
+		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}
 
 	if (message.msg && message.t === 'e2e') {
@@ -41,10 +39,7 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
 	}
 	mentions.forEach((mention) => {
 		if (mention.name) {
-			message = message.replace(
-				new RegExp(escapeRegExp(`@${mention.username}`), 'g'),
-				mention.name,
-			);
+			message = message.replace(new RegExp(escapeRegExp(`@${mention.username}`), 'g'), mention.name);
 		}
 	});
 	return message;

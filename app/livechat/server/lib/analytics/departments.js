@@ -23,12 +23,7 @@ export const findAllRoomsAsync = async ({ start, end, answered, departmentId, op
 	};
 };
 
-export const findAllAverageOfChatDurationTimeAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findAllAverageOfChatDurationTimeAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -49,12 +44,7 @@ export const findAllAverageOfChatDurationTimeAsync = async ({
 	};
 };
 
-export const findAllAverageServiceTimeAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -96,12 +86,7 @@ export const findAllServiceTimeAsync = async ({ start, end, departmentId, option
 	};
 };
 
-export const findAllAverageWaitingTimeAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -122,12 +107,7 @@ export const findAllAverageWaitingTimeAsync = async ({
 	};
 };
 
-export const findAllNumberOfTransferredRoomsAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -148,32 +128,18 @@ export const findAllNumberOfTransferredRoomsAsync = async ({
 	};
 };
 
-export const findAllNumberOfAbandonedRoomsAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findAllNumberOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const total = await (
-		await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount: true })
-	).toArray();
+	const total = await (await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount: true })).toArray();
 	return {
-		departments: await (
-			await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, options })
-		).toArray(),
+		departments: await (await LivechatRooms.findAllNumberOfAbandonedRooms({ start, end, departmentId, options })).toArray(),
 		total: total.length ? total[0].total : 0,
 	};
 };
 
-export const findPercentageOfAbandonedRoomsAsync = async ({
-	start,
-	end,
-	departmentId,
-	options = {},
-}) => {
+export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -186,9 +152,7 @@ export const findPercentageOfAbandonedRoomsAsync = async ({
 		})
 	).toArray();
 	return {
-		departments: await (
-			await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId, options })
-		).toArray(),
+		departments: await (await LivechatRooms.findPercentageOfAbandonedRooms({ start, end, departmentId, options })).toArray(),
 		total: total.length ? total[0].total : 0,
 	};
 };

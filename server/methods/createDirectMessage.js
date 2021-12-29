@@ -25,11 +25,7 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	if (
-		settings.get('Message_AllowDirectMessagesToYourself') === false &&
-		usernames.length === 1 &&
-		me.username === usernames[0]
-	) {
+	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});

@@ -5,10 +5,7 @@ import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { Users } from '../../../models/server';
 import { RocketChatAssets } from '../../../assets/server';
-import {
-	replaceMentionedUsernamesWithFullNames,
-	parseMessageTextPerUser,
-} from '../../../lib/server/functions/notifications';
+import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
 import { callbacks } from '../../../callbacks/server';
 import { getPushData } from '../../../lib/server/functions/notifications/mobile';
 
@@ -18,18 +15,7 @@ export class PushNotification {
 		return this.hash(`${serverId}|${roomId}`); // hash
 	}
 
-	getNotificationConfig({
-		rid,
-		uid: userId,
-		mid: messageId,
-		roomName,
-		username,
-		message,
-		payload,
-		badge = 1,
-		category,
-		idOnly = false,
-	}) {
+	getNotificationConfig({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category, idOnly = false }) {
 		const title = idOnly ? '' : roomName || username;
 
 		// message is being redacted already by 'getPushData' if idOnly is true

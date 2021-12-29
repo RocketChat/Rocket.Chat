@@ -94,9 +94,7 @@ export const MessageAction = new (class {
 	});
 
 	_getButtonsByGroup = mem(function (group) {
-		return this._getButtons().filter((button) =>
-			Array.isArray(button.group) ? button.group.includes(group) : button.group === group,
-		);
+		return this._getButtons().filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	});
 
 	getButtons(message, context, group) {
@@ -266,9 +264,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg } = messageArgs(this);
-			getChatMessagesFrom(msg).edit(
-				document.getElementById(msg.tmid ? `thread-${msg._id}` : msg._id),
-			);
+			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${msg._id}` : msg._id));
 		},
 		condition({ msg: message, subscription, settings }) {
 			if (subscription == null) {

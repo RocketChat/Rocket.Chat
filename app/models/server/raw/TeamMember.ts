@@ -26,19 +26,13 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByUserId(userId: string): Cursor<ITeamMember>;
 
-	findByUserId(
-		userId: string,
-		options: WithoutProjection<FindOneOptions<ITeamMember>>,
-	): Cursor<ITeamMember>;
+	findByUserId(userId: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
 	findByUserId<P>(userId: string, options: FindOneOptions<P>): Cursor<P>;
 
 	findByUserId<P>(
 		userId: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeamMember>>
-			| FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ userId }, options) : this.col.find({ userId }, options);
 	}
@@ -51,93 +45,57 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		options: WithoutProjection<FindOneOptions<ITeamMember>>,
 	): Promise<ITeamMember | null>;
 
-	findOneByUserIdAndTeamId<P>(
-		userId: string,
-		teamId: string,
-		options: FindOneOptions<P>,
-	): Promise<P | null>;
+	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOneOptions<P>): Promise<P | null>;
 
 	findOneByUserIdAndTeamId<P>(
 		userId: string,
 		teamId: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeamMember>>
-			| FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P | null | ITeamMember> {
-		return options
-			? this.col.findOne({ userId, teamId }, options)
-			: this.col.findOne({ userId, teamId }, options);
+		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
 
 	findByTeamId(teamId: string): Cursor<ITeamMember>;
 
-	findByTeamId(
-		teamId: string,
-		options: WithoutProjection<FindOneOptions<ITeamMember>>,
-	): Cursor<ITeamMember>;
+	findByTeamId(teamId: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
 	findByTeamId<P>(teamId: string, options: FindOneOptions<P>): Cursor<P>;
 
 	findByTeamId<P>(
 		teamId: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeamMember>>
-			| FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Cursor<P> | Cursor<ITeamMember> {
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
 
 	findByTeamIds(teamIds: Array<string>): Cursor<ITeamMember>;
 
-	findByTeamIds(
-		teamIds: Array<string>,
-		options: WithoutProjection<FindOneOptions<ITeamMember>>,
-	): Cursor<ITeamMember>;
+	findByTeamIds(teamIds: Array<string>, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
 	findByTeamIds<P>(teamIds: Array<string>, options: FindOneOptions<P>): Cursor<P>;
 
 	findByTeamIds<P>(
 		teamIds: Array<string>,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeamMember>>
-			| FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Cursor<P> | Cursor<ITeamMember> {
-		return options
-			? this.col.find({ teamId: { $in: teamIds } }, options)
-			: this.col.find({ teamId: { $in: teamIds } }, options);
+		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
 	findByTeamIdAndRole(teamId: string, role: string): Cursor<ITeamMember>;
 
-	findByTeamIdAndRole(
-		teamId: string,
-		role: string,
-		options: WithoutProjection<FindOneOptions<ITeamMember>>,
-	): Cursor<ITeamMember>;
+	findByTeamIdAndRole(teamId: string, role: string, options: WithoutProjection<FindOneOptions<ITeamMember>>): Cursor<ITeamMember>;
 
 	findByTeamIdAndRole<P>(teamId: string, role: string, options: FindOneOptions<P>): Cursor<P>;
 
 	findByTeamIdAndRole<P>(
 		teamId: string,
 		role: string,
-		options?:
-			| undefined
-			| WithoutProjection<FindOneOptions<ITeamMember>>
-			| FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Cursor<P> | Cursor<ITeamMember> {
-		return options
-			? this.col.find({ teamId, roles: role }, options)
-			: this.col.find({ teamId, roles: role });
+		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
 	}
 
-	findByUserIdAndTeamIds(
-		userId: string,
-		teamIds: Array<string>,
-		options: FindOneOptions<T> = {},
-	): Cursor<T> {
+	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
 			userId,
 			teamId: {
@@ -148,12 +106,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.find(query, options);
 	}
 
-	findMembersInfoByTeamId(
-		teamId: string,
-		limit: number,
-		skip: number,
-		query?: FilterQuery<T>,
-	): Cursor<T> {
+	findMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: FilterQuery<T>): Cursor<T> {
 		return this.col.find({ ...query, teamId }, {
 			limit,
 			skip,
@@ -166,11 +119,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		} as FindOneOptions<T>);
 	}
 
-	updateOneByUserIdAndTeamId(
-		userId: string,
-		teamId: string,
-		update: Partial<T>,
-	): Promise<UpdateWriteOpResult> {
+	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<T>): Promise<UpdateWriteOpResult> {
 		return this.updateOne({ userId, teamId }, { $set: update });
 	}
 
@@ -187,11 +136,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		});
 	}
 
-	updateRolesByTeamIdAndUserId(
-		teamId: string,
-		userId: string,
-		roles: Array<string>,
-	): Promise<UpdateWriteOpResult> {
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
 		return this.updateOne(
 			{
 				teamId,
@@ -205,11 +150,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		);
 	}
 
-	removeRolesByTeamIdAndUserId(
-		teamId: string,
-		userId: string,
-		roles: Array<string>,
-	): Promise<UpdateWriteOpResult> {
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
 		return this.updateOne(
 			{
 				teamId,

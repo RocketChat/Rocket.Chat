@@ -70,24 +70,12 @@ Template.messagePopup.onCreated(function () {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(
-			template.data.matchSelectorRegex,
-			new RegExp(`(?:^| |\n)${template.trigger}[^\\s]*$`),
-		);
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${template.trigger}[^\\s]*$`));
 	} else {
-		template.matchSelectorRegex = val(
-			template.data.matchSelectorRegex,
-			new RegExp(`(?:^)${template.trigger}[^\\s]*$`),
-		);
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${template.trigger}[^\\s]*$`));
 	}
-	template.selectorRegex = val(
-		template.data.selectorRegex,
-		new RegExp(`${template.trigger}([^\\s]*)$`),
-	);
-	template.replaceRegex = val(
-		template.data.replaceRegex,
-		new RegExp(`${template.trigger}[^\\s]*$`),
-	);
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${template.trigger}([^\\s]*)$`));
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${template.trigger}[^\\s]*$`));
 	template.getValue = val(template.data.getValue, function (_id) {
 		return _id;
 	});
@@ -95,9 +83,7 @@ Template.messagePopup.onCreated(function () {
 		const current = template.find('.popup-item.selected');
 		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
 		if (previous != null) {
-			current.className = current.className
-				.replace(/\sselected/, '')
-				.replace('sidebar-item__popup-active', '');
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			previous.className += ' selected sidebar-item__popup-active';
 			previous.scrollIntoView(false);
 			return template.value.set(previous.getAttribute('data-id'));
@@ -107,9 +93,7 @@ Template.messagePopup.onCreated(function () {
 		const current = template.find('.popup-item.selected');
 		const next = $(current).next('.popup-item')[0] || template.find('.popup-item');
 		if (next && next.classList.contains('popup-item')) {
-			current.className = current.className
-				.replace(/\sselected/, '')
-				.replace('sidebar-item__popup-active', '');
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			next.className += ' selected sidebar-item__popup-active';
 			next.scrollIntoView(false);
 			return template.value.set(next.getAttribute('data-id'));
@@ -165,11 +149,7 @@ Template.messagePopup.onCreated(function () {
 	}, template.textFilterDelay);
 
 	template.onInputKeyup = (event) => {
-		if (
-			template.closeOnEsc === true &&
-			template.open.curValue === true &&
-			event.which === keys.ESC
-		) {
+		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
 			event.preventDefault();
 			event.stopPropagation();
@@ -226,19 +206,11 @@ Template.messagePopup.onCreated(function () {
 		const caret = getCursorPosition(template.input);
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
-		const getValue = this.getValue(
-			template.value.curValue,
-			template.data.collection,
-			template.records.get(),
-			firstPartValue,
-		);
+		const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue);
 		if (!getValue) {
 			return;
 		}
-		firstPartValue = firstPartValue.replace(
-			template.selectorRegex,
-			template.prefix + getValue + template.suffix,
-		);
+		firstPartValue = firstPartValue.replace(template.selectorRegex, template.prefix + getValue + template.suffix);
 		template.input.value = firstPartValue + lastPartValue;
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
@@ -307,9 +279,7 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		const current = template.find('.popup-item.selected');
 		if (current != null) {
-			current.className = current.className
-				.replace(/\sselected/, '')
-				.replace('sidebar-item__popup-active', '');
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 		}
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);

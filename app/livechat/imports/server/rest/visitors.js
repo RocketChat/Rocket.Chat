@@ -19,9 +19,7 @@ API.v1.addRoute(
 				visitorId: String,
 			});
 
-			const visitor = Promise.await(
-				findVisitorInfo({ userId: this.userId, visitorId: this.queryParams.visitorId }),
-			);
+			const visitor = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: this.queryParams.visitorId }));
 
 			return API.v1.success(visitor);
 		},

@@ -15,11 +15,7 @@ async function afterDeleteMessage(message) {
 	clientLogger.debug({ msg: 'afterDeleteMessage', message, room });
 
 	// Create the delete message event
-	const event = await FederationRoomEvents.createDeleteMessageEvent(
-		getFederationDomain(),
-		room._id,
-		message._id,
-	);
+	const event = await FederationRoomEvents.createDeleteMessageEvent(getFederationDomain(), room._id, message._id);
 
 	// Dispatch event (async)
 	dispatchEvent(room.federation.domains, event);

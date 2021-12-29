@@ -12,11 +12,7 @@ import { canAccessRoom } from '../../authorization/server/functions/canAccessRoo
 
 const recursiveRemove = (message, deep = 1) => {
 	if (message) {
-		if (
-			'attachments' in message &&
-			message.attachments !== null &&
-			deep < settings.get('Message_QuoteChainLimit')
-		) {
+		if ('attachments' in message && message.attachments !== null && deep < settings.get('Message_QuoteChainLimit')) {
 			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
 		} else {
 			delete message.attachments;

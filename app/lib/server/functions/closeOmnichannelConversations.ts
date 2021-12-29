@@ -10,10 +10,7 @@ type SubscribedRooms = {
 	t: string;
 };
 
-export const closeOmnichannelConversations = (
-	user: IUser,
-	subscribedRooms: SubscribedRooms[],
-): void => {
+export const closeOmnichannelConversations = (user: IUser, subscribedRooms: SubscribedRooms[]): void => {
 	const roomsInfo = LivechatRooms.findByIds(subscribedRooms.map(({ rid }) => rid));
 	const language = settings.get<string>('Language') || 'en';
 	const comment = TAPi18n.__('Agent_deactivated', { lng: language });

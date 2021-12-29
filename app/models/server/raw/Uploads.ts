@@ -25,18 +25,9 @@ const fillTypeGroup = (fileData: Partial<T>): void => {
 };
 
 export class UploadsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { rid: 1 } },
-		{ key: { uploadedAt: 1 } },
-		{ key: { typeGroup: 1 } },
-	];
+	protected indexes: IndexSpecification[] = [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
 
-	findNotHiddenFilesOfRoom(
-		roomId: string,
-		searchText: string,
-		fileType: string,
-		limit: number,
-	): Cursor<T> {
+	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<T> {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -70,10 +61,7 @@ export class UploadsRaw extends BaseRaw<T> {
 		return this.find(fileQuery, fileOptions);
 	}
 
-	insert(
-		fileData: InsertionModel<T>,
-		options?: CollectionInsertOneOptions,
-	): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insert(fileData: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		fillTypeGroup(fileData);
 		return super.insertOne(fileData, options);
 	}
@@ -92,12 +80,7 @@ export class UploadsRaw extends BaseRaw<T> {
 		return super.update(filter, update, options);
 	}
 
-	async insertFileInit(
-		userId: string,
-		store: string,
-		file: { name: string },
-		extra: object,
-	): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		const fileData = {
 			userId,
 			store,
@@ -114,11 +97,7 @@ export class UploadsRaw extends BaseRaw<T> {
 		return this.insert(fileData);
 	}
 
-	async updateFileComplete(
-		fileId: string,
-		userId: string,
-		file: object,
-	): Promise<UpdateWriteOpResult | undefined> {
+	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateWriteOpResult | undefined> {
 		if (!fileId) {
 			return;
 		}

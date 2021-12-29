@@ -1,13 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import {
-	Subscriptions,
-	Messages,
-	Rooms,
-	Users,
-	LivechatVisitors,
-} from '../../../../app/models/server';
+import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
 import { ReadReceipts } from '../../../../app/models/server/raw';
 import { settings } from '../../../../app/settings/server';
 import { roomTypes } from '../../../../app/utils/server';
@@ -54,11 +48,7 @@ export const ReadReceipt = {
 		}
 
 		if (userLastSeen) {
-			this.storeReadReceipts(
-				Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen),
-				roomId,
-				userId,
-			);
+			this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 		}
 
 		updateMessages(room);

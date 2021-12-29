@@ -47,11 +47,7 @@ Meteor.methods({
 			},
 		};
 		const room = departmentId
-			? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(
-					visitorToken,
-					departmentId,
-					options,
-			  ).fetch()
+			? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch()
 			: LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
@@ -83,8 +79,7 @@ Meteor.methods({
 		info.offlineUnavailableMessage = initSettings.Livechat_offline_form_unavailable;
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
-		info.videoCall =
-			initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true;
+		info.videoCall = initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true;
 		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
@@ -95,8 +90,7 @@ Meteor.methods({
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
 
-		info.agentData =
-			room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
+		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
 		await LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));

@@ -206,9 +206,7 @@ export class Users extends Base {
 	getNextAgent(ignoreAgentId, extraQuery) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map(
-			(u) => u.username,
-		);
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
@@ -917,13 +915,9 @@ export class Users extends Base {
 			return this._db.find(query, options);
 		}
 
-		const termRegex = new RegExp(
-			(startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''),
-			'i',
-		);
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const searchFields =
-			forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
+		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(
 			searchFields,
@@ -955,33 +949,12 @@ export class Users extends Base {
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
 			},
 		];
-		return this.findByActiveUsersExcept(
-			searchTerm,
-			exceptions,
-			options,
-			forcedSearchFields,
-			extraQuery,
-		);
+		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findByActiveExternalUsersExcept(
-		searchTerm,
-		exceptions,
-		options,
-		forcedSearchFields,
-		localDomain,
-	) {
-		const extraQuery = [
-			{ federation: { $exists: true } },
-			{ 'federation.origin': { $ne: localDomain } },
-		];
-		return this.findByActiveUsersExcept(
-			searchTerm,
-			exceptions,
-			options,
-			forcedSearchFields,
-			extraQuery,
-		);
+	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
+		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
+		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {
@@ -1367,11 +1340,7 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	resetPasswordAndSetRequirePasswordChange(
-		_id,
-		requirePasswordChange,
-		requirePasswordChangeReason,
-	) {
+	resetPasswordAndSetRequirePasswordChange(_id, requirePasswordChange, requirePasswordChangeReason) {
 		const update = {
 			$unset: {
 				'services.password': 1,

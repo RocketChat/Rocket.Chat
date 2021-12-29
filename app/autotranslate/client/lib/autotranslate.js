@@ -34,10 +34,7 @@ export const AutoTranslate = {
 		if (rid) {
 			subscription = this.findSubscriptionByRid(rid);
 		}
-		const language =
-			(subscription && subscription.autoTranslateLanguage) ||
-			userLanguage ||
-			window.defaultUserLanguage();
+		const language = (subscription && subscription.autoTranslateLanguage) || userLanguage || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
@@ -53,11 +50,7 @@ export const AutoTranslate = {
 					attachment.text = attachment.translations[language];
 				}
 
-				if (
-					attachment.description &&
-					attachment.translations &&
-					attachment.translations[language]
-				) {
+				if (attachment.description && attachment.translations && attachment.translations[language]) {
 					attachment.description = attachment.translations[language];
 				}
 
@@ -90,10 +83,7 @@ export const AutoTranslate = {
 
 		Subscriptions.find().observeChanges({
 			changed: (id, fields) => {
-				if (
-					fields.hasOwnProperty('autoTranslate') ||
-					fields.hasOwnProperty('autoTranslateLanguage')
-				) {
+				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
 					mem.clear(this.findSubscriptionByRid);
 				}
 			},
@@ -120,17 +110,11 @@ export const createAutoTranslateMessageRenderer = () => {
 				}
 
 				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(
-						message.attachments,
-						autoTranslateLanguage,
-					);
+					message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
 				}
 			}
 		} else if (message.attachments && message.attachments.length > 0) {
-			message.attachments = AutoTranslate.translateAttachments(
-				message.attachments,
-				autoTranslateLanguage,
-			);
+			message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
 		}
 		return message;
 	};
@@ -151,15 +135,8 @@ export const createAutoTranslateMessageStreamHandler = () => {
 			) {
 				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-			} else if (
-				AutoTranslate.messageIdsToWait[message._id] !== undefined &&
-				subscription &&
-				subscription.autoTranslate !== true
-			) {
-				Messages.update(
-					{ _id: message._id },
-					{ $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } },
-				);
+			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
+				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
 				delete AutoTranslate.messageIdsToWait[message._id];
 			} else if (message.autoTranslateFetching === true) {
 				Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });

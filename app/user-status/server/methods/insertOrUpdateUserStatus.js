@@ -23,43 +23,34 @@ Meteor.methods({
 		const nameValidation = /[><&"']/;
 
 		if (nameValidation.test(userStatusData.name)) {
-			throw new Meteor.Error(
-				'error-input-is-not-a-valid-field',
-				`${userStatusData.name} is not a valid name`,
-				{ method: 'insertOrUpdateUserStatus', input: userStatusData.name, field: 'Name' },
-			);
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.name} is not a valid name`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.name,
+				field: 'Name',
+			});
 		}
 
 		let matchingResults = [];
 
 		if (userStatusData._id) {
-			matchingResults = await CustomUserStatus.findByNameExceptId(
-				userStatusData.name,
-				userStatusData._id,
-			).toArray();
+			matchingResults = await CustomUserStatus.findByNameExceptId(userStatusData.name, userStatusData._id).toArray();
 		} else {
 			matchingResults = await CustomUserStatus.findByName(userStatusData.name).toArray();
 		}
 
 		if (matchingResults.length > 0) {
-			throw new Meteor.Error(
-				'Custom_User_Status_Error_Name_Already_In_Use',
-				'The custom user status name is already in use',
-				{ method: 'insertOrUpdateUserStatus' },
-			);
+			throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', {
+				method: 'insertOrUpdateUserStatus',
+			});
 		}
 
 		const validStatusTypes = ['online', 'away', 'busy', 'offline'];
 		if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
-			throw new Meteor.Error(
-				'error-input-is-not-a-valid-field',
-				`${userStatusData.statusType} is not a valid status type`,
-				{
-					method: 'insertOrUpdateUserStatus',
-					input: userStatusData.statusType,
-					field: 'StatusType',
-				},
-			);
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.statusType} is not a valid status type`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.statusType,
+				field: 'StatusType',
+			});
 		}
 
 		if (!userStatusData._id) {

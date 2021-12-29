@@ -37,10 +37,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					updatedSince: Match.Where(
-						(value: unknown): value is string =>
-							typeof value === 'string' && !Number.isNaN(Date.parse(value)),
-					),
+					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
 				}),
 			);
 
@@ -72,10 +69,7 @@ API.v1.addRoute(
 			}
 
 			if (await Roles.findOneByIdOrName(name)) {
-				throw new Meteor.Error(
-					'error-duplicate-role-names-not-allowed',
-					'Role name already exists',
-				);
+				throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 			}
 
 			const roleId = (
@@ -114,10 +108,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isRoleAddUserToRoleProps(this.bodyParams)) {
-				throw new Meteor.Error(
-					'error-invalid-role-properties',
-					isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'),
-				);
+				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 			}
 
 			const user = this.getUserFromParams();
@@ -202,21 +193,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 			}
 
-			if (
-				role.protected &&
-				((roleData.name && roleData.name !== role.name) ||
-					(roleData.scope && roleData.scope !== role.scope))
-			) {
+			if (role.protected && ((roleData.name && roleData.name !== role.name) || (roleData.scope && roleData.scope !== role.scope))) {
 				throw new Meteor.Error('error-role-protected', 'Role is protected');
 			}
 
 			if (roleData.name) {
 				const otherRole = await Roles.findOneByIdOrName(roleData.name);
 				if (otherRole && otherRole._id !== role._id) {
-					throw new Meteor.Error(
-						'error-duplicate-role-names-not-allowed',
-						'Role name already exists',
-					);
+					throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 				}
 			}
 
@@ -224,13 +208,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-scope', 'Invalid scope');
 			}
 
-			await Roles.updateById(
-				roleData.roleId,
-				roleData.name,
-				roleData.scope,
-				roleData.description,
-				roleData.mandatory2fa,
-			);
+			await Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
 
 			if (settings.get('UI_DisplayRoles')) {
 				api.broadcast('user.roleUpdate', {

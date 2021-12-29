@@ -15,8 +15,7 @@ const cacheMaxAge = 3600000; // one hour
 const memoizedDnsResolveSRV = mem(dnsResolveSRV, { maxAge: cacheMaxAge });
 const memoizedDnsResolveTXT = mem(dnsResolveTXT, { maxAge: cacheMaxAge });
 
-const hubUrl =
-	process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
+const hubUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
 
 export async function registerWithHub(peerDomain, url, publicKey) {
 	const body = { domain: peerDomain, url, public_key: publicKey };
@@ -142,9 +141,7 @@ export function search(peerDomain) {
 
 	// If there is no entry, throw error
 	if (!publicKey) {
-		dnsLogger.debug(
-			`search: could not find TXT entry for peerDomain=${peerDomain} - SRV entry found`,
-		);
+		dnsLogger.debug(`search: could not find TXT entry for peerDomain=${peerDomain} - SRV entry found`);
 		return searchHub(peerDomain);
 	}
 

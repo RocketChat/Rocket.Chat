@@ -6,14 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
-import {
-	findGuest,
-	findRoom,
-	getRoom,
-	settings,
-	findAgent,
-	onCheckRoomParams,
-} from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
@@ -135,16 +128,9 @@ API.v1.addRoute('livechat/room.transfer', {
 			Messages.keepHistoryForToken(token);
 
 			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData(
-				{ _id, username, name, userType: 'visitor' },
-				room,
-			);
+			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (
-				!Promise.await(
-					Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }),
-				)
-			) {
+			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -189,10 +175,7 @@ API.v1.addRoute('livechat/room.survey', {
 
 			const updateData = {};
 			for (const item of data) {
-				if (
-					(config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) ||
-					item.name === 'additionalFeedback'
-				) {
+				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
 					updateData[item.name] = item.value;
 				}
 			}
@@ -217,9 +200,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			API.v1.success(
-				Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)),
-			);
+			API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
 		},
 	},
 );
@@ -238,9 +219,7 @@ API.v1.addRoute(
 
 				const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
-				const { visitor } = Promise.await(
-					findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }),
-				);
+				const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
 				if (!visitor) {
 					throw new Meteor.Error('invalid-visitor');
 				}

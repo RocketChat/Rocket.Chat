@@ -41,25 +41,13 @@ export class Filter {
 				maxSize: 0,
 				invalidFileError: () => new Meteor.Error('invalid-file', 'File is not valid'),
 				fileTooSmallError: (fileSize, minFileSize) =>
-					new Meteor.Error(
-						'file-too-small',
-						`File size (size = ${fileSize}) is too small (min = ${minFileSize})`,
-					),
+					new Meteor.Error('file-too-small', `File size (size = ${fileSize}) is too small (min = ${minFileSize})`),
 				fileTooLargeError: (fileSize, maxFileSize) =>
-					new Meteor.Error(
-						'file-too-large',
-						`File size (size = ${fileSize}) is too large (max = ${maxFileSize})`,
-					),
+					new Meteor.Error('file-too-large', `File size (size = ${fileSize}) is too large (max = ${maxFileSize})`),
 				invalidFileExtension: (fileExtension, allowedExtensions) =>
-					new Meteor.Error(
-						'invalid-file-extension',
-						`File extension "${fileExtension}" is not accepted (${allowedExtensions})`,
-					),
+					new Meteor.Error('invalid-file-extension', `File extension "${fileExtension}" is not accepted (${allowedExtensions})`),
 				invalidFileType: (fileType, allowedContentTypes) =>
-					new Meteor.Error(
-						'invalid-file-type',
-						`File type "${fileType}" is not accepted (${allowedContentTypes})`,
-					),
+					new Meteor.Error('invalid-file-type', `File type "${fileType}" is not accepted (${allowedContentTypes})`),
 				onCheck: this.onCheck,
 			},
 			options,

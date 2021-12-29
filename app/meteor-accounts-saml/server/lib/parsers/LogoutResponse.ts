@@ -19,10 +19,7 @@ export class LogoutResponseParser {
 			return callback('No Doc Found');
 		}
 
-		const response = doc.getElementsByTagNameNS(
-			'urn:oasis:names:tc:SAML:2.0:protocol',
-			'LogoutResponse',
-		)[0];
+		const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
 		if (!response) {
 			return callback('No Response Found', null);
 		}
@@ -34,13 +31,8 @@ export class LogoutResponseParser {
 			SAMLUtils.log(`In Response to: ${inResponseTo}`);
 		} catch (e) {
 			SAMLUtils.log(`Caught error: ${e}`);
-			const msg = doc.getElementsByTagNameNS(
-				'urn:oasis:names:tc:SAML:2.0:protocol',
-				'StatusMessage',
-			);
-			SAMLUtils.log(
-				`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`,
-			);
+			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 		}
 
 		if (!inResponseTo) {

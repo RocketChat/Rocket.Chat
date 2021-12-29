@@ -5,12 +5,7 @@ import type { WriteOpResult } from 'mongodb';
 import { Rooms, Messages } from '../../../models/server';
 import type { IUser } from '../../../../definition/IUser';
 
-export const saveRoomEncrypted = function (
-	rid: string,
-	encrypted: boolean,
-	user: IUser,
-	sendMessage = true,
-): Promise<WriteOpResult> {
+export const saveRoomEncrypted = function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<WriteOpResult> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomEncrypted',

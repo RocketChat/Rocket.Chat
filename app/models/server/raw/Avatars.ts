@@ -9,13 +9,7 @@ export class AvatarsRaw extends BaseRaw<T> {
 		{ key: { rid: 1 }, sparse: true },
 	];
 
-	insertAvatarFileInit(
-		name: string,
-		userId: string,
-		store: string,
-		file: { name: string },
-		extra: object,
-	): Promise<UpdateWriteOpResult> {
+	insertAvatarFileInit(name: string, userId: string, store: string, file: { name: string }, extra: object): Promise<UpdateWriteOpResult> {
 		const fileData = {
 			name,
 			userId,
@@ -32,11 +26,7 @@ export class AvatarsRaw extends BaseRaw<T> {
 		return this.updateOne({ _id: name }, fileData, { upsert: true });
 	}
 
-	updateFileComplete(
-		fileId: string,
-		userId: string,
-		file: object,
-	): Promise<UpdateWriteOpResult> | undefined {
+	updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateWriteOpResult> | undefined {
 		if (!fileId) {
 			return;
 		}

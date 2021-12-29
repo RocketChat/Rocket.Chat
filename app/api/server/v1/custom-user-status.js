@@ -65,9 +65,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "customUserStatusId" params is required!');
 			}
 
-			Meteor.runAsUser(this.userId, () =>
-				Meteor.call('deleteCustomUserStatus', customUserStatusId),
-			);
+			Meteor.runAsUser(this.userId, () => Meteor.call('deleteCustomUserStatus', customUserStatusId));
 
 			return API.v1.success();
 		},
@@ -95,9 +93,7 @@ API.v1.addRoute(
 
 			// Ensure the message exists
 			if (!customUserStatus) {
-				return API.v1.failure(
-					`No custom user status found with the id of "${userStatusData._id}".`,
-				);
+				return API.v1.failure(`No custom user status found with the id of "${userStatusData._id}".`);
 			}
 
 			Meteor.runAsUser(this.userId, () => {

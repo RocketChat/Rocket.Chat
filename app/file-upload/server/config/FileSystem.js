@@ -27,10 +27,7 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			file = FileUpload.addExtensionTo(file);
-			res.setHeader(
-				'Content-Disposition',
-				`attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
-			);
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 
@@ -108,10 +105,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader(
-					'Content-Disposition',
-					`attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
-				);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
@@ -130,21 +124,9 @@ settings.watch('FileUpload_FileSystemPath', function () {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
 
-	FileSystemUploads.store = FileUpload.configureUploadsStore(
-		'Local',
-		FileSystemUploads.name,
-		options,
-	);
-	FileSystemAvatars.store = FileUpload.configureUploadsStore(
-		'Local',
-		FileSystemAvatars.name,
-		options,
-	);
-	FileSystemUserDataFiles.store = FileUpload.configureUploadsStore(
-		'Local',
-		FileSystemUserDataFiles.name,
-		options,
-	);
+	FileSystemUploads.store = FileUpload.configureUploadsStore('Local', FileSystemUploads.name, options);
+	FileSystemAvatars.store = FileUpload.configureUploadsStore('Local', FileSystemAvatars.name, options);
+	FileSystemUserDataFiles.store = FileUpload.configureUploadsStore('Local', FileSystemUserDataFiles.name, options);
 
 	// DEPRECATED backwards compatibililty (remove)
 	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];

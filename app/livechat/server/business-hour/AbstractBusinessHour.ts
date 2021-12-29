@@ -1,10 +1,7 @@
 import moment from 'moment';
 
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
-import {
-	IWorkHoursCronJobsWrapper,
-	LivechatBusinessHoursRaw,
-} from '../../../models/server/raw/LivechatBusinessHours';
+import { IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
@@ -66,10 +63,7 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData = this.convertWorkHours(businessHourData);
 		if (businessHourData._id) {
-			await this.BusinessHourRepository.updateOne(
-				{ _id: businessHourData._id },
-				{ $set: businessHourData },
-			);
+			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, { $set: businessHourData });
 			return businessHourData._id;
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
@@ -78,12 +72,8 @@ export abstract class AbstractBusinessHourType {
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
 		businessHourData.workHours.forEach((hour: any) => {
-			const startUtc = moment
-				.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name)
-				.utc();
-			const finishUtc = moment
-				.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name)
-				.utc();
+			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			hour.start = {
 				time: hour.start,
 				utc: {

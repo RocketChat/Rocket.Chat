@@ -59,9 +59,7 @@ Template.liveStreamTab.helpers({
 		return !!settings.get('Broadcasting_enabled');
 	},
 	streamingSource() {
-		return Template.instance().streamingOptions.get()
-			? Template.instance().streamingOptions.get().url
-			: '';
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},
 	streamingUnavailableMessage() {
 		return Template.instance().streamingOptions.get() &&
@@ -71,9 +69,7 @@ Template.liveStreamTab.helpers({
 			: t('Livestream_not_found');
 	},
 	thumbnailUrl() {
-		return Template.instance().streamingOptions.get()
-			? Template.instance().streamingOptions.get().thumbnail
-			: '';
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().thumbnail : '';
 	},
 	hasThumbnail() {
 		return (
@@ -97,8 +93,7 @@ Template.liveStreamTab.helpers({
 			Template.instance().editing.get() ||
 			Template.instance().streamingOptions.get() == null ||
 			(Template.instance().streamingOptions.get() != null &&
-				(Template.instance().streamingOptions.get().url == null ||
-					Template.instance().streamingOptions.get().url === ''))
+				(Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''))
 		);
 	},
 	canDock() {
@@ -106,8 +101,7 @@ Template.liveStreamTab.helpers({
 		let popoutSource = null;
 		try {
 			if (popout.context) {
-				popoutSource =
-					Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+				popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
 			}
 			if (popoutSource != null && livestreamTabSource === popoutSource) {
 				return true;
@@ -121,9 +115,7 @@ Template.liveStreamTab.helpers({
 		return Template.instance().popoutOpen.get();
 	},
 	isAudioOnly() {
-		return Template.instance().streamingOptions.get()
-			? Template.instance().streamingOptions.get().isAudioOnly
-			: false;
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().isAudioOnly : false;
 	},
 });
 
@@ -217,8 +209,7 @@ Template.liveStreamTab.events({
 		e.stopPropagation();
 		let popoutSource = '';
 		if (popout.context) {
-			popoutSource =
-				Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
 		}
 		popout.close();
 		if (popoutSource !== Template.instance().streamingOptions.get().url) {
@@ -287,10 +278,7 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		e.currentTarget.classList.add('loading');
 		try {
-			const user = Users.findOne(
-				{ _id: Meteor.userId() },
-				{ fields: { 'settings.livestream': 1 } },
-			);
+			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.livestream': 1 } });
 			if (!user.settings || !user.settings.livestream) {
 				await auth();
 			}

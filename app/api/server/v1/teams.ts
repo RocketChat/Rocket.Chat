@@ -99,9 +99,7 @@ API.v1.addRoute(
 	},
 );
 
-const getTeamByIdOrName = async (
-	params: { teamId: string } | { teamName: string },
-): Promise<ITeam | null> => {
+const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string }): Promise<ITeam | null> => {
 	if ('teamId' in params && params.teamId) {
 		return Team.getOneById<ITeam>(params.teamId);
 	}
@@ -119,10 +117,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsConvertToChannelProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-body-params',
-					isTeamsConvertToChannelProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-body-params', isTeamsConvertToChannelProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const { roomsToRemove = [] } = this.bodyParams;
@@ -145,11 +140,7 @@ API.v1.addRoute(
 				});
 			}
 
-			await Promise.all([
-				Team.unsetTeamIdOfRooms(team._id),
-				Team.removeAllMembersFromTeam(team._id),
-				Team.deleteById(team._id),
-			]);
+			await Promise.all([Team.unsetTeamIdOfRooms(team._id), Team.removeAllMembersFromTeam(team._id), Team.deleteById(team._id)]);
 
 			return API.v1.success();
 		},
@@ -204,10 +195,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsRemoveRoomProps(this.bodyParams)) {
-				return API.v1.failure(
-					'body-params-invalid',
-					isTeamsRemoveRoomProps.errors?.map((error) => error.message).join('\n '),
-				);
+				return API.v1.failure('body-params-invalid', isTeamsRemoveRoomProps.errors?.map((error) => error.message).join('\n '));
 			}
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -360,23 +348,14 @@ API.v1.addRoute(
 
 			const { userId, canUserDelete } = this.queryParams;
 
-			if (
-				!(
-					this.userId === userId ||
-					hasPermission(this.userId, 'view-all-team-channels', team.roomId)
-				)
-			) {
+			if (!(this.userId === userId || hasPermission(this.userId, 'view-all-team-channels', team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
-			const { records, total } = await Team.listRoomsOfUser(
-				this.userId,
-				team._id,
-				userId,
-				allowPrivateTeam,
-				canUserDelete ?? false,
-				{ offset, count },
-			);
+			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete ?? false, {
+				offset,
+				count,
+			});
 
 			return API.v1.success({
 				rooms: records,
@@ -431,13 +410,7 @@ API.v1.addRoute(
 				status: status ? { $in: status } : undefined,
 			} as FilterQuery<IUser>;
 
-			const { records, total } = await Team.members(
-				this.userId,
-				team._id,
-				canSeeAllMembers,
-				{ offset, count },
-				query,
-			);
+			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 
 			return API.v1.success({
 				members: records,
@@ -466,9 +439,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (
-				!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)
-			) {
+			if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)) {
 				return API.v1.unauthorized();
 			}
 
@@ -485,10 +456,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsUpdateMemberProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-params',
-					isTeamsUpdateMemberProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-params', isTeamsUpdateMemberProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const { bodyParams } = this;
@@ -516,10 +484,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsRemoveMemberProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-params',
-					isTeamsRemoveMemberProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-params', isTeamsRemoveMemberProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const { bodyParams } = this;
@@ -563,10 +528,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsLeaveProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-params',
-					isTeamsLeaveProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-params', isTeamsLeaveProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const { rooms = [] } = this.bodyParams;
@@ -630,10 +592,7 @@ API.v1.addRoute(
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			if (!isTeamsDeleteProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-params',
-					isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-params', isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -698,10 +657,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!isTeamsUpdateProps(this.bodyParams)) {
-				return API.v1.failure(
-					'invalid-params',
-					isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '),
-				);
+				return API.v1.failure('invalid-params', isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '));
 			}
 
 			const { data } = this.bodyParams;

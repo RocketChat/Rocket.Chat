@@ -78,10 +78,7 @@ export class NPSService extends ServiceClass implements INPSService {
 		// if there is nothing to sent, check if something gone wrong
 		if (votesToSend.length === 0) {
 			// check if still has votes left to send
-			const totalSent = await this.NpsVote.findByNpsIdAndStatus(
-				nps._id,
-				INpsVoteStatus.SENT,
-			).count();
+			const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
 			if (totalSent === total) {
 				await this.Nps.updateStatusById(nps._id, NPSStatus.SENT);
 				return;

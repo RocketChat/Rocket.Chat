@@ -9,10 +9,7 @@ const builder = new Builder({
 	headless: true,
 });
 
-const parse = (str) =>
-	new Promise((resolve, reject) =>
-		parseString(str, (err, json) => (err ? reject(err) : resolve(json))),
-	);
+const parse = (str) => new Promise((resolve, reject) => parseString(str, (err, json) => (err ? reject(err) : resolve(json))));
 
 const sort = function (a, b) {
 	if (a.toLocaleLowerCase() < b.toLocaleLowerCase()) {
@@ -35,8 +32,7 @@ const toSymbol = (id, viewBox, { id: _, ...args }) => ({
 	},
 });
 
-const xml =
-	'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">';
+const xml = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">';
 const start = async () => {
 	const stream = fs.createWriteStream('icons.svg', { flags: 'w' });
 	stream.write(`${xml}\n`);

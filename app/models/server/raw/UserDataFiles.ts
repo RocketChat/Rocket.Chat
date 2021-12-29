@@ -6,10 +6,7 @@ import { IUserDataFile as T } from '../../../../definition/IUserDataFile';
 export class UserDataFilesRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [{ key: { userId: 1 } }];
 
-	findLastFileByUser(
-		userId: string,
-		options: WithoutProjection<FindOneOptions<T>> = {},
-	): Promise<T | null> {
+	findLastFileByUser(userId: string, options: WithoutProjection<FindOneOptions<T>> = {}): Promise<T | null> {
 		const query = {
 			userId,
 		};

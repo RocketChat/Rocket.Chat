@@ -18,8 +18,6 @@ Meteor.startup(() => {
 
 	Accounts.onLogin(
 		async ({ user }: { user: any }) =>
-			user?.roles?.includes('livechat-agent') &&
-			!user?.roles?.includes('bot') &&
-			businessHourManager.onLogin(user._id),
+			user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id),
 	);
 });

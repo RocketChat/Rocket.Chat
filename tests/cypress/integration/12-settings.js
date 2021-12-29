@@ -6,15 +6,7 @@ import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
 import admin from '../pageobjects/administration.page';
 import { checkIfUserIsValid } from '../../data/checks';
-import {
-	adminUsername,
-	adminEmail,
-	adminPassword,
-	username,
-	email,
-	password,
-	reason,
-} from '../../data/user.js';
+import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
 import { wait } from '../../data/api-data';
 
 const request = supertest('http://localhost:3000');
@@ -456,11 +448,7 @@ describe('[Api Settings Change]', () => {
 
 			loginPage.submit();
 
-			loginPage.registrationSucceededCard.should(
-				'have.attr',
-				'data-i18n',
-				'Registration_Succeeded',
-			);
+			loginPage.registrationSucceededCard.should('have.attr', 'data-i18n', 'Registration_Succeeded');
 			loginPage.backToLoginButton.click();
 		});
 

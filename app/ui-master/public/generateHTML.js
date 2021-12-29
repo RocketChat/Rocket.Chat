@@ -10,8 +10,7 @@ const sort = function (a, b) {
 	return 0;
 };
 
-const iconHTML = (name) =>
-	`<div class="icon" title="${name}"><svg><use href="#icon-${name}"/></svg></div>`;
+const iconHTML = (name) => `<div class="icon" title="${name}"><svg><use href="#icon-${name}"/></svg></div>`;
 
 const header = `<html><body><style>
 	* {

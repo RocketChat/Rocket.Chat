@@ -7,17 +7,7 @@ import { HTTP } from 'meteor/http';
 
 import { registerAccessTokenService } from './oauth';
 
-const whitelisted = [
-	'id',
-	'email',
-	'name',
-	'first_name',
-	'last_name',
-	'link',
-	'gender',
-	'locale',
-	'age_range',
-];
+const whitelisted = ['id', 'email', 'name', 'first_name', 'last_name', 'link', 'gender', 'locale', 'age_range'];
 
 const FB_API_VERSION = 'v2.9';
 const FB_URL = 'https://graph.facebook.com';

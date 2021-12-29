@@ -14,15 +14,10 @@ export const filtered = (
 	message = message.replace(/```/g, '');
 
 	// Remove inline code backticks
-	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) =>
-		match.substr(1, match.length - 2),
-	);
+	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => match.substr(1, match.length - 2));
 
 	// Filter [text](url), ![alt_text](image_url)
-	message = message.replace(
-		new RegExp(`!?\\[([^\\]]+)\\]\\((?:${schemes}):\\/\\/[^\\)]+\\)`, 'gm'),
-		(match, title) => title,
-	);
+	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${schemes}):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => title);
 
 	// Filter <http://link|Text>
 	message = message.replace(

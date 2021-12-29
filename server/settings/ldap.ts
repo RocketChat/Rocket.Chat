@@ -53,10 +53,7 @@ settingsRegistry.addGroup('LDAP', function () {
 				enableQuery,
 			});
 
-			const enableTLSQuery = [
-				enableQuery,
-				{ _id: 'LDAP_Encryption', value: { $in: ['tls', 'ssl'] } },
-			];
+			const enableTLSQuery = [enableQuery, { _id: 'LDAP_Encryption', value: { $in: ['tls', 'ssl'] } }];
 
 			this.add('LDAP_CA_Cert', '', {
 				type: 'string',
@@ -144,14 +141,10 @@ settingsRegistry.addGroup('LDAP', function () {
 	});
 
 	this.with({ tab: 'LDAP_DataSync' }, function () {
-		this.add(
-			'LDAP_Unique_Identifier_Field',
-			'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber,uid',
-			{
-				type: 'string',
-				enableQuery,
-			},
-		);
+		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber,uid', {
+			type: 'string',
+			enableQuery,
+		});
 
 		this.add('LDAP_Merge_Existing_Users', false, {
 			type: 'boolean',

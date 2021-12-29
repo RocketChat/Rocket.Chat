@@ -185,12 +185,7 @@ class Bridge {
 	 */
 	setupLocalHandlers() {
 		// Auth
-		callbacks.add(
-			'afterValidateLogin',
-			this.onMessageReceived.bind(this, 'local', 'onLogin'),
-			callbacks.priority.LOW,
-			'irc-on-login',
-		);
+		callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), callbacks.priority.LOW, 'irc-on-login');
 		callbacks.add(
 			'afterCreateUser',
 			this.onMessageReceived.bind(this, 'local', 'onCreateUser'),
@@ -210,19 +205,9 @@ class Bridge {
 			callbacks.priority.LOW,
 			'irc-on-create-room',
 		);
-		callbacks.add(
-			'afterJoinRoom',
-			this.onMessageReceived.bind(this, 'local', 'onJoinRoom'),
-			callbacks.priority.LOW,
-			'irc-on-join-room',
-		);
+		callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), callbacks.priority.LOW, 'irc-on-join-room');
 		// Leaving rooms or channels
-		callbacks.add(
-			'afterLeaveRoom',
-			this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'),
-			callbacks.priority.LOW,
-			'irc-on-leave-room',
-		);
+		callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
@@ -231,12 +216,7 @@ class Bridge {
 			'irc-on-save-message',
 		);
 		// Leaving
-		callbacks.add(
-			'afterLogoutCleanUp',
-			this.onMessageReceived.bind(this, 'local', 'onLogout'),
-			callbacks.priority.LOW,
-			'irc-on-logout',
-		);
+		callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}
 
 	removeLocalHandlers() {

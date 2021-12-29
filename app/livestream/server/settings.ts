@@ -7,15 +7,13 @@ Meteor.startup(function () {
 		this.add('Livestream_enabled', false, {
 			type: 'boolean',
 			public: true,
-			alert:
-				'This feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert: 'This feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 		});
 
 		this.add('Broadcasting_enabled', false, {
 			type: 'boolean',
 			public: true,
-			alert:
-				'This feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert: 'This feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: { _id: 'Livestream_enabled', value: true },
 		});
 

@@ -11,10 +11,7 @@ import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
-	message.reactions[reaction].usernames.splice(
-		message.reactions[reaction].usernames.indexOf(username),
-		1,
-	);
+	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -30,11 +27,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	if (
-		room.ro === true &&
-		!room.reactWhenReadOnly &&
-		!hasPermission(user._id, 'post-readonly', room._id)
-	) {
+	if (room.ro === true && !room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id)) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username)) {
 			throw new Error("You can't send messages because the room is readonly.");
@@ -42,13 +35,9 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
-		throw new Meteor.Error(
-			'error-not-allowed',
-			TAPi18n.__('You_have_been_muted', {}, user.language),
-			{
-				rid: room._id,
-			},
-		);
+		throw new Meteor.Error('error-not-allowed', TAPi18n.__('You_have_been_muted', {}, user.language), {
+			rid: room._id,
+		});
 	}
 
 	const userAlreadyReacted =

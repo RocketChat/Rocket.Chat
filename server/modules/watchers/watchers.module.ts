@@ -65,10 +65,7 @@ interface IChange<T> {
 
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
-type BroadcastCallback = <T extends keyof EventSignatures>(
-	event: T,
-	...args: Parameters<EventSignatures[T]>
-) => Promise<void>;
+type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
 const hasKeys =
 	(requiredKeys: string[]): ((data?: Record<string, any>) => boolean) =>
@@ -86,11 +83,7 @@ const hasKeys =
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 
-export function initWatchers(
-	models: IModelsParam,
-	broadcast: BroadcastCallback,
-	watch: Watcher,
-): void {
+export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
 		Users,
@@ -109,10 +102,7 @@ export function initWatchers(
 		EmailInbox,
 	} = models;
 
-	const getSettingCached = mem(
-		async (setting: string): Promise<SettingValue> => Settings.getValueById(setting),
-		{ maxAge: 10000 },
-	);
+	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(
 		async (userId: string): Promise<string | undefined> => {
@@ -167,9 +157,9 @@ export function initWatchers(
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById<
-					Pick<ISubscription, keyof typeof subscriptionFields>
-				>(id, { projection: subscriptionFields });
+				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, {
+					projection: subscriptionFields,
+				});
 				if (!subscription) {
 					return;
 				}
@@ -194,8 +184,7 @@ export function initWatchers(
 			return;
 		}
 
-		const role =
-			clientAction === 'removed' ? { _id: id, name: id } : data || (await Roles.findOneById(id));
+		const role = clientAction === 'removed' ? { _id: id, name: id } : data || (await Roles.findOneById(id));
 
 		if (!role) {
 			return;
@@ -247,9 +236,9 @@ export function initWatchers(
 
 	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, diff }) => {
 		if (clientAction === 'removed') {
-			const data = await LivechatDepartmentAgents.trashFindOneById<
-				Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>
-			>(id, { projection: { agentId: 1, departmentId: 1 } });
+			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, {
+				projection: { agentId: 1, departmentId: 1 },
+			});
 			if (!data) {
 				return;
 			}
@@ -257,9 +246,9 @@ export function initWatchers(
 			return;
 		}
 
-		const data = await LivechatDepartmentAgents.findOneById<
-			Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>
-		>(id, { projection: { agentId: 1, departmentId: 1 } });
+		const data = await LivechatDepartmentAgents.findOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, {
+			projection: { agentId: 1, departmentId: 1 },
+		});
 		if (!data) {
 			return;
 		}
@@ -353,9 +342,7 @@ export function initWatchers(
 	});
 
 	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
-		const data = await LoginServiceConfiguration.findOne<
-			Omit<ILoginServiceConfiguration, 'secret'>
-		>(id, { projection: { secret: 0 } });
+		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
 		if (!data) {
 			return;
 		}
@@ -370,9 +357,9 @@ export function initWatchers(
 	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'updated': {
-				const history = await IntegrationHistory.findOneById<
-					Pick<IIntegrationHistory, 'integration'>
-				>(id, { projection: { 'integration._id': 1 } });
+				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, {
+					projection: { 'integration._id': 1 },
+				});
 				if (!history || !history.integration) {
 					return;
 				}

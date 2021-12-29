@@ -44,23 +44,10 @@ export type EventSignatures = {
 	'presence.status'(data: { user: Partial<IUser> }): void;
 	'watch.messages'(data: { clientAction: ClientAction; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
-	'watch.rooms'(data: {
-		clientAction: ClientAction;
-		room: Pick<IRoom, '_id'> & Partial<IRoom>;
-	}): void;
-	'watch.subscriptions'(data: {
-		clientAction: ClientAction;
-		subscription: Partial<ISubscription>;
-	}): void;
-	'watch.userSessions'(data: {
-		clientAction: ClientAction;
-		userSession: Partial<IUserSession>;
-	}): void;
-	'watch.inquiries'(data: {
-		clientAction: ClientAction;
-		inquiry: IInquiry;
-		diff?: undefined | Record<string, any>;
-	}): void;
+	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
+	'watch.subscriptions'(data: { clientAction: ClientAction; subscription: Partial<ISubscription> }): void;
+	'watch.userSessions'(data: { clientAction: ClientAction; userSession: Partial<IUserSession> }): void;
+	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
 	'watch.users'(data: {
 		clientAction: ClientAction;
@@ -69,11 +56,7 @@ export type EventSignatures = {
 		unset?: undefined | Record<string, number>;
 		id: string;
 	}): void;
-	'watch.loginServiceConfiguration'(data: {
-		clientAction: ClientAction;
-		data: Partial<ILoginServiceConfiguration>;
-		id: string;
-	}): void;
+	'watch.loginServiceConfiguration'(data: { clientAction: ClientAction; data: Partial<ILoginServiceConfiguration>; id: string }): void;
 	'watch.instanceStatus'(data: {
 		clientAction: ClientAction;
 		data?: undefined | Partial<IInstanceStatus>;
@@ -86,16 +69,8 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
-	'watch.integrations'(data: {
-		clientAction: ClientAction;
-		data: Partial<IIntegration>;
-		id: string;
-	}): void;
-	'watch.emailInbox'(data: {
-		clientAction: ClientAction;
-		data: Partial<IEmailInbox>;
-		id: string;
-	}): void;
+	'watch.integrations'(data: { clientAction: ClientAction; data: Partial<IIntegration>; id: string }): void;
+	'watch.emailInbox'(data: { clientAction: ClientAction; data: Partial<IEmailInbox>; id: string }): void;
 	'watch.livechatDepartmentAgents'(data: {
 		clientAction: ClientAction;
 		data: Partial<ILivechatDepartmentAgents>;

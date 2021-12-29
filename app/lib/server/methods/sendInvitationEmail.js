@@ -47,14 +47,10 @@ Meteor.methods({
 					},
 				});
 			} catch ({ message }) {
-				throw new Meteor.Error(
-					'error-email-send-failed',
-					`Error trying to send email: ${message}`,
-					{
-						method: 'sendInvitationEmail',
-						message,
-					},
-				);
+				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+					method: 'sendInvitationEmail',
+					message,
+				});
 			}
 		});
 	},

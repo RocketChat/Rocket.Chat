@@ -21,13 +21,10 @@ export const createTransformChain = <T>(...transforms: Transform<T, T>[]): Trans
 	return Object.assign(call, { use });
 };
 
-export const createAsyncTransformChain = <T>(
-	...transforms: Transform<T, Promise<T>>[]
-): TransformChain<T, Promise<T>> => {
+export const createAsyncTransformChain = <T>(...transforms: Transform<T, Promise<T>>[]): TransformChain<T, Promise<T>> => {
 	let chain = transforms;
 
-	const call = (x: T): Promise<T> =>
-		chain.reduce((x, transform) => x.then(transform), Promise.resolve(x));
+	const call = (x: T): Promise<T> => chain.reduce((x, transform) => x.then(transform), Promise.resolve(x));
 
 	const use = (transform: Transform<T, Promise<T>>): (() => void) => {
 		chain.push(transform);

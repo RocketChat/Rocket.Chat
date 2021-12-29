@@ -23,11 +23,7 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	}
 
 	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
-	await AutoCloseOnHoldScheduler.scheduleRoom(
-		room._id,
-		autoCloseOnHoldChatTimeout,
-		customCloseMessage,
-	);
+	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, customCloseMessage);
 };
 
 settings.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
@@ -35,12 +31,7 @@ settings.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
 	if (!value || value <= 0) {
 		callbacks.remove('livechat:afterOnHold', 'livechat-auto-close-on-hold');
 	}
-	callbacks.add(
-		'livechat:afterOnHold',
-		handleAfterOnHold,
-		callbacks.priority.HIGH,
-		'livechat-auto-close-on-hold',
-	);
+	callbacks.add('livechat:afterOnHold', handleAfterOnHold, callbacks.priority.HIGH, 'livechat-auto-close-on-hold');
 });
 
 settings.watch('Livechat_auto_close_on_hold_chats_custom_message', (value) => {

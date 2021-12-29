@@ -12,6 +12,5 @@ export type ImageAttachmentProps = {
 	file?: FileProp;
 } & MessageAttachmentBase;
 
-export const isFileImageAttachment = (
-	attachment: FileAttachmentProps,
-): attachment is ImageAttachmentProps & { type: 'file' } => 'image_url' in attachment;
+export const isFileImageAttachment = (attachment: FileAttachmentProps): attachment is ImageAttachmentProps & { type: 'file' } =>
+	'image_url' in attachment;

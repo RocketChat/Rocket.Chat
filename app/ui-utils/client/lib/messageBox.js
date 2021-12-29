@@ -33,9 +33,7 @@ class MessageBoxActions {
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
-				const actions = this.actions[key].filter(
-					(action) => !action.condition || action.condition(),
-				);
+				const actions = this.actions[key].filter((action) => !action.condition || action.condition());
 				if (actions.length) {
 					ret[key] = actions;
 				}

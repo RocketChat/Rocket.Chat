@@ -1,21 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import {
-	LivechatRooms,
-	LivechatInquiry,
-	Messages,
-	Users,
-	LivechatVisitors,
-} from '../../../../../app/models/server';
+import { LivechatRooms, LivechatInquiry, Messages, Users, LivechatVisitors } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../app/callbacks/server';
 
-const resolveOnHoldCommentInfo = (
-	options: { clientAction: boolean },
-	room: any,
-	onHoldChatResumedBy: any,
-): string => {
+const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): string => {
 	let comment = '';
 	if (options.clientAction) {
 		comment = TAPi18n.__('Omnichannel_on_hold_chat_manually', {
@@ -63,19 +53,12 @@ Meteor.methods({
 		} = room;
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
-		const onHoldChatResumedBy = options.clientAction
-			? Meteor.user()
-			: Users.findOneById('rocket.cat');
+		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
 
 		const comment = resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
-		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(
-			roomId,
-			comment,
-			onHoldChatResumedBy,
-		);
+		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
 
 		const updatedRoom = LivechatRooms.findOneById(roomId);
-		updatedRoom &&
-			Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
+		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
 	},
 });

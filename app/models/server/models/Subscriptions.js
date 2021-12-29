@@ -1252,12 +1252,7 @@ export class Subscriptions extends Base {
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	addUnreadThreadByRoomIdAndUserIds(
-		rid,
-		users,
-		tmid,
-		{ groupMention = false, userMention = false } = {},
-	) {
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid, { groupMention = false, userMention = false } = {}) {
 		if (!users) {
 			return;
 		}

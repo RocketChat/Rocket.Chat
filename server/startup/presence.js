@@ -13,9 +13,7 @@ Meteor.startup(function () {
 	// UserPresenceMonitor.start();
 
 	// Remove lost connections
-	const ids = Promise.await(InstanceStatus.find({}, { projection: { _id: 1 } }).toArray()).map(
-		(id) => id._id,
-	);
+	const ids = Promise.await(InstanceStatus.find({}, { projection: { _id: 1 } }).toArray()).map((id) => id._id);
 
 	Promise.await(UsersSessions.clearConnectionsFromInstanceId(ids));
 });

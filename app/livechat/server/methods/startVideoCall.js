@@ -9,9 +9,7 @@ import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	async 'livechat:startVideoCall'(roomId) {
-		methodDeprecationLogger.warn(
-			'livechat:startVideoCall will be deprecated in future versions of Rocket.Chat',
-		);
+		methodDeprecationLogger.warn('livechat:startVideoCall will be deprecated in future versions of Rocket.Chat');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:closeByVisitor',
@@ -54,8 +52,7 @@ Meteor.methods({
 		return {
 			roomId: room._id,
 			domain: settings.get('Jitsi_Domain'),
-			jitsiRoom:
-				settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix'),
+			jitsiRoom: settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix'),
 		};
 	},
 });

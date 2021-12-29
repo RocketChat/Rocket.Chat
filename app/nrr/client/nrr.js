@@ -34,9 +34,7 @@ const renderNonReactive = function (templateName, data) {
 
 	return Tracker.nonreactive(() => {
 		console.warn('Nrr template is deprecated');
-		const view = new Blaze.View('nrr', () =>
-			HTML.Raw(toHTMLWithDataNonReactive(Template[templateName], data)),
-		);
+		const view = new Blaze.View('nrr', () => HTML.Raw(toHTMLWithDataNonReactive(Template[templateName], data)));
 
 		view.onViewReady(() => {
 			const { onViewReady } = Template[templateName];

@@ -280,10 +280,7 @@ describe('Sessions Aggregates', () => {
 		const sessions = db.collection('sessions');
 		const sessions_dates = db.collection('sessions_dates');
 
-		return Promise.all([
-			sessions.insertMany(DATA.sessions),
-			sessions_dates.insertMany(DATA.sessions_dates),
-		]);
+		return Promise.all([sessions.insertMany(DATA.sessions), sessions_dates.insertMany(DATA.sessions_dates)]);
 	});
 
 	it('should have sessions_dates data saved', () => {
@@ -301,18 +298,10 @@ describe('Sessions Aggregates', () => {
 		expect($match).to.be.deep.equal({
 			$and: [
 				{
-					$or: [
-						{ year: { $gt: 2018 } },
-						{ year: 2018, month: { $gt: 12 } },
-						{ year: 2018, month: 12, day: { $gte: 11 } },
-					],
+					$or: [{ year: { $gt: 2018 } }, { year: 2018, month: { $gt: 12 } }, { year: 2018, month: 12, day: { $gte: 11 } }],
 				},
 				{
-					$or: [
-						{ year: { $lt: 2019 } },
-						{ year: 2019, month: { $lt: 1 } },
-						{ year: 2019, month: 1, day: { $lte: 10 } },
-					],
+					$or: [{ year: { $lt: 2019 } }, { year: 2019, month: { $lt: 1 } }, { year: 2019, month: 1, day: { $lte: 10 } }],
 				},
 			],
 		});
@@ -771,176 +760,162 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique users for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(1);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 2,
-						roles: [
-							{
-								count: 1,
-								role: 'user',
-								sessions: 3,
-								time: 5814,
-							},
-							{
-								count: 1,
-								role: 'admin',
-								sessions: 1,
-								time: 4167,
-							},
-						],
-						sessions: 4,
-						time: 9981,
-					},
-				]);
-			});
+		return aggregates.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 }).then((docs) => {
+			expect(docs.length).to.be.equal(1);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 2,
+					roles: [
+						{
+							count: 1,
+							role: 'user',
+							sessions: 3,
+							time: 5814,
+						},
+						{
+							count: 1,
+							role: 'admin',
+							sessions: 1,
+							time: 4167,
+						},
+					],
+					sessions: 4,
+					time: 9981,
+				},
+			]);
+		});
 	});
 
 	it('should have 1 unique user for 1st of month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueUsersOfYesterday(collection, { year: 2019, month: 5, day: 1 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(1);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 1,
-						roles: [
-							{
-								count: 1,
-								role: 'admin',
-								sessions: 1,
-								time: 4167,
-							},
-						],
-						sessions: 1,
-						time: 4167,
-					},
-				]);
-			});
+		return aggregates.getUniqueUsersOfYesterday(collection, { year: 2019, month: 5, day: 1 }).then((docs) => {
+			expect(docs.length).to.be.equal(1);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 1,
+					roles: [
+						{
+							count: 1,
+							role: 'admin',
+							sessions: 1,
+							time: 4167,
+						},
+					],
+					sessions: 1,
+					time: 4167,
+				},
+			]);
+		});
 	});
 
 	it('should have 1 unique user for 2nd of month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueUsersOfYesterday(collection, { year: 2019, month: 5, day: 2 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(1);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 1,
-						roles: [
-							{
-								count: 1,
-								role: 'user',
-								sessions: 3,
-								time: 5814,
-							},
-						],
-						sessions: 3,
-						time: 5814,
-					},
-				]);
-			});
+		return aggregates.getUniqueUsersOfYesterday(collection, { year: 2019, month: 5, day: 2 }).then((docs) => {
+			expect(docs.length).to.be.equal(1);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 1,
+					roles: [
+						{
+							count: 1,
+							role: 'user',
+							sessions: 3,
+							time: 5814,
+						},
+					],
+					sessions: 3,
+					time: 5814,
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique devices for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueDevicesOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 3,
-						time: 9695,
-						type: 'browser',
-						name: 'Chrome',
-						version: '73.0.3683',
-					},
-					{
-						count: 1,
-						time: 286,
-						type: 'browser',
-						name: 'Firefox',
-						version: '66.0.3',
-					},
-				]);
-			});
+		return aggregates.getUniqueDevicesOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 3,
+					time: 9695,
+					type: 'browser',
+					name: 'Chrome',
+					version: '73.0.3683',
+				},
+				{
+					count: 1,
+					time: 286,
+					type: 'browser',
+					name: 'Firefox',
+					version: '66.0.3',
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique devices for 2nd of month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueDevicesOfYesterday(collection, { year: 2019, month: 5, day: 2 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 2,
-						time: 5528,
-						type: 'browser',
-						name: 'Chrome',
-						version: '73.0.3683',
-					},
-					{
-						count: 1,
-						time: 286,
-						type: 'browser',
-						name: 'Firefox',
-						version: '66.0.3',
-					},
-				]);
-			});
+		return aggregates.getUniqueDevicesOfYesterday(collection, { year: 2019, month: 5, day: 2 }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 2,
+					time: 5528,
+					type: 'browser',
+					name: 'Chrome',
+					version: '73.0.3683',
+				},
+				{
+					count: 1,
+					time: 286,
+					type: 'browser',
+					name: 'Firefox',
+					version: '66.0.3',
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique OS for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueOSOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 3,
-						time: 9695,
-						name: 'Mac OS',
-						version: '10.14.1',
-					},
-					{
-						count: 1,
-						time: 286,
-						name: 'Linux',
-						version: '12',
-					},
-				]);
-			});
+		return aggregates.getUniqueOSOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 3,
+					time: 9695,
+					name: 'Mac OS',
+					version: '10.14.1',
+				},
+				{
+					count: 1,
+					time: 286,
+					name: 'Linux',
+					version: '12',
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique OS for 2nd of month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueOSOfYesterday(collection, { year: 2019, month: 5, day: 2 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 2,
-						time: 5528,
-						name: 'Mac OS',
-						version: '10.14.1',
-					},
-					{
-						count: 1,
-						time: 286,
-						name: 'Linux',
-						version: '12',
-					},
-				]);
-			});
+		return aggregates.getUniqueOSOfYesterday(collection, { year: 2019, month: 5, day: 2 }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 2,
+					time: 5528,
+					name: 'Mac OS',
+					version: '10.14.1',
+				},
+				{
+					count: 1,
+					time: 286,
+					name: 'Linux',
+					version: '12',
+				},
+			]);
+		});
 	});
 
 	it('should match sessions between 2018-12-29 and 2019-1-4', () => {
@@ -955,18 +930,10 @@ describe('Sessions Aggregates', () => {
 		expect($match).to.be.deep.equal({
 			$and: [
 				{
-					$or: [
-						{ year: { $gt: 2018 } },
-						{ year: 2018, month: { $gt: 12 } },
-						{ year: 2018, month: 12, day: { $gte: 29 } },
-					],
+					$or: [{ year: { $gt: 2018 } }, { year: 2018, month: { $gt: 12 } }, { year: 2018, month: 12, day: { $gte: 29 } }],
 				},
 				{
-					$or: [
-						{ year: { $lt: 2019 } },
-						{ year: 2019, month: { $lt: 1 } },
-						{ year: 2019, month: 1, day: { $lte: 4 } },
-					],
+					$or: [{ year: { $lt: 2019 } }, { year: 2019, month: { $lt: 1 } }, { year: 2019, month: 1, day: { $lte: 4 } }],
 				},
 			],
 		});
@@ -1108,88 +1075,80 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 0 unique users for the week ending on 5/31 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31, type: 'week' })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(0);
-			});
+		return aggregates.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31, type: 'week' }).then((docs) => {
+			expect(docs.length).to.be.equal(0);
+		});
 	});
 
 	it('should have 2 unique users for the week ending on 5/7 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7, type: 'week' })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(1);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 2,
-						roles: [
-							{
-								count: 1,
-								role: 'user',
-								sessions: 3,
-								time: 5814,
-							},
-							{
-								count: 1,
-								role: 'admin',
-								sessions: 1,
-								time: 4167,
-							},
-						],
-						sessions: 4,
-						time: 9981,
-					},
-				]);
-			});
+		return aggregates.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7, type: 'week' }).then((docs) => {
+			expect(docs.length).to.be.equal(1);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 2,
+					roles: [
+						{
+							count: 1,
+							role: 'user',
+							sessions: 3,
+							time: 5814,
+						},
+						{
+							count: 1,
+							role: 'admin',
+							sessions: 1,
+							time: 4167,
+						},
+					],
+					sessions: 4,
+					time: 9981,
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique devices for the week ending on 5/7 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueDevicesOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7, type: 'week' })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 3,
-						time: 9695,
-						type: 'browser',
-						name: 'Chrome',
-						version: '73.0.3683',
-					},
-					{
-						count: 1,
-						time: 286,
-						type: 'browser',
-						name: 'Firefox',
-						version: '66.0.3',
-					},
-				]);
-			});
+		return aggregates.getUniqueDevicesOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7, type: 'week' }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 3,
+					time: 9695,
+					type: 'browser',
+					name: 'Chrome',
+					version: '73.0.3683',
+				},
+				{
+					count: 1,
+					time: 286,
+					type: 'browser',
+					name: 'Firefox',
+					version: '66.0.3',
+				},
+			]);
+		});
 	});
 
 	it('should have 2 unique OS for the week ending on 5/7 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates
-			.getUniqueOSOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7 })
-			.then((docs) => {
-				expect(docs.length).to.be.equal(2);
-				expect(docs).to.be.deep.equal([
-					{
-						count: 3,
-						time: 9695,
-						name: 'Mac OS',
-						version: '10.14.1',
-					},
-					{
-						count: 2,
-						time: 572,
-						name: 'Linux',
-						version: '12',
-					},
-				]);
-			});
+		return aggregates.getUniqueOSOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 7 }).then((docs) => {
+			expect(docs.length).to.be.equal(2);
+			expect(docs).to.be.deep.equal([
+				{
+					count: 3,
+					time: 9695,
+					name: 'Mac OS',
+					version: '10.14.1',
+				},
+				{
+					count: 2,
+					time: 572,
+					name: 'Linux',
+					version: '12',
+				},
+			]);
+		});
 	});
 });

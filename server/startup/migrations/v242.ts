@@ -21,11 +21,7 @@ async function removeSetting(): Promise<void> {
 	const currentAction = oldSetting.value;
 
 	if (currentAction === 'Nothing') {
-		await Settings.update(
-			{ _id: 'Livechat_max_queue_wait_time' },
-			{ $set: { value: -1 } },
-			{ upsert: true },
-		);
+		await Settings.update({ _id: 'Livechat_max_queue_wait_time' }, { $set: { value: -1 } }, { upsert: true });
 	}
 	await Settings.removeById('Livechat_max_queue_wait_time_action');
 }

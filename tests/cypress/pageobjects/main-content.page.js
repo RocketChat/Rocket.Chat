@@ -117,9 +117,7 @@ class MainContent extends Page {
 	}
 
 	get messageReply() {
-		return browser.element(
-			'.message:last-child .message-actions__button[data-message-action="reply-in-thread"]',
-		);
+		return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
 	}
 
 	get messageEdit() {

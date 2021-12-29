@@ -1,9 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import {
-	SlashCommandContext,
-	ISlashCommand,
-	ISlashCommandPreviewItem,
-} from '@rocket.chat/apps-engine/definition/slashcommands';
+import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 
 import { slashCommands } from '../../../utils/server';
@@ -80,9 +76,7 @@ export class AppCommandsBridge extends CommandBridge {
 
 		const cmd = command.command.toLowerCase();
 		if (typeof slashCommands.commands[cmd] === 'undefined') {
-			throw new Error(
-				`Command does not exist in the system currently (or it is disabled): "${cmd}"`,
-			);
+			throw new Error(`Command does not exist in the system currently (or it is disabled): "${cmd}"`);
 		}
 
 		const item = slashCommands.commands[cmd];
@@ -91,9 +85,7 @@ export class AppCommandsBridge extends CommandBridge {
 		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
 		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
-		item.previewCallback = command.executePreviewItem
-			? this._appCommandPreviewExecutor.bind(this)
-			: item.previewCallback;
+		item.previewCallback = command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback;
 
 		slashCommands.commands[cmd] = item;
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -113,9 +105,7 @@ export class AppCommandsBridge extends CommandBridge {
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: !command.executePreviewItem
-				? undefined
-				: this._appCommandPreviewExecutor.bind(this),
+			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this),
 		};
 
 		slashCommands.commands[command.command.toLowerCase()] = item;
@@ -138,60 +128,37 @@ export class AppCommandsBridge extends CommandBridge {
 
 	private _verifyCommand(command: ISlashCommand): void {
 		if (typeof command !== 'object') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 
 		if (typeof command.command !== 'string') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 
 		if (command.i18nParamsExample && typeof command.i18nParamsExample !== 'string') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 
 		if (command.i18nDescription && typeof command.i18nDescription !== 'string') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 
 		if (typeof command.providesPreview !== 'boolean') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 
 		if (typeof command.executor !== 'function') {
-			throw new Error(
-				'Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.',
-			);
+			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 	}
 
-	private _appCommandExecutor(
-		command: string,
-		parameters: any,
-		message: IMessage,
-		triggerId: string,
-	): void {
+	private _appCommandExecutor(command: string, parameters: any, message: IMessage, triggerId: string): void {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(
-			Object.freeze(user),
-			Object.freeze(room),
-			Object.freeze(params),
-			threadId,
-			triggerId,
-		);
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
 
 		Promise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
 	}
@@ -202,12 +169,7 @@ export class AppCommandsBridge extends CommandBridge {
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(
-			Object.freeze(user),
-			Object.freeze(room),
-			Object.freeze(params),
-			threadId,
-		);
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId);
 		return Promise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
 	}
 
@@ -223,16 +185,8 @@ export class AppCommandsBridge extends CommandBridge {
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
-		const context = new SlashCommandContext(
-			Object.freeze(user),
-			Object.freeze(room),
-			Object.freeze(params),
-			threadId,
-			triggerId,
-		);
+		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
 
-		Promise.await(
-			this.orch.getManager()?.getCommandManager().executePreview(command, preview, context),
-		);
+		Promise.await(this.orch.getManager()?.getCommandManager().executePreview(command, preview, context));
 	}
 }

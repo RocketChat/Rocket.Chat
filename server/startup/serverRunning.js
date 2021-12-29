@@ -22,9 +22,7 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 Meteor.startup(function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
-	const desiredNodeVersion = semver.clean(
-		fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString(),
-	);
+	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
 	return Meteor.setTimeout(function () {
@@ -74,12 +72,7 @@ Meteor.startup(function () {
 		}
 
 		if (!semver.satisfies(semver.coerce(mongoVersion), '>=3.6.0')) {
-			msg += [
-				'',
-				'',
-				'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,',
-				'PLEASE UPGRADE TO VERSION 3.6 OR LATER',
-			].join('\n');
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.6 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
@@ -105,11 +98,7 @@ Meteor.startup(function () {
 				sendMessagesToAdmins({
 					msgs: ({ adminUser }) => [
 						{
-							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(
-								text,
-								mongoVersion,
-								adminUser.language,
-							)}\n${link}`,
+							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
 						},
 					],
 					banners: [

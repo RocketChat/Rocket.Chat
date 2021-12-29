@@ -10,13 +10,9 @@ import * as Mailer from '../../../mailer';
 export const sendMail = function (from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 	if (body.indexOf('[unsubscribe]') === -1) {
-		throw new Meteor.Error(
-			'error-missing-unsubscribe-link',
-			'You must provide the [unsubscribe] link.',
-			{
-				function: 'Mailer.sendMail',
-			},
-		);
+		throw new Meteor.Error('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
+			function: 'Mailer.sendMail',
+		});
 	}
 
 	let userQuery = { 'mailer.unsubscribed': { $exists: 0 } };

@@ -1,12 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({
-	name,
-	type,
-	username,
-	members = [],
-	credentials: customCredentials,
-}) => {
+export const createRoom = ({ name, type, username, members = [], credentials: customCredentials }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom" test helper');
 	}

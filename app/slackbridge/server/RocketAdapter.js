@@ -40,30 +40,10 @@ export default class RocketAdapter {
 
 	registerForEvents() {
 		rocketLogger.debug('Register for events');
-		callbacks.add(
-			'afterSaveMessage',
-			this.onMessage.bind(this),
-			callbacks.priority.LOW,
-			'SlackBridge_Out',
-		);
-		callbacks.add(
-			'afterDeleteMessage',
-			this.onMessageDelete.bind(this),
-			callbacks.priority.LOW,
-			'SlackBridge_Delete',
-		);
-		callbacks.add(
-			'setReaction',
-			this.onSetReaction.bind(this),
-			callbacks.priority.LOW,
-			'SlackBridge_SetReaction',
-		);
-		callbacks.add(
-			'unsetReaction',
-			this.onUnSetReaction.bind(this),
-			callbacks.priority.LOW,
-			'SlackBridge_UnSetReaction',
-		);
+		callbacks.add('afterSaveMessage', this.onMessage.bind(this), callbacks.priority.LOW, 'SlackBridge_Out');
+		callbacks.add('afterDeleteMessage', this.onMessageDelete.bind(this), callbacks.priority.LOW, 'SlackBridge_Delete');
+		callbacks.add('setReaction', this.onSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_SetReaction');
+		callbacks.add('unsetReaction', this.onUnSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
 	}
 
 	unregisterForEvents() {
@@ -205,9 +185,7 @@ export default class RocketAdapter {
 		}
 
 		const fileId = rocketMessage.file._id;
-		return rocketMessage.attachments.find(
-			(attachment) => attachment.title_link && attachment.title_link.indexOf(`/${fileId}/`) >= 0,
-		);
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${fileId}/`) >= 0);
 	}
 
 	processFileShare(rocketMessage, slack) {
@@ -249,9 +227,7 @@ export default class RocketAdapter {
 	}
 
 	getChannel(slackMessage) {
-		return slackMessage.channel
-			? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel)
-			: null;
+		return slackMessage.channel ? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel) : null;
 	}
 
 	getUser(slackUser) {
@@ -280,9 +256,7 @@ export default class RocketAdapter {
 	}
 
 	getRocketUserCreator(slackChannel) {
-		return slackChannel.creator
-			? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator)
-			: null;
+		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null;
 	}
 
 	addChannel(slackChannelID, hasRetried = false) {
@@ -318,12 +292,7 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = createRoom(
-							isPrivate ? 'p' : 'c',
-							slackChannel.name,
-							rocketUserCreator.username,
-							rocketUsers,
-						);
+						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
 						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
@@ -345,11 +314,7 @@ export default class RocketAdapter {
 						lastSetTopic = slackChannel.topic.last_set;
 					}
 
-					if (
-						slackChannel.purpose &&
-						slackChannel.purpose.value &&
-						slackChannel.purpose.last_set > lastSetTopic
-					) {
+					if (slackChannel.purpose && slackChannel.purpose.value && slackChannel.purpose.last_set > lastSetTopic) {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
 
@@ -393,9 +358,7 @@ export default class RocketAdapter {
 				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 				let existingRocketUser;
 				if (!isBot) {
-					existingRocketUser =
-						Users.findOneByEmailAddress(email) ||
-						Users.findOneByUsernameIgnoringCase(rocketUserData.name);
+					existingRocketUser = Users.findOneByEmailAddress(email) || Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				} else {
 					existingRocketUser = Users.findOneByUsernameIgnoringCase(rocketUserData.name);
 				}
@@ -488,23 +451,11 @@ export default class RocketAdapter {
 		return rocketMsgObj;
 	}
 
-	createAndSaveMessage(
-		rocketChannel,
-		rocketUser,
-		slackMessage,
-		rocketMsgDataDefaults,
-		isImporting,
-		slack,
-	) {
+	createAndSaveMessage(rocketChannel, rocketUser, slackMessage, rocketMsgDataDefaults, isImporting, slack) {
 		if (slackMessage.type === 'message') {
 			let rocketMsgObj = {};
 			if (!_.isEmpty(slackMessage.subtype)) {
-				rocketMsgObj = slack.processSubtypedMessage(
-					rocketChannel,
-					rocketUser,
-					slackMessage,
-					isImporting,
-				);
+				rocketMsgObj = slack.processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 				if (!rocketMsgObj) {
 					return;
 				}

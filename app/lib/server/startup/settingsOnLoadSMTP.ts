@@ -2,15 +2,7 @@ import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 settings.watchMultiple(
-	[
-		'SMTP_Host',
-		'SMTP_Port',
-		'SMTP_Username',
-		'SMTP_Password',
-		'SMTP_Protocol',
-		'SMTP_Pool',
-		'SMTP_IgnoreTLS',
-	],
+	['SMTP_Host', 'SMTP_Port', 'SMTP_Username', 'SMTP_Password', 'SMTP_Protocol', 'SMTP_Pool', 'SMTP_IgnoreTLS'],
 	function () {
 		SystemLogger.info('Updating process.env.MAIL_URL');
 
@@ -18,9 +10,9 @@ settings.watchMultiple(
 			process.env.MAIL_URL = `${settings.get('SMTP_Protocol')}://`;
 
 			if (settings.get('SMTP_Username') && settings.get('SMTP_Password')) {
-				process.env.MAIL_URL += `${encodeURIComponent(
-					settings.get('SMTP_Username'),
-				)}:${encodeURIComponent(settings.get('SMTP_Password'))}@`;
+				process.env.MAIL_URL += `${encodeURIComponent(settings.get('SMTP_Username'))}:${encodeURIComponent(
+					settings.get('SMTP_Password'),
+				)}@`;
 			}
 
 			process.env.MAIL_URL += encodeURIComponent(settings.get('SMTP_Host'));

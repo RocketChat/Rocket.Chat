@@ -22,8 +22,7 @@ Meteor.methods({
 
 		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
 		const requestDay = lastOperation ? lastOperation.createdAt : new Date();
-		const pendingOperationsBeforeMyRequestCount =
-			await ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
+		const pendingOperationsBeforeMyRequestCount = await ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
 
 		if (lastOperation) {
 			const yesterday = new Date();

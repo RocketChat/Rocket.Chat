@@ -10,10 +10,7 @@ async function migrateTeamNames(fut) {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 	const Team = new TeamRaw(mongo.db.collection('rocketchat_team'));
 
-	const rooms = await Rooms.find(
-		{ teamMain: true },
-		{ projection: { name: 1, fname: 1, teamId: 1, t: 1 } },
-	).toArray();
+	const rooms = await Rooms.find({ teamMain: true }, { projection: { name: 1, fname: 1, teamId: 1, t: 1 } }).toArray();
 	await Promise.all(
 		rooms.map(async ({ name, fname, t, teamId }) => {
 			const update = {

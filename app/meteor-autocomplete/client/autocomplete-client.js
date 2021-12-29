@@ -131,9 +131,7 @@ export default class AutoComplete {
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
 			const endpointName = rule.endpoint || 'users.autocomplete';
-			const { items } = await APIClient.v1.get(
-				`${endpointName}?selector=${JSON.stringify(selector)}`,
-			);
+			const { items } = await APIClient.v1.get(`${endpointName}?selector=${JSON.stringify(selector)}`);
 			AutoCompleteRecords.remove({});
 			items.forEach((item) => AutoCompleteRecords.insert(item));
 			this.setLoaded(true);
@@ -363,10 +361,7 @@ export default class AutoComplete {
 		const startpos = this.element.selectionStart;
 		const fullStuff = this.getText();
 		let val = fullStuff.substring(0, startpos);
-		val = val.replace(
-			this.expressions[this.matched],
-			`$1${this.rules[this.matched].token}${replacement}`,
-		);
+		val = val.replace(this.expressions[this.matched], `$1${this.rules[this.matched].token}${replacement}`);
 		const posfix = fullStuff.substring(startpos, fullStuff.length);
 		const separator = posfix.match(/^\s/) ? '' : ' ';
 		const finalFight = val + separator + posfix;

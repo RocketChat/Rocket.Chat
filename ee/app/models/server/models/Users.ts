@@ -11,11 +11,7 @@ type AgentMetadata = {
 };
 
 // get next agent ignoring the ones reached the max amount of active chats
-const getUnavailableAgents = function (
-	_: any,
-	departmentId: string,
-	customFilter: { [k: string]: any }[],
-): Promise<AgentMetadata[]> {
+const getUnavailableAgents = function (_: any, departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
 	// @ts-expect-error
 	const col = this.model.rawCollection() as any;
 
@@ -74,11 +70,7 @@ const getUnavailableAgents = function (
 								input: '$subs',
 								as: 'sub',
 								cond: {
-									$and: [
-										{ $eq: ['$$sub.t', 'l'] },
-										{ $eq: ['$$sub.open', true] },
-										{ $ne: ['$$sub.onHold', true] },
-									],
+									$and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }],
 								},
 							},
 						},

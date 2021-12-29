@@ -12,10 +12,7 @@ import { createDirectMessage } from '../../../../server/methods/createDirectMess
 
 function findDirectMessageRoom(params, user, allowAdminOverride) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
-		throw new Meteor.Error(
-			'error-room-param-not-provided',
-			'Body param "roomId" or "username" is required',
-		);
+		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
 
 	const room = getDirectMessageByNameOrIdWithOptionToJoin({
@@ -23,14 +20,9 @@ function findDirectMessageRoom(params, user, allowAdminOverride) {
 		nameOrId: params.username || params.roomId,
 	});
 
-	const canAccess =
-		canAccessRoom(room, user) ||
-		(allowAdminOverride && hasPermission(user._id, 'view-room-administration'));
+	const canAccess = canAccessRoom(room, user) || (allowAdminOverride && hasPermission(user._id, 'view-room-administration'));
 	if (!canAccess || !room || room.t !== 'd') {
-		throw new Meteor.Error(
-			'error-room-not-found',
-			'The required "roomId" or "username" param provided does not match any direct message',
-		);
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -48,9 +40,7 @@ API.v1.addRoute(
 		post() {
 			const { username, usernames, excludeSelf } = this.requestParams();
 
-			const users = username
-				? [username]
-				: usernames && usernames.split(',').map((username) => username.trim());
+			const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
 
 			if (!users) {
 				throw new Meteor.Error(
@@ -94,9 +84,7 @@ API.v1.addRoute(
 			const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
 			if (!findResult.subscription.open) {
-				return API.v1.failure(
-					`The direct message room, ${this.bodyParams.name}, is already closed to the sender`,
-				);
+				return API.v1.failure(`The direct message room, ${this.bodyParams.name}, is already closed to the sender`);
 			}
 
 			Meteor.runAsUser(this.userId, () => {
@@ -346,18 +334,12 @@ API.v1.addRoute(
 
 			const { roomId } = this.queryParams;
 			if (!roomId || !roomId.trim()) {
-				throw new Meteor.Error(
-					'error-roomid-param-not-provided',
-					'The parameter "roomId" is required',
-				);
+				throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 			}
 
 			const room = Rooms.findOneById(roomId);
 			if (!room || room.t !== 'd') {
-				throw new Meteor.Error(
-					'error-room-not-found',
-					`No direct message room found by the id of: ${roomId}`,
-				);
+				throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 			}
 
 			const { offset, count } = this.getPaginationItems();

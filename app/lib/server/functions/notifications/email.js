@@ -14,9 +14,7 @@ let advice = '';
 let goToMessage = '';
 Meteor.startup(() => {
 	settings.watch('email_style', function () {
-		goToMessage = Mailer.inlinecss(
-			'<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>',
-		);
+		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
 	});
 	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
 		advice = value;
@@ -27,20 +25,15 @@ function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${roomTypes.getRoomName(room.t, room)}`);
-	const userName = escapeHTML(
-		settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username,
-	);
+	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
 	const roomType = roomTypes.getConfig(room.t);
 
-	const header = TAPi18n.__(
-		!roomType.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel',
-		{
-			username: userName,
-			channel: roomName,
-			lng,
-		},
-	);
+	const header = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+		username: userName,
+		channel: roomName,
+		lng,
+	});
 
 	if (message.msg !== '') {
 		if (!settings.get('Email_notification_show_message')) {
@@ -64,16 +57,11 @@ function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.file) {
-		const fileHeader = TAPi18n.__(
-			!roomType.isGroupChat(room)
-				? 'User_uploaded_a_file_to_you'
-				: 'User_uploaded_a_file_on_channel',
-			{
-				username: userName,
-				channel: roomName,
-				lng,
-			},
-		);
+		const fileHeader = TAPi18n.__(!roomType.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
+			username: userName,
+			channel: roomName,
+			lng,
+		});
 
 		if (!settings.get('Email_notification_show_message')) {
 			return fileHeader;
@@ -81,11 +69,7 @@ function getEmailContent({ message, user, room }) {
 
 		let content = `${escapeHTML(message.file.name)}`;
 
-		if (
-			message.attachments &&
-			message.attachments.length === 1 &&
-			message.attachments[0].description !== ''
-		) {
+		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
 			content += `<br/><br/>${escapeHTML(message.attachments[0].description)}`;
 		}
 
@@ -115,9 +99,7 @@ function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const path = `${s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/')}?msg=${
-		message._id
-	}`;
+	const path = `${s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/')}?msg=${message._id}`;
 	return getURL(path, {
 		full: true,
 		cloud: settings.get('Offline_Message_Use_DeepLink'),
@@ -133,18 +115,8 @@ function generateNameEmail(name, email) {
 	return `${String(name).replace(/@/g, '%40').replace(/[<>,]/g, '')} <${email}>`;
 }
 
-export function getEmailData({
-	message,
-	receiver,
-	sender,
-	subscription,
-	room,
-	emailAddress,
-	hasMentionToUser,
-}) {
-	const username = settings.get('UI_Use_Real_Name')
-		? message.u.name || message.u.username
-		: message.u.username;
+export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
+	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (!roomTypes.getConfig(room.t).isGroupChat(room)) {
@@ -165,9 +137,7 @@ export function getEmailData({
 
 	const room_path = getButtonUrl(room, subscription, message);
 
-	const receiverName = settings.get('UI_Use_Real_Name')
-		? receiver.name || receiver.username
-		: receiver.username;
+	const receiverName = settings.get('UI_Use_Real_Name') ? receiver.name || receiver.username : receiver.username;
 
 	const email = {
 		from: generateNameEmail(username, settings.get('From_Email')),
@@ -190,9 +160,9 @@ export function getEmailData({
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
 
 		// Reply-To header with format "username+messageId@domain"
-		email.headers['Reply-To'] = `${
-			replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0]
-		}${settings.get('Direct_Reply_Separator')}${message._id}@${replyto.split('@')[1]}`;
+		email.headers['Reply-To'] = `${replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0]}${settings.get(
+			'Direct_Reply_Separator',
+		)}${message._id}@${replyto.split('@')[1]}`;
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
@@ -205,9 +175,7 @@ export function sendEmailFromData(data) {
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	return sendEmailFromData(
-		getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }),
-	);
+	return sendEmailFromData(getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }));
 }
 
 export function shouldNotifyEmail({
@@ -238,12 +206,7 @@ export function shouldNotifyEmail({
 
 	// no user or room preference
 	if (emailNotifications == null) {
-		if (
-			disableAllMessageNotifications &&
-			!isHighlighted &&
-			!hasMentionToUser &&
-			!hasReplyToThread
-		) {
+		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 			return false;
 		}
 

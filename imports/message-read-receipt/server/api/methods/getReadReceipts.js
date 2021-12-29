@@ -11,11 +11,7 @@ Meteor.methods({
 		}
 
 		if (!messageId) {
-			throw new Meteor.Error(
-				'error-invalid-message',
-				"The required 'messageId' param is missing.",
-				{ method: 'getReadReceipts' },
-			);
+			throw new Meteor.Error('error-invalid-message', "The required 'messageId' param is missing.", { method: 'getReadReceipts' });
 		}
 
 		const message = Messages.findOneById(messageId);

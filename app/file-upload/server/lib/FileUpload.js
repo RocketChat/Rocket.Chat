@@ -169,10 +169,7 @@ export const FileUpload = {
 					return false;
 				}
 
-				res.setHeader(
-					'content-disposition',
-					`attachment; filename="${encodeURIComponent(file.name)}"`,
-				);
+				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name)}"`);
 				return true;
 			},
 		};
@@ -206,10 +203,7 @@ export const FileUpload = {
 					return false;
 				}
 
-				res.setHeader(
-					'content-disposition',
-					`attachment; filename="${encodeURIComponent(file.name)}"`,
-				);
+				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name)}"`);
 				return true;
 			},
 		};
@@ -224,10 +218,7 @@ export const FileUpload = {
 			if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 			}
-		} else if (
-			Meteor.userId() !== file.userId &&
-			!hasPermission(Meteor.userId(), 'edit-other-user-info')
-		) {
+		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -308,11 +299,7 @@ export const FileUpload = {
 		const width = settings.get('Message_Attachments_Thumbnails_Width');
 		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
-		if (
-			file.identify.size &&
-			file.identify.size.height < height &&
-			file.identify.size.width < width
-		) {
+		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
 			return;
 		}
 
@@ -323,9 +310,7 @@ export const FileUpload = {
 
 		const transformer = sharp().resize({ width, height, fit: 'inside' });
 
-		const result = transformer
-			.toBuffer({ resolveWithObject: true })
-			.then(({ data, info: { width, height } }) => ({ data, width, height }));
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
 		image.pipe(transformer);
 
 		return result;
@@ -426,10 +411,7 @@ export const FileUpload = {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
 
-		if (
-			Meteor.userId() !== file.userId &&
-			!hasPermission(Meteor.userId(), 'edit-other-user-info')
-		) {
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
@@ -457,22 +439,15 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByCookies =
-			rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders =
-			headers['x-user-id'] &&
-			headers['x-auth-token'] &&
-			Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		const isAuthorizedByRoom =
-			rc_room_type &&
-			roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+			headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
 		const isAuthorizedByJWT =
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
 			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
-		return (
-			isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT
-		);
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -556,19 +531,13 @@ export const FileUpload = {
 	},
 
 	proxyFile(fileName, fileUrl, forceDownload, request, req, res) {
-		res.setHeader(
-			'Content-Disposition',
-			`${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`,
-		);
+		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
 
 		request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }) {
-		if (
-			!settings.get('FileUpload_ProtectFiles') ||
-			!settings.get('FileUpload_Enable_json_web_token_for_files')
-		) {
+		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
 			return;
 		}
 		return generateJWT(

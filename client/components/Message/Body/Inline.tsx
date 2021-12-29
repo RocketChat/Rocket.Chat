@@ -12,10 +12,7 @@ import Plain from './Plain';
 import Strike from './Strike';
 import { UserMention } from './definitions/UserMention';
 
-const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = ({
-	value = [],
-	mentions = [],
-}) => (
+const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = ({ value = [], mentions = [] }) => (
 	<>
 		{value.map((block, idx) => {
 			switch (block.type) {

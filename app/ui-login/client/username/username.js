@@ -75,9 +75,7 @@ Template.username.onCreated(function () {
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
 				$(`#login-card input[name=${key}], #login-card select[name=${key}]`).addClass('error');
-				$(
-					`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`,
-				).text(value);
+				$(`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`).text(value);
 			});
 
 			return false;

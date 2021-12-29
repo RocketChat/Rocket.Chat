@@ -1,12 +1,7 @@
 import Agenda from 'agenda';
 import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
-import {
-	StartupType,
-	IProcessor,
-	IOnetimeSchedule,
-	IRecurringSchedule,
-} from '@rocket.chat/apps-engine/definition/scheduler';
+import { StartupType, IProcessor, IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
 import { AppServerOrchestrator } from '../orchestrator';
@@ -73,10 +68,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	 *
 	 * @returns {string[]} List of task ids run at startup, or void no startup run is set
 	 */
-	protected async registerProcessors(
-		processors: Array<IProcessor> = [],
-		appId: string,
-	): Promise<void | Array<string>> {
+	protected async registerProcessors(processors: Array<IProcessor> = [], appId: string): Promise<void | Array<string>> {
 		const runAfterRegister: Promise<string>[] = [];
 		this.orch.debugLog(`The App ${appId} is registering job processors`, processors);
 		processors.forEach(({ id, processor, startupSetting }: IProcessor) => {
@@ -89,10 +81,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 			switch (startupSetting.type) {
 				case StartupType.ONETIME:
 					runAfterRegister.push(
-						this.scheduleOnceAfterRegister(
-							{ id, when: startupSetting.when, data: startupSetting.data },
-							appId,
-						) as Promise<string>,
+						this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId) as Promise<string>,
 					);
 					break;
 				case StartupType.RECURRING:
@@ -111,11 +100,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 				default:
 					this.orch
 						.getRocketChatLogger()
-						.error(
-							`Invalid startup setting type (${String(
-								(startupSetting as any).type,
-							)}) for the processor ${id}`,
-						);
+						.error(`Invalid startup setting type (${String((startupSetting as any).type)}) for the processor ${id}`);
 					break;
 			}
 		});
@@ -136,10 +121,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	 *
 	 * @returns {string} taskid
 	 */
-	protected async scheduleOnce(
-		{ id, when, data }: IOnetimeSchedule,
-		appId: string,
-	): Promise<void | string> {
+	protected async scheduleOnce({ id, when, data }: IOnetimeSchedule, appId: string): Promise<void | string> {
 		this.orch.debugLog(`The App ${appId} is scheduling an onetime job (processor ${id})`);
 		try {
 			await this.startScheduler();
@@ -150,10 +132,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		}
 	}
 
-	private async scheduleOnceAfterRegister(
-		job: IOnetimeSchedule,
-		appId: string,
-	): Promise<void | string> {
+	private async scheduleOnceAfterRegister(job: IOnetimeSchedule, appId: string): Promise<void | string> {
 		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' });
 		if (!scheduledJobs.length) {
 			return this.scheduleOnce(job, appId);

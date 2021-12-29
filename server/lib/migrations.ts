@@ -150,11 +150,7 @@ function migrate(direction: 'up' | 'down', migration: IMigration): void {
 		throw new Error(`Cannot migrate ${direction} on version ${migration.version}`);
 	}
 
-	log.startup(
-		`Running ${direction}() on version ${migration.version}${
-			migration.name ? `(${migration.name})` : ''
-		}`,
-	);
+	log.startup(`Running ${direction}() on version ${migration.version}${migration.name ? `(${migration.name})` : ''}`);
 
 	Promise.await(migration[direction]?.(migration));
 }
@@ -183,10 +179,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		return true;
 	}
 
-	const version =
-		targetVersion === 'latest'
-			? orderedMigrations[orderedMigrations.length - 1].version
-			: targetVersion;
+	const version = targetVersion === 'latest' ? orderedMigrations[orderedMigrations.length - 1].version : targetVersion;
 
 	// get latest version
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
@@ -258,9 +251,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		throw new Error(`Can't find migration version ${version}`);
 	}
 
-	log.startup(
-		`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`,
-	);
+	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
 
 	try {
 		if (currentVersion < version) {

@@ -28,8 +28,7 @@ export let API = {};
 
 const getRequestIP = (req) => {
 	const socket = req.socket || req.connection?.socket;
-	const remoteAddress =
-		req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
+	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
 	let forwardedFor = req.headers['x-forwarded-for'];
 
 	if (!socket) {
@@ -120,9 +119,7 @@ export class APIClass extends Restivus {
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
 			Boolean(version) &&
 			!process.env.TEST_MODE &&
-			Boolean(
-				defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS,
-			)
+			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
 	}
 
@@ -218,8 +215,7 @@ export class APIClass extends Restivus {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' ||
-				settings.get('API_Enable_Rate_Limiter_Dev') === true) &&
+			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true) &&
 			!(userId && hasPermission(userId, 'api-bypass-rate-limit'))
 		);
 	}
@@ -229,18 +225,10 @@ export class APIClass extends Restivus {
 			return;
 		}
 
-		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(
-			objectForRateLimitMatch,
-		);
-		const attemptResult =
-			rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(
-				objectForRateLimitMatch,
-			);
+		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader(
-			'X-RateLimit-Limit',
-			rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed,
-		);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 
@@ -272,14 +260,10 @@ export class APIClass extends Restivus {
 
 	addRateLimiterRuleForRoutes({ routes, rateLimiterOptions, endpoints, apiVersion }) {
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error(
-				'You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint',
-			);
+			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error(
-				'You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint',
-			);
+			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
 		}
 		const addRateLimitRuleToEveryRoute = (routes) => {
 			routes.forEach((route) => {
@@ -298,9 +282,7 @@ export class APIClass extends Restivus {
 				);
 			});
 		};
-		routes
-			.map((route) => this.namedRoutes(route, endpoints, apiVersion))
-			.map(addRateLimitRuleToEveryRoute);
+		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
 	}
 
 	processTwoFactor({ userId, request, invocation, options, connection }) {
@@ -378,9 +360,7 @@ export class APIClass extends Restivus {
 						method,
 						version,
 						...(prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] }),
-						entrypoint: route.startsWith('method.call')
-							? decodeURIComponent(this.request._parsedUrl.pathname.slice(8))
-							: route,
+						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
 					this.requestIp = getRequestIP(this.request);
@@ -417,17 +397,10 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
-						if (
-							shouldVerifyPermissions &&
-							(!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))
-						) {
-							throw new Meteor.Error(
-								'error-unauthorized',
-								'User does not have the permissions required for this action',
-								{
-									permissions: _options.permissionsRequired,
-								},
-							);
+						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
+							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
+								permissions: _options.permissionsRequired,
+							});
 						}
 
 						const invocation = new DDPCommon.MethodInvocation({
@@ -449,10 +422,7 @@ export class APIClass extends Restivus {
 							connection,
 						});
 
-						result =
-							DDP._CurrentInvocation.withValue(invocation, () =>
-								Promise.await(originalAction.apply(this)),
-							) || API.v1.success();
+						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
 						log.http({
 							status: result.statusCode,
@@ -465,12 +435,7 @@ export class APIClass extends Restivus {
 								'error-unauthorized': 'unauthorized',
 							}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](
-							typeof e === 'string' ? e : e.message,
-							e.error,
-							process.env.TEST_MODE ? e.stack : undefined,
-							e,
-						);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 
 						log.http({
 							err: e,
@@ -506,8 +471,7 @@ export class APIClass extends Restivus {
 		if (rateLimiterDictionary[route]) {
 			rateLimiterDictionary[route].options.numRequestsAllowed =
 				numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
-			rateLimiterDictionary[route].options.intervalTimeInMS =
-				intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
+			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
 			API.v1.reloadRoutesToRefreshRateLimiter();
 		}
 	}
@@ -522,10 +486,7 @@ export class APIClass extends Restivus {
 				return bodyParams;
 			}
 
-			if (
-				_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length >
-				0
-			) {
+			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
 				return bodyParams;
 			}
 
@@ -699,9 +660,7 @@ export class APIClass extends Restivus {
 			},
 			{
 				get() {
-					console.warn(
-						'Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.',
-					);
+					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
 					return logout.call(this);
 				},
@@ -842,9 +801,7 @@ settings.watch('Accounts_CustomFields', (value) => {
 	}
 	try {
 		const customFields = JSON.parse(value);
-		const nonPublicCustomFields = Object.keys(customFields).filter(
-			(customFieldKey) => customFields[customFieldKey].public !== true,
-		);
+		const nonPublicCustomFields = Object.keys(customFields).filter((customFieldKey) => customFields[customFieldKey].public !== true);
 		API.v1.setLimitedCustomFields(nonPublicCustomFields);
 	} catch (error) {
 		console.warn('Invalid Custom Fields', error);

@@ -38,21 +38,13 @@ export const readMessage = new (class extends Emitter {
 		}
 
 		if (subscription.alert === false && subscription.unread === 0) {
-			this.log(
-				'readMessage -> readNow canceled, alert',
-				subscription.alert,
-				'and unread',
-				subscription.unread,
-			);
+			this.log('readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread);
 			return;
 		}
 
 		const room = RoomManager.getOpenedRoomByRid(rid);
 		if (room == null) {
-			this.log(
-				'readMessage -> readNow canceled, no room found for typeName:',
-				subscription.t + subscription.name,
-			);
+			this.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name);
 			return;
 		}
 
@@ -62,12 +54,7 @@ export const readMessage = new (class extends Emitter {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
 			if (!visible && room.unreadSince.get()) {
-				this.log(
-					'readMessage -> readNow canceled, unread mark visible:',
-					visible,
-					'unread since exists',
-					room.unreadSince.get() != null,
-				);
+				this.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null);
 				return;
 			}
 			// if unread mark is not visible and there is more more not loaded unread messages

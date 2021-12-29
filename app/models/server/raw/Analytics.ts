@@ -8,18 +8,9 @@ import { IRoom } from '../../../../definition/IRoom';
 type T = IAnalytic;
 
 export class AnalyticsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { date: 1 } },
-		{ key: { 'room._id': 1, 'date': 1 }, unique: true },
-	];
+	protected indexes: IndexSpecification[] = [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
 
-	saveMessageSent({
-		room,
-		date,
-	}: {
-		room: IRoom;
-		date: IAnalytic['date'];
-	}): Promise<UpdateWriteOpResult> {
+	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
 		return this.updateMany(
 			{ date, 'room._id': room._id, 'type': 'messages' },
 			{
@@ -57,13 +48,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		);
 	}
 
-	saveMessageDeleted({
-		room,
-		date,
-	}: {
-		room: { _id: string };
-		date: IAnalytic['date'];
-	}): Promise<UpdateWriteOpResult> {
+	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytic['date'] }): Promise<UpdateWriteOpResult> {
 		return this.updateMany(
 			{ date, 'room._id': room._id },
 			{
@@ -105,13 +90,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		]);
 	}
 
-	getMessagesOrigin({
-		start,
-		end,
-	}: {
-		start: IAnalytic['date'];
-		end: IAnalytic['date'];
-	}): AggregationCursor<{
+	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<{
 		t: IRoom['t'];
 		messages: number;
 	}> {

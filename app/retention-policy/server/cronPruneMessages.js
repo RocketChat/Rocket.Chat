@@ -31,10 +31,7 @@ function job() {
 		Rooms.find(
 			{
 				't': type,
-				'$or': [
-					{ 'retention.enabled': { $eq: true } },
-					{ 'retention.enabled': { $exists: false } },
-				],
+				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 				'retention.overrideGlobal': { $ne: true },
 			},
 			{ fields: { _id: 1 } },
@@ -132,8 +129,7 @@ settings.watchMultiple(
 		maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
 
 		const precision =
-			(settings.get('RetentionPolicy_Advanced_Precision') &&
-				settings.get('RetentionPolicy_Advanced_Precision_Cron')) ||
+			(settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) ||
 			getSchedule(settings.get('RetentionPolicy_Precision'));
 
 		return deployCron(precision);

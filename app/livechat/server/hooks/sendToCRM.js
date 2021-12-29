@@ -13,8 +13,7 @@ const sendMessageType = (msgType) => {
 			return true;
 		case msgNavType:
 			return (
-				settings.get('Livechat_Visitor_navigation_as_a_message') &&
-				settings.get('Send_visitor_navigation_history_livechat_webhook_request')
+				settings.get('Livechat_Visitor_navigation_as_a_message') && settings.get('Send_visitor_navigation_history_livechat_webhook_request')
 			);
 		default:
 			return false;

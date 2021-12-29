@@ -284,14 +284,7 @@ API.v1.addRoute(
 						<path fill="${backgroundColor}" d="M${leftSize} 0h${rightSize}v${height}H${leftSize}z"/>
 						<path fill="url(#b)" d="M0 0h${width}v${height}H0z"/>
 					</g>
-						${
-							hideIcon
-								? ''
-								: `<image x="5" y="3" width="14" height="14" xlink:href="${getURL(
-										'/assets/favicon.svg',
-										{ full: true },
-								  )}"/>`
-						}
+						${hideIcon ? '' : `<image x="5" y="3" width="14" height="14" xlink:href="${getURL('/assets/favicon.svg', { full: true })}"/>`}
 					<g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
 						${
 							name
@@ -455,11 +448,9 @@ const methodCall = () => ({
 			DDPRateLimiter._increment(rateLimiterInput);
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error(
-					'too-many-requests',
-					DDPRateLimiter.getErrorMessage(rateLimitResult),
-					{ timeToReset: rateLimitResult.timeToReset },
-				);
+				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+					timeToReset: rateLimitResult.timeToReset,
+				});
 			}
 
 			const result = Meteor.call(method, ...params);
@@ -476,13 +467,5 @@ const methodCall = () => ({
 
 // had to create two different endpoints for authenticated and non-authenticated calls
 // because restivus does not provide 'this.userId' if 'authRequired: false'
-API.v1.addRoute(
-	'method.call/:method',
-	{ authRequired: true, rateLimiterOptions: false },
-	methodCall(),
-);
-API.v1.addRoute(
-	'method.callAnon/:method',
-	{ authRequired: false, rateLimiterOptions: false },
-	methodCall(),
-);
+API.v1.addRoute('method.call/:method', { authRequired: true, rateLimiterOptions: false }, methodCall());
+API.v1.addRoute('method.callAnon/:method', { authRequired: false, rateLimiterOptions: false }, methodCall());

@@ -28,13 +28,7 @@ export const openToolTip = (title, anchor) => {
 		anchor,
 	};
 	Dep.changed();
-	unregister =
-		unregister ||
-		createEphemeralPortal(
-			() => import('../../../../client/components/TooltipComponent'),
-			props,
-			dom,
-		);
+	unregister = unregister || createEphemeralPortal(() => import('../../../../client/components/TooltipComponent'), props, dom);
 };
 
 window.matchMedia('(hover: none)').matches ||
@@ -45,10 +39,7 @@ window.matchMedia('(hover: none)').matches ||
 			return (e) => {
 				timeout = timeout && clearTimeout(timeout);
 				timeout = setTimeout(() => {
-					const element =
-						e.target.title || e.dataset?.title
-							? e.target
-							: e.target.closest('[title], [data-title]');
+					const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
 					if (element) {
 						element.dataset.title = element.title || element.dataset.title;
 						element.removeAttribute('title');

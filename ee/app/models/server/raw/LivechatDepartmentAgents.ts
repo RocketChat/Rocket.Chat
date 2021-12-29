@@ -2,10 +2,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/ra
 import { overwriteClassOnLicense } from '../../../license/server';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
-	findAgentsByAgentIdAndBusinessHourId(
-		agentId: string,
-		businessHourId: string,
-	): Promise<Record<string, any>> {
+	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
 		};

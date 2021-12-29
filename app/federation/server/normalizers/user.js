@@ -50,9 +50,7 @@ const normalizeUser = (originalResource) => {
 	resource.active = true;
 	resource.roles = ['user'];
 	resource.status = 'online';
-	resource.username = !isFullyQualified(resource.username)
-		? `${resource.username}@${getFederationDomain()}`
-		: resource.username;
+	resource.username = !isFullyQualified(resource.username) ? `${resource.username}@${getFederationDomain()}` : resource.username;
 
 	// Federation
 	resource.federation = resource.federation || {
@@ -65,10 +63,7 @@ const normalizeUser = (originalResource) => {
 	resource.isRemote = resource.federation.origin !== getFederationDomain();
 
 	// Persist the normalization
-	Users.update(
-		{ _id: resource._id },
-		{ $set: { isRemote: resource.isRemote, federation: resource.federation } },
-	);
+	Users.update({ _id: resource._id }, { $set: { isRemote: resource.isRemote, federation: resource.federation } });
 
 	return resource;
 };

@@ -59,10 +59,7 @@ API.v1.addRoute(
 					inquiryId: String,
 					userId: Match.Maybe(String),
 				});
-				if (
-					this.bodyParams.userId &&
-					!Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })
-				) {
+				if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
 					return API.v1.failure('The user is invalid');
 				}
 				return API.v1.success({

@@ -16,12 +16,7 @@ import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod
 let lastCredentialToken = null;
 let lastCredentialSecret = null;
 
-Accounts.oauth.tryLoginAfterPopupClosed = function (
-	credentialToken,
-	callback,
-	totpCode,
-	credentialSecret = null,
-) {
+Accounts.oauth.tryLoginAfterPopupClosed = function (credentialToken, callback, totpCode, credentialSecret = null) {
 	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
 	const methodArgument = {
 		oauth: {
@@ -67,18 +62,10 @@ const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callb
 	}
 
 	if (lastCredentialToken && lastCredentialSecret) {
-		Accounts.oauth.tryLoginAfterPopupClosed(
-			lastCredentialToken,
-			callback,
-			code,
-			lastCredentialSecret,
-		);
+		Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
 	} else {
 		const provider = (credentialProvider && credentialProvider()) || this;
-		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(
-			callback,
-			code,
-		);
+		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
 		provider.requestCredential(options, credentialRequestCompleteCallback);
 	}
 
@@ -100,17 +87,10 @@ Meteor.loginWithGithub = function (options, cb) {
 	overrideLoginMethod(loginWithGithub, [options], cb, loginWithGithubAndTOTP);
 };
 
-const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(
-	() => MeteorDeveloperAccounts,
-);
+const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(() => MeteorDeveloperAccounts);
 const { loginWithMeteorDeveloperAccount } = Meteor;
 Meteor.loginWithMeteorDeveloperAccount = function (options, cb) {
-	overrideLoginMethod(
-		loginWithMeteorDeveloperAccount,
-		[options],
-		cb,
-		loginWithMeteorDeveloperAccountAndTOTP,
-	);
+	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], cb, loginWithMeteorDeveloperAccountAndTOTP);
 };
 
 const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(() => Twitter);

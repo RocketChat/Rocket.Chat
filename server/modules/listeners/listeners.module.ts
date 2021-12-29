@@ -86,12 +86,7 @@ export class ListenersModule {
 				return;
 			}
 
-			notifications.notifyLoggedInThisInstance('user-status', [
-				_id,
-				username,
-				STATUS_MAP[status],
-				statusText,
-			]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
 
 			if (_id) {
 				notifications.sendPresence(_id, [username, STATUS_MAP[status], statusText]);
@@ -109,16 +104,11 @@ export class ListenersModule {
 				return;
 			}
 
-			notifications.streamRoomMessage._emit(
-				'__my_messages__',
-				[message],
-				undefined,
-				false,
-				(streamer, _sub, eventName, args, allowed) =>
-					streamer.changedPayload(streamer.subscriptionName, 'id', {
-						eventName,
-						args: [...args, allowed],
-					}),
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) =>
+				streamer.changedPayload(streamer.subscriptionName, 'id', {
+					eventName,
+					args: [...args, allowed],
+				}),
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
@@ -136,12 +126,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
-			notifications.notifyUserInThisInstance(
-				subscription.u._id,
-				'subscriptions-changed',
-				clientAction,
-				subscription,
-			);
+			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
@@ -175,10 +160,7 @@ export class ListenersModule {
 				});
 
 				if (inquiry.department) {
-					return notifications.streamLivechatQueueData.emitWithoutBroadcast(
-						`department/${inquiry.department}`,
-						{ type, ...inquiry },
-					);
+					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 				}
 
 				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
@@ -199,10 +181,7 @@ export class ListenersModule {
 				});
 			}
 
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(
-				`department/${inquiry.department}`,
-				{ type, ...inquiry },
-			);
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 
 			if (clientAction === 'updated' && !diff?.department) {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });

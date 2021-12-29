@@ -10,17 +10,12 @@ import { KonchatNotification } from '../../lib/notification';
 Template.secretURL.helpers({
 	registrationAllowed() {
 		const { hashIsValid } = Template.instance();
-		return (
-			settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get()
-		);
+		return settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get();
 	},
 	ready() {
 		const instance = Template.instance();
 		return (
-			typeof instance.subscriptionsReady === 'function' &&
-			instance.subscriptionsReady() &&
-			instance.hashReady &&
-			instance.hashReady.get()
+			typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get()
 		);
 	},
 });

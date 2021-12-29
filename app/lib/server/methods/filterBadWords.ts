@@ -8,12 +8,9 @@ import { IMessage } from '../../../../definition/IMessage';
 
 const Dep = new Tracker.Dependency();
 Meteor.startup(() => {
-	settings.watchMultiple(
-		['Message_AllowBadWordsFilter', 'Message_BadWordsFilterList', 'Message_BadWordsWhitelist'],
-		() => {
-			Dep.changed();
-		},
-	);
+	settings.watchMultiple(['Message_AllowBadWordsFilter', 'Message_BadWordsFilterList', 'Message_BadWordsWhitelist'], () => {
+		Dep.changed();
+	});
 	Tracker.autorun(() => {
 		Dep.depend();
 		const allowBadWordsFilter = settings.get('Message_AllowBadWordsFilter');

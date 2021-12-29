@@ -52,8 +52,7 @@ export const validateEmailDomain = function (email) {
 	if (
 		emailDomainBlackList.length &&
 		(emailDomainBlackList.indexOf(emailDomain) !== -1 ||
-			(settings.get('Accounts_UseDefaultBlockedDomainsList') &&
-				emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
+			(settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
 	) {
 		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',

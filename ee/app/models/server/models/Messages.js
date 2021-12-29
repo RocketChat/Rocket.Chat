@@ -1,12 +1,7 @@
 import { Messages } from '../../../../../app/models/server/models/Messages';
 import { settings } from '../../../../../app/settings/server';
 
-Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function (
-	roomId,
-	message,
-	user,
-	extraData,
-) {
+Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function (roomId, message, user, extraData) {
 	const type = 'livechat_priority_history';
 	const record = {
 		t: type,
@@ -47,11 +42,7 @@ Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function (roomI
 	return record;
 };
 
-Messages.prototype.createOnHoldResumedHistoryWithRoomIdMessageAndUser = function (
-	roomId,
-	comment,
-	user,
-) {
+Messages.prototype.createOnHoldResumedHistoryWithRoomIdMessageAndUser = function (roomId, comment, user) {
 	const type = 'omnichannel_on_hold_chat_resumed';
 	const record = {
 		t: type,

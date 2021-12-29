@@ -1,13 +1,5 @@
 import { EventEmitter } from 'eventemitter3';
-import type {
-	IPublication,
-	Rule,
-	Connection,
-	DDPSubscription,
-	IStreamer,
-	IRules,
-	TransformMessage,
-} from 'meteor/rocketchat:streamer';
+import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -40,10 +32,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 	constructor(
 		public name: string,
-		{
-			retransmit = true,
-			retransmitToSelf = false,
-		}: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
+		{ retransmit = true, retransmitToSelf = false }: { retransmit?: boolean; retransmitToSelf?: boolean } = {},
 	) {
 		super();
 
@@ -134,27 +123,15 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		};
 	}
 
-	async isReadAllowed(
-		scope: IPublication,
-		eventName: string,
-		args: any,
-	): Promise<boolean | object> {
+	async isReadAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
 		return this.isAllowed(this._allowRead)(scope, eventName, args);
 	}
 
-	async isEmitAllowed(
-		scope: IPublication,
-		eventName: string,
-		...args: any[]
-	): Promise<boolean | object> {
+	async isEmitAllowed(scope: IPublication, eventName: string, ...args: any[]): Promise<boolean | object> {
 		return this.isAllowed(this._allowEmit)(scope, eventName, args);
 	}
 
-	async isWriteAllowed(
-		scope: IPublication,
-		eventName: string,
-		args: any,
-	): Promise<boolean | object> {
+	async isWriteAllowed(scope: IPublication, eventName: string, args: any): Promise<boolean | object> {
 		return this.isAllowed(this._allowWrite)(scope, eventName, args);
 	}
 
@@ -232,29 +209,20 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 	abstract registerPublication(
 		name: string,
-		fn: (
-			eventName: string,
-			options: boolean | { useCollection?: boolean; args?: any },
-		) => Promise<void>,
+		fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => Promise<void>,
 	): void;
 
 	iniPublication(): void {
 		const _publish = this._publish.bind(this);
 		this.registerPublication(
 			this.subscriptionName,
-			async function (
-				this: IPublication,
-				eventName: string,
-				options: boolean | { useCollection?: boolean; args?: any },
-			) {
+			async function (this: IPublication, eventName: string, options: boolean | { useCollection?: boolean; args?: any }) {
 				return _publish(this, eventName, options);
 			},
 		);
 	}
 
-	abstract registerMethod(
-		methods: Record<string, (eventName: string, ...args: any[]) => any>,
-	): void;
+	abstract registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void;
 
 	initMethod(): void {
 		const isWriteAllowed = this.isWriteAllowed.bind(this);
@@ -283,19 +251,9 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 	}
 
-	abstract changedPayload(
-		collection: string,
-		id: string,
-		fields: Record<string, any>,
-	): string | false;
+	abstract changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 
-	_emit(
-		eventName: string,
-		args: any[],
-		origin: Connection | undefined,
-		broadcast: boolean,
-		transform?: TransformMessage,
-	): boolean {
+	_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean {
 		if (broadcast === true) {
 			StreamerCentral.emit('broadcast', this.name, eventName, args);
 		}
@@ -333,20 +291,13 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		getMsg: string | TransformMessage,
 	): Promise<void> {
 		subscriptions.forEach(async (subscription) => {
-			if (
-				this.retransmitToSelf === false &&
-				origin &&
-				origin === subscription.subscription.connection
-			) {
+			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
 				return;
 			}
 
 			const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
 			if (allowed) {
-				const msg =
-					typeof getMsg === 'string'
-						? getMsg
-						: getMsg(this, subscription, eventName, args, allowed);
+				const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
 				if (msg) {
 					subscription.subscription._session.socket?.send(msg);
 				}

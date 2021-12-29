@@ -34,11 +34,7 @@ googleTranslate.getSupportedLanguages(function (err, langs) {
 			.forEach(function (key) {
 				en[key] = enUnsorted[key];
 			});
-		fs.writeFileSync(
-			`${path}en.i18n.json`,
-			JSON.stringify(en, null, '  ').replace(/": "/g, '" : "'),
-			'utf8',
-		);
+		fs.writeFileSync(`${path}en.i18n.json`, JSON.stringify(en, null, '  ').replace(/": "/g, '" : "'), 'utf8');
 
 		const files = fs.readdirSync(path);
 		async.eachSeries(
@@ -94,14 +90,10 @@ googleTranslate.getSupportedLanguages(function (err, langs) {
 						} else {
 							for (const key in translations) {
 								if (translations.hasOwnProperty(key)) {
-									newContent[invertToTranslate[translations[key].originalText]] =
-										translations[key].translatedText;
+									newContent[invertToTranslate[translations[key].originalText]] = translations[key].translatedText;
 								}
 							}
-							const newJsonString = JSON.stringify(newContent, null, '  ').replace(
-								/": "/g,
-								'" : "',
-							);
+							const newJsonString = JSON.stringify(newContent, null, '  ').replace(/": "/g, '" : "');
 							fs.writeFileSync(path + file, newJsonString, 'utf8');
 							setTimeout(function () {
 								return callback();

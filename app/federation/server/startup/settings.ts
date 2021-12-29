@@ -8,12 +8,7 @@ import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
 import { FederationKeys } from '../../../models/server/raw';
-import {
-	STATUS_ENABLED,
-	STATUS_REGISTERING,
-	STATUS_ERROR_REGISTERING,
-	STATUS_DISABLED,
-} from '../constants';
+import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
 Meteor.startup(async function () {
 	const federationPublicKey = await FederationKeys.getPublicKeyString();
@@ -81,11 +76,7 @@ const updateSettings = async function (): Promise<void> {
 		try {
 			await updateStatus(STATUS_REGISTERING);
 
-			await registerWithHub(
-				getFederationDomain(),
-				settings.get('Site_Url'),
-				await FederationKeys.getPublicKeyString(),
-			);
+			await registerWithHub(getFederationDomain(), settings.get('Site_Url'), await FederationKeys.getPublicKeyString());
 
 			await updateStatus(STATUS_ENABLED);
 		} catch (err) {

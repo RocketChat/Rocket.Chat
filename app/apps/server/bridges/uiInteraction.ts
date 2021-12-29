@@ -11,11 +11,7 @@ export class UiInteractionBridge extends UiIntBridge {
 		super();
 	}
 
-	protected async notifyUser(
-		user: IUser,
-		interaction: IUIKitInteraction,
-		appId: string,
-	): Promise<void> {
+	protected async notifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is sending an interaction to user.`);
 
 		const app = this.orch.getManager()?.getOneById(appId);

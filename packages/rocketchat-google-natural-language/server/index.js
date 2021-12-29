@@ -39,12 +39,7 @@ const setRoomSentiment = function (message) {
 
 settings.watch('GoogleNaturalLanguage_Enabled', (value) => {
 	if (value) {
-		callbacks.add(
-			'afterSaveMessage',
-			setRoomSentiment,
-			callbacks.priority.MEDIUM,
-			'GoogleNaturalLanguage',
-		);
+		callbacks.add('afterSaveMessage', setRoomSentiment, callbacks.priority.MEDIUM, 'GoogleNaturalLanguage');
 	} else {
 		callbacks.remove('afterSaveMessage', 'GoogleNaturalLanguage');
 	}

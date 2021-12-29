@@ -43,9 +43,7 @@ Cypress.Commands.add('logout', () =>
 
 //
 // -- This is a child command --
-Cypress.Commands.add('getLocation', { prevSubject: 'element' }, (subject) =>
-	subject.get(0).getBoundingClientRect(),
-);
+Cypress.Commands.add('getLocation', { prevSubject: 'element' }, (subject) => subject.get(0).getBoundingClientRect());
 //
 //
 // -- This is a dual command --

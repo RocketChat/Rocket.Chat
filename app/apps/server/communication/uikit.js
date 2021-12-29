@@ -65,18 +65,13 @@ Meteor.startup(() => {
 		max: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
 		skip: () =>
 			settings.get('API_Enable_Rate_Limiter') !== true ||
-			(process.env.NODE_ENV === 'development' &&
-				settings.get('API_Enable_Rate_Limiter_Dev') !== true),
+			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
 	router.use(apiLimiter);
 });
 
 router.use((req, res, next) => {
-	const {
-		'x-user-id': userId,
-		'x-auth-token': authToken,
-		'x-visitor-token': visitorToken,
-	} = req.headers;
+	const { 'x-user-id': userId, 'x-auth-token': authToken, 'x-visitor-token': visitorToken } = req.headers;
 
 	if (userId && authToken) {
 		req.user = Users.findOneByIdAndLoginToken(userId, authToken);
@@ -207,9 +202,7 @@ const appsRoutes = (orch) => (req, res) => {
 			};
 
 			try {
-				const eventInterface = !visitor
-					? AppInterface.IUIKitInteractionHandler
-					: AppInterface.IUIKitLivechatInteractionHandler;
+				const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
 
 				const result = Promise.await(orch.triggerEvent(eventInterface, action));
 

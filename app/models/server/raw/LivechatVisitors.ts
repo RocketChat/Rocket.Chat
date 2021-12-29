@@ -5,10 +5,7 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
-	findOneById(
-		_id: string,
-		options: WithoutProjection<FindOneOptions<ILivechatVisitor>>,
-	): Promise<ILivechatVisitor | null> {
+	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
 		const query = {
 			_id,
 		};
@@ -16,10 +13,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		return this.findOne(query, options);
 	}
 
-	getVisitorByToken(
-		token: string,
-		options: WithoutProjection<FindOneOptions<ILivechatVisitor>>,
-	): Promise<ILivechatVisitor | null> {
+	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
 		};
@@ -27,15 +21,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({
-		start,
-		end,
-		department,
-	}: {
-		start: Date;
-		end: Date;
-		department: string;
-	}): Cursor<ILivechatVisitor> {
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): Cursor<ILivechatVisitor> {
 		const query = {
 			_updatedAt: {
 				$gte: new Date(start),
@@ -84,13 +70,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		};
 
 		const order = { $sort: sort || { name: 1 } };
-		const params: Record<string, unknown>[] = [
-			match,
-			order,
-			skip && { $skip: skip },
-			limit && { $limit: limit },
-			project,
-		].filter(Boolean) as Record<string, unknown>[];
+		const params: Record<string, unknown>[] = [match, order, skip && { $skip: skip }, limit && { $limit: limit }, project].filter(
+			Boolean,
+		) as Record<string, unknown>[];
 
 		return this.col.aggregate(params);
 	}

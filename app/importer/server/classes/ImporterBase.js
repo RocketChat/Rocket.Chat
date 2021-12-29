@@ -133,11 +133,9 @@ export class Base {
 			if (!fileType || fileType.mime !== this.info.mimeType) {
 				this.logger.warn(`Invalid file uploaded for the ${this.info.name} importer.`);
 				this.updateProgress(ProgressStep.ERROR);
-				throw new Meteor.Error(
-					'error-invalid-file-uploaded',
-					`Invalid file uploaded to import ${this.info.name} data from.`,
-					{ step: 'prepare' },
-				);
+				throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${this.info.name} data from.`, {
+					step: 'prepare',
+				});
 			}
 		}
 
@@ -158,9 +156,7 @@ export class Base {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
-			throw new Error(
-				`Users in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`,
-			);
+			throw new Error(`Users in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`);
 		} else if (importSelection.channels === undefined) {
 			throw new Error(
 				`Channels in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`,
@@ -255,59 +251,33 @@ export class Base {
 
 		switch (step) {
 			case ProgressStep.IMPORTING_STARTED:
-				this.oldSettings.Accounts_AllowedDomainsList = Settings.findOneById(
-					'Accounts_AllowedDomainsList',
-				).value;
+				this.oldSettings.Accounts_AllowedDomainsList = Settings.findOneById('Accounts_AllowedDomainsList').value;
 				Settings.updateValueById('Accounts_AllowedDomainsList', '');
 
-				this.oldSettings.Accounts_AllowUsernameChange = Settings.findOneById(
-					'Accounts_AllowUsernameChange',
-				).value;
+				this.oldSettings.Accounts_AllowUsernameChange = Settings.findOneById('Accounts_AllowUsernameChange').value;
 				Settings.updateValueById('Accounts_AllowUsernameChange', true);
 
-				this.oldSettings.FileUpload_MaxFileSize =
-					Settings.findOneById('FileUpload_MaxFileSize').value;
+				this.oldSettings.FileUpload_MaxFileSize = Settings.findOneById('FileUpload_MaxFileSize').value;
 				Settings.updateValueById('FileUpload_MaxFileSize', -1);
 
-				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById(
-					'FileUpload_MediaTypeWhiteList',
-				).value;
+				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 
-				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById(
-					'FileUpload_MediaTypeBlackList',
-				).value;
+				this.oldSettings.FileUpload_MediaTypeBlackList = Settings.findOneById('FileUpload_MediaTypeBlackList').value;
 				Settings.updateValueById('FileUpload_MediaTypeBlackList', '');
 
-				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById(
-					'UI_Allow_room_names_with_special_chars',
-				).value;
+				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
 				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
 			case ProgressStep.CANCELLED:
-				Settings.updateValueById(
-					'Accounts_AllowedDomainsList',
-					this.oldSettings.Accounts_AllowedDomainsList,
-				);
-				Settings.updateValueById(
-					'Accounts_AllowUsernameChange',
-					this.oldSettings.Accounts_AllowUsernameChange,
-				);
+				Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
+				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
-				Settings.updateValueById(
-					'FileUpload_MediaTypeWhiteList',
-					this.oldSettings.FileUpload_MediaTypeWhiteList,
-				);
-				Settings.updateValueById(
-					'FileUpload_MediaTypeBlackList',
-					this.oldSettings.FileUpload_MediaTypeBlackList,
-				);
-				Settings.updateValueById(
-					'UI_Allow_room_names_with_special_chars',
-					this.oldSettings.UI_Allow_room_names_with_special_chars,
-				);
+				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList);
+				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
 
@@ -353,10 +323,7 @@ export class Base {
 
 		// Only update the database every 500 records
 		// Or the completed is greater than or equal to the total amount
-		if (
-			this.progress.count.completed % 500 === 0 ||
-			this.progress.count.completed >= this.progress.count.total
-		) {
+		if (this.progress.count.completed % 500 === 0 || this.progress.count.completed >= this.progress.count.total) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
 			this.reportProgress();
 		} else if (!this._reportProgressHandler) {
@@ -443,14 +410,7 @@ export class Base {
 
 		const selectionUsers = users.map(
 			(u) =>
-				new SelectionUser(
-					u.data.importIds[0],
-					u.data.username,
-					u.data.emails[0],
-					Boolean(u.data.deleted),
-					u.data.type === 'bot',
-					true,
-				),
+				new SelectionUser(u.data.importIds[0], u.data.username, u.data.emails[0], Boolean(u.data.deleted), u.data.type === 'bot', true),
 		);
 		const selectionChannels = channels.map(
 			(c) =>
@@ -467,17 +427,7 @@ export class Base {
 		const selectionMessages = ImportData.countMessages();
 
 		if (hasDM) {
-			selectionChannels.push(
-				new SelectionChannel(
-					'__directMessages__',
-					t('Direct_Messages'),
-					false,
-					true,
-					true,
-					undefined,
-					true,
-				),
-			);
+			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
 		}
 
 		const results = new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);

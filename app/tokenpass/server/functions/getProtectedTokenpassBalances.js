@@ -20,8 +20,6 @@ export const getProtectedTokenpassBalances = function (accessToken) {
 			},
 		}).data;
 	} catch (error) {
-		throw new Error(
-			`Failed to fetch protected tokenpass balances from Tokenpass. ${error.message}`,
-		);
+		throw new Error(`Failed to fetch protected tokenpass balances from Tokenpass. ${error.message}`);
 	}
 };

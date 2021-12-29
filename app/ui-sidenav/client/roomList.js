@@ -40,11 +40,9 @@ Template.roomList.helpers({
 			sort.lm = -1;
 		} else {
 			// alphabetical
-			sort[
-				this.identifier === 'd' && settings.get('UI_Use_Real_Name')
-					? 'lowerCaseFName'
-					: 'lowerCaseName'
-			] = /descending/.test(sortBy) ? -1 : 1;
+			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy)
+				? -1
+				: 1;
 		}
 
 		if (this.identifier === 'unread') {
@@ -54,9 +52,7 @@ Template.roomList.helpers({
 			return ChatSubscription.find(query, { sort });
 		}
 
-		const favoritesEnabled = !!(
-			settings.get('Favorite_Rooms') && getUserPreference(user, 'sidebarShowFavorites')
-		);
+		const favoritesEnabled = !!(settings.get('Favorite_Rooms') && getUserPreference(user, 'sidebarShowFavorites'));
 
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
@@ -109,9 +105,7 @@ Template.roomList.helpers({
 		or is unread and has one room
 		*/
 
-		return (
-			!['unread', 'f'].includes(group.identifier) || rooms.length || (rooms.count && rooms.count())
-		);
+		return !['unread', 'f'].includes(group.identifier) || rooms.length || (rooms.count && rooms.count());
 	},
 
 	roomType(room) {
@@ -125,10 +119,7 @@ Template.roomList.helpers({
 		if (instance.data.anonymous) {
 			return 'No_channels_yet';
 		}
-		return (
-			roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) ||
-			'No_channels_yet'
-		);
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
@@ -222,9 +213,7 @@ const mergeSubRoom = (subscription) => {
 		queuedAt,
 	} = room;
 
-	subscription.lm = subscription.lr
-		? new Date(Math.max(subscription.lr, lastRoomUpdate))
-		: lastRoomUpdate;
+	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 
 	return Object.assign(subscription, getLowerCaseNames(subscription), {
 		encrypted,

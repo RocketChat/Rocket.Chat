@@ -89,11 +89,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.all(userId, [permissionId], scope);
 	}
 
-	async hasAtLeastOnePermission(
-		userId: string,
-		permissions: string[],
-		scope?: string,
-	): Promise<boolean> {
+	async hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
@@ -153,31 +149,20 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			return false;
 		}
 
-		const result = await this.Permissions.findOne(
-			{ _id: permission, roles: { $in: roles } },
-			{ projection: { _id: 1 } },
-		);
+		const result = await this.Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
 		return !!result;
 	}
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
-		const { roles: userRoles = [] } =
-			(await this.Users.findOneById(uid, { projection: { roles: 1 } })) || {};
+		const { roles: userRoles = [] } = (await this.Users.findOneById(uid, { projection: { roles: 1 } })) || {};
 		const { roles: subscriptionsRoles = [] } =
 			(scope &&
-				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>(
-					{ 'rid': scope, 'u._id': uid },
-					{ projection: { roles: 1 } },
-				))) ||
+				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ 'rid': scope, 'u._id': uid }, { projection: { roles: 1 } }))) ||
 			{};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
-	private async atLeastOne(
-		uid: string,
-		permissions: string[] = [],
-		scope?: string,
-	): Promise<boolean> {
+	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
 		for (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line

@@ -16,9 +16,7 @@ callbacks.add(
 		}
 
 		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (
-			!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)
-		) {
+		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
 			return message;
 		}
 

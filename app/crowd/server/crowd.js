@@ -53,10 +53,7 @@ export class CROWD {
 
 		this.crowdClient = new AtlassianCrowd(this.options);
 
-		this.crowdClient.user.authenticateSync = Meteor.wrapAsync(
-			this.crowdClient.user.authenticate,
-			this,
-		);
+		this.crowdClient.user.authenticateSync = Meteor.wrapAsync(this.crowdClient.user.authenticate, this);
 		this.crowdClient.user.findSync = Meteor.wrapAsync(this.crowdClient.user.find, this);
 		this.crowdClient.searchSync = Meteor.wrapAsync(this.crowdClient.search, this);
 		this.crowdClient.pingSync = Meteor.wrapAsync(this.crowdClient.ping, this);
@@ -91,10 +88,7 @@ export class CROWD {
 		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			user = Meteor.users.findOne(
-				{ 'emails.address': email },
-				{ fields: { username: 1, crowd_username: 1, crowd: 1 } },
-			);
+			user = Meteor.users.findOne({ 'emails.address': email }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -103,10 +97,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users.findOne(
-				{ username },
-				{ fields: { username: 1, crowd_username: 1, crowd: 1 } },
-			);
+			user = Meteor.users.findOne({ username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -115,10 +106,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users.findOne(
-				{ crowd_username: username },
-				{ fields: { username: 1, crowd_username: 1, crowd: 1 } },
-			);
+			user = Meteor.users.findOne({ crowd_username: username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -202,9 +190,7 @@ export class CROWD {
 		logger.info('Sync started...');
 
 		users.forEach(function (user) {
-			let crowd_username = user.hasOwnProperty('crowd_username')
-				? user.crowd_username
-				: user.username;
+			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info('Syncing user', crowd_username);
 
 			let crowdUser = null;
@@ -220,11 +206,7 @@ export class CROWD {
 
 				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
-					logger.warn(
-						'Could not find user in CROWD with username or email:',
-						crowd_username,
-						email,
-					);
+					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
 						Meteor.defer(function () {
@@ -331,29 +313,26 @@ Accounts.registerLoginHandler('crowd', function (loginRequest) {
 const jobName = 'CROWD_Sync';
 
 Meteor.startup(() => {
-	settings.watchMultiple(
-		['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'],
-		function addCronJobDebounced([data, interval]) {
-			if (data !== true) {
-				logger.info('Disabling CROWD Background Sync');
-				if (SyncedCron.nextScheduledAtDate(jobName)) {
-					SyncedCron.remove(jobName);
-				}
-				return;
+	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], function addCronJobDebounced([data, interval]) {
+		if (data !== true) {
+			logger.info('Disabling CROWD Background Sync');
+			if (SyncedCron.nextScheduledAtDate(jobName)) {
+				SyncedCron.remove(jobName);
 			}
-			const crowd = new CROWD();
-			if (interval) {
-				logger.info('Enabling CROWD Background Sync');
-				SyncedCron.add({
-					name: jobName,
-					schedule: (parser) => parser.text(interval),
-					job() {
-						crowd.sync();
-					},
-				});
-			}
-		},
-	);
+			return;
+		}
+		const crowd = new CROWD();
+		if (interval) {
+			logger.info('Enabling CROWD Background Sync');
+			SyncedCron.add({
+				name: jobName,
+				schedule: (parser) => parser.text(interval),
+				job() {
+					crowd.sync();
+				},
+			});
+		}
+	});
 });
 
 Meteor.methods({

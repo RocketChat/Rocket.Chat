@@ -316,10 +316,7 @@ Meteor.startup(function () {
 			section: 'CRM_Integration',
 			i18nLabel: 'Send_visitor_navigation_history_on_request',
 			i18nDescription: 'Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled',
-			enableQuery: [
-				{ _id: 'Livechat_Visitor_navigation_as_a_message', value: true },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_Visitor_navigation_as_a_message', value: true }, omnichannelEnabledQuery],
 		});
 
 		this.add('Livechat_webhook_on_capture', false, {
@@ -447,10 +444,7 @@ Meteor.startup(function () {
 			group: 'Omnichannel',
 			section: 'Livechat',
 			public: true,
-			enableQuery: [
-				{ _id: 'Livechat_OfflineMessageToChannel_enabled', value: true },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_OfflineMessageToChannel_enabled', value: true }, omnichannelEnabledQuery],
 			i18nLabel: 'Channel_name',
 		});
 
@@ -524,10 +518,7 @@ Meteor.startup(function () {
 			public: true,
 			i18nLabel: 'Max_number_incoming_livechats_displayed',
 			i18nDescription: 'Max_number_incoming_livechats_displayed_description',
-			enableQuery: [
-				{ _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_Routing_Method', value: 'Manual_Selection' }, omnichannelEnabledQuery],
 		});
 
 		this.add('Livechat_show_queue_list_link', false, {
@@ -536,10 +527,7 @@ Meteor.startup(function () {
 			public: true,
 			section: 'Routing',
 			i18nLabel: 'Show_queue_list_to_all_agents',
-			enableQuery: [
-				{ _id: 'Livechat_Routing_Method', value: { $ne: 'External' } },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_Routing_Method', value: { $ne: 'External' } }, omnichannelEnabledQuery],
 		});
 
 		this.add('Livechat_External_Queue_URL', '', {
@@ -590,10 +578,7 @@ Meteor.startup(function () {
 			public: true,
 			i18nLabel: 'Data_processing_consent_text',
 			i18nDescription: 'Data_processing_consent_text_description',
-			enableQuery: [
-				{ _id: 'Livechat_force_accept_data_processing_consent', value: true },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_force_accept_data_processing_consent', value: true }, omnichannelEnabledQuery],
 		});
 
 		this.add('Livechat_agent_leave_action', 'none', {
@@ -613,10 +598,7 @@ Meteor.startup(function () {
 			type: 'int',
 			group: 'Omnichannel',
 			section: 'Sessions',
-			enableQuery: [
-				{ _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_agent_leave_action', value: { $ne: 'none' } }, omnichannelEnabledQuery],
 			i18nLabel: 'How_long_to_wait_after_agent_goes_offline',
 			i18nDescription: 'Time_in_seconds',
 		});
@@ -625,10 +607,7 @@ Meteor.startup(function () {
 			type: 'string',
 			group: 'Omnichannel',
 			section: 'Sessions',
-			enableQuery: [
-				{ _id: 'Livechat_agent_leave_action', value: 'close' },
-				omnichannelEnabledQuery,
-			],
+			enableQuery: [{ _id: 'Livechat_agent_leave_action', value: 'close' }, omnichannelEnabledQuery],
 			i18nLabel: 'Comment_to_leave_on_closing_session',
 		});
 
@@ -651,8 +630,7 @@ Meteor.startup(function () {
 				{ key: 'Jitsi', i18nLabel: 'Jitsi' },
 				{ key: 'WebRTC', i18nLabel: 'WebRTC' },
 			],
-			i18nDescription:
-				'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
+			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 			i18nLabel: 'Call_provider',
 			alert:
 				'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',

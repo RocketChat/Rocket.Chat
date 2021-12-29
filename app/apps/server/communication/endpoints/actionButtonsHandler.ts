@@ -3,9 +3,7 @@ import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { API } from '../../../../api/server';
 import { AppsRestApi } from '../rest';
 
-export const actionButtonsHandler = (
-	apiManager: AppsRestApi,
-): [Record<string, any>, Record<string, Function>] => [
+export const actionButtonsHandler = (apiManager: AppsRestApi): [Record<string, any>, Record<string, Function>] => [
 	{
 		authRequired: false,
 	},

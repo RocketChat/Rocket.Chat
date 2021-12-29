@@ -1,11 +1,4 @@
-import {
-	ObjectId,
-	Collection,
-	Cursor,
-	FindOneOptions,
-	UpdateWriteOpResult,
-	WithoutProjection,
-} from 'mongodb';
+import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult, WithoutProjection } from 'mongodb';
 
 import { INpsVote, INpsVoteStatus } from '../../../../definition/INps';
 import { BaseRaw } from './BaseRaw';
@@ -15,10 +8,7 @@ export class NpsVoteRaw extends BaseRaw<T> {
 	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
 		super(col, trash);
 
-		this.col.createIndexes([
-			{ key: { npsId: 1, status: 1, sentAt: 1 } },
-			{ key: { npsId: 1, identifier: 1 } },
-		]);
+		this.col.createIndexes([{ key: { npsId: 1, status: 1, sentAt: 1 } }, { key: { npsId: 1, identifier: 1 } }]);
 	}
 
 	findNotSentByNpsId(npsId: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
@@ -29,11 +19,7 @@ export class NpsVoteRaw extends BaseRaw<T> {
 		return this.col.find(query, options).sort({ ts: 1 }).limit(1000);
 	}
 
-	findByNpsIdAndStatus(
-		npsId: string,
-		status: INpsVoteStatus,
-		options?: WithoutProjection<FindOneOptions<T>>,
-	): Cursor<T> {
+	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const query = {
 			npsId,
 			status,

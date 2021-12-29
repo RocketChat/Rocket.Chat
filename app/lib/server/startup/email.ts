@@ -126,17 +126,13 @@ settingsRegistry.addGroup('Email', function () {
 			i18nLabel: 'Offline_DM_Email',
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
-		this.add(
-			'Offline_Mention_Email',
-			'[[Site_Name]] You have been mentioned by [User] in #[Room]',
-			{
-				type: 'code',
-				code: 'text',
-				multiline: true,
-				i18nLabel: 'Offline_Mention_Email',
-				i18nDescription: 'Offline_Email_Subject_Description',
-			},
-		);
+		this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
+			type: 'code',
+			code: 'text',
+			multiline: true,
+			i18nLabel: 'Offline_Mention_Email',
+			i18nDescription: 'Offline_Email_Subject_Description',
+		});
 		this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
 			type: 'code',
 			code: 'text',

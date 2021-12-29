@@ -127,9 +127,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const roomData = getRoomData(data.rid);
 
-	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${
-		data.format
-	}`;
+	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${data.format}`;
 
 	const fullFileList: any[] = [];
 
@@ -146,16 +144,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 			  };
 
 	const exportMessages = async (): Promise<void> => {
-		const { fileList } = await exportRoomMessagesToFile(
-			exportPath,
-			assetsPath,
-			exportType,
-			roomsToExport,
-			user,
-			filter,
-			{},
-			false,
-		);
+		const { fileList } = await exportRoomMessagesToFile(exportPath, assetsPath, exportType, roomsToExport, user, filter, {}, false);
 
 		fullFileList.push(...fileList);
 

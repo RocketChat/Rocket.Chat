@@ -49,10 +49,7 @@ Template.contactChatHistoryMessages.events({
 		return instance.clear();
 	},
 	'scroll .js-list': _.throttle(function (e, instance) {
-		if (
-			e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight &&
-			instance.hasMore.get()
-		) {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
@@ -106,14 +103,10 @@ Template.contactChatHistoryMessages.onCreated(function () {
 		const searchTerm = this.searchTerm.get();
 
 		if (searchTerm !== '') {
-			return this.loadMessages(
-				`chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`,
-			);
+			return this.loadMessages(`chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`);
 		}
 
-		this.loadMessages(
-			`livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`,
-		);
+		this.loadMessages(`livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`);
 	});
 
 	this.autorun(() => {

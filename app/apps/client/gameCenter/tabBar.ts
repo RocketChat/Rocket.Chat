@@ -5,11 +5,7 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 addAction('game-center', () => {
-	const {
-		value = { externalComponents: [] },
-		phase: state,
-		error,
-	} = useEndpointData('/apps/externalComponents');
+	const { value = { externalComponents: [] }, phase: state, error } = useEndpointData('/apps/externalComponents');
 
 	const hasExternalComponents = value && value.externalComponents.length > 0;
 	const hasError = !!error;

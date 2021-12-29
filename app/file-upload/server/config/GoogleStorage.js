@@ -88,21 +88,9 @@ const configure = _.debounce(function () {
 		URLExpiryTimeSpan,
 	};
 
-	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore(
-		'GoogleStorage',
-		GoogleCloudStorageUploads.name,
-		config,
-	);
-	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore(
-		'GoogleStorage',
-		GoogleCloudStorageAvatars.name,
-		config,
-	);
-	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore(
-		'GoogleStorage',
-		GoogleCloudStorageUserDataFiles.name,
-		config,
-	);
+	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUploads.name, config);
+	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageAvatars.name, config);
+	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUserDataFiles.name, config);
 }, 500);
 
 settings.watchByRegex(/^FileUpload_GoogleStorage_/, configure);

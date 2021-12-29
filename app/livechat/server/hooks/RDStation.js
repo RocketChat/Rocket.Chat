@@ -16,9 +16,7 @@ function sendToRDStation(room) {
 		return room;
 	}
 
-	const email = Array.isArray(livechatData.visitor.email)
-		? livechatData.visitor.email[0].address
-		: livechatData.visitor.email;
+	const email = Array.isArray(livechatData.visitor.email) ? livechatData.visitor.email[0].address : livechatData.visitor.email;
 
 	const options = {
 		headers: {
@@ -59,16 +57,6 @@ function sendToRDStation(room) {
 	return room;
 }
 
-callbacks.add(
-	'livechat.closeRoom',
-	sendToRDStation,
-	callbacks.priority.MEDIUM,
-	'livechat-rd-station-close-room',
-);
+callbacks.add('livechat.closeRoom', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-close-room');
 
-callbacks.add(
-	'livechat.saveInfo',
-	sendToRDStation,
-	callbacks.priority.MEDIUM,
-	'livechat-rd-station-save-info',
-);
+callbacks.add('livechat.saveInfo', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-save-info');

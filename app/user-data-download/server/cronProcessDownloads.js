@@ -77,9 +77,7 @@ export const loadUserSubscriptions = function (exportOperation, fileType, userId
 	const cursor = Subscriptions.findByUserId(userId);
 	cursor.forEach((subscription) => {
 		const roomData = getRoomData(subscription.rid, userId);
-		const targetFile = `${
-			(fileType === 'json' && roomData.roomName) || subscription.rid
-		}.${fileType}`;
+		const targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
 		roomList.push({
 			...roomData,
@@ -111,12 +109,7 @@ const getAttachmentData = function (attachment, message) {
 		fileName: null,
 	};
 
-	const url =
-		attachment.title_link ||
-		attachment.image_url ||
-		attachment.audio_url ||
-		attachment.video_url ||
-		attachment.message_link;
+	const url = attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url || attachment.message_link;
 	if (url) {
 		attachmentData.url = url;
 	}
@@ -148,9 +141,7 @@ const hideUserName = function (username, userData, usersMap) {
 };
 
 const getMessageData = function (msg, hideUsers, userData, usersMap) {
-	const username = hideUsers
-		? hideUserName(msg.u.username || msg.u.name, userData, usersMap)
-		: msg.u.username;
+	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name, userData, usersMap) : msg.u.username;
 
 	const messageObject = {
 		msg: msg.msg,
@@ -227,20 +218,15 @@ const exportMessageObject = (type, messageObject, messageFile) => {
 
 	const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-	const message = italicTypes.includes(messageType)
-		? `<i>${messageObject.msg}</i>`
-		: messageObject.msg;
+	const message = italicTypes.includes(messageType) ? `<i>${messageObject.msg}</i>` : messageObject.msg;
 
 	file.push(`<p><strong>${messageObject.username}</strong> (${timestamp}):<br/>`);
 	file.push(message);
 
 	if (messageFile?._id) {
-		const attachment = messageObject.attachments.find(
-			(att) => att.type === 'file' && att.title_link.includes(messageFile._id),
-		);
+		const attachment = messageObject.attachments.find((att) => att.type === 'file' && att.title_link.includes(messageFile._id));
 
-		const description =
-			attachment?.description || attachment?.title || TAPi18n.__('Message_Attachments');
+		const description = attachment?.description || attachment?.title || TAPi18n.__('Message_Attachments');
 
 		const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
 		const link = `<br/><a href="${assetUrl}">${description}</a>`;
@@ -299,9 +285,7 @@ export async function exportRoomMessages(
 }
 
 export const isExportComplete = function (exportOperation) {
-	const incomplete = exportOperation.roomList.some(
-		(exportOpRoomData) => exportOpRoomData.status !== 'completed',
-	);
+	const incomplete = exportOperation.roomList.some((exportOpRoomData) => exportOpRoomData.status !== 'completed');
 
 	return !incomplete;
 };
@@ -412,20 +396,12 @@ export const exportRoomMessagesToFile = async function (
 		fileList: [],
 	};
 
-	const limit =
-		settings.get('UserData_MessageLimitPerRequest') > 0
-			? settings.get('UserData_MessageLimitPerRequest')
-			: 1000;
+	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
 	for (const exportOpRoomData of roomList) {
 		const filePath = joinPath(exportPath, exportOpRoomData.targetFile);
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
-			startFile(
-				filePath,
-				exportType === 'html'
-					? '<meta http-equiv="content-type" content="text/html; charset=utf-8">'
-					: '',
-			);
+			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
 		}
 
 		const skip = exportOpRoomData.exportedCount;
@@ -479,10 +455,7 @@ const generateUserFile = function (exportOperation, userData) {
 		services: Object.keys(services),
 	};
 
-	const fileName = joinPath(
-		exportOperation.exportPath,
-		exportOperation.fullExport ? 'user.json' : 'user.html',
-	);
+	const fileName = joinPath(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
 	startFile(fileName, '');
 
 	if (exportOperation.fullExport) {
@@ -539,11 +512,7 @@ const continueExportOperation = async function (exportOperation) {
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
-		exportOperation.roomList = loadUserSubscriptions(
-			exportOperation,
-			exportType,
-			exportOperation.userId,
-		);
+		exportOperation.roomList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
 
 		if (exportOperation.fullExport) {
 			exportOperation.status = 'exporting-rooms';
@@ -615,11 +584,7 @@ const continueExportOperation = async function (exportOperation) {
 		}
 
 		if (exportOperation.status === 'uploading') {
-			const { _id: fileId } = await uploadZipFile(
-				exportOperation.generatedFile,
-				exportOperation.userId,
-				exportType,
-			);
+			const { _id: fileId } = await uploadZipFile(exportOperation.generatedFile, exportOperation.userId, exportType);
 			exportOperation.fileId = fileId;
 
 			exportOperation.status = 'completed';

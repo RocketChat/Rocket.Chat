@@ -20,9 +20,7 @@ API.v1.addRoute(
 		get() {
 			const { clientId, appId } = this.queryParams;
 			if (!clientId && !appId) {
-				return API.v1.failure(
-					'At least one of the query parameters "clientId" or "appId" is required.',
-				);
+				return API.v1.failure('At least one of the query parameters "clientId" or "appId" is required.');
 			}
 
 			return API.v1.success({

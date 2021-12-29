@@ -1563,9 +1563,7 @@ describe('Meteor.methods', function () {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('message').that.is.an('object');
-							expect(res.body.message.msg).to.equal(
-								'test message with ```https://github.com``` updated',
-							);
+							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
 							expect(res.body.message).to.have.property('urls');
 							expect(res.body.message.urls.length).to.be.equal(0);
 						})

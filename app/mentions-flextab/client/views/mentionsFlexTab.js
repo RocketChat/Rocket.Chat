@@ -61,9 +61,7 @@ Template.mentionsFlexTab.onCreated(function () {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(
-			`chat.getMentionedMessages?roomId=${this.data.rid}&count=${limit}`,
-		);
+		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${this.data.rid}&count=${limit}`);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 
@@ -78,10 +76,7 @@ Template.mentionsFlexTab.onDestroyed(function () {
 Template.mentionsFlexTab.events({
 	...getCommonRoomEvents(),
 	'scroll .js-list': _.throttle(function (e, instance) {
-		if (
-			e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight &&
-			instance.hasMore.get()
-		) {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}
 	}, 200),

@@ -17,33 +17,21 @@ API.v1.addRoute(
 			let { id } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
-				throw new Meteor.Error(
-					'error-id-param-not-valid',
-					'The required "id" body param is invalid.',
-				);
+				throw new Meteor.Error('error-id-param-not-valid', 'The required "id" body param is invalid.');
 			} else {
 				id = Random.id();
 			}
 
 			if (!type || (type !== 'apn' && type !== 'gcm')) {
-				throw new Meteor.Error(
-					'error-type-param-not-valid',
-					'The required "type" body param is missing or invalid.',
-				);
+				throw new Meteor.Error('error-type-param-not-valid', 'The required "type" body param is missing or invalid.');
 			}
 
 			if (!value || typeof value !== 'string') {
-				throw new Meteor.Error(
-					'error-token-param-not-valid',
-					'The required "value" body param is missing or invalid.',
-				);
+				throw new Meteor.Error('error-token-param-not-valid', 'The required "value" body param is missing or invalid.');
 			}
 
 			if (!appName || typeof appName !== 'string') {
-				throw new Meteor.Error(
-					'error-appName-param-not-valid',
-					'The required "appName" body param is missing or invalid.',
-				);
+				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
 			let result;
@@ -62,10 +50,7 @@ API.v1.addRoute(
 			const { token } = this.bodyParams;
 
 			if (!token || typeof token !== 'string') {
-				throw new Meteor.Error(
-					'error-token-param-not-valid',
-					'The required "token" body param is missing or invalid.',
-				);
+				throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
 			}
 
 			const affectedRecords = appTokensCollection.remove({

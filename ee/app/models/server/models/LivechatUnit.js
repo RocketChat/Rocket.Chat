@@ -1,8 +1,6 @@
 import _ from 'underscore';
 
-import LivechatDepartmentInstance, {
-	LivechatDepartment,
-} from '../../../../../app/models/server/models/LivechatDepartment';
+import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
 import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import LivechatUnitMonitors from './LivechatUnitMonitors';
@@ -79,10 +77,7 @@ export class LivechatUnit extends LivechatDepartment {
 			});
 		});
 
-		const savedDepartments = _.pluck(
-			LivechatDepartmentInstance.find({ parentId: _id }).fetch(),
-			'_id',
-		);
+		const savedDepartments = _.pluck(LivechatDepartmentInstance.find({ parentId: _id }).fetch(), '_id');
 		const departmentsToSave = _.pluck(departments, 'departmentId');
 
 		// remove other departments

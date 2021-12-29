@@ -19,20 +19,13 @@ Package.onUse(function (api) {
 		const fullPath = `${workingDir}/packages/${additionalPackages[current]}`;
 		fs.readdirSync(fullPath).forEach(function (filename) {
 			if (filename.indexOf('.json') > -1 && fs.statSync(`${fullPath}/${filename}`).size > 16) {
-				fs.writeFileSync(
-					`${i18nDir}/${current}.${filename}`,
-					fs.readFileSync(`${fullPath}/${filename}`),
-				);
+				fs.writeFileSync(`${i18nDir}/${current}.${filename}`, fs.readFileSync(`${fullPath}/${filename}`));
 			}
 		});
 	});
 
 	fs.readdirSync(i18nDir).forEach(function (filename) {
-		if (
-			filename.indexOf('.json') > -1 &&
-			filename.indexOf('livechat.') === -1 &&
-			fs.statSync(`${i18nDir}/${filename}`).size > 16
-		) {
+		if (filename.indexOf('.json') > -1 && filename.indexOf('livechat.') === -1 && fs.statSync(`${i18nDir}/${filename}`).size > 16) {
 			api.addFiles(`i18n/${filename}`);
 		}
 	});

@@ -18,18 +18,10 @@ async function afterSaveMessage(message, room) {
 	// If editedAt exists, it means it is an update
 	if (message.editedAt) {
 		// Create the edit message event
-		event = await FederationRoomEvents.createEditMessageEvent(
-			getFederationDomain(),
-			room._id,
-			normalizers.normalizeMessage(message),
-		);
+		event = await FederationRoomEvents.createEditMessageEvent(getFederationDomain(), room._id, normalizers.normalizeMessage(message));
 	} else {
 		// Create the message event
-		event = await FederationRoomEvents.createMessageEvent(
-			getFederationDomain(),
-			room._id,
-			normalizers.normalizeMessage(message),
-		);
+		event = await FederationRoomEvents.createMessageEvent(getFederationDomain(), room._id, normalizers.normalizeMessage(message));
 	}
 
 	// Dispatch event (async)

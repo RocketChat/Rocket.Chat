@@ -27,8 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		const newStatus =
-			status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
+		const newStatus = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
 
 		if (newStatus === agent.statusLivechat) {
 			return;

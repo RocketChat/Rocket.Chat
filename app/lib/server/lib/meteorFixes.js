@@ -32,15 +32,11 @@ Meteor.setInterval(() => {
 	const driver = MongoInternals.defaultRemoteCollectionDriver();
 
 	Object.entries(driver.mongo._observeMultiplexers)
-		.filter(
-			([, { _observeDriver }]) =>
-				_observeDriver._phase === 'QUERYING' && timeoutQuery < now - _observeDriver._phaseStartTime,
-		)
+		.filter(([, { _observeDriver }]) => _observeDriver._phase === 'QUERYING' && timeoutQuery < now - _observeDriver._phaseStartTime)
 		.forEach(([observeKey, { _observeDriver }]) => {
 			console.error('TIMEOUT QUERY OPERATION', {
 				observeKey,
-				writesToCommitWhenWeReachSteadyLength:
-					_observeDriver._writesToCommitWhenWeReachSteady.length,
+				writesToCommitWhenWeReachSteadyLength: _observeDriver._writesToCommitWhenWeReachSteady.length,
 				cursorDescription: JSON.stringify(_observeDriver._cursorDescription),
 			});
 			_observeDriver._registerPhaseChange('STEADY');

@@ -39,9 +39,6 @@ window.addEventListener('message', function (e) {
 		ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'] &&
 			ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'](e.data.version);
 	} else if (e.data.sourceId != null) {
-		return (
-			typeof ChromeScreenShare.callbacks.getSourceId === 'function' &&
-			ChromeScreenShare.callbacks.getSourceId(e.data.sourceId)
-		);
+		return typeof ChromeScreenShare.callbacks.getSourceId === 'function' && ChromeScreenShare.callbacks.getSourceId(e.data.sourceId);
 	}
 });

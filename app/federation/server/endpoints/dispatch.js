@@ -3,13 +3,7 @@ import { EJSON } from 'meteor/ejson';
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
-import {
-	FederationRoomEvents,
-	Messages,
-	Rooms,
-	Subscriptions,
-	Users,
-} from '../../../models/server';
+import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
@@ -129,10 +123,7 @@ const eventHandlers = {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						Subscriptions.update(
-							{ _id: persistedSubscription._id },
-							{ $set: { federation: subscription.federation } },
-						);
+						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
@@ -144,9 +135,7 @@ const eventHandlers = {
 					federationAltered = true;
 				}
 			} catch (ex) {
-				serverLogger.debug(
-					`unable to create subscription for user ( ${user._id} ) in room (${roomId})`,
-				);
+				serverLogger.debug(`unable to create subscription for user ( ${user._id} ) in room (${roomId})`);
 			}
 
 			// Refresh the servers list
@@ -229,10 +218,7 @@ const eventHandlers = {
 			if (persistedMessage) {
 				// Update the federation
 				if (!persistedMessage.federation) {
-					Messages.update(
-						{ _id: persistedMessage._id },
-						{ $set: { federation: message.federation } },
-					);
+					Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
 				}
 			} else {
 				// Load the room
@@ -318,10 +304,7 @@ const eventHandlers = {
 				eventResult.reason = 'missingMessageToEdit';
 			} else {
 				// Update the message
-				Messages.update(
-					{ _id: persistedMessage._id },
-					{ $set: { msg: message.msg, federation: message.federation } },
-				);
+				Messages.update({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
 			}
 		}
 

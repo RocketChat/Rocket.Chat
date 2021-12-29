@@ -41,10 +41,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
 
-		if (
-			(!room.servedBy || room.servedBy._id !== userId) &&
-			!hasPermission(userId, 'save-others-livechat-room-info')
-		) {
+		if ((!room.servedBy || room.servedBy._id !== userId) && !hasPermission(userId, 'save-others-livechat-room-info')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
@@ -52,8 +49,7 @@ Meteor.methods({
 			delete guestData.phone;
 		}
 
-		const ret =
-			Livechat.saveGuest(guestData, userId) && Livechat.saveRoomInfo(roomData, guestData, userId);
+		const ret = Livechat.saveGuest(guestData, userId) && Livechat.saveRoomInfo(roomData, guestData, userId);
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
 

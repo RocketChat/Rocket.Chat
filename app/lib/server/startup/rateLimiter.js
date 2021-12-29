@@ -29,8 +29,7 @@ DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function (input) {
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth =
-		(session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
 };
@@ -40,8 +39,7 @@ DDPRateLimiter._increment = function (input) {
 RateLimiter.prototype.check = function (input) {
 	// ==== BEGIN OVERRIDE ====
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth =
-		(session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
 	const self = this;
@@ -92,10 +90,7 @@ RateLimiter.prototype.check = function (input) {
 		} else {
 			// If this is an allowed attempt and we haven't failed on any of the
 			// other rules that match, update the reply field.
-			if (
-				rule.options.numRequestsAllowed - numInvocations < reply.numInvocationsLeft &&
-				reply.allowed
-			) {
+			if (rule.options.numRequestsAllowed - numInvocations < reply.numInvocationsLeft && reply.allowed) {
 				reply.timeToReset = ruleResult.timeToNextReset;
 				reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
 			}

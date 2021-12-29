@@ -208,9 +208,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	// For the Rocket.Chat Apps :)
 	if (Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(
-			Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message),
-		);
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			if (settings.get('Apps_Framework_Development_Mode')) {
 				SystemLogger.info({ msg: 'A Rocket.Chat App prevented the message sending.', message });
@@ -220,12 +218,8 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		}
 
 		let result;
-		result = Promise.await(
-			Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message),
-		);
-		result = Promise.await(
-			Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result),
-		);
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -258,8 +252,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 			);
 			message._id = _id;
 		} else {
-			const messageAlreadyExists =
-				message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
 			if (messageAlreadyExists) {
 				return;
 			}

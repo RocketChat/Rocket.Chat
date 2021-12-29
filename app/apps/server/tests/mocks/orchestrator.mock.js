@@ -90,9 +90,7 @@ export class AppServerOrchestratorMock {
 
 		this._manager
 			.load()
-			.then((affs) =>
-				console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`),
-			)
+			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`))
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
 	}
 

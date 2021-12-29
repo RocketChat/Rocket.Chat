@@ -365,14 +365,7 @@ API.v1.addRoute(
 			const { text, onlyMyDepartments } = this.queryParams;
 
 			const { departments, total } = Promise.await(
-				findAllDepartmentsAvailable(
-					this.userId,
-					unitId,
-					offset,
-					count,
-					text,
-					onlyMyDepartments === 'true',
-				),
+				findAllDepartmentsAvailable(this.userId, unitId, offset, count, text, onlyMyDepartments === 'true'),
 			);
 
 			return API.v1.success({

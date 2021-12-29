@@ -178,11 +178,7 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 	const convertShortName = mem(
 		function (shortname) {
 			// the fix is basically adding this .replace(/[+]/g, '\\$&')
-			if (
-				typeof shortname === 'undefined' ||
-				shortname === '' ||
-				ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1
-			) {
+			if (typeof shortname === 'undefined' || shortname === '' || ns.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1) {
 				// if the shortname doesnt exist just return the entire match
 				return shortname;
 			}
@@ -203,15 +199,11 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 
 			const unicode = ns.emojioneList[shortname].uc_output;
 			const fname = ns.emojioneList[shortname].uc_base;
-			const category =
-				fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+			const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
 			const title = ns.imageTitleTag ? `title="${shortname}"` : '';
 			// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 			// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
-			const ePath =
-				ns.defaultPathPNG !== ns.imagePathPNG
-					? ns.imagePathPNG
-					: `${ns.defaultPathPNG + ns.emojiSize}/`;
+			const ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ns.defaultPathPNG + ns.emojiSize}/`;
 
 			// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
 			const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : shortname;
@@ -236,15 +228,11 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 			m3 = ns.unescapeHTML(m3);
 			const unicode = ns.asciiList[m3];
 			const shortname = mappedUnicode[unicode];
-			const category =
-				unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
+			const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : ns.emojioneList[shortname].category;
 			const title = ns.imageTitleTag ? `title="${ns.escapeHTML(m3)}"` : '';
 			// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 			// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
-			const ePath =
-				ns.defaultPathPNG !== ns.imagePathPNG
-					? ns.imagePathPNG
-					: `${ns.defaultPathPNG + ns.emojiSize}/`;
+			const ePath = ns.defaultPathPNG !== ns.imagePathPNG ? ns.imagePathPNG : `${ns.defaultPathPNG + ns.emojiSize}/`;
 
 			// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
 			const alt = ns.unicodeAlt ? ns.convert(unicode.toUpperCase()) : ns.escapeHTML(m3);

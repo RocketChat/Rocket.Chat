@@ -5,20 +5,13 @@ import { UserStatus } from '../../../../../definition/UserStatus';
 import { IUserSession } from '../../../../../definition/IUserSession';
 import { api } from '../../../../../server/sdk/api';
 
-export async function setStatus(
-	uid: string,
-	statusDefault: UserStatus,
-	statusText?: string,
-): Promise<boolean> {
+export async function setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
 	const query = { _id: uid };
 
 	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
 	const userSessions = (await UserSession.findOne(query)) || { connections: [] };
 
-	const { status, statusConnection } = processPresenceAndStatus(
-		userSessions.connections,
-		statusDefault,
-	);
+	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
 	const update = {
 		statusDefault,
@@ -49,11 +42,7 @@ export async function setStatus(
 	return !!result.modifiedCount;
 }
 
-export async function setConnectionStatus(
-	uid: string,
-	status: UserStatus,
-	session: string,
-): Promise<boolean> {
+export async function setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
 	const query = {
 		'_id': uid,
 		'connections.id': session,

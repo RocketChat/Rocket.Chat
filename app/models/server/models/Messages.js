@@ -30,10 +30,7 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-		this.tryEnsureIndex(
-			{ rid: 1, tlm: -1 },
-			{ partialFilterExpression: { tcount: { $exists: true } } },
-		); // used for the List Threads
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
 		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
@@ -367,14 +364,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
-		roomId,
-		timestamp,
-		types,
-		options,
-		showThreadMessages = true,
-		inclusive = false,
-	) {
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -942,35 +932,17 @@ export class Messages extends Base {
 
 	createUserUnmutedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'user-unmuted',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('user-unmuted', roomId, message, user, extraData);
 	}
 
 	createNewModeratorWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'new-moderator',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('new-moderator', roomId, message, user, extraData);
 	}
 
 	createModeratorRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'moderator-removed',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, extraData);
 	}
 
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {
@@ -980,13 +952,7 @@ export class Messages extends Base {
 
 	createOwnerRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'owner-removed',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('owner-removed', roomId, message, user, extraData);
 	}
 
 	createNewLeaderWithRoomIdAndUser(roomId, user, extraData) {
@@ -996,35 +962,17 @@ export class Messages extends Base {
 
 	createLeaderRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'leader-removed',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('leader-removed', roomId, message, user, extraData);
 	}
 
 	createSubscriptionRoleAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'subscription-role-added',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('subscription-role-added', roomId, message, user, extraData);
 	}
 
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(
-			'subscription-role-removed',
-			roomId,
-			message,
-			user,
-			extraData,
-		);
+		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
 	// REMOVE
@@ -1044,10 +992,7 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	findThreadsByRoomIdPinnedTimestampAndUsers(
-		{ rid, pinned, ignoreDiscussion = true, ts, users = [] },
-		options,
-	) {
+	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
 		const query = {
 			rid,
 			ts,
@@ -1070,15 +1015,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(
-		rid,
-		pinned,
-		ignoreDiscussion = true,
-		ts,
-		limit,
-		users = [],
-		ignoreThreads = true,
-	) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,

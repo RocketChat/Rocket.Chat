@@ -13,14 +13,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import {
-	LivechatRooms,
-	Rooms,
-	Messages,
-	Users,
-	LivechatInquiry,
-	Subscriptions,
-} from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
 const logger = new Logger('RoutingManager');
@@ -41,9 +34,7 @@ export const RoutingManager = {
 	setMethodNameAndStartQueue(name) {
 		logger.debug(`Changing default routing method from ${this.methodName} to ${name}`);
 		if (!this.methods[name]) {
-			logger.warn(
-				`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`,
-			);
+			logger.warn(`Cannot change routing method to ${name}. Selected Routing method does not exists. Defaulting to Manual_Selection`);
 			this.methodName = 'Manual_Selection';
 		} else {
 			this.methodName = name;
@@ -76,19 +67,10 @@ export const RoutingManager = {
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (
-			!agent ||
-			(agent.username &&
-				!Users.findOneOnlineAgentByUserList(agent.username) &&
-				!allowAgentSkipQueue(agent))
-		) {
-			logger.debug(
-				`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`,
-			);
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
-			logger.debug(
-				`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`,
-			);
+			logger.debug(`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`);
 		}
 
 		if (!agent) {
@@ -127,9 +109,7 @@ export const RoutingManager = {
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		Apps.getBridges()
-			.getListenerBridge()
-			.livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 
@@ -144,9 +124,7 @@ export const RoutingManager = {
 		}
 
 		if (departmentId && departmentId !== department) {
-			logger.debug(
-				`Switching department for inquiry ${inquiry._id} [Current: ${department} | Next: ${departmentId}]`,
-			);
+			logger.debug(`Switching department for inquiry ${inquiry._id} [Current: ${department} | Next: ${departmentId}]`);
 			updateChatDepartment({
 				rid,
 				newDepartmentId: departmentId,
@@ -197,9 +175,7 @@ export const RoutingManager = {
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
-			logger.debug(
-				`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`,
-			);
+			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
 		}
 

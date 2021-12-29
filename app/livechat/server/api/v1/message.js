@@ -227,10 +227,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
-				throw new Meteor.Error(
-					'error-token-param-not-provided',
-					'The required "token" query param is missing.',
-				);
+				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
 			}
 
 			const guest = findGuest(token);

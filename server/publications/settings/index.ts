@@ -44,12 +44,8 @@ Meteor.methods({
 			return [];
 		}
 
-		const privilegedSetting = hasAtLeastOnePermission(uid, [
-			'view-privileged-setting',
-			'edit-privileged-setting',
-		]);
-		const manageSelectedSettings =
-			privilegedSetting || hasPermission(uid, 'manage-selected-settings');
+		const privilegedSetting = hasAtLeastOnePermission(uid, ['view-privileged-setting', 'edit-privileged-setting']);
+		const manageSelectedSettings = privilegedSetting || hasPermission(uid, 'manage-selected-settings');
 
 		if (!manageSelectedSettings) {
 			return [];
@@ -62,10 +58,7 @@ Meteor.methods({
 		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] =>
 			settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));
 
-		const getAuthorizedSettings = async (
-			updatedAfter: Date,
-			privilegedSetting: boolean,
-		): Promise<ISetting[]> =>
+		const getAuthorizedSettings = async (updatedAfter: Date, privilegedSetting: boolean): Promise<ISetting[]> =>
 			applyFilter(
 				privilegedSetting ? bypass : getAuthorizedSettingsFiltered,
 				await Settings.findNotHidden(updatedAfter && { updatedAfter }).toArray(),

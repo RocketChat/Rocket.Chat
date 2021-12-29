@@ -35,8 +35,7 @@ const casTicket = function (req, token, callback) {
 	const ticketId = parsedUrl.query.ticket;
 	const baseUrl = settings.get('CAS_base_url');
 	const cas_version = parseFloat(settings.get('CAS_version'));
-	const appUrl =
-		Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${baseUrl}`);
 
 	const cas = new CAS({
@@ -120,14 +119,9 @@ Accounts.registerLoginHandler(function (options) {
 	}
 
 	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = Promise.await(
-		CredentialTokens.findOneNotExpiredById(options.cas.credentialToken),
-	);
+	const credentials = Promise.await(CredentialTokens.findOneNotExpiredById(options.cas.credentialToken));
 	if (credentials === undefined) {
-		throw new Meteor.Error(
-			Accounts.LoginCancelledError.numericError,
-			'no matching login attempt found',
-		);
+		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
 
 	const result = credentials.userInfo;
@@ -276,13 +270,8 @@ Accounts.registerLoginHandler(function (options) {
 		}
 	} else {
 		// Should fail as no user exist and can't be created
-		logger.debug(
-			`User "${result.username}" does not exist yet, will fail as no user creation is enabled`,
-		);
-		throw new Meteor.Error(
-			Accounts.LoginCancelledError.numericError,
-			'no matching user account found',
-		);
+		logger.debug(`User "${result.username}" does not exist yet, will fail as no user creation is enabled`);
+		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching user account found');
 	}
 
 	return { userId: user._id };

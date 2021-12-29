@@ -552,10 +552,7 @@ describe('miscellaneous', function () {
 
 					expect(extraInformation).to.have.property('host');
 					expect(extraInformation).to.have.property('port');
-					expect(extraInformation)
-						.to.have.property('os')
-						.and.to.have.property('cpus')
-						.to.be.a('number');
+					expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
 					expect(extraInformation).to.have.property('nodeVersion');
 				})
 				.end(done);

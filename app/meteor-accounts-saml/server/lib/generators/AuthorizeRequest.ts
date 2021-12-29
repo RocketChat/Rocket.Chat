@@ -16,10 +16,7 @@ import { IAuthorizeRequestVariables } from '../../definition/IAuthorizeRequestVa
 export class AuthorizeRequest {
 	public static generate(serviceProviderOptions: IServiceProviderOptions): ISAMLRequest {
 		const data = this.getDataForNewRequest(serviceProviderOptions);
-		const request = SAMLUtils.fillTemplateData(
-			this.authorizeRequestTemplate(serviceProviderOptions),
-			data,
-		);
+		const request = SAMLUtils.fillTemplateData(this.authorizeRequestTemplate(serviceProviderOptions), data);
 
 		return {
 			request,
@@ -40,9 +37,7 @@ export class AuthorizeRequest {
 		return SAMLUtils.fillTemplateData(template, data);
 	}
 
-	private static identifierFormatTagTemplate(
-		serviceProviderOptions: IServiceProviderOptions,
-	): string {
+	private static identifierFormatTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
 		if (!serviceProviderOptions.identifierFormat) {
 			return '';
 		}
@@ -58,9 +53,7 @@ export class AuthorizeRequest {
 		return serviceProviderOptions.authnContextTemplate || defaultAuthnContextTemplate;
 	}
 
-	private static getDataForNewRequest(
-		serviceProviderOptions: IServiceProviderOptions,
-	): IAuthorizeRequestVariables {
+	private static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions): IAuthorizeRequestVariables {
 		let id = `_${SAMLUtils.generateUniqueID()}`;
 		const instant = SAMLUtils.generateInstant();
 

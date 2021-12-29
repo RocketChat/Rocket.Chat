@@ -15,8 +15,7 @@ const getDateObj = (dateTime = new Date()) => ({
 	year: dateTime.getFullYear(),
 });
 
-const isSameDateObj = (oldest, newest) =>
-	oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
+const isSameDateObj = (oldest, newest) => oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
 
 const logger = new Logger('SAUMonitor');
 
@@ -165,27 +164,16 @@ export class SAUMonitorClass {
 		const currentDay = getDateObj(currentDateTime);
 
 		if (!isSameDateObj(this._today, currentDay)) {
-			const beforeDateTime = new Date(
-				this._today.year,
-				this._today.month - 1,
-				this._today.day,
-				23,
-				59,
-				59,
-				999,
-			);
+			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
 			const createSessions = async (objects, ids) => {
 				await Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
-					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds(
-						{ year, month, day },
-						this._instanceId,
-						ids,
-						{ lastActivityAt: beforeDateTime },
-					);
+					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, {
+						lastActivityAt: beforeDateTime,
+					});
 				});
 			};
 			this._applyAllServerSessionsBatch(createSessions, {
@@ -199,12 +187,9 @@ export class SAUMonitorClass {
 
 		// Otherwise, just update the lastActivityAt field
 		await this._applyAllServerSessionsIds(async (sessions) => {
-			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds(
-				{ year, month, day },
-				this._instanceId,
-				sessions,
-				{ lastActivityAt: currentDateTime },
-			);
+			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, {
+				lastActivityAt: currentDateTime,
+			});
 		});
 	}
 

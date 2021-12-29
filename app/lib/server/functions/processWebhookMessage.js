@@ -11,11 +11,7 @@ import {
 	getDirectMessageByNameOrIdWithOptionToJoin,
 } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
-export const processWebhookMessage = function (
-	messageObj,
-	user,
-	defaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
-) {
+export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -78,8 +74,7 @@ export const processWebhookMessage = function (
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: s.trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments || [],
-			parseUrls:
-				messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
+			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 			tmid: messageObj.tmid,

@@ -12,13 +12,7 @@ const p = (fn) =>
 		});
 	});
 
-export const getBroadcastStatus = async ({
-	id,
-	access_token,
-	refresh_token,
-	clientId,
-	clientSecret,
-}) => {
+export const getBroadcastStatus = async ({ id, access_token, refresh_token, clientId, clientSecret }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -38,13 +32,7 @@ export const getBroadcastStatus = async ({
 	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
 };
 
-export const statusStreamLiveStream = async ({
-	id,
-	access_token,
-	refresh_token,
-	clientId,
-	clientSecret,
-}) => {
+export const statusStreamLiveStream = async ({ id, access_token, refresh_token, clientId, clientSecret }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -65,14 +53,7 @@ export const statusStreamLiveStream = async ({
 	return result.items && result.items[0].status.streamStatus;
 };
 
-export const statusLiveStream = ({
-	id,
-	access_token,
-	refresh_token,
-	clientId,
-	clientSecret,
-	status,
-}) => {
+export const statusLiveStream = ({ id, access_token, refresh_token, clientId, clientSecret, status }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -94,14 +75,7 @@ export const statusLiveStream = ({
 	);
 };
 
-export const setBroadcastStatus = ({
-	id,
-	access_token,
-	refresh_token,
-	clientId,
-	clientSecret,
-	status,
-}) => {
+export const setBroadcastStatus = ({ id, access_token, refresh_token, clientId, clientSecret, status }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -123,13 +97,7 @@ export const setBroadcastStatus = ({
 	);
 };
 
-export const createLiveStream = async ({
-	room,
-	access_token,
-	refresh_token,
-	clientId,
-	clientSecret,
-}) => {
+export const createLiveStream = async ({ room, access_token, refresh_token, clientId, clientSecret }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 	auth.setCredentials({
 		access_token,

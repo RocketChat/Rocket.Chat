@@ -25,9 +25,7 @@ renderer.code = function (code, lang, escaped) {
 	if (!lang) {
 		text = `<pre><code class="code-colors hljs">${escaped ? code : escapeHTML(code)}</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${escape(lang, true)}">${
-			escaped ? code : escapeHTML(code)
-		}</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${escape(lang, true)}">${escaped ? code : escapeHTML(code)}</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
@@ -82,10 +80,7 @@ const highlight = function (code, lang) {
 	}
 };
 
-export const marked = (
-	message,
-	{ marked: { gfm, tables, breaks, pedantic, smartLists, smartypants } = {} },
-) => {
+export const marked = (message, { marked: { gfm, tables, breaks, pedantic, smartLists, smartypants } = {} }) => {
 	msg = message;
 
 	if (!message.tokens) {

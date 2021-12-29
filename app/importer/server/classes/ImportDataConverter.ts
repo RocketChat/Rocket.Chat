@@ -7,18 +7,9 @@ import { IImportUser } from '../../../../definition/IImportUser';
 import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
 import { IImportChannel } from '../../../../definition/IImportChannel';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import {
-	IImportUserRecord,
-	IImportChannelRecord,
-	IImportMessageRecord,
-} from '../../../../definition/IImportRecord';
+import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
-import {
-	generateUsernameSuggestion,
-	insertMessage,
-	saveUserIdentity,
-	addUserToDefaultChannels,
-} from '../../../lib/server';
+import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -127,11 +118,7 @@ export class ImportDataConverter {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	protected addObject(
-		type: string,
-		data: Record<string, any>,
-		options: Record<string, any> = {},
-	): void {
+	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
 			data,
 			dataType: type,
@@ -163,11 +150,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	addUserEmails(
-		updateData: Record<string, any>,
-		userData: IImportUser,
-		existingEmails: Array<IUserEmail>,
-	): void {
+	addUserEmails(updateData: Record<string, any>, userData: IImportUser, existingEmails: Array<IUserEmail>): void {
 		if (!userData.emails?.length) {
 			return;
 		}
@@ -176,8 +159,7 @@ export class ImportDataConverter {
 		const newEmailList: Array<IUserEmail> = [];
 
 		for (const email of userData.emails) {
-			const verified =
-				verifyEmails || existingEmails.find((ee) => ee.address === email)?.verified || false;
+			const verified = verifyEmails || existingEmails.find((ee) => ee.address === email)?.verified || false;
 
 			newEmailList.push({
 				address: email,
@@ -284,9 +266,7 @@ export class ImportDataConverter {
 	}
 
 	insertUser(userData: IImportUser): IUser {
-		const password = `${Date.now()}${userData.name || ''}${
-			userData.emails.length ? userData.emails[0].toUpperCase() : ''
-		}`;
+		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? Accounts.createUser({
 					email: userData.emails[0],
@@ -413,9 +393,7 @@ export class ImportDataConverter {
 		);
 	}
 
-	convertMessageReactions(
-		importedReactions: Record<string, IImportMessageReaction>,
-	): undefined | IMessageReactions {
+	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
 		const reactions: IMessageReactions = {};
 
 		for (const name in importedReactions) {
@@ -601,9 +579,7 @@ export class ImportDataConverter {
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					this._logger.warn(
-						`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`,
-					);
+					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
 				}
 
@@ -735,10 +711,7 @@ export class ImportDataConverter {
 			return this._userDisplayNameCache.get(importId);
 		}
 
-		const user =
-			importId === 'rocket.cat'
-				? Users.findOneById('rocket.cat', options)
-				: Users.findOneByImportId(importId, options);
+		const user = importId === 'rocket.cat' ? Users.findOneById('rocket.cat', options) : Users.findOneByImportId(importId, options);
 		if (user) {
 			if (!this._userCache.has(importId)) {
 				this.addUserToCache(importId, user._id, user.username);
@@ -803,10 +776,7 @@ export class ImportDataConverter {
 	insertRoom(roomData: IImportChannel, startedByUserId: string): void {
 		// Find the rocketchatId of the user who created this channel
 		const creatorId = this.getRoomCreatorId(roomData, startedByUserId);
-		const members = this.convertImportedIdsToUsernames(
-			roomData.users,
-			roomData.t !== 'd' ? creatorId : undefined,
-		);
+		const members = this.convertImportedIdsToUsernames(roomData.users, roomData.t !== 'd' ? creatorId : undefined);
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
@@ -821,11 +791,7 @@ export class ImportDataConverter {
 				const roomInfo =
 					roomData.t === 'd'
 						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(
-								roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel',
-								roomData.name,
-								members,
-						  );
+						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
 				roomData._id = roomInfo.rid;
 			});
@@ -838,10 +804,7 @@ export class ImportDataConverter {
 		this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
-	convertImportedIdsToUsernames(
-		importedIds: Array<string>,
-		idToRemove: string | undefined = undefined,
-	): Array<string> {
+	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
 		return importedIds
 			.map((user) => {
 				if (user === 'rocket.cat') {
@@ -898,10 +861,7 @@ export class ImportDataConverter {
 		return ImportDataRaw.getAllChannels().toArray();
 	}
 
-	convertChannels(
-		startedByUserId: string,
-		{ beforeImportFn, afterImportFn }: IConversionCallbacks = {},
-	): void {
+	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const channels = Promise.await(this.getChannelsToImport());
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {

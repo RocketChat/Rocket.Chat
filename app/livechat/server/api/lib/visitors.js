@@ -43,12 +43,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	};
 }
 
-export async function findChatHistory({
-	userId,
-	roomId,
-	visitorId,
-	pagination: { offset, count, sort },
-}) {
+export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -148,22 +143,13 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 		},
 	};
 
-	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(
-		selector.term,
-		exceptions,
-		conditions,
-		options,
-	).toArray();
+	const items = await LivechatVisitors.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
 	return {
 		items,
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
-	userId,
-	term,
-	pagination: { offset, count, sort },
-}) {
+export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}

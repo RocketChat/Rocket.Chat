@@ -25,9 +25,7 @@ function _getLink(attachment) {
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
 	}
-	return (
-		Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url
-	);
+	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 }
 
 smarsh.generateEml = () => {
@@ -49,9 +47,7 @@ smarsh.generateEml = () => {
 				users: [],
 				msgs: 0,
 				files: [],
-				time: smarshHistory
-					? moment(date).diff(moment(smarshHistory.lastRan), 'minutes')
-					: moment(date).diff(moment(room.ts), 'minutes'),
+				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`,
 			};
 
@@ -84,13 +80,7 @@ smarsh.generateEml = () => {
 				if (message.t) {
 					const messageType = MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(
-							TAPi18n.__(
-								messageType.message,
-								messageType.data ? messageType.data(message) : '',
-								'en',
-							),
-						);
+						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
 						rows.push(`${message.msg} (${message.t})`);
 					}

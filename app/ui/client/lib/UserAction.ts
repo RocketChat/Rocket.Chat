@@ -40,12 +40,7 @@ const emitActivities = debounce((rid: string, extras: IExtras): void => {
 	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), [...activities], extras);
 }, 500);
 
-function handleStreamAction(
-	rid: string,
-	username: string,
-	activityTypes: string[],
-	extras?: IExtras,
-): void {
+function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
 	rid = extras?.tmid || rid;
 	const roomActivities = performingUsers.get(rid) || {};
 
@@ -60,10 +55,7 @@ function handleStreamAction(
 
 		if (activityTypes.includes(activity)) {
 			activityTypes.splice(activityTypes.indexOf(activity), 1);
-			users[username] = setTimeout(
-				() => handleStreamAction(rid, username, activityTypes, extras),
-				TIMEOUT,
-			);
+			users[username] = setTimeout(() => handleStreamAction(rid, username, activityTypes, extras), TIMEOUT);
 		} else {
 			delete users[username];
 		}

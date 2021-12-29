@@ -156,10 +156,7 @@ describe('[Users]', function () {
 						expect(res.body).to.have.nested.property('user.emails[0].address', email);
 						expect(res.body).to.have.nested.property('user.active', true);
 						expect(res.body).to.have.nested.property('user.name', username);
-						expect(res.body).to.have.nested.property(
-							'user.customFields.customFieldText',
-							'success',
-						);
+						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
 						expect(res.body).to.not.have.nested.property('user.e2e');
 					})
 					.end(done);
@@ -185,10 +182,7 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property(
-							'error',
-							`${name} is blocked and can't be used! [error-blocked-username]`,
-						);
+						expect(res.body).to.have.property('error', `${name} is blocked and can't be used! [error-blocked-username]`);
 					})
 					.end(done);
 			});
@@ -222,10 +216,7 @@ describe('[Users]', function () {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property(
-								'errorType',
-								'error-user-registration-custom-field',
-							);
+							expect(res.body).to.have.property('errorType', 'error-user-registration-custom-field');
 						})
 						.end(done);
 				});
@@ -575,14 +566,7 @@ describe('[Users]', function () {
 						expect(res.body)
 							.to.have.property('users')
 							.to.have.property('0')
-							.to.deep.have.all.keys(
-								'_id',
-								'avatarETag',
-								'username',
-								'name',
-								'status',
-								'utcOffset',
-							);
+							.to.deep.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
 					})
 					.end(done);
 			});
@@ -616,14 +600,7 @@ describe('[Users]', function () {
 						expect(res.body)
 							.to.have.property('users')
 							.to.have.property('0')
-							.to.deep.have.all.keys(
-								'_id',
-								'avatarETag',
-								'username',
-								'name',
-								'status',
-								'utcOffset',
-							);
+							.to.deep.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
 					})
 					.end(done);
 			});
@@ -1278,10 +1255,7 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property(
-							'error',
-							'Could not save user identity [error-could-not-save-identity]',
-						);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 					})
 					.end(done);
 			});
@@ -1483,10 +1457,7 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property(
-							'error',
-							'Could not save user identity [error-could-not-save-identity]',
-						);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 					})
 					.end(done);
 			});
@@ -1614,10 +1585,7 @@ describe('[Users]', function () {
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property(
-							'error',
-							'Editing user is not allowed [error-action-not-allowed]',
-						);
+						expect(res.body).to.have.property('error', 'Editing user is not allowed [error-action-not-allowed]');
 						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 					})
 					.end(done);
@@ -1887,11 +1855,7 @@ describe('[Users]', function () {
 						.post(api('users.deleteOwnAccount'))
 						.set(createdUserCredentials)
 						.send({
-							password: crypto
-								.createHash('sha256')
-								.update(password, 'utf8')
-								.digest('hex')
-								.toUpperCase(),
+							password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -2448,8 +2412,7 @@ describe('[Users]', function () {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('Remove necessary permission "create-personal-accss-tokens" to user', () =>
-				updatePermission('create-personal-access-tokens', []));
+			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request
@@ -3222,9 +3185,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						getUserStatus(credentials['X-User-Id']).then((status) =>
-							expect(status.status).to.be.equal('busy'),
-						);
+						getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
 					})
 					.end(done);
 			});
@@ -3282,9 +3243,7 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-invalid-status');
-					expect(res.body.error).to.be.equal(
-						'Valid status types include online, away, offline, and busy. [error-invalid-status]',
-					);
+					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
 				})
 				.end(done);
 		});
@@ -3302,9 +3261,7 @@ describe('[Users]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
-					expect(res.body.error).to.be.equal(
-						'Invisible status is disabled [error-status-not-allowed]',
-					);
+					expect(res.body.error).to.be.equal('Invisible status is disabled [error-status-not-allowed]');
 				});
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
@@ -3348,11 +3305,7 @@ describe('[Users]', function () {
 				}
 			}
 
-			request
-				.post(api('users.removeOtherTokens'))
-				.set(newCredentials)
-				.expect(200)
-				.then(tryAuthentication);
+			request.post(api('users.removeOtherTokens')).set(newCredentials).expect(200).then(tryAuthentication);
 		});
 	});
 
@@ -3508,12 +3461,7 @@ describe('[Users]', function () {
 
 		it('should logout the requester', (done) => {
 			updatePermission('logout-other-user', []).then(() => {
-				request
-					.post(api('users.logout'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.end(done);
+				request.post(api('users.logout')).set(credentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
 		});
 	});

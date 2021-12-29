@@ -19,10 +19,7 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
-		throw new Meteor.Error(
-			'error-roomid-param-not-provided',
-			'The parameter "roomId" or "roomName" is required',
-		);
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const fields = { ...API.v1.defaultFieldsToExclude };
@@ -34,10 +31,7 @@ function findRoomByIdOrName({ params, checkedArchived = true }) {
 		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 	if (!room) {
-		throw new Meteor.Error(
-			'error-room-not-found',
-			'The required "roomId" or "roomName" param provided does not match any channel',
-		);
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 	if (checkedArchived && room.archived) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
@@ -56,10 +50,7 @@ API.v1.addRoute(
 			let updatedSinceDate;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error(
-						'error-updatedSince-param-invalid',
-						'The "updatedSince" query parameter must be a valid date.',
-					);
+					throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 				} else {
 					updatedSinceDate = new Date(updatedSince);
 				}
@@ -141,12 +132,7 @@ API.v1.addRoute(
 			const saveNotifications = (notifications, roomId) => {
 				Object.keys(notifications).forEach((notificationKey) =>
 					Meteor.runAsUser(this.userId, () =>
-						Meteor.call(
-							'saveNotificationSettings',
-							roomId,
-							notificationKey,
-							notifications[notificationKey],
-						),
+						Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]),
 					),
 				);
 			};
@@ -486,9 +472,7 @@ API.v1.addRoute(
 		post() {
 			const { rid, ...params } = this.bodyParams;
 
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('saveRoomSettings', rid, params),
-			);
+			const result = Meteor.runAsUser(this.userId, () => Meteor.call('saveRoomSettings', rid, params));
 
 			return API.v1.success({ rid: result.rid });
 		},

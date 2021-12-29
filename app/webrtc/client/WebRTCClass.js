@@ -40,30 +40,17 @@ class WebRTCTransportClass extends Emitter {
 	}
 
 	startCall(data) {
-		this.log(
-			'WebRTCTransportClass - startCall',
-			this.webrtcInstance.room,
-			this.webrtcInstance.selfId,
-		);
-		Notifications.notifyUsersOfRoom(
-			this.webrtcInstance.room,
-			WEB_RTC_EVENTS.WEB_RTC,
-			WEB_RTC_EVENTS.CALL,
-			{
-				from: this.webrtcInstance.selfId,
-				room: this.webrtcInstance.room,
-				media: data.media,
-				monitor: data.monitor,
-			},
-		);
+		this.log('WebRTCTransportClass - startCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
+		Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.CALL, {
+			from: this.webrtcInstance.selfId,
+			room: this.webrtcInstance.room,
+			media: data.media,
+			monitor: data.monitor,
+		});
 	}
 
 	joinCall(data) {
-		this.log(
-			'WebRTCTransportClass - joinCall',
-			this.webrtcInstance.room,
-			this.webrtcInstance.selfId,
-		);
+		this.log('WebRTCTransportClass - joinCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
 		if (data.monitor === true) {
 			Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
 				from: this.webrtcInstance.selfId,
@@ -72,17 +59,12 @@ class WebRTCTransportClass extends Emitter {
 				monitor: data.monitor,
 			});
 		} else {
-			Notifications.notifyUsersOfRoom(
-				this.webrtcInstance.room,
-				WEB_RTC_EVENTS.WEB_RTC,
-				WEB_RTC_EVENTS.JOIN,
-				{
-					from: this.webrtcInstance.selfId,
-					room: this.webrtcInstance.room,
-					media: data.media,
-					monitor: data.monitor,
-				},
-			);
+			Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
+				from: this.webrtcInstance.selfId,
+				room: this.webrtcInstance.room,
+				media: data.media,
+				monitor: data.monitor,
+			});
 		}
 	}
 
@@ -103,12 +85,7 @@ class WebRTCTransportClass extends Emitter {
 	sendStatus(data) {
 		this.log('WebRTCTransportClass - sendStatus', data, this.webrtcInstance.room);
 		data.from = this.webrtcInstance.selfId;
-		Notifications.notifyRoom(
-			this.webrtcInstance.room,
-			WEB_RTC_EVENTS.WEB_RTC,
-			WEB_RTC_EVENTS.STATUS,
-			data,
-		);
+		Notifications.notifyRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.STATUS, data);
 	}
 
 	onRemoteCall(fn) {
@@ -225,10 +202,7 @@ class WebRTCClass {
 		const { peerConnections } = this;
 		const date = Date.now();
 		Object.entries(peerConnections).some(([id, peerConnection]) => {
-			if (
-				!['connected', 'completed'].includes(peerConnection.iceConnectionState) &&
-				peerConnection.createdAt + 5000 < date
-			) {
+			if (!['connected', 'completed'].includes(peerConnection.iceConnectionState) && peerConnection.createdAt + 5000 < date) {
 				this.stopPeerConnection(id);
 				return true;
 			}
@@ -323,10 +297,7 @@ class WebRTCClass {
 		];
 
 		remoteConnections.forEach((remoteConnection) => {
-			if (
-				remoteConnection.id !== this.selfId &&
-				this.peerConnections[remoteConnection.id] == null
-			) {
+			if (remoteConnection.id !== this.selfId && this.peerConnections[remoteConnection.id] == null) {
 				this.log('reconnecting with', remoteConnection.id);
 				this.onRemoteJoin({
 					from: remoteConnection.id,
@@ -390,8 +361,7 @@ class WebRTCClass {
 		});
 		peerConnection.addEventListener('iceconnectionstatechange', () => {
 			if (
-				(peerConnection.iceConnectionState === 'disconnected' ||
-					peerConnection.iceConnectionState === 'closed') &&
+				(peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'closed') &&
 				peerConnection === this.peerConnections[id]
 			) {
 				this.stopPeerConnection(id);
@@ -448,8 +418,7 @@ class WebRTCClass {
 			};
 
 			const isChromeExtensionInstalled = this.navigator === 'chrome' && ChromeScreenShare.installed;
-			const isFirefoxExtensionInstalled =
-				this.navigator === 'firefox' && window.rocketchatscreenshare != null;
+			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
 				modal.open(
@@ -465,8 +434,7 @@ class WebRTCClass {
 					(isConfirm) => {
 						if (isConfirm) {
 							if (this.navigator === 'chrome') {
-								const url =
-									'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
+								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
 								try {
 									chrome.webstore.install(url, refresh, function () {
 										window.open(url);
@@ -478,9 +446,7 @@ class WebRTCClass {
 									refresh();
 								}
 							} else if (this.navigator === 'firefox') {
-								window.open(
-									'https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/',
-								);
+								window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
 								refresh();
 							}
 						}
@@ -556,9 +522,7 @@ class WebRTCClass {
 			!this.videoEnabled.get() && this.disableVideo();
 			this.localUrl.set(stream);
 			const { peerConnections } = this;
-			Object.entries(peerConnections).forEach(([, peerConnection]) =>
-				peerConnection.addStream(stream),
-			);
+			Object.entries(peerConnections).forEach(([, peerConnection]) => peerConnection.addStream(stream));
 			document.querySelector('video#localVideo').srcObject = stream;
 			callback(null, this.localStream);
 		};
@@ -835,11 +799,7 @@ class WebRTCClass {
 				});
 			};
 
-			peerConnection.setLocalDescription(
-				new RTCSessionDescription(offer),
-				onLocalDescription,
-				this.onError,
-			);
+			peerConnection.setLocalDescription(new RTCSessionDescription(offer), onLocalDescription, this.onError);
 		};
 
 		if (data.monitor === true) {
@@ -862,10 +822,7 @@ class WebRTCClass {
 		this.log('onRemoteOffer', [data, ...args]);
 		let peerConnection = this.getPeerConnection(data.from);
 
-		if (
-			['have-local-offer', 'stable'].includes(peerConnection.signalingState) &&
-			peerConnection.createdAt < data.ts
-		) {
+		if (['have-local-offer', 'stable'].includes(peerConnection.signalingState) && peerConnection.createdAt < data.ts) {
 			this.stopPeerConnection(data.from);
 			peerConnection = this.getPeerConnection(data.from);
 		}
@@ -897,11 +854,7 @@ class WebRTCClass {
 				});
 			};
 
-			peerConnection.setLocalDescription(
-				new RTCSessionDescription(answer),
-				onLocalDescription,
-				this.onError,
-			);
+			peerConnection.setLocalDescription(new RTCSessionDescription(answer), onLocalDescription, this.onError);
 		};
 
 		peerConnection.createAnswer(onAnswer, this.onError);

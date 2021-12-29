@@ -26,11 +26,7 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call(
-				'POST',
-				`${this._options.baseurl}${this._options.updatepath}`,
-				options,
-			);
+			const response = HTTP.call('POST', `${this._options.baseurl}${this._options.updatepath}`, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
 				ChatpalLogger.debug({ msg: `indexed ${docs.length} documents`, data: response.data });
@@ -91,24 +87,15 @@ class Backend {
 
 		try {
 			if (callback) {
-				HTTP.call(
-					'POST',
-					this._options.baseurl + this._options.searchpath,
-					options,
-					(err, result) => {
-						if (err) {
-							return callback(err);
-						}
+				HTTP.call('POST', this._options.baseurl + this._options.searchpath, options, (err, result) => {
+					if (err) {
+						return callback(err);
+					}
 
-						callback(undefined, result.data);
-					},
-				);
+					callback(undefined, result.data);
+				});
 			} else {
-				const response = HTTP.call(
-					'POST',
-					this._options.baseurl + this._options.searchpath,
-					options,
-				);
+				const response = HTTP.call('POST', this._options.baseurl + this._options.searchpath, options);
 
 				if (response.statusCode >= 200 && response.statusCode < 300) {
 					return response.data;
@@ -127,22 +114,17 @@ class Backend {
 			...this._options.httpOptions,
 		};
 
-		HTTP.call(
-			'POST',
-			this._options.baseurl + this._options.suggestionpath,
-			options,
-			(err, result) => {
-				if (err) {
-					return callback(err);
-				}
+		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
+			if (err) {
+				return callback(err);
+			}
 
-				try {
-					callback(undefined, result.data.suggestion);
-				} catch (e) {
-					callback(e);
-				}
-			},
-		);
+			try {
+				callback(undefined, result.data.suggestion);
+			} catch (e) {
+				callback(e);
+			}
+		});
 	}
 
 	clear() {
@@ -233,9 +215,7 @@ export default class Index {
 
 		this._options = options;
 
-		this._batchIndexer = new BatchIndexer(this._options.batchSize || 100, (values) =>
-			this._backend.index(values),
-		);
+		this._batchIndexer = new BatchIndexer(this._options.batchSize || 100, (values) => this._backend.index(values));
 
 		this._bootstrap(clear, date);
 	}
@@ -293,11 +273,7 @@ export default class Index {
 	 * @private
 	 */
 	_existsDataOlderThan(date) {
-		return (
-			Messages.model
-				.find({ ts: { $lt: new Date(date) }, t: { $exists: false } }, { limit: 1 })
-				.fetch().length > 0
-		);
+		return Messages.model.find({ ts: { $lt: new Date(date) }, t: { $exists: false } }, { limit: 1 }).fetch().length > 0;
 	}
 
 	_doesRoomCountDiffer() {
@@ -345,19 +321,13 @@ export default class Index {
 
 		const cursor = Messages.model.find({ ts: { $gt: start, $lt: end }, t: { $exists: false } });
 
-		ChatpalLogger.debug(
-			`Start indexing ${cursor.count()} messages between ${start.toString()} and ${end.toString()}`,
-		);
+		ChatpalLogger.debug(`Start indexing ${cursor.count()} messages between ${start.toString()} and ${end.toString()}`);
 
 		cursor.forEach((message) => {
 			this.indexDoc('message', message, false);
 		});
 
-		ChatpalLogger.info(
-			`Messages between ${start.toString()} and ${end.toString()} indexed successfully (index-id: ${
-				this._id
-			})`,
-		);
+		ChatpalLogger.info(`Messages between ${start.toString()} and ${end.toString()} indexed successfully (index-id: ${this._id})`);
 
 		return start.getTime();
 	}
@@ -380,9 +350,7 @@ export default class Index {
 
 			resolve();
 		} else {
-			ChatpalLogger.info(
-				`No messages older than already indexed date ${new Date(date).toString()}`,
-			);
+			ChatpalLogger.info(`No messages older than already indexed date ${new Date(date).toString()}`);
 
 			if (this._doesUserCountDiffer() && !this._break) {
 				this._indexUsers();

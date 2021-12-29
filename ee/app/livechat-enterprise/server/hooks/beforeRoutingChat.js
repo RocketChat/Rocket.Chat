@@ -4,11 +4,7 @@ import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
-import {
-	LivechatDepartment,
-	LivechatInquiry as LivechatInquiryRaw,
-	LivechatRooms,
-} from '../../../../../app/models/server/raw';
+import { LivechatDepartment, LivechatInquiry as LivechatInquiryRaw, LivechatRooms } from '../../../../../app/models/server/raw';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
@@ -18,9 +14,7 @@ callbacks.add(
 	async (inquiry, agent) => {
 		// check here if department has fallback before queueing
 		if (inquiry?.department && !online(inquiry.department, true, true)) {
-			cbLogger.debug(
-				'No agents online on selected department. Inquiry will use fallback department',
-			);
+			cbLogger.debug('No agents online on selected department. Inquiry will use fallback department');
 			const department = await LivechatDepartment.findOneById(inquiry.department);
 			if (department.fallbackForwardDepartment) {
 				cbLogger.debug(
@@ -32,15 +26,9 @@ callbacks.add(
 					department: department.fallbackForwardDepartment,
 				});
 				// update inquiry
-				inquiry = await LivechatInquiryRaw.setDepartmentByInquiryId(
-					inquiry._id,
-					department.fallbackForwardDepartment,
-				);
+				inquiry = await LivechatInquiryRaw.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
 				// update room
-				await LivechatRooms.setDepartmentByRoomId(
-					inquiry.rid,
-					department.fallbackForwardDepartment,
-				);
+				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 				cbLogger.debug(`Inquiry ${inquiry._id} moved. Continue normal queue process`);
 			} else {
 				cbLogger.debug('No fallback department configured. Skipping');

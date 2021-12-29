@@ -22,10 +22,7 @@ Meteor.methods({
 			params.map(async ({ _id, value }) => {
 				// Verify the _id passed in is a string.
 				check(_id, String);
-				if (
-					!editPrivilegedSetting &&
-					!(manageSelectedSettings && hasPermission(uid, getSettingPermissionId(_id)))
-				) {
+				if (!editPrivilegedSetting && !(manageSelectedSettings && hasPermission(uid, getSettingPermissionId(_id)))) {
 					return settingsNotAllowed.push(_id);
 				}
 
@@ -58,9 +55,7 @@ Meteor.methods({
 			});
 		}
 
-		await Promise.all(
-			params.map(({ _id, value, editor }) => Settings.updateValueById(_id, value, editor)),
-		);
+		await Promise.all(params.map(({ _id, value, editor }) => Settings.updateValueById(_id, value, editor)));
 
 		return true;
 	}, {}),

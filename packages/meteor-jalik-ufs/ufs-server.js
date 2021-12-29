@@ -59,8 +59,7 @@ if (Meteor.isServer) {
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err &&
-						console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+					err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
 				});
 			}
 		});
@@ -222,11 +221,7 @@ if (Meteor.isServer) {
 				return;
 			}
 
-			if (
-				store.onRead !== null &&
-				store.onRead !== undefined &&
-				typeof store.onRead !== 'function'
-			) {
+			if (store.onRead !== null && store.onRead !== undefined && typeof store.onRead !== 'function') {
 				console.error(`ufs: Store.onRead is not a function in store "${storeName}"`);
 				res.writeHead(500);
 				res.end();
@@ -380,10 +375,7 @@ if (Meteor.isServer) {
 					// Parse request headers
 					if (typeof req.headers === 'object') {
 						// Compress data using if needed (ignore audio/video as they are already compressed)
-						if (
-							typeof req.headers['accept-encoding'] === 'string' &&
-							!/^(audio|video)/.test(file.type)
-						) {
+						if (typeof req.headers['accept-encoding'] === 'string' && !/^(audio|video)/.test(file.type)) {
 							const accept = req.headers['accept-encoding'];
 
 							// Compress with gzip

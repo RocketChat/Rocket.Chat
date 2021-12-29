@@ -94,9 +94,7 @@ function startProcess(opts, callback) {
 					process.exit(exitCode);
 				})
 				.catch((error) => {
-					console.error(
-						`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${exitCode}`,
-					);
+					console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${exitCode}`);
 					console.error(error);
 					process.exit(exitCode);
 				});
@@ -132,9 +130,7 @@ function startChimp() {
 		// params: ['2'],
 		options: {
 			env: Object.assign({}, process.env, {
-				NODE_PATH: `${
-					process.env.NODE_PATH + path.delimiter + srcDir + path.delimiter + srcDir
-				}/node_modules`,
+				NODE_PATH: `${process.env.NODE_PATH + path.delimiter + srcDir + path.delimiter + srcDir}/node_modules`,
 			}),
 		},
 	});

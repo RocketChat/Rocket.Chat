@@ -9,8 +9,7 @@ import { handleError } from '../../../../client/lib/utils/handleError';
 let modalStack = [];
 
 const createModal = (config = {}, fn, onCancel) => {
-	config.confirmButtonText =
-		config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
+	config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 	config.cancelButtonText = config.cancelButtonText || t('Cancel');
 	config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 	config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
@@ -119,10 +118,7 @@ export const modal = {
 		if (config.dontAskAgain) {
 			const dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
-			if (
-				dontAskAgainList &&
-				dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)
-			) {
+			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
 				instance.confirm(true);
 				return;
 			}

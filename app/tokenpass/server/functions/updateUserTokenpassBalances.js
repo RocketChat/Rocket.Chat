@@ -9,11 +9,7 @@ export const updateUserTokenpassBalances = function (user) {
 		const tcaPublicBalances = getPublicTokenpassBalances(user.services.tokenpass.accessToken);
 		const tcaProtectedBalances = getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
 
-		const balances = _.uniq(
-			_.union(tcaPublicBalances, tcaProtectedBalances),
-			false,
-			(item) => item.asset,
-		);
+		const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, (item) => item.asset);
 
 		Users.setTokenpassTcaBalances(user._id, balances);
 

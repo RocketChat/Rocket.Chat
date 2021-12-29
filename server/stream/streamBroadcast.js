@@ -28,24 +28,17 @@ export const streamLogger = logger.section('Stream');
 function _authorizeConnection(instance) {
 	authLogger.info(`Authorizing with ${instance}`);
 
-	return connections[instance].call(
-		'broadcastAuth',
-		InstanceStatus.id(),
-		connections[instance].instanceId,
-		function (err, ok) {
-			if (err != null) {
-				return authLogger.error({
-					msg: `broadcastAuth error ${instance} ${InstanceStatus.id()} ${
-						connections[instance].instanceId
-					}`,
-					err,
-				});
-			}
+	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function (err, ok) {
+		if (err != null) {
+			return authLogger.error({
+				msg: `broadcastAuth error ${instance} ${InstanceStatus.id()} ${connections[instance].instanceId}`,
+				err,
+			});
+		}
 
-			connections[instance].broadcastAuth = ok;
-			return authLogger.info({ msg: `broadcastAuth with ${instance}`, ok });
-		},
-	);
+		connections[instance].broadcastAuth = ok;
+		return authLogger.info({ msg: `broadcastAuth with ${instance}`, ok });
+	});
 }
 
 function authorizeConnection(instance) {
@@ -77,10 +70,7 @@ function startMatrixBroadcast() {
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
 
-			if (
-				record.extraInformation.port === process.env.PORT &&
-				record.extraInformation.host === process.env.INSTANCE_IP
-			) {
+			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
 				authLogger.info({ msg: 'prevent self connect', instance });
 				return;
 			}
@@ -335,11 +325,7 @@ Meteor.methods({
 			_id: remoteId,
 		};
 
-		if (
-			selfId === InstanceStatus.id() &&
-			remoteId !== InstanceStatus.id() &&
-			InstanceStatus.getCollection().findOne(query)
-		) {
+		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
 			this.connection.broadcastAuth = true;
 		}
 

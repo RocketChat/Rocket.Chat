@@ -15,9 +15,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	}
 
 	const language = user.language || settings.get('Language') || 'en';
-	const addresses = user.emails
-		?.filter(({ verified }: { verified: boolean }) => verified)
-		.map((e) => e.address);
+	const addresses = user.emails?.filter(({ verified }: { verified: boolean }) => verified).map((e) => e.address);
 	if (!addresses?.length) {
 		return;
 	}
@@ -47,14 +45,10 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 					html,
 				} as any);
 			} catch (error) {
-				throw new Meteor.Error(
-					'error-email-send-failed',
-					`Error trying to send email: ${error.message}`,
-					{
-						function: 'resetUserTOTP',
-						message: error.message,
-					},
-				);
+				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+					function: 'resetUserTOTP',
+					message: error.message,
+				});
 			}
 		});
 	}

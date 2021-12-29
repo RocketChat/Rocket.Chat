@@ -92,9 +92,7 @@ export class RoomTypeConfig {
 		}
 
 		if (typeof route !== 'undefined' && !(route instanceof RoomTypeRouteConfig)) {
-			throw new Error(
-				'Room\'s route is not a valid route configuration. Must be an instance of "RoomTypeRouteConfig".',
-			);
+			throw new Error('Room\'s route is not a valid route configuration. Must be an instance of "RoomTypeRouteConfig".');
 		}
 
 		this._identifier = identifier;
@@ -182,18 +180,14 @@ export class RoomTypeConfig {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
-		return Meteor.isServer
-			? hasPermission(Meteor.userId(), `create-${this._identifier}`)
-			: hasPermission([`create-${this._identifier}`]);
+		return Meteor.isServer ? hasPermission(Meteor.userId(), `create-${this._identifier}`) : hasPermission([`create-${this._identifier}`]);
 	}
 
 	canBeDeleted(hasPermission, room) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 		}
-		return Meteor.isServer
-			? hasPermission(Meteor.userId(), `delete-${room.t}`, room._id)
-			: hasPermission(`delete-${room.t}`, room._id);
+		return Meteor.isServer ? hasPermission(Meteor.userId(), `delete-${room.t}`, room._id) : hasPermission(`delete-${room.t}`, room._id);
 	}
 
 	supportMembersList(/* room */) {
@@ -265,9 +259,7 @@ export class RoomTypeConfig {
 
 		const title = `#${this.roomName(room)}`;
 
-		const text = `${
-			settings.get('UI_Use_Real_Name') ? user.name : user.username
-		}: ${notificationMessage}`;
+		const text = `${settings.get('UI_Use_Real_Name') ? user.name : user.username}: ${notificationMessage}`;
 
 		return { title, text };
 	}

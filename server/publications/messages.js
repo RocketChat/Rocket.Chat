@@ -5,17 +5,7 @@ import { canAccessRoom } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
 
 Meteor.methods({
-	'messages/get'(
-		rid,
-		{
-			lastUpdate,
-			latestDate = new Date(),
-			oldestDate,
-			inclusive = false,
-			count = 20,
-			unreads = false,
-		},
-	) {
+	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
 		check(rid, String);
 
 		const fromId = Meteor.userId();
@@ -45,11 +35,7 @@ Meteor.methods({
 		if (lastUpdate instanceof Date) {
 			return {
 				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),
-				deleted: Messages.trashFindDeletedAfter(
-					lastUpdate,
-					{ rid },
-					{ ...options, fields: { _id: 1, _deletedAt: 1 } },
-				).fetch(),
+				deleted: Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 

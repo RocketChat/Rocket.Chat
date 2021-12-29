@@ -56,10 +56,7 @@ export function isBundle(moduleName: string): boolean {
 
 export function getBundleModules(moduleName: string): string[] {
 	if (moduleName === '*') {
-		return Object.keys(bundles).reduce<string[]>(
-			(modules, bundle) => modules.concat(bundles[bundle]),
-			[],
-		);
+		return Object.keys(bundles).reduce<string[]>((modules, bundle) => modules.concat(bundles[bundle]), []);
 	}
 
 	const bundle = getBundleFromModule(moduleName);

@@ -33,9 +33,4 @@ const handleAfterSaveMessage = (message, { _id: rid }) => {
 	return message;
 };
 
-callbacks.add(
-	'afterSaveMessage',
-	handleAfterSaveMessage,
-	callbacks.priority.HIGH,
-	'livechat-resume-on-hold',
-);
+callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-resume-on-hold');

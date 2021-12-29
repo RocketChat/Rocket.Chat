@@ -1,11 +1,4 @@
-import {
-	Cursor,
-	FindOneOptions,
-	InsertOneWriteOpResult,
-	UpdateWriteOpResult,
-	WithId,
-	WithoutProjection,
-} from 'mongodb';
+import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { ICustomUserStatus as T } from '../../../../definition/ICustomUserStatus';
@@ -14,10 +7,7 @@ export class CustomUserStatusRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];
 
 	// find one by name
-	async findOneByName(
-		name: string,
-		options: WithoutProjection<FindOneOptions<T>>,
-	): Promise<T | null> {
+	async findOneByName(name: string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null> {
 		return this.findOne({ name }, options);
 	}
 
@@ -30,11 +20,7 @@ export class CustomUserStatusRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(
-		name: string,
-		except: string,
-		options: WithoutProjection<FindOneOptions<T>>,
-	): Cursor<T> {
+	findByNameExceptId(name: string, except: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
