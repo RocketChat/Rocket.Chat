@@ -13,13 +13,9 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 	useQuery(
 		['admin/engagement-dashboard/users/hourly-chat-activity', { displacement, utc }],
 		async () => {
-			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day'))
-				.subtract(displacement, 'days')
-				.toDate();
+			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'days').toDate();
 
-			const response = await getFromRestApi(
-				'/v1/engagement-dashboard/users/chat-busier/hourly-data',
-			)({
+			const response = await getFromRestApi('/v1/engagement-dashboard/users/chat-busier/hourly-data')({
 				start: day.toISOString(),
 			});
 

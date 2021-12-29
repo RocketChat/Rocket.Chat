@@ -7,19 +7,13 @@ import GenericTable from './GenericTable';
 export default {
 	title: 'components/GenericTable',
 	component: GenericTable,
-	decorators: [
-		(fn: () => ReactNode): ReactElement => <div children={fn()} style={{ height: '100vh' }} />,
-	],
+	decorators: [(fn: () => ReactNode): ReactElement => <div children={fn()} style={{ height: '100vh' }} />],
 };
 
 export const _default: Story = () => {
 	const Search = (): ReactElement => (
 		<Box mb='x16' is='form' display='flex' flexDirection='column'>
-			<TextInput
-				flexShrink={0}
-				placeholder='Search...'
-				addon={<Icon name='magnifier' size='x20' />}
-			/>
+			<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20' />} />
 		</Box>
 	);
 

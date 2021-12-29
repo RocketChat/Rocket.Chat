@@ -24,14 +24,7 @@ type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
 	expires: string | null;
 };
 
-const InviteRow = ({
-	_id,
-	createdAt,
-	expires,
-	uses,
-	maxUses,
-	onRemove,
-}: InviteRowProps): ReactElement => {
+const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const removeInvite = useEndpoint('DELETE', `removeInvite/${_id}`);

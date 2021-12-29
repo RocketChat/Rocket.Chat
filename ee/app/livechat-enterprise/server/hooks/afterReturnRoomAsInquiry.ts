@@ -17,5 +17,10 @@ settings.watch('Livechat_abandoned_rooms_action', (value) => {
 		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry');
 		return;
 	}
-	callbacks.add('livechat:afterReturnRoomAsInquiry', unsetPredictedVisitorAbandonment, callbacks.priority.HIGH, 'livechat-after-return-room-as-inquiry');
+	callbacks.add(
+		'livechat:afterReturnRoomAsInquiry',
+		unsetPredictedVisitorAbandonment,
+		callbacks.priority.HIGH,
+		'livechat-after-return-room-as-inquiry',
+	);
 });

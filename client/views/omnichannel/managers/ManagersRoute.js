@@ -56,13 +56,7 @@ function ManagersRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && (
@@ -97,12 +91,7 @@ function ManagersRoute() {
 			<Table.Row key={_id} tabIndex={0} qa-user-id={_id}>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' alignItems='center'>
-						<UserAvatar
-							size={mediaQuery ? 'x28' : 'x40'}
-							title={username}
-							username={username}
-							etag={avatarETag}
-						/>
+						<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
 						<Box display='flex' withTruncatedText mi='x8'>
 							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 								<Box fontScale='p2m' withTruncatedText color='default'>

@@ -19,13 +19,17 @@ Meteor.methods({
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
 		if (!subscription) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'ignoreUser' });
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'ignoreUser',
+			});
 		}
 
 		const subscriptionIgnoredUser = Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser);
 
 		if (!subscriptionIgnoredUser) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'ignoreUser' });
+			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+				method: 'ignoreUser',
+			});
 		}
 
 		return !!Subscriptions.ignoreUser({ _id: subscription._id, ignoredUser, ignore });

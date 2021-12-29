@@ -18,10 +18,7 @@ function SendTestButton({ id }) {
 				ghost
 				title={t('Send_Test_Email')}
 				onClick={(e) =>
-					e.preventDefault() &
-					e.stopPropagation() &
-					sendTest() &
-					dispatchToastMessage({ type: 'success', message: t('Email_sent') })
+					e.preventDefault() & e.stopPropagation() & sendTest() & dispatchToastMessage({ type: 'success', message: t('Email_sent') })
 				}
 			>
 				<Icon name='send' size='x20' />

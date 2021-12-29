@@ -56,10 +56,10 @@ export const APIClient = {
 
 				if (Array.isArray(params[key])) {
 					const encodedParams = params[key].map((value) => encodeURIComponent(value));
-					const joinedArray = encodedParams.join(`&${ key }[]=`);
-					query += `${ key }[]=${ joinedArray }`;
+					const joinedArray = encodedParams.join(`&${key}[]=`);
+					query += `${key}[]=${joinedArray}`;
 				} else {
-					query += `${ key }=${ encodeURIComponent(params[key]) }`;
+					query += `${key}=${encodeURIComponent(params[key])}`;
 				}
 			});
 		}
@@ -73,11 +73,14 @@ export const APIClient = {
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
-				url: `${ baseURI }api/${ endpoint }${ query }`,
-				headers: Object.assign({
-					'Content-Type': 'application/json',
-					...APIClient.getCredentials(),
-				}, headers),
+				url: `${baseURI}api/${endpoint}${query}`,
+				headers: Object.assign(
+					{
+						'Content-Type': 'application/json',
+						...APIClient.getCredentials(),
+					},
+					headers,
+				),
 				data: JSON.stringify(body),
 				dataType,
 				success: function _rlGetSuccess(result) {
@@ -101,7 +104,7 @@ export const APIClient = {
 	},
 
 	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
-		const ret = { };
+		const ret = {};
 
 		const query = APIClient._generateQueryFromParams(params);
 
@@ -114,18 +117,22 @@ export const APIClient = {
 				xhr() {
 					const xhr = new window.XMLHttpRequest();
 
-					xhr.upload.addEventListener('progress', function(evt) {
-						if (evt.lengthComputable) {
-							const percentComplete = evt.loaded / evt.total;
-							progress(percentComplete * 100);
-						}
-					}, false);
+					xhr.upload.addEventListener(
+						'progress',
+						function (evt) {
+							if (evt.lengthComputable) {
+								const percentComplete = evt.loaded / evt.total;
+								progress(percentComplete * 100);
+							}
+						},
+						false,
+					);
 
 					xhr.upload.addEventListener('error', error, false);
 
 					return xhr;
 				},
-				url: `${ baseURI }api/${ endpoint }${ query }`,
+				url: `${baseURI}api/${endpoint}${query}`,
 				headers: APIClient.getCredentials(),
 				data: formData,
 				processData: false,
@@ -157,30 +164,32 @@ export const APIClient = {
 				const headers = params[params.length - 1];
 				headers['x-2fa-code'] = code;
 				headers['x-2fa-method'] = method;
-				APIClient._jqueryCall(...params).then(resolve).catch(reject);
+				APIClient._jqueryCall(...params)
+					.then(resolve)
+					.catch(reject);
 			},
 		});
 	},
 
 	v1: {
 		delete(endpoint, params) {
-			return APIClient.delete(`v1/${ endpoint }`, params);
+			return APIClient.delete(`v1/${endpoint}`, params);
 		},
 
 		get(endpoint, params) {
-			return APIClient.get(`v1/${ endpoint }`, params);
+			return APIClient.get(`v1/${endpoint}`, params);
 		},
 
 		post(endpoint, params, body) {
-			return APIClient.post(`v1/${ endpoint }`, params, body);
+			return APIClient.post(`v1/${endpoint}`, params, body);
 		},
 
 		upload(endpoint, params, formData) {
-			return APIClient.upload(`v1/${ endpoint }`, params, formData);
+			return APIClient.upload(`v1/${endpoint}`, params, formData);
 		},
 
 		put(endpoint, params, body) {
-			return APIClient.put(`v1/${ endpoint }`, params, body);
+			return APIClient.put(`v1/${endpoint}`, params, body);
 		},
 	},
 };

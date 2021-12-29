@@ -1,13 +1,4 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	PaginatedMultiSelectFiltered,
-	Select,
-	ButtonGroup,
-	Icon,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, PaginatedMultiSelectFiltered, Select, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
@@ -37,25 +28,13 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
-	const {
-		phase: monitorsPhase,
-		items: monitorsItems,
-		itemCount: monitorsTotal,
-	} = useRecordList(monitorsList);
+	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(monitorsList);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } =
-		useDepartmentsByUnitsList(
-			useMemo(
-				() => ({ filter: debouncedDepartmentsFilter, unitId }),
-				[debouncedDepartmentsFilter, unitId],
-			),
-		);
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsByUnitsList(
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId }), [debouncedDepartmentsFilter, unitId]),
+	);
 
-	const {
-		phase: departmentsPhase,
-		items: departmentsItems,
-		itemCount: departmentsTotal,
-	} = useRecordList(departmentsList);
+	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const departmentsSortedByName = departmentsItems.sort((a, b) => {
 		if (a.name > b.name) {
@@ -106,27 +85,17 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	const { handleName, handleVisibility, handleDepartments, handleMonitors } = handlers;
 	const { name, visibility, departments, monitors } = values;
 
-	const nameError = useMemo(
-		() => (!name || name.length === 0 ? t('The_field_is_required', t('name')) : undefined),
-		[name, t],
-	);
+	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', t('name')) : undefined), [name, t]);
 	const visibilityError = useMemo(
-		() =>
-			!visibility || visibility.length === 0
-				? t('The_field_is_required', t('description'))
-				: undefined,
+		() => (!visibility || visibility.length === 0 ? t('The_field_is_required', t('description')) : undefined),
 		[visibility, t],
 	);
 	const departmentError = useMemo(
-		() =>
-			!departments || departments.length === 0
-				? t('The_field_is_required', t('departments'))
-				: undefined,
+		() => (!departments || departments.length === 0 ? t('The_field_is_required', t('departments')) : undefined),
 		[departments, t],
 	);
 	const unitMonitorsError = useMemo(
-		() =>
-			!monitors || monitors.length === 0 ? t('The_field_is_required', t('monitors')) : undefined,
+		() => (!monitors || monitors.length === 0 ? t('The_field_is_required', t('monitors')) : undefined),
 		[monitors, t],
 	);
 
@@ -173,36 +142,17 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button
-							primary
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges || !canSave}
-							onClick={handleSave}
-						>
+						<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.ScrollableContentWithShadow>
-					<FieldGroup
-						w='full'
-						alignSelf='center'
-						maxWidth='x600'
-						is='form'
-						autoComplete='off'
-						{...props}
-					>
+					<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off' {...props}>
 						<Field>
 							<Field.Label>{t('Name')}*</Field.Label>
 							<Field.Row>
-								<TextInput
-									placeholder={t('Name')}
-									flexGrow={1}
-									value={name}
-									onChange={handleName}
-									error={hasUnsavedChanges && nameError}
-								/>
+								<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError} />
 							</Field.Row>
 						</Field>
 						<Field>
@@ -255,9 +205,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 									onChange={handleMonitors}
 									flexGrow={1}
 									endReached={
-										monitorsPhase === AsyncStatePhase.LOADING
-											? () => {}
-											: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
+										monitorsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
 									}
 								/>
 							</Field.Row>

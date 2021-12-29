@@ -68,15 +68,7 @@ const UserCard = forwardRef(function UserCard(
 						</Box>
 					)}
 				</Box>
-				{customStatus && (
-					<Info>
-						{typeof customStatus === 'string' ? (
-							<MarkdownText content={customStatus} />
-						) : (
-							customStatus
-						)}
-					</Info>
-				)}
+				{customStatus && <Info>{typeof customStatus === 'string' ? <MarkdownText content={customStatus} /> : customStatus}</Info>}
 				<Roles>{roles}</Roles>
 				<Info>{localTime}</Info>
 				{bio && (

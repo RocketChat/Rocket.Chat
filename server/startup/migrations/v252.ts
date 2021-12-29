@@ -2,7 +2,6 @@ import { Rooms } from '../../../app/models/server/raw';
 import { IOmnichannelRoom, OmnichannelSourceType } from '../../../definition/IRoom';
 import { addMigration } from '../../lib/migrations';
 
-
 addMigration({
 	version: 252,
 	async up() {

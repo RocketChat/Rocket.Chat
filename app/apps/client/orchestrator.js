@@ -44,7 +44,7 @@ class AppClientOrchestrator {
 
 		await handleI18nResources();
 		this.setEnabled(isEnabled);
-	}
+	};
 
 	getWsListener = () => this.ws;
 
@@ -58,14 +58,14 @@ class AppClientOrchestrator {
 				message: error.message,
 			});
 		}
-	}
+	};
 
-	isEnabled = () => this.deferredIsEnabled
+	isEnabled = () => this.deferredIsEnabled;
 
 	getApps = async () => {
 		const { apps } = await APIClient.get('apps');
 		return apps;
-	}
+	};
 
 	getAppsFromMarketplace = async () => {
 		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
@@ -76,59 +76,59 @@ class AppClientOrchestrator {
 			purchaseType,
 			isEnterpriseOnly,
 		}));
-	}
+	};
 
 	getAppsOnBundle = async (bundleId) => {
-		const { apps } = await APIClient.get(`apps/bundles/${ bundleId }/apps`);
+		const { apps } = await APIClient.get(`apps/bundles/${bundleId}/apps`);
 		return apps;
-	}
+	};
 
 	getAppsLanguages = async () => {
 		const { apps } = await APIClient.get('apps/languages');
 		return apps;
-	}
+	};
 
 	getApp = async (appId) => {
-		const { app } = await APIClient.get(`apps/${ appId }`);
+		const { app } = await APIClient.get(`apps/${appId}`);
 		return app;
-	}
+	};
 
 	getAppFromMarketplace = async (appId, version) => {
-		const { app } = await APIClient.get(`apps/${ appId }`, {
+		const { app } = await APIClient.get(`apps/${appId}`, {
 			marketplace: 'true',
 			version,
 		});
 		return app;
-	}
+	};
 
 	getLatestAppFromMarketplace = async (appId, version) => {
-		const { app } = await APIClient.get(`apps/${ appId }`, {
+		const { app } = await APIClient.get(`apps/${appId}`, {
 			marketplace: 'true',
 			update: 'true',
 			appVersion: version,
 		});
 		return app;
-	}
+	};
 
 	getAppSettings = async (appId) => {
-		const { settings } = await APIClient.get(`apps/${ appId }/settings`);
+		const { settings } = await APIClient.get(`apps/${appId}/settings`);
 		return settings;
-	}
+	};
 
 	setAppSettings = async (appId, settings) => {
-		const { updated } = await APIClient.post(`apps/${ appId }/settings`, undefined, { settings });
+		const { updated } = await APIClient.post(`apps/${appId}/settings`, undefined, { settings });
 		return updated;
-	}
+	};
 
 	getAppApis = async (appId) => {
-		const { apis } = await APIClient.get(`apps/${ appId }/apis`);
+		const { apis } = await APIClient.get(`apps/${appId}/apis`);
 		return apis;
-	}
+	};
 
 	getAppLanguages = async (appId) => {
-		const { languages } = await APIClient.get(`apps/${ appId }/languages`);
+		const { languages } = await APIClient.get(`apps/${appId}/languages`);
 		return languages;
-	}
+	};
 
 	installApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post('apps/', {
@@ -138,30 +138,30 @@ class AppClientOrchestrator {
 			permissionsGranted,
 		});
 		return app;
-	}
+	};
 
 	updateApp = async (appId, version, permissionsGranted) => {
-		const { app } = await APIClient.post(`apps/${ appId }`, {
+		const { app } = await APIClient.post(`apps/${appId}`, {
 			appId,
 			marketplace: true,
 			version,
 			permissionsGranted,
 		});
 		return app;
-	}
+	};
 
-	uninstallApp = (appId) => APIClient.delete(`apps/${ appId }`)
+	uninstallApp = (appId) => APIClient.delete(`apps/${appId}`);
 
-	syncApp = (appId) => APIClient.post(`apps/${ appId }/sync`)
+	syncApp = (appId) => APIClient.post(`apps/${appId}/sync`);
 
 	setAppStatus = async (appId, status) => {
-		const { status: effectiveStatus } = await APIClient.post(`apps/${ appId }/status`, { status });
+		const { status: effectiveStatus } = await APIClient.post(`apps/${appId}/status`, { status });
 		return effectiveStatus;
-	}
+	};
 
-	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled')
+	enableApp = (appId) => this.setAppStatus(appId, 'manually_enabled');
 
-	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled')
+	disableApp = (appId) => this.setAppStatus(appId, 'manually_disabled');
 
 	buildExternalUrl = (appId, purchaseType = 'buy', details = false) =>
 		APIClient.get('apps', {
@@ -169,12 +169,12 @@ class AppClientOrchestrator {
 			appId,
 			purchaseType,
 			details,
-		})
+		});
 
 	getCategories = async () => {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
-	}
+	};
 
 	getUIHost = () => this._appClientUIHost;
 }

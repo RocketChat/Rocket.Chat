@@ -56,7 +56,6 @@ function updateSettings(): void {
 	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
 
-
 Meteor.startup(() => {
 	updateSettings();
 

@@ -22,11 +22,7 @@ type NewUsersSectionProps = {
 };
 
 const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(
-		'last 7 days',
-		'last 30 days',
-		'last 90 days',
-	);
+	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
 	const utc = timezone === 'utc';
@@ -50,9 +46,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			return undefined;
 		}
 
-		const values = Array.from({ length: arrayLength }, (_, i) =>
-			moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
-		);
+		const values = Array.from({ length: arrayLength }, (_, i) => moment(data.start).add(i, 'days').format('YYYY-MM-DD'));
 
 		const relation = Math.ceil(values.length / maxTicks);
 
@@ -64,36 +58,24 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 		}, [] as string[]);
 	}, [data, maxTicks]);
 
-	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
-		useMemo(() => {
-			if (!data) {
-				return [];
-			}
+	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] = useMemo(() => {
+		if (!data) {
+			return [];
+		}
 
-			const values = Array.from(
-				{ length: moment(data.end).diff(data.start, 'days') + 1 },
-				(_, i) => ({
-					date: moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
-					newUsers: 0,
-				}),
-			);
-			for (const { day, users } of data.days) {
-				const i = utc
-					? moment(day).utc().diff(data.start, 'days')
-					: moment(day).diff(data.start, 'days');
-				if (i >= 0) {
-					values[i].newUsers += users;
-				}
+		const values = Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => ({
+			date: moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
+			newUsers: 0,
+		}));
+		for (const { day, users } of data.days) {
+			const i = utc ? moment(day).utc().diff(data.start, 'days') : moment(day).diff(data.start, 'days');
+			if (i >= 0) {
+				values[i].newUsers += users;
 			}
+		}
 
-			return [
-				data.period.count,
-				data.period.variation,
-				data.yesterday.count,
-				data.yesterday.variation,
-				values,
-			];
-		}, [data, utc]);
+		return [data.period.count, data.period.variation, data.yesterday.count, data.yesterday.variation, values];
+	}, [data, utc]);
 
 	return (
 		<Section
@@ -105,9 +87,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 						attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'New Users']}
 						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined =>
-							values?.map(({ date, newUsers }) => [date, newUsers])
-						}
+						dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newUsers }) => [date, newUsers])}
 					/>
 				</>
 			}
@@ -164,8 +144,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues,
-											format: (date): string =>
-												moment(date).format(values?.length === 7 ? 'dddd' : 'DD/MM'),
+											format: (date): string => moment(date).format(values?.length === 7 ? 'dddd' : 'DD/MM'),
 										}}
 										axisLeft={{
 											tickSize: 0,
@@ -195,8 +174,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											tooltip: {
 												// @ts-ignore
 												backgroundColor: colors.n900,
-												boxShadow:
-													'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 												borderRadius: 2,
 												padding: 4,
 											},

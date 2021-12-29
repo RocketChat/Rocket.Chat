@@ -17,15 +17,4 @@ import './methods/getLatestImportOperations';
 import './startup/setImportsToInvalid';
 import './startup/store';
 
-export {
-	Base,
-	Importers,
-	ImporterInfo,
-	ImporterWebsocket,
-	Progress,
-	ProgressStep,
-	RawImports,
-	Selection,
-	SelectionChannel,
-	SelectionUser,
-};
+export { Base, Importers, ImporterInfo, ImporterWebsocket, Progress, ProgressStep, RawImports, Selection, SelectionChannel, SelectionUser };

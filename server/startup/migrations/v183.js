@@ -26,11 +26,15 @@ const unifyRooms = (room) => {
 		});
 
 		// update subscription to point to new room _id
-		Subscriptions.update({ rid: room._id }, {
-			$set: {
-				rid: newId,
+		Subscriptions.update(
+			{ rid: room._id },
+			{
+				$set: {
+					rid: newId,
+				},
 			},
-		}, { multi: true });
+			{ multi: true },
+		);
 
 		return newId;
 	}
@@ -53,19 +57,27 @@ const fixSelfDMs = () => {
 		const correctId = unifyRooms(room);
 
 		// move things to correct room
-		Messages.update({ rid: room._id }, {
-			$set: {
-				rid: correctId,
-			},
-		}, { multi: true });
-
-		// Fix error of upload permission check using Meteor.userId()
-		Meteor.runAsUser(room.uids[0], async () => {
-			await Uploads.update({ rid: room._id }, {
+		Messages.update(
+			{ rid: room._id },
+			{
 				$set: {
 					rid: correctId,
 				},
-			}, { multi: true });
+			},
+			{ multi: true },
+		);
+
+		// Fix error of upload permission check using Meteor.userId()
+		Meteor.runAsUser(room.uids[0], async () => {
+			await Uploads.update(
+				{ rid: room._id },
+				{
+					$set: {
+						rid: correctId,
+					},
+				},
+				{ multi: true },
+			);
 		});
 	});
 };
@@ -74,20 +86,23 @@ const fixDiscussions = () => {
 	Rooms.find({ t: 'd', prid: { $exists: true } }, { fields: { _id: 1 } }).forEach(({ _id }) => {
 		const { u } = Messages.findOne({ drid: _id }, { fields: { u: 1 } }) || {};
 
-		Rooms.update({ _id }, {
-			$set: {
-				t: 'p',
-				name: Random.id(),
-				u,
-				ro: false,
-				default: false,
-				sysMes: true,
+		Rooms.update(
+			{ _id },
+			{
+				$set: {
+					t: 'p',
+					name: Random.id(),
+					u,
+					ro: false,
+					default: false,
+					sysMes: true,
+				},
+				$unset: {
+					usernames: 1,
+					uids: 1,
+				},
 			},
-			$unset: {
-				usernames: 1,
-				uids: 1,
-			},
-		});
+		);
 	});
 };
 

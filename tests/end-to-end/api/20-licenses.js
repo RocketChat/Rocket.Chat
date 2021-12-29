@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 
-describe('licenses', function() {
+describe('licenses', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -17,7 +17,8 @@ describe('licenses', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(api('licenses.add'))
+			request
+				.post(api('licenses.add'))
 				.send({
 					license: '',
 				})
@@ -31,7 +32,8 @@ describe('licenses', function() {
 		});
 
 		it('should fail if user is unauthorized', (done) => {
-			request.post(api('licenses.add'))
+			request
+				.post(api('licenses.add'))
 				.set(unauthorizedUserCredentials)
 				.send({
 					license: '',
@@ -46,7 +48,8 @@ describe('licenses', function() {
 		});
 
 		it('should fail if license is invalid', (done) => {
-			request.post(api('licenses.add'))
+			request
+				.post(api('licenses.add'))
 				.set(credentials)
 				.send({
 					license: '',
@@ -69,7 +72,8 @@ describe('licenses', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.get(api('licenses.get'))
+			request
+				.get(api('licenses.get'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
@@ -80,7 +84,8 @@ describe('licenses', function() {
 		});
 
 		it('should fail if user is unauthorized', (done) => {
-			request.get(api('licenses.get'))
+			request
+				.get(api('licenses.get'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -92,7 +97,8 @@ describe('licenses', function() {
 		});
 
 		it('should return licenses if user is logged in and is authorized', (done) => {
-			request.get(api('licenses.get'))
+			request
+				.get(api('licenses.get'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

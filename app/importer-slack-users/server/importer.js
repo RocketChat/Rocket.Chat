@@ -2,13 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 
-import {
-	RawImports,
-	Base,
-	ProgressStep,
-	Selection,
-	SelectionUser,
-} from '../../importer/server';
+import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
 
@@ -58,7 +52,12 @@ export class SlackUsersImporter extends Base {
 
 		const userArray = Array.from(this.userMap.values());
 
-		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: userArray });
+		const usersId = this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'users',
+			users: userArray,
+		});
 		this.users = this.collection.findOne(usersId);
 		super.updateRecord({ 'count.users': this.userMap.size });
 		super.addCountToTotal(this.userMap.size);
@@ -69,7 +68,12 @@ export class SlackUsersImporter extends Base {
 			return super.getProgress();
 		}
 
-		this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'admins', admins: this.admins });
+		this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'admins',
+			admins: this.admins,
+		});
 
 		super.updateProgress(ProgressStep.USER_SELECTION);
 		return new Selection(this.name, userArray, [], 0);
@@ -132,7 +136,10 @@ export class SlackUsersImporter extends Base {
 							Users.setEmail(existantUser._id, u.email);
 							Users.setEmailVerified(existantUser._id, u.email);
 						} else {
-							userId = Accounts.createUser({ username: u.username + Random.id(), password: Date.now() + u.name + u.email.toUpperCase() });
+							userId = Accounts.createUser({
+								username: u.username + Random.id(),
+								password: Date.now() + u.name + u.email.toUpperCase(),
+							});
 
 							if (!userId) {
 								console.warn('An error happened while creating a user.');
@@ -165,7 +172,7 @@ export class SlackUsersImporter extends Base {
 			}
 
 			const timeTook = Date.now() - started;
-			this.logger.log(`Slack Users Import took ${ timeTook } milliseconds.`);
+			this.logger.log(`Slack Users Import took ${timeTook} milliseconds.`);
 		});
 
 		return super.getProgress();

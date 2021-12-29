@@ -1,10 +1,7 @@
 import i18next from 'i18next';
 import React, { PropsWithChildren, ReactElement } from 'react';
 
-import {
-	TranslationContext,
-	TranslationContextValue,
-} from '../../../client/contexts/TranslationContext';
+import { TranslationContext, TranslationContextValue } from '../../../client/contexts/TranslationContext';
 
 let contextValue: TranslationContextValue;
 

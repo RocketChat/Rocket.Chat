@@ -29,17 +29,11 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 		!roomAvatar && reset();
 	}, [roomAvatar, reset]);
 
-	const defaultUrl = room.prid
-		? getAvatarURL({ roomId: room.prid })
-		: getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
+	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
 
 	return (
 		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
-			<RoomAvatar
-				{...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })}
-				room={room}
-				size='x332'
-			/>
+			<RoomAvatar {...(roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar })} room={room} size='x332' />
 			<Box
 				className={[
 					css`
@@ -56,14 +50,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 						{t('Upload')}
 					</Button>
 
-					<Button
-						primary
-						small
-						danger
-						title={t('Accounts_SetDefaultAvatar')}
-						disabled={roomAvatar === null}
-						onClick={clickReset}
-					>
+					<Button primary small danger title={t('Accounts_SetDefaultAvatar')} disabled={roomAvatar === null} onClick={clickReset}>
 						<Icon name='trash' size='x16' />
 					</Button>
 				</ButtonGroup>

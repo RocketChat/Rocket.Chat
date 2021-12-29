@@ -3,16 +3,7 @@ import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
-function BooleanSettingInput({
-	_id,
-	label,
-	disabled,
-	readonly,
-	value,
-	hasResetButton,
-	onChangeValue,
-	onResetButtonClick,
-}) {
+function BooleanSettingInput({ _id, label, disabled, readonly, value, hasResetButton, onChangeValue, onResetButtonClick }) {
 	const handleChange = (event) => {
 		const value = event.currentTarget.checked;
 		onChangeValue && onChangeValue(value);
@@ -32,9 +23,7 @@ function BooleanSettingInput({
 			<Field.Label htmlFor={_id} title={_id}>
 				{label}
 			</Field.Label>
-			{hasResetButton && (
-				<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
-			)}
+			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</Field.Row>
 	);
 }

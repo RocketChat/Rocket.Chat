@@ -1,13 +1,4 @@
-import {
-	Field,
-	Button,
-	TextAreaInput,
-	Icon,
-	ButtonGroup,
-	Modal,
-	Box,
-	PaginatedSelectFiltered,
-} from '@rocket.chat/fuselage';
+import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -44,11 +35,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 		useMemo(() => ({ filter: debouncedDepartmentsFilter }), [debouncedDepartmentsFilter]),
 	);
 
-	const {
-		phase: departmentsPhase,
-		items: departmentsItems,
-		itemCount: departmentsTotal,
-	} = useRecordList(departmentsList);
+	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const handleSend = useMutableCallback(() => {
 		onForward(department?.value, userId, comment);
@@ -132,13 +119,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 						</Box>
 					</Field.Label>
 					<Field.Row>
-						<TextAreaInput
-							ref={inputRef}
-							rows={8}
-							flexGrow={1}
-							value={comment}
-							onChange={handleComment}
-						/>
+						<TextAreaInput ref={inputRef} rows={8} flexGrow={1} value={comment} onChange={handleComment} />
 					</Field.Row>
 				</Field>
 			</Modal.Content>
