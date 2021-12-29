@@ -8,15 +8,13 @@ import { triggerActionButtonAction } from '../ActionManager';
 import { t } from '../../../utils/client';
 import { Utilities } from '../../../apps/lib/misc/Utilities';
 
-const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${ appId }/${ actionId }`;
+const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
 const APP_GROUP = 'Create_new';
 
-// eslint-disable-next-line no-void
-export const onAdded = (button: IUIActionButton): void => void messageBox.actions.add(
-	APP_GROUP,
-	t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)),
-	{
+export const onAdded = (button: IUIActionButton): void =>
+	// eslint-disable-next-line no-void
+	void messageBox.actions.add(APP_GROUP, t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)), {
 		id: getIdForActionButton(button),
 		// icon: button.icon || '',
 		condition() {
@@ -32,5 +30,6 @@ export const onAdded = (button: IUIActionButton): void => void messageBox.action
 		},
 	});
 
-// eslint-disable-next-line no-void
-export const onRemoved = (button: IUIActionButton): void => void messageBox.actions.remove(APP_GROUP, new RegExp(getIdForActionButton(button)));
+export const onRemoved = (button: IUIActionButton): void =>
+	// eslint-disable-next-line no-void
+	void messageBox.actions.remove(APP_GROUP, new RegExp(getIdForActionButton(button)));

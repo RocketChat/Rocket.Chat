@@ -77,7 +77,7 @@ export const onlineAgents = {
 			}
 		} catch (e) {
 			logger.error({
-				msg: `Cannot perform action ${ action }`,
+				msg: `Cannot perform action ${action}`,
 				err: e,
 			});
 		}

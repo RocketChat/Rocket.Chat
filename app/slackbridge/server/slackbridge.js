@@ -10,7 +10,7 @@ class SlackBridgeClass {
 	constructor() {
 		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
-		this.reactionsMap = new Map();	// Sync object between rocket and slack
+		this.reactionsMap = new Map(); // Sync object between rocket and slack
 
 		this.connected = false;
 		this.rocket.clearSlackAdapters();

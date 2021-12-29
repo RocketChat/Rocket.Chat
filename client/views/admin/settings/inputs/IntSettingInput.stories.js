@@ -20,13 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<IntSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <IntSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<IntSettingInput _id='setting_id' label='Label' value={12345} placeholder='Placeholder' />
-);
+export const withValue = () => <IntSettingInput _id='setting_id' label='Label' value={12345} placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<IntSettingInput

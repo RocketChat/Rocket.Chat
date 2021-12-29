@@ -1,12 +1,4 @@
-import {
-	Field,
-	TextInput,
-	FieldGroup,
-	Modal,
-	Icon,
-	ButtonGroup,
-	Button,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
@@ -24,11 +16,7 @@ type EditStatusModalProps = {
 	userStatusText: IUser['statusText'];
 };
 
-const EditStatusModal = ({
-	onClose,
-	userStatus,
-	userStatusText,
-}: EditStatusModalProps): ReactElement => {
+const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const setUserStatus = useMethod('setUserStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -68,7 +56,7 @@ const EditStatusModal = ({
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content fontScale='p3'>
+			<Modal.Content fontScale='p2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('StatusMessage')}</Field.Label>
@@ -80,18 +68,10 @@ const EditStatusModal = ({
 								value={statusText}
 								onChange={handleStatusText}
 								placeholder={t('StatusMessage_Placeholder')}
-								addon={
-									<UserStatusMenu
-										margin='neg-x2'
-										onChange={handleStatusType}
-										initialStatus={statusType}
-									/>
-								}
+								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
 							/>
 						</Field.Row>
-						{!allowUserStatusMessageChange && (
-							<Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>
-						)}
+						{!allowUserStatusMessageChange && <Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>}
 						<Field.Error>{statusTextError}</Field.Error>
 					</Field>
 				</FieldGroup>

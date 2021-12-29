@@ -16,11 +16,7 @@ const UnitEditWithData: FC<{
 
 	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
 
-	const {
-		value: unitMonitors,
-		phase: unitMonitorsState,
-		error: unitMonitorsError,
-	} = useEndpointData('livechat/unitMonitors.list', query);
+	const { value: unitMonitors, phase: unitMonitorsState, error: unitMonitorsError } = useEndpointData('livechat/unitMonitors.list', query);
 
 	const {
 		value: unitDepartments,

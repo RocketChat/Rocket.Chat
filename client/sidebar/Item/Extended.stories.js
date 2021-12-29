@@ -49,26 +49,13 @@ const avatar = <UserAvatar size='x36' url='https://via.placeholder.com/16' />;
 
 export const Normal = () => (
 	<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-		<Extended
-			clickable
-			title={title}
-			subtitle={subtitle}
-			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
-			avatar={avatar}
-		/>
+		<Extended clickable title={title} subtitle={subtitle} titleIcon={<Box mi='x4'>{<Status.Online />}</Box>} avatar={avatar} />
 	</Box>
 );
 
 export const Selected = () => (
 	<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-		<Extended
-			clickable
-			selected
-			title={title}
-			subtitle={subtitle}
-			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
-			avatar={avatar}
-		/>
+		<Extended clickable selected title={title} subtitle={subtitle} titleIcon={<Box mi='x4'>{<Status.Online />}</Box>} avatar={avatar} />
 	</Box>
 );
 
