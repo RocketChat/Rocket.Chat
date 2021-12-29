@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 
-import { IVisitor } from '../../../../definition/IVisitor';
+import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 import { VoipRoom } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { Subscriptions, Users } from '../../../models/server';
@@ -65,7 +65,7 @@ export const normalizeAgent = (agentId: string): any => {
 	return Object.assign(extraData);
 };
 
-export const createVoipRoom = async (rid: string, name: string, guest: IVisitor): Promise<any> => {
+export const createVoipRoom = async (rid: string, name: string, agent: any, guest: ILivechatVisitor): Promise<any> => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -79,6 +79,8 @@ export const createVoipRoom = async (rid: string, name: string, guest: IVisitor)
 	const newRoomAt = new Date();
 
 	logger.debug(`Creating livechat room for visitor ${ _id }`);
+
+	logger.error(`Agent is ${ JSON.stringify(agent) }`);
 
 	const room = Object.assign({
 		_id: rid,
@@ -94,6 +96,11 @@ export const createVoipRoom = async (rid: string, name: string, guest: IVisitor)
 			username,
 			token: guest.token,
 			status,
+		},
+		servedBy: {
+			_id: agent.agentId,
+			ts: new Date(),
+			username: agent.username,
 		},
 		cl: false,
 		open: true,
@@ -111,7 +118,7 @@ export const createVoipRoom = async (rid: string, name: string, guest: IVisitor)
 	return roomId;
 };
 
-export const createVoipSubscription = (rid: string, name: string, guest: IVisitor, agent: any): any => {
+export const createVoipSubscription = (rid: string, name: string, guest: ILivechatVisitor, agent: any): any => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({

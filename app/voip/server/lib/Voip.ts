@@ -8,23 +8,22 @@ import _ from 'underscore';
 import {
 	LivechatDepartment,
 } from '../../../models/server';
-import { VoipVisitor, VoipRoom } from '../../../models/server/raw';
+import { LivechatVisitors, VoipRoom } from '../../../models/server/raw';
 import { Logger } from '../../../logger/server';
-import { normalizeAgent, validateEmail, createVoipRoom, createVoipSubscription, updateSubscriptionDisplayNameByRoomId, removeSubscriptionByRoomId } from './Helper';
-import { IVisitor } from '../../../../definition/IVisitor';
+import { normalizeAgent, validateEmail, createVoipRoom, updateSubscriptionDisplayNameByRoomId, removeSubscriptionByRoomId } from './Helper';
+import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 import { IOmnichannelRoom, IRoom } from '../../../../definition/IRoom';
 import { callbacks } from '../../../callbacks/server';
-
 
 export class Voip {
 	static logger: Logger = new Logger('Voip');;
 
-	static async getVisitorByToken(token: string, _options: FindOneOptions<IVisitor> = {}): Promise<IVisitor | null> {
-		return VoipVisitor.getVisitorByToken(token, _options);
+	static async getVisitorByToken(token: string, _options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
+		return LivechatVisitors.getVisitorByToken(token, _options);
 	}
 
-	static async getVisitorById(id: string, _options: FindOneOptions<IVisitor> = {}): Promise<IVisitor | null> {
-		return VoipVisitor.findOneById(id, _options);
+	static async getVisitorById(id: string, _options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
+		return LivechatVisitors.findOneById(id, _options);
 	}
 
 	static findOpenRoomByVisitorToken(token: string, _options: FindOneOptions<IOmnichannelRoom> = {}): Cursor<IOmnichannelRoom> {
@@ -76,8 +75,8 @@ export class Voip {
 			this.logger.debug(`Assigning visitor ${ token } to department ${ dep._id }`);
 			updateUser.$set.department = dep._id;
 		}
-		const user = await VoipVisitor.getVisitorByToken(token);
-		const existingUser = await VoipVisitor.findOneGuestByEmailAddress(email);
+		const user = await LivechatVisitors.getVisitorByToken(token);
+		const existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email);
 
 		if (user) {
 			this.logger.debug('Found matching user by token');
@@ -88,19 +87,20 @@ export class Voip {
 		} else {
 			this.logger.debug(`No matches found. Attempting to create new user with token ${ token }`);
 			if (!username) {
-				username = await VoipVisitor.getNextVisitorUsername();
+				username = await LivechatVisitors.getNextVisitorUsername();
 			}
 			const userData = {
 				username,
-				ts: new Date().toString(),
+				ts: new Date(),
 				_id: id,
 				token,
+				_updatedAt: new Date(),
 			};
 			this.logger.debug({ msg: 'registerGuest inserting user ', userData });
-			userId = await VoipVisitor.insert(userData);
+			userId = await LivechatVisitors.insert(userData);
 		}
 		if (userId) {
-			VoipVisitor.updateById(userId, updateUser);
+			LivechatVisitors.updateById(userId, updateUser);
 			return userId;
 		}
 		return '';
@@ -108,17 +108,17 @@ export class Voip {
 
 	static async removeGuest(_id: string): Promise<any> {
 		check(_id, String);
-		const guest = VoipVisitor.findOneById(_id);
+		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
 		}
 
 		await this.cleanGuestHistory(_id);
-		return VoipVisitor.removeById(_id);
+		return LivechatVisitors.removeById(_id);
 	}
 
 	static async cleanGuestHistory(_id: string): Promise<void> {
-		const guest = await VoipVisitor.findOneById(_id);
+		const guest = await LivechatVisitors.findOneById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
 		}
@@ -160,7 +160,7 @@ export class Voip {
 	}
 	*/
 
-	static async getNewRoom(guest: IVisitor, agent: any, rid: string, roomInfo: any): Promise<any> {
+	static async getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<any> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${ guest._id }`);
 		const message = {
 			_id: Random.id(),
@@ -182,13 +182,13 @@ export class Voip {
 			this.logger.debug(`Calling QueueManager to request a room for visitor ${ guest._id }`);
 			// room = await QueueManager.requestRoom({ guest, message, roomInfo, agent: defaultAgent, extraData });
 			const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
-			room = await VoipRoom.findOneById(await createVoipRoom(rid, name, guest));
+			room = await VoipRoom.findOneById(await createVoipRoom(rid, name, agent, guest));
 			newRoom = true;
 
 			this.logger.debug(`Room obtained for visitor ${ guest._id } -> ${ room?._id }`);
 
 			// Now add the subscription
-			await createVoipSubscription(rid, name, guest, agent);
+			// await createVoipSubscription(rid, name, guest, agent);
 		}
 
 		if (!room) {
@@ -198,7 +198,7 @@ export class Voip {
 		return { room, newRoom };
 	}
 
-	static async saveRoomInfo(roomData: IRoom, guestData: IVisitor): Promise<any> {
+	static async saveRoomInfo(roomData: IRoom, guestData: ILivechatVisitor): Promise<any> {
 		this.logger.debug(`Saving room information on room ${ roomData._id }`);
 		if (!_.isEmpty(guestData.name)) {
 			const { _id: rid } = roomData;
@@ -229,7 +229,7 @@ export class Voip {
 		return VoipRoom.findOneByIdAndVisitorToken(rid, token, fields);
 	}
 
-	static async closeRoom(visitor: IVisitor, room: IOmnichannelRoom, /* comment: any,*/ options = {}): Promise<any> {
+	static async closeRoom(visitor: ILivechatVisitor, room: IOmnichannelRoom, /* comment: any,*/ options = {}): Promise<any> {
 		this.logger.debug(`Attempting to close room ${ room._id }`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;

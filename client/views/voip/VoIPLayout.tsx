@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
@@ -27,7 +28,7 @@ const VoIPLayout: FC = () => {
 	const acceptCall = useRef<HTMLButtonElement>(null);
 	const rejectCall = useRef<HTMLButtonElement>(null);
 	const endCall = useRef<HTMLButtonElement>(null);
-	const roomToken = createToken();
+	const roomVisitorToken = createToken();
 	let caller: ICallerInfo;
 	let visitor: IVisitor;
 	let room: IOmnichannelRoom;
@@ -141,26 +142,25 @@ const VoIPLayout: FC = () => {
 			logger.error(`error ${error} in API connector.extension.getRegistrationInfo`);
 		}
 	};
-	/*
 	const testVoipRooms = async (): Promise<void> => {
 		const token = createToken();
 		try {
-			logger.info('Executing POST voip/visitor');
+			logger.info('Executing POST livechat/visitor');
 			const output = await APIClient.v1.post(
-				'voip/visitor',
+				'livechat/visitor',
 				{},
 				{
 					visitor: {
 						id: createToken(),
 						token,
-						name: 'amol',
+						name: 'amol-livechat-user',
 						phone: '+919421203308',
 					},
 				},
 			);
-			logger.info('voip/visitor output = ', JSON.stringify(output));
+			logger.info('livechat/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API voipServerConfig.callServer`);
+			logger.error(`error ${error} in API POST livechat/visitor`);
 		}
 
 		try {
@@ -168,26 +168,25 @@ const VoIPLayout: FC = () => {
 			const output = await APIClient.v1.get(`voip/room`, { token, agentId: 'JrQAQF5xwMe3AdbKL' });
 			logger.info('GET voip/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API voipServerConfig.callServer`);
+			logger.error(`error ${error} in API GET voip/room`);
 		}
 
 		try {
-			logger.info('Executing GET voip/visitor');
-			const output = await APIClient.v1.get(`voip/visitor/${token}`);
-			logger.info('GET voip/visitor output = ', JSON.stringify(output));
+			logger.info('Executing GET livechat/visitor');
+			const output = await APIClient.v1.get(`livechat/visitor/${token}`);
+			logger.info('GET livechat/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API voipServerConfig.callServer`);
+			logger.error(`error ${error} in API GET livechat/visitor`);
 		}
 
 		try {
-			logger.info('Executing DELETE voip/visitor');
-			const output = await APIClient.v1.delete(`voip/visitor/${token}`);
-			logger.info('DELETE voip/visitor output = ', JSON.stringify(output));
+			logger.info('Executing DELETE livechat/visitor');
+			const output = await APIClient.v1.delete(`livechat/visitor/${token}`);
+			logger.info('DELETE livechat/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API voipServerConfig.callServer`);
+			logger.error(`error ${error} in API DELETE livechat/visitor`);
 		}
 	};
-	*/
 	const registerCallback = (): void => {
 		if (callTypeSelection.current) {
 			callTypeSelection.current.disabled = true;
@@ -235,12 +234,12 @@ const VoIPLayout: FC = () => {
 			// Create a new visitor
 			logger.info('Creating new visitor');
 			visitor = await APIClient.v1.post(
-				'voip/visitor',
+				'livechat/visitor',
 				{},
 				{
 					visitor: {
 						id: createToken(),
-						token: roomToken,
+						token: roomVisitorToken,
 						name: caller.callerName,
 						phone: caller.callerId,
 					},
@@ -251,8 +250,9 @@ const VoIPLayout: FC = () => {
 			// Now create a new room
 			logger.info('Creatring a new room');
 			const output = await APIClient.v1.get('voip/room', {
-				token: roomToken,
-				agentId: 'JrQAQF5xwMe3AdbKL',
+				token: roomVisitorToken,
+				// agentId: 'JrQAQF5xwMe3AdbKL',
+				agentId: Meteor.userId(),
 			});
 			room = output.room;
 			logger.info('New Room created', JSON.stringify(room));
@@ -285,7 +285,7 @@ const VoIPLayout: FC = () => {
 				{},
 				{
 					rid: room._id,
-					token: roomToken,
+					token: roomVisitorToken,
 				},
 			);
 			logger.info('Closed room Result = ', JSON.stringify(output));
@@ -463,7 +463,6 @@ const VoIPLayout: FC = () => {
 				</div>
 			</div>
 			<div style={{ marginTop: '20px', marginBottom: '30px' }}>
-				{/* 
 				<button
 					style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
 					className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
@@ -472,8 +471,6 @@ const VoIPLayout: FC = () => {
 				>
 					Test Room
 				</button>
-				*/}
-
 				<button
 					style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
 					className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
