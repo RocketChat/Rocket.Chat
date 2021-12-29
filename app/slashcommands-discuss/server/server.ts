@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommand } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 import { Rooms, Messages } from '../../models/server';
 import { IRoom } from '../../../definition/IRoom';
@@ -93,7 +93,7 @@ async function discuss(_command: string, params: any, item: any): Promise<void> 
 	Meteor.call('createDiscussion', discussion);
 }
 
-slashCommand.add('discuss', discuss, {
+slashCommands.add('discuss', discuss, {
 	description: 'Create a new discussion',
 	params: '[#channel] [discussion name]',
 	permission: ['start-discussion-other-user', 'start-discussion'],
