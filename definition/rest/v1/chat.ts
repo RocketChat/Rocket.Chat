@@ -20,13 +20,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'chat.getThreadsList': {
-		GET: (params: {
-			rid: IRoom['_id'];
-			type: 'unread' | 'following' | 'all';
-			text?: string;
-			offset: number;
-			count: number;
-		}) => {
+		GET: (params: { rid: IRoom['_id']; type: 'unread' | 'following' | 'all'; text?: string; offset: number; count: number }) => {
 			threads: IMessage[];
 			total: number;
 		};

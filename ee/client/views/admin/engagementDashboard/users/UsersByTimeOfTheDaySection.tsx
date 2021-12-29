@@ -15,14 +15,8 @@ type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const UsersByTimeOfTheDaySection = ({
-	timezone,
-}: UsersByTimeOfTheDaySectionProps): ReactElement => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(
-		'last 7 days',
-		'last 30 days',
-		'last 90 days',
-	);
+const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProps): ReactElement => {
+	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const utc = timezone === 'utc';
 
@@ -37,9 +31,7 @@ const UsersByTimeOfTheDaySection = ({
 
 		const dates = Array.from(
 			{
-				length: utc
-					? moment(data.end).diff(data.start, 'days') + 1
-					: moment(data.end).diff(data.start, 'days') - 1,
+				length: utc ? moment(data.end).diff(data.start, 'days') + 1 : moment(data.end).diff(data.start, 'days') - 1,
 			},
 			(_, i) =>
 				utc
@@ -54,18 +46,14 @@ const UsersByTimeOfTheDaySection = ({
 			(_, hour) =>
 				({
 					hour: String(hour),
-					...dates
-						.map((date) => ({ [date.toISOString()]: 0 }))
-						.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
+					...dates.map((date) => ({ [date.toISOString()]: 0 })).reduce((obj, elem) => ({ ...obj, ...elem }), {}),
 				} as { [date: string]: number } & { hour: string }),
 		);
 
 		const timezoneOffset = moment().utcOffset() / 60;
 
 		for (const { users, hour, day, month, year } of data.week) {
-			const date = utc
-				? moment.utc([year, month - 1, day, hour])
-				: moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
+			const date = utc ? moment.utc([year, month - 1, day, hour]) : moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
 
 			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
 				values[date.hour()][date.endOf('day').toISOString()] += users;
@@ -138,8 +126,7 @@ const UsersByTimeOfTheDaySection = ({
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (isoString): string =>
-											dates?.length === 7 ? moment(isoString).format('dddd') : '',
+										format: (isoString): string => (dates?.length === 7 ? moment(isoString).format('dddd') : ''),
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
@@ -174,8 +161,7 @@ const UsersByTimeOfTheDaySection = ({
 										tooltip: {
 											container: {
 												backgroundColor: colors.n900,
-												boxShadow:
-													'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 												borderRadius: 2,
 											},
 										},

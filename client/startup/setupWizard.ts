@@ -11,8 +11,7 @@ Meteor.startup(() => {
 		const setupWizardState = settings.get('Show_Setup_Wizard');
 
 		const mustRedirect =
-			(!userId && setupWizardState === 'pending') ||
-			(!!userId && !!hasRole(userId, 'admin') && setupWizardState === 'in_progress');
+			(!userId && setupWizardState === 'pending') || (!!userId && !!hasRole(userId, 'admin') && setupWizardState === 'in_progress');
 
 		if (mustRedirect) {
 			FlowRouter.go('setup-wizard');

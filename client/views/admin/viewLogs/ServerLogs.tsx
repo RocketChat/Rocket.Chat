@@ -13,8 +13,7 @@ type StdOutLogEntry = {
 	ts: Date;
 };
 
-const compareEntries = (a: StdOutLogEntry, b: StdOutLogEntry): number =>
-	a.ts.getTime() - b.ts.getTime();
+const compareEntries = (a: StdOutLogEntry, b: StdOutLogEntry): number => a.ts.getTime() - b.ts.getTime();
 
 const unserializeEntry = ({ ts, ...entry }: Serialized<StdOutLogEntry>): StdOutLogEntry => ({
 	ts: new Date(ts),
@@ -168,14 +167,7 @@ const ServerLogs = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	return (
-		<Box
-			width='full'
-			height='full'
-			overflow='hidden'
-			position='relative'
-			display='flex'
-			marginBlock='x8'
-		>
+		<Box width='full' height='full' overflow='hidden' position='relative' display='flex' marginBlock='x8'>
 			<Scrollable vertical>
 				<Box
 					ref={wrapperRef}

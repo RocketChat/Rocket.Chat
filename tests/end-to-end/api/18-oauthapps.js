@@ -1,14 +1,9 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-describe('[OAuthApps]', function() {
+describe('[OAuthApps]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -16,7 +11,8 @@ describe('[OAuthApps]', function() {
 	describe('[/oauth-apps.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
 			updatePermission('manage-oauth-apps', []).then(() => {
-				request.get(api('oauth-apps.list'))
+				request
+					.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(400)
 					.expect((res) => {
@@ -28,7 +24,8 @@ describe('[OAuthApps]', function() {
 		});
 		it('should return an array of oauth apps', (done) => {
 			updatePermission('manage-oauth-apps', ['admin']).then(() => {
-				request.get(api('oauth-apps.list'))
+				request
+					.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(200)
 					.expect((res) => {
@@ -42,7 +39,8 @@ describe('[OAuthApps]', function() {
 
 	describe('[/oauth-apps.get]', () => {
 		it('should return a single oauthApp by id', (done) => {
-			request.get(api('oauth-apps.get?appId=zapier'))
+			request
+				.get(api('oauth-apps.get?appId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -53,7 +51,8 @@ describe('[OAuthApps]', function() {
 				.end(done);
 		});
 		it('should return a single oauthApp by client id', (done) => {
-			request.get(api('oauth-apps.get?clientId=zapier'))
+			request
+				.get(api('oauth-apps.get?clientId=zapier'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

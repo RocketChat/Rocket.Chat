@@ -13,11 +13,7 @@ import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
 const MessagesPerChannelSection = (): ReactElement => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(
-		'last 7 days',
-		'last 30 days',
-		'last 90 days',
-	);
+	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const t = useTranslation();
 
@@ -25,11 +21,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 	const { data: topFivePopularChannelsData } = useTopFivePopularChannels({ period });
 
 	const pie = useMemo(
-		() =>
-			messageOriginsData?.origins?.reduce<{ [roomType: string]: number }>(
-				(obj, { messages, t }) => ({ ...obj, [t]: messages }),
-				{},
-			),
+		() => messageOriginsData?.origins?.reduce<{ [roomType: string]: number }>((obj, { messages, t }) => ({ ...obj, [t]: messages }), {}),
 		[messageOriginsData],
 	);
 
@@ -42,13 +34,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 					name?: string;
 					messages: number;
 				}[]
-			>(
-				(entries, { t, messages, name, usernames }, i) => [
-					...entries,
-					{ i, t, name: name || usernames?.join(' × '), messages },
-				],
-				[],
-			),
+			>((entries, { t, messages, name, usernames }, i) => [...entries, { i, t, name: name || usernames?.join(' × '), messages }], []),
 		[topFivePopularChannelsData],
 	);
 
@@ -62,9 +48,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
 						headers={['Room Type', 'Messages']}
 						dataAvailable={!!messageOriginsData}
-						dataExtractor={(): unknown[][] | undefined =>
-							messageOriginsData?.origins.map(({ t, messages }) => [t, messages])
-						}
+						dataExtractor={(): unknown[][] | undefined => messageOriginsData?.origins.map(({ t, messages }) => [t, messages])}
 					/>
 				</>
 			}
@@ -141,8 +125,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 																		tooltip: {
 																			container: {
 																				backgroundColor: '#1F2329',
-																				boxShadow:
-																					'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+																				boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 																				borderRadius: 2,
 																			},
 																		},
@@ -188,11 +171,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 							<Flex.Item grow={1} shrink={0} basis='0'>
 								<Box>
 									<Margins blockEnd='x16'>
-										{table ? (
-											<Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box>
-										) : (
-											<Skeleton width='50%' />
-										)}
+										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 									</Margins>
 									{table && !table.length && (
 										<Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>

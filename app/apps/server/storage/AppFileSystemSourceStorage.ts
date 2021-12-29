@@ -55,7 +55,7 @@ export class AppFileSystemSourceStorage extends AppSourceStorage {
 	}
 
 	private itemToFilename(item: IAppStorageItem): string {
-		return `${ normalize(join(this.path, item.id)) }.zip`;
+		return `${normalize(join(this.path, item.id))}.zip`;
 	}
 
 	private filenameToSourcePath(filename: string): string {

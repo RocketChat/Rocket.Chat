@@ -2,14 +2,15 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe('[CustomUserStatus]', function() {
+describe('[CustomUserStatus]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('[/custom-user-status.list]', () => {
 		it('should return custom user status', (done) => {
-			request.get(api('custom-user-status.list'))
+			request
+				.get(api('custom-user-status.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
