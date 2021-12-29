@@ -6,7 +6,7 @@ import { createIntegration, removeIntegration } from '../../data/integration.hel
 import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
 
-describe('[Outgoing Integrations]', function() {
+describe('[Outgoing Integrations]', function () {
 	this.retries(0);
 
 	let integration;
@@ -35,7 +35,8 @@ describe('[Outgoing Integrations]', function() {
 	describe('[/integrations.create]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
-				request.post(api('integrations.create'))
+				request
+					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
 						type: 'webhook-outgoing',
@@ -63,7 +64,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
 			updatePermission('manage-own-outgoing-integrations', []).then(() => {
-				request.post(api('integrations.create'))
+				request
+					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
 						type: 'webhook-outgoing',
@@ -90,7 +92,8 @@ describe('[Outgoing Integrations]', function() {
 		});
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
-			request.post(api('integrations.create'))
+			request
+				.post(api('integrations.create'))
 				.set(credentials)
 				.send({
 					type: 'webhook-outgoing-invalid',
@@ -118,7 +121,8 @@ describe('[Outgoing Integrations]', function() {
 		it('should add the integration successfully when the user ONLY has the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
 			let integrationId;
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
-				request.post(api('integrations.create'))
+				request
+					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
 						type: 'webhook-outgoing',
@@ -148,7 +152,8 @@ describe('[Outgoing Integrations]', function() {
 		it('should add the integration successfully when the user ONLY has the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
 				updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
-					request.post(api('integrations.create'))
+					request
+						.post(api('integrations.create'))
 						.set(credentials)
 						.send({
 							type: 'webhook-outgoing',
@@ -177,7 +182,8 @@ describe('[Outgoing Integrations]', function() {
 		});
 
 		it('should create an outgoing integration successfully', (done) => {
-			request.post(api('integrations.create'))
+			request
+				.post(api('integrations.create'))
 				.set(credentials)
 				.send({
 					type: 'webhook-outgoing',
@@ -215,20 +221,23 @@ describe('[Outgoing Integrations]', function() {
 				login(user.username, password).then((credentials) => {
 					userCredentials = credentials;
 					updatePermission('manage-outgoing-integrations', ['user']).then(() => {
-						createIntegration({
-							type: 'webhook-outgoing',
-							name: 'Guggy',
-							enabled: true,
-							username: 'rocket.cat',
-							urls: ['http://text2gif.guggy.com/guggify'],
-							scriptEnabled: false,
-							channel: '#general',
-							triggerWords: ['!guggy'],
-							alias: 'guggy',
-							avatar: 'http://res.guggy.com/logo_128.png',
-							emoji: ':ghost:',
-							event: 'sendMessage',
-						}, userCredentials).then((integration) => {
+						createIntegration(
+							{
+								type: 'webhook-outgoing',
+								name: 'Guggy',
+								enabled: true,
+								username: 'rocket.cat',
+								urls: ['http://text2gif.guggy.com/guggify'],
+								scriptEnabled: false,
+								channel: '#general',
+								triggerWords: ['!guggy'],
+								alias: 'guggy',
+								avatar: 'http://res.guggy.com/logo_128.png',
+								emoji: ':ghost:',
+								event: 'sendMessage',
+							},
+							userCredentials,
+						).then((integration) => {
 							integrationCreatedByAnUser = integration;
 							done();
 						});
@@ -238,7 +247,8 @@ describe('[Outgoing Integrations]', function() {
 		});
 
 		it('should return the list of outgoing integrations', (done) => {
-			request.get(api('integrations.list'))
+			request
+				.get(api('integrations.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -257,13 +267,16 @@ describe('[Outgoing Integrations]', function() {
 		it('should return the list create by the user only', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
 				updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
-					request.get(api('integrations.list'))
+					request
+						.get(api('integrations.list'))
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-							const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
+							const integrationCreatedByAdmin = res.body.integrations.find(
+								(createdIntegration) => createdIntegration._id === integration._id,
+							);
 							expect(integrationCreatedByAdmin).to.be.equal(undefined);
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('items');
@@ -279,7 +292,8 @@ describe('[Outgoing Integrations]', function() {
 				updatePermission('manage-own-incoming-integrations', []).then(() => {
 					updatePermission('manage-outgoing-integrations', []).then(() => {
 						updatePermission('manage-outgoing-integrations', []).then(() => {
-							request.get(api('integrations.list'))
+							request
+								.get(api('integrations.list'))
 								.set(credentials)
 								.expect('Content-Type', 'application/json')
 								.expect(403)
@@ -299,7 +313,8 @@ describe('[Outgoing Integrations]', function() {
 		it('should return an error when the user DOES NOT the necessary permission', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
 				updatePermission('manage-own-outgoing-integrations', []).then(() => {
-					request.get(api('integrations.history'))
+					request
+						.get(api('integrations.history'))
 						.set(credentials)
 						.query({
 							id: integration._id,
@@ -317,7 +332,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return the history of outgoing integrations', (done) => {
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
-				request.get(api('integrations.history'))
+				request
+					.get(api('integrations.history'))
 					.set(credentials)
 					.query({
 						id: integration._id,
@@ -338,7 +354,8 @@ describe('[Outgoing Integrations]', function() {
 
 	describe('[/integrations.get]', () => {
 		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-			request.get(api('integrations.get'))
+			request
+				.get(api('integrations.get'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -351,7 +368,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				request
+					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -365,7 +383,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration created by another user', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
+				request
+					.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -379,7 +398,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user sends an invalid integration', (done) => {
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
-				request.get(api('integrations.get?integrationId=invalid'))
+				request
+					.get(api('integrations.get?integrationId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -395,7 +415,8 @@ describe('[Outgoing Integrations]', function() {
 			updatePermission('manage-outgoing-integrations', [])
 				.then(() => updatePermission('manage-own-outgoing-integrations', ['user']))
 				.then(() => {
-					request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
+					request
+						.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -410,7 +431,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return the integration successfully', (done) => {
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				request
+					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -427,7 +449,8 @@ describe('[Outgoing Integrations]', function() {
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to remove an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -444,7 +467,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
 			updatePermission('manage-own-incoming-integrations', []).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -461,7 +485,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
 			updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -479,7 +504,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('should remove the integration successfully when the user at least one of the necessary permission to remove an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -496,7 +522,8 @@ describe('[Outgoing Integrations]', function() {
 
 		it('the normal user should remove the integration successfully when the user have the "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
 			updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(userCredentials)
 					.send({
 						integrationId: integrationCreatedByAnUser._id,

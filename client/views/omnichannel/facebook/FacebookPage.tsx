@@ -24,15 +24,7 @@ type FacebookPageProps = OnToggleProps & {
 	onEnable: () => void;
 };
 
-const FacebookPage: FC<FacebookPageProps> = ({
-	pages,
-	enabled,
-	hasToken,
-	onToggle,
-	onRefresh,
-	onEnable,
-	onDisable,
-}) => {
+const FacebookPage: FC<FacebookPageProps> = ({ pages, enabled, hasToken, onToggle, onRefresh, onEnable, onDisable }) => {
 	const t = useTranslation();
 
 	return (
@@ -57,7 +49,7 @@ const FacebookPage: FC<FacebookPageProps> = ({
 					)}
 					{enabled && (
 						<>
-							<Box fontScale='h1' mbe='x8'>
+							<Box fontScale='h2' mbe='x8'>
 								{t('Pages')}
 							</Box>
 							{pages?.length ? (

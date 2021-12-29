@@ -38,16 +38,8 @@ export function OAuthAppsTable() {
 
 	const renderRow = useCallback(
 		({ _id, name, _createdAt, _createdBy: { username: createdBy } }) => (
-			<Table.Row
-				key={_id}
-				onKeyDown={onClick(_id)}
-				onClick={onClick(_id)}
-				tabIndex={0}
-				role='link'
-				action
-				qa-oauth-app-id={_id}
-			>
-				<Table.Cell withTruncatedText color='default' fontScale='p2'>
+			<Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-oauth-app-id={_id}>
+				<Table.Cell withTruncatedText color='default' fontScale='p2m'>
 					{name}
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{createdBy}</Table.Cell>

@@ -10,12 +10,7 @@ export const TooltipComponent = ({ title, anchor }: TooltipComponentProps): Reac
 	const ref = useRef(anchor);
 
 	return (
-		<PositionAnimated
-			anchor={ref}
-			placement='top-middle'
-			margin={8}
-			visible={AnimatedVisibility.UNHIDING}
-		>
+		<PositionAnimated anchor={ref} placement='top-middle' margin={8} visible={AnimatedVisibility.UNHIDING}>
 			<Tooltip>{title}</Tooltip>
 		</PositionAnimated>
 	);

@@ -16,7 +16,7 @@ const logger = new Logger('rocketchat:theme');
 let currentHash = '';
 let currentSize = 0;
 
-export const theme = new class {
+export const theme = new (class {
 	constructor() {
 		this.variables = {};
 		this.packageCallbacks = [];
@@ -56,15 +56,15 @@ export const theme = new class {
 			plugins: [new Autoprefixer()],
 		};
 		const start = Date.now();
-		return less.render(content, options, function(err, data) {
+		return less.render(content, options, function (err, data) {
 			logger.info({ stop_rendering: Date.now() - start });
 			if (err != null) {
 				return logger.error(err);
 			}
 			Settings.updateValueById('css', data.css);
 
-			return Meteor.startup(function() {
-				return Meteor.setTimeout(function() {
+			return Meteor.startup(function () {
+				return Meteor.setTimeout(function () {
 					return process.emit('message', {
 						refresh: 'client',
 					});
@@ -83,7 +83,7 @@ export const theme = new class {
 			section,
 		};
 
-		return settingsRegistry.add(`theme-color-${ name }`, value, config);
+		return settingsRegistry.add(`theme-color-${name}`, value, config);
 	}
 
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
@@ -102,7 +102,7 @@ export const theme = new class {
 				allowedTypes,
 				property,
 			};
-			return settingsRegistry.add(`theme-${ type }-${ name }`, value, config);
+			return settingsRegistry.add(`theme-${type}-${name}`, value, config);
 		}
 	}
 
@@ -121,7 +121,7 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-}();
+})();
 
 Meteor.startup(() => {
 	settings.watch('css', (value = '') => {
@@ -131,16 +131,16 @@ Meteor.startup(() => {
 	});
 });
 
-WebApp.rawConnectHandlers.use(function(req, res, next) {
+WebApp.rawConnectHandlers.use(function (req, res, next) {
 	const path = req.url.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	if (path !== `${ prefix }/theme.css`) {
+	if (path !== `${prefix}/theme.css`) {
 		return next();
 	}
 
 	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
 	res.setHeader('Content-Length', currentSize);
-	res.setHeader('ETag', `"${ currentHash }"`);
+	res.setHeader('ETag', `"${currentHash}"`);
 	res.write(theme.getCss());
 	res.end();
 });

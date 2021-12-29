@@ -13,15 +13,7 @@ type CallBBBProps = {
 	openNewWindow: boolean;
 };
 
-const CallBBB: FC<CallBBBProps> = ({
-	handleClose,
-	canManageCall,
-	live,
-	startCall,
-	endCall,
-	openNewWindow,
-	...props
-}) => {
+const CallBBB: FC<CallBBBProps> = ({ handleClose, canManageCall, live, startCall, endCall, openNewWindow, ...props }) => {
 	const t = useTranslation();
 	return (
 		<>
@@ -33,8 +25,8 @@ const CallBBB: FC<CallBBBProps> = ({
 			<VerticalBar.ScrollableContent {...(props as any)}>
 				{openNewWindow ? (
 					<>
-						<Box fontScale='p2'>{t('Video_Conference')}</Box>
-						<Box fontScale='p1' color='neutral-700'>
+						<Box fontScale='p2m'>{t('Video_Conference')}</Box>
+						<Box fontScale='p2' color='neutral-700'>
 							{t('Opened_in_a_new_window')}
 						</Box>
 					</>
@@ -55,9 +47,7 @@ const CallBBB: FC<CallBBBProps> = ({
 							{t('BBB_Start_Meeting')}
 						</Button>
 					)}
-					{!live && !canManageCall && (
-						<Button primary>{t('BBB_You_have_no_permission_to_start_a_call')}</Button>
-					)}
+					{!live && !canManageCall && <Button primary>{t('BBB_You_have_no_permission_to_start_a_call')}</Button>}
 				</ButtonGroup>
 			</VerticalBar.ScrollableContent>
 		</>

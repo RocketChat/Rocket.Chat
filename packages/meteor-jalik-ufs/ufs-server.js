@@ -51,15 +51,15 @@ if (Meteor.isServer) {
 				// Create the temp directory
 				mkdirp(path, { mode }, (err) => {
 					if (err) {
-						console.error(`ufs: cannot create temp directory at "${ path }" (${ err.message })`);
+						console.error(`ufs: cannot create temp directory at "${path}" (${err.message})`);
 					} else {
-						console.log(`ufs: temp directory created at "${ path }"`);
+						console.log(`ufs: temp directory created at "${path}"`);
 					}
 				});
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err && console.error(`ufs: cannot set temp directory permissions ${ mode } (${ err.message })`);
+					err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
 				});
 			}
 		});
@@ -70,13 +70,13 @@ if (Meteor.isServer) {
 	const d = domain.create();
 
 	d.on('error', (err) => {
-		console.error(`ufs: ${ err.message }`);
+		console.error(`ufs: ${err.message}`);
 	});
 
 	// Listen HTTP requests to serve files
 	WebApp.connectHandlers.use((req, res, next) => {
 		// Quick check to see if request should be caught
-		if (!req.url.includes(`/${ UploadFS.config.storesPath }/`)) {
+		if (!req.url.includes(`/${UploadFS.config.storesPath}/`)) {
 			next();
 			return;
 		}
@@ -93,7 +93,7 @@ if (Meteor.isServer) {
 		};
 
 		if (req.method === 'OPTIONS') {
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
 			const match = regExp.exec(path);
 
 			// Request is not valid
@@ -117,7 +117,7 @@ if (Meteor.isServer) {
 			next();
 		} else if (req.method === 'POST') {
 			// Get store
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
 			const match = regExp.exec(path);
 
 			// Request is not valid
@@ -154,7 +154,7 @@ if (Meteor.isServer) {
 			}
 
 			// Check if duplicate
-			const unique = function(hash) {
+			const unique = function (hash) {
 				const originalId = store.getCollection().findOne({ hash, _id: { $ne: fileId } });
 				return originalId ? originalId._id : false;
 			};
@@ -177,17 +177,20 @@ if (Meteor.isServer) {
 				res.writeHead(500);
 				res.end();
 			});
-			req.on('end', Meteor.bindEnvironment(() => {
-				// Update completed state without triggering hooks
-				fields.hash = spark.end();
-				fields.originalId = unique(fields.hash);
-				store.getCollection().direct.update({ _id: fileId }, { $set: fields });
-				ws.end();
-			}));
+			req.on(
+				'end',
+				Meteor.bindEnvironment(() => {
+					// Update completed state without triggering hooks
+					fields.hash = spark.end();
+					fields.originalId = unique(fields.hash);
+					store.getCollection().direct.update({ _id: fileId }, { $set: fields });
+					ws.end();
+				}),
+			);
 			ws.on('error', (err) => {
-				console.error(`ufs: cannot write chunk of file "${ fileId }" (${ err.message })`);
+				console.error(`ufs: cannot write chunk of file "${fileId}" (${err.message})`);
 				fs.unlink(tmpFile, (err) => {
-					err && console.error(`ufs: cannot delete temp file "${ tmpFile }" (${ err.message })`);
+					err && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err.message})`);
 				});
 				res.writeHead(500);
 				res.end();
@@ -198,7 +201,7 @@ if (Meteor.isServer) {
 			});
 		} else if (req.method === 'GET') {
 			// Get store, file Id and file name
-			const regExp = new RegExp('^\/([^\/\?]+)\/([^\/\?]+)(?:\/([^\/\?]+))?$');
+			const regExp = new RegExp('^/([^/?]+)/([^/?]+)(?:/([^/?]+))?$');
 			const match = regExp.exec(path);
 
 			// Avoid 504 Gateway timeout error
@@ -219,7 +222,7 @@ if (Meteor.isServer) {
 			}
 
 			if (store.onRead !== null && store.onRead !== undefined && typeof store.onRead !== 'function') {
-				console.error(`ufs: Store.onRead is not a function in store "${ storeName }"`);
+				console.error(`ufs: Store.onRead is not a function in store "${storeName}"`);
 				res.writeHead(500);
 				res.end();
 				return;
@@ -281,9 +284,11 @@ if (Meteor.isServer) {
 						if (req.headers['if-modified-since']) {
 							const modifiedSince = new Date(req.headers['if-modified-since']);
 
-							if ((file.modifiedAt instanceof Date && file.modifiedAt > modifiedSince)
-                // eslint-disable-next-line no-mixed-operators
-                || file.uploadedAt instanceof Date && file.uploadedAt > modifiedSince) {
+							if (
+								(file.modifiedAt instanceof Date && file.modifiedAt > modifiedSince) ||
+								// eslint-disable-next-line no-mixed-operators
+								(file.uploadedAt instanceof Date && file.uploadedAt > modifiedSince)
+							) {
 								res.writeHead(304); // Not Modified
 								res.end();
 								return;
@@ -310,7 +315,10 @@ if (Meteor.isServer) {
 								return;
 							}
 
-							const ranges = range.substr(unit.length).replace(/[^0-9\-,]/, '').split(',');
+							const ranges = range
+								.substr(unit.length)
+								.replace(/[^0-9\-,]/, '')
+								.split(',');
 
 							if (ranges.length > 1) {
 								// todo: support multipart ranges: https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
@@ -327,7 +335,7 @@ if (Meteor.isServer) {
 								}
 
 								// Update headers
-								headers['Content-Range'] = `bytes ${ start }-${ end }/${ total }`;
+								headers['Content-Range'] = `bytes ${start}-${end}/${total}`;
 								headers['Content-Length'] = end - start + 1;
 								options.start = start;
 								options.end = end;
@@ -342,14 +350,20 @@ if (Meteor.isServer) {
 					const rs = store.getReadStream(fileId, file, options);
 					const ws = new stream.PassThrough();
 
-					rs.on('error', Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}));
-					ws.on('error', Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}));
+					rs.on(
+						'error',
+						Meteor.bindEnvironment((err) => {
+							store.onReadError.call(store, err, fileId, file);
+							res.end();
+						}),
+					);
+					ws.on(
+						'error',
+						Meteor.bindEnvironment((err) => {
+							store.onReadError.call(store, err, fileId, file);
+							res.end();
+						}),
+					);
 					ws.on('close', () => {
 						// Close output stream at the end
 						ws.emit('end');

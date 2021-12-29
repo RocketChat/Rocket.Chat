@@ -13,13 +13,7 @@ function CustomUserStatus({ data, sort, onClick, onHeaderClick, setParams, param
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key='name'
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -38,19 +32,11 @@ function CustomUserStatus({ data, sort, onClick, onHeaderClick, setParams, param
 	const renderRow = (status) => {
 		const { _id, name, statusType } = status;
 		return (
-			<Table.Row
-				key={_id}
-				onKeyDown={onClick(_id, status)}
-				onClick={onClick(_id, status)}
-				tabIndex={0}
-				role='link'
-				action
-				qa-user-id={_id}
-			>
-				<Table.Cell fontScale='p1' color='default' style={style}>
+			<Table.Row key={_id} onKeyDown={onClick(_id, status)} onClick={onClick(_id, status)} tabIndex={0} role='link' action qa-user-id={_id}>
+				<Table.Cell fontScale='p2' color='default' style={style}>
 					{name}
 				</Table.Cell>
-				<Table.Cell fontScale='p1' color='default' style={style}>
+				<Table.Cell fontScale='p2' color='default' style={style}>
 					{statusType}
 				</Table.Cell>
 			</Table.Row>

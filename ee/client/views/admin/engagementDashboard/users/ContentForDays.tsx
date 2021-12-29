@@ -13,12 +13,7 @@ type ContentForDaysProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ContentForDays = ({
-	displacement,
-	onPreviousDateClick,
-	onNextDateClick,
-	timezone,
-}: ContentForDaysProps): ReactElement => {
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps): ReactElement => {
 	const utc = timezone === 'utc';
 	const { data } = useWeeklyChatActivity({ displacement, utc });
 

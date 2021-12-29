@@ -57,10 +57,7 @@ function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {}
 			<Field.Row>
 				<div className='settings-file-preview'>
 					{value.url ? (
-						<div
-							className='preview'
-							style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }}
-						/>
+						<div className='preview' style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }} />
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
 							<Icon name='upload' />
@@ -78,11 +75,7 @@ function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {}
 								<input
 									className='AssetSettingInput__input'
 									type='file'
-									accept={
-										fileConstraints.extensions &&
-										fileConstraints.extensions.length &&
-										`.${fileConstraints.extensions.join(', .')}`
-									}
+									accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${fileConstraints.extensions.join(', .')}`}
 									onChange={handleUpload}
 								/>
 							</div>

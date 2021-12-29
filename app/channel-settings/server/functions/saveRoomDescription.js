@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 
 import { Rooms, Messages } from '../../../models';
 
-export const saveRoomDescription = function(rid, roomDescription, user) {
+export const saveRoomDescription = function (rid, roomDescription, user) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomDescription',

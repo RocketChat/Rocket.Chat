@@ -1,8 +1,6 @@
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () =>
-	import('./OmnichannelRouter'),
-);
+export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',

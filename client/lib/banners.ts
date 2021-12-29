@@ -1,4 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { Icon } from '@rocket.chat/fuselage';
+import { ComponentProps } from 'react';
 import { Subscription } from 'use-subscription';
 
 import { UiKitBannerPayload } from '../../definition/UIKit';
@@ -9,7 +11,7 @@ export type LegacyBannerPayload = {
 	title?: string;
 	text?: string;
 	html?: string;
-	icon?: string;
+	icon?: ComponentProps<typeof Icon>['name'];
 	modifiers?: ('large' | 'danger')[];
 	timer?: number;
 	action?: () => void;
@@ -18,8 +20,7 @@ export type LegacyBannerPayload = {
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 
-export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload =>
-	!('blocks' in payload);
+export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
 const queue: BannerPayload[] = [];
 const emitter = new Emitter<{
