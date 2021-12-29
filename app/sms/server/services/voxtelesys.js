@@ -12,9 +12,10 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
-	msg,
-});
+const notifyAgent = (userId, rid, msg) =>
+	api.broadcast('notify.ephemeralMessage', userId, rid, {
+		msg,
+	});
 
 class Voxtelesys {
 	constructor() {
@@ -62,7 +63,11 @@ class Voxtelesys {
 		let media;
 		const defaultLanguage = settings.get('Language') || 'en';
 		if (extraData && extraData.fileUpload) {
-			const { rid, userId, fileUpload: { size, type, publicFilePath } } = extraData;
+			const {
+				rid,
+				userId,
+				fileUpload: { size, type, publicFilePath },
+			} = extraData;
 			const user = userId ? Meteor.users.findOne(userId) : null;
 			const lng = (user && user.language) || defaultLanguage;
 
@@ -80,7 +85,7 @@ class Voxtelesys {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return SystemLogger.error(`(Voxtelesys) -> ${ reason }`);
+				return SystemLogger.error(`(Voxtelesys) -> ${reason}`);
 			}
 
 			media = [publicFilePath];
@@ -88,20 +93,20 @@ class Voxtelesys {
 
 		const options = {
 			headers: {
-				Authorization: `Bearer ${ this.authToken }`,
+				Authorization: `Bearer ${this.authToken}`,
 			},
 			data: {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
-				...media && { media },
+				...(media && { media }),
 			},
 		};
 
 		try {
 			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
 		} catch (error) {
-			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
+			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${error}`);
 		}
 	}
 

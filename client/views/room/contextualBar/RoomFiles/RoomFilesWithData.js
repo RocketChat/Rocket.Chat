@@ -30,9 +30,7 @@ const RoomFilesWithData = ({ rid }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems, reload } = useFilesList(
-		useMemo(() => ({ rid, type, text }), [rid, type, text]),
-	);
+	const { filesList, loadMoreItems, reload } = useFilesList(useMemo(() => ({ rid, type, text }), [rid, type, text]));
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
 
 	const handleDelete = useMutableCallback((_id) => {
@@ -48,12 +46,7 @@ const RoomFilesWithData = ({ rid }) => {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onConfirm}
-				onCancel={closeModal}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={closeModal} confirmText={t('Delete')}>
 				{t('Delete_File_Warning')}
 			</GenericModal>,
 		);

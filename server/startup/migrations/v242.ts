@@ -3,10 +3,14 @@ import { LivechatInquiry } from '../../../app/models/server';
 import { Settings } from '../../../app/models/server/raw';
 
 function removeQueueTimeoutFromInquiries(): void {
-	LivechatInquiry.update({
-		status: 'queued',
-		estimatedInactivityCloseTimeAt: { $exists: true },
-	}, { $unset: { estimatedInactivityCloseTimeAt: 1 } }, { multi: true });
+	LivechatInquiry.update(
+		{
+			status: 'queued',
+			estimatedInactivityCloseTimeAt: { $exists: true },
+		},
+		{ $unset: { estimatedInactivityCloseTimeAt: 1 } },
+		{ multi: true },
+	);
 }
 
 async function removeSetting(): Promise<void> {

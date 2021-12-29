@@ -5,16 +5,23 @@ type FunctionPropertyNames<T> = {
 }[keyof T];
 
 type Prom<T> = {
-	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? T[K] : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
-}
+	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
+		? T[K]
+		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
+};
 
 type PromOrError<T> = {
-	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error> : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
-}
+	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any>
+		? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error>
+		: (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
+};
 
 function handler<T extends object>(namespace: string, waitService: boolean): ProxyHandler<T> {
 	return {
-		get: (_target: T, prop: string): any => (...params: any): Promise<any> => api[waitService ? 'waitAndCall' : 'call'](`${ namespace }.${ prop }`, params),
+		get:
+			(_target: T, prop: string): any =>
+			(...params: any): Promise<any> =>
+				api[waitService ? 'waitAndCall' : 'call'](`${namespace}.${prop}`, params),
 	};
 }
 

@@ -3,7 +3,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { Users } from '../../../models';
 
 export async function findEmailInboxes({ userId, query = {}, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
+	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
 	const cursor = EmailInbox.find(query, {
@@ -25,7 +25,7 @@ export async function findEmailInboxes({ userId, query = {}, pagination: { offse
 }
 
 export async function findOneEmailInbox({ userId, _id }) {
-	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
+	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOneById(_id);
@@ -72,7 +72,7 @@ export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
 }
 
 export async function findOneEmailInboxByEmail({ userId, email }) {
-	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
+	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOne({ email });

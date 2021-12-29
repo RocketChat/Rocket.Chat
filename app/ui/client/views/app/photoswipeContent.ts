@@ -10,19 +10,20 @@ const parseLength = (x: unknown): number | undefined => {
 	return Number.isFinite(length) ? length : undefined;
 };
 
-const getImageSize = (src: string): Promise<[w: number, h: number]> => new Promise((resolve, reject) => {
-	const img = new Image();
+const getImageSize = (src: string): Promise<[w: number, h: number]> =>
+	new Promise((resolve, reject) => {
+		const img = new Image();
 
-	img.addEventListener('load', () => {
-		resolve([img.naturalWidth, img.naturalHeight]);
+		img.addEventListener('load', () => {
+			resolve([img.naturalWidth, img.naturalHeight]);
+		});
+
+		img.addEventListener('error', (error) => {
+			reject(error.error);
+		});
+
+		img.src = src;
 	});
-
-	img.addEventListener('error', (error) => {
-		reject(error.error);
-	});
-
-	img.src = src;
-});
 
 type Slide = PhotoSwipeUiDefault.Item & { description?: string };
 
@@ -112,46 +113,54 @@ const defaultGalleryOptions: PhotoSwipeUiDefault.Options = {
 	index: 0,
 	addCaptionHTMLFn(item: Slide, captionEl: HTMLElement): boolean {
 		captionEl.children[0].innerHTML = `
-			${ escapeHTML(item.title ?? '') }<br/>
-			<small>${ escapeHTML(item.description ?? '') }</small>
+			${escapeHTML(item.title ?? '')}<br/>
+			<small>${escapeHTML(item.description ?? '')}</small>
 		`;
 		return true;
 	},
 };
 
-const createEventListenerFor = (className: string) => (event: JQuery.ClickEvent): void => {
-	event.preventDefault();
-	event.stopPropagation();
+const createEventListenerFor =
+	(className: string) =>
+	(event: JQuery.ClickEvent): void => {
+		event.preventDefault();
+		event.stopPropagation();
 
-	const { currentTarget } = event;
+		const { currentTarget } = event;
 
-	Array.from(document.querySelectorAll(className))
-		.sort((a, b) => {
-			if (a === currentTarget) {
-				return -1;
-			}
+		Array.from(document.querySelectorAll(className))
+			.sort((a, b) => {
+				if (a === currentTarget) {
+					return -1;
+				}
 
-			if (b === currentTarget) {
-				return 1;
-			}
+				if (b === currentTarget) {
+					return 1;
+				}
 
-			return 0;
-		})
-		.map((element) => fromElementToSlide(element))
-		.reduce((p, curr) => p.then(() => curr).then(async (slide) => {
-			if (!slide) {
-				return;
-			}
+				return 0;
+			})
+			.map((element) => fromElementToSlide(element))
+			.reduce(
+				(p, curr) =>
+					p
+						.then(() => curr)
+						.then(async (slide) => {
+							if (!slide) {
+								return;
+							}
 
-			if (!currentGallery) {
-				return initGallery([slide], defaultGalleryOptions);
-			}
+							if (!currentGallery) {
+								return initGallery([slide], defaultGalleryOptions);
+							}
 
-			currentGallery.items.push(slide);
-			currentGallery.invalidateCurrItems();
-			currentGallery.updateSize(true);
-		}), Promise.resolve());
-};
+							currentGallery.items.push(slide);
+							currentGallery.invalidateCurrItems();
+							currentGallery.updateSize(true);
+						}),
+				Promise.resolve(),
+			);
+	};
 
 Meteor.startup(() => {
 	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));

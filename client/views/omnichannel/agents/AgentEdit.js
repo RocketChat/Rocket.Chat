@@ -1,13 +1,4 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	Margins,
-	Box,
-	MultiSelect,
-	Icon,
-	Select,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef, useState } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -39,10 +30,7 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 		[availableDepartments],
 	);
 	const initialDepartmentValue = useMemo(
-		() =>
-			userDepartments && userDepartments.departments
-				? userDepartments.departments.map(({ departmentId }) => departmentId)
-				: [],
+		() => (userDepartments && userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
 	const eeForms = useSubscription(formsSubscription);
@@ -151,20 +139,10 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<Margins inlineEnd='x4'>
-						<Button
-							flexGrow={1}
-							type='reset'
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleReset}
-						>
+						<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleReset}>
 							{t('Reset')}
 						</Button>
-						<Button
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleSave}
-						>
+						<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</Margins>

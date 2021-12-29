@@ -8,13 +8,17 @@ export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivech
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 	return businessHours
-		.filter((businessHour) => businessHour.active && businessHour.workHours
-			.filter((hour) => hour.open)
-			.some((hour) => {
-				const localTimeStart = moment(`${ hour.start.cron.dayOfWeek }:${ hour.start.cron.time }`, 'dddd:HH:mm');
-				const localTimeFinish = moment(`${ hour.finish.cron.dayOfWeek }:${ hour.finish.cron.time }`, 'dddd:HH:mm');
-				return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
-			}))
+		.filter(
+			(businessHour) =>
+				businessHour.active &&
+				businessHour.workHours
+					.filter((hour) => hour.open)
+					.some((hour) => {
+						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}`, 'dddd:HH:mm');
+						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}`, 'dddd:HH:mm');
+						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isSameOrBefore(localTimeFinish);
+					}),
+		)
 		.map((businessHour) => ({
 			_id: businessHour._id,
 			type: businessHour.type,
@@ -39,7 +43,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
-	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
+	if ((await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count()) === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };

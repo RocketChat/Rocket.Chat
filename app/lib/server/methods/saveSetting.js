@@ -7,7 +7,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
-	saveSetting: twoFactorRequired(async function(_id, value, editor) {
+	saveSetting: twoFactorRequired(async function (_id, value, editor) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
@@ -15,8 +15,11 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(uid, 'edit-privileged-setting')
-			&& !hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])) { // TODO use the same function
+		if (
+			!hasPermission(uid, 'edit-privileged-setting') &&
+			!hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])
+		) {
+			// TODO use the same function
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 				settingId: _id,

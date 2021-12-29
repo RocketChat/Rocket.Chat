@@ -22,7 +22,9 @@ if (navigator.userAgent.indexOf('Firefox') !== -1) {
 			migrationData = null;
 		}
 
-		if (! (migrationData && migrationData.credentialToken)) { return null; }
+		if (!(migrationData && migrationData.credentialToken)) {
+			return null;
+		}
 
 		const { credentialToken } = migrationData;
 		const key = OAuth._storageTokenPrefix + credentialToken;

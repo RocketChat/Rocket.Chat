@@ -5,16 +5,18 @@ import { IFederationServer } from '../../../../definition/Federation';
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 
 export class FederationServersRaw extends BaseRaw<IFederationServer> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { domain: 1 } },
-	]
+	protected indexes: IndexSpecification[] = [{ key: { domain: 1 } }];
 
 	saveDomain(domain: string): Promise<UpdateWriteOpResult> {
-		return this.updateOne({ domain }, {
-			$setOnInsert: {
-				domain,
+		return this.updateOne(
+			{ domain },
+			{
+				$setOnInsert: {
+					domain,
+				},
 			},
-		}, { upsert: true });
+			{ upsert: true },
+		);
 	}
 
 	async refreshServers(): Promise<void> {

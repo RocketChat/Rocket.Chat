@@ -26,12 +26,12 @@ export async function syncWorkspace(reconnectCheck = false) {
 		const token = getWorkspaceAccessToken(true);
 
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		} else {
 			return false;
 		}
 
-		result = HTTP.post(`${ workspaceUrl }/client`, {
+		result = HTTP.post(`${workspaceUrl}/client`, {
 			data: info,
 			headers,
 		});
@@ -39,7 +39,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 		getWorkspaceLicense();
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);
 		}
@@ -57,10 +57,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	}
 
 	if (data.nps) {
-		const {
-			id: npsId,
-			expireAt,
-		} = data.nps;
+		const { id: npsId, expireAt } = data.nps;
 
 		const startAt = new Date(data.nps.startAt);
 
@@ -80,11 +77,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	// add banners
 	if (data.banners) {
 		for await (const banner of data.banners) {
-			const {
-				createdAt,
-				expireAt,
-				startAt,
-			} = banner;
+			const { createdAt, expireAt, startAt } = banner;
 
 			await Banner.create({
 				...banner,

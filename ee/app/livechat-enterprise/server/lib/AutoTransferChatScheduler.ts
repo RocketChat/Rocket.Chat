@@ -35,7 +35,7 @@ class AutoTransferChatSchedulerClass {
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
 		await this.unscheduleRoom(roomId);
 
-		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
+		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		const when = new Date();
 		when.setSeconds(when.getSeconds() + timeout);
 
@@ -45,19 +45,28 @@ class AutoTransferChatSchedulerClass {
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
+		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 
 		await LivechatRooms.unsetAutoTransferOngoingById(roomId);
 		await this.scheduler.cancel({ name: jobName });
 	}
 
 	private async transferRoom(roomId: string): Promise<boolean> {
-		const room = LivechatRooms.findOneById(roomId, { _id: 1, v: 1, servedBy: 1, open: 1, departmentId: 1 });
+		const room = LivechatRooms.findOneById(roomId, {
+			_id: 1,
+			v: 1,
+			servedBy: 1,
+			open: 1,
+			departmentId: 1,
+		});
 		if (!room?.open || !room?.servedBy?._id) {
 			return false;
 		}
 
-		const { departmentId, servedBy: { _id: ignoreAgentId } } = room;
+		const {
+			departmentId,
+			servedBy: { _id: ignoreAgentId },
+		} = room;
 
 		if (!RoutingManager.getConfig().autoAssignAgent) {
 			return Livechat.returnRoomAsInquiry(room._id, departmentId);
@@ -65,7 +74,11 @@ class AutoTransferChatSchedulerClass {
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
 		if (agent) {
-			return forwardRoomToAgent(room, { userId: agent.agentId, transferredBy: schedulerUser, transferredTo: agent });
+			return forwardRoomToAgent(room, {
+				userId: agent.agentId,
+				transferredBy: schedulerUser,
+				transferredTo: agent,
+			});
 		}
 
 		return false;

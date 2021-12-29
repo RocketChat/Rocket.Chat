@@ -1,10 +1,10 @@
-import { Badge } from '@rocket.chat/fuselage';
+import { Badge, Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
+import { RoomIcon } from '../../components/RoomIcon';
 import { useLayout } from '../../contexts/LayoutContext';
 import RoomMenu from '../RoomMenu';
-import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room, lastMessage, t) => {
@@ -20,10 +20,7 @@ const getMessage = (room, lastMessage, t) => {
 	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
-	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(
-		lastMessage,
-		t,
-	)}`;
+	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
 function SideBarItemTemplateWithData({
@@ -35,7 +32,7 @@ function SideBarItemTemplateWithData({
 	AvatarTemplate,
 	t,
 	style,
-	sidebarViewMode,
+	// sidebarViewMode,
 	isAnonymous,
 }) {
 	const { sidebar } = useLayout();
@@ -59,7 +56,9 @@ function SideBarItemTemplateWithData({
 
 	const highlighted = !hideUnreadStatus && (alert || unread);
 	const icon = (
-		<SidebarIcon highlighted={highlighted} room={room} small={sidebarViewMode !== 'medium'} />
+		<Sidebar.Item.Icon highlighted={highlighted}>
+			<RoomIcon highlighted={highlighted} room={room} placement='sidebar' />
+		</Sidebar.Item.Icon>
 	);
 
 	const isQueued = room.status === 'queued';
@@ -67,14 +66,9 @@ function SideBarItemTemplateWithData({
 	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
 
-	const subtitle = message ? (
-		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} />
-	) : null;
+	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 	const variant =
-		((userMentions || tunreadUser.length) && 'danger') ||
-		(threadUnread && 'primary') ||
-		(groupMentions && 'warning') ||
-		'ghost';
+		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
 	const badges =
 		!hideUnreadStatus && isUnread ? (
@@ -125,16 +119,9 @@ function SideBarItemTemplateWithData({
 
 const propsAreEqual = (prevProps, nextProps) => {
 	if (
-		[
-			'id',
-			'style',
-			'extended',
-			'selected',
-			'SideBarItemTemplate',
-			'AvatarTemplate',
-			't',
-			'sidebarViewMode',
-		].some((key) => prevProps[key] !== nextProps[key])
+		['id', 'style', 'extended', 'selected', 'SideBarItemTemplate', 'AvatarTemplate', 't', 'sidebarViewMode'].some(
+			(key) => prevProps[key] !== nextProps[key],
+		)
 	) {
 		return false;
 	}
@@ -149,10 +136,7 @@ const propsAreEqual = (prevProps, nextProps) => {
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
-	if (
-		prevProps.room.lastMessage?._updatedAt?.toISOString() !==
-		nextProps.room.lastMessage?._updatedAt?.toISOString()
-	) {
+	if (prevProps.room.lastMessage?._updatedAt?.toISOString() !== nextProps.room.lastMessage?._updatedAt?.toISOString()) {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {

@@ -32,8 +32,7 @@ export const SettingsContext = createContext<SettingsContextValue>({
 	dispatch: async () => undefined,
 });
 
-export const useIsPrivilegedSettingsContext = (): boolean =>
-	useContext(SettingsContext).hasPrivateAccess;
+export const useIsPrivilegedSettingsContext = (): boolean => useContext(SettingsContext).hasPrivateAccess;
 
 export const useIsSettingsContextLoading = (): boolean => useContext(SettingsContext).isLoading;
 
@@ -51,12 +50,9 @@ export const useSettings = (query?: SettingsContextQuery): ISetting[] => {
 	return useSubscription(subscription);
 };
 
-export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) =>
-	useContext(SettingsContext).dispatch;
+export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) => useContext(SettingsContext).dispatch;
 
-export const useSettingSetValue = <T extends ISetting['value']>(
-	_id: SettingId,
-): ((value: T) => Promise<void>) => {
+export const useSettingSetValue = <T extends ISetting['value']>(_id: SettingId): ((value: T) => Promise<void>) => {
 	const dispatch = useSettingsDispatch();
 	return useCallback((value: T) => dispatch([{ _id, value }]), [dispatch, _id]);
 };
