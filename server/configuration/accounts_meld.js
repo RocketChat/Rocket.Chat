@@ -6,7 +6,7 @@ import { Users } from '../../app/models';
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
 Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceData = {}, ...args /* , options*/) {
-	const services = ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter'];
+	const services = ['facebook', 'github', 'gitlab', 'google', 'meteor-developer', 'linkedin', 'twitter', 'apple'];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
 		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);

@@ -1,18 +1,51 @@
-import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { Accounts } from 'meteor/accounts-base';
+import React, { FC, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 
-export const AppleOauthButton = (): ReactNode => {
+export const AppleOauthButton: FC = () => {
 	const enabled = useSetting('Accounts_OAuth_Apple');
 	const absoluteUrl = useAbsoluteUrl();
-	const appleClientID = useSetting('Accounts_OAuth_Apple_client_id') || '[CLIENT_ID]';
-	const appleState = useSetting('Accounts_OAuth_Apple_state');
+	const appleClientID = useSetting('Accounts_OAuth_Apple_id') || '[CLIENT_ID]';
 
-	const appleRedirectUri = useSetting('Accounts_OAuth_Apple_redirectUri');
-	const defaultRedirectURI = absoluteUrl('_oauth/apple');
-	const redirectURI = appleRedirectUri || defaultRedirectURI;
+	const redirectURI = absoluteUrl('_oauth/apple');
+
+	useEffect(() => {
+		const success = (data: any): void => {
+			const { authorization, user } = data.detail;
+
+			Accounts.callLoginMethod({
+				methodArguments: [
+					{
+						serviceName: 'apple',
+						identityToken: authorization.id_token,
+						...(user && {
+							fullName: {
+								givenName: user.name.firstName,
+								familyName: user.name.lastName,
+							},
+							email: user.email,
+						}),
+					},
+				],
+				userCallback: console.log,
+			});
+		};
+
+		const error = (error: any): void => {
+			// handle error.
+			console.error(error);
+		};
+		document.addEventListener('AppleIDSignInOnSuccess', success);
+		// Listen for authorization failures
+		document.addEventListener('AppleIDSignInOnFailure', error);
+
+		return (): void => {
+			document.removeEventListener('AppleIDSignInOnSuccess', success);
+			document.removeEventListener('AppleIDSignInOnFailure', error);
+		};
+	}, []);
 
 	const scriptLoadedHandler = useCallback(() => {
 		if (!enabled) {
@@ -22,18 +55,11 @@ export const AppleOauthButton = (): ReactNode => {
 			clientId: appleClientID,
 			scope: 'name email',
 			redirectURI,
-			state:
-				appleState ||
-				btoa(
-					JSON.stringify({
-						loginStyle: 'redirect',
-						redirectUrl: location.href,
-					}),
-				),
+			usePopup: true,
 		});
-	}, [enabled, appleClientID, redirectURI, appleState]);
+	}, [enabled, appleClientID, redirectURI]);
 
-	const ref = useRef<HTMLScriptElement>(null);
+	const ref = useRef<HTMLScriptElement>();
 
 	useEffect(() => {
 		if ((window as any).AppleID) {
@@ -60,11 +86,8 @@ export const AppleOauthButton = (): ReactNode => {
 	if (!enabled) {
 		return null;
 	}
-	return (
-		<>
-			<div id='appleid-signin' data-height='40px'></div>
-		</>
-	);
+
+	return <div id='appleid-signin' data-height='40px'></div>;
 };
 
 export default AppleOauthButton;

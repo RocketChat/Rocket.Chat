@@ -160,13 +160,9 @@ createTemplateForComponent('SortList', () => import('./components/SortList'));
 
 createTemplateForComponent('CreateRoomList', () => import('./sidebar/header/actions/CreateRoomList'));
 
-createTemplateForComponent(
-	'AppleOauthButton',
-	() => import('./views/login/AppleOauth/AppleOauthButton'),
-	{
-		renderContainerView: () => HTML.DIV({ style: 'display: flex; justify-content: center;' }),
-	},
-);
+createTemplateForComponent('AppleOauthButton', () => import('./views/login/AppleOauth/AppleOauthButton'), {
+	renderContainerView: () => HTML.DIV({ style: 'display: flex; justify-content: center;' }),
+});
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
 
