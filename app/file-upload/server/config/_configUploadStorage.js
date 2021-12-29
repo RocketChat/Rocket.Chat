@@ -13,10 +13,10 @@ const configStore = _.debounce(() => {
 	const store = settings.get('FileUpload_Storage_Type');
 
 	if (store) {
-		SystemLogger.info(`Setting default file store to ${ store }`);
-		UploadFS.getStores().Avatars = UploadFS.getStore(`${ store }:Avatars`);
-		UploadFS.getStores().Uploads = UploadFS.getStore(`${ store }:Uploads`);
-		UploadFS.getStores().UserDataFiles = UploadFS.getStore(`${ store }:UserDataFiles`);
+		SystemLogger.info(`Setting default file store to ${store}`);
+		UploadFS.getStores().Avatars = UploadFS.getStore(`${store}:Avatars`);
+		UploadFS.getStores().Uploads = UploadFS.getStore(`${store}:Uploads`);
+		UploadFS.getStores().UserDataFiles = UploadFS.getStore(`${store}:UserDataFiles`);
 	}
 }, 1000);
 

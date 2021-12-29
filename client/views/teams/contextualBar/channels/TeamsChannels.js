@@ -1,8 +1,4 @@
-import {
-	useMutableCallback,
-	useLocalStorage,
-	useDebouncedValue,
-} from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
@@ -61,15 +57,7 @@ const TeamsChannels = ({ teamId, rid }) => {
 	});
 
 	if (state.tab === 'RoomInfo') {
-		return (
-			<RoomInfo
-				rid={state.rid}
-				onClickClose={onClickClose}
-				onClickBack={handleBack}
-				onEnterRoom={goToRoom}
-				resetState={setState}
-			/>
-		);
+		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} resetState={setState} />;
 	}
 
 	return (

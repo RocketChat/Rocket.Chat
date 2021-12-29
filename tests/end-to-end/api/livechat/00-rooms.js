@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createVisitor, createLivechatRoom, createAgent } from '../../../data/livechat/rooms.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - rooms', function() {
+describe('LIVECHAT - rooms', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -21,7 +21,8 @@ describe('LIVECHAT - rooms', function() {
 	describe('livechat/rooms', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/rooms'))
+				request
+					.get(api('livechat/rooms'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
@@ -34,7 +35,8 @@ describe('LIVECHAT - rooms', function() {
 		});
 		it('should return an error when the "agents" query parameter is not valid', (done) => {
 			updatePermission('view-livechat-manager', ['admin']).then(() => {
-				request.get(api('livechat/rooms?agents=invalid'))
+				request
+					.get(api('livechat/rooms?agents=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -45,7 +47,8 @@ describe('LIVECHAT - rooms', function() {
 			});
 		});
 		it('should return an error when the "roomName" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?roomName[]=invalid'))
+			request
+				.get(api('livechat/rooms?roomName[]=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -55,7 +58,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "departmentId" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?departmentId[]=marcos'))
+			request
+				.get(api('livechat/rooms?departmentId[]=marcos'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -65,7 +69,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "open" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?open[]=true'))
+			request
+				.get(api('livechat/rooms?open[]=true'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -75,7 +80,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "tags" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?tags=invalid'))
+			request
+				.get(api('livechat/rooms?tags=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -85,7 +91,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "createdAt" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?createdAt=invalid'))
+			request
+				.get(api('livechat/rooms?createdAt=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -95,7 +102,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "closedAt" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?closedAt=invalid'))
+			request
+				.get(api('livechat/rooms?closedAt=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -105,7 +113,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an error when the "customFields" query parameter is not valid', (done) => {
-			request.get(api('livechat/rooms?customFields=invalid'))
+			request
+				.get(api('livechat/rooms?customFields=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -115,7 +124,8 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an array of rooms when has no parameters', (done) => {
-			request.get(api('livechat/rooms'))
+			request
+				.get(api('livechat/rooms'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -129,9 +139,12 @@ describe('LIVECHAT - rooms', function() {
 				.end(done);
 		});
 		it('should return an array of rooms when the query params is all valid', (done) => {
-			request.get(api(`livechat/rooms?agents[]=teste&departamentId=123&open=true&createdAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}
+			request
+				.get(
+					api(`livechat/rooms?agents[]=teste&departamentId=123&open=true&createdAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}
 			&closedAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}&tags[]=rocket
-			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 0}&roomName=test`))
+			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 0}&roomName=test`),
+				)
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

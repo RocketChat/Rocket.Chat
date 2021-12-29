@@ -4,10 +4,7 @@ import { IMessage } from '../../../../../definition/IMessage';
 import { IUser } from '../../../../../definition/IUser';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 
-export const Avatar: FC<{ message: IMessage; user: Pick<IUser, 'username'> }> = ({
-	message,
-	user,
-}) => (
+export const Avatar: FC<{ message: IMessage; user: Pick<IUser, 'username'> }> = ({ message, user }) => (
 	<>
 		{message.avatar}
 		{message.emoji}

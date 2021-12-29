@@ -40,21 +40,15 @@ export const useShowStarred: MessageListContextValue['useShowStarred'] = (...arg
 	useContext(MessageListContext).useShowStarred(...args);
 export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>
 	useContext(MessageListContext).useShowFollowing(...args);
-export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (
-	...args
-) => useContext(MessageListContext).useMessageDateFormatter(...args);
-export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] =>
-	useContext(MessageListContext).showRoles;
-export const useMessageListShowUsernames = (): MessageListContextValue['showUsernames'] =>
-	useContext(MessageListContext).showUsernames;
-export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
-	message: IMessage,
-) => useContext(MessageListContext).useUserHasReacted(message);
-export const useReactToMessage: MessageListContextValue['useReactToMessage'] = (
-	message: IMessage,
-) => useContext(MessageListContext).useReactToMessage(message);
+export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
+	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
+export const useMessageListShowUsernames = (): MessageListContextValue['showUsernames'] => useContext(MessageListContext).showUsernames;
+export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
+	useContext(MessageListContext).useUserHasReacted(message);
+export const useReactToMessage: MessageListContextValue['useReactToMessage'] = (message: IMessage) =>
+	useContext(MessageListContext).useReactToMessage(message);
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
-export const useReactionsFilter: MessageListContextValue['useReactionsFilter'] = (
-	message: IMessage,
-) => useContext(MessageListContext).useReactionsFilter(message);
+export const useReactionsFilter: MessageListContextValue['useReactionsFilter'] = (message: IMessage) =>
+	useContext(MessageListContext).useReactionsFilter(message);

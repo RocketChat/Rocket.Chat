@@ -13,12 +13,7 @@ import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../contexts/RoomContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
-import {
-	useTab,
-	useTabBarOpen,
-	useTabBarClose,
-	useTabBarOpenUserInfo,
-} from '../providers/ToolboxProvider';
+import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import LazyComponent from './LazyComponent';
 
 export const Room: FC<{}> = () => {
@@ -31,14 +26,11 @@ export const Room: FC<{}> = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const hideFlexTab = useUserPreference('hideFlexTab');
 
-	const isOpen = useMutableCallback(() => !!(tab && tab.template));
+	const isOpen = useMutableCallback(() => !!tab?.template);
 
 	const appsContextualBarContext = useAppsContextualBar();
 
-	const tabBar = useMemo(
-		() => ({ open, close, isOpen, openUserInfo }),
-		[open, close, isOpen, openUserInfo],
-	);
+	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [open, close, isOpen, openUserInfo]);
 
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
@@ -46,37 +38,17 @@ export const Room: FC<{}> = () => {
 				<Header room={room} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
-				{!isLayoutEmbedded && room.announcement && (
-					<Announcement announcement={room.announcement} announcementDetails={undefined} />
-				)}
-				<BlazeTemplate
-					onClick={hideFlexTab ? close : undefined}
-					name='roomOld'
-					tabBar={tabBar}
-					rid={room._id}
-					_id={room._id}
-				/>
+				{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+				<BlazeTemplate onClick={hideFlexTab ? close : undefined} name='roomOld' tabBar={tabBar} rid={room._id} _id={room._id} />
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
 					<ErrorBoundary>
 						{typeof tab.template === 'string' && (
-							<VerticalBarOldActions
-								{...tab}
-								name={tab.template}
-								tabBar={tabBar}
-								rid={room._id}
-								_id={room._id}
-							/>
+							<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
 						)}
 						{typeof tab.template !== 'string' && (
-							<LazyComponent
-								template={tab.template}
-								tabBar={tabBar}
-								rid={room._id}
-								teamId={room.teamId}
-								_id={room._id}
-							/>
+							<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
 						)}
 					</ErrorBoundary>
 				</RoomTemplate.Aside>

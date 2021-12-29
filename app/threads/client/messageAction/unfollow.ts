@@ -8,7 +8,7 @@ import { MessageAction } from '../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('unfollow-message');
@@ -20,7 +20,10 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile', 'threads'],
 			async action(_, { message }) {
 				callWithErrorHandling('unfollowMessage', { mid: message._id }).then(() =>
-					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_unfollowed_this_message') }),
+					dispatchToastMessage({
+						type: 'success',
+						message: TAPi18n.__('You_unfollowed_this_message'),
+					}),
 				);
 			},
 			condition({ message: { _id, tmid, replies = [] }, user, context }) {

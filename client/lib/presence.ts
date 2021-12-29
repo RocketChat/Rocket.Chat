@@ -24,8 +24,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'>> &
-		Required<Pick<IUser, '_id' | 'username'>>
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'>> & Required<Pick<IUser, '_id' | 'username'>>
 >;
 
 type UsersPresencePayload = {
@@ -34,9 +33,7 @@ type UsersPresencePayload = {
 };
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) &&
-	typeof eventType === 'string' &&
-	!['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 
@@ -84,10 +81,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const { users } = (await APIClient.v1.get(
-					'users.presence',
-					params,
-				)) as UsersPresencePayload;
+				const { users } = (await APIClient.v1.get('users.presence', params)) as UsersPresencePayload;
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
@@ -141,10 +135,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	return get;
 })();
 
-const listen = (
-	uid: UserPresence['_id'],
-	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
-): void => {
+const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
 	if (!uid) {
 		return;
 	}
@@ -158,10 +149,7 @@ const listen = (
 	getPresence(uid);
 };
 
-const stop = (
-	uid: UserPresence['_id'],
-	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
-): void => {
+const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
 	setTimeout(() => {
 		emitter.off(uid, handler);
 		emitter.emit('remove', uid);

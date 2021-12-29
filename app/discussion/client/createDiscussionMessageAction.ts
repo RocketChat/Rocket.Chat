@@ -9,8 +9,7 @@ import { roomTypes } from '../../utils/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 
-
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return MessageAction.removeButton('start-discussion');
@@ -34,8 +33,17 @@ Meteor.startup(function() {
 					},
 				});
 			},
-			condition({ message: { u: { _id: uid }, drid, dcount }, room, subscription, user }) {
-				if (drid || !dcount) {
+			condition({
+				message: {
+					u: { _id: uid },
+					drid,
+					dcount,
+				},
+				room,
+				subscription,
+				user,
+			}) {
+				if (drid || !Number.isNaN(dcount)) {
 					return false;
 				}
 				if (!subscription) {

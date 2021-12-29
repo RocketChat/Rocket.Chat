@@ -26,11 +26,7 @@ const AppLayout: FC = () => {
 	}
 
 	if ('component' in descriptor) {
-		return (
-			<Suspense fallback={<PageLoading />}>
-				{createElement(descriptor.component, descriptor.props)}
-			</Suspense>
-		);
+		return <Suspense fallback={<PageLoading />}>{createElement(descriptor.component, descriptor.props)}</Suspense>;
 	}
 
 	throw new Error('invalid app layout descriptor');

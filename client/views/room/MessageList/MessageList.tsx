@@ -39,9 +39,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 					return (
 						<Fragment key={message._id}>
 							{shouldShowDivider && (
-								<MessageDivider
-									unreadLabel={unread ? t('Unread_Messages').toLowerCase() : undefined}
-								>
+								<MessageDivider unreadLabel={unread ? t('Unread_Messages').toLowerCase() : undefined}>
 									{newDay && format(message.ts)}
 								</MessageDivider>
 							)}

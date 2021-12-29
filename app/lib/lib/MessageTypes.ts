@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,

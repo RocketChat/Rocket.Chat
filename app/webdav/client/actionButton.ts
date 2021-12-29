@@ -6,7 +6,7 @@ import { settings } from '../../settings/client';
 import { MessageAction, modal } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',

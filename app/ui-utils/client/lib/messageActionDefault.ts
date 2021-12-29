@@ -26,13 +26,13 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 	return messagesList;
 };
 
-Meteor.startup(async function() {
+Meteor.startup(async function () {
 	const { chatMessages } = await import('../../../ui');
 
 	const getChatMessagesFrom = (msg: IMessage): ChatMessages => {
 		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
-		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
+		return chatMessages[`${rid}-${tmid}`] || chatMessages[rid];
 	};
 
 	MessageAction.addButton({
@@ -62,7 +62,7 @@ Meteor.startup(async function() {
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
 			if (user._id !== message.u._id && !hasPermission('create-d')) {
 				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
-				if (!dmRoom || !Subscriptions.findOne({ rid: dmRoom._id, 'u._id': user._id })) {
+				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
 				}
 			}
@@ -148,9 +148,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).edit(
-				document.getElementById(message.tmid ? `thread-${ message._id }` : message._id),
-			);
+			getChatMessagesFrom(message).edit(document.getElementById(message.tmid ? `thread-${message._id}` : message._id));
 		},
 		condition({ message, subscription, settings }) {
 			if (subscription == null) {

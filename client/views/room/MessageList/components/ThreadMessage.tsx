@@ -19,11 +19,7 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
 
-export const ThreadMessage: FC<{ message: IThreadMessage; sequential: boolean }> = ({
-	message,
-	sequential,
-	...props
-}) => {
+export const ThreadMessage: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
 		actions: { openThread },
 	} = useMessageActions();
@@ -37,9 +33,7 @@ export const ThreadMessage: FC<{ message: IThreadMessage; sequential: boolean }>
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
-						<ThreadMessageOrigin>
-							{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}
-						</ThreadMessageOrigin>
+						<ThreadMessageOrigin>{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
@@ -50,11 +44,7 @@ export const ThreadMessage: FC<{ message: IThreadMessage; sequential: boolean }>
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{message.md ? (
-							<MessageBodyRender mentions={message.mentions} tokens={message.md} />
-						) : (
-							message.msg
-						)}
+						{message.md ? <MessageBodyRender mentions={message.mentions} tokens={message.md} /> : message.msg}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>

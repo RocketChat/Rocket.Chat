@@ -22,7 +22,7 @@ Cypress.Cookies.defaults({
 	whitelist: ['rc_uid', 'rc_token'],
 });
 
-Cypress.LocalStorage.clear = function() {};
+Cypress.LocalStorage.clear = function () {};
 
 Cypress.on('fail', () => {
 	Cypress.stop();

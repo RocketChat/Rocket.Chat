@@ -1,11 +1,7 @@
 import React, { useMemo, FC, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
-import {
-	IMessage,
-	isTranslatedMessage,
-	isMessageReactionsNormalized,
-} from '../../../../../definition/IMessage';
+import { IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '../../../../../definition/IMessage';
 import { IRoom } from '../../../../../definition/IRoom';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
@@ -41,21 +37,13 @@ export const MessageListProvider: FC<{
 				const { reactions } = message;
 				return !showUsernames
 					? (reaction: string): string[] =>
-							(reactions &&
-								reactions[reaction]?.usernames
-									.filter((user) => user !== username)
-									.map((username) => `@${username}`)) ||
-							[]
+							reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || []
 					: (reaction: string): string[] => {
 							if (!reactions || !reactions[reaction]) {
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return (
-									(message.reactions &&
-										message.reactions[reaction]?.usernames.map((username) => `@${username}`)) ||
-									[]
-								);
+								return (message.reactions && message.reactions[reaction]?.usernames.map((username) => `@${username}`)) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
@@ -79,16 +67,10 @@ export const MessageListProvider: FC<{
 			useShowTranslated:
 				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
 					? ({ message }): boolean =>
-							message.u &&
-							message.u._id !== uid &&
-							isTranslatedMessage(message) &&
-							Boolean(message.translations[autoTranslateLanguage])
+							message.u && message.u._id !== uid && isTranslatedMessage(message) && Boolean(message.translations[autoTranslateLanguage])
 					: (): boolean => false,
 			useShowStarred: hasSubscription
-				? ({ message }): boolean =>
-						Boolean(
-							Array.isArray(message.starred) && message.starred.find((star) => star._id === uid),
-						)
+				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
 			useMessageDateFormatter:
 				() =>
@@ -110,22 +92,12 @@ export const MessageListProvider: FC<{
 							e.nativeEvent.stopImmediatePropagation();
 							EmojiPicker.open(
 								e.currentTarget,
-								(emoji: string) =>
-									reactToMessage({ messageId: message._id, reaction: emoji }) as unknown as void,
+								(emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }) as unknown as void,
 							);
 						}
 				: () => (): void => undefined,
 		}),
-		[
-			uid,
-			autoTranslateEnabled,
-			hasSubscription,
-			autoTranslateLanguage,
-			showRoles,
-			username,
-			reactToMessage,
-			showUsernames,
-		],
+		[uid, autoTranslateEnabled, hasSubscription, autoTranslateLanguage, showRoles, username, reactToMessage, showUsernames],
 	);
 
 	return <MessageListContext.Provider value={context} {...props} />;

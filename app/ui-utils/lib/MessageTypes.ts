@@ -17,16 +17,10 @@ class MessageTypesClass {
 
 	registerType(options: MessageType): MessageType {
 		if ('render' in options) {
-			console.warn(
-				'MessageType.render is deprecated. Use MessageType.message instead.',
-				options.id,
-			);
+			console.warn('MessageType.render is deprecated. Use MessageType.message instead.', options.id);
 		}
 		if ('template' in options) {
-			console.warn(
-				'MessageType.template is deprecated. Use MessageType.message instead.',
-				options.id,
-			);
+			console.warn('MessageType.template is deprecated. Use MessageType.message instead.', options.id);
 		}
 		this.types.set(options.id, options);
 		return options;

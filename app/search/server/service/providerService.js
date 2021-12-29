@@ -18,7 +18,9 @@ class SearchProviderService {
 	 */
 	use(id) {
 		return new Promise((resolve, reject) => {
-			if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
+			if (!this.providers[id]) {
+				throw new Error(`provider ${id} cannot be found`);
+			}
 
 			let reason = 'switch';
 
@@ -28,20 +30,21 @@ class SearchProviderService {
 				reason = 'update';
 			}
 
-			const stopProvider = () => new Promise((resolve, reject) => {
-				if (this.activeProvider) {
-					SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
+			const stopProvider = () =>
+				new Promise((resolve, reject) => {
+					if (this.activeProvider) {
+						SearchLogger.debug(`Stopping provider '${this.activeProvider.key}'`);
 
-					this.activeProvider.stop(resolve, reject);
-				} else {
-					resolve();
-				}
-			});
+						this.activeProvider.stop(resolve, reject);
+					} else {
+						resolve();
+					}
+				});
 
 			stopProvider().then(() => {
 				this.activeProvider = undefined;
 
-				SearchLogger.debug(`Start provider '${ id }'`);
+				SearchLogger.debug(`Start provider '${id}'`);
 
 				try {
 					this.providers[id].run(reason).then(() => {
@@ -72,7 +75,7 @@ class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		settingsRegistry.addGroup('Search', function() {
+		settingsRegistry.addGroup('Search', function () {
 			const self = this;
 
 			self.add('Search.Provider', 'defaultProvider', {
@@ -84,8 +87,8 @@ class SearchProviderService {
 
 			Object.keys(providers)
 				.filter((key) => providers[key].settings && providers[key].settings.length > 0)
-				.forEach(function(key) {
-					self.section(providers[key].i18nLabel, function() {
+				.forEach(function (key) {
+					self.section(providers[key].i18nLabel, function () {
 						providers[key].settings.forEach((setting) => {
 							const _options = {
 								type: setting.type,
@@ -106,13 +109,16 @@ class SearchProviderService {
 		});
 
 		// add listener to react on setting changes
-		const configProvider = _.debounce(Meteor.bindEnvironment(() => {
-			const providerId = settings.get('Search.Provider');
+		const configProvider = _.debounce(
+			Meteor.bindEnvironment(() => {
+				const providerId = settings.get('Search.Provider');
 
-			if (providerId) {
-				this.use(providerId);// TODO do something with success and errors
-			}
-		}), 1000);
+				if (providerId) {
+					this.use(providerId); // TODO do something with success and errors
+				}
+			}),
+			1000,
+		);
 
 		settings.watchByRegex(/^Search\./, configProvider);
 	}
@@ -135,7 +141,7 @@ Meteor.methods({
 	 */
 	'rocketchatSearch.search'(text, context, payload) {
 		return new Promise((resolve, reject) => {
-			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 			try {
 				if (!searchProviderService.activeProvider) {
@@ -158,10 +164,12 @@ Meteor.methods({
 	},
 	'rocketchatSearch.suggest'(text, context, payload) {
 		return new Promise((resolve, reject) => {
-			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined; // TODO is this cleanup necessary?
 
 			try {
-				if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
+				if (!searchProviderService.activeProvider) {
+					throw new Error('Provider currently not active');
+				}
 
 				SearchLogger.debug({ msg: 'suggest', text, context, payload });
 
@@ -182,7 +190,9 @@ Meteor.methods({
 	 * @returns {*}
 	 */
 	'rocketchatSearch.getProvider'() {
-		if (!searchProviderService.activeProvider) { return undefined; }
+		if (!searchProviderService.activeProvider) {
+			return undefined;
+		}
 
 		return {
 			key: searchProviderService.activeProvider.key,

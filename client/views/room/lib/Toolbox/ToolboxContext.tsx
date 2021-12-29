@@ -33,24 +33,24 @@ export const useToolboxContext = (): ToolboxContextValue => useContext(ToolboxCo
  * we cannot reach this context because the messages are wrapped by blaze
  */
 
-const tabbarStore = new Map<IRoom['_id'], ToolboxContextValue>();
+const tabBarStore = new Map<IRoom['_id'], ToolboxContextValue>();
 
 /*
  * @deprecated
  * we cannot reach this context because the messages are wrapped by blaze
  */
 export const getTabBarContext = (rid: IRoom['_id']): ToolboxContextValue => {
-	const result = tabbarStore.get(rid);
+	const result = tabBarStore.get(rid);
 	if (!result) {
-		throw new Error('Tabbar context not found');
+		throw new Error('TabBar context not found');
 	}
 	return result;
 };
 
 export const setTabBarContext = (rid: IRoom['_id'], context: ToolboxContextValue): void => {
-	tabbarStore.set(rid, context);
+	tabBarStore.set(rid, context);
 };
 
 export const removeTabBarContext = (rid: IRoom['_id']): void => {
-	tabbarStore.delete(rid);
+	tabBarStore.delete(rid);
 };

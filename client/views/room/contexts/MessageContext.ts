@@ -66,9 +66,7 @@ export const useMessageActions = (): MessageContextValue => {
 	return context;
 };
 
-export const useMessageRunActionLink = (): ((
-	message: IMessage,
-) => (action: string) => () => void) => {
+export const useMessageRunActionLink = (): ((message: IMessage) => (action: string) => () => void) => {
 	const context = useMessageActions();
 	return context.actions.runActionLink;
 };

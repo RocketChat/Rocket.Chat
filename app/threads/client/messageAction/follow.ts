@@ -9,7 +9,7 @@ import { roomTypes } from '../../../utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('follow-message');
@@ -21,7 +21,10 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile', 'threads'],
 			async action(_, { message }) {
 				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
-					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_followed_this_message') }),
+					dispatchToastMessage({
+						type: 'success',
+						message: TAPi18n.__('You_followed_this_message'),
+					}),
 				);
 			},
 			condition({ message: { _id, tmid, replies = [] }, room, user, context }) {

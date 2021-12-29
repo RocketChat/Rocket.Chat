@@ -27,9 +27,7 @@ const DiscussionMetric: FC<DicussionOptions> = ({ lm, count, rid, drid, openDisc
 				</Message.Metrics.Reply>
 				<Message.Metrics.Item title={lm?.toLocaleString()}>
 					<Message.Metrics.Item.Icon name='clock' />
-					<Message.Metrics.Item.Label>
-						{lm ? format(lm) : t('No_messages_yet')}
-					</Message.Metrics.Item.Label>
+					<Message.Metrics.Item.Label>{lm ? format(lm) : t('No_messages_yet')}</Message.Metrics.Item.Label>
 				</Message.Metrics.Item>
 			</Message.Metrics>
 		</Message.Block>

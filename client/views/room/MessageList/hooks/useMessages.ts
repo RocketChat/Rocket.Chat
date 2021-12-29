@@ -35,7 +35,5 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	// 	query.t = { $nin: Array.from(hideMessagesOfType.values()) };
 	// }
 
-	return useReactiveValue<IMessage[]>(
-		useCallback(() => ChatMessage.find(query, options).fetch(), [query]),
-	);
+	return useReactiveValue<IMessage[]>(useCallback(() => ChatMessage.find(query, options).fetch(), [query]));
 };

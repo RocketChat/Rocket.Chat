@@ -24,13 +24,7 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 	return (
 		<>
 			<Field.Row>
-				<Button
-					data-qa-setting-id={_id}
-					children={t(actionText)}
-					disabled={disabled || sectionChanged}
-					primary
-					onClick={handleClick}
-				/>
+				<Button data-qa-setting-id={_id} children={t(actionText)} disabled={disabled || sectionChanged} primary onClick={handleClick} />
 			</Field.Row>
 			{sectionChanged && <Field.Hint>{t('Save_to_enable_this_action')}</Field.Hint>}
 		</>

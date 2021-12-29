@@ -37,13 +37,7 @@ export default React.memo(function MessageThread({
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
 		<Box className={className} pb='x8'>
-			<Message
-				{...props}
-				className={[
-					...(isIterable(className) ? className : [className]),
-					!following && followStyle,
-				].filter(Boolean)}
-			>
+			<Message {...props} className={[...(isIterable(className) ? className : [className]), !following && followStyle].filter(Boolean)}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>

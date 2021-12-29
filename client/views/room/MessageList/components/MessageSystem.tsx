@@ -34,9 +34,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageSystemName>
-						{(showUsername && message.u.name) || message.u.username}
-					</MessageSystemName>
+					<MessageSystemName>{(showUsername && message.u.name) || message.u.username}</MessageSystemName>
 					{messageType && (
 						<MessageSystemBody
 							dangerouslySetInnerHTML={{

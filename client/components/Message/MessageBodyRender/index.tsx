@@ -18,8 +18,7 @@ type BodyProps = {
 	onMentionClick?: (username: string) => (e: MouseEvent<HTMLDivElement>) => void;
 };
 
-const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] =>
-	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
+const isBigEmoji = (tokens: MarkdownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
 const MessageBodyRender: FC<BodyProps> = ({ tokens, mentions = [], onMentionClick }) => {
 	if (isBigEmoji(tokens)) {

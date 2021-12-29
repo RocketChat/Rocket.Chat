@@ -48,12 +48,7 @@ const normalizeType = (type: string): PreviewType => {
 };
 
 export const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
-	const image =
-		meta.ogImage ||
-		meta.twitterImage ||
-		meta.msapplicationTileImage ||
-		meta.oembedThumbnailUrl ||
-		meta.oembedThumbnailUrl;
+	const image = meta.ogImage || meta.twitterImage || meta.msapplicationTileImage || meta.oembedThumbnailUrl || meta.oembedThumbnailUrl;
 
 	const imageHeight = meta.ogImageHeight || meta.oembedHeight || meta.oembedThumbnailHeight;
 	const imageWidth = meta.ogImageWidth || meta.oembedWidth || meta.oembedThumbnailWidth;

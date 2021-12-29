@@ -1,17 +1,17 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-this.onYouTubePlayerAPIReady = function() {
+this.onYouTubePlayerAPIReady = function () {
 	const playerReadyEvent = new Event('playerReady');
 	document.querySelector('.streaming-popup').dispatchEvent(playerReadyEvent);
 };
 this.liveStreamPlayer = null;
 
-Template.liveStreamView.onCreated(function() {
+Template.liveStreamView.onCreated(function () {
 	this.streamingOptions = new ReactiveVar(this.data.streamingOptions);
 });
 
-Template.liveStreamView.onRendered(function() {
+Template.liveStreamView.onRendered(function () {
 	if (window.YT) {
 		window.liveStreamPlayer = new window.YT.Player('ytplayer', {
 			width: '380',

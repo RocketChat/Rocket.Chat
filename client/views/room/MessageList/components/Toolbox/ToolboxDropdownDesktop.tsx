@@ -18,15 +18,7 @@ export const ToolboxDropdownDesktop = forwardRef<
 	useEffect(() => onClose, [onClose]);
 
 	return (
-		<Tile
-			is='ul'
-			padding={0}
-			paddingBlock={'x12'}
-			paddingInline={0}
-			elevation='2'
-			ref={ref}
-			style={s}
-		>
+		<Tile is='ul' padding={0} paddingBlock={'x12'} paddingInline={0} elevation='2' ref={ref} style={s}>
 			{children}
 		</Tile>
 	);

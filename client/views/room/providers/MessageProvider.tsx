@@ -103,17 +103,7 @@ export const MessageProvider = memo(function MessageProvider({
 				messageHeader,
 			},
 		};
-	}, [
-		isEmbedded,
-		oembedEnabled,
-		isMobile,
-		broadcast,
-		messageHeader,
-		router,
-		params,
-		rid,
-		routeName,
-	]);
+	}, [isEmbedded, oembedEnabled, isMobile, broadcast, messageHeader, router, params, rid, routeName]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

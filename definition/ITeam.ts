@@ -8,13 +8,13 @@ export enum TEAM_TYPE {
 	PRIVATE = 1,
 }
 
-export type SortType = -1|1;
+export type SortType = -1 | 1;
 
 export interface ITeam extends IRocketChatRecord {
 	name: string;
 	type: TEAM_TYPE;
 	roomId: string;
-	createdBy: Pick<IUser, '_id' | 'username' >;
+	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
 }
 
@@ -22,7 +22,7 @@ export interface ITeamMember extends IRocketChatRecord {
 	teamId: string;
 	userId: string;
 	roles?: Array<string>;
-	createdBy: Pick<IUser, '_id' | 'username' >;
+	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
 }
 

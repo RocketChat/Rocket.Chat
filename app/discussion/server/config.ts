@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('Discussion', function() {
+settingsRegistry.addGroup('Discussion', function () {
 	// the channel for which discussions are created if none is explicitly chosen
 
 	this.add('Discussion_enabled', true, {

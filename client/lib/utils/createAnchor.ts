@@ -3,9 +3,7 @@ import { registerAnchor } from './deleteAnchor';
 type T = keyof HTMLElementTagNameMap;
 
 export const createAnchor: {
-	(id: string, tag?: T): T extends undefined
-		? HTMLElementTagNameMap['div']
-		: HTMLElementTagNameMap[T];
+	(id: string, tag?: T): T extends undefined ? HTMLElementTagNameMap['div'] : HTMLElementTagNameMap[T];
 } = (id: string, tag = 'div') => {
 	const anchor = document.getElementById(id);
 	if (anchor && anchor.tagName.toLowerCase() === tag) {

@@ -110,15 +110,13 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
-	'editedAt' in message && 'editedBy' in message;
+export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: unknown };
 }
 
-export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage =>
-	'translations' in message;
+export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
 
 export interface IThreadMainMessage extends IMessage {
 	tcount: number;
@@ -129,8 +127,7 @@ export interface IThreadMessage extends IMessage {
 	tmid: string;
 }
 
-export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage =>
-	'tcount' in message && 'tlm' in message;
+export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;
 
 export const isThreadMessage = (message: IMessage): message is IThreadMessage => !!message.tmid;
 
@@ -140,15 +137,13 @@ export interface IDiscussionMessage extends IMessage {
 	dcount: number;
 }
 
-export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage =>
-	!!message.drid;
+export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => !!message.drid;
 
 export interface IPrivateMessage extends IMessage {
 	private: true;
 }
 
-export const isPrivateMessage = (message: IMessage): message is IPrivateMessage =>
-	!!message.private;
+export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => !!message.private;
 
 export interface IMessageReactionsNormalized extends IMessage {
 	reactions: {
@@ -159,15 +154,8 @@ export interface IMessageReactionsNormalized extends IMessage {
 	};
 }
 
-export const isMessageReactionsNormalized = (
-	message: IMessage,
-): message is IMessageReactionsNormalized =>
-	Boolean(
-		'reactions' in message
-			&& message.reactions
-			&& message.reactions[0]
-			&& 'names' in message.reactions[0],
-	);
+export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
+	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {

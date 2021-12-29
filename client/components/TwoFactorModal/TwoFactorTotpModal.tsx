@@ -37,12 +37,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): Re
 		>
 			<Box mbe='x16'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>
 			<Box mbe='x16' display='flex' justifyContent='stretch'>
-				<TextInput
-					ref={ref}
-					value={code}
-					onChange={onChange}
-					placeholder={t('Enter_authentication_code')}
-				></TextInput>
+				<TextInput ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')}></TextInput>
 			</Box>
 		</GenericModal>
 	);

@@ -14,8 +14,8 @@ import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
 
 const fields = {
-	name: 1,
-	username: 1,
+	'name': 1,
+	'username': 1,
 	'settings.preferences.enableMessageParserEarlyAdoption': 1,
 	'settings.preferences.showMessageInMainThread': 1,
 	'settings.preferences.autoImageLoad': 1,
@@ -49,11 +49,11 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const runAction = isLayoutEmbedded()
 		? (msg, actionlink) =>
-			fireGlobalEvent('click-action-link', {
-				actionlink,
-				value: msg._id,
-				message: msg,
-			})
+				fireGlobalEvent('click-action-link', {
+					actionlink,
+					value: msg._id,
+					message: msg,
+				})
 		: (msg, actionlink) => actionLinks.run(actionlink, msg);
 
 	const openDiscussion = (e) => {
@@ -65,11 +65,7 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const replyBroadcast = (e) => {
 		const { username, mid } = e.currentTarget.dataset;
-		roomTypes.openRouteLink(
-			'd',
-			{ name: username },
-			{ ...FlowRouter.current().queryParams, reply: mid },
-		);
+		roomTypes.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
 	};
 
 	return {
@@ -121,8 +117,7 @@ export function messageContext({ rid } = Template.instance()) {
 			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
 			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
 			enableMessageParserEarlyAdoption: getUserPreference(user, 'enableMessageParserEarlyAdoption'),
-			saveMobileBandwidth:
-				Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
+			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,
 			showReplyButton: true,
@@ -133,9 +128,7 @@ export function messageContext({ rid } = Template.instance()) {
 			Chatops_Username: settings.get('Chatops_Username'),
 			AutoTranslate_Enabled: settings.get('AutoTranslate_Enabled'),
 			Message_AllowEditing: settings.get('Message_AllowEditing'),
-			Message_AllowEditing_BlockEditInMinutes: settings.get(
-				'Message_AllowEditing_BlockEditInMinutes',
-			),
+			Message_AllowEditing_BlockEditInMinutes: settings.get('Message_AllowEditing_BlockEditInMinutes'),
 			Message_ShowEditedStatus: settings.get('Message_ShowEditedStatus'),
 			API_Embed: settings.get('API_Embed'),
 			API_EmbedDisabledFor: settings.get('API_EmbedDisabledFor'),

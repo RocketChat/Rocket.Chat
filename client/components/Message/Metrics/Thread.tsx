@@ -20,18 +20,7 @@ type ThreadReplyOptions = {
 	openThread: () => any;
 };
 
-const ThreadMetric: FC<ThreadReplyOptions> = ({
-	unread,
-	mention,
-	all,
-	rid,
-	mid,
-	counter,
-	participants,
-	following,
-	lm,
-	openThread,
-}) => {
+const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
 	const t = useTranslation();
 
 	const followMessage = useEndpoint('POST', 'chat.followMessage');

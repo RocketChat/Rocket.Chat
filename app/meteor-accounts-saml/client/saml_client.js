@@ -23,7 +23,7 @@ const logoutBehaviour = {
 	ONLY_RC: 'Local',
 };
 
-Meteor.logout = function(...args) {
+Meteor.logout = function (...args) {
 	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
@@ -43,17 +43,17 @@ Meteor.logout = function(...args) {
 	return MeteorLogout.apply(Meteor, args);
 };
 
-Meteor.loginWithSaml = function(options/* , callback*/) {
+Meteor.loginWithSaml = function (options /* , callback*/) {
 	options = options || {};
-	const credentialToken = `id-${ Random.id() }`;
+	const credentialToken = `id-${Random.id()}`;
 	options.credentialToken = credentialToken;
 
-	window.location.href = `_saml/authorize/${ options.provider }/${ options.credentialToken }`;
+	window.location.href = `_saml/authorize/${options.provider}/${options.credentialToken}`;
 };
 
-Meteor.logoutWithSaml = function(options/* , callback*/) {
+Meteor.logoutWithSaml = function (options /* , callback*/) {
 	// Accounts.saml.idpInitiatedSLO(options, callback);
-	Meteor.call('samlLogout', options.provider, function(err, result) {
+	Meteor.call('samlLogout', options.provider, function (err, result) {
 		if (err || !result) {
 			MeteorLogout.apply(Meteor);
 			return;
@@ -64,16 +64,18 @@ Meteor.logoutWithSaml = function(options/* , callback*/) {
 		Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
 
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
+		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`));
 	});
 };
 
-Meteor.loginWithSamlToken = function(token, userCallback) {
+Meteor.loginWithSamlToken = function (token, userCallback) {
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			saml: true,
-			credentialToken: token,
-		}],
+		methodArguments: [
+			{
+				saml: true,
+				credentialToken: token,
+			},
+		],
 		userCallback,
 	});
 };

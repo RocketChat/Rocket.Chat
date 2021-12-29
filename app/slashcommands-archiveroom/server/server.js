@@ -26,10 +26,14 @@ function Archive(command, params, item) {
 
 	if (!room) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 	}
 
@@ -40,10 +44,14 @@ function Archive(command, params, item) {
 
 	if (room.archived) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Duplicate_archived_channel_name', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Duplicate_archived_channel_name',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 		return;
 	}
@@ -51,10 +59,14 @@ function Archive(command, params, item) {
 
 	Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
 	api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-		msg: TAPi18n.__('Channel_Archived', {
-			postProcess: 'sprintf',
-			sprintf: [channel],
-		}, user.language),
+		msg: TAPi18n.__(
+			'Channel_Archived',
+			{
+				postProcess: 'sprintf',
+				sprintf: [channel],
+			},
+			user.language,
+		),
 	});
 
 	return Archive;

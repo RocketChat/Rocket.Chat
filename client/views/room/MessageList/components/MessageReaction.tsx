@@ -1,8 +1,4 @@
-import {
-	MessageReaction as MessageReactionTemplate,
-	MessageReactionEmoji,
-	MessageReactionCounter,
-} from '@rocket.chat/fuselage';
+import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import React, { FC, useRef } from 'react';
 
 import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';

@@ -14,9 +14,7 @@ type ActionOptions = {
 	danger?: boolean;
 };
 
-const resolveLegacyIcon = (
-	legacyIcon: IconProps['name'] | `icon-${IconProps['name'] | 'videocam'}`,
-): IconProps['name'] => {
+const resolveLegacyIcon = (legacyIcon: IconProps['name'] | `icon-${IconProps['name'] | 'videocam'}`): IconProps['name'] => {
 	if (legacyIcon === 'icon-videocam') {
 		return 'video';
 	}
@@ -24,28 +22,13 @@ const resolveLegacyIcon = (
 	return legacyIcon?.replace(/^icon-/, '') as IconProps['name'];
 };
 
-const Action: FC<ActionOptions> = ({
-	icon,
-	methodId,
-	icon,
-	i18nLabel,
-	label,
-	runAction,
-	danger,
-}) => {
+const Action: FC<ActionOptions> = ({ icon, methodId, i18nLabel, label, runAction, danger }) => {
 	const t = useTranslation();
 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button
-			data-method-id={methodId}
-			onClick={runAction(methodId)}
-			marginInline='x4'
-			primary
-			small
-			danger={danger}
-		>
+		<Button data-method-id={methodId} onClick={runAction(methodId)} marginInline='x4' primary small danger={danger}>
 			{icon && <Icon name={resolvedIcon} />}
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>

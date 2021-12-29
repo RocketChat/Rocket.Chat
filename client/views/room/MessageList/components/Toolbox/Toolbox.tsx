@@ -23,22 +23,11 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const settings = useSettings();
 	const user = useUser() as IUser;
 
-	const mapSettings = useMemo(
-		() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])),
-		[settings],
-	);
+	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 
-	const messageActions = MessageAction.getButtons(
-		{ message, room, user, subscription, settings: mapSettings },
-		'message',
-		'message',
-	);
+	const messageActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, 'message', 'message');
 
-	const menuActions = MessageAction.getButtons(
-		{ message, room, user, subscription, settings: mapSettings },
-		'message',
-		'menu',
-	);
+	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, 'message', 'menu');
 
 	const tabbar = getTabBarContext(message.rid);
 

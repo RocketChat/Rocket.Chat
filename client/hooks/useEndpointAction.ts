@@ -1,13 +1,7 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
-import {
-	MatchPathPattern,
-	Method,
-	OperationParams,
-	OperationResult,
-	PathFor,
-} from '../../definition/rest';
+import { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 

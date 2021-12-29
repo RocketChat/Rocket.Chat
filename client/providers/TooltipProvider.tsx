@@ -19,10 +19,7 @@ const TooltipProvider: FC = ({ children }) => {
 
 		const handleMouseOver = (e: MouseEvent): void => {
 			const target = e.target as HTMLElement;
-			const anchor =
-				target.title || target.dataset?.tooltip
-					? target
-					: (target.closest('[title], [data-tooltip]') as HTMLElement);
+			const anchor = target.title || target.dataset?.tooltip ? target : (target.closest('[title], [data-tooltip]') as HTMLElement);
 			if (lastAnchor.current === anchor) {
 				return;
 			}

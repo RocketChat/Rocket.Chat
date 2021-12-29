@@ -17,11 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import {
-	IMessage,
-	isDiscussionMessage,
-	isThreadMainMessage,
-} from '../../../../../definition/IMessage';
+import { IMessage, isDiscussionMessage, isThreadMainMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
@@ -88,9 +84,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	return (
 		<MessageTemplate {...props}>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && (
-					<UserAvatar username={message.u.username} size={'x36'} />
-				)}
+				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
 				{sequential && <MessageIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
@@ -112,33 +106,19 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 								{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
 							</MessageRoles>
 						)}
-						<MessageTimestamp data-time={message.ts.toISOString()}>
-							{formatters.messageHeader(message.ts)}
-						</MessageTimestamp>
-						{message.private && (
-							<MessageStatusPrivateIndicator>
-								{t('Only_you_can_see_this_message')}
-							</MessageStatusPrivateIndicator>
-						)}
+						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
+						{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
 				<MessageBody>
 					{!message.blocks && message.md && (
-						<MessageBodyRender
-							onMentionClick={openUserCard}
-							mentions={message.mentions}
-							tokens={message.md}
-						/>
+						<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
 					)}
 					{!message.blocks && !message.md && message.msg}
 				</MessageBody>
-				{message.blocks && (
-					<MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />
-				)}
-				{message.attachments && (
-					<Attachments attachments={message.attachments} file={message.file} />
-				)}
+				{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+				{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 				{/* {{#unless hideActionLinks}}
 				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
@@ -197,18 +177,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{message.location && <MessageLocation location={message.location} />}
-				{broadcast && user.username && (
-					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
-				)}
+				{broadcast && user.username && <Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
 
 				{oembedIsEnabled && message.urls && (
 					<Box width={oembedWidth}>
-						<MessageBlock
-							mid={message._id}
-							blocks={convertOembedToUiKit(message.urls)}
-							appId
-							rid={message.rid}
-						/>
+						<MessageBlock mid={message._id} blocks={convertOembedToUiKit(message.urls)} appId rid={message.rid} />
 					</Box>
 				)}
 			</MessageContainer>

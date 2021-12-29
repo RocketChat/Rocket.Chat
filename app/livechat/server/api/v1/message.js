@@ -42,7 +42,10 @@ API.v1.addRoute('livechat/message', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+			if (
+				settings.get('Livechat_enable_message_character_limit') &&
+				msg.length > parseInt(settings.get('Livechat_message_character_limit'))
+			) {
 				throw new Meteor.Error('message-length-exceeds-character-limit');
 			}
 
@@ -147,7 +150,10 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			const result = Livechat.updateMessage({ guest, message: { _id: msg._id, msg: this.bodyParams.msg } });
+			const result = Livechat.updateMessage({
+				guest,
+				message: { _id: msg._id, msg: this.bodyParams.msg },
+			});
 			if (result) {
 				let message = Messages.findOneById(_id);
 				if (message.file) {
@@ -249,9 +255,16 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls, sort, offset, text })
-				.messages
-				.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
+			const messages = loadMessageHistory({
+				userId: guest._id,
+				rid,
+				end,
+				limit,
+				ls,
+				sort,
+				offset,
+				text,
+			}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
 			return API.v1.success({ messages });
 		} catch (e) {
 			return API.v1.failure(e);
@@ -259,74 +272,78 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 	},
 });
 
-API.v1.addRoute('livechat/messages', { authRequired: true }, {
-	post() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
-			return API.v1.unauthorized();
-		}
+API.v1.addRoute(
+	'livechat/messages',
+	{ authRequired: true },
+	{
+		post() {
+			if (!hasPermission(this.userId, 'view-livechat-manager')) {
+				return API.v1.unauthorized();
+			}
 
-		if (!this.bodyParams.visitor) {
-			return API.v1.failure('Body param "visitor" is required');
-		}
-		if (!this.bodyParams.visitor.token) {
-			return API.v1.failure('Body param "visitor.token" is required');
-		}
-		if (!this.bodyParams.messages) {
-			return API.v1.failure('Body param "messages" is required');
-		}
-		if (!(this.bodyParams.messages instanceof Array)) {
-			return API.v1.failure('Body param "messages" is not an array');
-		}
-		if (this.bodyParams.messages.length === 0) {
-			return API.v1.failure('Body param "messages" is empty');
-		}
+			if (!this.bodyParams.visitor) {
+				return API.v1.failure('Body param "visitor" is required');
+			}
+			if (!this.bodyParams.visitor.token) {
+				return API.v1.failure('Body param "visitor.token" is required');
+			}
+			if (!this.bodyParams.messages) {
+				return API.v1.failure('Body param "messages" is required');
+			}
+			if (!(this.bodyParams.messages instanceof Array)) {
+				return API.v1.failure('Body param "messages" is not an array');
+			}
+			if (this.bodyParams.messages.length === 0) {
+				return API.v1.failure('Body param "messages" is empty');
+			}
 
-		const visitorToken = this.bodyParams.visitor.token;
+			const visitorToken = this.bodyParams.visitor.token;
 
-		let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		let rid;
-		if (visitor) {
-			const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
-			if (rooms && rooms.length > 0) {
-				rid = rooms[0]._id;
+			let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+			let rid;
+			if (visitor) {
+				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
+				if (rooms && rooms.length > 0) {
+					rid = rooms[0]._id;
+				} else {
+					rid = Random.id();
+				}
 			} else {
 				rid = Random.id();
+
+				const guest = this.bodyParams.visitor;
+				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+
+				const visitorId = Livechat.registerGuest(guest);
+				visitor = LivechatVisitors.findOneById(visitorId);
 			}
-		} else {
-			rid = Random.id();
 
-			const guest = this.bodyParams.visitor;
-			guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-
-			const visitorId = Livechat.registerGuest(guest);
-			visitor = LivechatVisitors.findOneById(visitorId);
-		}
-
-		const sentMessages = this.bodyParams.messages.map((message) => {
-			const sendMessage = {
-				guest: visitor,
-				message: {
-					_id: Random.id(),
-					rid,
-					token: visitorToken,
-					msg: message.msg,
-				},
-				roomInfo: {
-					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+			const sentMessages = this.bodyParams.messages.map((message) => {
+				const sendMessage = {
+					guest: visitor,
+					message: {
+						_id: Random.id(),
+						rid,
+						token: visitorToken,
+						msg: message.msg,
 					},
-				},
-			};
-			const sentMessage = Promise.await(Livechat.sendMessage(sendMessage));
-			return {
-				username: sentMessage.u.username,
-				msg: sentMessage.msg,
-				ts: sentMessage.ts,
-			};
-		});
+					roomInfo: {
+						source: {
+							type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						},
+					},
+				};
+				const sentMessage = Promise.await(Livechat.sendMessage(sendMessage));
+				return {
+					username: sentMessage.u.username,
+					msg: sentMessage.msg,
+					ts: sentMessage.ts,
+				};
+			});
 
-		return API.v1.success({
-			messages: sentMessages,
-		});
+			return API.v1.success({
+				messages: sentMessages,
+			});
+		},
 	},
-});
+);

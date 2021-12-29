@@ -24,9 +24,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting(
-		'Livechat_guest_pool_max_number_incoming_livechats_displayed',
-	) as number;
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
@@ -62,12 +60,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
-		enabled &&
-		canViewOmnichannelQueue &&
-		!!routeConfig &&
-		routeConfig.showQueue &&
-		!routeConfig.autoAssignAgent &&
-		agentAvailable;
+		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
 	useEffect(() => {
 		if (!manuallySelected) {

@@ -12,7 +12,7 @@ export type ModalParams = {
 	triggerId: string;
 	score: string;
 	user: IUser;
-}
+};
 
 export const createModal = Meteor.bindEnvironment(({ type = 'modal.open', id, appId, npsId, triggerId, score, user }: ModalParams): any => {
 	const language = user.language || settings.get('Language') || 'en';
@@ -48,36 +48,43 @@ export const createModal = Meteor.bindEnvironment(({ type = 'modal.open', id, ap
 				},
 				actionId: 'cancel',
 			},
-			blocks: [{
-				blockId: npsId,
-				type: 'actions',
-				elements: [{
-					type: 'linear_scale',
-					initialValue: score,
-					actionId: 'nps-score',
-					preLabel: { type: 'plain_text', text: TAPi18n.__('Not_likely', { lng: language }) },
-					postLabel: { type: 'plain_text', text: TAPi18n.__('Extremely_likely', { lng: language }) },
-				}],
-				label: {
-					type: 'plain_text',
-					text: TAPi18n.__('Score', { lng: language }),
-					emoji: false,
+			blocks: [
+				{
+					blockId: npsId,
+					type: 'actions',
+					elements: [
+						{
+							type: 'linear_scale',
+							initialValue: score,
+							actionId: 'nps-score',
+							preLabel: { type: 'plain_text', text: TAPi18n.__('Not_likely', { lng: language }) },
+							postLabel: {
+								type: 'plain_text',
+								text: TAPi18n.__('Extremely_likely', { lng: language }),
+							},
+						},
+					],
+					label: {
+						type: 'plain_text',
+						text: TAPi18n.__('Score', { lng: language }),
+						emoji: false,
+					},
 				},
-			},
-			{
-				blockId: npsId,
-				type: 'input',
-				element: {
-					type: 'plain_text_input',
-					multiline: true,
-					actionId: 'comment',
+				{
+					blockId: npsId,
+					type: 'input',
+					element: {
+						type: 'plain_text_input',
+						multiline: true,
+						actionId: 'comment',
+					},
+					label: {
+						type: 'plain_text',
+						text: TAPi18n.__('Why_did_you_chose__score__', { score, lng: language }),
+						emoji: false,
+					},
 				},
-				label: {
-					type: 'plain_text',
-					text: TAPi18n.__('Why_did_you_chose__score__', { score, lng: language }),
-					emoji: false,
-				},
-			}],
+			],
 		},
 	};
 });

@@ -3,7 +3,6 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-
 import { settings } from '../../settings/client';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -12,7 +11,7 @@ import { roomTypes } from '../../utils/client';
 import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
@@ -20,7 +19,7 @@ Meteor.startup(function() {
 		context: ['starred', 'message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			Meteor.call('starMessage', { ...message, starred: true }, function(error: any) {
+			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
 				if (error) {
 					return handleError(error);
 				}
@@ -49,7 +48,7 @@ Meteor.startup(function() {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 
-			Meteor.call('starMessage', { ...message, starred: false }, function(error?: any) {
+			Meteor.call('starMessage', { ...message, starred: false }, function (error?: any) {
 				if (error) {
 					handleError(error);
 				}
@@ -77,15 +76,19 @@ Meteor.startup(function() {
 				(Template.instance() as any).tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},

@@ -2,25 +2,20 @@ import { useMemo } from 'react';
 
 import { IMessage } from '../../../../../definition/IMessage';
 
-export const useMessageBody = ({
-	attachments,
-	msg,
-}: Partial<Pick<IMessage, 'msg' | 'attachments'>> = {}): string =>
+export const useMessageBody = ({ attachments, msg }: Partial<Pick<IMessage, 'msg' | 'attachments'>> = {}): string =>
 	useMemo(() => {
 		if (msg) {
 			return msg;
 		}
 
 		if (attachments) {
-			const attachment = attachments.find(
-				(attachment) => attachment.title || attachment.description,
-			);
+			const attachment = attachments.find((attachment) => attachment.title || attachment.description);
 
-			if (attachment && attachment.description) {
+			if (attachment?.description) {
 				return attachment.description;
 			}
 
-			if (attachment && attachment.title) {
+			if (attachment?.title) {
 				return attachment.title;
 			}
 		}

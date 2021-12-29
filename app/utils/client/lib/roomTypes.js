@@ -5,13 +5,15 @@ import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { ChatRoom, ChatSubscription } from '../../../models';
 
-export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
+export const roomTypes = new (class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
 		return roomType.condition == null || roomType.condition();
 	}
 
 	getTypes() {
-		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
+		return _.sortBy(this.roomTypesOrder, 'order')
+			.map((type) => this.roomTypes[type.identifier])
+			.filter((type) => !type.condition || type.condition());
 	}
 
 	getIcon(roomData) {
@@ -26,7 +28,11 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	getSecondaryRoomName(roomType, roomData) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].secondaryRoomName === 'function' && this.roomTypes[roomType].secondaryRoomName(roomData);
+		return (
+			this.roomTypes[roomType] &&
+			typeof this.roomTypes[roomType].secondaryRoomName === 'function' &&
+			this.roomTypes[roomType].secondaryRoomName(roomData)
+		);
 	}
 
 	getIdentifiers(e) {
@@ -36,31 +42,48 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	getUserStatus(roomType, rid) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(rid);
+		return (
+			this.roomTypes[roomType] &&
+			typeof this.roomTypes[roomType].getUserStatus === 'function' &&
+			this.roomTypes[roomType].getUserStatus(rid)
+		);
 	}
 
 	getRoomType(roomId) {
 		const fields = {
 			t: 1,
 		};
-		const room = ChatRoom.findOne({
-			_id: roomId,
-		}, {
-			fields,
-		});
+		const room = ChatRoom.findOne(
+			{
+				_id: roomId,
+			},
+			{
+				fields,
+			},
+		);
 		return room && room.t;
 	}
 
 	isLivechatRoom(roomType) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].isLivechatRoom === 'function' && this.roomTypes[roomType].isLivechatRoom();
+		return (
+			this.roomTypes[roomType] && typeof this.roomTypes[roomType].isLivechatRoom === 'function' && this.roomTypes[roomType].isLivechatRoom()
+		);
 	}
 
 	showQuickActionButtons(roomType) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].showQuickActionButtons === 'function' && this.roomTypes[roomType].showQuickActionButtons();
+		return (
+			this.roomTypes[roomType] &&
+			typeof this.roomTypes[roomType].showQuickActionButtons === 'function' &&
+			this.roomTypes[roomType].showQuickActionButtons()
+		);
 	}
 
 	getUserStatusText(roomType, rid) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatusText === 'function' && this.roomTypes[roomType].getUserStatusText(rid);
+		return (
+			this.roomTypes[roomType] &&
+			typeof this.roomTypes[roomType].getUserStatusText === 'function' &&
+			this.roomTypes[roomType].getUserStatusText(rid)
+		);
 	}
 
 	findRoom(roomType, identifier, user) {
@@ -80,11 +103,14 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			fields.muted = 1;
 			fields.unmuted = 1;
 		}
-		const room = ChatRoom.findOne({
-			_id: rid,
-		}, {
-			fields,
-		});
+		const room = ChatRoom.findOne(
+			{
+				_id: rid,
+			},
+			{
+				fields,
+			},
+		);
 
 		const roomType = room && room.t;
 		if (roomType && this.roomTypes[roomType] && this.roomTypes[roomType].readOnly) {
@@ -122,7 +148,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	verifyCanSendMessage(rid) {
-		const room = ChatRoom.findOne({	_id: rid }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
 
 		if (!room || !room.t) {
 			return;
@@ -184,4 +210,4 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
-}();
+})();

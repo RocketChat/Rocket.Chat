@@ -18,9 +18,7 @@ export const useMessageBodyMentions = (): UserMention[] => {
 	return mentions;
 };
 
-export const useMessageBodyMentionClick = (): ((
-	username: string,
-) => (e: MouseEvent<HTMLDivElement>) => void) => {
+export const useMessageBodyMentionClick = (): ((username: string) => (e: MouseEvent<HTMLDivElement>) => void) => {
 	const { onMentionClick } = useMessageBodyContext();
 	if (!onMentionClick) {
 		console.warn('onMentionClick is not defined');

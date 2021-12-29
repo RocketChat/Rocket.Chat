@@ -39,9 +39,7 @@ export const createGetEmojiClassNameAndDataTitle =
 		}
 
 		const image = (
-			Object.fromEntries(
-				(emojiElement.getAttribute('style') || '')?.split(';').map((s) => s.split(':')),
-			) as Record<string, string>
+			Object.fromEntries((emojiElement.getAttribute('style') || '')?.split(';').map((s) => s.split(':'))) as Record<string, string>
 		)['background-image'];
 
 		return {

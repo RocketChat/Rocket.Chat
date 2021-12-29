@@ -21,15 +21,7 @@ const BlazeTemplate: FC<
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [name, JSON.stringify(props)]);
 	return (
-		<Box
-			rcx-blaze-template
-			display='flex'
-			onClick={onClick}
-			flexDirection='column'
-			flexGrow={1}
-			ref={ref}
-			{...{ flexShrink, overflow }}
-		/>
+		<Box rcx-blaze-template display='flex' onClick={onClick} flexDirection='column' flexGrow={1} ref={ref} {...{ flexShrink, overflow }} />
 	);
 };
 

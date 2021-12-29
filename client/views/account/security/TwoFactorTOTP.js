@@ -131,11 +131,7 @@ const TwoFactorTOTP = (props) => {
 						<TextCopy text={totpSecret} />
 						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Box display='flex' flexDirection='row' w='full'>
-							<TextInput
-								placeholder={t('Enter_authentication_code')}
-								value={authCode}
-								onChange={handleAuthCode}
-							/>
+							<TextInput placeholder={t('Enter_authentication_code')} value={authCode} onChange={handleAuthCode} />
 							<Button primary onClick={handleVerifyCode}>
 								{t('Verify')}
 							</Button>

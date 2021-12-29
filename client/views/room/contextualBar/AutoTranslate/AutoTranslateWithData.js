@@ -48,12 +48,7 @@ const AutoTranslateWithData = ({ rid }) => {
 		if (!subscription.autoTranslateLanguage) {
 			handleChangeLanguage(userLanguage);
 		}
-	}, [
-		subscription.autoTranslate,
-		subscription.autoTranslateLanguage,
-		handleChangeLanguage,
-		userLanguage,
-	]);
+	}, [subscription.autoTranslate, subscription.autoTranslateLanguage, handleChangeLanguage, userLanguage]);
 
 	return (
 		<AutoTranslate

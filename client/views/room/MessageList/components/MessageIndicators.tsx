@@ -4,12 +4,7 @@ import React, { FC } from 'react';
 import { IMessage, isEditedMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
-import {
-	useMessageDateFormatter,
-	useShowStarred,
-	useShowTranslated,
-	useShowFollowing,
-} from '../contexts/MessageListContext';
+import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 // edited() {
 // 	const { msg } = this;
@@ -44,15 +39,11 @@ export const MessageIndicators: FC<{
 
 	return (
 		<MessageStatusIndicator>
-			{translated && (
-				<MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />
-			)}
+			{translated && <MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />}
 
 			{following && <MessageStatusIndicatorItem name='bell' data-title={t('Following')} />}
 
-			{message.sentByEmail && (
-				<MessageStatusIndicatorItem name='mail' data-title={t('Message_sent_by_email')} />
-			)}
+			{message.sentByEmail && <MessageStatusIndicatorItem name='mail' data-title={t('Message_sent_by_email')} />}
 			{isEditedMessage(message) && (
 				<MessageStatusIndicatorItem
 					name='edit'
@@ -67,13 +58,9 @@ export const MessageIndicators: FC<{
 					}
 				/>
 			)}
-			{message.pinned && (
-				<MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />
-			)}
+			{message.pinned && <MessageStatusIndicatorItem name='pin' data-title={t('Message_has_been_pinned')} />}
 
-			{starred && (
-				<MessageStatusIndicatorItem name='star-filled' data-title={t('Message_has_been_starred')} />
-			)}
+			{starred && <MessageStatusIndicatorItem name='star-filled' data-title={t('Message_has_been_starred')} />}
 		</MessageStatusIndicator>
 	);
 };

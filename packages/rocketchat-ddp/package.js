@@ -5,11 +5,8 @@ Package.describe({
 	git: '',
 });
 
-Package.onUse(function(api) {
-	api.use([
-		'ecmascript',
-		'socket-stream-client',
-	]);
+Package.onUse(function (api) {
+	api.use(['ecmascript', 'socket-stream-client']);
 
 	api.mainModule('client/index.js', 'client');
 });

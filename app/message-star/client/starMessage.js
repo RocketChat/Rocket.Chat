@@ -28,12 +28,15 @@ Meteor.methods({
 		} else {
 			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Message_has_been_unstarred') });
 		}
-		return ChatMessage.update({
-			_id: message._id,
-		}, {
-			$addToSet: {
-				_id: Meteor.userId(),
+		return ChatMessage.update(
+			{
+				_id: message._id,
 			},
-		});
+			{
+				$addToSet: {
+					starred: !!message.starred,
+				},
+			},
+		);
 	},
 });

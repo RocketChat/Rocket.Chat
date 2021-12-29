@@ -60,7 +60,7 @@ export class IframeLogin {
 		}
 
 		if (navigator.userAgent.indexOf('Electron') > -1) {
-			iframeUrl += `${ separator }client=electron`;
+			iframeUrl += `${separator}client=electron`;
 		}
 
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
@@ -99,10 +99,12 @@ export class IframeLogin {
 		}
 
 		Accounts.callLoginMethod({
-			methodArguments: [{
-				iframe: true,
-				token: tokenData.token,
-			}],
+			methodArguments: [
+				{
+					iframe: true,
+					token: tokenData.token,
+				},
+			],
 			userCallback: callback,
 		});
 	}
