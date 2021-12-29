@@ -1,99 +1,12 @@
 
-# 4.3.0 (Under Release Candidate Process)
+# 4.3.0
+`2021-12-28  ·  7 🎉  ·  5 🚀  ·  26 🐛  ·  37 🔍  ·  28 👩‍💻👨‍💻`
 
-## 4.3.0-rc.4
-`2021-12-28  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Chore: Bump fuselage 0.31.0 ([#24046](https://github.com/RocketChat/Rocket.Chat/pull/24046))
-
-- Chore: Replace typography ([#24021](https://github.com/RocketChat/Rocket.Chat/pull/24021))
-
-- Chore: Update Apps-Engine to latest ([#24045](https://github.com/RocketChat/Rocket.Chat/pull/24045))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@juliajforesti](https://github.com/juliajforesti)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.3.0-rc.3
-`2021-12-28  ·  4 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- i18n: Language update from LingoHub 🤖 on 2021-12-27Z ([#24030](https://github.com/RocketChat/Rocket.Chat/pull/24030))
-
-- Regression: Add optional chaining to possibly undefined fields ([#24033](https://github.com/RocketChat/Rocket.Chat/pull/24033))
-
-- Regression: Ensure room action buttons only appear inside menu ([#24035](https://github.com/RocketChat/Rocket.Chat/pull/24035))
-
-  Currently, action buttons registered by apps to appear in the ROOM_ACTION context show in the first position of the list, but since they don't have an icon they are effectively invisible in the tab bar.
-
-  Here we change the order configuration of the button so we make sure it only shows inside the room menu
-
-- Regression: Remove dangling console.log ([#24034](https://github.com/RocketChat/Rocket.Chat/pull/24034))
-
-  A empty array have been printed to console due to a promise chained to `console.log` and `console.error` calls, probably for debugging purposes.
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@d-gubert](https://github.com/d-gubert)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.3.0-rc.2
-`2021-12-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: addAction verification breaking rooms ([#24019](https://github.com/RocketChat/Rocket.Chat/pull/24019))
-
-- Regression: Remove self from fallback departments dropdown ([#24018](https://github.com/RocketChat/Rocket.Chat/pull/24018))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@dougfabris](https://github.com/dougfabris)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 4.3.0-rc.1
-`2021-12-22  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add migration for omni rooms with no source ([#24012](https://github.com/RocketChat/Rocket.Chat/pull/24012))
-
-  Add a migration to add source property to all the omnichannel rooms which don't have it yet. All these rooms will have source type as `other`
-
-- Regression: Let Meteor.absoluteUrl.defaultOptions.rootUrl as baseURI ([#24009](https://github.com/RocketChat/Rocket.Chat/pull/24009))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@murtaza98](https://github.com/murtaza98)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.3.0-rc.0
-`2021-12-22  ·  7 🎉  ·  5 🚀  ·  26 🐛  ·  26 🔍  ·  27 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.29.0`
 
 ### 🎉 New features
 
@@ -274,6 +187,8 @@
 
 - Chore: added last login to users.list ([#23846](https://github.com/RocketChat/Rocket.Chat/pull/23846))
 
+- Chore: Bump fuselage 0.31.0 ([#24046](https://github.com/RocketChat/Rocket.Chat/pull/24046))
+
 - Chore: Centralize email validation functionality ([#23816](https://github.com/RocketChat/Rocket.Chat/pull/23816))
 
   - Create lib for validating emails  
@@ -326,6 +241,10 @@
 
 - Chore: Replace new typography ([#23756](https://github.com/RocketChat/Rocket.Chat/pull/23756))
 
+- Chore: Replace typography ([#24021](https://github.com/RocketChat/Rocket.Chat/pull/24021))
+
+- Chore: Update Apps-Engine to latest ([#24045](https://github.com/RocketChat/Rocket.Chat/pull/24045))
+
 - Chore: update docker image base to latest node 12 patch ([#23875](https://github.com/RocketChat/Rocket.Chat/pull/23875))
 
 - Chore: Update Livechat ([#23913](https://github.com/RocketChat/Rocket.Chat/pull/23913))
@@ -340,13 +259,37 @@
 
 - i18n: Language update from LingoHub 🤖 on 2021-12-20Z ([#23991](https://github.com/RocketChat/Rocket.Chat/pull/23991))
 
+- i18n: Language update from LingoHub 🤖 on 2021-12-27Z ([#24030](https://github.com/RocketChat/Rocket.Chat/pull/24030))
+
 - Merge master into develop & Set version to 4.3.0-develop ([#23827](https://github.com/RocketChat/Rocket.Chat/pull/23827))
 
+- Regression: Add migration for omni rooms with no source ([#24012](https://github.com/RocketChat/Rocket.Chat/pull/24012))
+
+  Add a migration to add source property to all the omnichannel rooms which don't have it yet. All these rooms will have source type as `other`
+
+- Regression: Add optional chaining to possibly undefined fields ([#24033](https://github.com/RocketChat/Rocket.Chat/pull/24033))
+
+- Regression: addAction verification breaking rooms ([#24019](https://github.com/RocketChat/Rocket.Chat/pull/24019))
+
+- Regression: Ensure room action buttons only appear inside menu ([#24035](https://github.com/RocketChat/Rocket.Chat/pull/24035))
+
+  Currently, action buttons registered by apps to appear in the ROOM_ACTION context show in the first position of the list, but since they don't have an icon they are effectively invisible in the tab bar.
+
+  Here we change the order configuration of the button so we make sure it only shows inside the room menu
+
 - Regression: Fix omnichannel empty source usage ([#24008](https://github.com/RocketChat/Rocket.Chat/pull/24008))
+
+- Regression: Let Meteor.absoluteUrl.defaultOptions.rootUrl as baseURI ([#24009](https://github.com/RocketChat/Rocket.Chat/pull/24009))
 
 - Regression: Missing padding in popover with custom template ([#23877](https://github.com/RocketChat/Rocket.Chat/pull/23877))
 
   ![Screen Shot 2021-12-06 at 14 16 40](https://user-images.githubusercontent.com/27704687/144891474-a5bf982e-56af-46df-b472-adf9d999ce02.png)
+
+- Regression: Remove dangling console.log ([#24034](https://github.com/RocketChat/Rocket.Chat/pull/24034))
+
+  A empty array have been printed to console due to a promise chained to `console.log` and `console.error` calls, probably for debugging purposes.
+
+- Regression: Remove self from fallback departments dropdown ([#24018](https://github.com/RocketChat/Rocket.Chat/pull/24018))
 
 - Regression: Toolbox render item ([#23862](https://github.com/RocketChat/Rocket.Chat/pull/23862))
 
@@ -384,6 +327,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
+- [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 4.2.2
 `2021-12-14  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
