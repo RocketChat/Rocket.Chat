@@ -1,4 +1,3 @@
-
 import { Permissions, Roles } from '../../../../app/models/server/raw';
 
 export const createPermissions = async (): Promise<void> => {

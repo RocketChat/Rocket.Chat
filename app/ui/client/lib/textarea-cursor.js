@@ -1,7 +1,6 @@
 // http://stackoverflow.com/a/499158
 
-
-$.fn.setCursorPosition = function(pos) {
+$.fn.setCursorPosition = function (pos) {
 	this.each((index, element) => {
 		const p = pos < 0 ? element.value.length - pos : pos;
 		if (element.setSelectionRange) {

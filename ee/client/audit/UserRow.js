@@ -18,12 +18,7 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 		<Table.Row key={_id} tabIndex={0} role='link'>
 			<Table.Cell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					<UserAvatar
-						size={mediaQuery ? 'x28' : 'x40'}
-						title={username}
-						username={username}
-						etag={avatarETag}
-					/>
+					<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' withTruncatedText color='default'>
@@ -48,13 +43,7 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 			<Table.Cell withTruncatedText>{when}</Table.Cell>
 			<Table.Cell withTruncatedText>{results}</Table.Cell>
 			<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-				<FilterDisplay
-					t={t}
-					users={users}
-					room={room}
-					startDate={formatDate(startDate)}
-					endDate={formatDate(endDate)}
-				/>
+				<FilterDisplay t={t} users={users} room={room} startDate={formatDate(startDate)} endDate={formatDate(endDate)} />
 			</Table.Cell>
 		</Table.Row>
 	);

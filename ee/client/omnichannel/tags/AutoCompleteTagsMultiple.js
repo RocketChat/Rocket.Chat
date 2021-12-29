@@ -44,11 +44,7 @@ const AutoCompleteTagMultiple = (props) => {
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			endReached={
-				tagsPhase === AsyncStatePhase.LOADING
-					? () => {}
-					: (start) => loadMoreTags(start, Math.min(50, tagsTotal))
-			}
+			endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
 		/>
 	);
 };

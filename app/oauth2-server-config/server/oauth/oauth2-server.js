@@ -28,7 +28,7 @@ oauth2server.routes.disable('x-powered-by');
 
 WebApp.connectHandlers.use(oauth2server.app);
 
-oauth2server.routes.get('/oauth/userinfo', function(req, res) {
+oauth2server.routes.get('/oauth/userinfo', function (req, res) {
 	if (req.headers.authorization == null) {
 		return res.sendStatus(401).send('No token');
 	}
@@ -50,11 +50,11 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 		birthdate: '',
 		preffered_username: user.username,
 		updated_at: user._updatedAt,
-		picture: `${ Meteor.absoluteUrl() }avatar/${ user.username }`,
+		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
 	});
 });
 
-API.v1.addAuthMethod(function() {
+API.v1.addAuthMethod(function () {
 	let headerToken = this.request.headers.authorization;
 	const getToken = this.request.query.access_token;
 	if (headerToken != null) {
@@ -74,7 +74,7 @@ API.v1.addAuthMethod(function() {
 	if (accessToken == null) {
 		return;
 	}
-	if ((accessToken.expires != null) && accessToken.expires !== 0 && accessToken.expires < new Date()) {
+	if (accessToken.expires != null && accessToken.expires !== 0 && accessToken.expires < new Date()) {
 		return;
 	}
 	const user = Users.findOne(accessToken.userId);

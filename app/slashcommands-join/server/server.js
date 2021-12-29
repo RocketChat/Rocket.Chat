@@ -19,14 +19,20 @@ function Join(command, params, item) {
 	const room = Rooms.findOneByNameAndType(channel, 'c');
 	if (!room) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 	}
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		fields: { _id: 1 },
+	});
 	if (subscription) {
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 			method: 'slashCommands',

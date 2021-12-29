@@ -48,12 +48,12 @@ Template.contactChatHistoryMessages.events({
 	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
-	'keyup #message-search': _.debounce(function(e, instance) {
+	'keyup #message-search': _.debounce(function (e, instance) {
 		if (e.keyCode === 13) {
 			return e.preventDefault();
 		}
@@ -69,7 +69,7 @@ Template.contactChatHistoryMessages.events({
 	}, 300),
 });
 
-Template.contactChatHistoryMessages.onCreated(function() {
+Template.contactChatHistoryMessages.onCreated(function () {
 	const currentData = Template.currentData();
 	this.rid = currentData.rid;
 	this.messages = new ReactiveVar([]);
@@ -103,10 +103,10 @@ Template.contactChatHistoryMessages.onCreated(function() {
 		const searchTerm = this.searchTerm.get();
 
 		if (searchTerm !== '') {
-			return this.loadMessages(`chat.search/?roomId=${ this.rid }&searchText=${ searchTerm }&count=${ limit }&offset=${ offset }&sort={"ts": 1}`);
+			return this.loadMessages(`chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`);
 		}
 
-		this.loadMessages(`livechat/${ this.rid }/messages?count=${ limit }&offset=${ offset }&sort={"ts": 1}`);
+		this.loadMessages(`livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`);
 	});
 
 	this.autorun(() => {

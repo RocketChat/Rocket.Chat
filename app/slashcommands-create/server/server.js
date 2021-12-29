@@ -36,10 +36,14 @@ function Create(command, params, item) {
 	const room = Rooms.findOneByName(channel);
 	if (room != null) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_already_exist', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_already_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 		return;
 	}

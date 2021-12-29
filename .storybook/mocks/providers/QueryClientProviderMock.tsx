@@ -13,8 +13,6 @@ const queryClient = new QueryClient({
 	queryCache,
 });
 
-const QueryClientProviderMock: FC = ({ children }) => (
-	<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
+const QueryClientProviderMock: FC = ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 
 export default QueryClientProviderMock;
