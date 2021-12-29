@@ -4,15 +4,7 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-const EditInvite = ({
-	onClickBack,
-	onClickClose,
-	onClickNewLink,
-	days,
-	setDays,
-	maxUses,
-	setMaxUses,
-}) => {
+const EditInvite = ({ onClickBack, onClickClose, onClickNewLink, days, setDays, maxUses, setMaxUses }) => {
 	const t = useTranslation();
 
 	const daysOptions = useMemo(
@@ -50,22 +42,14 @@ const EditInvite = ({
 				<Field>
 					<Field.Label flexGrow={0}>{t('Expiration_(Days)')}</Field.Label>
 					<Field.Row>
-						{days === undefined ? (
-							<InputBox.Skeleton />
-						) : (
-							<Select value={days} onChange={setDays} options={daysOptions} />
-						)}
+						{days === undefined ? <InputBox.Skeleton /> : <Select value={days} onChange={setDays} options={daysOptions} />}
 					</Field.Row>
 				</Field>
 
 				<Field pb='x16'>
 					<Field.Label flexGrow={0}>{t('Max_number_of_uses')}</Field.Label>
 					<Field.Row>
-						{maxUses === undefined ? (
-							<InputBox.Skeleton />
-						) : (
-							<Select value={maxUses} onChange={setMaxUses} options={maxUsesOptions} />
-						)}
+						{maxUses === undefined ? <InputBox.Skeleton /> : <Select value={maxUses} onChange={setMaxUses} options={maxUsesOptions} />}
 					</Field.Row>
 				</Field>
 

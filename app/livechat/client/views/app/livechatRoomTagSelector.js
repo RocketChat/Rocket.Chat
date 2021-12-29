@@ -15,7 +15,7 @@ Template.livechatRoomTagSelector.helpers({
 	},
 });
 
-Template.livechatRoomTagSelector.onCreated(function() {
+Template.livechatRoomTagSelector.onCreated(function () {
 	this.availableTags = new ReactiveVar([]);
 
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {

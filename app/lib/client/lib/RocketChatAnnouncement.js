@@ -11,7 +11,11 @@ export class RocketChatAnnouncement {
 	}
 
 	save() {
-		const announcementObject = { message: this.message.get(), callback: this.callback.get(), style: this.style.get() };
+		const announcementObject = {
+			message: this.message.get(),
+			callback: this.callback.get(),
+			style: this.style.get(),
+		};
 		Meteor.call('saveRoomSettings', this.room.get(), 'roomAnnouncement', announcementObject);
 	}
 
@@ -28,8 +32,10 @@ export class RocketChatAnnouncement {
 	}
 
 	getByRoom(rid) {
-		const roomData = Session.get(`roomData${ rid }`);
-		if (!roomData) { return null; }
+		const roomData = Session.get(`roomData${rid}`);
+		if (!roomData) {
+			return null;
+		}
 		this.room.set(rid);
 		this.message.set(roomData.announcement);
 		this.callback.set(roomData.announcementDetails ? roomData.announcementDetails.callback : null);

@@ -29,7 +29,7 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 };
 
 export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -42,15 +42,12 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 	};
 
 	const filter = {
-		...status && { status },
+		...(status && { status }),
 		$or: [
 			{
-				$and: [
-					{ defaultAgent: { $exists: true } },
-					{ 'defaultAgent.agentId': userId },
-				],
+				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
 			},
-			{ ...department && { department } },
+			{ ...(department && { department }) },
 		],
 	};
 
@@ -67,7 +64,7 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 }
 
 export async function findOneInquiryByRoomId({ userId, roomId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

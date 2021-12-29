@@ -11,49 +11,77 @@ addMigration({
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarShowDiscussion');
 
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarHideAvatar');
-		Settings.update({
-			_id: 'Accounts_Default_User_Preferences_sidebarDisplayAvatar',
-		}, {
-			$set: {
-				value: !hideAvatarsSidebarSetting?.value,
+		Settings.update(
+			{
+				_id: 'Accounts_Default_User_Preferences_sidebarDisplayAvatar',
 			},
-		}, {
-			upsert: true,
-		});
+			{
+				$set: {
+					value: !hideAvatarsSidebarSetting?.value,
+				},
+			},
+			{
+				upsert: true,
+			},
+		);
 
 		await Settings.removeById('Accounts_Default_User_Preferences_hideAvatars');
-		Settings.update({
-			_id: 'Accounts_Default_User_Preferences_displayAvatars',
-		}, {
-			$set: {
-				value: !hideAvatarsSetting?.value,
+		Settings.update(
+			{
+				_id: 'Accounts_Default_User_Preferences_displayAvatars',
 			},
-		}, {
-			upsert: true,
-		});
+			{
+				$set: {
+					value: !hideAvatarsSetting?.value,
+				},
+			},
+			{
+				upsert: true,
+			},
+		);
 
-		Users.update({ 'settings.preferences.hideAvatars': true }, {
-			$set: { 'settings.preferences.displayAvatars': false },
-			$unset: { 'settings.preferences.hideAvatars': 1 },
-		}, { multi: true });
+		Users.update(
+			{ 'settings.preferences.hideAvatars': true },
+			{
+				$set: { 'settings.preferences.displayAvatars': false },
+				$unset: { 'settings.preferences.hideAvatars': 1 },
+			},
+			{ multi: true },
+		);
 
-		Users.update({ 'settings.preferences.hideAvatars': false }, {
-			$set: { 'settings.preferences.displayAvatars': true },
-			$unset: { 'settings.preferences.hideAvatars': 1 },
-		}, { multi: true });
+		Users.update(
+			{ 'settings.preferences.hideAvatars': false },
+			{
+				$set: { 'settings.preferences.displayAvatars': true },
+				$unset: { 'settings.preferences.hideAvatars': 1 },
+			},
+			{ multi: true },
+		);
 
-		Users.update({ 'settings.preferences.sidebarHideAvatar': true }, {
-			$set: { 'settings.preferences.sidebarDisplayAvatar': false },
-			$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
-		}, { multi: true });
+		Users.update(
+			{ 'settings.preferences.sidebarHideAvatar': true },
+			{
+				$set: { 'settings.preferences.sidebarDisplayAvatar': false },
+				$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
+			},
+			{ multi: true },
+		);
 
-		Users.update({ 'settings.preferences.sidebarHideAvatar': false }, {
-			$set: { 'settings.preferences.sidebarDisplayAvatar': true },
-			$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
-		}, { multi: true });
+		Users.update(
+			{ 'settings.preferences.sidebarHideAvatar': false },
+			{
+				$set: { 'settings.preferences.sidebarDisplayAvatar': true },
+				$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
+			},
+			{ multi: true },
+		);
 
-		Users.update({ 'settings.preferences.sidebarShowDiscussion': { $exists: true } }, {
-			$unset: { 'settings.preferences.sidebarShowDiscussion': 1 },
-		}, { multi: true });
+		Users.update(
+			{ 'settings.preferences.sidebarShowDiscussion': { $exists: true } },
+			{
+				$unset: { 'settings.preferences.sidebarShowDiscussion': 1 },
+			},
+			{ multi: true },
+		);
 	},
 });

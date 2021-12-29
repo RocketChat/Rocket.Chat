@@ -21,27 +21,31 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 			...tooltipCallbacks,
 		},
 		scales: {
-			xAxes: [{
-				scaleLabel: {
-					display: false,
+			xAxes: [
+				{
+					scaleLabel: {
+						display: false,
+					},
+					gridLines: {
+						display: true,
+						color: 'rgba(0, 0, 0, 0.03)',
+					},
 				},
-				gridLines: {
-					display: true,
-					color: 'rgba(0, 0, 0, 0.03)',
+			],
+			yAxes: [
+				{
+					scaleLabel: {
+						display: false,
+					},
+					gridLines: {
+						display: true,
+						color: 'rgba(0, 0, 0, 0.03)',
+					},
+					ticks: {
+						beginAtZero: true,
+					},
 				},
-			}],
-			yAxes: [{
-				scaleLabel: {
-					display: false,
-				},
-				gridLines: {
-					display: true,
-					color: 'rgba(0, 0, 0, 0.03)',
-				},
-				ticks: {
-					beginAtZero: true,
-				},
-			}],
+			],
 		},
 		hover: {
 			animationDuration: 0, // duration of animations when hovering an item
@@ -81,7 +85,6 @@ const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = fa
 	return config;
 };
 
-
 const doughnutChartConfiguration = (title, tooltipCallbacks = {}) => ({
 	layout: {
 		padding: {
@@ -118,7 +121,6 @@ const doughnutChartConfiguration = (title, tooltipCallbacks = {}) => ({
 	responsiveAnimationDuration: 0, // animation duration after a resize
 });
 
-
 /**
  *
  * @param {Object} chart - chart element
@@ -135,25 +137,16 @@ export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels
 	if (chartContext) {
 		chartContext.destroy();
 	}
-	const colors = [
-		'#2de0a5',
-		'#ffd21f',
-		'#f5455c',
-		'#cbced1',
-	];
+	const colors = ['#2de0a5', '#ffd21f', '#f5455c', '#cbced1'];
 
 	const datasets = [];
 
-	chartLabels.forEach(function(chartLabel, index) {
+	chartLabels.forEach(function (chartLabel, index) {
 		datasets.push({
-			label: TAPi18n.__(chartLabel),	// chart label
-			data: dataSets[index],		// data points corresponding to data labels, x-axis points
-			backgroundColor: [
-				colors[index],
-			],
-			borderColor: [
-				colors[index],
-			],
+			label: TAPi18n.__(chartLabel), // chart label
+			data: dataSets[index], // data points corresponding to data labels, x-axis points
+			backgroundColor: [colors[index]],
+			borderColor: [colors[index]],
 			borderWidth: 3,
 			fill: false,
 		});
@@ -163,7 +156,7 @@ export const drawLineChart = async (chart, chartContext, chartLabels, dataLabels
 	return new Chart(chart, {
 		type: 'line',
 		data: {
-			labels: dataLabels,		// data labels, y-axis points
+			labels: dataLabels, // data labels, y-axis points
 			datasets,
 		},
 		options: lineChartConfiguration(options),
@@ -189,17 +182,14 @@ export const drawDoughnutChart = async (chart, title, chartContext, dataLabels, 
 	return new Chart(chart, {
 		type: 'doughnut',
 		data: {
-			labels: dataLabels,		// data labels, y-axis points
-			datasets: [{
-				data: dataPoints,		// data points corresponding to data labels, x-axis points
-				backgroundColor: [
-					'#2de0a5',
-					'#cbced1',
-					'#f5455c',
-					'#ffd21f',
-				],
-				borderWidth: 0,
-			}],
+			labels: dataLabels, // data labels, y-axis points
+			datasets: [
+				{
+					data: dataPoints, // data points corresponding to data labels, x-axis points
+					backgroundColor: ['#2de0a5', '#cbced1', '#f5455c', '#ffd21f'],
+					borderWidth: 0,
+				},
+			],
 		},
 		options: doughnutChartConfiguration(title),
 	});

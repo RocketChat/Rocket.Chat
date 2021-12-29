@@ -11,22 +11,19 @@ const base = require('./.mocharc.base.json');
  * covers test files too.
  */
 
-Object.assign(process.env, {
-	TS_NODE_FILES: true,
-	TS_NODE_TRANSPILE_ONLY: true,
-}, process.env);
+Object.assign(
+	process.env,
+	{
+		TS_NODE_FILES: true,
+		TS_NODE_TRANSPILE_ONLY: true,
+	},
+	process.env,
+);
 
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
-	require: [
-		...base.require,
-		'./tests/setup/registerWebApiMocks.ts',
-		'./tests/setup/cleanupTestingLibrary.ts',
-	],
+	require: [...base.require, './tests/setup/registerWebApiMocks.ts', './tests/setup/cleanupTestingLibrary.ts'],
 	exit: false,
 	slow: 200,
-	spec: [
-		'client/**/*.spec.ts',
-		'client/**/*.spec.tsx',
-	],
+	spec: ['client/**/*.spec.ts', 'client/**/*.spec.tsx'],
 };

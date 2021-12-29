@@ -31,9 +31,7 @@ function UnitsPage({ data, header, setParams, params, title, renderRow, children
 				</Page.Header>
 				<Page.Content>
 					<GenericTable
-						renderFilter={({ onChange, ...props }) => (
-							<FilterByText onChange={onChange} {...props} />
-						)}
+						renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 						header={header}
 						renderRow={renderRow}
 						results={data && data.units}

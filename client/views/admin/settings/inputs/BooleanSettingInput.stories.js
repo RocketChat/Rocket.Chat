@@ -10,9 +10,7 @@ export default {
 	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () => (
-	<BooleanSettingInput _id='setting_id' label='Label' onChangeValue={action('changeValue')} />
-);
+export const _default = () => <BooleanSettingInput _id='setting_id' label='Label' onChangeValue={action('changeValue')} />;
 
 export const disabled = () => <BooleanSettingInput _id='setting_id' label='Label' disabled />;
 

@@ -22,9 +22,7 @@ const InstancesModal = ({ instances = [], onClose }) => {
 						<Accordion.Item title={address} key={address}>
 							<DescriptionList>
 								<DescriptionList.Entry label={t('Address')}>{address}</DescriptionList.Entry>
-								<DescriptionList.Entry label={t('Auth')}>
-									{broadcastAuth ? 'true' : 'false'}
-								</DescriptionList.Entry>
+								<DescriptionList.Entry label={t('Auth')}>{broadcastAuth ? 'true' : 'false'}</DescriptionList.Entry>
 								<DescriptionList.Entry
 									label={
 										<>
