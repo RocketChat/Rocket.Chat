@@ -88,24 +88,17 @@ export const useWebRTC = (rid: string): useWebRTCProps => {
 	const overlayEnabled = webRTCInstance?.overlayEnabled.get();
 	const audioEnabled = webRTCInstance?.audioEnabled.get();
 	const videoEnabled = webRTCInstance?.videoEnabled.get();
-	const audioAndVideoEnabled =
-		webRTCInstance?.audioEnabled.get() && webRTCInstance?.videoEnabled.get();
+	const audioAndVideoEnabled = webRTCInstance?.audioEnabled.get() && webRTCInstance?.videoEnabled.get();
 
 	const screenShareEnabled = webRTCInstance?.screenShareEnabled.get();
 	const remoteVideoItems = webRTCInstance?.remoteItems.get();
 	const selfVideoUrl = webRTCInstance?.localUrl.get();
 
 	const handleStopCall = (): void => webRTCInstance?.stop();
-	const toggleOverlay = (): void =>
-		overlayEnabled
-			? webRTCInstance?.overlayEnabled.set(false)
-			: webRTCInstance?.overlayEnabled.set(true);
-	const toggleScreenShare = (): void =>
-		screenShareEnabled ? webRTCInstance?.disableScreenShare() : webRTCInstance?.enableScreenShare();
-	const toggleVideo = (): void =>
-		videoEnabled ? webRTCInstance?.disableVideo() : webRTCInstance?.enableVideo();
-	const toggleAudio = (): void =>
-		audioEnabled ? webRTCInstance?.disableAudio() : webRTCInstance?.enableAudio();
+	const toggleOverlay = (): void => (overlayEnabled ? webRTCInstance?.overlayEnabled.set(false) : webRTCInstance?.overlayEnabled.set(true));
+	const toggleScreenShare = (): void => (screenShareEnabled ? webRTCInstance?.disableScreenShare() : webRTCInstance?.enableScreenShare());
+	const toggleVideo = (): void => (videoEnabled ? webRTCInstance?.disableVideo() : webRTCInstance?.enableVideo());
+	const toggleAudio = (): void => (audioEnabled ? webRTCInstance?.disableAudio() : webRTCInstance?.enableAudio());
 
 	const joinCall = (params: callParams): void => webRTCInstance?.joinCall(params);
 	const startCall = (params: callParams): void => webRTCInstance?.startCall(params);

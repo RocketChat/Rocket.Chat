@@ -17,15 +17,20 @@ addMessagePopup((template) => ({
 	textFilterDelay: 500,
 	getFilter: (collection, filter) => {
 		const exp = new RegExp(filter, 'i');
-		const records = collection.find({
-			shortcut: exp,
-		}, {
-			reactive: 1,
-			limit: 12,
-			sort: {
-				shortcut: -1,
-			},
-		}).fetch();
+		const records = collection
+			.find(
+				{
+					shortcut: exp,
+				},
+				{
+					reactive: 1,
+					limit: 12,
+					sort: {
+						shortcut: -1,
+					},
+				},
+			)
+			.fetch();
 
 		return records;
 	},

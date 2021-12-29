@@ -24,8 +24,16 @@ describe('TeamsLeaveProps (definition/rest/v1)', () => {
 			assert.isFalse(isTeamsLeaveProps({ teamId: 'teamId', rooms: [] }));
 		});
 
+		it('should return true if teamId are provided, but rooms are undefined', () => {
+			assert.isTrue(isTeamsLeaveProps({ teamId: 'teamId', rooms: undefined }));
+		});
+
 		it('should return false if teamName and rooms are provided, but rooms is empty', () => {
 			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: [] }));
+		});
+
+		it('should return true if teamName are provided, but rooms are undefined', () => {
+			assert.isTrue(isTeamsLeaveProps({ teamName: 'teamName', rooms: undefined }));
 		});
 
 		it('should return true if teamId and rooms are provided', () => {

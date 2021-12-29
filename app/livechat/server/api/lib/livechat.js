@@ -8,19 +8,34 @@ import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department) {
-	return Livechat.online(department);
+export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {
+	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
 async function findTriggers() {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
+	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
+		_id,
+		actions,
+		conditions,
+		runOnce,
+	}));
 }
 
 export function findDepartments() {
 	return LivechatDepartment.findEnabledWithAgents({
-		_id: 1, name: 1, showOnRegistration: 1, showOnOfflineForm: 1,
-	}).fetch().map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({ _id, name, showOnRegistration, showOnOfflineForm }));
+		_id: 1,
+		name: 1,
+		showOnRegistration: 1,
+		showOnOfflineForm: 1,
+	})
+		.fetch()
+		.map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+			_id,
+			name,
+			showOnRegistration,
+			showOnOfflineForm,
+		}));
 }
 
 export function findGuest(token) {
@@ -62,7 +77,9 @@ export function findOpenRoom(token, departmentId) {
 		},
 	};
 
-	const rooms = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId
+		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch()
+		: LivechatRooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
@@ -94,7 +111,7 @@ export async function settings() {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
 	const departments = findDepartments();
-	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
+	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -113,8 +130,9 @@ export async function settings() {
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
-			limitTextLength: initSettings.Livechat_enable_message_character_limit
-				&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			limitTextLength:
+				initSettings.Livechat_enable_message_character_limit &&
+				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -123,8 +141,18 @@ export async function settings() {
 			offlineColor: initSettings.Livechat_offline_title_color,
 			actionLinks: {
 				webrtc: [
-					{ actionLinksAlignment: 'flex-start', i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall' },
-					{ i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall', danger: true },
+					{
+						actionLinksAlignment: 'flex-start',
+						i18nLabel: 'Join_call',
+						label: TAPi18n.__('Join_call'),
+						method_id: 'joinLivechatWebRTCCall',
+					},
+					{
+						i18nLabel: 'End_call',
+						label: TAPi18n.__('End_call'),
+						method_id: 'endLivechatWebRTCCall',
+						danger: true,
+					},
 				],
 				jitsi: [
 					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall' },

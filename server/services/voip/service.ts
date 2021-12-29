@@ -34,7 +34,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
-			this.logger.error({ mst: `Error while initialising the connector. error = ${ error }` });
+			this.logger.error({ mst: `Error while initialising the connector. error = ${error}` });
 		}
 	}
 
@@ -50,10 +50,10 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
-			throw new Error(`Error! There already exists an active record of type ${ type }`);
+			throw new Error(`Error! There already exists an active record of type ${type}`);
 		}
 
-		const returnValue = !!await this.VoipServerConfiguration.insertOne(config);
+		const returnValue = !!(await this.VoipServerConfiguration.insertOne(config));
 		if (returnValue && type === ServerType.MANAGEMENT) {
 			// If we have added management server, initialise the connection to it.
 			Promise.await(this.initManagementServerConnection());
@@ -68,7 +68,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
-			throw new Error(`Error! No active record exists of type ${ type }`);
+			throw new Error(`Error! No active record exists of type ${type}`);
 		}
 
 		await this.VoipServerConfiguration.updateOne({ type, active: true }, config);
@@ -109,17 +109,17 @@ export class VoipService extends ServiceClass implements IVoipService {
 		membershipDetails.extension = requestParams.extension;
 		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
 		for (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = Promise.await(this.commandHandler.executeCommand(
-				Commands.queue_details,
-				{ queueName: queue.name })) as IVoipConnectorResult;
+			const queueDetails = Promise.await(
+				this.commandHandler.executeCommand(Commands.queue_details, { queueName: queue.name }),
+			) as IVoipConnectorResult;
 			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetails });
 			if (!(queueDetails.result as unknown as IQueueDetails).members) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
 			}
-			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some(
-				(element) => element.name.endsWith(requestParams.extension),
+			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some((element) =>
+				element.name.endsWith(requestParams.extension),
 			);
 			if (!isAMember) {
 				// Current extension is not a member of queue in question.

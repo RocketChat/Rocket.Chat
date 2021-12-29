@@ -10,13 +10,7 @@ const RoomInfo = ({ rid, onClickBack, onEnterRoom, resetState }) => {
 	return editing ? (
 		<EditRoomInfoWithData onClickBack={backToView} rid={rid} />
 	) : (
-		<RoomInfoWithData
-			onClickBack={onClickBack}
-			openEditing={setEditing}
-			rid={rid}
-			onEnterRoom={onEnterRoom}
-			resetState={resetState}
-		/>
+		<RoomInfoWithData onClickBack={onClickBack} openEditing={setEditing} rid={rid} onEnterRoom={onEnterRoom} resetState={resetState} />
 	);
 };
 

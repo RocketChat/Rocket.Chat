@@ -10,12 +10,7 @@ type ConfirmationModalProps = {
 	content: string;
 };
 
-const ConfirmationModal: FC<ConfirmationModalProps> = ({
-	onClose,
-	onConfirmAction,
-	labelButton,
-	content,
-}) => {
+const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmAction, labelButton, content }) => {
 	const t = useTranslation();
 
 	const handleConfirm = (): void => {

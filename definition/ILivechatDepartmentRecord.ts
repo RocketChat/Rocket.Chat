@@ -1,6 +1,5 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 
-
 export interface ILivechatDepartmentRecord extends IRocketChatRecord {
 	_id: string;
 	name: string;
@@ -14,6 +13,7 @@ export interface ILivechatDepartmentRecord extends IRocketChatRecord {
 	offlineMessageChannelName: string;
 	numAgents: number;
 	businessHourId?: string;
+	fallbackForwardDepartment?: string;
 	// extra optional fields
 	[k: string]: any;
 }

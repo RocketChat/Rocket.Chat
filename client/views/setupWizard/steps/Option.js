@@ -9,10 +9,7 @@ const Option = forwardRef(function Option({ children, label, selected, disabled,
 
 	return (
 		<Box
-			className={[
-				'SetupWizard__RegisterServerStep-option',
-				selected && 'SetupWizard__RegisterServerStep-option--selected',
-			]
+			className={['SetupWizard__RegisterServerStep-option', selected && 'SetupWizard__RegisterServerStep-option--selected']
 				.filter(Boolean)
 				.join(' ')}
 			display='block'

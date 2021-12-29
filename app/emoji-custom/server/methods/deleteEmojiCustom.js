@@ -13,10 +13,12 @@ Meteor.methods({
 
 		const emoji = await EmojiCustom.findOneById(emojiID);
 		if (emoji == null) {
-			throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', { method: 'deleteEmojiCustom' });
+			throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', {
+				method: 'deleteEmojiCustom',
+			});
 		}
 
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emoji.name }.${ emoji.extension }`));
+		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
 		await EmojiCustom.removeById(emojiID);
 		api.broadcast('emoji.deleteCustom', emoji);
 

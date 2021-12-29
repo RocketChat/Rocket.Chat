@@ -6,19 +6,13 @@ import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
-export const usePermissionsAndRoles = (
-	type = 'permissions',
-	filter = '',
-	limit = 25,
-	skip = 0,
-): Array<any> => {
+export const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, skip = 0): Array<any> => {
 	const getPermissions = useCallback(() => {
 		const filterRegExp = new RegExp(filter, 'i');
 
 		return ChatPermissions.find(
 			{
-				level:
-					type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
+				level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
 				_id: filterRegExp,
 			},
 			{

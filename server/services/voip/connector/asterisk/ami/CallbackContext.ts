@@ -16,11 +16,11 @@ export class CallbackContext implements ICallbackContext {
 	}
 
 	/**
-     * Checks whether the event's action id is same as the action id of this command's
-     * execution.
-     * If it is valid, calls the registered callback and returns true
-     * else returns false
-     */
+	 * Checks whether the event's action id is same as the action id of this command's
+	 * execution.
+	 * If it is valid, calls the registered callback and returns true
+	 * else returns false
+	 */
 	call(event: any): boolean {
 		if (event.actionid === this.ref.actionid) {
 			this.callback(event);
@@ -30,9 +30,9 @@ export class CallbackContext implements ICallbackContext {
 	}
 
 	/**
-     * Checks whether the event's action id is same as the action id of this command's
-     * execution. Returns true if it is, else returns false
-     */
+	 * Checks whether the event's action id is same as the action id of this command's
+	 * execution. Returns true if it is, else returns false
+	 */
 	isValidContext(actionid: any): boolean {
 		return this.ref.actionid === actionid;
 	}

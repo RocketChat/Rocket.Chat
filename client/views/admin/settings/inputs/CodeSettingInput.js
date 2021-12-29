@@ -34,19 +34,10 @@ function CodeSettingInput({
 					<Field.Label htmlFor={_id} title={_id}>
 						{label}
 					</Field.Label>
-					{hasResetButton && (
-						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
-					)}
+					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<div
-				className={[
-					'code-mirror-box',
-					fullScreen && 'code-mirror-box-fullscreen content-background-color',
-				]
-					.filter(Boolean)
-					.join(' ')}
-			>
+			<div className={['code-mirror-box', fullScreen && 'code-mirror-box-fullscreen content-background-color'].filter(Boolean).join(' ')}>
 				<div className='title'>{label}</div>
 				<CodeMirror
 					data-qa-setting-id={_id}

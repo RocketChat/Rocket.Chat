@@ -15,10 +15,7 @@ const setOpen = (open: boolean | ((isOpen: boolean) => boolean)): void => {
 };
 
 const SidebarProvider: FC = ({ children }) => (
-	<SidebarContext.Provider
-		children={children}
-		value={[useReactiveValue<boolean>(getOpen), setOpen]}
-	/>
+	<SidebarContext.Provider children={children} value={[useReactiveValue<boolean>(getOpen), setOpen]} />
 );
 
 export default SidebarProvider;

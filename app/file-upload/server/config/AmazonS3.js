@@ -8,7 +8,7 @@ import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const get = function(file, req, res) {
+const get = function (file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
 
 	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
@@ -21,7 +21,7 @@ const get = function(file, req, res) {
 		}
 
 		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
+		if (settings.get(`FileUpload_S3_Proxy_${storeType}`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 
 			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
@@ -31,7 +31,7 @@ const get = function(file, req, res) {
 	});
 };
 
-const copy = function(file, out) {
+const copy = function (file, out) {
 	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
@@ -63,7 +63,7 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function() {
+const configure = _.debounce(function () {
 	const Bucket = settings.get('FileUpload_S3_Bucket');
 	const Acl = settings.get('FileUpload_S3_Acl');
 	const AWSAccessKeyId = settings.get('FileUpload_S3_AWSAccessKeyId');
