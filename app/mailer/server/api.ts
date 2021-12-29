@@ -10,6 +10,8 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { settings } from '../../settings/server';
 import { ISetting } from '../../../definition/ISetting';
 import { replaceVariables } from './replaceVariables';
+import { Apps } from '../../apps/server';
+import { validateEmail } from '../../../lib/emailValidator';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -130,9 +132,7 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 });
 
-export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
-
-export const checkAddressFormat = (adresses: string | string[]): boolean => ([] as string[]).concat(adresses).every((address) => rfcMailPatternWithName.test(address));
+export const checkAddressFormat = (adresses: string | string[]): boolean => ([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
 export const sendNoWrap = ({
 	to,
@@ -163,7 +163,11 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
+	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', {
+		email: { to, from, replyTo, subject, html, text, headers },
+	}));
+
+	Meteor.defer(() => Email.send(eventResult.email || eventResult));
 };
 
 export const send = ({

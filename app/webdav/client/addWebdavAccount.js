@@ -54,8 +54,8 @@ const validate = function() {
 	if (!formObj.username) {
 		validationObj.username = t('Field_required');
 	}
-	if (!formObj.pass) {
-		validationObj.pass = t('Field_required');
+	if (!formObj.password) {
+		validationObj.password = t('Field_required');
 	}
 
 	form.find('input.error, select.error').removeClass('error');

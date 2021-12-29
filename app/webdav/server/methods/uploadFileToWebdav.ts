@@ -28,7 +28,7 @@ Meteor.methods({
 
 		try {
 			const cred = getWebdavCredentials(account);
-			const client = new WebdavClientAdapter(account.server_url, cred);
+			const client = new WebdavClientAdapter(account.serverURL, cred);
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			await client.createDirectory(uploadFolder).catch(() => {});
 			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });

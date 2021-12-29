@@ -41,7 +41,7 @@ const CannedResponseEdit: FC<{
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
 	const form = useForm({
-		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
+		_id: data?.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
 		tags:
@@ -49,10 +49,9 @@ const CannedResponseEdit: FC<{
 				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
 				: [],
 		scope: data ? data.cannedResponse.scope : 'user',
-		departmentId:
-			data && data.cannedResponse && data.cannedResponse.departmentId
-				? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
-				: '',
+		departmentId: data?.cannedResponse?.departmentId
+			? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
+			: '',
 	});
 
 	const { values, handlers, hasUnsavedChanges } = form;
@@ -131,7 +130,7 @@ const CannedResponseEdit: FC<{
 			reload();
 			totalDataReload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 
@@ -163,7 +162,7 @@ const CannedResponseEdit: FC<{
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow fontScale='p1'>
+			<Page.ScrollableContentWithShadow fontScale='p2'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
 						isManager={hasManagerPermission}

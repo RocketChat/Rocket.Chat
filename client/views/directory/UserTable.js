@@ -123,16 +123,16 @@ function UserTable({ workspace = 'local' }) {
 							</Flex.Item>
 							<Box withTruncatedText grow={1} mi='x8'>
 								<Box display='flex'>
-									<Box fontScale='p2' withTruncatedText>
+									<Box fontScale='p2m' withTruncatedText>
 										{name || username}
 										{nickname && ` (${nickname})`}
 									</Box>{' '}
 									<Box mi='x4' />{' '}
-									<Box fontScale='p1' color='hint' withTruncatedText>
+									<Box fontScale='p2' color='hint' withTruncatedText>
 										{username}
 									</Box>
 								</Box>
-								<MarkdownText variant='inline' fontScale='p1' color='hint' content={bio} />
+								<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 							</Box>
 						</Box>
 					</Flex.Container>
@@ -142,7 +142,7 @@ function UserTable({ workspace = 'local' }) {
 				)}
 				{federation && <Table.Cell withTruncatedText>{domain}</Table.Cell>}
 				{mediaQuery && (
-					<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+					<Table.Cell fontScale='p2' color='hint' withTruncatedText>
 						{formatDate(createdAt)}
 					</Table.Cell>
 				)}

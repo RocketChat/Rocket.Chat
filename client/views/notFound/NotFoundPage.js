@@ -34,18 +34,18 @@ function NotFoundPage() {
 				<Flex.Item>
 					<Box>
 						<Margins all='x12'>
-							<Box fontWeight='p2' fontSize='x64' color='alternative'>
+							<Box fontWeight='p2m' fontSize='x64' color='alternative'>
 								404
 							</Box>
 
-							<Box role='heading' aria-level='1' fontScale='h1' color='alternative'>
+							<Box role='heading' aria-level='1' fontScale='h2' color='alternative'>
 								{t('Oops_page_not_found')}
 							</Box>
 
 							<Box
 								role='status'
 								aria-label='Sorry_page_you_requested_does_not_exist_or_was_deleted'
-								fontScale='p1'
+								fontScale='p2'
 								color='alternative'
 							>
 								{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}

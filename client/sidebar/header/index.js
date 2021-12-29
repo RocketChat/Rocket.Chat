@@ -16,6 +16,7 @@ const HeaderWithData = () => {
 	const user = useUser();
 	const t = useTranslation();
 	useSidebarPaletteColor();
+
 	return (
 		<>
 			<Sidebar.TopBar.Section className='sidebar--custom-colors'>
