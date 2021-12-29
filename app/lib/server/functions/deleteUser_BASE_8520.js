@@ -40,7 +40,6 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		await relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get('Message_ErasureType');
-		let keepMessages = false;
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
@@ -54,8 +53,6 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 				const nameAlias = TAPi18n.__('Removed_User');
 				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
-			case 'Keep':
-				keepMessages = true;
 		}
 
 		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
@@ -69,11 +66,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		}
 
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
-
-		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't dissappear from logged in sessions
-		if (messageErasureType !== 'Keep') {
-			api.broadcast('user.deleted', user);
-		}
+		api.broadcast('user.deleted', user);
 	}
 
 	// Remove user from users database

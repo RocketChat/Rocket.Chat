@@ -69,11 +69,15 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		}
 
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+<<<<<<< HEAD
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't dissappear from logged in sessions
 		if (messageErasureType !== 'Keep') {
 			api.broadcast('user.deleted', user);
 		}
+=======
+		api.broadcast('user.deleted', user, keepMessages);
+>>>>>>> edfdbd4ffd4c663b0f159b14d82b405c9f549d14
 	}
 
 	// Remove user from users database
