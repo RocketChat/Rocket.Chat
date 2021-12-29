@@ -60,7 +60,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 							<Box is='h2' fontScale='h2' color='default'>
 								{t('Setup_Wizard')}
 							</Box>
-							<Box is='p' color='hint' fontScale='p3'>
+							<Box is='p' color='hint' fontScale='p2'>
 								{t('Setup_Wizard_Info')}
 							</Box>
 						</Margins>
@@ -81,7 +81,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 									marginInline='neg-x8'
 									display='flex'
 									alignItems='center'
-									fontScale='p4'
+									fontScale='p2m'
 									color={
 										(step === currentStep && 'primary') ||
 										(step < currentStep && 'default') ||

@@ -73,7 +73,7 @@ function Section({
 			title={sectionName && t(sectionName)}
 		>
 			{help && (
-				<Box is='p' color='hint' fontScale='p3'>
+				<Box is='p' color='hint' fontScale='p2'>
 					{help}
 				</Box>
 			)}
