@@ -12,12 +12,15 @@ export class LocalBroker implements IBroker {
 	private events = new EventEmitter();
 
 	async call(method: string, data: any): Promise<any> {
-		const result = await asyncLocalStorage.run({
-			id: 'ctx.id',
-			nodeID: 'ctx.nodeID',
-			requestID: 'ctx.requestID',
-			broker: this,
-		}, (): any => this.methods.get(method)?.(...data));
+		const result = await asyncLocalStorage.run(
+			{
+				id: 'ctx.id',
+				nodeID: 'ctx.nodeID',
+				requestID: 'ctx.requestID',
+				broker: this,
+			},
+			(): any => this.methods.get(method)?.(...data),
+		);
 
 		return result;
 	}
@@ -33,13 +36,16 @@ export class LocalBroker implements IBroker {
 			this.events.removeListener(eventName, instance.emit);
 		});
 
-		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+		const methods =
+			instance.constructor?.name === 'Object'
+				? Object.getOwnPropertyNames(instance)
+				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
 			}
 
-			this.methods.delete(`${ namespace }.${ method }`);
+			this.methods.delete(`${namespace}.${method}`);
 		}
 	}
 
@@ -48,18 +54,21 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((eventName) => {
 			this.events.on(eventName, (...args) => {
-				instance.emit(eventName, ...args as Parameters<EventSignatures[typeof eventName]>);
+				instance.emit(eventName, ...(args as Parameters<EventSignatures[typeof eventName]>));
 			});
 		});
 
-		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+		const methods =
+			instance.constructor?.name === 'Object'
+				? Object.getOwnPropertyNames(instance)
+				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
 			}
 			const i = instance as any;
 
-			this.methods.set(`${ namespace }.${ method }`, i[method].bind(i));
+			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
 		}
 	}
 

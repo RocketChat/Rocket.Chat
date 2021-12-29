@@ -17,11 +17,7 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }) =>
 		useMemo(() => ({ filter: departmentsFilter, departmentId }), [departmentId, departmentsFilter]),
 	);
 
-	const {
-		phase: departmentsPhase,
-		items: departmentsItems,
-		itemCount: departmentsTotal,
-	} = useRecordList(departmentsList);
+	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	return (
 		<Field>

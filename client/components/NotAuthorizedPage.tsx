@@ -10,7 +10,7 @@ const NotAuthorizedPage = (): ReactElement => {
 	return (
 		<Page>
 			<Page.Content pb='x24'>
-				<Box is='p' fontScale='p3'>
+				<Box is='p' fontScale='p2'>
 					{t('You_are_not_authorized_to_view_this_page')}
 				</Box>
 			</Page.Content>

@@ -13,13 +13,9 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 	useQuery(
 		['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
 		async () => {
-			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day'))
-				.subtract(displacement, 'weeks')
-				.toDate();
+			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
 
-			const response = await getFromRestApi(
-				'/v1/engagement-dashboard/users/chat-busier/weekly-data',
-			)({
+			const response = await getFromRestApi('/v1/engagement-dashboard/users/chat-busier/weekly-data')({
 				start: day.toISOString(),
 			});
 

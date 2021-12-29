@@ -9,7 +9,7 @@ import { SystemLogger } from '../../lib/logger/system';
 type NPSResultPayload = {
 	total: number;
 	votes: INpsVote[];
-}
+};
 
 export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
 	const token: string = getWorkspaceAccessToken();
@@ -20,9 +20,9 @@ export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(nps
 	const npsUrl = settings.get('Nps_Url');
 
 	try {
-		return HTTP.post(`${ npsUrl }/v1/surveys/${ npsId }/results`, {
+		return HTTP.post(`${npsUrl}/v1/surveys/${npsId}/results`, {
 			headers: {
-				Authorization: `Bearer ${ token }`,
+				Authorization: `Bearer ${token}`,
 			},
 			data,
 		});

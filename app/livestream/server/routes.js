@@ -11,7 +11,7 @@ API.v1.addRoute('livestream/oauth', {
 		const clientAuth = new OAuth2(
 			settings.get('Broadcasting_client_id'),
 			settings.get('Broadcasting_client_secret'),
-			`${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'),
+			`${settings.get('Site_Url')}/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'),
 		);
 		const { userId } = this.queryParams;
 		const url = clientAuth.generateAuthUrl({
@@ -41,14 +41,19 @@ API.v1.addRoute('livestream/oauth/callback', {
 		const clientAuth = new OAuth2(
 			settings.get('Broadcasting_client_id'),
 			settings.get('Broadcasting_client_secret'),
-			`${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'),
+			`${settings.get('Site_Url')}/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'),
 		);
 
 		const ret = Promise.await(clientAuth.getToken(code));
 
-		Users.update({ _id: userId }, { $set: {
-			'settings.livestream': ret,
-		} });
+		Users.update(
+			{ _id: userId },
+			{
+				$set: {
+					'settings.livestream': ret,
+				},
+			},
+		);
 
 		return {
 			headers: {

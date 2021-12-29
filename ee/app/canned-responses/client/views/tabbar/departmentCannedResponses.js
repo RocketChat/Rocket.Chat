@@ -9,8 +9,6 @@ Template.departmentCannedResponses.helpers({
 	},
 });
 
-Template.departmentCannedResponses.events({
-});
+Template.departmentCannedResponses.events({});
 
-Template.departmentCannedResponses.onCreated(function() {
-});
+Template.departmentCannedResponses.onCreated(function () {});

@@ -37,9 +37,7 @@ function AppsTable() {
 	const [sortBy, sortDirection] = sort;
 
 	const handleHeaderCellClick = (id) => {
-		setSort(([sortBy, sortDirection]) =>
-			sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc'],
-		);
+		setSort(([sortBy, sortDirection]) => (sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc']));
 	};
 
 	return (
@@ -64,9 +62,7 @@ function AppsTable() {
 			total={filteredAppsCount}
 			params={params}
 			setParams={setParams}
-			renderFilter={({ onChange, ...props }) => (
-				<FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />
-			)}
+			renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />}
 		>
 			{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
 		</GenericTable>

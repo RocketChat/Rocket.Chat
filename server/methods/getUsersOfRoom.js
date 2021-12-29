@@ -30,7 +30,13 @@ Meteor.methods({
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
-		const users = findUsersOfRoom({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
+		const users = findUsersOfRoom({
+			rid,
+			status: !showAll ? { $ne: 'offline' } : undefined,
+			limit,
+			skip,
+			filter,
+		}).fetch();
 
 		return {
 			total,

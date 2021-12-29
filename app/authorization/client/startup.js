@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-
 import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { APIClient } from '../../utils/client';

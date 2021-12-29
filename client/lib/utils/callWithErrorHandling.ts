@@ -1,8 +1,4 @@
-import {
-	ServerMethodName,
-	ServerMethodParameters,
-	ServerMethodReturn,
-} from '../../contexts/ServerContext';
+import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '../../contexts/ServerContext';
 import { call } from './call';
 import { handleError } from './handleError';
 

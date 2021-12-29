@@ -28,8 +28,7 @@ Meteor.startup(() => {
 		return language;
 	};
 
-	const getBrowserLanguage = (): string =>
-		filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
+	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
 	const loadMomentLocale = (language: string): Promise<string> =>
 		new Promise((resolve, reject) => {
@@ -79,8 +78,7 @@ Meteor.startup(() => {
 	};
 	window.setLanguage = setLanguage;
 
-	const defaultUserLanguage = (): string =>
-		settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = (): string => settings.get('Language') || getBrowserLanguage() || 'en';
 	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {

@@ -23,12 +23,18 @@ addAction('e2e', ({ room }) => {
 
 	const enabledOnRoom = !!room.encrypted;
 
-	return useMemo(() => (e2eEnabled && hasPermission ? {
-		groups: ['direct', 'direct_multiple', 'group', 'team'],
-		id: 'e2e',
-		title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
-		icon: 'key',
-		order: 13,
-		action,
-	} : null), [action, e2eEnabled, enabledOnRoom, hasPermission]);
+	return useMemo(
+		() =>
+			e2eEnabled && hasPermission
+				? {
+						groups: ['direct', 'direct_multiple', 'group', 'team'],
+						id: 'e2e',
+						title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
+						icon: 'key',
+						order: 13,
+						action,
+				  }
+				: null,
+		[action, e2eEnabled, enabledOnRoom, hasPermission],
+	);
 });

@@ -8,7 +8,7 @@ import { hasRole } from '../../../authorization';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { validateEmail } from '../../../../lib/emailValidator';
 
-Template.ChatpalAdmin.onCreated(function() {
+Template.ChatpalAdmin.onCreated(function () {
 	this.validateEmail = validateEmail;
 
 	this.apiKey = new ReactiveVar();
@@ -31,22 +31,48 @@ Template.ChatpalAdmin.events({
 		const email = e.target.email.value;
 		const tac = e.target.readtac.checked;
 
-		if (!tac) { return dispatchToastMessage({ type: 'error', message: TAPi18n.__('Chatpal_ERROR_TAC_must_be_checked') }); }
-		if (!email || email === '') { return dispatchToastMessage({ type: 'error', message: TAPi18n.__('Chatpal_ERROR_Email_must_be_set') }); }
-		if (!t.validateEmail(email)) { return dispatchToastMessage({ type: 'error', message: TAPi18n.__('Chatpal_ERROR_Email_must_be_valid') }); }
+		if (!tac) {
+			return dispatchToastMessage({
+				type: 'error',
+				message: TAPi18n.__('Chatpal_ERROR_TAC_must_be_checked'),
+			});
+		}
+		if (!email || email === '') {
+			return dispatchToastMessage({
+				type: 'error',
+				message: TAPi18n.__('Chatpal_ERROR_Email_must_be_set'),
+			});
+		}
+		if (!t.validateEmail(email)) {
+			return dispatchToastMessage({
+				type: 'error',
+				message: TAPi18n.__('Chatpal_ERROR_Email_must_be_valid'),
+			});
+		}
 
 		// TODO register
 		try {
 			Meteor.call('chatpalUtilsCreateKey', email, (err, key) => {
-				if (!key) { return dispatchToastMessage({ type: 'error', message: TAPi18n.__('Chatpal_ERROR_username_already_exists') }); }
+				if (!key) {
+					return dispatchToastMessage({
+						type: 'error',
+						message: TAPi18n.__('Chatpal_ERROR_username_already_exists'),
+					});
+				}
 
-				dispatchToastMessage({ type: 'info', message: TAPi18n.__('Chatpal_created_key_successfully') });
+				dispatchToastMessage({
+					type: 'info',
+					message: TAPi18n.__('Chatpal_created_key_successfully'),
+				});
 
 				t.apiKey.set(key);
 			});
 		} catch (e) {
 			console.log(e);
-			dispatchToastMessage({ type: 'error', message: TAPi18n.__('Chatpal_ERROR_username_already_exists') });// TODO error messages
+			dispatchToastMessage({
+				type: 'error',
+				message: TAPi18n.__('Chatpal_ERROR_username_already_exists'),
+			}); // TODO error messages
 		}
 	},
 });

@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 
-Accounts.registerLoginHandler('iframe', function(result) {
+Accounts.registerLoginHandler('iframe', function (result) {
 	if (!result.iframe) {
 		return;
 	}
@@ -20,7 +20,6 @@ Accounts.registerLoginHandler('iframe', function(result) {
 		};
 	}
 });
-
 
 Meteor.methods({
 	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {

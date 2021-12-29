@@ -6,7 +6,7 @@ Package.describe({
 	devOnly: true,
 });
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
 	api.export('ReactFastRefresh');
 	api.use('modules');
 	api.addFiles('server.js', 'server');
