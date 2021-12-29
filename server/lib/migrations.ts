@@ -8,14 +8,14 @@ import { showErrorBox } from './logger/showBox';
 type IControl = {
 	version: number;
 	locked: boolean;
-}
+};
 
 export type IMigration = {
 	name?: string;
 	version: number;
 	up: Function;
 	down?: Function;
-}
+};
 
 const log = new Logger('Migrations');
 
@@ -25,16 +25,20 @@ const collection = new Mongo.Collection('migrations');
 
 // sets the control record
 function setControl(control: IControl): IControl {
-	collection.update({
-		_id: 'control',
-	}, {
-		$set: {
-			version: control.version,
-			locked: control.locked,
+	collection.update(
+		{
+			_id: 'control',
 		},
-	}, {
-		upsert: true,
-	});
+		{
+			$set: {
+				version: control.version,
+				locked: control.locked,
+			},
+		},
+		{
+			upsert: true,
+		},
+	);
 
 	return control;
 }
@@ -45,12 +49,14 @@ export function getControl(): IControl {
 		_id: 'control',
 	}) as IControl;
 
-	return control || setControl({
-		version: 0,
-		locked: false,
-	});
+	return (
+		control ||
+		setControl({
+			version: 0,
+			locked: false,
+		})
+	);
 }
-
 
 // Returns true if lock was acquired.
 function lock(): boolean {
@@ -63,26 +69,35 @@ function lock(): boolean {
 	// This is atomic. The selector ensures only one caller at a time will see
 	// the unlocked control, and locking occurs in the same update's modifier.
 	// All other simultaneous callers will get false back from the update.
-	return collection.update({
-		_id: 'control',
-		$or: [{
-			locked: false,
-		}, {
-			lockedAt: {
-				$lt: dateMinusInterval,
+	return (
+		collection.update(
+			{
+				_id: 'control',
+				$or: [
+					{
+						locked: false,
+					},
+					{
+						lockedAt: {
+							$lt: dateMinusInterval,
+						},
+					},
+					{
+						buildAt: {
+							$ne: build,
+						},
+					},
+				],
 			},
-		}, {
-			buildAt: {
-				$ne: build,
+			{
+				$set: {
+					locked: true,
+					lockedAt: date,
+					buildAt: build,
+				},
 			},
-		}],
-	}, {
-		$set: {
-			locked: true,
-			lockedAt: date,
-			buildAt: build,
-		},
-	}) === 1;
+		) === 1
+	);
 }
 
 export function addMigration(migration: IMigration): void {
@@ -104,40 +119,41 @@ function unlock(version: number): void {
 }
 
 function getOrderedMigrations(): IMigration[] {
-	return Array.from(migrations)
-		.sort((a, b) => a.version - b.version);
+	return Array.from(migrations).sort((a, b) => a.version - b.version);
 }
 
 function showError(version: number, control: IControl, e: any): void {
-	showErrorBox('ERROR! SERVER STOPPED', [
-		'Your database migration failed:',
-		e.message,
-		'',
-		'Please make sure you are running the latest version and try again.',
-		'If the problem persists, please contact support.',
-		'',
-		`This Rocket.Chat version: ${ Info.version }`,
-		`Database locked at version: ${ control.version }`,
-		`Database target version: ${ version }`,
-		'',
-		`Commit: ${ Info.commit.hash }`,
-		`Date: ${ Info.commit.date }`,
-		`Branch: ${ Info.commit.branch }`,
-		`Tag: ${ Info.commit.tag }`,
-	].join('\n'));
+	showErrorBox(
+		'ERROR! SERVER STOPPED',
+		[
+			'Your database migration failed:',
+			e.message,
+			'',
+			'Please make sure you are running the latest version and try again.',
+			'If the problem persists, please contact support.',
+			'',
+			`This Rocket.Chat version: ${Info.version}`,
+			`Database locked at version: ${control.version}`,
+			`Database target version: ${version}`,
+			'',
+			`Commit: ${Info.commit.hash}`,
+			`Date: ${Info.commit.date}`,
+			`Branch: ${Info.commit.branch}`,
+			`Tag: ${Info.commit.tag}`,
+		].join('\n'),
+	);
 }
 
 // run the actual migration
 function migrate(direction: 'up' | 'down', migration: IMigration): void {
 	if (typeof migration[direction] !== 'function') {
-		throw new Error(`Cannot migrate ${ direction } on version ${ migration.version }`);
+		throw new Error(`Cannot migrate ${direction} on version ${migration.version}`);
 	}
 
-	log.startup(`Running ${ direction }() on version ${ migration.version }${ migration.name ? `(${ migration.name })` : '' }`);
+	log.startup(`Running ${direction}() on version ${migration.version}${migration.name ? `(${migration.name})` : ''}`);
 
 	Promise.await(migration[direction]?.(migration));
 }
-
 
 const maxAttempts = 30;
 const retryInterval = 10;
@@ -163,17 +179,15 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		return true;
 	}
 
-	const version = targetVersion === 'latest'
-		? orderedMigrations[orderedMigrations.length - 1].version
-		: targetVersion;
+	const version = targetVersion === 'latest' ? orderedMigrations[orderedMigrations.length - 1].version : targetVersion;
 
 	// get latest version
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
 
 	if (!lock()) {
-		const msg = `Not migrating, control is locked. Attempt ${ currentAttempt }/${ maxAttempts }`;
+		const msg = `Not migrating, control is locked. Attempt ${currentAttempt}/${maxAttempts}`;
 		if (currentAttempt <= maxAttempts) {
-			log.warn(`${ msg }. Trying again in ${ retryInterval } seconds.`);
+			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
 
 			(Meteor as unknown as any)._sleepForMs(retryInterval * 1000);
 
@@ -181,29 +195,32 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 			return migrateDatabase(targetVersion, subcommands);
 		}
 		const control = getControl(); // Side effect: upserts control document.
-		showErrorBox('ERROR! SERVER STOPPED', [
-			'Your database migration control is locked.',
-			'Please make sure you are running the latest version and try again.',
-			'If the problem persists, please contact support.',
-			'',
-			`This Rocket.Chat version: ${ Info.version }`,
-			`Database locked at version: ${ control.version }`,
-			`Database target version: ${ version }`,
-			'',
-			`Commit: ${ Info.commit.hash }`,
-			`Date: ${ Info.commit.date }`,
-			`Branch: ${ Info.commit.branch }`,
-			`Tag: ${ Info.commit.tag }`,
-		].join('\n'));
+		showErrorBox(
+			'ERROR! SERVER STOPPED',
+			[
+				'Your database migration control is locked.',
+				'Please make sure you are running the latest version and try again.',
+				'If the problem persists, please contact support.',
+				'',
+				`This Rocket.Chat version: ${Info.version}`,
+				`Database locked at version: ${control.version}`,
+				`Database target version: ${version}`,
+				'',
+				`Commit: ${Info.commit.hash}`,
+				`Date: ${Info.commit.date}`,
+				`Branch: ${Info.commit.branch}`,
+				`Tag: ${Info.commit.tag}`,
+			].join('\n'),
+		);
 		process.exit(1);
 	}
 
 	if (subcommands?.includes('rerun')) {
-		log.startup(`Rerunning version ${ targetVersion }`);
+		log.startup(`Rerunning version ${targetVersion}`);
 		const migration = orderedMigrations.find((migration) => migration.version === targetVersion);
 
 		if (!migration) {
-			throw new Error(`Cannot rerun migration ${ targetVersion }`);
+			throw new Error(`Cannot rerun migration ${targetVersion}`);
 		}
 
 		try {
@@ -219,22 +236,22 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	}
 
 	if (currentVersion === version) {
-		log.startup(`Not migrating, already at version ${ version }`);
+		log.startup(`Not migrating, already at version ${version}`);
 		unlock(currentVersion);
 		return true;
 	}
 
 	const startIdx = orderedMigrations.findIndex((migration) => migration.version === currentVersion);
 	if (startIdx === -1) {
-		throw new Error(`Can't find migration version ${ currentVersion }`);
+		throw new Error(`Can't find migration version ${currentVersion}`);
 	}
 
 	const endIdx = orderedMigrations.findIndex((migration) => migration.version === version);
 	if (endIdx === -1) {
-		throw new Error(`Can't find migration version ${ version }`);
+		throw new Error(`Can't find migration version ${version}`);
 	}
 
-	log.startup(`Migrating from version ${ orderedMigrations[startIdx].version } -> ${ orderedMigrations[endIdx].version }`);
+	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
 
 	try {
 		if (currentVersion < version) {
@@ -271,6 +288,9 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	return true;
 }
 
-export const onFreshInstall = getControl().version !== 0
-	? (): void => { /* noop */ }
-	: (fn: () => unknown): unknown => fn();
+export const onFreshInstall =
+	getControl().version !== 0
+		? (): void => {
+				/* noop */
+		  }
+		: (fn: () => unknown): unknown => fn();

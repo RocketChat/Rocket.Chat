@@ -31,14 +31,7 @@ function MonitorsRow(props) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteMonitor}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (

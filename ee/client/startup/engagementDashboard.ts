@@ -1,11 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasAllPermission } from '../../../app/authorization/client';
-import {
-	registerAdminRoute,
-	registerAdminSidebarItem,
-	unregisterAdminSidebarItem,
-} from '../../../client/views/admin';
+import { registerAdminRoute, registerAdminSidebarItem, unregisterAdminSidebarItem } from '../../../client/views/admin';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
 const [registerRoute, unregisterRoute] = registerAdminRoute('/engagement-dashboard/:tab?', {

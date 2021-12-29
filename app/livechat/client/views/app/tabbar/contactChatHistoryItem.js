@@ -14,11 +14,11 @@ Template.contactChatHistoryItem.helpers({
 	},
 	i18nMessageCounter() {
 		const { msgs } = this;
-		return `<span class='message-counter'>${ msgs }</span>`;
+		return `<span class='message-counter'>${msgs}</span>`;
 	},
 });
 
-Template.contactChatHistoryItem.onCreated(function() {
+Template.contactChatHistoryItem.onCreated(function () {
 	this.room = new ReactiveVar();
 
 	this.autorun(async () => {

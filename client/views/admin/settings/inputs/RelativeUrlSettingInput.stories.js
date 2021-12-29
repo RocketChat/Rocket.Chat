@@ -20,13 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<RelativeUrlSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <RelativeUrlSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<RelativeUrlSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />
-);
+export const withValue = () => <RelativeUrlSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<RelativeUrlSettingInput

@@ -68,7 +68,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(rid) {
-		const room = Session.get(`roomData${ rid }`);
+		const room = Session.get(`roomData${rid}`);
 		if (room) {
 			return room.v && room.v.status;
 		}
@@ -115,7 +115,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
 	openCustomProfileTab(instance, room, username) {

@@ -27,15 +27,7 @@ export class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({
-		scroll,
-		lastTime,
-		atBottom,
-	}: {
-		scroll?: number;
-		lastTime?: Date;
-		atBottom?: boolean;
-	}): void {
+	update({ scroll, lastTime, atBottom }: { scroll?: number; lastTime?: Date; atBottom?: boolean }): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}

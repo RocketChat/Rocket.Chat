@@ -33,7 +33,7 @@ Package.describe({
 	documentation: 'README.md',
 });
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
 	api.versionsFrom('1.9');
 	api.use('check');
 	api.use('ecmascript');
@@ -46,6 +46,6 @@ Package.onUse(function(api) {
 
 // eslint-disable-next-line no-undef
 Npm.depends({
-	mkdirp: '0.3.5',
+	'mkdirp': '0.3.5',
 	'spark-md5': '3.0.0',
 });

@@ -44,7 +44,6 @@ Meteor.setInterval(() => {
 		});
 }, interval);
 
-
 /**
  * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
@@ -64,7 +63,9 @@ process.on('unhandledRejection', (error) => {
 	console.error(error);
 	console.error('---------------------------------');
 	console.error('Errors like this can cause oplog processing errors.');
-	console.error('Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process');
+	console.error(
+		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
+	);
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
 

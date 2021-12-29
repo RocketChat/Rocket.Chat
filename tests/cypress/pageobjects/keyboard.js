@@ -4,17 +4,16 @@ const Keys = {
 	ESCAPE: 'u\ue00c',
 };
 
-const sendEnter = function() {
+const sendEnter = function () {
 	browser.keys(Keys.ENTER);
 };
 
-const sendEscape = function() {
+const sendEscape = function () {
 	browser.keys(Keys.ESCAPE);
 };
 
-const sendTab = function() {
+const sendTab = function () {
 	browser.keys(Keys.TAB);
 };
-
 
 export { sendEnter, sendEscape, sendTab };

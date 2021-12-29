@@ -1,5 +1,5 @@
 // http://stackoverflow.com/a/26990347 function isSet() from Gajus
-export const isSet = function(fn) {
+export const isSet = function (fn) {
 	let value;
 	try {
 		value = fn();
@@ -9,7 +9,7 @@ export const isSet = function(fn) {
 	return value !== undefined;
 };
 
-export const isSetNotNull = function(fn) {
+export const isSetNotNull = function (fn) {
 	let value;
 	try {
 		value = fn();

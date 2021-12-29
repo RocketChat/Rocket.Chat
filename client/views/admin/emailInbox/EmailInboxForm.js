@@ -158,12 +158,7 @@ function EmailInboxForm({ id, data }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteManager}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onDeleteManager} onCancel={() => setModal()} confirmText={t('Delete')}>
 				{t('You_will_not_be_able_to_recover_email_inbox')}
 			</GenericModal>,
 		);
@@ -254,12 +249,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Email')}*</Field.Label>
 								<Field.Row>
-									<TextInput
-										onBlur={checkEmailExists}
-										error={emailError}
-										value={email}
-										onChange={handleEmail}
-									/>
+									<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} />
 								</Field.Row>
 								<Field.Error>{t(emailError)}</Field.Error>
 							</Field>
@@ -272,11 +262,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Sender_Info')}</Field.Label>
 								<Field.Row>
-									<TextInput
-										value={senderInfo}
-										onChange={handleSenderInfo}
-										placeholder={t('Optional')}
-									/>
+									<TextInput value={senderInfo} onChange={handleSenderInfo} placeholder={t('Optional')} />
 								</Field.Row>
 								<Field.Hint>{t('Will_Appear_In_From')}</Field.Hint>
 							</Field>

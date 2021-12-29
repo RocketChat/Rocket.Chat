@@ -17,28 +17,12 @@ export default {
 };
 
 export const _default = () => (
-	<CodeSettingInput
-		_id='setting_id'
-		label='Label'
-		code='javascript'
-		placeholder='Placeholder'
-		onChangeValue={action('changeValue')}
-	/>
+	<CodeSettingInput _id='setting_id' label='Label' code='javascript' placeholder='Placeholder' onChangeValue={action('changeValue')} />
 );
 
-export const disabled = () => (
-	<CodeSettingInput
-		_id='setting_id'
-		label='Label'
-		code='javascript'
-		placeholder='Placeholder'
-		disabled
-	/>
-);
+export const disabled = () => <CodeSettingInput _id='setting_id' label='Label' code='javascript' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<CodeSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />
-);
+export const withValue = () => <CodeSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<CodeSettingInput

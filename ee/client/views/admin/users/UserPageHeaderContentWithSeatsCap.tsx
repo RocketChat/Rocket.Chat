@@ -15,10 +15,7 @@ type UserPageHeaderContentWithSeatsCapProps = {
 	maxActiveUsers: number;
 };
 
-const UserPageHeaderContentWithSeatsCap = ({
-	activeUsers,
-	maxActiveUsers,
-}: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
+const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
 	const seatsLinkUrl = useRequestSeatsLink();
 
 	const t = useTranslation();
@@ -42,14 +39,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 			return;
 		}
 		if (hasReachedLimit()) {
-			setModal(
-				<ReachedSeatsCapModal
-					members={activeUsers}
-					limit={maxActiveUsers}
-					requestSeatsLink={seatsLinkUrl}
-					onClose={closeModal}
-				/>,
-			);
+			setModal(<ReachedSeatsCapModal members={activeUsers} limit={maxActiveUsers} requestSeatsLink={seatsLinkUrl} onClose={closeModal} />);
 			return;
 		}
 

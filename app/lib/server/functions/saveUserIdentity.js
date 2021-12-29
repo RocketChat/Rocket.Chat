@@ -46,8 +46,8 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
-			Messages.findByMention(previousUsername).forEach(function(msg) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
+			Messages.findByMention(previousUsername).forEach(function (msg) {
+				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 			});
 			Rooms.replaceUsername(previousUsername, username);
