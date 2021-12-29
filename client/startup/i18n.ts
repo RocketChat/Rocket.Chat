@@ -86,7 +86,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const user = Users.findOne(Meteor.userId(), { fields: { language: 1 } });
 
-		setLanguage((user && user.language) || defaultUserLanguage());
+		setLanguage(user?.language || defaultUserLanguage());
 	});
 
 	Tracker.autorun(() => {

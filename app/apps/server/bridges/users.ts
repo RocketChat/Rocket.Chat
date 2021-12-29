@@ -4,7 +4,7 @@ import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
@@ -106,5 +106,9 @@ export class AppUserBridge extends UserBridge {
 
 	protected async getActiveUserCount(): Promise<number> {
 		return Users.getActiveLocalUserCount();
+	}
+
+	protected async getUserUnreadMessageCount(uid: string): Promise<number> {
+		return Subscriptions.getBadgeCount(uid);
 	}
 }

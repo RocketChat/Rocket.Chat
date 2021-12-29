@@ -13,7 +13,7 @@ const Header = ({ title, onClose, children = undefined, ...props }) => (
 				flexGrow={1}
 			>
 				{title && (
-					<Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>
+					<Box color='neutral-800' fontSize='p2' fontWeight='p2' flexShrink={1} withTruncatedText>
 						{title}
 					</Box>
 				)}

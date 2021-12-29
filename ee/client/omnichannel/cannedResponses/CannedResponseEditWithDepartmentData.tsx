@@ -44,6 +44,7 @@ const CannedResponseEditWithData: FC<{
 			data={data}
 			reload={reload}
 			totalDataReload={totalDataReload}
+			// @ts-expect-error - Path is inferring union type instead of most-specific one
 			departmentData={departmentData}
 		/>
 	);
