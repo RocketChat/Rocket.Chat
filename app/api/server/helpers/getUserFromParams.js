@@ -16,11 +16,17 @@ API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
 	} else if (params.user && params.user.trim()) {
 		user = Users.findOneByUsernameIgnoringCase(params.user) || doesntExist;
 	} else {
-		throw new Meteor.Error('error-user-param-not-provided', 'The required "userId" or "username" param was not provided');
+		throw new Meteor.Error(
+			'error-user-param-not-provided',
+			'The required "userId" or "username" param was not provided',
+		);
 	}
 
 	if (user._doesntExist) {
-		throw new Meteor.Error('error-invalid-user', 'The required "userId" or "username" param provided does not match any users');
+		throw new Meteor.Error(
+			'error-invalid-user',
+			'The required "userId" or "username" param provided does not match any users',
+		);
 	}
 
 	return user;
@@ -39,7 +45,10 @@ API.helperMethods.set('getUserListFromParams', function _getUserListFromParams()
 	userListParam = [...new Set(userListParam)];
 
 	if (!userListParam.length) {
-		throw new Meteor.Error('error-users-params-not-provided', 'Please provide "userId" or "username" or "userIds" or "usernames" as param');
+		throw new Meteor.Error(
+			'error-users-params-not-provided',
+			'Please provide "userId" or "username" or "userIds" or "usernames" as param',
+		);
 	}
 
 	if (params.userIds || params.userId) {

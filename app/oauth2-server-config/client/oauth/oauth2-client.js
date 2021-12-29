@@ -30,9 +30,9 @@ FlowRouter.route('/oauth/error/:error', {
 	},
 });
 
-Template.authorize.onCreated(async function() {
+Template.authorize.onCreated(async function () {
 	this.oauthApp = new ReactiveVar({});
-	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${ this.data.client_id() }`);
+	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${this.data.client_id()}`);
 	this.oauthApp.set(oauthApp);
 });
 
@@ -54,9 +54,14 @@ Template.authorize.events({
 	},
 });
 
-Template.authorize.onRendered(function() {
+Template.authorize.onRendered(function () {
 	const user = Meteor.user();
-	if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
+	if (
+		user &&
+		user.oauth &&
+		user.oauth.authorizedClients &&
+		user.oauth.authorizedClients.includes(this.data.client_id())
+	) {
 		$('button[type=submit]').click();
 	}
 });

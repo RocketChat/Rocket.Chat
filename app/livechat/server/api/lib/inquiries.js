@@ -1,10 +1,18 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
+import {
+	LivechatDepartmentAgents,
+	LivechatDepartment,
+	LivechatInquiry,
+} from '../../../../models/server/raw';
 import { hasAnyRoleAsync } from '../../../../authorization/server/functions/hasRole';
 
 const agentDepartments = async (userId) => {
-	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
-	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
+	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(
+		({ departmentId }) => departmentId,
+	);
+	return (
+		await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()
+	).map(({ _id }) => _id);
 };
 
 const applyDepartmentRestrictions = async (userId, filterDepartment) => {
@@ -28,8 +36,13 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 	return { $exists: false };
 };
 
-export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+export async function findInquiries({
+	userId,
+	department: filterDepartment,
+	status,
+	pagination: { offset, count, sort },
+}) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -42,15 +55,12 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 	};
 
 	const filter = {
-		...status && { status },
+		...(status && { status }),
 		$or: [
 			{
-				$and: [
-					{ defaultAgent: { $exists: true } },
-					{ 'defaultAgent.agentId': userId },
-				],
+				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
 			},
-			{ ...department && { department } },
+			{ ...(department && { department }) },
 		],
 	};
 
@@ -67,7 +77,7 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 }
 
 export async function findOneInquiryByRoomId({ userId, roomId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

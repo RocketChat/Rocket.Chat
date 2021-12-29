@@ -14,10 +14,14 @@ const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfigu
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();
 
-MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
+MeteorService.getLoginServiceConfiguration().then((records = []) =>
+	records.forEach((record) => loginServices.set(record._id, record)),
+);
 
-server.publish(loginServiceConfigurationPublication, async function() {
-	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
+server.publish(loginServiceConfigurationPublication, async function () {
+	loginServices.forEach((record) =>
+		this.added(loginServiceConfigurationCollection, record._id, record),
+	);
 
 	const fn = (action: string, record: any): void => {
 		switch (action) {
@@ -48,7 +52,7 @@ MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 });
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
-server.publish(autoUpdateCollection, function() {
+server.publish(autoUpdateCollection, function () {
 	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
 
 	const fn = (record: any): void => {
@@ -66,7 +70,15 @@ server.publish(autoUpdateCollection, function() {
 });
 
 server.methods({
-	async login({ resume, user, password }: {resume: string; user: {username: string}; password: string}) {
+	async 'login'({
+		resume,
+		user,
+		password,
+	}: {
+		resume: string;
+		user: { username: string };
+		password: string;
+	}) {
 		const result = await Account.login({ resume, user, password });
 		if (!result) {
 			throw new Error('login error');
@@ -86,7 +98,7 @@ server.methods({
 			type: result.type,
 		};
 	},
-	async logout() {
+	async 'logout'() {
 		if (this.userToken && this.userId) {
 			await Account.logout({ userId: this.userId, token: this.userToken });
 		}

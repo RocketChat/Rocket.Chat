@@ -36,12 +36,16 @@ function saveUserProfile(settings, customFields) {
 	const user = Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
-		if (!saveUserIdentity({
-			_id: this.userId,
-			name: settings.realname,
-			username: settings.username,
-		})) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUserProfile' });
+		if (
+			!saveUserIdentity({
+				_id: this.userId,
+				name: settings.realname,
+				username: settings.username,
+			})
+		) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				method: 'saveUserProfile',
+			});
 		}
 	}
 
@@ -81,15 +85,26 @@ function saveUserProfile(settings, customFields) {
 		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
 			// don't let user change to same password
 			if (compareUserPassword(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-					method: 'saveUserProfile',
-				});
+				throw new Meteor.Error(
+					'error-password-same-as-current',
+					'Entered password same as current password',
+					{
+						method: 'saveUserProfile',
+					},
+				);
 			}
 
-			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
-					method: 'saveUserProfile',
-				});
+			if (
+				user.services?.passwordHistory &&
+				!compareUserPasswordHistory(user, { plain: settings.newPassword })
+			) {
+				throw new Meteor.Error(
+					'error-password-in-history',
+					'Entered password has been previously used',
+					{
+						method: 'saveUserProfile',
+					},
+				);
 			}
 
 			passwordPolicy.validate(settings.newPassword);

@@ -18,19 +18,27 @@ Meteor.methods({
 		}
 
 		if (!hasPermission(userId, 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'getImportFileData' });
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', {
+				method: 'getImportFileData',
+			});
 		}
 
 		const operation = Imports.findLastImport();
 		if (!operation) {
-			throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', { method: 'getImportFileData' });
+			throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', {
+				method: 'getImportFileData',
+			});
 		}
 
 		const { importerKey } = operation;
 
 		const importer = Importers.get(importerKey);
 		if (!importer) {
-			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'getImportFileData' });
+			throw new Meteor.Error(
+				'error-importer-not-defined',
+				`The importer (${importerKey}) has no import class defined.`,
+				{ method: 'getImportFileData' },
+			);
 		}
 
 		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
@@ -47,7 +55,9 @@ Meteor.methods({
 			if (importer.instance.importRecord && importer.instance.importRecord.valid) {
 				return { waiting: true };
 			}
-			throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', { method: 'getImportFileData' });
+			throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', {
+				method: 'getImportFileData',
+			});
 		}
 
 		const readySteps = [
@@ -62,7 +72,9 @@ Meteor.methods({
 		}
 
 		const fileName = importer.instance.importRecord.file;
-		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = fs.existsSync(fileName)
+			? fileName
+			: path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
 
 		if (promise && promise instanceof Promise) {

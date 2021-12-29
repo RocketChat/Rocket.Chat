@@ -25,11 +25,17 @@ Meteor.methods({
 		}
 
 		if (!!message.tmid && originalMessage._id === message.tmid) {
-			throw new Meteor.Error('error-message-same-as-tmid', 'Cannot set tmid the same as the _id', { method: 'updateMessage' });
+			throw new Meteor.Error('error-message-same-as-tmid', 'Cannot set tmid the same as the _id', {
+				method: 'updateMessage',
+			});
 		}
 
 		if (!originalMessage.tmid && !!message.tmid) {
-			throw new Meteor.Error('error-message-change-to-thread', 'Cannot update message to a thread', { method: 'updateMessage' });
+			throw new Meteor.Error(
+				'error-message-change-to-thread',
+				'Cannot update message to a thread',
+				{ method: 'updateMessage' },
+			);
 		}
 
 		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
@@ -37,7 +43,10 @@ Meteor.methods({
 		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
+			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
+				method: 'updateMessage',
+				action: 'Message_editing',
+			});
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
@@ -52,7 +61,9 @@ Meteor.methods({
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockEditInMinutes) {
-				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
+				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', {
+					method: 'updateMessage',
+				});
 			}
 		}
 
@@ -60,7 +71,11 @@ Meteor.methods({
 		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
-		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
+		if (
+			originalMessage.attachments &&
+			originalMessage.attachments.length > 0 &&
+			originalMessage.attachments[0].description !== undefined
+		) {
 			message.attachments = originalMessage.attachments;
 			message.attachments[0].description = message.msg;
 			message.msg = originalMessage.msg;

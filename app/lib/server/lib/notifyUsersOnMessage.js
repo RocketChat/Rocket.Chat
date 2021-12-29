@@ -15,16 +15,21 @@ import { callbacks } from '../../../callbacks/server';
  */
 
 export function messageContainsHighlight(message, highlights) {
-	if (! highlights || highlights.length === 0) { return false; }
+	if (!highlights || highlights.length === 0) {
+		return false;
+	}
 
-	return highlights.some(function(highlight) {
+	return highlights.some(function (highlight) {
 		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
 
 export function getMentions(message) {
-	const { mentions, u: { _id: senderId } } = message;
+	const {
+		mentions,
+		u: { _id: senderId },
+	} = message;
 
 	if (!mentions) {
 		return {
@@ -58,44 +63,52 @@ export function getMentions(message) {
 }
 
 const incGroupMentions = (rid, roomType, excludeUserId, unreadCount) => {
-	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+	const incUnreadByGroup = [
+		'all_messages',
+		'group_mentions_only',
+		'user_and_group_mentions_only',
+	].includes(unreadCount);
 	const incUnread = roomType === 'd' || incUnreadByGroup ? 1 : 0;
 
 	Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
 const incUserMentions = (rid, roomType, uids, unreadCount) => {
-	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+	const incUnreadByUser = [
+		'all_messages',
+		'user_mentions_only',
+		'user_and_group_mentions_only',
+	].includes(unreadCount);
 	const incUnread = roomType === 'd' || incUnreadByUser ? 1 : 0;
 
 	Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
 
 const getUserIdsFromHighlights = (rid, message) => {
-	const highlightOptions = { fields: { userHighlights: 1, 'u._id': 1 } };
+	const highlightOptions = { fields: { 'userHighlights': 1, 'u._id': 1 } };
 	const subs = Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).fetch();
 
 	return subs
-		.filter(({ userHighlights, u: { _id: uid } }) => userHighlights && messageContainsHighlight(message, userHighlights) && uid !== message.u._id)
+		.filter(
+			({ userHighlights, u: { _id: uid } }) =>
+				userHighlights &&
+				messageContainsHighlight(message, userHighlights) &&
+				uid !== message.u._id,
+		)
 		.map(({ u: { _id: uid } }) => uid);
 };
 
 export function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
-		const {
-			toAll,
-			toHere,
-			mentionIds,
-		} = getMentions(message);
+		const { toAll, toHere, mentionIds } = getMentions(message);
 
 		const userIds = new Set(mentionIds);
 
 		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
 		const unreadCount = settings.get(unreadSetting);
 
-		getUserIdsFromHighlights(room._id, message)
-			.forEach((uid) => userIds.add(uid));
+		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
 
 		// give priority to user mentions over group mentions
 		if (userIds.size > 0) {
@@ -141,7 +154,11 @@ export function notifyUsersOnMessage(message, room) {
 		}
 
 		// only updates last message if it was edited (skip rest of callback)
-		if (settings.get('Store_Last_Message') && (!message.tmid || message.tshow) && (!room.lastMessage || room.lastMessage._id === message._id)) {
+		if (
+			settings.get('Store_Last_Message') &&
+			(!message.tmid || message.tshow) &&
+			(!room.lastMessage || room.lastMessage._id === message._id)
+		) {
 			Rooms.setLastMessageById(message.rid, message);
 		}
 
@@ -160,11 +177,21 @@ export function notifyUsersOnMessage(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+	Rooms.incMsgCountAndSetLastMessageById(
+		message.rid,
+		1,
+		message.ts,
+		settings.get('Store_Last_Message') && message,
+	);
 
 	updateUsersSubscriptions(message, room);
 
 	return message;
 }
 
-callbacks.add('afterSaveMessage', notifyUsersOnMessage, callbacks.priority.LOW, 'notifyUsersOnMessage');
+callbacks.add(
+	'afterSaveMessage',
+	notifyUsersOnMessage,
+	callbacks.priority.LOW,
+	'notifyUsersOnMessage',
+);

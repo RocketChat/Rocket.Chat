@@ -6,7 +6,11 @@ import { Users } from '../../../models/server';
 import { IRole, IUser } from '../../../../definition/IUser';
 import { Roles } from '../../../models/server/raw';
 
-export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => {
+export const addUserRoles = (
+	userId: IUser['_id'],
+	roleNames: IRole['name'][],
+	scope?: string,
+): boolean => {
 	if (!userId || !roleNames) {
 		return false;
 	}
@@ -18,7 +22,8 @@ export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], s
 		});
 	}
 
-	if (!Array.isArray(roleNames)) { // TODO: remove this check
+	if (!Array.isArray(roleNames)) {
+		// TODO: remove this check
 		roleNames = [roleNames];
 	}
 

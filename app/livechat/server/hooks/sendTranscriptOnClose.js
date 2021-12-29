@@ -16,4 +16,9 @@ const sendTranscriptOnClose = (room) => {
 	return LivechatRooms.findOneById(rid);
 };
 
-callbacks.add('livechat.closeRoom', sendTranscriptOnClose, callbacks.priority.HIGH, 'livechat-send-transcript-on-close-room');
+callbacks.add(
+	'livechat.closeRoom',
+	sendTranscriptOnClose,
+	callbacks.priority.HIGH,
+	'livechat-send-transcript-on-close-room',
+);

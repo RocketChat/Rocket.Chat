@@ -20,10 +20,12 @@ const config = {
 const Gitlab = new CustomOAuth('gitlab', config);
 
 if (Meteor.isServer) {
-	Meteor.startup(function() {
+	Meteor.startup(function () {
 		const updateConfig = _.debounce(() => {
-			config.serverURL = settings.get('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
-			config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;
+			config.serverURL =
+				settings.get('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
+			config.identityPath =
+				settings.get('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;
 			config.mergeUsers = Boolean(settings.get('Accounts_OAuth_Gitlab_merge_users'));
 			Gitlab.configure(config);
 		}, 300);
@@ -33,8 +35,8 @@ if (Meteor.isServer) {
 		settings.get('Accounts_OAuth_Gitlab_merge_users', updateConfig);
 	});
 } else {
-	Meteor.startup(function() {
-		Tracker.autorun(function() {
+	Meteor.startup(function () {
+		Tracker.autorun(function () {
 			let anyChange = false;
 			if (settings.get('API_Gitlab_URL')) {
 				config.serverURL = settings.get('API_Gitlab_URL').trim().replace(/\/*$/, '');
@@ -42,7 +44,8 @@ if (Meteor.isServer) {
 			}
 
 			if (settings.get('Accounts_OAuth_Gitlab_identity_path')) {
-				config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path').trim() || config.identityPath;
+				config.identityPath =
+					settings.get('Accounts_OAuth_Gitlab_identity_path').trim() || config.identityPath;
 				anyChange = true;
 			}
 

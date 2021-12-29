@@ -1,11 +1,12 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('Video Conference', function() {
-	this.section('BigBlueButton', function() {
+settingsRegistry.addGroup('Video Conference', function () {
+	this.section('BigBlueButton', function () {
 		this.add('bigbluebutton_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
-			alert: 'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert:
+				'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			public: true,
 		});
 
@@ -27,7 +28,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			},
 		});
 
-
 		this.add('bigbluebutton_Open_New_Window', false, {
 			type: 'boolean',
 			enableQuery: {
@@ -37,7 +37,6 @@ settingsRegistry.addGroup('Video Conference', function() {
 			i18nLabel: 'Always_open_in_new_window',
 			public: true,
 		});
-
 
 		this.add('bigbluebutton_enable_d', true, {
 			type: 'boolean',
@@ -80,11 +79,12 @@ settingsRegistry.addGroup('Video Conference', function() {
 		});
 	});
 
-	this.section('Jitsi', function() {
+	this.section('Jitsi', function () {
 		this.add('Jitsi_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
-			alert: 'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert:
+				'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			public: true,
 		});
 

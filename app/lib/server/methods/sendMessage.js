@@ -46,9 +46,13 @@ export function executeSendMessage(uid, message) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
 
 		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage',
-			});
+			throw new Meteor.Error(
+				'error-message-size-exceeded',
+				'Message size exceeds Message_MaxAllowedSize',
+				{
+					method: 'sendMessage',
+				},
+			);
 		}
 	}
 
@@ -69,7 +73,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (!rid) {
-		throw new Error('The \'rid\' property on the message object is missing.');
+		throw new Error("The 'rid' property on the message object is missing.");
 	}
 
 	try {

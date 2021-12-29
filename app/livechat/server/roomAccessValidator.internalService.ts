@@ -10,7 +10,11 @@ class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivech
 
 	protected internal = true;
 
-	async canAccessRoom(room: Partial<IRoom>, user: Partial<IUser>, extraData?: object): Promise<boolean> {
+	async canAccessRoom(
+		room: Partial<IRoom>,
+		user: Partial<IUser>,
+		extraData?: object,
+	): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user, extraData)) {
 				return true;

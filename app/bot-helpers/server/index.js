@@ -29,14 +29,18 @@ class BotHelpers {
 			this.userFields[n.trim()] = 1;
 		});
 		this._allUsers = Users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._onlineUsers = Users.find(
+			{ $and: [this.queries.users, this.queries.online] },
+			{ fields: this.userFields },
+		);
 	}
 
 	// request methods or props as arguments to Meteor.call
 	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
-		} if (typeof this[prop] === 'function') {
+		}
+		if (typeof this[prop] === 'function') {
 			return this[prop](...params);
 		}
 		return this[prop];
@@ -77,7 +81,10 @@ class BotHelpers {
 
 	// generic error whenever property access insufficient to fill request
 	requestError() {
-		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', { method: 'botRequest', action: 'bot_request' });
+		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', {
+			method: 'botRequest',
+			action: 'bot_request',
+		});
 	}
 
 	// "public" properties accessed by getters
@@ -151,7 +158,7 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-settings.watch('BotHelpers_userFields', function(settingValue) {
+settings.watch('BotHelpers_userFields', function (settingValue) {
 	botHelpers.setupCursors(settingValue);
 });
 

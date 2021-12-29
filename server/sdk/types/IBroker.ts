@@ -27,7 +27,7 @@ export type BaseMetricOptions = {
 	labelNames?: Array<string>;
 	unit?: string;
 	aggregator?: string;
-}
+};
 
 export interface IServiceMetrics {
 	register(opts: BaseMetricOptions): void;
@@ -51,7 +51,13 @@ export interface IBroker {
 	createService(service: ServiceClass): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
-	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
-	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
+	broadcast<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void>;
+	broadcastLocal<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
 }

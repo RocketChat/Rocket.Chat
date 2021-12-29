@@ -52,7 +52,10 @@ export class Session {
 
 	async decryptToBuffer(data: string | Buffer): Promise<Buffer> {
 		const sodium = await this.sodium();
-		const buffer = Buffer.from(Buffer.isBuffer(data) ? data.toString() : data, this.stringFormatEncryptedData);
+		const buffer = Buffer.from(
+			Buffer.isBuffer(data) ? data.toString() : data,
+			this.stringFormatEncryptedData,
+		);
 
 		const decrypted = await sodium.crypto_secretbox_open(
 			buffer.slice(24),

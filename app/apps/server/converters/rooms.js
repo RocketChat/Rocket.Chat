@@ -69,7 +69,7 @@ export class AppRoomsConverter {
 		}
 
 		const newRoom = {
-			...room.id && { _id: room.id },
+			...(room.id && { _id: room.id }),
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
@@ -83,7 +83,8 @@ export class AppRoomsConverter {
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
-			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
+			waitingResponse:
+				typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
 			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
@@ -93,12 +94,12 @@ export class AppRoomsConverter {
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
-			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
-			...room.source && {
+			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
+			...(room.source && {
 				source: {
 					...room.source,
 				},
-			},
+			}),
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);

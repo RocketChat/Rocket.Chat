@@ -1,11 +1,7 @@
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import {
-	hasAllPermission,
-	hasPermission,
-	canAccessRoom,
-} from '../../app/authorization/server';
+import { hasAllPermission, hasPermission, canAccessRoom } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
@@ -14,10 +10,7 @@ import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
-		if (
-			!settings.get('Store_Last_Message')
-			|| hasPermission(userId, 'preview-c-room')
-		) {
+		if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
 			return rooms;
 		}
 
@@ -60,30 +53,19 @@ export class Spotlight {
 
 		const searchableRoomTypeIds = searchableRoomTypes();
 
-		const roomIds = Subscriptions.findByUserIdAndTypes(
-			userId,
-			searchableRoomTypeIds,
-			{ fields: { rid: 1 } },
-		)
+		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+			fields: { rid: 1 },
+		})
 			.fetch()
 			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(
-			text,
-			searchableRoomTypeIds,
-			roomOptions,
-		);
+		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
 		return this.fetchRooms(
 			userId,
-			Rooms.findByNameAndTypesNotInIds(
-				regex,
-				searchableRoomTypeIds,
-				roomIds,
-				roomOptions,
-			).fetch(),
+			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch(),
 		);
 	}
 
@@ -102,9 +84,7 @@ export class Spotlight {
 		}
 
 		// Prevent the next query to get the same users
-		usernames.push(
-			...users.map((u) => u.username).filter((u) => !usernames.includes(u)),
-		);
+		usernames.push(...users.map((u) => u.username).filter((u) => !usernames.includes(u)));
 	}
 
 	_searchInsiderUsers({
@@ -118,10 +98,7 @@ export class Spotlight {
 	}) {
 		// Get insiders first
 		if (rid) {
-			const searchFields = settings
-				.get('Accounts_SearchFields')
-				.trim()
-				.split(',');
+			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 
 			users.push(
 				...Promise.await(
@@ -153,10 +130,7 @@ export class Spotlight {
 	}) {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
-			const searchFields = settings
-				.get('Accounts_SearchFields')
-				.trim()
-				.split(',');
+			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 			users.push(
 				...Promise.await(
 					Users.findByActiveUsersExcept(
@@ -206,11 +180,8 @@ export class Spotlight {
 			return users;
 		}
 
-		const canListOutsiders = hasAllPermission(userId, [
-			'view-outside-room',
-			'view-d-room',
-		]);
-		const canListInsiders =			canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
+		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
+		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
 		// If can't list outsiders and, wether, the rid was not passed or the user has no access to the room, return
 		if (!canListOutsiders && !canListInsiders) {

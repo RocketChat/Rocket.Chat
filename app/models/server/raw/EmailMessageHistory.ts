@@ -6,7 +6,7 @@ import { IEmailMessageHistory as T } from '../../../../definition/IEmailMessageH
 export class EmailMessageHistoryRaw extends BaseRaw<T> {
 	protected indexes: IndexSpecification[] = [
 		{ key: { createdAt: 1 }, expireAfterSeconds: 60 * 60 * 24 },
-	]
+	];
 
 	async create({ _id, email }: T): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		return this.insertOne({

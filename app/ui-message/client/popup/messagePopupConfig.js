@@ -20,7 +20,8 @@ import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
-	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+	const user =
+		Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
 	if (!rid || !user) {
 		return;
 	}
@@ -29,39 +30,48 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 
 	const uniqueMessageUsersControl = {};
 
-	Messages
-		.find({
+	Messages.find(
+		{
 			rid,
 			'u.username': { $ne: user.username },
-			t: { $exists: false },
+			't': { $exists: false },
 		},
 		{
 			fields: {
 				'u.username': 1,
 				'u.name': 1,
-				ts: 1,
+				'ts': 1,
 			},
 			sort: { ts: -1 },
-		})
+		},
+	)
 		.fetch()
 		.filter(({ u: { username } }) => {
 			const notMapped = !uniqueMessageUsersControl[username];
 			uniqueMessageUsersControl[username] = true;
 			return notMapped;
 		})
-		.forEach(({ u: { username, name }, ts }) => template.usersFromRoomMessages.upsert(username, {
-			_id: username,
-			username,
-			name,
-			status: Tracker.nonreactive(() => Session.get(`user_${ username }_status`) || 'offline'),
-			ts,
-		}));
+		.forEach(({ u: { username, name }, ts }) =>
+			template.usersFromRoomMessages.upsert(username, {
+				_id: username,
+				username,
+				name,
+				status: Tracker.nonreactive(() => Session.get(`user_${username}_status`) || 'offline'),
+				ts,
+			}),
+		);
 };
 
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
-	const { users } = await callWithErrorHandling('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
+	const { users } = await callWithErrorHandling(
+		'spotlight',
+		filterText,
+		usernames,
+		{ users: true, mentions: true },
+		rid,
+	);
 
 	if (!users || users.length <= 0) {
 		return;
@@ -95,7 +105,13 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		return;
 	}
 
-	const { rooms } = await callWithErrorHandling('spotlight', filterText, null, { rooms: true, mentions: true }, rid);
+	const { rooms } = await callWithErrorHandling(
+		'spotlight',
+		filterText,
+		null,
+		{ rooms: true, mentions: true },
+		rid,
+	);
 
 	if (!rooms || rooms.length <= 0) {
 		return;
@@ -133,9 +149,9 @@ const emojiSort = (recents) => (a, b) => {
 };
 const exactFinalTone = new RegExp('^tone[1-5]:*$');
 const colorBlind = new RegExp('tone[1-5]:*$');
-const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
+const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
 const getEmojis = (collection, filter) => {
-	const key = `:${ filter }`;
+	const key = `:${filter}`;
 
 	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return [];
@@ -146,14 +162,20 @@ const getEmojis = (collection, filter) => {
 	}
 
 	const regExp = new RegExp(escapeRegExp(filter), 'i');
-	const recents = EmojiPicker.getRecent().map((item) => `:${ item }:`);
+	const recents = EmojiPicker.getRecent().map((item) => `:${item}:`);
 
 	return Object.keys(collection)
 		.map((_id) => {
 			const data = collection[key];
 			return { _id, data };
 		})
-		.filter(({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)))
+		.filter(
+			({ _id }) =>
+				regExp.test(_id) &&
+				(exactFinalTone.test(_id.substring(key.length)) ||
+					seeColor.test(key) ||
+					!colorBlind.test(_id)),
+		)
 		.sort(emojiSort(recents))
 		.slice(0, 10);
 };
@@ -174,7 +196,7 @@ const addEmojiToRecents = (emoji) => {
 	});
 };
 
-Template.messagePopupConfig.onCreated(function() {
+Template.messagePopupConfig.onCreated(function () {
 	this.usersFromRoomMessages = new Mongo.Collection(null);
 
 	this.autorun(() => {
@@ -209,25 +231,23 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter = '', cb) => {
 				const { rid } = this;
 				const filterText = filter.trim();
-				const filterRegex = filterText !== '' && new RegExp(`${ escapeRegExp(filterText) }`, 'i');
+				const filterRegex = filterText !== '' && new RegExp(`${escapeRegExp(filterText)}`, 'i');
 
 				const items = template.usersFromRoomMessages
 					.find(
 						{
 							ts: { $exists: true },
-							...filterText && {
-								$or: [
-									{ username: filterRegex },
-									{ name: filterRegex },
-								],
-							},
+							...(filterText && {
+								$or: [{ username: filterRegex }, { name: filterRegex }],
+							}),
 						},
 						{
 							limit: filterText ? 2 : suggestionsCount,
 							sort: { ts: -1 },
 						},
 					)
-					.fetch().map((u) => {
+					.fetch()
+					.map((u) => {
 						u.suggestion = true;
 						return u;
 					});
@@ -375,18 +395,23 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter, cb) => {
 				const { rid } = this;
 				const exp = new RegExp(filter, 'i');
-				const records = collection.find({
-					name: exp,
-					t: {
-						$in: ['c', 'p'],
-					},
-				}, {
-					reactive: 1,
-					limit: 5,
-					sort: {
-						ls: -1,
-					},
-				}).fetch();
+				const records = collection
+					.find(
+						{
+							name: exp,
+							t: {
+								$in: ['c', 'p'],
+							},
+						},
+						{
+							reactive: 1,
+							limit: 5,
+							sort: {
+								ls: -1,
+							},
+						},
+					)
+					.fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
 					fetchRoomsFromServer(filter, records, rid, cb);
@@ -422,7 +447,8 @@ Template.messagePopupConfig.helpers({
 							description: TAPi18n.__(item.description),
 							permission: item.permission,
 						};
-					}).filter((command) => {
+					})
+					.filter((command) => {
 						const isMatch = command._id.indexOf(filter) > -1;
 
 						if (!isMatch) {

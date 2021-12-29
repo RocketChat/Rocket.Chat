@@ -5,7 +5,13 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import {
+	RoomMemberActions,
+	RoomSettingsEnum,
+	UiTextContext,
+	RoomTypeRouteConfig,
+	RoomTypeConfig,
+} from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 let LivechatInquiry;
@@ -68,7 +74,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(rid) {
-		const room = Session.get(`roomData${ rid }`);
+		const room = Session.get(`roomData${rid}`);
 		if (room) {
 			return room.v && room.v.status;
 		}
@@ -115,7 +121,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
 	openCustomProfileTab(instance, room, username) {

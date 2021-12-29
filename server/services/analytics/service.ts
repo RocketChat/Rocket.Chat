@@ -8,7 +8,7 @@ import { IAnalyticsSeatRequest } from '../../../definition/IAnalytic';
 export class AnalyticsService extends ServiceClass implements IAnalyticsService {
 	protected name = 'analytics';
 
-	private Analytics: AnalyticsRaw
+	private Analytics: AnalyticsRaw;
 
 	constructor(db: Db) {
 		super();
@@ -20,7 +20,10 @@ export class AnalyticsService extends ServiceClass implements IAnalyticsService 
 	}
 
 	async getSeatRequestCount(): Promise<number> {
-		const result = await this.Analytics.findOne<IAnalyticsSeatRequest>({ type: 'seat-request' }, {});
+		const result = await this.Analytics.findOne<IAnalyticsSeatRequest>(
+			{ type: 'seat-request' },
+			{},
+		);
 		return result?.count ? result.count : 0;
 	}
 

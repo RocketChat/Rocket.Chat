@@ -11,7 +11,7 @@ export const DataExport = {
 	handlers: {},
 
 	getPath(path = '') {
-		return `/data-export/${ path }`;
+		return `/data-export/${path}`;
 	},
 
 	requestCanAccessFiles({ headers = {}, query = {} }, userId) {
@@ -29,7 +29,11 @@ export const DataExport = {
 		}
 
 		if (headers['x-user-id'] && headers['x-auth-token'] && headers['x-user-id'] === userId) {
-			return !!Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token'], options);
+			return !!Users.findOneByIdAndLoginToken(
+				headers['x-user-id'],
+				headers['x-auth-token'],
+				options,
+			);
 		}
 
 		return false;
@@ -50,5 +54,4 @@ export const DataExport = {
 		errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
 		return errorHtml;
 	},
-
 };

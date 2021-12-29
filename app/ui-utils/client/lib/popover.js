@@ -37,12 +37,12 @@ Template.popover.helpers({
 	},
 });
 
-Template.popover.onRendered(function() {
+Template.popover.onRendered(function () {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
 
-	$('.rc-popover').click(function(e) {
+	$('.rc-popover').click(function (e) {
 		if (e.currentTarget === e.target) {
 			popover.close();
 		}
@@ -52,28 +52,36 @@ Template.popover.onRendered(function() {
 	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
+		const direction =
+			typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
 		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
 		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
 		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 
-		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
-		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+		const position =
+			typeof this.data.position === 'function' ? this.data.position() : this.data.position;
+		const customCSSProperties =
+			typeof this.data.customCSSProperties === 'function'
+				? this.data.customCSSProperties()
+				: this.data.customCSSProperties;
 
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
-			y: this.data.targetRect[verticalDirection],
-		};
+		const mousePosition =
+			typeof this.data.mousePosition === 'function'
+				? this.data.mousePosition()
+				: this.data.mousePosition || {
+						x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
+						y: this.data.targetRect[verticalDirection],
+				  };
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 
 		const leftDiff = window.innerWidth - originalWidth;
 
 		if (position) {
-			popoverContent.style.top = `${ position.top }px`;
-			popoverContent.style.left = `${ position.left + leftDiff }px`;
+			popoverContent.style.top = `${position.top}px`;
+			popoverContent.style.left = `${position.left + leftDiff}px`;
 		} else {
 			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
@@ -109,12 +117,12 @@ Template.popover.onRendered(function() {
 				left = mousePosition.x + offsetWidth;
 			}
 
-			popoverContent.style.top = `${ top }px`;
-			popoverContent.style.left = `${ left + leftDiff }px`;
+			popoverContent.style.top = `${top}px`;
+			popoverContent.style.left = `${left + leftDiff}px`;
 		}
 
 		if (customCSSProperties) {
-			Object.keys(customCSSProperties).forEach(function(property) {
+			Object.keys(customCSSProperties).forEach(function (property) {
 				popoverContent.style[property] = customCSSProperties[property];
 			});
 		}
@@ -143,7 +151,7 @@ Template.popover.onRendered(function() {
 	this.firstNode.style.visibility = 'visible';
 });
 
-Template.popover.onDestroyed(function() {
+Template.popover.onDestroyed(function () {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
 	}

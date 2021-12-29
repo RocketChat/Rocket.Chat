@@ -14,7 +14,8 @@ export class UsersRaw extends BaseRaw {
 	addRolesByUserId(uid, roles) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			process.env.NODE_ENV === 'development' &&
+				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
 		}
 
 		const query = {
@@ -64,7 +65,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
 
 		const query = {
@@ -84,9 +85,20 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
-		if (exceptions == null) { exceptions = []; }
-		if (options == null) { options = {}; }
+	findByActiveUsersExcept(
+		searchTerm,
+		exceptions,
+		options,
+		searchFields,
+		extraQuery = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (options == null) {
+			options = {};
+		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -106,11 +118,14 @@ export class UsersRaw extends BaseRaw {
 			return this.find(query, options);
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const termRegex = new RegExp(
+			(startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''),
+			'i',
+		);
 
 		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
-		const orStmt = (searchFields || []).reduce(function(acc, el) {
+		const orStmt = (searchFields || []).reduce(function (acc, el) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -148,7 +163,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
 
 		const query = { username };
@@ -176,7 +191,7 @@ export class UsersRaw extends BaseRaw {
 
 	findConnectedLDAPUsers(options) {
 		const query = {
-			ldap: true,
+			'ldap': true,
 			'services.resume.loginTokens': {
 				$exists: true,
 				$ne: [],
@@ -201,26 +216,52 @@ export class UsersRaw extends BaseRaw {
 
 	async getNextLeastBusyAgent(department, ignoreAgentId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
-			{ $lookup: {
-				from: 'rocketchat_subscription',
-				let: { id: '$_id' },
-				pipeline: [{
-					$match: {
-						$expr: {
-							$and: [
-								{ $eq: ['$u._id', '$$id'] },
-								{ $eq: ['$open', true] },
-								{ $ne: ['$onHold', true] },
-								{ ...department && { $eq: ['$department', department] } },
-							],
-						},
-					},
-				}],
-				as: 'subs' },
+			{
+				$match: {
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+					...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
+				},
 			},
-			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
-			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					let: { id: '$_id' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ['$u._id', '$$id'] },
+										{ $eq: ['$open', true] },
+										{ $ne: ['$onHold', true] },
+										{ ...(department && { $eq: ['$department', department] }) },
+									],
+								},
+							},
+						},
+					],
+					as: 'subs',
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
+			{
+				$project: {
+					agentId: '$_id',
+					username: 1,
+					lastRoutingTime: 1,
+					departments: 1,
+					count: { $size: '$subs' },
+				},
+			},
 			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
@@ -241,8 +282,22 @@ export class UsersRaw extends BaseRaw {
 
 	async getLastAvailableAgentRouted(department, ignoreAgentId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
-			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{
+				$match: {
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+					...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'agentId',
+					as: 'departments',
+				},
+			},
 			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
 			{ $sort: { lastRoutingTime: 1, username: 1 } },
 		];
@@ -264,20 +319,23 @@ export class UsersRaw extends BaseRaw {
 
 	async setLastRoutingTime(userId) {
 		const result = await this.col.findAndModify(
-			{ _id: userId }
-			, {
+			{ _id: userId },
+			{
 				sort: {
 					_id: 1,
 				},
-			}, {
+			},
+			{
 				$set: {
 					lastRoutingTime: new Date(),
 				},
-			});
+			},
+		);
 		return result.value;
 	}
 
-	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) { // TODO: Create class Agent
+	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) {
+		// TODO: Create class Agent
 		const query = {
 			_id: userId,
 			...conditions,
@@ -295,10 +353,46 @@ export class UsersRaw extends BaseRaw {
 
 	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
-			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
-			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
+			{
+				$match: {
+					_id: userId,
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$project: {
+					'agentId': '$_id',
+					'username': 1,
+					'lastAssignTime': 1,
+					'lastRoutingTime': 1,
+					'queueInfo.chats': {
+						$size: {
+							$filter: {
+								input: '$subs',
+								as: 'sub',
+								cond: {
+									$and: [
+										{ $eq: ['$$sub.t', 'l'] },
+										{ $eq: ['$$sub.open', true] },
+										{ $ne: ['$$sub.onHold', true] },
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+			{ $sort: { 'queueInfo.chats': 1, 'lastAssignTime': 1, 'lastRoutingTime': 1, 'username': 1 } },
 		];
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
@@ -306,60 +400,80 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findAllResumeTokensByUserId(userId) {
-		return this.col.aggregate([
-			{
-				$match: {
-					_id: userId,
+		return this.col
+			.aggregate([
+				{
+					$match: {
+						_id: userId,
+					},
 				},
-			},
-			{
-				$project: {
-					tokens: {
-						$filter: {
-							input: '$services.resume.loginTokens',
-							as: 'token',
-							cond: {
-								$ne: ['$$token.type', 'personalAccessToken'],
+				{
+					$project: {
+						tokens: {
+							$filter: {
+								input: '$services.resume.loginTokens',
+								as: 'token',
+								cond: {
+									$ne: ['$$token.type', 'personalAccessToken'],
+								},
 							},
 						},
 					},
 				},
-			},
-			{ $unwind: '$tokens' },
-			{ $sort: { 'tokens.when': 1 } },
-			{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
-		]).toArray();
+				{ $unwind: '$tokens' },
+				{ $sort: { 'tokens.when': 1 } },
+				{ $group: { _id: '$_id', tokens: { $push: '$tokens' } } },
+			])
+			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		termRegex,
+		exceptions,
+		conditions,
+		options,
+	) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (conditions == null) {
+			conditions = {};
+		}
+		if (options == null) {
+			options = {};
+		}
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
 		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}, {
-				nickname: termRegex,
-			}],
+			$or: [
+				{
+					username: termRegex,
+				},
+				{
+					name: termRegex,
+				},
+				{
+					nickname: termRegex,
+				},
+			],
 			active: true,
 			type: {
 				$in: ['user', 'bot'],
 			},
-			$and: [{
-				username: {
-					$exists: true,
+			$and: [
+				{
+					username: {
+						$exists: true,
+					},
 				},
-			}, {
-				username: {
-					$nin: exceptions,
+				{
+					username: {
+						$nin: exceptions,
+					},
 				},
-			}],
+			],
 			...conditions,
 		};
 
@@ -377,46 +491,54 @@ export class UsersRaw extends BaseRaw {
 				_id: null,
 				offline: {
 					$sum: {
-						$cond: [{
-							$or: [{
-								$and: [
-									{ $eq: ['$status', 'offline'] },
-									{ $eq: ['$statusLivechat', 'available'] },
+						$cond: [
+							{
+								$or: [
+									{
+										$and: [
+											{ $eq: ['$status', 'offline'] },
+											{ $eq: ['$statusLivechat', 'available'] },
+										],
+									},
+									{ $eq: ['$statusLivechat', 'not-available'] },
 								],
 							},
-							{ $eq: ['$statusLivechat', 'not-available'] },
-							],
-						}, 1, 0],
+							1,
+							0,
+						],
 					},
 				},
 				away: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $eq: ['$status', 'away'] },
-								{ $eq: ['$statusLivechat', 'available'] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $eq: ['$status', 'away'] }, { $eq: ['$statusLivechat', 'available'] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				busy: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $eq: ['$status', 'busy'] },
-								{ $eq: ['$statusLivechat', 'available'] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $eq: ['$status', 'busy'] }, { $eq: ['$statusLivechat', 'available'] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				available: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $eq: ['$status', 'online'] },
-								{ $eq: ['$statusLivechat', 'available'] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $eq: ['$status', 'online'] }, { $eq: ['$statusLivechat', 'available'] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 			},
@@ -639,7 +761,7 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 			roles: 'livechat-agent',
-			...Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } },
+			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 		};
 
 		const update = {
@@ -670,13 +792,15 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async isAgentWithinBusinessHours(agentId) {
-		return await this.find({
-			_id: agentId,
-			openBusinessHours: {
-				$exists: true,
-				$not: { $size: 0 },
-			},
-		}).count() > 0;
+		return (
+			(await this.find({
+				_id: agentId,
+				openBusinessHours: {
+					$exists: true,
+					$not: { $size: 0 },
+				},
+			}).count()) > 0
+		);
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -697,32 +821,42 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	resetTOTPById(userId) {
-		return this.col.updateOne({
-			_id: userId,
-		}, {
-			$unset: {
-				'services.totp': 1,
+		return this.col.updateOne(
+			{
+				_id: userId,
 			},
-		});
+			{
+				$unset: {
+					'services.totp': 1,
+				},
+			},
+		);
 	}
 
 	unsetLoginTokens(userId) {
-		return this.col.updateOne({
-			_id: userId,
-		}, {
-			$set: {
-				'services.resume.loginTokens': [],
+		return this.col.updateOne(
+			{
+				_id: userId,
 			},
-		});
+			{
+				$set: {
+					'services.resume.loginTokens': [],
+				},
+			},
+		);
 	}
 
 	removeRoomsByRoomIdsAndUserId(rids, userId) {
-		return this.update({
-			_id: userId,
-			__rooms: { $in: rids },
-		}, {
-			$pullAll: { __rooms: rids },
-		}, { multi: true });
+		return this.update(
+			{
+				_id: userId,
+				__rooms: { $in: rids },
+			},
+			{
+				$pullAll: { __rooms: rids },
+			},
+			{ multi: true },
+		);
 	}
 
 	removeRolesByUserId(uid, roles) {
@@ -755,14 +889,14 @@ export class UsersRaw extends BaseRaw {
 	addBannerById(_id, banner) {
 		const query = {
 			_id,
-			[`banners.${ banner.id }.read`]: {
+			[`banners.${banner.id}.read`]: {
 				$ne: true,
 			},
 		};
 
 		const update = {
 			$set: {
-				[`banners.${ banner.id }`]: banner,
+				[`banners.${banner.id}`]: banner,
 			},
 		};
 

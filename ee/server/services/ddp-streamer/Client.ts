@@ -30,10 +30,7 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	constructor(
-		public ws: WebSocket,
-		public meteorClient = false,
-	) {
+	constructor(public ws: WebSocket, public meteorClient = false) {
 		super();
 
 		this.connection = {
@@ -61,7 +58,10 @@ export class Client extends EventEmitter {
 
 		this.once('message', ({ msg }) => {
 			if (msg !== DDP_EVENTS.CONNECT) {
-				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
+				return this.ws.close(
+					WS_ERRORS.CLOSE_PROTOCOL_ERROR,
+					WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR,
+				);
 			}
 			return this.send(
 				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }),
@@ -127,11 +127,15 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(
+			server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }),
+		);
 	}
 
 	pong(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(
+			server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }),
+		);
 	}
 
 	handleIdle = (): void => {
@@ -149,21 +153,20 @@ export class Client extends EventEmitter {
 			const packet = server.parse(payload);
 			this.emit('message', packet);
 			if (this.wait) {
-				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
+				return new Promise((resolve) =>
+					this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))),
+				);
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {
 			console.error(err);
-			return this.ws.close(
-				WS_ERRORS.UNSUPPORTED_DATA,
-				WS_ERRORS_MESSAGES.UNSUPPORTED_DATA,
-			);
+			return this.ws.close(WS_ERRORS.UNSUPPORTED_DATA, WS_ERRORS_MESSAGES.UNSUPPORTED_DATA);
 		}
 	};
 
 	encodePayload(payload: string): string {
 		if (this.meteorClient) {
-			return `a${ JSON.stringify([payload]) }`;
+			return `a${JSON.stringify([payload])}`;
 		}
 		return payload;
 	}

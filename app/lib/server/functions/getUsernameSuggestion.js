@@ -19,7 +19,6 @@ function usernameIsAvaliable(username) {
 	return !Users.findOneByUsernameIgnoringCase(username);
 }
 
-
 const name = (username) => (settings.get('UTF8_Names_Slugify') ? slug(username) : username);
 
 export function generateUsernameSuggestion(user) {
@@ -43,7 +42,14 @@ export function generateUsernameSuggestion(user) {
 	}
 
 	if (Array.isArray(user.services)) {
-		const services = new Set(user.services.flatMap(({ name, username, firstName, lastName }) => [name, username, firstName, lastName]));
+		const services = new Set(
+			user.services.flatMap(({ name, username, firstName, lastName }) => [
+				name,
+				username,
+				firstName,
+				lastName,
+			]),
+		);
 		usernames.push(...services.map(name));
 	}
 
@@ -66,11 +72,11 @@ export function generateUsernameSuggestion(user) {
 
 	usernames.push(settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
-	let index = Users.find({ username: new RegExp(`^${ usernames[0] }-[0-9]+`) }).count();
+	let index = Users.find({ username: new RegExp(`^${usernames[0]}-[0-9]+`) }).count();
 	const username = '';
 	while (!username) {
-		if (usernameIsAvaliable(`${ usernames[0] }-${ index }`)) {
-			return `${ usernames[0] }-${ index }`;
+		if (usernameIsAvaliable(`${usernames[0]}-${index}`)) {
+			return `${usernames[0]}-${index}`;
 		}
 		index++;
 	}

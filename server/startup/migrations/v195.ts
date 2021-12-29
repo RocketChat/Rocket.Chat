@@ -3,10 +3,16 @@ import { Mongo } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
 import { LivechatBusinessHours, Permissions, Settings } from '../../../app/models/server/raw';
-import { ILivechatBusinessHour, IBusinessHourWorkHour, LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
+import {
+	ILivechatBusinessHour,
+	IBusinessHourWorkHour,
+	LivechatBusinessHourTypes,
+} from '../../../definition/ILivechatBusinessHour';
 
 const migrateCollection = async (): Promise<void> => {
-	const LivechatOfficeHour = new Mongo.Collection<IBusinessHourWorkHour>('rocketchat_livechat_office_hour');
+	const LivechatOfficeHour = new Mongo.Collection<IBusinessHourWorkHour>(
+		'rocketchat_livechat_office_hour',
+	);
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const officeHours: IBusinessHourWorkHour[] = [];
 	days.forEach((day) => {
@@ -25,42 +31,59 @@ const migrateCollection = async (): Promise<void> => {
 		active: true,
 		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
-		workHours: officeHours.map((officeHour): IBusinessHourWorkHour => ({
-			day: officeHour.day,
-			start: {
-				time: officeHour.start as any,
-				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
+		workHours: officeHours.map(
+			(officeHour): IBusinessHourWorkHour => ({
+				day: officeHour.day,
+				start: {
+					time: officeHour.start as any,
+					utc: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm')
+							.utc()
+							.format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm')
+							.utc()
+							.format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').format('HH:mm'),
+					},
 				},
-				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('HH:mm'),
+				finish: {
+					time: officeHour.finish as any,
+					utc: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm')
+							.utc()
+							.format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm')
+							.utc()
+							.format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').format(
+							'dddd',
+						),
+						time: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').format('HH:mm'),
+					},
 				},
-			},
-			finish: {
-				time: officeHour.finish as any,
-				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			},
-			code: officeHour.code,
-			open: officeHour.open,
-		})),
+				code: officeHour.code,
+				open: officeHour.open,
+			}),
+		),
 		timezone: {
 			name: moment.tz.guess(),
 			utc: String(moment().utcOffset() / 60),
 		},
 	};
-	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
+	if (
+		(await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count()) === 0
+	) {
 		LivechatBusinessHours.insertOne(businessHour);
 	} else {
-		LivechatBusinessHours.update({ type: LivechatBusinessHourTypes.DEFAULT }, { $set: { ...businessHour } });
+		LivechatBusinessHours.update(
+			{ type: LivechatBusinessHourTypes.DEFAULT },
+			{ $set: { ...businessHour } },
+		);
 	}
 	try {
 		Promise.await(LivechatOfficeHour.rawCollection().drop());
@@ -79,7 +102,11 @@ addMigration({
 		await Settings.removeById('Livechat_allow_online_agents_outside_office_hours');
 		const permission = await Permissions.findOneById('view-livechat-officeHours');
 		if (permission) {
-			await Permissions.update({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } }, { upsert: true });
+			await Permissions.update(
+				{ _id: 'view-livechat-business-hours' },
+				{ $set: { roles: permission.roles } },
+				{ upsert: true },
+			);
 			await Permissions.deleteOne({ _id: 'view-livechat-officeHours' });
 		}
 		await migrateCollection();

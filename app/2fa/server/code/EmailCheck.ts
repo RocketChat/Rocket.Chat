@@ -46,20 +46,20 @@ export class EmailCheck implements ICodeCheck {
 			},
 			headers: undefined,
 			text: `
-${ t('Here_is_your_authentication_code') }
+${t('Here_is_your_authentication_code')}
 
 __code__
 
-${ t('Do_not_provide_this_code_to_anyone') }
-${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
+${t('Do_not_provide_this_code_to_anyone')}
+${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 `,
 			html: `
-				<p>${ t('Here_is_your_authentication_code') }</p>
+				<p>${t('Here_is_your_authentication_code')}</p>
 				<p style="font-size: 30px;">
 					<b>__code__</b>
 				</p>
-				<p>${ t('Do_not_provide_this_code_to_anyone') }</p>
-				<p>${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }</p>
+				<p>${t('Do_not_provide_this_code_to_anyone')}</p>
+				<p>${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}</p>
 			`,
 		});
 	}
@@ -99,7 +99,10 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
 		const expire = new Date();
-		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
+		const expirationInSeconds = parseInt(
+			settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string,
+			10,
+		);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 

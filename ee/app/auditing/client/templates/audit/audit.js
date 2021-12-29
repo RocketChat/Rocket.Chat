@@ -8,12 +8,42 @@ import { call } from '../../utils.js';
 
 import './audit.html';
 
-const loadMessages = async function({ rid, users, startDate, endDate = new Date(), msg, type, visitor, agent }) {
+const loadMessages = async function ({
+	rid,
+	users,
+	startDate,
+	endDate = new Date(),
+	msg,
+	type,
+	visitor,
+	agent,
+}) {
 	this.messages = this.messages || new ReactiveVar([]);
 	this.loading = this.loading || new ReactiveVar(true);
 	try {
 		this.loading.set(true);
-		const messages = type === 'l' ? await call('auditGetOmnichannelMessages', { rid, users, startDate, endDate, msg, type, visitor, agent }) : await call('auditGetMessages', { rid, users, startDate, endDate, msg, type, visitor, agent });
+		const messages =
+			type === 'l'
+				? await call('auditGetOmnichannelMessages', {
+						rid,
+						users,
+						startDate,
+						endDate,
+						msg,
+						type,
+						visitor,
+						agent,
+				  })
+				: await call('auditGetMessages', {
+						rid,
+						users,
+						startDate,
+						endDate,
+						msg,
+						type,
+						visitor,
+						agent,
+				  });
 		this.messagesContext.set({
 			...messageContext({ rid }),
 			messages,
@@ -24,7 +54,6 @@ const loadMessages = async function({ rid, users, startDate, endDate = new Date(
 		this.loading.set(false);
 	}
 };
-
 
 Template.audit.helpers({
 	isLoading() {
@@ -38,7 +67,7 @@ Template.audit.helpers({
 	},
 });
 
-Template.audit.onCreated(async function() {
+Template.audit.onCreated(async function () {
 	this.messagesContext = new ReactiveVar({});
 	this.loading = new ReactiveVar(false);
 	this.hasResults = new ReactiveVar(false);
@@ -50,17 +79,14 @@ Template.audit.onCreated(async function() {
 	this.autorun(() => {
 		const messagesContext = this.messagesContext.get();
 
-		this.hasResults.set(messagesContext && messagesContext.messages && messagesContext.messages.length > 0);
+		this.hasResults.set(
+			messagesContext && messagesContext.messages && messagesContext.messages.length > 0,
+		);
 	});
 
 	this.loadMessages = loadMessages.bind(this);
 
-	const {
-		visitor,
-		agent,
-		users,
-		rid,
-	} = this.data;
+	const { visitor, agent, users, rid } = this.data;
 	if (rid || users.length || agent || visitor) {
 		await this.loadMessages(this.data);
 	}

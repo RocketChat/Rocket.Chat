@@ -1,13 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 
-import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
+import {
+	createLiveStream,
+	statusLiveStream,
+	statusStreamLiveStream,
+	getBroadcastStatus,
+	setBroadcastStatus,
+} from './functions/livestream';
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
 Meteor.methods({
-
 	async livestreamStreamStatus({ streamId }) {
 		if (!streamId) {
 			// TODO: change error

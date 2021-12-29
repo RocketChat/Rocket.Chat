@@ -17,7 +17,7 @@ export class WebdavStore extends UploadFS.Store {
 		const { server, username, password } = options.connection.credentials;
 		const client = new WebdavClientAdapter(server, { username, password });
 
-		options.getPath = function(file) {
+		options.getPath = function (file) {
 			if (options.uploadFolderPath[options.uploadFolderPath.length - 1] !== '/') {
 				options.uploadFolderPath += '/';
 			}
@@ -28,7 +28,9 @@ export class WebdavStore extends UploadFS.Store {
 			if (err.message.toLowerCase() === 'not found') {
 				client.createDirectory(options.uploadFolderPath);
 			} else if (err.message.toLowerCase() === 'unauthorized') {
-				console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');
+				console.warn(
+					'File upload is unauthorized to connect on Webdav, please verify your credentials',
+				);
 			}
 		});
 
@@ -37,7 +39,7 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param file
 		 * @return {string}
 		 */
-		this.getPath = function(file) {
+		this.getPath = function (file) {
 			if (file.Webdav) {
 				return file.Webdav.path;
 			}
@@ -49,7 +51,7 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function(file, callback) {
+		this.create = function (file, callback) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -69,11 +71,14 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function(fileId, callback) {
+		this.delete = function (fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
-			client.deleteFile(this.getPath(file)).then((data) => {
-				callback && callback(null, data);
-			}).catch(SystemLogger.error);
+			client
+				.deleteFile(this.getPath(file))
+				.then((data) => {
+					callback && callback(null, data);
+				})
+				.catch(SystemLogger.error);
 		};
 
 		/**
@@ -83,7 +88,7 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function(fileId, file, options = {}) {
+		this.getReadStream = function (fileId, file, options = {}) {
 			const range = {};
 
 			if (options.start != null) {
@@ -102,7 +107,7 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param file
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file) {
+		this.getWriteStream = function (fileId, file) {
 			const writeStream = new stream.PassThrough();
 			const webdavStream = client.createWriteStream(this.getPath(file));
 
@@ -112,7 +117,7 @@ export class WebdavStore extends UploadFS.Store {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);
 						writeStream.removeListener('newListener', newListenerCallback);
-						writeStream.on(event, function() {
+						writeStream.on(event, function () {
 							setTimeout(listener, 500);
 						});
 					});

@@ -45,13 +45,18 @@ export async function sendMessagesToAdmins({
 			try {
 				const { rid } = createDirectMessage([adminUser.username], fromId);
 
-				getData<Partial<IMessage>>(msgs, adminUser)
-					.forEach((msg) => executeSendMessage(fromId, Object.assign({ rid }, msg)));
+				getData<Partial<IMessage>>(msgs, adminUser).forEach((msg) =>
+					executeSendMessage(fromId, Object.assign({ rid }, msg)),
+				);
 			} catch (error) {
 				SystemLogger.error(error);
 			}
 		}
 
-		await Promise.all(getData<Banner>(banners, adminUser).map((banner) => Users.addBannerById(adminUser._id, banner)));
+		await Promise.all(
+			getData<Banner>(banners, adminUser).map((banner) =>
+				Users.addBannerById(adminUser._id, banner),
+			),
+		);
 	}
 }

@@ -19,14 +19,17 @@ export class ResponseParser {
 
 	public validate(xml: string, callback: IResponseValidateCallback): void {
 		// We currently use RelayState to save SAML provider
-		SAMLUtils.log(`Validating response with relay state: ${ xml }`);
+		SAMLUtils.log(`Validating response with relay state: ${xml}`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xml, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
 
-		const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');
+		const allResponses = doc.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:protocol',
+			'Response',
+		);
 		if (allResponses.length === 0) {
 			return this._checkLogoutResponse(doc, callback);
 		}
@@ -48,10 +51,9 @@ export class ResponseParser {
 				return callback(new Error(statusValidateObj.message), null, false);
 			}
 
-			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
+			return callback(new Error(`Status is: ${statusValidateObj.statusCode}`), null, false);
 		}
 		SAMLUtils.log('Status ok');
-
 
 		let assertion: XmlParent;
 		let assertionData: ISAMLAssertion;
@@ -84,7 +86,10 @@ export class ResponseParser {
 
 		const subject = this.getSubject(assertion);
 		if (subject) {
-			const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
+			const nameID = subject.getElementsByTagNameNS(
+				'urn:oasis:names:tc:SAML:2.0:assertion',
+				'NameID',
+			)[0];
 			if (nameID) {
 				profile.nameID = nameID.textContent;
 
@@ -106,12 +111,15 @@ export class ResponseParser {
 			return callback(e, null, false);
 		}
 
-		const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
+		const authnStatement = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'AuthnStatement',
+		)[0];
 
 		if (authnStatement) {
 			if (authnStatement.hasAttribute('SessionIndex')) {
 				profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
-				SAMLUtils.log(`Session Index: ${ profile.sessionIndex }`);
+				SAMLUtils.log(`Session Index: ${profile.sessionIndex}`);
 			} else {
 				SAMLUtils.log('No Session Index Found');
 			}
@@ -119,14 +127,22 @@ export class ResponseParser {
 			SAMLUtils.log('No AuthN Statement found');
 		}
 
-		const attributeStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeStatement')[0];
+		const attributeStatement = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'AttributeStatement',
+		)[0];
 		if (attributeStatement) {
 			this.mapAttributes(attributeStatement, profile);
 		} else {
 			SAMLUtils.log('No Attribute Statement found in SAML response.');
 		}
 
-		if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
+		if (
+			!profile.email &&
+			profile.nameID &&
+			profile.nameIDFormat &&
+			profile.nameIDFormat.indexOf('emailAddress') >= 0
+		) {
 			profile.email = profile.nameID;
 		}
 
@@ -145,7 +161,10 @@ export class ResponseParser {
 	}
 
 	private _checkLogoutResponse(doc: Document, callback: IResponseValidateCallback): void {
-		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
+		const logoutResponse = doc.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:protocol',
+			'LogoutResponse',
+		);
 		if (!logoutResponse.length) {
 			return callback(new Error('Unknown SAML response message'), null, false);
 		}
@@ -153,7 +172,7 @@ export class ResponseParser {
 		SAMLUtils.log('Verify status');
 		const statusValidateObj = SAMLUtils.validateStatus(doc);
 		if (!statusValidateObj.success) {
-			return callback(new Error(`Status is: ${ statusValidateObj.statusCode }`), null, false);
+			return callback(new Error(`Status is: ${statusValidateObj.statusCode}`), null, false);
 		}
 		SAMLUtils.log('Status ok');
 
@@ -162,8 +181,14 @@ export class ResponseParser {
 	}
 
 	private getAssertion(response: Element, xml: string): ISAMLAssertion {
-		const allAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
-		const allEncrypedAssertions = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion');
+		const allAssertions = response.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'Assertion',
+		);
+		const allEncrypedAssertions = response.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'EncryptedAssertion',
+		);
 
 		if (allAssertions.length + allEncrypedAssertions.length > 1) {
 			throw new Error('Too many SAML assertions');
@@ -176,7 +201,7 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function(err, result) {
+			xmlenc.decrypt(encData, options, function (err, result) {
 				if (err) {
 					SAMLUtils.error(err);
 				}
@@ -186,7 +211,10 @@ export class ResponseParser {
 					throw new Error('Failed to decrypt SAML assertion');
 				}
 
-				const decryptedAssertions = document.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion');
+				const decryptedAssertions = document.getElementsByTagNameNS(
+					'urn:oasis:names:tc:SAML:2.0:assertion',
+					'Assertion',
+				);
 				if (decryptedAssertions.length) {
 					assertion = decryptedAssertions[0];
 				}
@@ -232,7 +260,13 @@ export class ResponseParser {
 
 		if (checkAssertion) {
 			SAMLUtils.log('Verify Assertion Signature');
-			if (!this.validateAssertionSignature(assertionData.xml, this.serviceProviderOptions.cert, assertionData.assertion)) {
+			if (
+				!this.validateAssertionSignature(
+					assertionData.xml,
+					this.serviceProviderOptions.cert,
+					assertionData.assertion,
+				)
+			) {
 				if (!checkEither) {
 					SAMLUtils.log('Assertion Signature WRONG');
 					throw new Error('Invalid Assertion signature');
@@ -258,7 +292,8 @@ export class ResponseParser {
 	}
 
 	private validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
-		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
+		const xpathSigQuery =
+			".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 		const signatures = xmlCrypto.xpath(parent, xpathSigQuery) as Array<Element>;
 		let signature = null;
 
@@ -304,7 +339,10 @@ export class ResponseParser {
 	}
 
 	private getIssuer(assertion: XmlParent): any {
-		const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
+		const issuers = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'Issuer',
+		);
 		if (issuers.length > 1) {
 			throw new Error('Too many Issuers');
 		}
@@ -313,28 +351,46 @@ export class ResponseParser {
 	}
 
 	private getSubject(assertion: XmlParent): XmlParent {
-		let subject: XmlParent = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
-		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
+		let subject: XmlParent = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'Subject',
+		)[0];
+		const encSubject = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'EncryptedID',
+		)[0];
 
 		if (typeof encSubject !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
-			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, (err, result) => {
-				if (err) {
-					SAMLUtils.error(err);
-				}
-				subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-			});
+			xmlenc.decrypt(
+				encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0],
+				options,
+				(err, result) => {
+					if (err) {
+						SAMLUtils.error(err);
+					}
+					subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+				},
+			);
 		}
 
 		return subject;
 	}
 
-
 	private validateSubjectConditions(subject: XmlParent): void {
-		const subjectConfirmation = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmation')[0];
+		const subjectConfirmation = subject.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'SubjectConfirmation',
+		)[0];
 		if (subjectConfirmation) {
-			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'SubjectConfirmationData')[0];
-			if (subjectConfirmationData && !this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)) {
+			const subjectConfirmationData = subjectConfirmation.getElementsByTagNameNS(
+				'urn:oasis:names:tc:SAML:2.0:assertion',
+				'SubjectConfirmationData',
+			)[0];
+			if (
+				subjectConfirmationData &&
+				!this.validateNotBeforeNotOnOrAfterAssertions(subjectConfirmationData)
+			) {
 				throw new Error('NotBefore / NotOnOrAfter assertion failed');
 			}
 		}
@@ -376,20 +432,29 @@ export class ResponseParser {
 	}
 
 	private validateAssertionConditions(assertion: XmlParent): void {
-		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
+		const conditions = assertion.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'Conditions',
+		)[0];
 		if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
 			throw new Error('NotBefore / NotOnOrAfter assertion failed');
 		}
 	}
 
 	private mapAttributes(attributeStatement: Element, profile: Record<string, any>): void {
-		SAMLUtils.log(`Attribute Statement found in SAML response: ${ attributeStatement }`);
-		const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
-		SAMLUtils.log(`Attributes will be processed: ${ attributes.length }`);
+		SAMLUtils.log(`Attribute Statement found in SAML response: ${attributeStatement}`);
+		const attributes = attributeStatement.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:assertion',
+			'Attribute',
+		);
+		SAMLUtils.log(`Attributes will be processed: ${attributes.length}`);
 
 		if (attributes) {
 			for (let i = 0; i < attributes.length; i++) {
-				const values = attributes[i].getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue');
+				const values = attributes[i].getElementsByTagNameNS(
+					'urn:oasis:names:tc:SAML:2.0:assertion',
+					'AttributeValue',
+				);
 				let value;
 				if (values.length === 1) {
 					value = values[0].textContent;
@@ -402,8 +467,8 @@ export class ResponseParser {
 
 				const key = attributes[i].getAttribute('Name');
 				if (key) {
-					SAMLUtils.log(`Name:  ${ attributes[i] }`);
-					SAMLUtils.log(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
+					SAMLUtils.log(`Name:  ${attributes[i]}`);
+					SAMLUtils.log(`Adding attribute from SAML response to profile: ${key} = ${value}`);
 					profile[key] = value;
 				}
 			}

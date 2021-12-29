@@ -24,7 +24,12 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 
 		normalizedUsers.push(normalizedSourceUser);
 
-		const addUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), room._id, normalizedSourceUser, normalizedSourceSubscription);
+		const addUserEvent = await FederationRoomEvents.createAddUserEvent(
+			getFederationDomain(),
+			room._id,
+			normalizedSourceUser,
+			normalizedSourceSubscription,
+		);
 
 		addUserEvents.push(addUserEvent);
 
@@ -40,11 +45,16 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 
 	// Check if the number of domains is allowed
 	if (!checkRoomDomainsLength(normalizedRoom.federation.domains)) {
-		throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
+		throw new Error(
+			`Cannot federate rooms with more than ${process.env.FEDERATED_DOMAINS_LENGTH || 10} domains`,
+		);
 	}
 
 	// Ensure a genesis event for this room
-	const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
+	const genesisEvent = await FederationRoomEvents.createGenesisEvent(
+		getFederationDomain(),
+		normalizedRoom,
+	);
 
 	// Dispatch the events
 	await dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...addUserEvents]);
@@ -52,7 +62,9 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 
 async function afterCreateRoom(roomOwner, room) {
 	// If the room is federated, ignore
-	if (room.federation) { return roomOwner; }
+	if (room.federation) {
+		return roomOwner;
+	}
 
 	// Find all subscriptions of this room
 	let subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
@@ -72,7 +84,9 @@ async function afterCreateRoom(roomOwner, room) {
 	const hasFederatedUser = users.find((u) => u.username.indexOf('@') !== -1);
 
 	// If there are not federated users on this room, ignore it
-	if (!hasFederatedUser) { return roomOwner; }
+	if (!hasFederatedUser) {
+		return roomOwner;
+	}
 
 	try {
 		// If the room is not on the allowed types, ignore

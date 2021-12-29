@@ -12,14 +12,17 @@ export class LogoutRequestParser {
 	}
 
 	public validate(xmlString: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.log(`LogoutRequest: ${ xmlString }`);
+		SAMLUtils.log(`LogoutRequest: ${xmlString}`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
 		}
 
-		const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
+		const request = doc.getElementsByTagNameNS(
+			'urn:oasis:names:tc:SAML:2.0:protocol',
+			'LogoutRequest',
+		)[0];
 		if (!request) {
 			return callback('No Request Found');
 		}
@@ -39,10 +42,15 @@ export class LogoutRequestParser {
 			return callback(null, { idpSession, nameID, id });
 		} catch (e) {
 			SAMLUtils.error(e);
-			SAMLUtils.log(`Caught error: ${ e }`);
+			SAMLUtils.log(`Caught error: ${e}`);
 
-			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+			const msg = doc.getElementsByTagNameNS(
+				'urn:oasis:names:tc:SAML:2.0:protocol',
+				'StatusMessage',
+			);
+			SAMLUtils.log(
+				`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`,
+			);
 
 			return callback(e, null);
 		}

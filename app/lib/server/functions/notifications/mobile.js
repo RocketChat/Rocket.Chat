@@ -20,8 +20,19 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function getPushData({ room, message, userId, senderUsername, senderName, notificationMessage, receiver, shouldOmitMessage = true }) {
-	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
+export async function getPushData({
+	room,
+	message,
+	userId,
+	senderUsername,
+	senderName,
+	notificationMessage,
+	receiver,
+	shouldOmitMessage = true,
+}) {
+	const username =
+		(settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) ||
+		senderUsername;
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 
@@ -42,13 +53,18 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 			name: settings.get('Push_show_username_room') ? room.name : '',
 			messageType: message.t,
 			tmid: message.tmid,
-			...message.t === 'e2e' && { msg: message.msg },
+			...(message.t === 'e2e' && { msg: message.msg }),
 		},
-		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
+		roomName:
+			settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room)
+				? `#${roomTypes.getRoomName(room.t, room)}`
+				: '',
 		username,
 		message: messageText,
 		badge: await Subscriptions.getBadgeCount(userId),
-		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiver.username)
+			? CATEGORY_MESSAGE
+			: CATEGORY_MESSAGE_NOREPLY,
 	};
 }
 
@@ -66,7 +82,13 @@ export function shouldNotifyMobile({
 		return false;
 	}
 
-	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+	if (
+		disableAllMessageNotifications &&
+		mobilePushNotifications == null &&
+		!isHighlighted &&
+		!hasMentionToUser &&
+		!hasReplyToThread
+	) {
 		return false;
 	}
 
@@ -75,7 +97,10 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' && (!isThread || hasReplyToThread)) {
+		if (
+			settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' &&
+			(!isThread || hasReplyToThread)
+		) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'nothing') {
@@ -83,5 +108,12 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return (roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && hasMentionToAll) ||
+			isHighlighted ||
+			mobilePushNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

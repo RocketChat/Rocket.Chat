@@ -6,7 +6,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
+import {
+	findGuest,
+	findRoom,
+	getRoom,
+	settings,
+	findAgent,
+	onCheckRoomParams,
+} from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
@@ -128,9 +135,16 @@ API.v1.addRoute('livechat/room.transfer', {
 			Messages.keepHistoryForToken(token);
 
 			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
+			const transferredBy = normalizeTransferredByData(
+				{ _id, username, name, userType: 'visitor' },
+				room,
+			);
 
-			if (!Promise.await(Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }))) {
+			if (
+				!Promise.await(
+					Livechat.transfer(room, guest, { roomId: rid, departmentId: department, transferredBy }),
+				)
+			) {
 				return API.v1.failure();
 			}
 
@@ -148,10 +162,12 @@ API.v1.addRoute('livechat/room.survey', {
 			check(this.bodyParams, {
 				rid: String,
 				token: String,
-				data: [Match.ObjectIncluding({
-					name: String,
-					value: String,
-				})],
+				data: [
+					Match.ObjectIncluding({
+						name: String,
+						value: String,
+					}),
+				],
 			});
 
 			const { rid, token, data } = this.bodyParams;
@@ -173,7 +189,10 @@ API.v1.addRoute('livechat/room.survey', {
 
 			const updateData = {};
 			for (const item of data) {
-				if ((config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) || item.name === 'additionalFeedback') {
+				if (
+					(config.survey.items.includes(item.name) && config.survey.values.includes(item.value)) ||
+					item.name === 'additionalFeedback'
+				) {
 					updateData[item.name] = item.value;
 				}
 			}
@@ -193,43 +212,55 @@ API.v1.addRoute('livechat/room.survey', {
 	},
 });
 
-API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
-	post() {
-		API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+API.v1.addRoute(
+	'livechat/room.forward',
+	{ authRequired: true },
+	{
+		post() {
+			API.v1.success(
+				Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)),
+			);
+		},
 	},
-});
+);
 
-API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
-	put() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				oldVisitorId: String,
-				newVisitorId: String,
-			});
+API.v1.addRoute(
+	'livechat/room.visitor',
+	{ authRequired: true },
+	{
+		put() {
+			try {
+				check(this.bodyParams, {
+					rid: String,
+					oldVisitorId: String,
+					newVisitorId: String,
+				});
 
-			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
+				const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
-			const { visitor } = Promise.await(findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }));
-			if (!visitor) {
-				throw new Meteor.Error('invalid-visitor');
+				const { visitor } = Promise.await(
+					findVisitorInfo({ userId: this.userId, visitorId: newVisitorId }),
+				);
+				if (!visitor) {
+					throw new Meteor.Error('invalid-visitor');
+				}
+
+				let room = LivechatRooms.findOneById(rid, { _id: 1 }); // TODO: check _id
+				if (!room) {
+					throw new Meteor.Error('invalid-room');
+				}
+
+				const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
+				if (roomVisitorId !== oldVisitorId) {
+					throw new Meteor.Error('invalid-room-visitor');
+				}
+
+				room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
+
+				return API.v1.success({ room });
+			} catch (e) {
+				return API.v1.failure(e);
 			}
-
-			let room = LivechatRooms.findOneById(rid, { _id: 1 }); // TODO: check _id
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
-			}
-
-			const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
-			if (roomVisitorId !== oldVisitorId) {
-				throw new Meteor.Error('invalid-room-visitor');
-			}
-
-			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
-
-			return API.v1.success({ room });
-		} catch (e) {
-			return API.v1.failure(e);
-		}
+		},
 	},
-});
+);

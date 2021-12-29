@@ -15,40 +15,57 @@ Meteor.methods({
 		const AllowAnonymousWrite = settings.get('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
-			const userId = Accounts.insertUserDoc({}, {
-				globalRoles: [
-					'anonymous',
-				],
-				active: true,
-			});
+			const userId = Accounts.insertUserDoc(
+				{},
+				{
+					globalRoles: ['anonymous'],
+					active: true,
+				},
+			);
 
 			const stampedLoginToken = Accounts._generateStampedLoginToken();
 
 			Accounts._insertLoginToken(userId, stampedLoginToken);
 			return stampedLoginToken;
 		}
-		check(formData, Match.ObjectIncluding({
-			email: String,
-			pass: String,
-			name: String,
-			secretURL: Match.Optional(String),
-			reason: Match.Optional(String),
-		}));
-
+		check(
+			formData,
+			Match.ObjectIncluding({
+				email: String,
+				pass: String,
+				name: String,
+				secretURL: Match.Optional(String),
+				reason: Match.Optional(String),
+			}),
+		);
 
 		if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
-			throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', { method: 'registerUser' });
+			throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', {
+				method: 'registerUser',
+			});
 		}
 
-		if (settings.get('Accounts_RegistrationForm') === 'Secret URL' && (!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))) {
+		if (
+			settings.get('Accounts_RegistrationForm') === 'Secret URL' &&
+			(!formData.secretURL ||
+				formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))
+		) {
 			if (!formData.secretURL) {
-				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+				throw new Meteor.Error(
+					'error-user-registration-secret',
+					'User registration is only allowed via Secret URL',
+					{ method: 'registerUser' },
+				);
 			}
 
 			try {
 				await validateInviteToken(formData.secretURL);
 			} catch (e) {
-				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
+				throw new Meteor.Error(
+					'error-user-registration-secret',
+					'User registration is only allowed via Secret URL',
+					{ method: 'registerUser' },
+				);
 			}
 		}
 
@@ -68,7 +85,12 @@ Meteor.methods({
 			// Check if user has already been imported and never logged in. If so, set password and let it through
 			const importedUser = Users.findOneByEmailAddress(formData.email);
 
-			if (importedUser && importedUser.importIds && importedUser.importIds.length && !importedUser.lastLogin) {
+			if (
+				importedUser &&
+				importedUser.importIds &&
+				importedUser.importIds.length &&
+				!importedUser.lastLogin
+			) {
 				Accounts.setPassword(importedUser._id, userData.password);
 				userId = importedUser._id;
 			} else {
@@ -99,17 +121,28 @@ Meteor.methods({
 	},
 });
 
-let registerUserRuleId = RateLimiter.limitMethod('registerUser',
+let registerUserRuleId = RateLimiter.limitMethod(
+	'registerUser',
 	settings.get('Rate_Limiter_Limit_RegisterUser'),
-	settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() { return true; },
-	});
-
+	settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+	{
+		userId() {
+			return true;
+		},
+	},
+);
 
 settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
 	// remove old DDP rate limiter rule and create a new one with the updated setting value
 	DDPRateLimiter.removeRule(registerUserRuleId);
-	registerUserRuleId = RateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() { return true; },
-	});
+	registerUserRuleId = RateLimiter.limitMethod(
+		'registerUser',
+		value,
+		settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+		{
+			userId() {
+				return true;
+			},
+		},
+	);
 });

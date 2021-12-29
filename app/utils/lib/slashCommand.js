@@ -4,7 +4,15 @@ export const slashCommands = {
 	commands: {},
 };
 
-slashCommands.add = function _addingSlashCommand(command, callback, options = {}, result, providesPreview = false, previewer, previewCallback) {
+slashCommands.add = function _addingSlashCommand(
+	command,
+	callback,
+	options = {},
+	result,
+	providesPreview = false,
+	previewer,
+	previewCallback,
+) {
 	slashCommands.commands[command] = {
 		command,
 		callback,
@@ -20,24 +28,40 @@ slashCommands.add = function _addingSlashCommand(command, callback, options = {}
 };
 
 slashCommands.run = function _runningSlashCommand(command, params, message, triggerId) {
-	if (slashCommands.commands[command] && typeof slashCommands.commands[command].callback === 'function') {
+	if (
+		slashCommands.commands[command] &&
+		typeof slashCommands.commands[command].callback === 'function'
+	) {
 		if (!message || !message.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new Meteor.Error(
+				'invalid-command-usage',
+				'Executing a command requires at least a message with a room id.',
+			);
 		}
 		return slashCommands.commands[command].callback(command, params, message, triggerId);
 	}
 };
 
 slashCommands.getPreviews = function _gettingSlashCommandPreviews(command, params, message) {
-	if (slashCommands.commands[command] && typeof slashCommands.commands[command].previewer === 'function') {
+	if (
+		slashCommands.commands[command] &&
+		typeof slashCommands.commands[command].previewer === 'function'
+	) {
 		if (!message || !message.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new Meteor.Error(
+				'invalid-command-usage',
+				'Executing a command requires at least a message with a room id.',
+			);
 		}
 
 		// { i18nTitle, items: [{ id, type, value }] }
 		const previewInfo = slashCommands.commands[command].previewer(command, params, message);
 
-		if (typeof previewInfo !== 'object' || !Array.isArray(previewInfo.items) || previewInfo.items.length === 0) {
+		if (
+			typeof previewInfo !== 'object' ||
+			!Array.isArray(previewInfo.items) ||
+			previewInfo.items.length === 0
+		) {
 			return;
 		}
 
@@ -50,18 +74,39 @@ slashCommands.getPreviews = function _gettingSlashCommandPreviews(command, param
 	}
 };
 
-slashCommands.executePreview = function _executeSlashCommandPreview(command, params, message, preview, triggerId) {
-	if (slashCommands.commands[command] && typeof slashCommands.commands[command].previewCallback === 'function') {
+slashCommands.executePreview = function _executeSlashCommandPreview(
+	command,
+	params,
+	message,
+	preview,
+	triggerId,
+) {
+	if (
+		slashCommands.commands[command] &&
+		typeof slashCommands.commands[command].previewCallback === 'function'
+	) {
 		if (!message || !message.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new Meteor.Error(
+				'invalid-command-usage',
+				'Executing a command requires at least a message with a room id.',
+			);
 		}
 
 		// { id, type, value }
 		if (!preview.id || !preview.type || !preview.value) {
-			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
+			throw new Meteor.Error(
+				'error-invalid-preview',
+				'Preview Item must have an id, type, and value.',
+			);
 		}
 
-		return slashCommands.commands[command].previewCallback(command, params, message, preview, triggerId);
+		return slashCommands.commands[command].previewCallback(
+			command,
+			params,
+			message,
+			preview,
+			triggerId,
+		);
 	}
 };
 

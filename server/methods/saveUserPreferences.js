@@ -73,27 +73,60 @@ Meteor.methods({
 
 		// propagate changed notification preferences
 		Meteor.defer(() => {
-			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
+			if (
+				settings.desktopNotifications &&
+				oldDesktopNotifications !== settings.desktopNotifications
+			) {
 				if (settings.desktopNotifications === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
+					Subscriptions.clearNotificationUserPreferences(
+						user._id,
+						'desktopNotifications',
+						'desktopPrefOrigin',
+					);
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.desktopNotifications, 'desktopNotifications', 'desktopPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.desktopNotifications,
+						'desktopNotifications',
+						'desktopPrefOrigin',
+					);
 				}
 			}
 
 			if (settings.pushNotifications && oldMobileNotifications !== settings.pushNotifications) {
 				if (settings.pushNotifications === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
+					Subscriptions.clearNotificationUserPreferences(
+						user._id,
+						'mobilePushNotifications',
+						'mobilePrefOrigin',
+					);
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.pushNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.pushNotifications,
+						'mobilePushNotifications',
+						'mobilePrefOrigin',
+					);
 				}
 			}
 
-			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
+			if (
+				settings.emailNotificationMode &&
+				oldEmailNotifications !== settings.emailNotificationMode
+			) {
 				if (settings.emailNotificationMode === 'default') {
-					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
+					Subscriptions.clearNotificationUserPreferences(
+						user._id,
+						'emailNotifications',
+						'emailPrefOrigin',
+					);
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.emailNotificationMode,
+						'emailNotifications',
+						'emailPrefOrigin',
+					);
 				}
 			}
 

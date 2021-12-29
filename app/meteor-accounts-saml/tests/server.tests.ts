@@ -41,7 +41,9 @@ describe('SAML', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
 				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions);
-				expect(authorizeRequest.request).to.be.equal('<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>');
+				expect(authorizeRequest.request).to.be.equal(
+					'<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>',
+				);
 			});
 
 			it('should include the unique ID on the request', () => {
@@ -69,7 +71,11 @@ describe('SAML', () => {
 	describe('[LogoutRequest]', () => {
 		describe('LogoutRequest.generate', () => {
 			it('should use the custom template to generate the request', () => {
-				const logoutRequest = LogoutRequest.generate(serviceProviderOptions, 'NameID', 'sessionIndex');
+				const logoutRequest = LogoutRequest.generate(
+					serviceProviderOptions,
+					'NameID',
+					'sessionIndex',
+				);
 				expect(logoutRequest.request).to.be.equal('[logout-request-template]');
 			});
 
@@ -86,11 +92,14 @@ describe('SAML', () => {
 			it('should include the custom options on the request', () => {
 				const customOptions = {
 					...serviceProviderOptions,
-					logoutRequestTemplate: '__idpSLORedirectURL__ __issuer__ __identifierFormat__ __nameID__ __sessionIndex__',
+					logoutRequestTemplate:
+						'__idpSLORedirectURL__ __issuer__ __identifierFormat__ __nameID__ __sessionIndex__',
 				};
 
 				const logoutRequest = LogoutRequest.generate(customOptions, 'NameID', 'sessionIndex');
-				expect(logoutRequest.request).to.be.equal('[idpSLORedirectURL] [issuer] email NameID sessionIndex');
+				expect(logoutRequest.request).to.be.equal(
+					'[idpSLORedirectURL] [issuer] email NameID sessionIndex',
+				);
 			});
 		});
 
@@ -130,7 +139,10 @@ describe('SAML', () => {
 				const parser = new LogoutRequestParser(serviceProviderOptions);
 
 				parser.validate(invalidLogoutRequest, (err, data) => {
-					expect(err).to.be.an('error').that.has.property('message').equal('SAML Logout Request: No NameID node found');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.equal('SAML Logout Request: No NameID node found');
 					expect(data).to.not.exist;
 				});
 			});
@@ -140,7 +152,12 @@ describe('SAML', () => {
 	describe('[LogoutResponse]', () => {
 		describe('LogoutResponse.generate', () => {
 			it('should use the custom template to generate the response', () => {
-				const logoutResponse = LogoutResponse.generate(serviceProviderOptions, 'NameID', 'sessionIndex', 'inResponseToId');
+				const logoutResponse = LogoutResponse.generate(
+					serviceProviderOptions,
+					'NameID',
+					'sessionIndex',
+					'inResponseToId',
+				);
 				expect(logoutResponse.response).to.be.equal('[logout-response-template]');
 			});
 
@@ -150,7 +167,12 @@ describe('SAML', () => {
 					logoutResponseTemplate: '__newId__',
 				};
 
-				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex', 'inResponseToId');
+				const logoutResponse = LogoutResponse.generate(
+					customOptions,
+					'NameID',
+					'sessionIndex',
+					'inResponseToId',
+				);
 				expect(logoutResponse.response).to.be.equal(logoutResponse.id);
 			});
 
@@ -160,15 +182,22 @@ describe('SAML', () => {
 					logoutResponseTemplate: '__idpSLORedirectURL__ __issuer__',
 				};
 
-				const logoutResponse = LogoutResponse.generate(customOptions, 'NameID', 'sessionIndex', 'inResponseToId');
+				const logoutResponse = LogoutResponse.generate(
+					customOptions,
+					'NameID',
+					'sessionIndex',
+					'inResponseToId',
+				);
 				expect(logoutResponse.response).to.be.equal('[idpSLORedirectURL] [issuer]');
 			});
 		});
 
 		describe('LogoutResponse.validate', () => {
 			it('should extract the inResponseTo from the response', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
+				const logoutResponse = simpleLogoutResponse.replace(
+					'[STATUSCODE]',
+					'urn:oasis:names:tc:SAML:2.0:status:Success',
+				);
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -178,8 +207,7 @@ describe('SAML', () => {
 			});
 
 			it('should reject a response with a non-success StatusCode', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'Anything');
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'Anything');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -273,7 +301,10 @@ describe('SAML', () => {
 					expect(profile).to.have.property('uid').equal('1');
 					expect(profile).to.have.property('eduPersonAffiliation').equal('group1');
 					expect(profile).to.have.property('email').equal('user1@example.com');
-					expect(profile).to.have.property('channels').that.is.an('array').that.is.deep.equal(['channel1', 'pets', 'random']);
+					expect(profile)
+						.to.have.property('channels')
+						.that.is.an('array')
+						.that.is.deep.equal(['channel1', 'pets', 'random']);
 					expect(loggedOut).to.be.false;
 				});
 			});
@@ -288,7 +319,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(profile).to.be.null;
 					expect(loggedOut).to.be.false;
 				});
@@ -307,17 +341,22 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(profile).to.be.null;
 					expect(loggedOut).to.be.false;
 				});
 			});
 
-
 			it('should fail to parse an invalid xml', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(invalidXml, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Unknown SAML response message');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -326,7 +365,10 @@ describe('SAML', () => {
 			it('should fail to parse a xml without any Response tag', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(randomXml, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Unknown SAML response message');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Unknown SAML response message');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -335,7 +377,10 @@ describe('SAML', () => {
 			it('should reject a xml with multiple responses', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(duplicatedSamlResponse, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML responses');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Too many SAML responses');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -344,7 +389,10 @@ describe('SAML', () => {
 			it('should fail to parse a reponse with no Status tag', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseMissingStatus, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing StatusCode');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Missing StatusCode');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -353,7 +401,10 @@ describe('SAML', () => {
 			it('should fail to parse a reponse with a failed status', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseFailedStatus, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Status is: Failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Status is: Failed');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -362,7 +413,10 @@ describe('SAML', () => {
 			it('should reject a response with multiple assertions', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseMultipleAssertions, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many SAML assertions');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Too many SAML assertions');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -371,7 +425,10 @@ describe('SAML', () => {
 			it('should reject a response with no assertions', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseMissingAssertion, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Missing SAML assertion');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Missing SAML assertion');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -396,7 +453,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('No valid SAML Signature found');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('No valid SAML Signature found');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -405,7 +465,10 @@ describe('SAML', () => {
 			it('should reject a document with multiple issuers', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(samlResponseMultipleIssuers, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Too many Issuers');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Too many Issuers');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -421,7 +484,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(options);
 				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
 					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -438,7 +504,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(options);
 				parser.validate(encryptedResponse, (err, profile, loggedOut) => {
 					// No way to change the assertion conditions on an encrypted response ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -465,7 +534,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Invalid Assertion signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -490,7 +562,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Invalid Signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -515,7 +590,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Assertion signature');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Invalid Assertion signature');
 					expect(data).to.not.exist;
 					expect(loggedOut).to.be.false;
 				});
@@ -531,7 +609,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -547,7 +628,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -562,7 +646,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Invalid Signature');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -578,7 +665,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidSignatures, (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -593,7 +683,10 @@ describe('SAML', () => {
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('Invalid Signature');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -609,7 +702,10 @@ describe('SAML', () => {
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(samlResponseValidAssertionSignature, (err, profile, loggedOut) => {
 					// To have a valid signature, we can't change the assertion conditions ¯\_(ツ)_/¯
-					expect(err).to.be.an('error').that.has.property('message').that.is.equal('NotBefore / NotOnOrAfter assertion failed');
+					expect(err)
+						.to.be.an('error')
+						.that.has.property('message')
+						.that.is.equal('NotBefore / NotOnOrAfter assertion failed');
 					expect(loggedOut).to.be.false;
 					expect(profile).to.be.null;
 				});
@@ -636,15 +732,25 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('samlLogin').that.is.an('object');
-				expect(userObject).to.have.nested.property('samlLogin.provider').that.is.equal('[RelayState]');
+				expect(userObject)
+					.to.have.nested.property('samlLogin.provider')
+					.that.is.equal('[RelayState]');
 				expect(userObject).to.have.nested.property('samlLogin.idp').that.is.equal('[IssuerName]');
-				expect(userObject).to.have.nested.property('samlLogin.idpSession').that.is.equal('[SessionIndex]');
+				expect(userObject)
+					.to.have.nested.property('samlLogin.idpSession')
+					.that.is.equal('[SessionIndex]');
 				expect(userObject).to.have.nested.property('samlLogin.nameID').that.is.equal('[nameID]');
-				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
+				expect(userObject)
+					.to.have.property('emailList')
+					.that.is.an('array')
+					.that.includes('testing@server.com');
 				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
 				expect(userObject).to.not.have.property('roles');
-				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
+				expect(userObject)
+					.to.have.property('channels')
+					.that.is.an('array')
+					.with.members(['pets', 'pics', 'funny', 'random', 'babies']);
 			});
 
 			it('should join array values if username receives an array of values', () => {
@@ -667,17 +773,16 @@ describe('SAML', () => {
 			it('should support `channels` attribute with multiple values', () => {
 				const channelsProfile = {
 					...profile,
-					channels: [
-						'pets',
-						'pics',
-						'funny',
-					],
+					channels: ['pets', 'pics', 'funny'],
 				};
 
 				const userObject = SAMLUtils.mapProfileToUserObject(channelsProfile);
 
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny']);
+				expect(userObject)
+					.to.have.property('channels')
+					.that.is.an('array')
+					.with.members(['pets', 'pics', 'funny']);
 			});
 
 			it('should reject an userDataFieldMap without an email field', () => {
@@ -753,10 +858,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						template: '__displayName__ (__anotherName__)',
 					},
 				};
@@ -769,7 +871,9 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('username').that.is.equal('user-[AnotherName]');
-				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] ([AnotherName])');
+				expect(userObject)
+					.to.have.property('fullName')
+					.that.is.equal('[DisplayName] ([AnotherName])');
 			});
 
 			it('should combine regexes and templates when both are used', () => {
@@ -783,10 +887,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						regex: '\\[(.*)\\]',
 						template: '__displayName__ (__regex__)',
 					},
@@ -802,7 +903,9 @@ describe('SAML', () => {
 				// should run the template first, then the regex
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherName]45');
 				// for this one, should run the regex first, then the template
-				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName] (AnotherName)');
+				expect(userObject)
+					.to.have.property('fullName')
+					.that.is.equal('[DisplayName] (AnotherName)');
 			});
 
 			it('should support individual array values on templates', () => {
@@ -831,7 +934,10 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('username').that.is.equal('user-2');
-				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
+				expect(userObject)
+					.to.have.property('emailList')
+					.that.is.an('array')
+					.that.includes('user-1');
 			});
 
 			it('should collect the values of every attribute on the field map', () => {
@@ -862,20 +968,23 @@ describe('SAML', () => {
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
-					'anotherUsername',
-					'singleEmail',
-					'anotherName',
-					'issuer',
-					'sessionIndex',
-					'nameID',
-					'displayName',
-					'username',
-					'roles',
-					'otherRoles',
-					'language',
-					'channels',
-				]);
+				expect(userObject)
+					.to.have.property('attributeList')
+					.that.is.a('Map')
+					.that.have.keys([
+						'anotherUsername',
+						'singleEmail',
+						'anotherName',
+						'issuer',
+						'sessionIndex',
+						'nameID',
+						'displayName',
+						'username',
+						'roles',
+						'otherRoles',
+						'language',
+						'channels',
+					]);
 
 				// Workaround because chai doesn't handle Maps very well
 				for (const [key, value] of userObject.attributeList) {
@@ -892,14 +1001,20 @@ describe('SAML', () => {
 
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('email');
+				expect(userObject)
+					.to.have.property('identifier')
+					.that.has.property('type')
+					.that.is.equal('email');
 
 				globalSettings.immutableProperty = 'Username';
 				SAMLUtils.updateGlobalSettings(globalSettings);
 
 				const newUserObject = SAMLUtils.mapProfileToUserObject(profile);
 				expect(newUserObject).to.be.an('object');
-				expect(newUserObject).to.have.property('identifier').that.has.property('type').that.is.equal('username');
+				expect(newUserObject)
+					.to.have.property('identifier')
+					.that.has.property('type')
+					.that.is.equal('username');
 			});
 
 			it('should collect the identifier from the fieldset', () => {
@@ -918,8 +1033,14 @@ describe('SAML', () => {
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('custom');
-				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
+				expect(userObject)
+					.to.have.property('identifier')
+					.that.has.property('type')
+					.that.is.equal('custom');
+				expect(userObject)
+					.to.have.property('identifier')
+					.that.has.property('attribute')
+					.that.is.equal('customField3');
 			});
 		});
 	});
@@ -962,11 +1083,18 @@ describe('SAML', () => {
 
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('samlLogin').that.is.an('object');
-				expect(userObject).to.have.nested.property('samlLogin.provider').that.is.equal('[RelayState]');
+				expect(userObject)
+					.to.have.nested.property('samlLogin.provider')
+					.that.is.equal('[RelayState]');
 				expect(userObject).to.have.nested.property('samlLogin.idp').that.is.equal('[ISSUER]');
-				expect(userObject).to.have.nested.property('samlLogin.idpSession').that.is.equal('[SESSIONINDEX]');
+				expect(userObject)
+					.to.have.nested.property('samlLogin.idpSession')
+					.that.is.equal('[SESSIONINDEX]');
 				expect(userObject).to.have.nested.property('samlLogin.nameID').that.is.equal('[NAMEID]');
-				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user1@example.com');
+				expect(userObject)
+					.to.have.property('emailList')
+					.that.is.an('array')
+					.that.includes('user1@example.com');
 				expect(userObject).to.have.property('username').that.is.equal('user-1');
 
 				const map = new Map();

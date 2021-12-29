@@ -5,7 +5,8 @@ import { Subscriptions, Users } from '../../../models/server';
 import { Settings } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
-export const getNameAndDomain = (fullyQualifiedName: string): string [] => fullyQualifiedName.split('@');
+export const getNameAndDomain = (fullyQualifiedName: string): string[] =>
+	fullyQualifiedName.split('@');
 
 export const isFullyQualified = (name: string): boolean => name.indexOf('@') !== -1;
 
@@ -23,22 +24,30 @@ export async function updateEnabled(enabled: boolean): Promise<void> {
 }
 
 export const checkRoomType = (room: IRoom): boolean => room.t === 'p' || room.t === 'd';
-export const checkRoomDomainsLength = (domains: unknown[]): boolean => domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
+export const checkRoomDomainsLength = (domains: unknown[]): boolean =>
+	domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
 
-export const hasExternalDomain = ({ federation }: { federation: { origin: string; domains: string[] } }): boolean => {
+export const hasExternalDomain = ({
+	federation,
+}: {
+	federation: { origin: string; domains: string[] };
+}): boolean => {
 	// same test as isFederated(room)
 	if (!federation) {
 		return false;
 	}
 
-	return federation.domains
-		.some((domain) => domain !== federation.origin);
+	return federation.domains.some((domain) => domain !== federation.origin);
 };
 
-export const isLocalUser = ({ federation }: { federation: { origin: string } }, localDomain: string): boolean =>
-	!federation || federation.origin === localDomain;
+export const isLocalUser = (
+	{ federation }: { federation: { origin: string } },
+	localDomain: string,
+): boolean => !federation || federation.origin === localDomain;
 
-export const getFederatedRoomData = (room: IRoom): {
+export const getFederatedRoomData = (
+	room: IRoom,
+): {
 	hasFederatedUser: boolean;
 	users: IUser[];
 	subscriptions: { [k: string]: ISubscription } | undefined;

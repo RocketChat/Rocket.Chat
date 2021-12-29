@@ -13,14 +13,17 @@ import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
 
-const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
-	fn(...args, (err, result) => {
-		if (err) {
-			return reject(err);
-		}
-		return resolve(result);
-	});
-});
+const wrap =
+	(fn) =>
+	(...args) =>
+		new Promise((resolve, reject) => {
+			fn(...args, (err, result) => {
+				if (err) {
+					return reject(err);
+				}
+				return resolve(result);
+			});
+		});
 
 const localforageGetItem = wrap(localforage.getItem);
 
@@ -41,7 +44,9 @@ class CachedCollectionManagerClass extends Emitter {
 		// on first connection the `reconnect` callbacks will run
 
 		Tracker.autorun(() => {
-			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
+			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [
+				0, 1, 2,
+			];
 			this.step = this.step || WAITING_FIRST_CONNECTION;
 			const { connected } = Meteor.status();
 			switch (this.step) {
@@ -108,19 +113,24 @@ class CachedCollectionManagerClass extends Emitter {
 
 export const CachedCollectionManager = new CachedCollectionManagerClass();
 
-const debug = (name) => [getConfig(`debugCachedCollection-${ name }`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
+const debug = (name) =>
+	[
+		getConfig(`debugCachedCollection-${name}`),
+		getConfig('debugCachedCollection'),
+		getConfig('debug'),
+	].includes('true');
 
-const nullLog = function() {};
+const nullLog = function () {};
 
-const log = (...args) => console.log(`CachedCollection ${ this.name } =>`, ...args);
+const log = (...args) => console.log(`CachedCollection ${this.name} =>`, ...args);
 
 export class CachedCollection extends Emitter {
 	constructor({
 		collection = new Mongo.Collection(null),
 		name,
-		methodName = `${ name }/get`,
-		syncMethodName = `${ name }/get`,
-		eventName = `${ name }-changed`,
+		methodName = `${name}/get`,
+		syncMethodName = `${name}/get`,
+		eventName = `${name}-changed`,
 		eventType = 'onUser',
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
@@ -158,7 +168,7 @@ export class CachedCollection extends Emitter {
 	}
 
 	countQueries() {
-		this.log(`${ Object.keys(this.collection._collection.queries).length } queries`);
+		this.log(`${Object.keys(this.collection._collection.queries).length} queries`);
 	}
 
 	getToken() {
@@ -185,10 +195,10 @@ export class CachedCollection extends Emitter {
 			return false;
 		}
 
-		this.log(`${ data.records.length } records loaded from cache`);
+		this.log(`${data.records.length} records loaded from cache`);
 
 		data.records.forEach((record) => {
-			callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
+			callbacks.run(`cachedCollection-loadFromCache-${this.name}`, record);
 			// this.collection.direct.insert(record);
 
 			if (!record._updatedAt) {
@@ -206,11 +216,15 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(
+			data.records.map((record) => [record._id, record]),
+		);
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
-		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
+		Object.values(this.collection._collection.queries).forEach((query) =>
+			this.collection._collection._recomputeResults(query),
+		);
 
 		return true;
 	}
@@ -219,15 +233,17 @@ export class CachedCollection extends Emitter {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
 		const data = await call(this.methodName);
-		this.log(`${ data.length } records loaded from server`);
+		this.log(`${data.length} records loaded from server`);
 		data.forEach((record) => {
-			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
+			callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
 
 			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 			this.onSyncData('changed', record);
 
-			if (record._updatedAt && record._updatedAt > this.updatedAt) { this.updatedAt = record._updatedAt; }
+			if (record._updatedAt && record._updatedAt > this.updatedAt) {
+				this.updatedAt = record._updatedAt;
+			}
 		});
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
@@ -271,7 +287,7 @@ export class CachedCollection extends Emitter {
 		const { ChatRoom, CachedChatRoom } = await import('../../../models');
 		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
-			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
+			callbacks.run(`cachedCollection-received-${this.name}`, record, t);
 			if (t === 'removed') {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
@@ -301,7 +317,7 @@ export class CachedCollection extends Emitter {
 		clearTimeout(this.tm);
 		// Wait for an empty queue to load data again and sync
 		this.tm = setTimeout(async () => {
-			if (!await this.sync()) {
+			if (!(await this.sync())) {
 				return this.trySync(delay);
 			}
 			this.save();
@@ -309,25 +325,29 @@ export class CachedCollection extends Emitter {
 	}
 
 	async sync() {
-		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+		if (
+			!this.updatedAt ||
+			this.updatedAt.valueOf() === 0 ||
+			Meteor.connection._outstandingMethodBlocks.length !== 0
+		) {
 			return false;
 		}
 
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
 
-		this.log(`syncing from ${ this.updatedAt }`);
+		this.log(`syncing from ${this.updatedAt}`);
 
 		const data = await call(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {
-			this.log(`${ data.update.length } records updated in sync`);
+			this.log(`${data.update.length} records updated in sync`);
 			changes.push(...data.update);
 		}
 
 		if (data.remove && data.remove.length > 0) {
-			this.log(`${ data.remove.length } records removed in sync`);
+			this.log(`${data.remove.length} records removed in sync`);
 			changes.push(...data.remove);
 		}
 
@@ -348,7 +368,7 @@ export class CachedCollection extends Emitter {
 
 		for (const record of changes) {
 			const action = record._deletedAt ? 'removed' : 'changed';
-			callbacks.run(`cachedCollection-sync-${ this.name }`, record, action);
+			callbacks.run(`cachedCollection-sync-${this.name}`, record, action);
 			const actionTime = record._deletedAt || record._updatedAt;
 			const { _id, ...recordData } = record;
 			if (record._deletedAt) {

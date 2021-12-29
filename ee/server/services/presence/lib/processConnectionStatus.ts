@@ -11,12 +11,18 @@ export const processConnectionStatus = (current: UserStatus, status: UserStatus)
 	return current;
 };
 
-export const processStatus = (statusConnection: UserStatus, statusDefault: UserStatus): UserStatus => (
-	statusConnection !== UserStatus.OFFLINE ? statusDefault : statusConnection
-);
+export const processStatus = (
+	statusConnection: UserStatus,
+	statusDefault: UserStatus,
+): UserStatus => (statusConnection !== UserStatus.OFFLINE ? statusDefault : statusConnection);
 
-export const processPresenceAndStatus = (userSessions: IUserSessionConnection[] = [], statusDefault = UserStatus.ONLINE): {status: UserStatus; statusConnection: UserStatus} => {
-	const statusConnection = userSessions.map((s) => s.status).reduce(processConnectionStatus, UserStatus.OFFLINE);
+export const processPresenceAndStatus = (
+	userSessions: IUserSessionConnection[] = [],
+	statusDefault = UserStatus.ONLINE,
+): { status: UserStatus; statusConnection: UserStatus } => {
+	const statusConnection = userSessions
+		.map((s) => s.status)
+		.reduce(processConnectionStatus, UserStatus.OFFLINE);
 	const status = processStatus(statusConnection, statusDefault);
 	return {
 		status,

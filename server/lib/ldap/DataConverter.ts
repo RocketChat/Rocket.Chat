@@ -20,7 +20,9 @@ export class LDAPDataConverter extends VirtualDataConverter {
 
 	findExistingUser(data: IImportUser): IUser | undefined {
 		if (data.services?.ldap?.id) {
-			const importedUser = Promise.await(Users.findOneByLDAPId(data.services.ldap.id, data.services.ldap.idAttribute));
+			const importedUser = Promise.await(
+				Users.findOneByLDAPId(data.services.ldap.id, data.services.ldap.idAttribute),
+			);
 			if (importedUser) {
 				return importedUser;
 			}

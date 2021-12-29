@@ -2,7 +2,12 @@ import moment from 'moment';
 
 import { roomTypes } from '../../../../app/utils/server';
 import { Messages, Analytics } from '../../../../app/models/server/raw';
-import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
+import {
+	convertDateToInt,
+	diffBetweenDaysInclusive,
+	convertIntToDate,
+	getTotalOfWeekItems,
+} from './date';
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 import { IMessage } from '../../../../definition/IMessage';
 
@@ -11,10 +16,12 @@ export const handleMessagesSent = (message: IMessage, room: IRoom): IMessage => 
 	if (!roomTypesToShow.includes(room.t)) {
 		return message;
 	}
-	Promise.await(Analytics.saveMessageSent({
-		date: convertDateToInt(message.ts),
-		room,
-	}));
+	Promise.await(
+		Analytics.saveMessageSent({
+			date: convertDateToInt(message.ts),
+			room,
+		}),
+	);
 	return message;
 };
 
@@ -23,10 +30,12 @@ export const handleMessagesDeleted = (message: IMessage, room: IRoom): IMessage 
 	if (!roomTypesToShow.includes(room.t)) {
 		return message;
 	}
-	Promise.await(Analytics.saveMessageDeleted({
-		date: convertDateToInt(message.ts),
-		room,
-	}));
+	Promise.await(
+		Analytics.saveMessageDeleted({
+			date: convertDateToInt(message.ts),
+			room,
+		}),
+	);
 	return message;
 };
 
@@ -41,14 +50,24 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date: Date): Promise<void>
 			start: startOfPeriod,
 			end: date,
 		});
-		await Promise.all(messages.map((message) => Analytics.insertOne({
-			...message,
-			date: parseInt(message.date),
-		})));
+		await Promise.all(
+			messages.map((message) =>
+				Analytics.insertOne({
+					...message,
+					date: parseInt(message.date),
+				}),
+			),
+		);
 	}
 };
 
-export const findWeeklyMessagesSentData = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findWeeklyMessagesSentData = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	days: { day: Date; messages: number }[];
 	period: {
 		count: number;
@@ -74,12 +93,17 @@ export const findWeeklyMessagesSentData = async ({ start, end }: { start: Date; 
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayMessages = (currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
-	const todayMessages = (currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
+	const yesterdayMessages =
+		(currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
+	const todayMessages =
+		(currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
 	const lastPeriodTotalOfMessages = getTotalOfWeekItems(lastPeriodMessages, 'messages');
 	return {
-		days: currentPeriodMessages.map((day) => ({ day: convertIntToDate(day._id), messages: day.messages })),
+		days: currentPeriodMessages.map((day) => ({
+			day: convertIntToDate(day._id),
+			messages: day.messages,
+		})),
 		period: {
 			count: currentPeriodTotalOfMessages,
 			variation: currentPeriodTotalOfMessages - lastPeriodTotalOfMessages,
@@ -91,7 +115,13 @@ export const findWeeklyMessagesSentData = async ({ start, end }: { start: Date; 
 	};
 };
 
-export const findMessagesSentOrigin = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findMessagesSentOrigin = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	origins: {
 		t: IRoom['t'];
 		messages: number;
@@ -103,7 +133,9 @@ export const findMessagesSentOrigin = async ({ start, end }: { start: Date; end:
 	}).toArray();
 	const roomTypesToShow: IRoom['t'][] = roomTypes.getTypesToShowOnDashboard() as IRoom['t'][];
 	const responseTypes = origins.map((origin) => origin.t);
-	const missingTypes = roomTypesToShow.filter((type): type is IRoom['t'] => !responseTypes.includes(type));
+	const missingTypes = roomTypesToShow.filter(
+		(type): type is IRoom['t'] => !responseTypes.includes(type),
+	);
 	if (missingTypes.length) {
 		missingTypes.forEach((type) => origins.push({ messages: 0, t: type }));
 	}
@@ -111,7 +143,13 @@ export const findMessagesSentOrigin = async ({ start, end }: { start: Date; end:
 	return { origins };
 };
 
-export const findTopFivePopularChannelsByMessageSentQuantity = async ({ start, end }: { start: Date; end: Date }): Promise<{
+export const findTopFivePopularChannelsByMessageSentQuantity = async ({
+	start,
+	end,
+}: {
+	start: Date;
+	end: Date;
+}): Promise<{
 	channels: {
 		t: IRoom['t'];
 		messages: number;

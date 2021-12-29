@@ -7,14 +7,20 @@ import { dispatchEvent } from '../handler';
 
 async function afterUnmuteUser(involvedUsers, room) {
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return involvedUsers; }
+	if (!hasExternalDomain(room)) {
+		return involvedUsers;
+	}
 
 	clientLogger.debug({ msg: 'afterUnmuteUser', involvedUsers, room });
 
 	const { unmutedUser } = involvedUsers;
 
 	// Create the mute user event
-	const event = await FederationRoomEvents.createUnmuteUserEvent(getFederationDomain(), room._id, normalizers.normalizeUser(unmutedUser));
+	const event = await FederationRoomEvents.createUnmuteUserEvent(
+		getFederationDomain(),
+		room._id,
+		normalizers.normalizeUser(unmutedUser),
+	);
 
 	// Dispatch event (async)
 	dispatchEvent(room.federation.domains, event);

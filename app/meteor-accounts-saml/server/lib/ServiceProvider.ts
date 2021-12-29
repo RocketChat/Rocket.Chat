@@ -47,18 +47,40 @@ export class SAMLServiceProvider {
 		return identifiedRequest.request;
 	}
 
-	public generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): ILogoutResponse {
-		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
+	public generateLogoutResponse({
+		nameID,
+		sessionIndex,
+		inResponseToId,
+	}: {
+		nameID: string;
+		sessionIndex: string;
+		inResponseToId: string;
+	}): ILogoutResponse {
+		return LogoutResponse.generate(
+			this.serviceProviderOptions,
+			nameID,
+			sessionIndex,
+			inResponseToId,
+		);
 	}
 
-	public generateLogoutRequest({ nameID, sessionIndex }: { nameID: string; sessionIndex: string }): ISAMLRequest {
+	public generateLogoutRequest({
+		nameID,
+		sessionIndex,
+	}: {
+		nameID: string;
+		sessionIndex: string;
+	}): ISAMLRequest {
 		return LogoutRequest.generate(this.serviceProviderOptions, nameID, sessionIndex);
 	}
 
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
+	public logoutResponseToUrl(
+		response: string,
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -99,7 +121,11 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
-	public requestToUrl(request: string, operation: string, callback: (err: string | object | null, url?: string) => void): void {
+	public requestToUrl(
+		request: string,
+		operation: string,
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		zlib.deflateRaw(request, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -142,7 +168,7 @@ export class SAMLServiceProvider {
 
 				target += querystring.stringify(samlRequest);
 
-				SAMLUtils.log(`requestToUrl: ${ target }`);
+				SAMLUtils.log(`requestToUrl: ${target}`);
 
 				if (operation === 'logout') {
 					// in case of logout we want to be redirected back to the Meteor app.
@@ -163,22 +189,36 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
-			const parser = new LogoutRequestParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+	public validateLogoutRequest(
+		samlRequest: string,
+		callback: ILogoutRequestValidateCallback,
+	): void {
+		SAMLUtils.inflateXml(
+			samlRequest,
+			(xml: string) => {
+				const parser = new LogoutRequestParser(this.serviceProviderOptions);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
-	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
-		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
-			const parser = new LogoutResponseParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+	public validateLogoutResponse(
+		samlResponse: string,
+		callback: ILogoutResponseValidateCallback,
+	): void {
+		SAMLUtils.inflateXml(
+			samlResponse,
+			(xml: string) => {
+				const parser = new LogoutResponseParser(this.serviceProviderOptions);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
 	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {

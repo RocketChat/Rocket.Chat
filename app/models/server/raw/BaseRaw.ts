@@ -35,16 +35,16 @@ export { IndexSpecification } from 'mongodb';
 type EnhancedOmit<T, K> = string | number extends keyof T
 	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
 	: T extends any
-		? Pick<T, Exclude<keyof T, K>> // discriminated unions
-		: never;
+	? Pick<T, Exclude<keyof T, K>> // discriminated unions
+	: never;
 
 // [extracted from @types/mongo]
 type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
 	? {} extends U
 		? Exclude<U, {}>
 		: unknown extends U
-			? ObjectId
-			: U
+		? ObjectId
+		: U
 	: ObjectId;
 
 export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
@@ -63,14 +63,15 @@ type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-		? Pick<Defaults, keyof Defaults>
-		: Omit<Defaults, keyof Defaults>;
+	? Pick<Defaults, keyof Defaults>
+	: Omit<Defaults, keyof Defaults>;
 
-const warnFields = process.env.NODE_ENV !== 'production'
-	? (...rest: any): void => {
-		console.warn(...rest, new Error().stack);
-	}
-	: new Function();
+const warnFields =
+	process.env.NODE_ENV !== 'production'
+		? (...rest: any): void => {
+				console.warn(...rest, new Error().stack);
+		  }
+		: new Function();
 
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
 	public readonly defaultFields: C;
@@ -144,7 +145,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 		return {
 			projection: this.defaultFields,
-			...fields && Object.values(fields).length && { projection: fields },
+			...(fields && Object.values(fields).length && { projection: fields }),
 			...rest,
 		};
 	}
@@ -376,9 +377,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	async trashFindOneById<P extends RocketChatRecordDeleted<T>>(
 		_id: string,
 		options?:
-		| undefined
-		| WithoutProjection<RocketChatRecordDeleted<T>>
-		| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+			| undefined
+			| WithoutProjection<RocketChatRecordDeleted<T>>
+			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Promise<RocketChatRecordDeleted<P> | null> {
 		const query = {
 			_id,
@@ -418,8 +419,8 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		deletedAt: Date,
 		query?: FilterQuery<RocketChatRecordDeleted<T>>,
 		options?:
-		| WithoutProjection<RocketChatRecordDeleted<T>>
-		| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+			| WithoutProjection<RocketChatRecordDeleted<T>>
+			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Cursor<RocketChatRecordDeleted<T>> {
 		const q = {
 			__collection__: this.name,

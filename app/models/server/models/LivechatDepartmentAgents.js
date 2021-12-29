@@ -32,17 +32,20 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	saveAgent(agent) {
-		return this.upsert({
-			agentId: agent.agentId,
-			departmentId: agent.departmentId,
-		}, {
-			$set: {
-				username: agent.username,
-				departmentEnabled: agent.departmentEnabled,
-				count: parseInt(agent.count),
-				order: parseInt(agent.order),
+		return this.upsert(
+			{
+				agentId: agent.agentId,
+				departmentId: agent.departmentId,
 			},
-		});
+			{
+				$set: {
+					username: agent.username,
+					departmentEnabled: agent.departmentEnabled,
+					count: parseInt(agent.count),
+					order: parseInt(agent.order),
+				},
+			},
+		);
 	}
 
 	removeByAgentId(agentId) {
@@ -69,7 +72,9 @@ export class LivechatDepartmentAgents extends Base {
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = Promise.await(Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
+		const currentUnavailableAgents = Promise.await(
+			Users.getUnavailableAgents(departmentId, extraQuery),
+		).map((u) => u.username);
 
 		const query = {
 			departmentId,
@@ -77,7 +82,7 @@ export class LivechatDepartmentAgents extends Base {
 				$in: onlineUsernames,
 				$nin: currentUnavailableAgents,
 			},
-			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
+			...(ignoreAgentId && { agentId: { $ne: ignoreAgentId } }),
 		};
 
 		const sort = {
@@ -102,7 +107,6 @@ export class LivechatDepartmentAgents extends Base {
 		}
 		return null;
 	}
-
 
 	checkOnlineForDepartment(departmentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
@@ -172,7 +176,7 @@ export class LivechatDepartmentAgents extends Base {
 			username: {
 				$in: botUsernames,
 			},
-			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
+			...(ignoreAgentId && { agentId: { $ne: ignoreAgentId } }),
 		};
 
 		const sort = {
@@ -230,9 +234,7 @@ export class LivechatDepartmentAgents extends Base {
 	}
 
 	setDepartmentEnabledByDepartmentId(departmentId, departmentEnabled) {
-		return this.update({ departmentId },
-			{ $set: { departmentEnabled } },
-			{ multi: true });
+		return this.update({ departmentId }, { $set: { departmentEnabled } }, { multi: true });
 	}
 }
 export default new LivechatDepartmentAgents();

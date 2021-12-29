@@ -5,7 +5,7 @@ import { statistics } from '../../../statistics';
 import { LICENSE_VERSION } from '../license';
 
 export async function buildWorkspaceRegistrationData() {
-	const stats = await Statistics.findLast() || statistics.get();
+	const stats = (await Statistics.findLast()) || statistics.get();
 
 	const address = settings.get('Site_Url');
 	const siteName = settings.get('Site_Name');
@@ -31,7 +31,14 @@ export async function buildWorkspaceRegistrationData() {
 
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
+	const {
+		organizationType,
+		industry,
+		size: orgSize,
+		country,
+		language,
+		serverType: workspaceType,
+	} = stats.wizard;
 	const seats = Users.getActiveLocalUserCount();
 
 	return {

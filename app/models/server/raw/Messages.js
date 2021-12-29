@@ -5,7 +5,7 @@ import { BaseRaw } from './BaseRaw';
 export class MessagesRaw extends BaseRaw {
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
@@ -15,9 +15,9 @@ export class MessagesRaw extends BaseRaw {
 
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'starred._id': userId,
-			rid: roomId,
+			'rid': roomId,
 		};
 
 		return this.find(query, options);
@@ -29,7 +29,9 @@ export class MessagesRaw extends BaseRaw {
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -140,15 +142,11 @@ export class MessagesRaw extends BaseRaw {
 					_id: {
 						_id: '$room._id',
 						name: {
-							$cond: [{ $ifNull: ['$room.fname', false] },
-								'$room.fname',
-								'$room.name'],
+							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
 						},
 						t: '$room.t',
 						usernames: {
-							$cond: [{ $ifNull: ['$room.usernames', false] },
-								'$room.usernames',
-								[]],
+							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
 						date: {
 							$concat: [
@@ -189,10 +187,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(
 			{
 				rid,
-				$or: [
-					{ t: { $exists: false } },
-					{ t: 'livechat-close' },
-				],
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
 			},
 			options,
 		);

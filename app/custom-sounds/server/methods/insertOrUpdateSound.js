@@ -14,7 +14,10 @@ Meteor.methods({
 		}
 
 		if (!s.trim(soundData.name)) {
-			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateSound', field: 'Name' });
+			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
+				method: 'insertOrUpdateSound',
+				field: 'Name',
+			});
 		}
 
 		// let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
@@ -27,20 +30,31 @@ Meteor.methods({
 		soundData.name = soundData.name.replace(/:/g, '');
 
 		if (nameValidation.test(soundData.name)) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ soundData.name } is not a valid name`, { method: 'insertOrUpdateSound', input: soundData.name, field: 'Name' });
+			throw new Meteor.Error(
+				'error-input-is-not-a-valid-field',
+				`${soundData.name} is not a valid name`,
+				{ method: 'insertOrUpdateSound', input: soundData.name, field: 'Name' },
+			);
 		}
 
 		let matchingResults = [];
 
 		if (soundData._id) {
 			check(soundData._id, String);
-			matchingResults = await CustomSounds.findByNameExceptId(soundData.name, soundData._id).toArray();
+			matchingResults = await CustomSounds.findByNameExceptId(
+				soundData.name,
+				soundData._id,
+			).toArray();
 		} else {
 			matchingResults = await CustomSounds.findByName(soundData.name).toArray();
 		}
 
 		if (matchingResults.length > 0) {
-			throw new Meteor.Error('Custom_Sound_Error_Name_Already_In_Use', 'The custom sound name is already in use', { method: 'insertOrUpdateSound' });
+			throw new Meteor.Error(
+				'Custom_Sound_Error_Name_Already_In_Use',
+				'The custom sound name is already in use',
+				{ method: 'insertOrUpdateSound' },
+			);
 		}
 
 		if (!soundData._id) {
@@ -57,7 +71,9 @@ Meteor.methods({
 		}
 		// update sound
 		if (soundData.newFile) {
-			RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
+			RocketChatFileCustomSoundsInstance.deleteFile(
+				`${soundData._id}.${soundData.previousExtension}`,
+			);
 		}
 
 		if (soundData.name !== soundData.previousName) {

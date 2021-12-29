@@ -14,7 +14,7 @@ const whitelistedFields = [
 	'email',
 ];
 
-const getIdentity = function(accessToken, appId, appSecret, accessTokenSecret) {
+const getIdentity = function (accessToken, appId, appSecret, accessTokenSecret) {
 	const Twitter = new Twit({
 		consumer_key: appId,
 		consumer_secret: appSecret,
@@ -26,25 +26,34 @@ const getIdentity = function(accessToken, appId, appSecret, accessTokenSecret) {
 
 		return result.data;
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${ err.message }`),
-			{ response: err.response });
+		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
+			response: err.response,
+		});
 	}
 };
 
-registerAccessTokenService('twitter', function(options) {
-	check(options, Match.ObjectIncluding({
-		accessToken: String,
-		appSecret: String,
-		appId: String,
-		accessTokenSecret: String,
-		expiresIn: Match.Integer,
-	}));
+registerAccessTokenService('twitter', function (options) {
+	check(
+		options,
+		Match.ObjectIncluding({
+			accessToken: String,
+			appSecret: String,
+			appId: String,
+			accessTokenSecret: String,
+			expiresIn: Match.Integer,
+		}),
+	);
 
-	const identity = getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
+	const identity = getIdentity(
+		options.accessToken,
+		options.appId,
+		options.appSecret,
+		options.accessTokenSecret,
+	);
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
 	};
 
 	const fields = _.pick(identity, whitelistedFields);

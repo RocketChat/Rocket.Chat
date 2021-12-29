@@ -12,8 +12,12 @@ const makeError = (message: string): Record<string, any> => ({
 	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
 });
 
-Accounts.registerLoginHandler('saml', function(loginRequest) {
-	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
+Accounts.registerLoginHandler('saml', function (loginRequest) {
+	if (
+		!loginRequest.saml ||
+		!loginRequest.credentialToken ||
+		typeof loginRequest.credentialToken !== 'string'
+	) {
 		return undefined;
 	}
 

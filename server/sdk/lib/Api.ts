@@ -44,11 +44,17 @@ export class Api {
 		return this.broker.waitAndCall(method, data);
 	}
 
-	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+	async broadcast<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
 		return this.broker.broadcast(event, ...args);
 	}
 
-	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+	async broadcastLocal<T extends keyof EventSignatures>(
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
 		return this.broker.broadcastLocal(event, ...args);
 	}
 }

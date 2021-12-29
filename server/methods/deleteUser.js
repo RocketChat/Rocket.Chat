@@ -40,10 +40,14 @@ Meteor.methods({
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
 		if (adminCount === 1 && userIsAdmin) {
-			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-				method: 'deleteUser',
-				action: 'Remove_last_admin',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Leaving the app without admins is not allowed',
+				{
+					method: 'deleteUser',
+					action: 'Remove_last_admin',
+				},
+			);
 		}
 
 		await deleteUser(userId, confirmRelinquish);

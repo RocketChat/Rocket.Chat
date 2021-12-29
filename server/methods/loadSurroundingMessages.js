@@ -48,7 +48,11 @@ Meteor.methods({
 			};
 		}
 
-		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
+		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(
+			message.rid,
+			message.ts,
+			options,
+		).fetch();
 
 		const moreBefore = messages.length === options.limit;
 
@@ -60,7 +64,11 @@ Meteor.methods({
 
 		options.limit = Math.floor(limit / 2);
 
-		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
+		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(
+			message.rid,
+			message.ts,
+			options,
+		).fetch();
 
 		const moreAfter = afterMessages.length === options.limit;
 

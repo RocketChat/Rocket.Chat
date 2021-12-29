@@ -40,7 +40,10 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === true) {
+		if (
+			Array.isArray(subscription.roles) === true &&
+			subscription.roles.includes('leader') === true
+		) {
 			throw new Meteor.Error('error-user-already-leader', 'User is already a leader', {
 				method: 'addRoomLeader',
 			});

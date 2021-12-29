@@ -53,7 +53,10 @@ API.v1.addRoute('livechat/visitor', {
 					return;
 				}
 				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
+				if (
+					customField.scope === 'visitor' &&
+					!LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)
+				) {
 					return API.v1.failure();
 				}
 			});
@@ -104,7 +107,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			},
 		}).fetch();
 
-		if (rooms && rooms.length) {
+		if (rooms?.length) {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
@@ -123,21 +126,25 @@ API.v1.addRoute('livechat/visitor/:token', {
 	},
 });
 
-API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true, permissionsRequired: ['view-livechat-manager'] }, {
-	async get() {
-		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
-			fields: {
-				name: 1,
-				t: 1,
-				cl: 1,
-				u: 1,
-				usernames: 1,
-				servedBy: 1,
-			},
-		}).fetch();
-		return API.v1.success({ rooms });
+API.v1.addRoute(
+	'livechat/visitor/:token/room',
+	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		async get() {
+			const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
+				fields: {
+					name: 1,
+					t: 1,
+					cl: 1,
+					u: 1,
+					usernames: 1,
+					servedBy: 1,
+				},
+			}).fetch();
+			return API.v1.success({ rooms });
+		},
 	},
-});
+);
 
 API.v1.addRoute('livechat/visitor.callStatus', {
 	async post() {

@@ -21,14 +21,17 @@ Meteor.methods({
 			});
 		}
 
-		const user = Meteor.users.findOne({
-			username,
-		}, {
-			fields: {
-				_id: 1,
-				roles: 1,
+		const user = Meteor.users.findOne(
+			{
+				username,
 			},
-		});
+			{
+				fields: {
+					_id: 1,
+					roles: 1,
+				},
+			},
+		);
 
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -38,18 +41,24 @@ Meteor.methods({
 
 		// prevent removing last user from admin role
 		if (roleName === 'admin') {
-			const adminCount = Meteor.users.find({
-				roles: {
-					$in: ['admin'],
-				},
-			}).count();
+			const adminCount = Meteor.users
+				.find({
+					roles: {
+						$in: ['admin'],
+					},
+				})
+				.count();
 
 			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
-				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-					method: 'removeUserFromRole',
-					action: 'Remove_last_admin',
-				});
+				throw new Meteor.Error(
+					'error-action-not-allowed',
+					'Leaving the app without admins is not allowed',
+					{
+						method: 'removeUserFromRole',
+						action: 'Remove_last_admin',
+					},
+				);
 			}
 		}
 

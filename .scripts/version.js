@@ -3,7 +3,8 @@ const path = require('path');
 let pkgJson = {};
 
 try {
-	pkgJson = require(path.resolve( // eslint-disable-line import/no-dynamic-require
+	pkgJson = require(path.resolve(
+		// eslint-disable-line import/no-dynamic-require
 		process.cwd(),
 		'./package.json',
 	));

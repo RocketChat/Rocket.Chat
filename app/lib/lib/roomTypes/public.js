@@ -4,7 +4,14 @@ import { openRoom } from '../../../ui-utils';
 import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
+import {
+	getUserPreference,
+	RoomTypeConfig,
+	RoomTypeRouteConfig,
+	RoomSettingsEnum,
+	UiTextContext,
+	RoomMemberActions,
+} from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
@@ -61,7 +68,11 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	condition() {
 		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true);
+		return (
+			groupByType &&
+			(hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) ||
+				settings.get('Accounts_AllowAnonymousRead') === true)
+		);
 	}
 
 	showJoinLink(roomId) {
@@ -91,9 +102,11 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 
 		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
+		return (
+			ChatSubscription.find({
+				rid: roomId,
+			}).count() > 0
+		);
 	}
 
 	enableMembersListProfile() {

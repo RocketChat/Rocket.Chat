@@ -13,7 +13,7 @@ const options = {
 };
 
 let lastEntries = [];
-const handleEntries = function(entries) {
+const handleEntries = function (entries) {
 	lastEntries = entries.filter(({ isIntersecting }) => isIntersecting);
 	lastEntries.forEach(async (entry) => {
 		const { uid } = data.get(entry.target);
@@ -30,7 +30,11 @@ Tracker.autorun(() => {
 	const isConnected = Meteor.status().connected;
 	if (!Meteor.userId() || !isConnected) {
 		Presence.reset();
-		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
+		return Meteor.users.update(
+			{ status: { $exists: true } },
+			{ $unset: { status: true } },
+			{ multi: true },
+		);
 	}
 
 	Presence.restart();
@@ -43,13 +47,12 @@ Tracker.autorun(() => {
 		return;
 	}
 
-
 	Accounts.onLogout(() => {
 		Presence.reset();
 	});
 });
 
-Template.userPresence.onRendered(function() {
+Template.userPresence.onRendered(function () {
 	if (!this.data || !this.data.uid) {
 		return;
 	}

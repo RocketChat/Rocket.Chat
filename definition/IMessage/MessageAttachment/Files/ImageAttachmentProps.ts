@@ -1,4 +1,3 @@
-
 import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { Dimensions } from './Dimensions';
 import { FileAttachmentProps } from './FileAttachmentProps';

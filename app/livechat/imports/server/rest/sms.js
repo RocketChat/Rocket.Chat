@@ -17,7 +17,10 @@ const getUploadFile = (details, fileUrl) => {
 
 	const fileStore = FileUpload.getStore('Uploads');
 
-	const { content, content: { length: size } } = response;
+	const {
+		content,
+		content: { length: size },
+	} = response;
 	return fileStore.insertSync({ ...details, size }, content);
 };
 
@@ -97,7 +100,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined));
+			Promise.await(
+				Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined),
+			);
 		}
 
 		let file;
@@ -117,7 +122,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			try {
 				const uploadedFile = getUploadFile(details, smsUrl);
 				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
-				const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
 				attachment = {
 					title: file.name,
@@ -141,13 +146,15 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.video_size = file.size;
 				}
 			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${ e.message }`);
+				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
 				attachment = {
-					fields: [{
-						title: 'User upload failed',
-						value: 'An attachment was received, but upload to server failed',
-						short: true,
-					}],
+					fields: [
+						{
+							title: 'User upload failed',
+							value: 'An attachment was received, but upload to server failed',
+							short: true,
+						},
+					],
 					color: 'yellow',
 				};
 			}
@@ -159,9 +166,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			rid,
 			token,
 			msg: sms.body,
-			...location && { location },
-			...attachments && { attachments },
-			...file && { file },
+			...(location && { location }),
+			...(attachments && { attachments }),
+			...(file && { file }),
 		};
 
 		try {
@@ -169,13 +176,28 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			Meteor.defer(() => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						Meteor.call(
+							'livechat:setCustomField',
+							sendMessage.message.token,
+							'country',
+							sms.extra.fromCountry,
+						);
 					}
 					if (sms.extra.fromState) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						Meteor.call(
+							'livechat:setCustomField',
+							sendMessage.message.token,
+							'state',
+							sms.extra.fromState,
+						);
 					}
 					if (sms.extra.fromCity) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						Meteor.call(
+							'livechat:setCustomField',
+							sendMessage.message.token,
+							'city',
+							sms.extra.fromCity,
+						);
 					}
 				}
 			});

@@ -20,13 +20,21 @@ class ImportsModel extends Base {
 	}
 
 	invalidateOperationsExceptId(id) {
-		this.update({ valid: { $ne: false }, _id: { $ne: id } }, { $set: { valid: false } }, { multi: true });
+		this.update(
+			{ valid: { $ne: false }, _id: { $ne: id } },
+			{ $set: { valid: false } },
+			{ multi: true },
+		);
 	}
 
 	invalidateOperationsNotInStatus(status) {
 		const statusList = [].concat(status);
 
-		this.update({ valid: { $ne: false }, status: { $nin: statusList } }, { $set: { valid: false } }, { multi: true });
+		this.update(
+			{ valid: { $ne: false }, status: { $nin: statusList } },
+			{ $set: { valid: false } },
+			{ multi: true },
+		);
 	}
 
 	findAllPendingOperations(options = {}) {

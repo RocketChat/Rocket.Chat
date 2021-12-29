@@ -112,7 +112,7 @@ class E2E extends Emitter {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
+					title: TAPi18n.__("Wasn't possible to decode your encryption key to be imported."),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
 					modifiers: ['large', 'danger'],
 					closable: true,
@@ -136,7 +136,10 @@ class E2E extends Emitter {
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('e2e.setUserPublicAndPrivateKeys', {
 				public_key: Meteor._localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), this.createRandomPassword()),
+				private_key: await this.encodePrivateKey(
+					Meteor._localStorage.getItem('private_key'),
+					this.createRandomPassword(),
+				),
 			});
 		}
 
@@ -154,7 +157,8 @@ class E2E extends Emitter {
 				closable: false,
 				icon: 'key',
 				action: () => {
-					imperativeModal.open({ component: SaveE2EPasswordModal,
+					imperativeModal.open({
+						component: SaveE2EPasswordModal,
 						props: {
 							passwordRevealText,
 							onClose: imperativeModal.close,
@@ -191,7 +195,10 @@ class E2E extends Emitter {
 	async changePassword(newPassword) {
 		await call('e2e.setUserPublicAndPrivateKeys', {
 			public_key: Meteor._localStorage.getItem('public_key'),
-			private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), newPassword),
+			private_key: await this.encodePrivateKey(
+				Meteor._localStorage.getItem('private_key'),
+				newPassword,
+			),
 		});
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
@@ -256,7 +263,7 @@ class E2E extends Emitter {
 	}
 
 	createRandomPassword() {
-		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
+		const randomPassword = `${Random.id(3)}-${Random.id(3)}-${Random.id(3)}`.toLowerCase();
 		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
@@ -298,7 +305,8 @@ class E2E extends Emitter {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			const showModal = () => {
-				imperativeModal.open({ component: EnterE2EPasswordModal,
+				imperativeModal.open({
+					component: EnterE2EPasswordModal,
 					props: {
 						onClose: imperativeModal.close,
 						onCancel: () => {

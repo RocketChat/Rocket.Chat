@@ -11,5 +11,4 @@ export type MessageQuoteAttachment = {
 
 export const isQuoteAttachment = (
 	attachment: MessageAttachmentBase,
-): attachment is MessageQuoteAttachment =>
-	'message_link' in attachment;
+): attachment is MessageQuoteAttachment => 'message_link' in attachment;

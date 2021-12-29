@@ -15,14 +15,17 @@ export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens')
 appTokensCollection._ensureIndex({ userId: 1 });
 
 export class PushClass {
-	options = {}
+	options = {};
 
-	isConfigured = false
+	isConfigured = false;
 
 	configure(options) {
-		this.options = Object.assign({
-			sendTimeout: 60000, // Timeout period for notification send
-		}, options);
+		this.options = Object.assign(
+			{
+				sendTimeout: 60000, // Timeout period for notification send
+			},
+			options,
+		);
 		// https://npmjs.org/package/apn
 
 		// After requesting the certificate from Apple, export your private key as
@@ -51,19 +54,21 @@ export class PushClass {
 	}
 
 	sendWorker(task, interval) {
-		logger.debug(`Send worker started, using interval: ${ interval }`);
+		logger.debug(`Send worker started, using interval: ${interval}`);
 
 		return Meteor.setInterval(() => {
 			try {
 				task();
 			} catch (error) {
-				logger.debug(`Error while sending: ${ error.message }`);
+				logger.debug(`Error while sending: ${error.message}`);
 			}
 		}, interval);
 	}
 
 	_replaceToken(currentToken, newToken) {
-		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
+		appTokensCollection
+			.rawCollection()
+			.updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
 	_removeToken(token) {
@@ -71,9 +76,11 @@ export class PushClass {
 	}
 
 	_shouldUseGateway() {
-		return !!this.options.gateways
-			&& settings.get('Register_Server')
-			&& settings.get('Cloud_Service_Agree_PrivacyTerms');
+		return (
+			!!this.options.gateways &&
+			settings.get('Register_Server') &&
+			settings.get('Cloud_Service_Agree_PrivacyTerms')
+		);
 	}
 
 	sendNotificationNative(app, notification, countApn, countGcm) {
@@ -93,7 +100,13 @@ export class PushClass {
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
 			if (this.options.gcm && this.options.gcm.apiKey) {
-				sendGCM({ userTokens: app.token.gcm, notification, _replaceToken: this._replaceToken, _removeToken: this._removeToken, options: this.options });
+				sendGCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this._replaceToken,
+					_removeToken: this._removeToken,
+					options: this.options,
+				});
 			}
 		} else {
 			throw new Error('send got a faulty query');
@@ -115,15 +128,18 @@ export class PushClass {
 			data.headers.Authorization = this.options.getAuthorization();
 		}
 
-		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
+		return HTTP.post(`${gateway}/push/${service}/send`, data, (error, response) => {
 			if (response?.statusCode === 406) {
 				logger.info('removing push token', token);
 				appTokensCollection.remove({
-					$or: [{
-						'token.apn': token,
-					}, {
-						'token.gcm': token,
-					}],
+					$or: [
+						{
+							'token.apn': token,
+						},
+						{
+							'token.gcm': token,
+						},
+					],
 				});
 				return;
 			}
@@ -142,7 +158,7 @@ export class PushClass {
 				return;
 			}
 
-			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
+			logger.error(`Error sending push to gateway (${tries} try) ->`, error);
 
 			if (tries <= 4) {
 				// [1, 2, 4, 8, 16] minutes (total 31)
@@ -150,7 +166,10 @@ export class PushClass {
 
 				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
-				return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+				return Meteor.setTimeout(
+					() => this.sendGatewayPush(gateway, service, token, notification, tries + 1),
+					ms,
+				);
 			}
 		});
 	}
@@ -188,14 +207,11 @@ export class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${ notification.title }" to userId`, notification.userId);
+		logger.debug(`send message "${notification.title}" to userId`, notification.userId);
 
 		const query = {
 			userId: notification.userId,
-			$or: [
-				{ 'token.apn': { $exists: true } },
-				{ 'token.gcm': { $exists: true } },
-			],
+			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
 		appTokensCollection.find(query).forEach((app) => {
@@ -209,21 +225,29 @@ export class PushClass {
 		});
 
 		if (settings.get('Log_Level') === '2') {
-			logger.debug(`Sent message "${ notification.title }" to ${ countApn.length } ios apps ${ countGcm.length } android apps`);
+			logger.debug(
+				`Sent message "${notification.title}" to ${countApn.length} ios apps ${countGcm.length} android apps`,
+			);
 
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
 			if (!countApn.length && !countGcm.length) {
 				if (appTokensCollection.find().count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" is empty - No clients have registered on the server yet...');
+					logger.debug(
+						'GUIDE: The "appTokensCollection" is empty - No clients have registered on the server yet...',
+					);
 				}
 			} else if (!countApn.length) {
 				if (appTokensCollection.find({ 'token.apn': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No APN clients have registered on the server yet...');
+					logger.debug(
+						'GUIDE: The "appTokensCollection" - No APN clients have registered on the server yet...',
+					);
 				}
 			} else if (!countGcm.length) {
 				if (appTokensCollection.find({ 'token.gcm': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No GCM clients have registered on the server yet...');
+					logger.debug(
+						'GUIDE: The "appTokensCollection" - No GCM clients have registered on the server yet...',
+					);
 				}
 			}
 		}
@@ -292,22 +316,51 @@ export class PushClass {
 		const currentUser = options.createdBy || '<SERVER>';
 
 		// Rig the notification object
-		const notification = Object.assign({
-			createdAt: new Date(),
-			createdBy: currentUser,
-			sent: false,
-			sending: 0,
-		}, _.pick(options, 'from', 'title', 'text', 'userId'));
+		const notification = Object.assign(
+			{
+				createdAt: new Date(),
+				createdBy: currentUser,
+				sent: false,
+				sending: 0,
+			},
+			_.pick(options, 'from', 'title', 'text', 'userId'),
+		);
 
 		// Add extra
-		Object.assign(notification, _.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'));
+		Object.assign(
+			notification,
+			_.pick(options, 'payload', 'badge', 'sound', 'notId', 'delayUntil', 'android_channel_id'),
+		);
 
 		if (Match.test(options.apn, Object)) {
-			notification.apn = _.pick(options.apn, 'from', 'title', 'text', 'badge', 'sound', 'notId', 'category');
+			notification.apn = _.pick(
+				options.apn,
+				'from',
+				'title',
+				'text',
+				'badge',
+				'sound',
+				'notId',
+				'category',
+			);
 		}
 
 		if (Match.test(options.gcm, Object)) {
-			notification.gcm = _.pick(options.gcm, 'image', 'style', 'summaryText', 'picture', 'from', 'title', 'text', 'badge', 'sound', 'notId', 'actions', 'android_channel_id');
+			notification.gcm = _.pick(
+				options.gcm,
+				'image',
+				'style',
+				'summaryText',
+				'picture',
+				'from',
+				'title',
+				'text',
+				'badge',
+				'sound',
+				'notId',
+				'actions',
+				'android_channel_id',
+			);
 		}
 
 		if (options.contentAvailable != null) {
@@ -324,7 +377,9 @@ export class PushClass {
 		try {
 			this.sendNotification(notification);
 		} catch (error) {
-			logger.debug(`Could not send notification id: "${ notification._id }", Error: ${ error.message }`);
+			logger.debug(
+				`Could not send notification id: "${notification._id}", Error: ${error.message}`,
+			);
 			logger.debug(error.stack);
 		}
 	}

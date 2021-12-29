@@ -56,7 +56,7 @@ export class CustomOAuth {
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${ capitalize(String(this.name || '')) }`;
+		const loginWithService = `loginWith${capitalize(String(this.name || ''))}`;
 
 		Meteor[loginWithService] = (options, callback) => {
 			// support a callback without options
@@ -65,7 +65,8 @@ export class CustomOAuth {
 				options = null;
 			}
 
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
+			const credentialRequestCompleteCallback =
+				Accounts.oauth.credentialRequestCompleteHandler(callback);
 			this.requestCredential(options, credentialRequestCompleteCallback);
 		};
 	}
@@ -90,12 +91,15 @@ export class CustomOAuth {
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 
-		const loginUrl = `${ this.authorizePath
-		}${ separator }client_id=${ config.clientId
-		}&redirect_uri=${ encodeURIComponent(OAuth._redirectUri(this.name, config))
-		}&response_type=code`
-			+ `&state=${ encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))
-			}&scope=${ encodeURIComponent(this.scope) }`;
+		const loginUrl =
+			`${this.authorizePath}${separator}client_id=${
+				config.clientId
+			}&redirect_uri=${encodeURIComponent(
+				OAuth._redirectUri(this.name, config),
+			)}&response_type=code` +
+			`&state=${encodeURIComponent(
+				OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
+			)}&scope=${encodeURIComponent(this.scope)}`;
 
 		OAuth.launchLogin({
 			loginService: this.name,

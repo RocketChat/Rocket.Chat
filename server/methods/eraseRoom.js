@@ -32,9 +32,14 @@ Meteor.methods({
 		}
 
 		if (Apps && Apps.isLoaded()) {
-			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+			const prevent = Promise.await(
+				Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room),
+			);
 			if (prevent) {
-				throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
+				throw new Meteor.Error(
+					'error-app-prevented-deleting',
+					'A Rocket.Chat App prevented the room erasing.',
+				);
 			}
 		}
 

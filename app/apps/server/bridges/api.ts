@@ -27,18 +27,21 @@ export class AppApisBridge extends ApiBridge {
 		super();
 		this.appRouters = new Map();
 
-		apiServer.use('/api/apps/private/:appId/:hash', (req: RequestWithPrivateHash, res: Response) => {
-			const notFound = (): Response => res.sendStatus(404);
+		apiServer.use(
+			'/api/apps/private/:appId/:hash',
+			(req: RequestWithPrivateHash, res: Response) => {
+				const notFound = (): Response => res.sendStatus(404);
 
-			const router = this.appRouters.get(req.params.appId);
+				const router = this.appRouters.get(req.params.appId);
 
-			if (router) {
-				req._privateHash = req.params.hash;
-				return router(req, res, notFound);
-			}
+				if (router) {
+					req._privateHash = req.params.hash;
+					return router(req, res, notFound);
+				}
 
-			notFound();
-		});
+				notFound();
+			},
+		);
 
 		apiServer.use('/api/apps/public/:appId', (req: Request, res: Response) => {
 			const notFound = (): Response => res.sendStatus(404);
@@ -54,7 +57,9 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	public registerApi({ api, computedPath, endpoint }: AppApi, appId: string): void {
-		this.orch.debugLog(`The App ${ appId } is registering the api: "${ endpoint.path }" (${ computedPath })`);
+		this.orch.debugLog(
+			`The App ${appId} is registering the api: "${endpoint.path}" (${computedPath})`,
+		);
 
 		this._verifyApi(api, endpoint);
 
@@ -69,7 +74,7 @@ export class AppApisBridge extends ApiBridge {
 
 		let routePath = endpoint.path.trim();
 		if (!routePath.startsWith('/')) {
-			routePath = `/${ routePath }`;
+			routePath = `/${routePath}`;
 		}
 
 		if (router[method] instanceof Function) {
@@ -78,7 +83,7 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	public unregisterApis(appId: string): void {
-		this.orch.debugLog(`The App ${ appId } is unregistering all apis`);
+		this.orch.debugLog(`The App ${appId} is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
@@ -100,13 +105,16 @@ export class AppApisBridge extends ApiBridge {
 			const request: IApiRequest = {
 				method: req.method.toLowerCase() as RequestMethod,
 				headers: req.headers as { [key: string]: string },
-				query: req.query as { [key: string]: string } || {},
+				query: (req.query as { [key: string]: string }) || {},
 				params: req.params || {},
 				content: req.body,
 				privateHash: req._privateHash,
 			};
 
-			this.orch.getManager()?.getApiManager().executeApi(appId, endpoint.path, request)
+			this.orch
+				.getManager()
+				?.getApiManager()
+				.executeApi(appId, endpoint.path, request)
 				.then(({ status, headers = {}, content }) => {
 					res.set(headers);
 					res.status(status);

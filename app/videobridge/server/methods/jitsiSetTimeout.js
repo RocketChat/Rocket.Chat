@@ -11,14 +11,20 @@ import { settings } from '../../../settings';
 
 // TODO: Access Token missing. This is just a partial solution, it doesn't handle access token generation logic as present in this file - client/views/room/contextualBar/Call/Jitsi/CallJitsWithData.js
 const resolveJitsiCallUrl = (room) => {
-	const rname = settings.get('Jitsi_URL_Room_Hash') ? settings.get('uniqueID') + room._id : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
-	return `${ settings.get('Jitsi_SSL') ? 'https://' : 'http://' }${ settings.get('Jitsi_Domain') }/${ settings.get('Jitsi_URL_Room_Prefix') }${ rname }${ settings.get('Jitsi_URL_Room_Suffix') }`;
+	const rname = settings.get('Jitsi_URL_Room_Hash')
+		? settings.get('uniqueID') + room._id
+		: encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+	return `${settings.get('Jitsi_SSL') ? 'https://' : 'http://'}${settings.get(
+		'Jitsi_Domain',
+	)}/${settings.get('Jitsi_URL_Room_Prefix')}${rname}${settings.get('Jitsi_URL_Room_Suffix')}`;
 };
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid, joiningNow = true) => {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:updateTimeout' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'jitsi:updateTimeout',
+			});
 		}
 
 		const uid = Meteor.userId();
@@ -46,24 +52,41 @@ Meteor.methods({
 			if (joiningNow && (!jitsiTimeout || currentTime > jitsiTimeout)) {
 				metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
-				const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
-					actionLinks: [
-						{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), i18nLabel: 'Click_to_join', method_id: 'joinJitsiCall', params: '' },
-					],
-					customFields: {
-						...room.customFields && { ...room.customFields },
-						...room.t === 'l' && { jitsiCallUrl: resolveJitsiCallUrl(room) }, // Note: this is just a temporary solution for the jitsi calls to work in Livechat. In future we wish to create specific events for specific to livechat calls (eg: start, accept, decline, end, etc) and this url info will be passed via there
+				const message = Messages.createWithTypeRoomIdMessageAndUser(
+					'jitsi_call_started',
+					rid,
+					'',
+					Meteor.user(),
+					{
+						actionLinks: [
+							{
+								icon: 'icon-videocam',
+								label: TAPi18n.__('Click_to_join'),
+								i18nLabel: 'Click_to_join',
+								method_id: 'joinJitsiCall',
+								params: '',
+							},
+						],
+						customFields: {
+							...(room.customFields && { ...room.customFields }),
+							...(room.t === 'l' && { jitsiCallUrl: resolveJitsiCallUrl(room) }), // Note: this is just a temporary solution for the jitsi calls to work in Livechat. In future we wish to create specific events for specific to livechat calls (eg: start, accept, decline, end, etc) and this url info will be passed via there
+						},
 					},
-				});
+				);
 				message.msg = TAPi18n.__('Started_a_video_call');
-				callbacks.run('afterSaveMessage', message, { ...room, jitsiTimeout: currentTime + CONSTANTS.TIMEOUT });
+				callbacks.run('afterSaveMessage', message, {
+					...room,
+					jitsiTimeout: currentTime + CONSTANTS.TIMEOUT,
+				});
 			}
 
 			return jitsiTimeout || nextTimeOut;
 		} catch (error) {
 			SystemLogger.error('Error starting video call:', error.message);
 
-			throw new Meteor.Error('error-starting-video-call', error.message, { method: 'jitsi:updateTimeout' });
+			throw new Meteor.Error('error-starting-video-call', error.message, {
+				method: 'jitsi:updateTimeout',
+			});
 		}
 	},
 });

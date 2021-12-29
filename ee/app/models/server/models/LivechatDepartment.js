@@ -3,7 +3,6 @@ import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;
 
-
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 	unfilteredFind(originalFn, ...args) {
 		return find.apply(this, args);
@@ -41,8 +40,12 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 	},
 });
 
-LivechatDepartment.prototype.removeDepartmentFromForwardListById = function(_id) {
-	return this.update({ departmentsAllowedToForward: _id }, { $pull: { departmentsAllowedToForward: _id } }, { multi: true });
+LivechatDepartment.prototype.removeDepartmentFromForwardListById = function (_id) {
+	return this.update(
+		{ departmentsAllowedToForward: _id },
+		{ $pull: { departmentsAllowedToForward: _id } },
+		{ multi: true },
+	);
 };
 
 export default LivechatDepartment;

@@ -30,4 +30,8 @@ export interface IAnalyticsSeatRequest extends IAnalyticsBase {
 	count: number;
 }
 
-export type IAnalytic = IAnalyticsBase | IAnalyticsMessages | IAnalyticsUsers | IAnalyticsSeatRequest;
+export type IAnalytic =
+	| IAnalyticsBase
+	| IAnalyticsMessages
+	| IAnalyticsUsers
+	| IAnalyticsSeatRequest;

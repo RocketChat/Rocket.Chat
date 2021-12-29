@@ -5,8 +5,10 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
-	const hardUpperLimit = settings.get('API_Upper_Count_Limit') <= 0 ? 100 : settings.get('API_Upper_Count_Limit');
-	const defaultCount = settings.get('API_Default_Count') <= 0 ? 50 : settings.get('API_Default_Count');
+	const hardUpperLimit =
+		settings.get('API_Upper_Count_Limit') <= 0 ? 100 : settings.get('API_Upper_Count_Limit');
+	const defaultCount =
+		settings.get('API_Default_Count') <= 0 ? 50 : settings.get('API_Default_Count');
 	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
 	let count = defaultCount;
 

@@ -54,8 +54,11 @@ Template.GameCenter.helpers({
 		if (instance.loading || instance.end.get()) {
 			return;
 		}
-		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+		return function (currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
 				return instance.page.set(instance.page.get() + 1);
 			}
 		};
@@ -74,7 +77,7 @@ Template.GameCenter.helpers({
 	},
 });
 
-Template.GameCenter.onCreated(function() {
+Template.GameCenter.onCreated(function () {
 	this.ready = new ReactiveVar(false);
 	this.games = new ReactiveVar([]);
 	this.isLoading = new ReactiveVar(true);

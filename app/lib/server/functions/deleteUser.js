@@ -7,7 +7,10 @@ import { FederationServers, Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
+import {
+	getSubscribedRoomsForUserWithDetails,
+	shouldRemoveOrChangeOwner,
+} from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
 
@@ -43,7 +46,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function({ file }) {
+				Messages.findFilesByUserId(userId).forEach(function ({ file }) {
 					store.deleteById(file._id);
 				});
 				Messages.removeByUserId(userId);

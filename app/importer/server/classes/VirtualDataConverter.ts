@@ -1,6 +1,13 @@
 import { Random } from 'meteor/random';
 
-import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord, IImportRecord, IImportRecordType, IImportData } from '../../../../definition/IImportRecord';
+import type {
+	IImportUserRecord,
+	IImportChannelRecord,
+	IImportMessageRecord,
+	IImportRecord,
+	IImportRecordType,
+	IImportData,
+} from '../../../../definition/IImportRecord';
 import { IImportChannel } from '../../../../definition/IImportChannel';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
@@ -48,7 +55,11 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	protected addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
+	protected addObject(
+		type: IImportRecordType,
+		data: IImportData,
+		options: Record<string, any> = {},
+	): void {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
 		}

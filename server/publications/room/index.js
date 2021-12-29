@@ -29,18 +29,24 @@ Meteor.methods({
 		if (updatedAt instanceof Date) {
 			return {
 				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
-				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				remove: Rooms.trashFindDeletedAfter(
+					updatedAt,
+					{},
+					{ fields: { _id: 1, _deletedAt: 1 } },
+				).fetch(),
 			};
 		}
 
 		return Rooms.findBySubscriptionUserId(user, options).fetch();
 	},
 
-	getRoomByTypeAndName(type, name) {
+	'getRoomByTypeAndName'(type, name) {
 		const userId = Meteor.userId();
 
 		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
 		const roomFind = roomTypes.getRoomFind(type);
@@ -48,11 +54,15 @@ Meteor.methods({
 		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
 		if (!canAccessRoom(room, { _id: userId })) {
-			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
+			throw new Meteor.Error('error-no-permission', 'No permission', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
 		if (settings.get('Store_Last_Message') && !hasPermission(userId, 'preview-c-room')) {

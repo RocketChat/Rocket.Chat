@@ -38,13 +38,8 @@ const permitedMutations = {
 		E2ERoomState.DISABLED,
 		E2ERoomState.KEYS_RECEIVED,
 	],
-	[E2ERoomState.READY]: [
-		E2ERoomState.DISABLED,
-	],
-	[E2ERoomState.ERROR]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.NOT_STARTED,
-	],
+	[E2ERoomState.READY]: [E2ERoomState.DISABLED],
+	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
 	[E2ERoomState.WAITING_KEYS]: [
 		E2ERoomState.KEYS_RECEIVED,
 		E2ERoomState.ERROR,
@@ -91,7 +86,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
-				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
+				this.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
@@ -100,11 +95,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	log(...msg) {
-		log(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	error(...msg) {
-		logError(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	setState(requestedState) {
@@ -112,7 +107,7 @@ export class E2ERoom extends Emitter {
 		const nextState = filterMutation(currentState, requestedState);
 
 		if (!nextState) {
-			this.error(`invalid state ${ currentState } -> ${ requestedState }`);
+			this.error(`invalid state ${currentState} -> ${requestedState}`);
 			return;
 		}
 
@@ -191,27 +186,33 @@ export class E2ERoom extends Emitter {
 	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({ rid: this.roomId });
 
-		const data = await (subscription.lastMessage?.msg && this.decrypt(subscription.lastMessage.msg));
+		const data = await (subscription.lastMessage?.msg &&
+			this.decrypt(subscription.lastMessage.msg));
 		if (!data?.text) {
 			this.log('decryptSubscriptions nothing to do');
 			return;
 		}
 
-		Subscriptions.direct.update({
-			_id: subscription._id,
-		}, {
-			$set: {
-				'lastMessage.msg': data.text,
-				'lastMessage.e2e': 'done',
+		Subscriptions.direct.update(
+			{
+				_id: subscription._id,
 			},
-		});
+			{
+				$set: {
+					'lastMessage.msg': data.text,
+					'lastMessage.e2e': 'done',
+				},
+			},
+		);
 		this.log('decryptSubscriptions Done');
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
-		});
+		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(
+			async ({ _id, ...msg }) => {
+				Messages.direct.update({ _id }, await this.decryptMessage(msg));
+			},
+		);
 	}
 
 	// Initiates E2E Encryption
@@ -237,7 +238,8 @@ export class E2ERoom extends Emitter {
 
 		try {
 			const room = Rooms.findOne({ _id: this.roomId });
-			if (!room.e2eKeyId) { // TODO CHECK_PERMISSION
+			if (!room.e2eKeyId) {
+				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -328,9 +330,17 @@ export class E2ERoom extends Emitter {
 
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
+			const encryptedUserKey = await encryptRSA(
+				userKey,
+				toArrayBuffer(this.sessionKeyExportedString),
+			);
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			await call(
+				'e2e.updateGroupKey',
+				this.roomId,
+				user._id,
+				this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)),
+			);
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
@@ -379,7 +389,9 @@ export class E2ERoom extends Emitter {
 	// Encrypts messages
 	async encryptText(data) {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
+			data = new TextEncoder('UTF-8').encode(
+				EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }),
+			);
 		}
 
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {
@@ -406,12 +418,14 @@ export class E2ERoom extends Emitter {
 			ts = new Date(Date.now() + TimeSync.serverOffset());
 		}
 
-		const data = new TextEncoder('UTF-8').encode(EJSON.stringify({
-			_id: message._id,
-			text: message.msg,
-			userId: this.userId,
-			ts,
-		}));
+		const data = new TextEncoder('UTF-8').encode(
+			EJSON.stringify({
+				_id: message._id,
+				text: message.msg,
+				userId: this.userId,
+				ts,
+			}),
+		);
 
 		return this.encryptText(data);
 	}

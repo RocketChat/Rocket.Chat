@@ -46,14 +46,14 @@ Template.visitorInfo.helpers({
 			const ua = new UAParser();
 			ua.setUA(user.userAgent);
 
-			user.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
+			user.os = `${ua.getOS().name} ${ua.getOS().version}`;
 			if (['Mac OS', 'iOS'].indexOf(ua.getOS().name) !== -1) {
 				user.osIcon = 'icon-apple';
 			} else {
-				user.osIcon = `icon-${ ua.getOS().name.toLowerCase() }`;
+				user.osIcon = `icon-${ua.getOS().name.toLowerCase()}`;
 			}
-			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
-			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
+			user.browser = `${ua.getBrowser().name} ${ua.getBrowser().version}`;
+			user.browserIcon = `icon-${ua.getBrowser().name.toLowerCase()}`;
 
 			user.status = roomTypes.getUserStatus('l', this.rid) || 'offline';
 		}
@@ -95,7 +95,12 @@ Template.visitorInfo.helpers({
 
 	customVisitorFields() {
 		const customFields = Template.instance().customFields.get();
-		if (!hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields'])) {
+		if (
+			!hasAtLeastOnePermission([
+				'view-livechat-room-customfields',
+				'edit-livechat-room-customfields',
+			])
+		) {
 			return;
 		}
 		if (!customFields || customFields.length === 0) {
@@ -160,7 +165,11 @@ Template.visitorInfo.helpers({
 	roomOpen() {
 		const room = Template.instance().room.get();
 		const uid = Meteor.userId();
-		return room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'));
+		return (
+			room &&
+			room.open &&
+			((room.servedBy && room.servedBy._id === uid) || hasRole(uid, 'livechat-manager'))
+		);
 	},
 
 	canReturnQueue() {
@@ -209,7 +218,14 @@ Template.visitorInfo.helpers({
 
 	canPlaceChatOnHold() {
 		const room = Template.instance().room.get();
-		return room.open && !room.onHold && room.servedBy && room.lastMessage && !room.lastMessage?.token && settings.get('Livechat_allow_manual_on_hold');
+		return (
+			room.open &&
+			!room.onHold &&
+			room.servedBy &&
+			room.lastMessage &&
+			!room.lastMessage?.token &&
+			settings.get('Livechat_allow_manual_on_hold')
+		);
 	},
 
 	roomClosedDateTime() {
@@ -230,7 +246,7 @@ Template.visitorInfo.helpers({
 		}
 
 		const closerLabel = closer.charAt(0).toUpperCase() + closer.slice(1);
-		return t(`${ closerLabel }`);
+		return t(`${closerLabel}`);
 	},
 
 	customInfoTemplate() {
@@ -269,19 +285,25 @@ Template.visitorInfo.events({
 
 		if (!closingDialogRequired(instance.department.get())) {
 			const comment = TAPi18n.__('Chat_closed_by_agent');
-			return Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true }, function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
-				}
+			return Meteor.call(
+				'livechat:closeRoom',
+				this.rid,
+				comment,
+				{ clientAction: true },
+				function (error /* , result*/) {
+					if (error) {
+						return handleError(error);
+					}
 
-				modal.open({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
-			});
+					modal.open({
+						title: t('Chat_closed'),
+						text: t('Chat_closed_successfully'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false,
+					});
+				},
+			);
 		}
 
 		modal.open({
@@ -300,23 +322,26 @@ Template.visitorInfo.events({
 	'click .return-inquiry'(event) {
 		event.preventDefault();
 
-		modal.open({
-			title: t('Would_you_like_to_return_the_inquiry'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Yes'),
-		}, () => {
-			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
-				if (error) {
-					handleError(error);
-				} else {
-					Session.set('openedRoom');
-					FlowRouter.go('/home');
-				}
-			});
-		});
+		modal.open(
+			{
+				title: t('Would_you_like_to_return_the_inquiry'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: t('Yes'),
+			},
+			() => {
+				Meteor.call('livechat:returnAsInquiry', this.rid, function (error /* , result*/) {
+					if (error) {
+						handleError(error);
+					} else {
+						Session.set('openedRoom');
+						FlowRouter.go('/home');
+					}
+				});
+			},
+		);
 	},
 
 	'click .forward-livechat'(event, instance) {
@@ -334,30 +359,32 @@ Template.visitorInfo.events({
 	'click .on-hold'(event) {
 		event.preventDefault();
 
-		modal.open({
-			title: t('Would_you_like_to_place_chat_on_hold'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Yes'),
-		},
-		async () => {
-			const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
-			if (success) {
-				modal.open({
-					title: t('Chat_On_Hold'),
-					text: t('Chat_On_Hold_Successfully'),
-					type: 'success',
-					timer: 1500,
-					showConfirmButton: false,
-				});
-			}
-		});
+		modal.open(
+			{
+				title: t('Would_you_like_to_place_chat_on_hold'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: t('Yes'),
+			},
+			async () => {
+				const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
+				if (success) {
+					modal.open({
+						title: t('Chat_On_Hold'),
+						text: t('Chat_On_Hold_Successfully'),
+						type: 'success',
+						timer: 1500,
+						showConfirmButton: false,
+					});
+				}
+			},
+		);
 	},
 });
 
-Template.visitorInfo.onCreated(function() {
+Template.visitorInfo.onCreated(function () {
 	this.visitorId = new ReactiveVar(null);
 	this.customFields = new ReactiveVar([]);
 	this.action = new ReactiveVar();
@@ -369,7 +396,7 @@ Template.visitorInfo.onCreated(function() {
 	this.room = new ReactiveVar({});
 
 	this.updateVisitor = async (visitorId) => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ visitorId }`);
+		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${visitorId}`);
 		this.user.set(visitor);
 	};
 
@@ -396,7 +423,7 @@ Template.visitorInfo.onCreated(function() {
 	});
 
 	const loadRoomData = async (rid) => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
 		this.updateRoom(room);
 	};
 
@@ -407,7 +434,9 @@ Template.visitorInfo.onCreated(function() {
 
 	this.autorun(async () => {
 		if (this.departmentId.get()) {
-			const { department } = await APIClient.v1.get(`livechat/department/${ this.departmentId.get() }?includeAgents=false`);
+			const { department } = await APIClient.v1.get(
+				`livechat/department/${this.departmentId.get()}?includeAgents=false`,
+			);
 			this.department.set(department);
 		}
 	});
@@ -420,7 +449,7 @@ Template.visitorInfo.onCreated(function() {
 	});
 });
 
-Template.visitorInfo.onDestroyed(function() {
+Template.visitorInfo.onDestroyed(function () {
 	const { rid } = Template.currentData();
 	RoomManager.roomStream.removeListener(rid, this.updateRoom);
 });

@@ -5,17 +5,25 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
-	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findInIds(
+		departmentsIds: string[],
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
 	}
 
-	findByNameRegexWithExceptionsAndConditions(searchTerm: string, exceptions: string[] = [], conditions: FilterQuery<ILivechatDepartmentRecord> = {}, options: FindOneOptions<ILivechatDepartmentRecord> = {}): Cursor<ILivechatDepartmentRecord> {
+	findByNameRegexWithExceptionsAndConditions(
+		searchTerm: string,
+		exceptions: string[] = [],
+		conditions: FilterQuery<ILivechatDepartmentRecord> = {},
+		options: FindOneOptions<ILivechatDepartmentRecord> = {},
+	): Cursor<ILivechatDepartmentRecord> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
-		const nameRegex = new RegExp(`^${ escapeRegExp(searchTerm).trim() }`, 'i');
+		const nameRegex = new RegExp(`^${escapeRegExp(searchTerm).trim()}`, 'i');
 
 		const query = {
 			name: nameRegex,
@@ -28,17 +36,26 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	findByBusinessHourId(businessHourId: string, options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findByBusinessHourId(
+		businessHourId: string,
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId };
 		return this.find(query, options);
 	}
 
-	findEnabledByBusinessHourId(businessHourId: string, options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findEnabledByBusinessHourId(
+		businessHourId: string,
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId, enabled: true };
 		return this.find(query, options);
 	}
 
-	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
+	addBusinessHourToDepartmentsByIds(
+		ids: string[] = [],
+		businessHourId: string,
+	): Promise<WriteOpResult> {
 		const query = {
 			_id: { $in: ids },
 		};
@@ -52,7 +69,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(
+		ids: string[] = [],
+		businessHourId: string,
+	): Promise<WriteOpResult> {
 		const query = {
 			_id: { $in: ids },
 			businessHourId,
@@ -67,7 +87,9 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.col.update(query, update, { multi: true });
 	}
 
-	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<WriteOpResult> {
+	removeBusinessHourFromDepartmentsByBusinessHourId(
+		businessHourId: string,
+	): Promise<WriteOpResult> {
 		const query = {
 			businessHourId,
 		};

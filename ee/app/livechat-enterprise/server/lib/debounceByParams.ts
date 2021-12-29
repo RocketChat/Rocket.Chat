@@ -8,7 +8,7 @@ export interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
 
 // Debounce `func` based on passed parameters
 // ref: https://github.com/lodash/lodash/issues/2403#issuecomment-816137402
-export function memoizeDebounce<F extends(...args: any[]) => any>(
+export function memoizeDebounce<F extends (...args: any[]) => any>(
 	func: F,
 	wait = 0,
 	options: any = {},
@@ -29,5 +29,5 @@ export function memoizeDebounce<F extends(...args: any[]) => any>(
 		debounceMemo(...args).flush();
 	};
 
-	return (wrappedFunction as unknown) as IMemoizeDebouncedFunction<F>;
+	return wrappedFunction as unknown as IMemoizeDebouncedFunction<F>;
 }

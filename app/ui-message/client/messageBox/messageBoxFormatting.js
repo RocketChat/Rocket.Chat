@@ -1,7 +1,6 @@
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings';
 
-
 export const formattingButtons = [
 	{
 		label: 'bold',
@@ -75,18 +74,25 @@ export function applyFormatting(pattern, input) {
 	input.focus();
 
 	const startPattern = pattern.substr(0, pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
+	const startPatternFound = [...startPattern]
+		.reverse()
+		.every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
 
 	if (startPatternFound) {
 		const endPattern = pattern.substr(pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
+		const endPatternFound = [...endPattern].every(
+			(char, index) => input.value.substr(selectionEnd + index, 1) === char,
+		);
 
 		if (endPatternFound) {
 			input.selectionStart = selectionStart - startPattern.length;
 			input.selectionEnd = selectionEnd + endPattern.length;
 
 			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
-				input.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
+				input.value =
+					initText.substr(0, initText.length - startPattern.length) +
+					selectedText +
+					finalText.substr(endPattern.length);
 			}
 
 			input.selectionStart = selectionStart - startPattern.length;
@@ -96,7 +102,10 @@ export function applyFormatting(pattern, input) {
 		}
 	}
 
-	if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
+	if (
+		!document.execCommand ||
+		!document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))
+	) {
 		input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
 	}
 

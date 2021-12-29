@@ -1,12 +1,17 @@
-import { Cursor, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
+import {
+	Cursor,
+	FindOneOptions,
+	InsertOneWriteOpResult,
+	UpdateWriteOpResult,
+	WithId,
+	WithoutProjection,
+} from 'mongodb';
 
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { ICustomSound as T } from '../../../../definition/ICustomSound';
 
 export class CustomSoundsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { name: 1 } },
-	]
+	protected indexes: IndexSpecification[] = [{ key: { name: 1 } }];
 
 	// find
 	findByName(name: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
@@ -17,7 +22,11 @@ export class CustomSoundsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(name: string, except: string, options: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findByNameExceptId(
+		name: string,
+		except: string,
+		options: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const query = {
 			_id: { $nin: [except] },
 			name,

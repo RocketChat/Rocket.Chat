@@ -14,27 +14,31 @@ const emojiParser = (message) => {
 	let html = message.html.trim();
 
 	// &#39; to apostrophe (') for emojis such as :')
-	html = html.replace(/&#39;/g, '\'');
+	html = html.replace(/&#39;/g, "'");
 
 	// '<br>' to ' <br> ' for emojis such at line breaks
 	html = html.replace(/<br>/g, ' <br> ');
 
-	html = Object.entries(emoji.packages).reverse().reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
+	html = Object.entries(emoji.packages)
+		.reverse()
+		.reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
 
 	const checkEmojiOnly = document.createElement('div');
 
 	checkEmojiOnly.innerHTML = html;
 
-	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+	const emojis = Array.from(
+		checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'),
+	);
 
 	let hasText = false;
 
 	if (!isIE11) {
 		const filter = (node) => {
-			if (node.nodeType === Node.ELEMENT_NODE && (
-				node.classList.contains('emojione')
-						|| node.classList.contains('emoji')
-			)) {
+			if (
+				node.nodeType === Node.ELEMENT_NODE &&
+				(node.classList.contains('emojione') || node.classList.contains('emoji'))
+			) {
 				return NodeFilter.FILTER_REJECT;
 			}
 			return NodeFilter.FILTER_ACCEPT;
@@ -46,9 +50,11 @@ const emojiParser = (message) => {
 			filter,
 		);
 
-
 		while (walker.nextNode()) {
-			if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+			if (
+				walker.currentNode.nodeType === Node.TEXT_NODE &&
+				walker.currentNode.nodeValue.trim() !== ''
+			) {
 				hasText = true;
 				break;
 			}

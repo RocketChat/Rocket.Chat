@@ -4,16 +4,17 @@ import { Apps } from './orchestrator';
 import { Utilities } from '../lib/misc/Utilities';
 import { AppEvents } from './communication';
 
-
 export const loadAppI18nResources = (appId, languages) => {
 	Object.entries(languages).forEach(([language, translations]) => {
 		try {
 			// Translations keys must be scoped under app id
-			const scopedTranslations = Object.entries(translations)
-				.reduce((translations, [key, value]) => {
+			const scopedTranslations = Object.entries(translations).reduce(
+				(translations, [key, value]) => {
 					translations[Utilities.getI18nKeyForApp(key, appId)] = value;
 					return translations;
-				}, {});
+				},
+				{},
+			);
 
 			TAPi18next.addResourceBundle(language, 'project', scopedTranslations);
 		} catch (error) {

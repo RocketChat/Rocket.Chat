@@ -12,59 +12,128 @@ export const register = async (lang) => {
 		case 'onec':
 			return hljs.registerLanguage('onec', (await import('highlight.js/lib/languages/1c')).default);
 		case 'abnf':
-			return hljs.registerLanguage('abnf', (await import('highlight.js/lib/languages/abnf')).default);
+			return hljs.registerLanguage(
+				'abnf',
+				(await import('highlight.js/lib/languages/abnf')).default,
+			);
 		case 'accesslog':
-			return hljs.registerLanguage('accesslog', (await import('highlight.js/lib/languages/accesslog')).default);
+			return hljs.registerLanguage(
+				'accesslog',
+				(await import('highlight.js/lib/languages/accesslog')).default,
+			);
 		case 'actionscript':
-			return hljs.registerLanguage('actionscript', (await import('highlight.js/lib/languages/actionscript')).default);
+			return hljs.registerLanguage(
+				'actionscript',
+				(await import('highlight.js/lib/languages/actionscript')).default,
+			);
 		case 'ada':
 			return hljs.registerLanguage('ada', (await import('highlight.js/lib/languages/ada')).default);
 		case 'apache':
-			return hljs.registerLanguage('apache', (await import('highlight.js/lib/languages/apache')).default);
+			return hljs.registerLanguage(
+				'apache',
+				(await import('highlight.js/lib/languages/apache')).default,
+			);
 		case 'applescript':
-			return hljs.registerLanguage('applescript', (await import('highlight.js/lib/languages/applescript')).default);
+			return hljs.registerLanguage(
+				'applescript',
+				(await import('highlight.js/lib/languages/applescript')).default,
+			);
 		case 'arduino':
-			return hljs.registerLanguage('arduino', (await import('highlight.js/lib/languages/arduino')).default);
+			return hljs.registerLanguage(
+				'arduino',
+				(await import('highlight.js/lib/languages/arduino')).default,
+			);
 		case 'armasm':
-			return hljs.registerLanguage('armasm', (await import('highlight.js/lib/languages/armasm')).default);
+			return hljs.registerLanguage(
+				'armasm',
+				(await import('highlight.js/lib/languages/armasm')).default,
+			);
 		case 'asciidoc':
-			return hljs.registerLanguage('asciidoc', (await import('highlight.js/lib/languages/asciidoc')).default);
+			return hljs.registerLanguage(
+				'asciidoc',
+				(await import('highlight.js/lib/languages/asciidoc')).default,
+			);
 		case 'aspectj':
-			return hljs.registerLanguage('aspectj', (await import('highlight.js/lib/languages/aspectj')).default);
+			return hljs.registerLanguage(
+				'aspectj',
+				(await import('highlight.js/lib/languages/aspectj')).default,
+			);
 		case 'autohotkey':
-			return hljs.registerLanguage('autohotkey', (await import('highlight.js/lib/languages/autohotkey')).default);
+			return hljs.registerLanguage(
+				'autohotkey',
+				(await import('highlight.js/lib/languages/autohotkey')).default,
+			);
 		case 'autoit':
-			return hljs.registerLanguage('autoit', (await import('highlight.js/lib/languages/autoit')).default);
+			return hljs.registerLanguage(
+				'autoit',
+				(await import('highlight.js/lib/languages/autoit')).default,
+			);
 		case 'avrasm':
-			return hljs.registerLanguage('avrasm', (await import('highlight.js/lib/languages/avrasm')).default);
+			return hljs.registerLanguage(
+				'avrasm',
+				(await import('highlight.js/lib/languages/avrasm')).default,
+			);
 		case 'awk':
 			return hljs.registerLanguage('awk', (await import('highlight.js/lib/languages/awk')).default);
 		case 'axapta':
-			return hljs.registerLanguage('axapta', (await import('highlight.js/lib/languages/axapta')).default);
+			return hljs.registerLanguage(
+				'axapta',
+				(await import('highlight.js/lib/languages/axapta')).default,
+			);
 		case 'bash':
-			return hljs.registerLanguage('bash', (await import('highlight.js/lib/languages/bash')).default);
+			return hljs.registerLanguage(
+				'bash',
+				(await import('highlight.js/lib/languages/bash')).default,
+			);
 		case 'basic':
-			return hljs.registerLanguage('basic', (await import('highlight.js/lib/languages/basic')).default);
+			return hljs.registerLanguage(
+				'basic',
+				(await import('highlight.js/lib/languages/basic')).default,
+			);
 		case 'bnf':
 			return hljs.registerLanguage('bnf', (await import('highlight.js/lib/languages/bnf')).default);
 		case 'brainfuck':
-			return hljs.registerLanguage('brainfuck', (await import('highlight.js/lib/languages/brainfuck')).default);
+			return hljs.registerLanguage(
+				'brainfuck',
+				(await import('highlight.js/lib/languages/brainfuck')).default,
+			);
 		case 'cal':
 			return hljs.registerLanguage('cal', (await import('highlight.js/lib/languages/cal')).default);
 		case 'capnproto':
-			return hljs.registerLanguage('capnproto', (await import('highlight.js/lib/languages/capnproto')).default);
+			return hljs.registerLanguage(
+				'capnproto',
+				(await import('highlight.js/lib/languages/capnproto')).default,
+			);
 		case 'ceylon':
-			return hljs.registerLanguage('ceylon', (await import('highlight.js/lib/languages/ceylon')).default);
+			return hljs.registerLanguage(
+				'ceylon',
+				(await import('highlight.js/lib/languages/ceylon')).default,
+			);
 		case 'clean':
-			return hljs.registerLanguage('clean', (await import('highlight.js/lib/languages/clean')).default);
+			return hljs.registerLanguage(
+				'clean',
+				(await import('highlight.js/lib/languages/clean')).default,
+			);
 		case 'clojure':
-			return hljs.registerLanguage('clojure', (await import('highlight.js/lib/languages/clojure')).default);
+			return hljs.registerLanguage(
+				'clojure',
+				(await import('highlight.js/lib/languages/clojure')).default,
+			);
 		case 'clojure-repl':
-			return hljs.registerLanguage('clojure-repl', (await import('highlight.js/lib/languages/clojure-repl')).default);
+			return hljs.registerLanguage(
+				'clojure-repl',
+				(await import('highlight.js/lib/languages/clojure-repl')).default,
+			);
 		case 'cmake':
-			return hljs.registerLanguage('cmake', (await import('highlight.js/lib/languages/cmake')).default);
+			return hljs.registerLanguage(
+				'cmake',
+				(await import('highlight.js/lib/languages/cmake')).default,
+			);
 		case 'coffeescript':
-			return hljs.registerLanguage('coffeescript', (await import('highlight.js/lib/languages/coffeescript')).default);
+			return hljs.registerLanguage(
+				'coffeescript',
+				(await import('highlight.js/lib/languages/coffeescript')).default,
+			);
 		case 'coq':
 			return hljs.registerLanguage('coq', (await import('highlight.js/lib/languages/coq')).default);
 		case 'cos':
@@ -72,9 +141,15 @@ export const register = async (lang) => {
 		case 'cpp':
 			return hljs.registerLanguage('cpp', (await import('highlight.js/lib/languages/cpp')).default);
 		case 'crmsh':
-			return hljs.registerLanguage('crmsh', (await import('highlight.js/lib/languages/crmsh')).default);
+			return hljs.registerLanguage(
+				'crmsh',
+				(await import('highlight.js/lib/languages/crmsh')).default,
+			);
 		case 'crystal':
-			return hljs.registerLanguage('crystal', (await import('highlight.js/lib/languages/crystal')).default);
+			return hljs.registerLanguage(
+				'crystal',
+				(await import('highlight.js/lib/languages/crystal')).default,
+			);
 		case 'cs':
 			return hljs.registerLanguage('cs', (await import('highlight.js/lib/languages/cs')).default);
 		case 'csp':
@@ -84,187 +159,412 @@ export const register = async (lang) => {
 		case 'd':
 			return hljs.registerLanguage('d', (await import('highlight.js/lib/languages/d')).default);
 		case 'dart':
-			return hljs.registerLanguage('dart', (await import('highlight.js/lib/languages/dart')).default);
+			return hljs.registerLanguage(
+				'dart',
+				(await import('highlight.js/lib/languages/dart')).default,
+			);
 		case 'delphi':
-			return hljs.registerLanguage('delphi', (await import('highlight.js/lib/languages/delphi')).default);
+			return hljs.registerLanguage(
+				'delphi',
+				(await import('highlight.js/lib/languages/delphi')).default,
+			);
 		case 'diff':
-			return hljs.registerLanguage('diff', (await import('highlight.js/lib/languages/diff')).default);
+			return hljs.registerLanguage(
+				'diff',
+				(await import('highlight.js/lib/languages/diff')).default,
+			);
 		case 'django':
-			return hljs.registerLanguage('django', (await import('highlight.js/lib/languages/django')).default);
+			return hljs.registerLanguage(
+				'django',
+				(await import('highlight.js/lib/languages/django')).default,
+			);
 		case 'dns':
 			return hljs.registerLanguage('dns', (await import('highlight.js/lib/languages/dns')).default);
 		case 'dockerfile':
-			return hljs.registerLanguage('dockerfile', (await import('highlight.js/lib/languages/dockerfile')).default);
+			return hljs.registerLanguage(
+				'dockerfile',
+				(await import('highlight.js/lib/languages/dockerfile')).default,
+			);
 		case 'dos':
 			return hljs.registerLanguage('dos', (await import('highlight.js/lib/languages/dos')).default);
 		case 'dsconfig':
-			return hljs.registerLanguage('dsconfig', (await import('highlight.js/lib/languages/dsconfig')).default);
+			return hljs.registerLanguage(
+				'dsconfig',
+				(await import('highlight.js/lib/languages/dsconfig')).default,
+			);
 		case 'dts':
 			return hljs.registerLanguage('dts', (await import('highlight.js/lib/languages/dts')).default);
 		case 'dust':
-			return hljs.registerLanguage('dust', (await import('highlight.js/lib/languages/dust')).default);
+			return hljs.registerLanguage(
+				'dust',
+				(await import('highlight.js/lib/languages/dust')).default,
+			);
 		case 'ebnf':
-			return hljs.registerLanguage('ebnf', (await import('highlight.js/lib/languages/ebnf')).default);
+			return hljs.registerLanguage(
+				'ebnf',
+				(await import('highlight.js/lib/languages/ebnf')).default,
+			);
 		case 'elixir':
-			return hljs.registerLanguage('elixir', (await import('highlight.js/lib/languages/elixir')).default);
+			return hljs.registerLanguage(
+				'elixir',
+				(await import('highlight.js/lib/languages/elixir')).default,
+			);
 		case 'elm':
 			return hljs.registerLanguage('elm', (await import('highlight.js/lib/languages/elm')).default);
 		case 'erb':
 			return hljs.registerLanguage('erb', (await import('highlight.js/lib/languages/erb')).default);
 		case 'erlang':
-			return hljs.registerLanguage('erlang', (await import('highlight.js/lib/languages/erlang')).default);
+			return hljs.registerLanguage(
+				'erlang',
+				(await import('highlight.js/lib/languages/erlang')).default,
+			);
 		case 'excel':
-			return hljs.registerLanguage('excel', (await import('highlight.js/lib/languages/excel')).default);
+			return hljs.registerLanguage(
+				'excel',
+				(await import('highlight.js/lib/languages/excel')).default,
+			);
 		case 'fix':
 			return hljs.registerLanguage('fix', (await import('highlight.js/lib/languages/fix')).default);
 		case 'flix':
-			return hljs.registerLanguage('flix', (await import('highlight.js/lib/languages/flix')).default);
+			return hljs.registerLanguage(
+				'flix',
+				(await import('highlight.js/lib/languages/flix')).default,
+			);
 		case 'fortran':
-			return hljs.registerLanguage('fortran', (await import('highlight.js/lib/languages/fortran')).default);
+			return hljs.registerLanguage(
+				'fortran',
+				(await import('highlight.js/lib/languages/fortran')).default,
+			);
 		case 'fsharp':
-			return hljs.registerLanguage('fsharp', (await import('highlight.js/lib/languages/fsharp')).default);
+			return hljs.registerLanguage(
+				'fsharp',
+				(await import('highlight.js/lib/languages/fsharp')).default,
+			);
 		case 'gams':
-			return hljs.registerLanguage('gams', (await import('highlight.js/lib/languages/gams')).default);
+			return hljs.registerLanguage(
+				'gams',
+				(await import('highlight.js/lib/languages/gams')).default,
+			);
 		case 'gauss':
-			return hljs.registerLanguage('gauss', (await import('highlight.js/lib/languages/gauss')).default);
+			return hljs.registerLanguage(
+				'gauss',
+				(await import('highlight.js/lib/languages/gauss')).default,
+			);
 		case 'gcode':
-			return hljs.registerLanguage('gcode', (await import('highlight.js/lib/languages/gcode')).default);
+			return hljs.registerLanguage(
+				'gcode',
+				(await import('highlight.js/lib/languages/gcode')).default,
+			);
 		case 'gherkin':
-			return hljs.registerLanguage('gherkin', (await import('highlight.js/lib/languages/gherkin')).default);
+			return hljs.registerLanguage(
+				'gherkin',
+				(await import('highlight.js/lib/languages/gherkin')).default,
+			);
 		case 'glsl':
-			return hljs.registerLanguage('glsl', (await import('highlight.js/lib/languages/glsl')).default);
+			return hljs.registerLanguage(
+				'glsl',
+				(await import('highlight.js/lib/languages/glsl')).default,
+			);
 		case 'go':
 			return hljs.registerLanguage('go', (await import('highlight.js/lib/languages/go')).default);
 		case 'golo':
-			return hljs.registerLanguage('golo', (await import('highlight.js/lib/languages/golo')).default);
+			return hljs.registerLanguage(
+				'golo',
+				(await import('highlight.js/lib/languages/golo')).default,
+			);
 		case 'gradle':
-			return hljs.registerLanguage('gradle', (await import('highlight.js/lib/languages/gradle')).default);
+			return hljs.registerLanguage(
+				'gradle',
+				(await import('highlight.js/lib/languages/gradle')).default,
+			);
 		case 'groovy':
-			return hljs.registerLanguage('groovy', (await import('highlight.js/lib/languages/groovy')).default);
+			return hljs.registerLanguage(
+				'groovy',
+				(await import('highlight.js/lib/languages/groovy')).default,
+			);
 		case 'haml':
-			return hljs.registerLanguage('haml', (await import('highlight.js/lib/languages/haml')).default);
+			return hljs.registerLanguage(
+				'haml',
+				(await import('highlight.js/lib/languages/haml')).default,
+			);
 		case 'handlebars':
-			return hljs.registerLanguage('handlebars', (await import('highlight.js/lib/languages/handlebars')).default);
+			return hljs.registerLanguage(
+				'handlebars',
+				(await import('highlight.js/lib/languages/handlebars')).default,
+			);
 		case 'haskell':
-			return hljs.registerLanguage('haskell', (await import('highlight.js/lib/languages/haskell')).default);
+			return hljs.registerLanguage(
+				'haskell',
+				(await import('highlight.js/lib/languages/haskell')).default,
+			);
 		case 'haxe':
-			return hljs.registerLanguage('haxe', (await import('highlight.js/lib/languages/haxe')).default);
+			return hljs.registerLanguage(
+				'haxe',
+				(await import('highlight.js/lib/languages/haxe')).default,
+			);
 		case 'hsp':
 			return hljs.registerLanguage('hsp', (await import('highlight.js/lib/languages/hsp')).default);
 		case 'htmlbars':
-			return hljs.registerLanguage('htmlbars', (await import('highlight.js/lib/languages/htmlbars')).default);
+			return hljs.registerLanguage(
+				'htmlbars',
+				(await import('highlight.js/lib/languages/htmlbars')).default,
+			);
 		case 'http':
-			return hljs.registerLanguage('http', (await import('highlight.js/lib/languages/http')).default);
+			return hljs.registerLanguage(
+				'http',
+				(await import('highlight.js/lib/languages/http')).default,
+			);
 		case 'hy':
 			return hljs.registerLanguage('hy', (await import('highlight.js/lib/languages/hy')).default);
 		case 'inform7':
-			return hljs.registerLanguage('inform7', (await import('highlight.js/lib/languages/inform7')).default);
+			return hljs.registerLanguage(
+				'inform7',
+				(await import('highlight.js/lib/languages/inform7')).default,
+			);
 		case 'ini':
 			return hljs.registerLanguage('ini', (await import('highlight.js/lib/languages/ini')).default);
 		case 'irpf90':
-			return hljs.registerLanguage('irpf90', (await import('highlight.js/lib/languages/irpf90')).default);
+			return hljs.registerLanguage(
+				'irpf90',
+				(await import('highlight.js/lib/languages/irpf90')).default,
+			);
 		case 'java':
-			return hljs.registerLanguage('java', (await import('highlight.js/lib/languages/java')).default);
+			return hljs.registerLanguage(
+				'java',
+				(await import('highlight.js/lib/languages/java')).default,
+			);
 		case 'javascript':
-			return hljs.registerLanguage('javascript', (await import('highlight.js/lib/languages/javascript')).default);
+			return hljs.registerLanguage(
+				'javascript',
+				(await import('highlight.js/lib/languages/javascript')).default,
+			);
 		case 'jboss-cli':
-			return hljs.registerLanguage('jboss-cli', (await import('highlight.js/lib/languages/jboss-cli')).default);
+			return hljs.registerLanguage(
+				'jboss-cli',
+				(await import('highlight.js/lib/languages/jboss-cli')).default,
+			);
 		case 'json':
-			return hljs.registerLanguage('json', (await import('highlight.js/lib/languages/json')).default);
+			return hljs.registerLanguage(
+				'json',
+				(await import('highlight.js/lib/languages/json')).default,
+			);
 		case 'julia':
-			return hljs.registerLanguage('julia', (await import('highlight.js/lib/languages/julia')).default);
+			return hljs.registerLanguage(
+				'julia',
+				(await import('highlight.js/lib/languages/julia')).default,
+			);
 		case 'julia-repl':
-			return hljs.registerLanguage('julia-repl', (await import('highlight.js/lib/languages/julia-repl')).default);
+			return hljs.registerLanguage(
+				'julia-repl',
+				(await import('highlight.js/lib/languages/julia-repl')).default,
+			);
 		case 'kotlin':
-			return hljs.registerLanguage('kotlin', (await import('highlight.js/lib/languages/kotlin')).default);
+			return hljs.registerLanguage(
+				'kotlin',
+				(await import('highlight.js/lib/languages/kotlin')).default,
+			);
 		case 'lasso':
-			return hljs.registerLanguage('lasso', (await import('highlight.js/lib/languages/lasso')).default);
+			return hljs.registerLanguage(
+				'lasso',
+				(await import('highlight.js/lib/languages/lasso')).default,
+			);
 		case 'ldif':
-			return hljs.registerLanguage('ldif', (await import('highlight.js/lib/languages/ldif')).default);
+			return hljs.registerLanguage(
+				'ldif',
+				(await import('highlight.js/lib/languages/ldif')).default,
+			);
 		case 'leaf':
-			return hljs.registerLanguage('leaf', (await import('highlight.js/lib/languages/leaf')).default);
+			return hljs.registerLanguage(
+				'leaf',
+				(await import('highlight.js/lib/languages/leaf')).default,
+			);
 		case 'less':
-			return hljs.registerLanguage('less', (await import('highlight.js/lib/languages/less')).default);
+			return hljs.registerLanguage(
+				'less',
+				(await import('highlight.js/lib/languages/less')).default,
+			);
 		case 'lisp':
-			return hljs.registerLanguage('lisp', (await import('highlight.js/lib/languages/lisp')).default);
+			return hljs.registerLanguage(
+				'lisp',
+				(await import('highlight.js/lib/languages/lisp')).default,
+			);
 		case 'livecodeserver':
-			return hljs.registerLanguage('livecodeserver', (await import('highlight.js/lib/languages/livecodeserver')).default);
+			return hljs.registerLanguage(
+				'livecodeserver',
+				(await import('highlight.js/lib/languages/livecodeserver')).default,
+			);
 		case 'livescript':
-			return hljs.registerLanguage('livescript', (await import('highlight.js/lib/languages/livescript')).default);
+			return hljs.registerLanguage(
+				'livescript',
+				(await import('highlight.js/lib/languages/livescript')).default,
+			);
 		case 'llvm':
-			return hljs.registerLanguage('llvm', (await import('highlight.js/lib/languages/llvm')).default);
+			return hljs.registerLanguage(
+				'llvm',
+				(await import('highlight.js/lib/languages/llvm')).default,
+			);
 		case 'lsl':
 			return hljs.registerLanguage('lsl', (await import('highlight.js/lib/languages/lsl')).default);
 		case 'lua':
 			return hljs.registerLanguage('lua', (await import('highlight.js/lib/languages/lua')).default);
 		case 'makefile':
-			return hljs.registerLanguage('makefile', (await import('highlight.js/lib/languages/makefile')).default);
+			return hljs.registerLanguage(
+				'makefile',
+				(await import('highlight.js/lib/languages/makefile')).default,
+			);
 		case 'markdown':
-			return hljs.registerLanguage('markdown', (await import('highlight.js/lib/languages/markdown')).default);
+			return hljs.registerLanguage(
+				'markdown',
+				(await import('highlight.js/lib/languages/markdown')).default,
+			);
 		case 'mathematica':
-			return hljs.registerLanguage('mathematica', (await import('highlight.js/lib/languages/mathematica')).default);
+			return hljs.registerLanguage(
+				'mathematica',
+				(await import('highlight.js/lib/languages/mathematica')).default,
+			);
 		case 'matlab':
-			return hljs.registerLanguage('matlab', (await import('highlight.js/lib/languages/matlab')).default);
+			return hljs.registerLanguage(
+				'matlab',
+				(await import('highlight.js/lib/languages/matlab')).default,
+			);
 		case 'maxima':
-			return hljs.registerLanguage('maxima', (await import('highlight.js/lib/languages/maxima')).default);
+			return hljs.registerLanguage(
+				'maxima',
+				(await import('highlight.js/lib/languages/maxima')).default,
+			);
 		case 'mel':
 			return hljs.registerLanguage('mel', (await import('highlight.js/lib/languages/mel')).default);
 		case 'mercury':
-			return hljs.registerLanguage('mercury', (await import('highlight.js/lib/languages/mercury')).default);
+			return hljs.registerLanguage(
+				'mercury',
+				(await import('highlight.js/lib/languages/mercury')).default,
+			);
 		case 'mipsasm':
-			return hljs.registerLanguage('mipsasm', (await import('highlight.js/lib/languages/mipsasm')).default);
+			return hljs.registerLanguage(
+				'mipsasm',
+				(await import('highlight.js/lib/languages/mipsasm')).default,
+			);
 		case 'mizar':
-			return hljs.registerLanguage('mizar', (await import('highlight.js/lib/languages/mizar')).default);
+			return hljs.registerLanguage(
+				'mizar',
+				(await import('highlight.js/lib/languages/mizar')).default,
+			);
 		case 'perl':
-			return hljs.registerLanguage('perl', (await import('highlight.js/lib/languages/perl')).default);
+			return hljs.registerLanguage(
+				'perl',
+				(await import('highlight.js/lib/languages/perl')).default,
+			);
 		case 'mojolicious':
-			return hljs.registerLanguage('mojolicious', (await import('highlight.js/lib/languages/mojolicious')).default);
+			return hljs.registerLanguage(
+				'mojolicious',
+				(await import('highlight.js/lib/languages/mojolicious')).default,
+			);
 		case 'monkey':
-			return hljs.registerLanguage('monkey', (await import('highlight.js/lib/languages/monkey')).default);
+			return hljs.registerLanguage(
+				'monkey',
+				(await import('highlight.js/lib/languages/monkey')).default,
+			);
 		case 'moonscript':
-			return hljs.registerLanguage('moonscript', (await import('highlight.js/lib/languages/moonscript')).default);
+			return hljs.registerLanguage(
+				'moonscript',
+				(await import('highlight.js/lib/languages/moonscript')).default,
+			);
 		case 'n1ql':
-			return hljs.registerLanguage('n1ql', (await import('highlight.js/lib/languages/n1ql')).default);
+			return hljs.registerLanguage(
+				'n1ql',
+				(await import('highlight.js/lib/languages/n1ql')).default,
+			);
 		case 'nginx':
-			return hljs.registerLanguage('nginx', (await import('highlight.js/lib/languages/nginx')).default);
+			return hljs.registerLanguage(
+				'nginx',
+				(await import('highlight.js/lib/languages/nginx')).default,
+			);
 		case 'nimrod':
-			return hljs.registerLanguage('nimrod', (await import('highlight.js/lib/languages/nimrod')).default);
+			return hljs.registerLanguage(
+				'nimrod',
+				(await import('highlight.js/lib/languages/nimrod')).default,
+			);
 		case 'nix':
 			return hljs.registerLanguage('nix', (await import('highlight.js/lib/languages/nix')).default);
 		case 'nsis':
-			return hljs.registerLanguage('nsis', (await import('highlight.js/lib/languages/nsis')).default);
+			return hljs.registerLanguage(
+				'nsis',
+				(await import('highlight.js/lib/languages/nsis')).default,
+			);
 		case 'objectivec':
-			return hljs.registerLanguage('objectivec', (await import('highlight.js/lib/languages/objectivec')).default);
+			return hljs.registerLanguage(
+				'objectivec',
+				(await import('highlight.js/lib/languages/objectivec')).default,
+			);
 		case 'ocaml':
-			return hljs.registerLanguage('ocaml', (await import('highlight.js/lib/languages/ocaml')).default);
+			return hljs.registerLanguage(
+				'ocaml',
+				(await import('highlight.js/lib/languages/ocaml')).default,
+			);
 		case 'openscad':
-			return hljs.registerLanguage('openscad', (await import('highlight.js/lib/languages/openscad')).default);
+			return hljs.registerLanguage(
+				'openscad',
+				(await import('highlight.js/lib/languages/openscad')).default,
+			);
 		case 'oxygene':
-			return hljs.registerLanguage('oxygene', (await import('highlight.js/lib/languages/oxygene')).default);
+			return hljs.registerLanguage(
+				'oxygene',
+				(await import('highlight.js/lib/languages/oxygene')).default,
+			);
 		case 'parser3':
-			return hljs.registerLanguage('parser3', (await import('highlight.js/lib/languages/parser3')).default);
+			return hljs.registerLanguage(
+				'parser3',
+				(await import('highlight.js/lib/languages/parser3')).default,
+			);
 		case 'pf':
 			return hljs.registerLanguage('pf', (await import('highlight.js/lib/languages/pf')).default);
 		case 'php':
 			return hljs.registerLanguage('php', (await import('highlight.js/lib/languages/php')).default);
 		case 'pony':
-			return hljs.registerLanguage('pony', (await import('highlight.js/lib/languages/pony')).default);
+			return hljs.registerLanguage(
+				'pony',
+				(await import('highlight.js/lib/languages/pony')).default,
+			);
 		case 'powershell':
-			return hljs.registerLanguage('powershell', (await import('highlight.js/lib/languages/powershell')).default);
+			return hljs.registerLanguage(
+				'powershell',
+				(await import('highlight.js/lib/languages/powershell')).default,
+			);
 		case 'processing':
-			return hljs.registerLanguage('processing', (await import('highlight.js/lib/languages/processing')).default);
+			return hljs.registerLanguage(
+				'processing',
+				(await import('highlight.js/lib/languages/processing')).default,
+			);
 		case 'profile':
-			return hljs.registerLanguage('profile', (await import('highlight.js/lib/languages/profile')).default);
+			return hljs.registerLanguage(
+				'profile',
+				(await import('highlight.js/lib/languages/profile')).default,
+			);
 		case 'prolog':
-			return hljs.registerLanguage('prolog', (await import('highlight.js/lib/languages/prolog')).default);
+			return hljs.registerLanguage(
+				'prolog',
+				(await import('highlight.js/lib/languages/prolog')).default,
+			);
 		case 'protobuf':
-			return hljs.registerLanguage('protobuf', (await import('highlight.js/lib/languages/protobuf')).default);
+			return hljs.registerLanguage(
+				'protobuf',
+				(await import('highlight.js/lib/languages/protobuf')).default,
+			);
 		case 'puppet':
-			return hljs.registerLanguage('puppet', (await import('highlight.js/lib/languages/puppet')).default);
+			return hljs.registerLanguage(
+				'puppet',
+				(await import('highlight.js/lib/languages/puppet')).default,
+			);
 		case 'purebasic':
-			return hljs.registerLanguage('purebasic', (await import('highlight.js/lib/languages/purebasic')).default);
+			return hljs.registerLanguage(
+				'purebasic',
+				(await import('highlight.js/lib/languages/purebasic')).default,
+			);
 		case 'python':
-			return hljs.registerLanguage('python', (await import('highlight.js/lib/languages/python')).default);
+			return hljs.registerLanguage(
+				'python',
+				(await import('highlight.js/lib/languages/python')).default,
+			);
 		case 'q':
 			return hljs.registerLanguage('q', (await import('highlight.js/lib/languages/q')).default);
 		case 'qml':
@@ -274,27 +574,57 @@ export const register = async (lang) => {
 		case 'rib':
 			return hljs.registerLanguage('rib', (await import('highlight.js/lib/languages/rib')).default);
 		case 'roboconf':
-			return hljs.registerLanguage('roboconf', (await import('highlight.js/lib/languages/roboconf')).default);
+			return hljs.registerLanguage(
+				'roboconf',
+				(await import('highlight.js/lib/languages/roboconf')).default,
+			);
 		case 'rsl':
 			return hljs.registerLanguage('rsl', (await import('highlight.js/lib/languages/rsl')).default);
 		case 'ruleslanguage':
-			return hljs.registerLanguage('ruleslanguage', (await import('highlight.js/lib/languages/ruleslanguage')).default);
+			return hljs.registerLanguage(
+				'ruleslanguage',
+				(await import('highlight.js/lib/languages/ruleslanguage')).default,
+			);
 		case 'rust':
-			return hljs.registerLanguage('rust', (await import('highlight.js/lib/languages/rust')).default);
+			return hljs.registerLanguage(
+				'rust',
+				(await import('highlight.js/lib/languages/rust')).default,
+			);
 		case 'scala':
-			return hljs.registerLanguage('scala', (await import('highlight.js/lib/languages/scala')).default);
+			return hljs.registerLanguage(
+				'scala',
+				(await import('highlight.js/lib/languages/scala')).default,
+			);
 		case 'scheme':
-			return hljs.registerLanguage('scheme', (await import('highlight.js/lib/languages/scheme')).default);
+			return hljs.registerLanguage(
+				'scheme',
+				(await import('highlight.js/lib/languages/scheme')).default,
+			);
 		case 'scilab':
-			return hljs.registerLanguage('scilab', (await import('highlight.js/lib/languages/scilab')).default);
+			return hljs.registerLanguage(
+				'scilab',
+				(await import('highlight.js/lib/languages/scilab')).default,
+			);
 		case 'scss':
-			return hljs.registerLanguage('scss', (await import('highlight.js/lib/languages/scss')).default);
+			return hljs.registerLanguage(
+				'scss',
+				(await import('highlight.js/lib/languages/scss')).default,
+			);
 		case 'shell':
-			return hljs.registerLanguage('shell', (await import('highlight.js/lib/languages/shell')).default);
+			return hljs.registerLanguage(
+				'shell',
+				(await import('highlight.js/lib/languages/shell')).default,
+			);
 		case 'smali':
-			return hljs.registerLanguage('smali', (await import('highlight.js/lib/languages/smali')).default);
+			return hljs.registerLanguage(
+				'smali',
+				(await import('highlight.js/lib/languages/smali')).default,
+			);
 		case 'smalltalk':
-			return hljs.registerLanguage('smalltalk', (await import('highlight.js/lib/languages/smalltalk')).default);
+			return hljs.registerLanguage(
+				'smalltalk',
+				(await import('highlight.js/lib/languages/smalltalk')).default,
+			);
 		case 'sml':
 			return hljs.registerLanguage('sml', (await import('highlight.js/lib/languages/sml')).default);
 		case 'sqf':
@@ -302,21 +632,45 @@ export const register = async (lang) => {
 		case 'sql':
 			return hljs.registerLanguage('sql', (await import('highlight.js/lib/languages/sql')).default);
 		case 'stan':
-			return hljs.registerLanguage('stan', (await import('highlight.js/lib/languages/stan')).default);
+			return hljs.registerLanguage(
+				'stan',
+				(await import('highlight.js/lib/languages/stan')).default,
+			);
 		case 'stata':
-			return hljs.registerLanguage('stata', (await import('highlight.js/lib/languages/stata')).default);
+			return hljs.registerLanguage(
+				'stata',
+				(await import('highlight.js/lib/languages/stata')).default,
+			);
 		case 'step21':
-			return hljs.registerLanguage('step21', (await import('highlight.js/lib/languages/step21')).default);
+			return hljs.registerLanguage(
+				'step21',
+				(await import('highlight.js/lib/languages/step21')).default,
+			);
 		case 'stylus':
-			return hljs.registerLanguage('stylus', (await import('highlight.js/lib/languages/stylus')).default);
+			return hljs.registerLanguage(
+				'stylus',
+				(await import('highlight.js/lib/languages/stylus')).default,
+			);
 		case 'subunit':
-			return hljs.registerLanguage('subunit', (await import('highlight.js/lib/languages/subunit')).default);
+			return hljs.registerLanguage(
+				'subunit',
+				(await import('highlight.js/lib/languages/subunit')).default,
+			);
 		case 'swift':
-			return hljs.registerLanguage('swift', (await import('highlight.js/lib/languages/swift')).default);
+			return hljs.registerLanguage(
+				'swift',
+				(await import('highlight.js/lib/languages/swift')).default,
+			);
 		case 'taggerscript':
-			return hljs.registerLanguage('taggerscript', (await import('highlight.js/lib/languages/taggerscript')).default);
+			return hljs.registerLanguage(
+				'taggerscript',
+				(await import('highlight.js/lib/languages/taggerscript')).default,
+			);
 		case 'yaml':
-			return hljs.registerLanguage('yaml', (await import('highlight.js/lib/languages/yaml')).default);
+			return hljs.registerLanguage(
+				'yaml',
+				(await import('highlight.js/lib/languages/yaml')).default,
+			);
 		case 'tap':
 			return hljs.registerLanguage('tap', (await import('highlight.js/lib/languages/tap')).default);
 		case 'tcl':
@@ -324,37 +678,76 @@ export const register = async (lang) => {
 		case 'tex':
 			return hljs.registerLanguage('tex', (await import('highlight.js/lib/languages/tex')).default);
 		case 'thrift':
-			return hljs.registerLanguage('thrift', (await import('highlight.js/lib/languages/thrift')).default);
+			return hljs.registerLanguage(
+				'thrift',
+				(await import('highlight.js/lib/languages/thrift')).default,
+			);
 		case 'tp':
 			return hljs.registerLanguage('tp', (await import('highlight.js/lib/languages/tp')).default);
 		case 'twig':
-			return hljs.registerLanguage('twig', (await import('highlight.js/lib/languages/twig')).default);
+			return hljs.registerLanguage(
+				'twig',
+				(await import('highlight.js/lib/languages/twig')).default,
+			);
 		case 'typescript':
-			return hljs.registerLanguage('typescript', (await import('highlight.js/lib/languages/typescript')).default);
+			return hljs.registerLanguage(
+				'typescript',
+				(await import('highlight.js/lib/languages/typescript')).default,
+			);
 		case 'vala':
-			return hljs.registerLanguage('vala', (await import('highlight.js/lib/languages/vala')).default);
+			return hljs.registerLanguage(
+				'vala',
+				(await import('highlight.js/lib/languages/vala')).default,
+			);
 		case 'vbnet':
-			return hljs.registerLanguage('vbnet', (await import('highlight.js/lib/languages/vbnet')).default);
+			return hljs.registerLanguage(
+				'vbnet',
+				(await import('highlight.js/lib/languages/vbnet')).default,
+			);
 		case 'vbscript':
-			return hljs.registerLanguage('vbscript', (await import('highlight.js/lib/languages/vbscript')).default);
+			return hljs.registerLanguage(
+				'vbscript',
+				(await import('highlight.js/lib/languages/vbscript')).default,
+			);
 		case 'vbscript-html':
-			return hljs.registerLanguage('vbscript-html(', (await import('highlight.js/lib/languages/vbscript-html')).default);
+			return hljs.registerLanguage(
+				'vbscript-html(',
+				(await import('highlight.js/lib/languages/vbscript-html')).default,
+			);
 		case 'verilog':
-			return hljs.registerLanguage('verilog', (await import('highlight.js/lib/languages/verilog')).default);
+			return hljs.registerLanguage(
+				'verilog',
+				(await import('highlight.js/lib/languages/verilog')).default,
+			);
 		case 'vhdl':
-			return hljs.registerLanguage('vhdl', (await import('highlight.js/lib/languages/vhdl')).default);
+			return hljs.registerLanguage(
+				'vhdl',
+				(await import('highlight.js/lib/languages/vhdl')).default,
+			);
 		case 'vim':
 			return hljs.registerLanguage('vim', (await import('highlight.js/lib/languages/vim')).default);
 		case 'x86asm':
-			return hljs.registerLanguage('x86asm', (await import('highlight.js/lib/languages/x86asm')).default);
+			return hljs.registerLanguage(
+				'x86asm',
+				(await import('highlight.js/lib/languages/x86asm')).default,
+			);
 		case 'xl':
 			return hljs.registerLanguage('xl', (await import('highlight.js/lib/languages/xl')).default);
 		case 'xquery':
-			return hljs.registerLanguage('xquery', (await import('highlight.js/lib/languages/xquery')).default);
+			return hljs.registerLanguage(
+				'xquery',
+				(await import('highlight.js/lib/languages/xquery')).default,
+			);
 		case 'zephir':
-			return hljs.registerLanguage('zephir', (await import('highlight.js/lib/languages/zephir')).default);
+			return hljs.registerLanguage(
+				'zephir',
+				(await import('highlight.js/lib/languages/zephir')).default,
+			);
 		default:
-			return hljs.registerLanguage('plaintext', (await import('highlight.js/lib/languages/plaintext')).default);
+			return hljs.registerLanguage(
+				'plaintext',
+				(await import('highlight.js/lib/languages/plaintext')).default,
+			);
 	}
 };
 

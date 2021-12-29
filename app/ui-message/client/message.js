@@ -32,7 +32,9 @@ const renderBody = (msg, settings) => {
 		// render template
 	} else if (messageType.message) {
 		msg.msg = escapeHTML(msg.msg);
-		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
+		msg = TAPi18n.__(messageType.message, {
+			...(typeof messageType.data === 'function' && messageType.data(msg)),
+		});
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = renderMentions(msg);
@@ -46,7 +48,7 @@ const renderBody = (msg, settings) => {
 	}
 
 	if (searchedText) {
-		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
+		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${str}</mark>`);
 	}
 
 	return msg;
@@ -54,7 +56,10 @@ const renderBody = (msg, settings) => {
 
 Template.message.helpers({
 	enableMessageParserEarlyAdoption() {
-		const { settings: { enableMessageParserEarlyAdoption }, msg } = this;
+		const {
+			settings: { enableMessageParserEarlyAdoption },
+			msg,
+		} = this;
 		return enableMessageParserEarlyAdoption && msg.md;
 	},
 	unread() {
@@ -87,7 +92,7 @@ Template.message.helpers({
 	},
 	i18nDiscussionCounter() {
 		const { msg } = this;
-		return `<span class='reply-counter'>${ msg.dcount }</span>`;
+		return `<span class='reply-counter'>${msg.dcount}</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -131,26 +136,38 @@ Template.message.helpers({
 		const userRoles = UserRoles.findOne(msg.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': msg.u._id,
-			rid: msg.rid,
+			'rid': msg.rid,
 		});
-		const roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
-		return Roles.find({
-			_id: {
-				$in: roles,
+		const roles = [
+			...((userRoles && userRoles.roles) || []),
+			...((roomRoles && roomRoles.roles) || []),
+		];
+		return Roles.find(
+			{
+				_id: {
+					$in: roles,
+				},
+				description: {
+					$exists: 1,
+					$ne: '',
+				},
 			},
-			description: {
-				$exists: 1,
-				$ne: '',
+			{
+				fields: {
+					description: 1,
+				},
 			},
-		}, {
-			fields: {
-				description: 1,
-			},
-		});
+		);
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || (MessageTypes.isSystemMessage(msg) && !msg.tmid)) {
+		if (
+			groupable === false ||
+			settings.allowGroup === false ||
+			room.broadcast ||
+			msg.groupable === false ||
+			(MessageTypes.isSystemMessage(msg) && !msg.tmid)
+		) {
 			return 'false';
 		}
 	},
@@ -236,9 +253,19 @@ Template.message.helpers({
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
-		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
+		if (
+			settings.AutoTranslate_Enabled &&
+			msg.u &&
+			msg.u._id !== u._id &&
+			!MessageTypes.isSystemMessage(msg)
+		) {
 			const autoTranslate = subscription && subscription.autoTranslate;
-			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]);
+			return (
+				msg.autoTranslateFetching ||
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse &&
+					msg.translations &&
+					msg.translations[settings.translateLanguage])
+			);
 		}
 	},
 	translationProvider() {
@@ -269,7 +296,8 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} if (msg.label) {
+		}
+		if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -281,42 +309,55 @@ Template.message.helpers({
 		}
 
 		// check if oembed is disabled for message's sender
-		if ((settings.API_EmbedDisabledFor || '').split(',').map((username) => username.trim()).includes(msg.u && msg.u.username)) {
+		if (
+			(settings.API_EmbedDisabledFor || '')
+				.split(',')
+				.map((username) => username.trim())
+				.includes(msg.u && msg.u.username)
+		) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
-		const { msg: { reactions = {} }, u: { username: myUsername, name: myName } } = this;
+		const {
+			msg: { reactions = {} },
+			u: { username: myUsername, name: myName },
+		} = this;
 
-		return Object.entries(reactions)
-			.map(([emoji, reaction]) => {
-				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
-				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
+		return Object.entries(reactions).map(([emoji, reaction]) => {
+			const myDisplayName = reaction.names ? myName : `@${myUsername}`;
+			const displayNames = reaction.names || reaction.usernames.map((username) => `@${username}`);
+			const selectedDisplayNames = displayNames
+				.slice(0, 15)
+				.filter((displayName) => displayName !== myDisplayName);
 
-				if (displayNames.some((displayName) => displayName === myDisplayName)) {
-					selectedDisplayNames.unshift(t('You'));
-				}
+			if (displayNames.some((displayName) => displayName === myDisplayName)) {
+				selectedDisplayNames.unshift(t('You'));
+			}
 
-				let usernames;
+			let usernames;
 
-				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
-				} else if (displayNames.length > 1) {
-					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
-				} else {
-					usernames = selectedDisplayNames[0];
-				}
+			if (displayNames.length > 15) {
+				usernames = `${selectedDisplayNames.join(', ')} ${t('And_more', {
+					length: displayNames.length - 15,
+				}).toLowerCase()}`;
+			} else if (displayNames.length > 1) {
+				usernames = `${selectedDisplayNames.slice(0, -1).join(', ')} ${t('and')} ${
+					selectedDisplayNames[selectedDisplayNames.length - 1]
+				}`;
+			} else {
+				usernames = selectedDisplayNames[0];
+			}
 
-				return {
-					emoji,
-					count: displayNames.length,
-					usernames,
-					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-					userReacted: displayNames.indexOf(myDisplayName) > -1,
-				};
-			});
+			return {
+				emoji,
+				count: displayNames.length,
+				usernames,
+				reaction: ` ${t('Reacted_with').toLowerCase()} ${emoji}`,
+				userReacted: displayNames.indexOf(myDisplayName) > -1,
+			};
+		});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {
@@ -358,10 +399,13 @@ Template.message.helpers({
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
-		return _.map(msg.actionLinks, function(actionLink, key) {
-			return _.extend({
-				id: key,
-			}, _.omit(actionLink, 'method_id', 'params'));
+		return _.map(msg.actionLinks, function (actionLink, key) {
+			return _.extend(
+				{
+					id: key,
+				},
+				_.omit(actionLink, 'method_id', 'params'),
+			);
 		});
 	},
 	hideActionLinks() {
@@ -426,31 +470,55 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
-		const { groupable, msg: { tmid, t, groupable: _groupable }, settings: { showreply } } = this;
-		return !(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'));
+		const {
+			groupable,
+			msg: { tmid, t, groupable: _groupable },
+			settings: { showreply },
+		} = this;
+		return (
+			!(groupable === true || _groupable === true) && !!(tmid && showreply && (!t || t === 'e2e'))
+		);
 	},
 	shouldHideBody() {
-		const { msg: { tmid, actionContext }, settings: { showreply }, context } = this;
+		const {
+			msg: { tmid, actionContext },
+			settings: { showreply },
+			context,
+		} = this;
 		return showreply && tmid && !(actionContext || context);
 	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
-		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
+		const {
+			msg: { tmid, collapsed },
+			settings: { showreply },
+			shouldCollapseReplies,
+		} = this;
+		const isCollapsedThreadReply =
+			shouldCollapseReplies && tmid && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
 	},
 	collapseSwitchClass() {
-		const { msg: { collapsed = true } } = this;
+		const {
+			msg: { collapsed = true },
+		} = this;
 		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
 	},
 	parentMessage() {
-		const { msg: { threadMsg } } = this;
+		const {
+			msg: { threadMsg },
+		} = this;
 		return threadMsg;
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return (
+			msg.starred &&
+			msg.starred.length > 0 &&
+			msg.starred.find((star) => star._id === Meteor.userId()) &&
+			!(msg.actionContext === 'starred' || this.context === 'starred')
+		);
 	},
 	readReceipt() {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
@@ -471,7 +539,10 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 	if (currentNode.previousElementSibling != null) {
 		let previousValid = currentNode.previousElementSibling;
-		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
+		while (
+			previousValid != null &&
+			(hasTempClass(previousValid) || !previousValid.classList.contains('message'))
+		) {
 			previousValid = previousValid.previousElementSibling;
 		}
 		return previousValid;
@@ -499,7 +570,14 @@ const isNewDay = (currentNode, previousNode, forceDate, showDateSeparator) => {
 	return false;
 };
 
-const isSequential = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
+const isSequential = (
+	currentNode,
+	previousNode,
+	forceDate,
+	period,
+	showDateSeparator,
+	shouldCollapseReplies,
+) => {
 	if (!previousNode) {
 		return false;
 	}
@@ -513,12 +591,17 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+	if (
+		showDateSeparator &&
+		previousMessageDate.toDateString() !== currentMessageDate.toDateString()
+	) {
 		return false;
 	}
 
 	if (!shouldCollapseReplies && currentDataset.tmid) {
-		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
+		return (
+			previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid
+		);
 	}
 
 	if (previousDataset.tmid && !currentDataset.tmid) {
@@ -544,7 +627,15 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 	return false;
 };
 
-const processSequentials = ({ index, currentNode, settings, forceDate, showDateSeparator = true, groupable, shouldCollapseReplies }) => {
+const processSequentials = ({
+	index,
+	currentNode,
+	settings,
+	forceDate,
+	showDateSeparator = true,
+	groupable,
+	shouldCollapseReplies,
+}) => {
 	if (!showDateSeparator && !groupable) {
 		return;
 	}
@@ -557,7 +648,16 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
 		}, 100);
 	}
-	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+	if (
+		isSequential(
+			currentNode,
+			previousNode,
+			forceDate,
+			settings.Message_GroupingPeriod,
+			showDateSeparator,
+			shouldCollapseReplies,
+		)
+	) {
 		currentNode.classList.add('sequential');
 	} else {
 		currentNode.classList.remove('sequential');
@@ -570,7 +670,16 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	}
 
 	if (nextNode && nextNode.dataset) {
-		if (isSequential(nextNode, currentNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+		if (
+			isSequential(
+				nextNode,
+				currentNode,
+				forceDate,
+				settings.Message_GroupingPeriod,
+				showDateSeparator,
+				shouldCollapseReplies,
+			)
+		) {
 			nextNode.classList.add('sequential');
 		} else {
 			nextNode.classList.remove('sequential');
@@ -584,7 +693,7 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	}
 };
 
-Template.message.onRendered(function() {
+Template.message.onRendered(function () {
 	const currentNode = this.firstNode;
 	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));
 });

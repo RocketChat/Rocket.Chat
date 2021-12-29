@@ -2,17 +2,24 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { Messages } from '../../../../models/server/raw';
 
 const normalizeTransferHistory = ({ transferData }) => transferData;
-export async function findLivechatTransferHistory({ userId, rid, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-livechat-rooms')) {
+export async function findLivechatTransferHistory({
+	userId,
+	rid,
+	pagination: { offset, count, sort },
+}) {
+	if (!(await hasPermissionAsync(userId, 'view-livechat-rooms'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = await Messages.find({ rid, t: 'livechat_transfer_history' }, {
-		fields: { transferData: 1 },
-		sort: sort || { ts: 1 },
-		skip: offset,
-		limit: count,
-	});
+	const cursor = await Messages.find(
+		{ rid, t: 'livechat_transfer_history' },
+		{
+			fields: { transferData: 1 },
+			sort: sort || { ts: 1 },
+			skip: offset,
+			limit: count,
+		},
+	);
 
 	const total = await cursor.count();
 	const messages = await cursor.toArray();

@@ -36,10 +36,16 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		return false;
 	},
 	update(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return (
+			hasPermission(Meteor.userId(), 'delete-message', doc.rid) ||
+			(settings.get('Message_AllowDeleting') && userId === doc.userId)
+		);
 	},
 	remove(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return (
+			hasPermission(Meteor.userId(), 'delete-message', doc.rid) ||
+			(settings.get('Message_AllowDeleting') && userId === doc.userId)
+		);
 	},
 });
 
@@ -51,9 +57,7 @@ export class FileUploadBase {
 		this.store = store;
 	}
 
-	getProgress() {
-
-	}
+	getProgress() {}
 
 	getFileName() {
 		return this.meta.name;

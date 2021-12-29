@@ -4,7 +4,8 @@ import { check, Match } from 'meteor/check';
 import { Session } from 'meteor/session';
 import './routes';
 
-const handleError = (error) => error && Session.set('errorMessage', error.reason || 'Unknown error');
+const handleError = (error) =>
+	error && Session.set('errorMessage', error.reason || 'Unknown error');
 
 // TODO: allow serviceConfig.loginStyle == popup
 Meteor.loginWithBlockstack = (options, callback = handleError) => {
@@ -21,14 +22,18 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 	}
 
 	try {
-		check(options, Match.ObjectIncluding({
-			blockstackIDHost: String,
-			redirectURI: String,
-			manifestURI: String,
-		}));
+		check(
+			options,
+			Match.ObjectIncluding({
+				blockstackIDHost: String,
+				redirectURI: String,
+				manifestURI: String,
+			}),
+		);
 
 		import('blockstack/dist/blockstack').then(({ redirectToSignIn }) =>
-			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes));
+			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes),
+		);
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
@@ -45,7 +50,8 @@ Meteor.logout = (...args) => {
 	if (serviceConfig && blockstackAuth) {
 		Session.delete('blockstack_auth');
 		import('blockstack/dist/blockstack').then(({ signUserOut }) =>
-			signUserOut(window.location.href));
+			signUserOut(window.location.href),
+		);
 	}
 
 	return meteorLogout(...args);

@@ -33,7 +33,9 @@ class MessageBoxActions {
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
-				const actions = this.actions[key].filter((action) => !action.condition || action.condition());
+				const actions = this.actions[key].filter(
+					(action) => !action.condition || action.condition(),
+				);
 				if (actions.length) {
 					ret[key] = actions;
 				}
@@ -47,7 +49,7 @@ class MessageBoxActions {
 	getById(id) {
 		const messageActions = this.actions;
 		let actions = [];
-		Object.keys(messageActions).forEach(function(action) {
+		Object.keys(messageActions).forEach(function (action) {
 			actions = actions.concat(messageActions[action]);
 		});
 

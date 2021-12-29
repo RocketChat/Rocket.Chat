@@ -21,23 +21,55 @@ import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = [
+	'roomAvatar',
+	'featured',
+	'roomName',
+	'roomTopic',
+	'roomAnnouncement',
+	'roomCustomFields',
+	'roomDescription',
+	'roomType',
+	'readOnly',
+	'reactWhenReadOnly',
+	'systemMessages',
+	'default',
+	'joinCode',
+	'tokenpass',
+	'streamingOptions',
+	'retentionEnabled',
+	'retentionMaxAge',
+	'retentionExcludePinned',
+	'retentionFilesOnly',
+	'retentionIgnoreThreads',
+	'retentionOverrideGlobal',
+	'encrypted',
+	'favorite',
+];
 
 const validators = {
 	default({ userId }) {
 		if (!hasPermission(userId, 'view-room-administration')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Viewing_room_administration',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Viewing room administration is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Viewing_room_administration',
+				},
+			);
 		}
 	},
 	featured({ userId }) {
 		if (!hasPermission(userId, 'view-room-administration')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Viewing_room_administration',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Viewing room administration is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Viewing_room_administration',
+				},
+			);
 		}
 	},
 	roomType({ userId, room, value }) {
@@ -46,74 +78,125 @@ const validators = {
 		}
 
 		if (value === 'c' && !hasPermission(userId, 'create-c')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Type',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Changing a private group to a public channel is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Type',
+				},
+			);
 		}
 
 		if (value === 'p' && !hasPermission(userId, 'create-p')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Type',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Changing a public channel to a private room is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Type',
+				},
+			);
 		}
 	},
 	encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
 			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
-				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
-					method: 'saveRoomSettings',
-					action: 'Change_Room_Encrypted',
-				});
+				throw new Meteor.Error(
+					'error-action-not-allowed',
+					'Only groups or direct channels can enable encryption',
+					{
+						method: 'saveRoomSettings',
+						action: 'Change_Room_Encrypted',
+					},
+				);
 			}
 
 			if (room.t !== 'd' && !hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
-				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
-					method: 'saveRoomSettings',
-					action: 'Change_Room_Encrypted',
-				});
+				throw new Meteor.Error(
+					'error-action-not-allowed',
+					'You do not have permission to toggle E2E encryption',
+					{
+						method: 'saveRoomSettings',
+						action: 'Change_Room_Encrypted',
+					},
+				);
 			}
 		}
 	},
 	retentionEnabled({ userId, value, room, rid }) {
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.enabled) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (
+			!hasPermission(userId, 'edit-room-retention-policy', rid) &&
+			value !== room.retention.enabled
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing room retention policy is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 	},
 	retentionMaxAge({ userId, value, room, rid }) {
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.maxAge) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (
+			!hasPermission(userId, 'edit-room-retention-policy', rid) &&
+			value !== room.retention.maxAge
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing room retention policy is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 	},
 	retentionExcludePinned({ userId, value, room, rid }) {
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.excludePinned) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (
+			!hasPermission(userId, 'edit-room-retention-policy', rid) &&
+			value !== room.retention.excludePinned
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing room retention policy is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 	},
 	retentionFilesOnly({ userId, value, room, rid }) {
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.filesOnly) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (
+			!hasPermission(userId, 'edit-room-retention-policy', rid) &&
+			value !== room.retention.filesOnly
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing room retention policy is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 	},
 	retentionIgnoreThreads({ userId, value, room, rid }) {
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.ignoreThreads) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+		if (
+			!hasPermission(userId, 'edit-room-retention-policy', rid) &&
+			value !== room.retention.ignoreThreads
+		) {
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing room retention policy is not allowed',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 	},
 	roomAvatar({ userId, rid }) {
@@ -173,10 +256,12 @@ const settingSavers = {
 	tokenpass({ value, rid }) {
 		check(value, {
 			require: String,
-			tokens: [{
-				token: String,
-				balance: String,
-			}],
+			tokens: [
+				{
+					token: String,
+					balance: String,
+				},
+			],
 		});
 		saveRoomTokenpass(rid, value);
 	},
@@ -282,10 +367,14 @@ Meteor.methods({
 		}
 
 		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
+			throw new Meteor.Error(
+				'error-action-not-allowed',
+				'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms',
+				{
+					method: 'saveRoomSettings',
+					action: 'Editing_room',
+				},
+			);
 		}
 
 		const user = Meteor.user();
@@ -327,7 +416,7 @@ Meteor.methods({
 			}
 		}
 
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			const room = Rooms.findOneById(rid);
 			callbacks.run('afterSaveRoomSettings', room);
 		});

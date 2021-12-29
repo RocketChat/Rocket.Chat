@@ -1,6 +1,12 @@
 import { _setUsername } from './setUsername';
 import { setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
+import {
+	Messages,
+	Rooms,
+	Subscriptions,
+	LivechatDepartmentAgents,
+	Users,
+} from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -46,9 +52,17 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
-			Messages.findByMention(previousUsername).forEach(function(msg) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
-				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			Messages.findByMention(previousUsername).forEach(function (msg) {
+				const updatedMsg = msg.msg.replace(
+					new RegExp(`@${previousUsername}`, 'ig'),
+					`@${username}`,
+				);
+				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(
+					msg._id,
+					previousUsername,
+					username,
+					updatedMsg,
+				);
 			});
 			Rooms.replaceUsername(previousUsername, username);
 			Rooms.replaceMutedUsername(previousUsername, username);
@@ -67,7 +81,11 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		// update other references if either the name or username has changed
 		if (usernameChanged || nameChanged) {
 			// update name and fname of 1-on-1 direct messages
-			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+			Subscriptions.updateDirectNameAndFnameByName(
+				previousUsername,
+				rawUsername && username,
+				rawName && name,
+			);
 
 			// update name and fname of group direct messages
 			updateGroupDMsName(user);

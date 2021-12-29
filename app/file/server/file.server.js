@@ -8,19 +8,19 @@ import Grid from 'gridfs-stream';
 import mkdirp from 'mkdirp';
 
 // Fix problem with usernames being converted to object id
-Grid.prototype.tryParseObjectId = function() {
+Grid.prototype.tryParseObjectId = function () {
 	return false;
 };
 
 const RocketChatFile = {};
 
-RocketChatFile.bufferToStream = function(buffer) {
+RocketChatFile.bufferToStream = function (buffer) {
 	const bufferStream = new stream.PassThrough();
 	bufferStream.end(buffer);
 	return bufferStream;
 };
 
-RocketChatFile.dataURIParse = function(dataURI) {
+RocketChatFile.dataURIParse = function (dataURI) {
 	const imageData = dataURI.split(';base64,');
 	return {
 		image: imageData[1],
@@ -28,7 +28,7 @@ RocketChatFile.dataURIParse = function(dataURI) {
 	};
 };
 
-RocketChatFile.addPassThrough = function(st, fn) {
+RocketChatFile.addPassThrough = function (st, fn) {
 	const pass = new stream.PassThrough();
 	fn(pass, st);
 	return pass;
@@ -43,7 +43,9 @@ RocketChatFile.GridFS = class {
 		const mongo = MongoInternals.NpmModule;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 		this.store = new Grid(db, mongo);
-		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
+		this.findOneSync = Meteor.wrapAsync(
+			this.store.collection(this.name).findOne.bind(this.store.collection(this.name)),
+		);
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
 		this.countSync = Meteor.wrapAsync(this.store._col.count.bind(this.store._col));
 		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
@@ -72,7 +74,7 @@ RocketChatFile.GridFS = class {
 			content_type: contentType,
 		});
 		if (self.transformWrite != null) {
-			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
+			ws = RocketChatFile.addPassThrough(ws, function (rs, ws) {
 				const file = {
 					name: self.name,
 					fileName,
@@ -81,7 +83,7 @@ RocketChatFile.GridFS = class {
 				return self.transformWrite(file, rs, ws);
 			});
 		}
-		ws.on('close', function() {
+		ws.on('close', function () {
 			return ws.emit('end');
 		});
 		return ws;
@@ -114,17 +116,23 @@ RocketChatFile.GridFS = class {
 			return cb();
 		}
 		const data = [];
-		file.readStream.on('data', Meteor.bindEnvironment(function(chunk) {
-			return data.push(chunk);
-		}));
-		return file.readStream.on('end', Meteor.bindEnvironment(function() {
-			return cb(null, {
-				buffer: Buffer.concat(data),
-				contentType: file.contentType,
-				length: file.length,
-				uploadDate: file.uploadDate,
-			});
-		}));
+		file.readStream.on(
+			'data',
+			Meteor.bindEnvironment(function (chunk) {
+				return data.push(chunk);
+			}),
+		);
+		return file.readStream.on(
+			'end',
+			Meteor.bindEnvironment(function () {
+				return cb(null, {
+					buffer: Buffer.concat(data),
+					contentType: file.contentType,
+					length: file.length,
+					uploadDate: file.uploadDate,
+				});
+			}),
+		);
 	}
 
 	deleteFile(fileName) {
@@ -161,7 +169,7 @@ RocketChatFile.FileSystem = class {
 		const self = this;
 		let ws = fs.createWriteStream(path.join(this.absolutePath, fileName));
 		if (self.transformWrite != null) {
-			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
+			ws = RocketChatFile.addPassThrough(ws, function (rs, ws) {
 				const file = {
 					fileName,
 					contentType,
@@ -169,7 +177,7 @@ RocketChatFile.FileSystem = class {
 				return self.transformWrite(file, rs, ws);
 			});
 		}
-		ws.on('close', function() {
+		ws.on('close', function () {
 			return ws.emit('end');
 		});
 		return ws;
@@ -207,18 +215,24 @@ RocketChatFile.FileSystem = class {
 			return cb();
 		}
 		const data = [];
-		file.readStream.on('data', Meteor.bindEnvironment(function(chunk) {
-			return data.push(chunk);
-		}));
-		return file.readStream.on('end', Meteor.bindEnvironment(function() {
-			return {
-				buffer: Buffer.concat(data)({
-					contentType: file.contentType,
-					length: file.length,
-					uploadDate: file.uploadDate,
-				}),
-			};
-		}));
+		file.readStream.on(
+			'data',
+			Meteor.bindEnvironment(function (chunk) {
+				return data.push(chunk);
+			}),
+		);
+		return file.readStream.on(
+			'end',
+			Meteor.bindEnvironment(function () {
+				return {
+					buffer: Buffer.concat(data)({
+						contentType: file.contentType,
+						length: file.length,
+						uploadDate: file.uploadDate,
+					}),
+				};
+			}),
+		);
 	}
 
 	deleteFile(fileName) {

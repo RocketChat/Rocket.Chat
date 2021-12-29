@@ -4,7 +4,10 @@ import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
-import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
+import {
+	updateThreadUsersSubscriptions,
+	getMentions,
+} from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
@@ -50,8 +53,8 @@ export const processThreads = (message, room) => {
 
 	const replies = [
 		...new Set([
-			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
-			...!parentMessage.tcount && room.t === 'd' ? room.uids : [],
+			...((!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || []),
+			...(!parentMessage.tcount && room.t === 'd' ? room.uids : []),
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
@@ -63,12 +66,17 @@ export const processThreads = (message, room) => {
 	return message;
 };
 
-Meteor.startup(function() {
-	settings.watch('Threads_enabled', function(value) {
+Meteor.startup(function () {
+	settings.watch('Threads_enabled', function (value) {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
-		callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
+		callbacks.add(
+			'afterSaveMessage',
+			processThreads,
+			callbacks.priority.LOW,
+			'threads-after-save-message',
+		);
 	});
 });

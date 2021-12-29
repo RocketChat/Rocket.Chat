@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-settingsRegistry.addGroup('FileUpload', function() {
+settingsRegistry.addGroup('FileUpload', function () {
 	this.add('FileUpload_Enabled', true, {
 		type: 'boolean',
 		public: true,
@@ -56,26 +56,32 @@ settingsRegistry.addGroup('FileUpload', function() {
 
 	this.add('FileUpload_Storage_Type', 'GridFS', {
 		type: 'select',
-		values: [{
-			key: 'GridFS',
-			i18nLabel: 'GridFS',
-		}, {
-			key: 'AmazonS3',
-			i18nLabel: 'AmazonS3',
-		}, {
-			key: 'GoogleCloudStorage',
-			i18nLabel: 'GoogleCloudStorage',
-		}, {
-			key: 'Webdav',
-			i18nLabel: 'WebDAV',
-		}, {
-			key: 'FileSystem',
-			i18nLabel: 'FileSystem',
-		}],
+		values: [
+			{
+				key: 'GridFS',
+				i18nLabel: 'GridFS',
+			},
+			{
+				key: 'AmazonS3',
+				i18nLabel: 'AmazonS3',
+			},
+			{
+				key: 'GoogleCloudStorage',
+				i18nLabel: 'GoogleCloudStorage',
+			},
+			{
+				key: 'Webdav',
+				i18nLabel: 'WebDAV',
+			},
+			{
+				key: 'FileSystem',
+				i18nLabel: 'FileSystem',
+			},
+		],
 		public: true,
 	});
 
-	this.section('Amazon S3', function() {
+	this.section('Amazon S3', function () {
 		this.add('FileUpload_S3_Bucket', '', {
 			type: 'string',
 			enableQuery: {
@@ -126,7 +132,8 @@ settingsRegistry.addGroup('FileUpload', function() {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
-			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.',
+			i18nDescription:
+				'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.',
 			secret: true,
 		});
 		this.add('FileUpload_S3_SignatureVersion', 'v4', {
@@ -167,7 +174,7 @@ settingsRegistry.addGroup('FileUpload', function() {
 		});
 	});
 
-	this.section('Google Cloud Storage', function() {
+	this.section('Google Cloud Storage', function () {
 		this.add('FileUpload_GoogleStorage_Bucket', '', {
 			type: 'string',
 			private: true,
@@ -212,7 +219,7 @@ settingsRegistry.addGroup('FileUpload', function() {
 		});
 	});
 
-	this.section('File System', function() {
+	this.section('File System', function () {
 		this.add('FileUpload_FileSystemPath', '', {
 			type: 'string',
 			enableQuery: {
@@ -222,7 +229,7 @@ settingsRegistry.addGroup('FileUpload', function() {
 		});
 	});
 
-	this.section('WebDAV', function() {
+	this.section('WebDAV', function () {
 		this.add('FileUpload_Webdav_Upload_Folder_Path', '', {
 			type: 'string',
 			enableQuery: {

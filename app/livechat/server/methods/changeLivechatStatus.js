@@ -9,7 +9,9 @@ Meteor.methods({
 		const uid = Meteor.userId();
 
 		if (!uid || !agentId) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:changeLivechatStatus' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:changeLivechatStatus',
+			});
 		}
 
 		const agent = Users.findOneAgentById(agentId, {
@@ -20,10 +22,13 @@ Meteor.methods({
 		});
 
 		if (!agent) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAgentInfo' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveAgentInfo',
+			});
 		}
 
-		const newStatus = status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
+		const newStatus =
+			status || (agent.statusLivechat === 'available' ? 'not-available' : 'available');
 
 		if (newStatus === agent.statusLivechat) {
 			return;
@@ -31,13 +36,17 @@ Meteor.methods({
 
 		if (agentId !== uid) {
 			if (!hasPermission(uid, 'manage-livechat-agents')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAgentInfo' });
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+					method: 'livechat:saveAgentInfo',
+				});
 			}
 			return Livechat.setUserStatusLivechat(agentId, newStatus);
 		}
 
 		if (!Livechat.allowAgentChangeServiceStatus(newStatus, agentId)) {
-			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', { method: 'livechat:changeLivechatStatus' });
+			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', {
+				method: 'livechat:changeLivechatStatus',
+			});
 		}
 
 		return Livechat.setUserStatusLivechat(agentId, newStatus);

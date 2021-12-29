@@ -11,7 +11,11 @@ import { Logger } from '../../../logger/server';
 
 const logger = new Logger('LoginProtection');
 
-export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
+export const notifyFailedLogin = async (
+	ipOrUsername: string,
+	blockedUntil: Date,
+	failedAttempts: number,
+): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
@@ -21,21 +25,25 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 	// to avoid issues when "fname" is presented in the UI, check if the name matches it as well
 	const room = await Rooms.findOneByNameOrFname(channelToNotify);
 	if (!room) {
-		logger.error('Cannot notify failed logins: channel provided doesn\'t exists');
+		logger.error("Cannot notify failed logins: channel provided doesn't exists");
 		return;
 	}
 
 	const rocketCat = await Users.findOneById('rocket.cat');
 	// send message
 	const message = {
-		attachments: [{
-			fields: [{
-				title: 'Failed login attempt threshold exceeded',
-				value: `User or IP: ${ ipOrUsername }\nBlocked until: ${ blockedUntil }\nFailed Attempts: ${ failedAttempts }`,
-				short: true,
-			}],
-			color: 'red',
-		}],
+		attachments: [
+			{
+				fields: [
+					{
+						title: 'Failed login attempt threshold exceeded',
+						value: `User or IP: ${ipOrUsername}\nBlocked until: ${blockedUntil}\nFailed Attempts: ${failedAttempts}`,
+						short: true,
+					},
+				],
+				color: 'red',
+			},
+		],
 	};
 
 	await sendMessage(rocketCat, message, room, false);
@@ -44,9 +52,11 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
 
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_Ip')
-		|| whitelist.includes(ip)) {
+	if (
+		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
+		!settings.get('Block_Multiple_Failed_Logins_By_Ip') ||
+		whitelist.includes(ip)
+	) {
 		return true;
 	}
 
@@ -56,10 +66,15 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	if (!lastLogin || !lastLogin.loginAt) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
+		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(
+			ip,
+			new Date(lastLogin.loginAt),
+		);
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
+	const attemptsUntilBlock = settings.get(
+		'Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip',
+	);
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
@@ -71,7 +86,9 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
+	const minutesUntilUnblock = settings.get(
+		'Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes',
+	) as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
@@ -83,12 +100,15 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_User')) {
+	if (
+		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
+		!settings.get('Block_Multiple_Failed_Logins_By_User')
+	) {
 		return true;
 	}
 
-	const user = login.user || await Users.findOneByUsername(login.methodArguments[0].user?.username);
+	const user =
+		login.user || (await Users.findOneByUsername(login.methodArguments[0].user?.username));
 
 	if (!user?.username) {
 		return true;
@@ -99,22 +119,31 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	if (!user?.lastLogin) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsername(user.username);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
+		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(
+			user.username,
+			new Date(user.lastLogin),
+		);
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
+	const attemptsUntilBlock = settings.get(
+		'Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User',
+	);
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
 	}
 
-	const lastAttemptAt = (await ServerEvents.findLastFailedAttemptByUsername(user.username as string))?.ts;
+	const lastAttemptAt = (
+		await ServerEvents.findLastFailedAttemptByUsername(user.username as string)
+	)?.ts;
 
 	if (!lastAttemptAt) {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
+	const minutesUntilUnblock = settings.get(
+		'Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes',
+	) as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 

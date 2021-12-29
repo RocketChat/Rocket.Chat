@@ -1,6 +1,17 @@
 // TODO: Lib imports should not exists inside the raw models
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { CollectionInsertOneOptions, Cursor, DeleteWriteOpResultObject, FilterQuery, InsertOneWriteOpResult, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult, WithId, WriteOpResult } from 'mongodb';
+import {
+	CollectionInsertOneOptions,
+	Cursor,
+	DeleteWriteOpResultObject,
+	FilterQuery,
+	InsertOneWriteOpResult,
+	UpdateOneOptions,
+	UpdateQuery,
+	UpdateWriteOpResult,
+	WithId,
+	WriteOpResult,
+} from 'mongodb';
 
 import { BaseRaw, IndexSpecification, InsertionModel } from './BaseRaw';
 import { IUpload as T } from '../../../../definition/IUpload';
@@ -18,9 +29,14 @@ export class UploadsRaw extends BaseRaw<T> {
 		{ key: { rid: 1 } },
 		{ key: { uploadedAt: 1 } },
 		{ key: { typeGroup: 1 } },
-	]
+	];
 
-	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): Cursor<T> {
+	findNotHiddenFilesOfRoom(
+		roomId: string,
+		searchText: string,
+		fileType: string,
+		limit: number,
+	): Cursor<T> {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -29,8 +45,8 @@ export class UploadsRaw extends BaseRaw<T> {
 				$ne: true,
 			},
 
-			...searchText && { name: { $regex: new RegExp(escapeRegExp(searchText), 'i') } },
-			...fileType && fileType !== 'all' && { typeGroup: fileType },
+			...(searchText && { name: { $regex: new RegExp(escapeRegExp(searchText), 'i') } }),
+			...(fileType && fileType !== 'all' && { typeGroup: fileType }),
 		};
 
 		const fileOptions = {
@@ -54,12 +70,19 @@ export class UploadsRaw extends BaseRaw<T> {
 		return this.find(fileQuery, fileOptions);
 	}
 
-	insert(fileData: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insert(
+		fileData: InsertionModel<T>,
+		options?: CollectionInsertOneOptions,
+	): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		fillTypeGroup(fileData);
 		return super.insertOne(fileData, options);
 	}
 
-	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
+	update(
+		filter: FilterQuery<T>,
+		update: UpdateQuery<T> | Partial<T>,
+		options?: UpdateOneOptions & { multi?: boolean },
+	): Promise<WriteOpResult> {
 		if ('$set' in update && update.$set) {
 			fillTypeGroup(update.$set);
 		} else if ('type' in update && update.type) {
@@ -69,7 +92,12 @@ export class UploadsRaw extends BaseRaw<T> {
 		return super.update(filter, update, options);
 	}
 
-	async insertFileInit(userId: string, store: string, file: {name: string}, extra: object): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	async insertFileInit(
+		userId: string,
+		store: string,
+		file: { name: string },
+		extra: object,
+	): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		const fileData = {
 			userId,
 			store,
@@ -86,7 +114,11 @@ export class UploadsRaw extends BaseRaw<T> {
 		return this.insert(fileData);
 	}
 
-	async updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateWriteOpResult | undefined> {
+	async updateFileComplete(
+		fileId: string,
+		userId: string,
+		file: object,
+	): Promise<UpdateWriteOpResult | undefined> {
 		if (!fileId) {
 			return;
 		}

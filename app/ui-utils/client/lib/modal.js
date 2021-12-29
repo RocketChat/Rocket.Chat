@@ -9,7 +9,8 @@ import { handleError } from '../../../../client/lib/utils/handleError';
 let modalStack = [];
 
 const createModal = (config = {}, fn, onCancel) => {
-	config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
+	config.confirmButtonText =
+		config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 	config.cancelButtonText = config.cancelButtonText || t('Cancel');
 	config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 	config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
@@ -118,7 +119,10 @@ export const modal = {
 		if (config.dontAskAgain) {
 			const dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
-			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
+			if (
+				dontAskAgainList &&
+				dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)
+			) {
 				instance.confirm(true);
 				return;
 			}
@@ -183,7 +187,6 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
-
 	showFooter() {
 		const { showCancelButton, showConfirmButton } = this;
 		return showCancelButton || showConfirmButton;
@@ -192,7 +195,7 @@ Template.rc_modal.helpers({
 		return !!this.action;
 	},
 	type() {
-		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
+		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${this.type}`;
 	},
 	modalIcon() {
 		switch (this.type) {
@@ -203,12 +206,12 @@ Template.rc_modal.helpers({
 			case 'info':
 				return 'info-circled';
 			default:
-				return `modal-${ this.type }`;
+				return `modal-${this.type}`;
 		}
 	},
 });
 
-Template.rc_modal.onRendered(function() {
+Template.rc_modal.onRendered(function () {
 	this.oldFocus = document.activeElement;
 	if (this.data.input) {
 		$('.js-modal-input', this.firstNode).focus();
@@ -221,7 +224,7 @@ Template.rc_modal.onRendered(function() {
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
-Template.rc_modal.onDestroyed(function() {
+Template.rc_modal.onDestroyed(function () {
 	this.oldFocus && this.oldFocus.focus();
 	document.removeEventListener('keydown', modal.onKeyDown);
 });
@@ -257,7 +260,7 @@ Template.rc_modal.events({
 				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', { dontAskAgainList }, function(error) {
+			Meteor.call('saveUserPreferences', { dontAskAgainList }, function (error) {
 				if (error) {
 					return handleError(error);
 				}

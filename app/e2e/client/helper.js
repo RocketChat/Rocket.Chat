@@ -22,7 +22,7 @@ export function toArrayBuffer(thing) {
 	}
 
 	if (typeof thing !== 'string') {
-		throw new Error(`Tried to convert a non-string of type ${ typeof thing } to an array buffer`);
+		throw new Error(`Tried to convert a non-string of type ${typeof thing} to an array buffer`);
 	}
 	return new ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
@@ -63,7 +63,16 @@ export async function generateAESKey() {
 }
 
 export async function generateRSAKey() {
-	return crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
+	return crypto.subtle.generateKey(
+		{
+			name: 'RSA-OAEP',
+			modulusLength: 2048,
+			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+			hash: { name: 'SHA-256' },
+		},
+		true,
+		['encrypt', 'decrypt'],
+	);
 }
 
 export async function exportJWKKey(key) {
@@ -71,7 +80,18 @@ export async function exportJWKKey(key) {
 }
 
 export async function importRSAKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
-	return crypto.subtle.importKey('jwk', keyData, { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, keyUsages);
+	return crypto.subtle.importKey(
+		'jwk',
+		keyData,
+		{
+			name: 'RSA-OAEP',
+			modulusLength: 2048,
+			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+			hash: { name: 'SHA-256' },
+		},
+		true,
+		keyUsages,
+	);
 }
 
 export async function importAESKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
@@ -86,16 +106,22 @@ export async function deriveKey(salt, baseKey, keyUsages = ['encrypt', 'decrypt'
 	const iterations = 1000;
 	const hash = 'SHA-256';
 
-	return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
+	return crypto.subtle.deriveKey(
+		{ name: 'PBKDF2', salt, iterations, hash },
+		baseKey,
+		{ name: 'AES-CBC', length: 256 },
+		true,
+		keyUsages,
+	);
 }
 
 export async function readFileAsArrayBuffer(file) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onload = function(evt) {
+		reader.onload = function (evt) {
 			resolve(evt.target.result);
 		};
-		reader.onerror = function(evt) {
+		reader.onerror = function (evt) {
 			reject(evt);
 		};
 		reader.readAsArrayBuffer(file);

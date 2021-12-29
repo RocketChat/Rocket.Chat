@@ -13,7 +13,14 @@ type FindUsersParam = {
 	sort?: Record<string, any>;
 };
 
-export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '', sort = {} }: FindUsersParam): Mongo.Cursor<IUser> {
+export function findUsersOfRoom({
+	rid,
+	status,
+	skip = 0,
+	limit = 0,
+	filter = '',
+	sort = {},
+}: FindUsersParam): Mongo.Cursor<IUser> {
 	const options = {
 		fields: {
 			name: 1,
@@ -25,14 +32,16 @@ export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '',
 		},
 		sort: {
 			statusConnection: -1,
-			...sort || { [settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1 },
+			...(sort || { [settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1 }),
 		},
-		...skip > 0 && { skip },
-		...limit > 0 && { limit },
+		...(skip > 0 && { skip }),
+		...(limit > 0 && { limit }),
 	};
 
-	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [{
-		__rooms: rid,
-		...status && { status },
-	}]);
+	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [
+		{
+			__rooms: rid,
+			...(status && { status }),
+		},
+	]);
 }

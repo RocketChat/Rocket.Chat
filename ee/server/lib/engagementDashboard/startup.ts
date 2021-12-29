@@ -1,12 +1,31 @@
-import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
+import {
+	fillFirstDaysOfMessagesIfNeeded,
+	handleMessagesDeleted,
+	handleMessagesSent,
+} from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
 import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { Permissions } from '../../../../app/models/server/raw';
 
 export const attachCallbacks = (): void => {
-	callbacks.add('afterSaveMessage', handleMessagesSent, callbacks.priority.MEDIUM, 'engagementDashboard.afterSaveMessage');
-	callbacks.add('afterDeleteMessage', handleMessagesDeleted, callbacks.priority.MEDIUM, 'engagementDashboard.afterDeleteMessage');
-	callbacks.add('afterCreateUser', handleUserCreated, callbacks.priority.MEDIUM, 'engagementDashboard.afterCreateUser');
+	callbacks.add(
+		'afterSaveMessage',
+		handleMessagesSent,
+		callbacks.priority.MEDIUM,
+		'engagementDashboard.afterSaveMessage',
+	);
+	callbacks.add(
+		'afterDeleteMessage',
+		handleMessagesDeleted,
+		callbacks.priority.MEDIUM,
+		'engagementDashboard.afterDeleteMessage',
+	);
+	callbacks.add(
+		'afterCreateUser',
+		handleUserCreated,
+		callbacks.priority.MEDIUM,
+		'engagementDashboard.afterCreateUser',
+	);
 };
 
 export const detachCallbacks = (): void => {
@@ -17,10 +36,7 @@ export const detachCallbacks = (): void => {
 
 export const prepareAnalytics = async (): Promise<void> => {
 	const now = new Date();
-	await Promise.all([
-		fillFirstDaysOfUsersIfNeeded(now),
-		fillFirstDaysOfMessagesIfNeeded(now),
-	]);
+	await Promise.all([fillFirstDaysOfUsersIfNeeded(now), fillFirstDaysOfMessagesIfNeeded(now)]);
 };
 
 export const prepareAuthorization = async (): Promise<void> => {

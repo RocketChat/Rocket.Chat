@@ -40,7 +40,10 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
+		if (
+			Array.isArray(subscription.roles) === true &&
+			subscription.roles.includes('owner') === true
+		) {
 			throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
 				method: 'addRoomOwner',
 			});

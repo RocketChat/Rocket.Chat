@@ -7,8 +7,18 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
 import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
+import {
+	AppMethods,
+	AppServerNotifier,
+	AppsRestApi,
+	AppUIKitInteractionApi,
+} from './communication';
+import {
+	AppMessagesConverter,
+	AppRoomsConverter,
+	AppSettingsConverter,
+	AppUsersConverter,
+} from './converters';
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
@@ -33,7 +43,10 @@ export class AppServerOrchestrator {
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
+		if (
+			typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' &&
+			process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== ''
+		) {
 			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
 		} else {
 			this._marketplaceUrl = 'https://marketplace.rocket.chat';
@@ -44,7 +57,10 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(
+			appsSourceStorageType,
+			appsSourceStorageFilesystemPath,
+		);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -156,8 +172,11 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.load()
-			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
+		return this._manager
+			.load()
+			.then((affs) =>
+				console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`),
+			)
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err))
 			.then(() => this.getBridges().getSchedulerBridge().startScheduler());
 	}
@@ -169,7 +188,8 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.unload()
+		return this._manager
+			.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
 	}
@@ -179,8 +199,7 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.updateAppsMarketplaceInfo(apps)
-			.then(() => this._manager.get());
+		return this._manager.updateAppsMarketplaceInfo(apps).then(() => this._manager.get());
 	}
 
 	async triggerEvent(event, ...payload) {
@@ -188,21 +207,24 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this.getBridges().getListenerBridge().handleEvent(event, ...payload).catch((error) => {
-			if (error instanceof EssentialAppDisabledException) {
-				throw new Meteor.Error('error-essential-app-disabled');
-			}
+		return this.getBridges()
+			.getListenerBridge()
+			.handleEvent(event, ...payload)
+			.catch((error) => {
+				if (error instanceof EssentialAppDisabledException) {
+					throw new Meteor.Error('error-essential-app-disabled');
+				}
 
-			throw error;
-		});
+				throw error;
+			});
 	}
 }
 
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settingsRegistry.addGroup('General', function() {
-	this.section('Apps', function() {
+settingsRegistry.addGroup('General', function () {
+	this.section('Apps', function () {
 		this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
 			values: [
@@ -241,13 +263,16 @@ settingsRegistry.addGroup('General', function() {
 
 		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
-			values: [{
-				key: 'gridfs',
-				i18nLabel: 'GridFS',
-			}, {
-				key: 'filesystem',
-				i18nLabel: 'FileSystem',
-			}],
+			values: [
+				{
+					key: 'gridfs',
+					i18nLabel: 'GridFS',
+				},
+				{
+					key: 'filesystem',
+					i18nLabel: 'FileSystem',
+				},
+			],
 			public: true,
 			hidden: false,
 			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',

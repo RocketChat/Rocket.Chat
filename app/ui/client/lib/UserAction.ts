@@ -25,7 +25,7 @@ const rooms = new Map<string, Function>();
 
 const performingUsers = new ReactiveDict<IActionsObject>();
 
-const shownName = function(user: IUser | null | undefined): string|undefined {
+const shownName = function (user: IUser | null | undefined): string | undefined {
 	if (!user) {
 		return;
 	}
@@ -40,7 +40,12 @@ const emitActivities = debounce((rid: string, extras: IExtras): void => {
 	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), [...activities], extras);
 }, 500);
 
-function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
+function handleStreamAction(
+	rid: string,
+	username: string,
+	activityTypes: string[],
+	extras?: IExtras,
+): void {
 	rid = extras?.tmid || rid;
 	const roomActivities = performingUsers.get(rid) || {};
 
@@ -55,7 +60,10 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 
 		if (activityTypes.includes(activity)) {
 			activityTypes.splice(activityTypes.indexOf(activity), 1);
-			users[username] = setTimeout(() => handleStreamAction(rid, username, activityTypes, extras), TIMEOUT);
+			users[username] = setTimeout(
+				() => handleStreamAction(rid, username, activityTypes, extras),
+				TIMEOUT,
+			);
 		} else {
 			delete users[username];
 		}
@@ -63,13 +71,15 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 
 	performingUsers.set(rid, roomActivities);
 }
-export const UserAction = new class {
+export const UserAction = new (class {
 	addStream(rid: string): void {
 		if (rooms.get(rid)) {
 			return;
 		}
-		const handler = function(username: string, activityType: string[], extras?: object): void {
-			const user = Meteor.users.findOne(Meteor.userId() || undefined, { fields: { name: 1, username: 1 } });
+		const handler = function (username: string, activityType: string[], extras?: object): void {
+			const user = Meteor.users.findOne(Meteor.userId() || undefined, {
+				fields: { name: 1, username: 1 },
+			});
 			if (username === shownName(user)) {
 				return;
 			}
@@ -81,30 +91,36 @@ export const UserAction = new class {
 
 	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {
 		const trid = extras?.tmid || rid;
-		const key = `${ activityType }-${ trid }`;
+		const key = `${activityType}-${trid}`;
 
 		if (continuingIntervals.get(key)) {
 			return;
 		}
 		this.start(rid, activityType, extras);
 
-		continuingIntervals.set(key, setInterval(() => {
-			this.start(rid, activityType, extras);
-		}, RENEW));
+		continuingIntervals.set(
+			key,
+			setInterval(() => {
+				this.start(rid, activityType, extras);
+			}, RENEW),
+		);
 	}
 
 	start(rid: string, activityType: string, extras: IExtras = {}): void {
 		const trid = extras?.tmid || rid;
-		const key = `${ activityType }-${ trid }`;
+		const key = `${activityType}-${trid}`;
 
 		if (activityRenews.get(key)) {
 			return;
 		}
 
-		activityRenews.set(key, setTimeout(() => {
-			clearTimeout(activityRenews.get(key));
-			activityRenews.delete(key);
-		}, RENEW));
+		activityRenews.set(
+			key,
+			setTimeout(() => {
+				clearTimeout(activityRenews.get(key));
+				activityRenews.delete(key);
+			}, RENEW),
+		);
 
 		const activities = roomActivities.get(trid) || new Set();
 		activities.add(activityType);
@@ -117,13 +133,16 @@ export const UserAction = new class {
 			activityTimeouts.delete(key);
 		}
 
-		activityTimeouts.set(key, setTimeout(() => this.stop(trid, activityType, extras), TIMEOUT));
+		activityTimeouts.set(
+			key,
+			setTimeout(() => this.stop(trid, activityType, extras), TIMEOUT),
+		);
 		activityTimeouts.get(key);
 	}
 
 	stop(rid: string, activityType: string, extras: IExtras): void {
 		const trid = extras?.tmid || rid;
-		const key = `${ activityType }-${ trid }`;
+		const key = `${activityType}-${trid}`;
 
 		if (activityTimeouts.get(key)) {
 			clearTimeout(activityTimeouts.get(key));
@@ -156,4 +175,4 @@ export const UserAction = new class {
 	get(roomId: string): IRoomActivity | undefined {
 		return performingUsers.get(roomId);
 	}
-}();
+})();

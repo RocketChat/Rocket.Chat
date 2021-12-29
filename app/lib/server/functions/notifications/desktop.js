@@ -12,15 +12,10 @@ import { roomTypes } from '../../../../utils';
  * @param {number} duration Duration of notification
  * @param {string} notificationMessage The message text to send on notification body
  */
-export function notifyDesktopUser({
-	userId,
-	user,
-	message,
-	room,
-	duration,
-	notificationMessage,
-}) {
-	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
+	const { title, text } = roomTypes
+		.getConfig(room.t)
+		.getNotificationDetails(room, user, notificationMessage);
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	Notifications.notifyUser(userId, 'notification', {
@@ -55,7 +50,13 @@ export function shouldNotifyDesktop({
 	roomType,
 	isThread,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+	if (
+		disableAllMessageNotifications &&
+		desktopNotifications == null &&
+		!isHighlighted &&
+		!hasMentionToUser &&
+		!hasReplyToThread
+	) {
 		return false;
 	}
 
@@ -64,7 +65,10 @@ export function shouldNotifyDesktop({
 	}
 
 	if (!desktopNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
+		if (
+			settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' &&
+			(!isThread || hasReplyToThread)
+		) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
@@ -72,5 +76,12 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) ||
+			isHighlighted ||
+			desktopNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

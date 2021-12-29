@@ -18,15 +18,21 @@ const testPaths = (o, _processPath) => {
 	expect(_getURL('/channel//', o)).to.be.equal(processPath('/channel'));
 	expect(_getURL('/channel/123', o)).to.be.equal(processPath('/channel/123'));
 	expect(_getURL('/channel/123/', o)).to.be.equal(processPath('/channel/123'));
-	expect(_getURL('/channel/123?id=456&name=test', o)).to.be.equal(processPath('/channel/123?id=456&name=test'));
-	expect(_getURL('/channel/123/?id=456&name=test', o)).to.be.equal(processPath('/channel/123?id=456&name=test'));
+	expect(_getURL('/channel/123?id=456&name=test', o)).to.be.equal(
+		processPath('/channel/123?id=456&name=test'),
+	);
+	expect(_getURL('/channel/123/?id=456&name=test', o)).to.be.equal(
+		processPath('/channel/123?id=456&name=test'),
+	);
 };
 
 const getCloudUrl = (_site_url, path) => {
 	path = s.ltrim(path, '/');
-	const url = `https://go.rocket.chat/?host=${ encodeURIComponent(_site_url.replace(/https?:\/\//, '')) }&path=${ encodeURIComponent(path) }`;
+	const url = `https://go.rocket.chat/?host=${encodeURIComponent(
+		_site_url.replace(/https?:\/\//, ''),
+	)}&path=${encodeURIComponent(path)}`;
 	if (_site_url.includes('http://')) {
-		return `${ url }&secure=no`;
+		return `${url}&secure=no`;
 	}
 	return url;
 };

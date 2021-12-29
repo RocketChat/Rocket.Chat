@@ -7,7 +7,7 @@ import { hasPermission } from '../../authorization/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return messageBox.actions.remove('Create_new', /start-discussion/);
@@ -15,7 +15,8 @@ Meteor.startup(function() {
 		messageBox.actions.add('Create_new', 'Discussion', {
 			id: 'start-discussion',
 			icon: 'discussion',
-			condition: () => hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
+			condition: () =>
+				hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
 			action(data) {
 				imperativeModal.open({
 					component: CreateDiscussion,

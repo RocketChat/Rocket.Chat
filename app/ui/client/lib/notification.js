@@ -21,8 +21,8 @@ export const KonchatNotification = {
 
 	// notificacoes HTML5
 	getDesktopPermission() {
-		if (window.Notification && (Notification.permission !== 'granted')) {
-			return Notification.requestPermission(function(status) {
+		if (window.Notification && Notification.permission !== 'granted') {
+			return Notification.requestPermission(function (status) {
 				KonchatNotification.notificationStatus.set(status);
 				if (Notification.permission !== status) {
 					Notification.permission = status;
@@ -33,9 +33,16 @@ export const KonchatNotification = {
 
 	notify(notification) {
 		if (window.Notification && Notification.permission === 'granted') {
-			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
-			return onClientMessageReceived(message).then(function(message) {
-				const requireInteraction = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction');
+			const message = {
+				rid: notification.payload != null ? notification.payload.rid : undefined,
+				msg: notification.text,
+				notification: true,
+			};
+			return onClientMessageReceived(message).then(function (message) {
+				const requireInteraction = getUserPreference(
+					Meteor.userId(),
+					'desktopNotificationRequireInteraction',
+				);
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
 					body: s.stripTags(message.msg),
@@ -61,16 +68,46 @@ export const KonchatNotification = {
 						);
 					}
 
-					n.onclick = function() {
+					n.onclick = function () {
 						this.close();
 						window.focus();
 						switch (notification.payload.type) {
 							case 'd':
-								return FlowRouter.go('direct', { rid: notification.payload.rid, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
+								return FlowRouter.go(
+									'direct',
+									{
+										rid: notification.payload.rid,
+										...(notification.payload.tmid && {
+											tab: 'thread',
+											context: notification.payload.tmid,
+										}),
+									},
+									{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
+								);
 							case 'c':
-								return FlowRouter.go('channel', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
+								return FlowRouter.go(
+									'channel',
+									{
+										name: notification.payload.name,
+										...(notification.payload.tmid && {
+											tab: 'thread',
+											context: notification.payload.tmid,
+										}),
+									},
+									{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
+								);
 							case 'p':
-								return FlowRouter.go('group', { name: notification.payload.name, ...notification.payload.tmid && { tab: 'thread', context: notification.payload.tmid } }, { ...FlowRouter.current().queryParams, jump: notification.payload._id });
+								return FlowRouter.go(
+									'group',
+									{
+										name: notification.payload.name,
+										...(notification.payload.tmid && {
+											tab: 'thread',
+											context: notification.payload.tmid,
+										}),
+									},
+									{ ...FlowRouter.current().queryParams, jump: notification.payload._id },
+								);
 						}
 					};
 				}
@@ -79,7 +116,10 @@ export const KonchatNotification = {
 	},
 
 	async showDesktop(notification) {
-		if ((notification.payload.rid === Session.get('openedRoom')) && (typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)) {
+		if (
+			notification.payload.rid === Session.get('openedRoom') &&
+			(typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)
+		) {
 			return;
 		}
 
@@ -94,14 +134,14 @@ export const KonchatNotification = {
 			}
 		}
 
-		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
+		return getAvatarAsPng(notification.payload.sender.username, function (avatarAsPng) {
 			notification.icon = avatarAsPng;
 			return KonchatNotification.notify(notification);
 		});
 	},
 
 	newMessage(rid) {
-		if (Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
+		if (Session.equals(`user_${Meteor.user().username}_status`, 'busy')) {
 			return;
 		}
 
@@ -133,8 +173,8 @@ export const KonchatNotification = {
 		}
 	},
 
-	newRoom(rid/* , withSound = true*/) {
-		Tracker.nonreactive(function() {
+	newRoom(rid /* , withSound = true*/) {
+		Tracker.nonreactive(function () {
 			let newRoomSound = Session.get('newRoomSound');
 			if (newRoomSound != null) {
 				newRoomSound = _.union(newRoomSound, [rid]);
@@ -153,12 +193,12 @@ export const KonchatNotification = {
 		newRoomSound = _.without(newRoomSound, rid);
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
-		return $(`.link-room-${ rid }`).removeClass('new-room-highlight');
+		return $(`.link-room-${rid}`).removeClass('new-room-highlight');
 	},
 };
 
 Meteor.startup(() => {
-	Tracker.autorun(function() {
+	Tracker.autorun(function () {
 		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.newRoomNotification': 1,
@@ -169,7 +209,7 @@ Meteor.startup(() => {
 		const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
 
 		if ((Session.get('newRoomSound') || []).length > 0) {
-			Meteor.defer(function() {
+			Meteor.defer(function () {
 				if (newRoomNotification !== 'none') {
 					CustomSounds.play(newRoomNotification, {
 						volume: Number((audioVolume / 100).toPrecision(2)),

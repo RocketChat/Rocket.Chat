@@ -6,7 +6,7 @@ import { hasAnyRoleAsync } from '../../app/authorization/server/functions/hasRol
 
 Meteor.methods({
 	async OEmbedCacheCleanup() {
-		if (Meteor.userId() && !await hasAnyRoleAsync(Meteor.userId(), ['admin'])) {
+		if (Meteor.userId() && !(await hasAnyRoleAsync(Meteor.userId(), ['admin']))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'OEmbedCacheCleanup',
 			});

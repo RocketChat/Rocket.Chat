@@ -3,10 +3,12 @@ import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
 import { BaseRaw } from './BaseRaw';
 import { ISetting, ISettingColor, ISettingSelectOption } from '../../../../definition/ISetting';
 
-
 export class SettingsRaw extends BaseRaw<ISetting> {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
-		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
+		const setting = await this.findOne<Pick<ISetting, 'value'>>(
+			{ _id },
+			{ projection: { value: 1 } },
+		);
 
 		return setting?.value;
 	}
@@ -46,7 +48,10 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.find(query);
 	}
 
-	updateValueById<T extends ISetting['value'] = ISetting['value']>(_id: string, value: T): Promise<WriteOpResult> {
+	updateValueById<T extends ISetting['value'] = ISetting['value']>(
+		_id: string,
+		value: T,
+	): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -62,7 +67,10 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateOptionsById<T extends ISetting = ISetting>(_id: ISetting['_id'], options: UpdateQuery<T>['$set']): Promise<WriteOpResult> {
+	updateOptionsById<T extends ISetting = ISetting>(
+		_id: ISetting['_id'],
+		options: UpdateQuery<T>['$set'],
+	): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			_id,
@@ -73,7 +81,10 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(_id: ISetting['_id'], value: T): Promise<WriteOpResult> {
+	updateValueNotHiddenById<T extends ISetting['value'] = ISetting['value']>(
+		_id: ISetting['_id'],
+		value: T,
+	): Promise<WriteOpResult> {
 		const query = {
 			_id,
 			hidden: { $ne: true },
@@ -89,7 +100,11 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	updateValueAndEditorById<T extends ISetting['value'] = ISetting['value']>(_id: ISetting['_id'], value: T, editor: ISettingColor['editor']): Promise<WriteOpResult> {
+	updateValueAndEditorById<T extends ISetting['value'] = ISetting['value']>(
+		_id: ISetting['_id'],
+		value: T,
+		editor: ISettingColor['editor'],
+	): Promise<WriteOpResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
@@ -106,7 +121,22 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		return this.update(query, update);
 	}
 
-	findNotHiddenPublic<T extends ISetting = ISetting>(ids: ISetting['_id'][] = []): Cursor< T extends ISettingColor ? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'> : Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>> {
+	findNotHiddenPublic<T extends ISetting = ISetting>(
+		ids: ISetting['_id'][] = [],
+	): Cursor<
+		T extends ISettingColor
+			? Pick<
+					T,
+					| '_id'
+					| 'value'
+					| 'editor'
+					| 'enterprise'
+					| 'invalidValue'
+					| 'modules'
+					| 'requiredOnWizard'
+			  >
+			: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
+	> {
 		const filter: FilterQuery<ISetting> = {
 			hidden: { $ne: true },
 			public: true,
@@ -116,7 +146,17 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			filter._id = { $in: ids };
 		}
 
-		return this.find(filter, { projection: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			projection: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 
 	findSetupWizardSettings(): Cursor<ISetting> {
@@ -151,6 +191,16 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			},
 		};
 
-		return this.find(filter, { projection: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			projection: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 }

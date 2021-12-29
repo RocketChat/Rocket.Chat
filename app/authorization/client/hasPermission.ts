@@ -10,8 +10,13 @@ import { IPermission } from '../../../definition/IPermission';
 const isValidScope = (scope: IRole['scope']): boolean =>
 	typeof scope === 'string' && scope in Models;
 
-const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
+const createPermissionValidator =
+	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
+	(
+		permissionIds: IPermission['_id'][],
+		scope: string | undefined,
+		userId: IUser['_id'],
+	): boolean => {
 		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
@@ -23,7 +28,9 @@ const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermi
 				}
 			}
 
-			const permission: IPermission | null = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
+			const permission: IPermission | null = ChatPermissions.findOne(permissionId, {
+				fields: { roles: 1 },
+			});
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleName) => {
@@ -47,7 +54,11 @@ const all = createPermissionValidator(Array.prototype.every);
 const validatePermissions = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope: string | undefined,
-	predicate: (permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']) => boolean,
+	predicate: (
+		permissionIds: IPermission['_id'][],
+		scope: string | undefined,
+		userId: IUser['_id'],
+	) => boolean,
 	userId?: IUser['_id'] | null,
 ): boolean => {
 	userId = userId ?? Meteor.userId();

@@ -1,6 +1,8 @@
 import _ from 'underscore';
 
-import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
+import LivechatDepartmentInstance, {
+	LivechatDepartment,
+} from '../../../../../app/models/server/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
 import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import LivechatUnitMonitors from './LivechatUnitMonitors';
@@ -18,7 +20,6 @@ const addQueryRestrictions = (originalQuery = {}) => {
 
 	return query;
 };
-
 
 export class LivechatUnit extends LivechatDepartment {
 	find(originalQuery, ...args) {
@@ -78,22 +79,35 @@ export class LivechatUnit extends LivechatDepartment {
 			});
 		});
 
-		const savedDepartments = _.pluck(LivechatDepartmentInstance.find({ parentId: _id }).fetch(), '_id');
+		const savedDepartments = _.pluck(
+			LivechatDepartmentInstance.find({ parentId: _id }).fetch(),
+			'_id',
+		);
 		const departmentsToSave = _.pluck(departments, 'departmentId');
 
 		// remove other departments
 		_.difference(savedDepartments, departmentsToSave).forEach((departmentId) => {
-			LivechatDepartmentInstance.update({ _id: departmentId }, { $set: {
-				parentId: null,
-				ancestors: null,
-			} });
+			LivechatDepartmentInstance.update(
+				{ _id: departmentId },
+				{
+					$set: {
+						parentId: null,
+						ancestors: null,
+					},
+				},
+			);
 		});
 
 		departmentsToSave.forEach((departmentId) => {
-			LivechatDepartmentInstance.update({ _id: departmentId }, { $set: {
-				parentId: _id,
-				ancestors,
-			} });
+			LivechatDepartmentInstance.update(
+				{ _id: departmentId },
+				{
+					$set: {
+						parentId: _id,
+						ancestors,
+					},
+				},
+			);
 		});
 
 		return _.extend(record, { _id });
@@ -127,11 +141,14 @@ export class LivechatUnit extends LivechatDepartment {
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);

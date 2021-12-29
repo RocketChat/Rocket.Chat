@@ -8,16 +8,25 @@ import { checkUsernameAvailability } from '../../../lib/server/functions';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
 	if (isDiscussion) {
-		return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
+		return (
+			Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName)
+		);
 	}
 	const slugifiedRoomName = getValidRoomName(displayName, rid);
 
 	// Check if the username is available
 	if (!checkUsernameAvailability(slugifiedRoomName)) {
-		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${ slugifiedRoomName }' already exists`, { function: 'RocketChat.updateRoomName', handle: slugifiedRoomName });
+		throw new Meteor.Error(
+			'error-duplicate-handle',
+			`A room, team or user with name '${slugifiedRoomName}' already exists`,
+			{ function: 'RocketChat.updateRoomName', handle: slugifiedRoomName },
+		);
 	}
 
-	return Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+	return (
+		Rooms.setNameById(rid, slugifiedRoomName, displayName) &&
+		Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName)
+	);
 };
 
 export async function saveRoomName(rid, displayName, user, sendMessage = true) {

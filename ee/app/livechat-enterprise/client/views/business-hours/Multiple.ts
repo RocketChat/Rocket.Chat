@@ -1,5 +1,8 @@
 import { IBusinessHourBehavior } from '../../../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../../definition/ILivechatBusinessHour';
+import {
+	ILivechatBusinessHour,
+	LivechatBusinessHourTypes,
+} from '../../../../../../definition/ILivechatBusinessHour';
 
 export class MultipleBusinessHoursBehavior implements IBusinessHourBehavior {
 	getView(): string {

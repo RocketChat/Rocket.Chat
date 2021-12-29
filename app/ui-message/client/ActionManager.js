@@ -75,7 +75,13 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)) {
+	if (
+		[
+			UIKitInteractionTypes.BANNER_UPDATE,
+			UIKitInteractionTypes.MODAL_UPDATE,
+			UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE,
+		].includes(type)
+	) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -159,32 +165,45 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) => new Promise(async (resolve, reject) => {
-	const triggerId = generateTriggerId(appId);
+export const triggerAction = async ({
+	type,
+	actionId,
+	appId,
+	rid,
+	mid,
+	viewId,
+	container,
+	...rest
+}) =>
+	new Promise(async (resolve, reject) => {
+		const triggerId = generateTriggerId(appId);
 
-	const payload = rest.payload || rest;
+		const payload = rest.payload || rest;
 
-	setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
+		setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
 
-	const { type: interactionType, ...data } = await APIClient.post(
-		`apps/ui.interaction/${ appId }`,
-		{ type, actionId, payload, container, mid, rid, triggerId, viewId },
-	);
+		const { type: interactionType, ...data } = await APIClient.post(
+			`apps/ui.interaction/${appId}`,
+			{ type, actionId, payload, container, mid, rid, triggerId, viewId },
+		);
 
-	return resolve(handlePayloadUserInteraction(interactionType, data));
-});
+		return resolve(handlePayloadUserInteraction(interactionType, data));
+	});
 
-export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
+export const triggerBlockAction = (options) =>
+	triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
 
 export const triggerActionButtonAction = (options) =>
-	triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(async (reason) => {
-		if (Array.isArray(reason) && reason[0] === TRIGGER_TIMEOUT_ERROR) {
-			dispatchToastMessage({
-				type: 'error',
-				message: t('UIKit_Interaction_Timeout'),
-			});
-		}
-	});
+	triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(
+		async (reason) => {
+			if (Array.isArray(reason) && reason[0] === TRIGGER_TIMEOUT_ERROR) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('UIKit_Interaction_Timeout'),
+				});
+			}
+		},
+	);
 
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
@@ -196,7 +215,11 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 	};
 
 	try {
-		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
+		const result = await triggerAction({
+			type: UIKitIncomingInteractionType.VIEW_SUBMIT,
+			viewId,
+			...options,
+		});
 		if (!result || UIKitInteractionTypes.MODAL_CLOSE === result) {
 			close();
 		}

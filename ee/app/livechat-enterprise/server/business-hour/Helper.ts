@@ -7,13 +7,24 @@ import {
 	LivechatDepartmentAgents,
 	Users,
 } from '../../../../../app/models/server/raw';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
+import {
+	ILivechatBusinessHour,
+	LivechatBusinessHourTypes,
+} from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { projection: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
-	const agentIdsWithoutDepartment = (await Users.findUsersInRolesWithQuery('livechat-agent', {
-		_id: { $nin: agentIdsWithDepartment },
-	}, { projection: { _id: 1 } }).toArray()).map((user: any) => user._id);
+	const agentIdsWithDepartment = (
+		await LivechatDepartmentAgents.find({}, { projection: { agentId: 1 } }).toArray()
+	).map((dept: any) => dept.agentId);
+	const agentIdsWithoutDepartment = (
+		await Users.findUsersInRolesWithQuery(
+			'livechat-agent',
+			{
+				_id: { $nin: agentIdsWithDepartment },
+			},
+			{ projection: { _id: 1 } },
+		).toArray()
+	).map((user: any) => user._id);
 	return agentIdsWithoutDepartment;
 };
 
@@ -21,8 +32,16 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {
 		return getAllAgentIdsWithoutDepartment();
 	}
-	const departmentIds = (await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, { projection: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
-	return (await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, { projection: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+	const departmentIds = (
+		await LivechatDepartment.findEnabledByBusinessHourId(businessHour._id, {
+			projection: { _id: 1 },
+		}).toArray()
+	).map((dept: any) => dept._id);
+	return (
+		await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
+			projection: { agentId: 1 },
+		}).toArray()
+	).map((dept: any) => dept.agentId);
 };
 
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
@@ -37,7 +56,10 @@ export const closeBusinessHour = async (businessHour: Record<string, any>): Prom
 	Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
-export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
+export const removeBusinessHourByAgentIds = async (
+	agentIds: string[],
+	businessHourId: string,
+): Promise<void> => {
 	if (!agentIds.length) {
 		return;
 	}
@@ -53,17 +75,22 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		if (isEnterprise) {
 			return;
 		}
-		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({ projection: { _id: 1 } });
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<
+			Pick<ILivechatBusinessHour, '_id'>
+		>({ projection: { _id: 1 } });
 		if (!defaultBusinessHour) {
 			return;
 		}
-		LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
-			$set: {
-				timezone: {
-					name: moment.tz.guess(),
-					utc: String(moment().utcOffset() / 60),
+		LivechatBusinessHours.update(
+			{ _id: defaultBusinessHour._id },
+			{
+				$set: {
+					timezone: {
+						name: moment.tz.guess(),
+						utc: String(moment().utcOffset() / 60),
+					},
 				},
 			},
-		});
+		);
 	});
 };

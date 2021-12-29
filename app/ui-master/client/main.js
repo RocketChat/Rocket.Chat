@@ -17,13 +17,20 @@ import './main.html';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
-
-callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
+callbacks.add(
+	'afterLogoutCleanUp',
+	() => fireGlobalEvent('Custom_Script_On_Logout'),
+	callbacks.priority.LOW,
+	'custom-script-on-logout',
+);
 
 Template.main.helpers({
 	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
-		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
+		if (
+			!!Meteor.userId() ||
+			(settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)
+		) {
 			document.documentElement.classList.add('noscroll');
 			document.documentElement.classList.remove('scroll');
 			return true;
@@ -64,7 +71,11 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
+		if (
+			!user ||
+			(user.services.totp !== undefined && user.services.totp.enabled) ||
+			(user.services.email2fa !== undefined && user.services.email2fa.enabled)
+		) {
 			return false;
 		}
 		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
@@ -90,21 +101,23 @@ Template.main.helpers({
 	},
 });
 
-Template.main.onCreated(function() {
+Template.main.onCreated(function () {
 	tooltip.init();
 });
 
-Template.main.onRendered(function() {
+Template.main.onRendered(function () {
 	// iOS prevent click if elements matches hover
-	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchend', 'a', (e) => {
-		if (!e.target.matches(':hover')) {
-			return;
-		}
+	isIOsDevice &&
+		window.matchMedia('(hover: none)').matches &&
+		$(document.body).on('touchend', 'a', (e) => {
+			if (!e.target.matches(':hover')) {
+				return;
+			}
 
-		e.target.click();
-	});
+			e.target.click();
+		});
 
-	Tracker.autorun(function() {
+	Tracker.autorun(function () {
 		const userId = Meteor.userId();
 
 		if (getUserPreference(userId, 'hideUsernames')) {

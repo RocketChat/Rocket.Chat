@@ -4,8 +4,18 @@ import fs from 'fs';
 
 import UglifyJS from 'uglify-js';
 
-const livechatSource = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js');
-const livechatTarget = path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocketchat-livechat.min.js');
+const livechatSource = path.resolve(
+	'packages',
+	'rocketchat-livechat',
+	'assets',
+	'rocket-livechat.js',
+);
+const livechatTarget = path.resolve(
+	'packages',
+	'rocketchat-livechat',
+	'assets',
+	'rocketchat-livechat.min.js',
+);
 
 fs.writeFileSync(livechatTarget, UglifyJS.minify(livechatSource).code);
 
@@ -17,7 +27,7 @@ const options = {
 };
 
 if (process.platform === 'win32') {
-	execSync(`${ pluginPath }/build.bat`, options);
+	execSync(`${pluginPath}/build.bat`, options);
 } else {
-	execSync(`sh ${ pluginPath }/build.sh`, options);
+	execSync(`sh ${pluginPath}/build.sh`, options);
 }

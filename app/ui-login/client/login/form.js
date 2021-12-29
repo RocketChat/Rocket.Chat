@@ -31,7 +31,7 @@ Template.loginForm.helpers({
 	},
 	btnLoginSave() {
 		if (Template.instance().loading.get()) {
-			return `${ t('Please_wait') }...`;
+			return `${t('Please_wait')}...`;
 		}
 		switch (Template.instance().state.get()) {
 			case 'register':
@@ -49,7 +49,10 @@ Template.loginForm.helpers({
 	},
 	registrationAllowed() {
 		const validSecretUrl = Template.instance().validSecretURL;
-		return settings.get('Accounts_RegistrationForm') === 'Public' || (validSecretUrl && validSecretUrl.get());
+		return (
+			settings.get('Accounts_RegistrationForm') === 'Public' ||
+			(validSecretUrl && validSecretUrl.get())
+		);
 	},
 	linkReplacementText() {
 		return settings.get('Accounts_RegistrationForm_LinkReplacementText');
@@ -109,7 +112,7 @@ Template.loginForm.events({
 			}
 			if (state === 'register') {
 				formData.secretURL = FlowRouter.getParam('hash');
-				return Meteor.call('registerUser', formData, function(error) {
+				return Meteor.call('registerUser', formData, function (error) {
 					instance.loading.set(false);
 					if (error != null) {
 						if (error.reason === 'Email already exists.') {
@@ -120,10 +123,11 @@ Template.loginForm.events({
 						return;
 					}
 					callbacks.run('userRegistered');
-					return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function(error) {
+					return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function (error) {
 						if (error && error.error === 'error-invalid-email') {
 							return instance.state.set('wait-email-activation');
-						} if (error && error.error === 'error-user-is-not-activated') {
+						}
+						if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
 						}
 						Session.set('forceLogin', false);
@@ -137,7 +141,7 @@ Template.loginForm.events({
 			if (settings.get('CROWD_Enable')) {
 				loginMethod = 'loginWithCrowd';
 			}
-			return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function(error) {
+			return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function (error) {
 				instance.loading.set(false);
 				if (error != null) {
 					switch (error.error) {
@@ -156,10 +160,16 @@ Template.loginForm.events({
 							dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_user') });
 							break;
 						case 'error-license-user-limit-reached':
-							dispatchToastMessage({ type: 'error', message: t('error-license-user-limit-reached') });
+							dispatchToastMessage({
+								type: 'error',
+								message: t('error-license-user-limit-reached'),
+							});
 							break;
 						default:
-							return dispatchToastMessage({ type: 'error', message: t('User_not_found_or_incorrect_password') });
+							return dispatchToastMessage({
+								type: 'error',
+								message: t('User_not_found_or_incorrect_password'),
+							});
 					}
 				}
 				Session.set('forceLogin', false);
@@ -180,7 +190,7 @@ Template.loginForm.events({
 	},
 });
 
-Template.loginForm.onCreated(function() {
+Template.loginForm.onCreated(function () {
 	const instance = this;
 	this.loading = new ReactiveVar(false);
 
@@ -198,7 +208,7 @@ Template.loginForm.onCreated(function() {
 	});
 
 	this.validSecretURL = new ReactiveVar(false);
-	this.validate = function() {
+	this.validate = function () {
 		const formData = $('#login-card').serializeArray();
 		const formObj = {};
 		const validationObj = {};
@@ -225,7 +235,10 @@ Template.loginForm.onCreated(function() {
 			if (settings.get('Accounts_RequireNameForSignUp') && !formObj.name) {
 				validationObj.name = t('Invalid_name');
 			}
-			if (settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj.pass) {
+			if (
+				settings.get('Accounts_RequirePasswordConfirmation') &&
+				formObj['confirm-pass'] !== formObj.pass
+			) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
 			}
 			if (settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
@@ -240,8 +253,10 @@ Template.loginForm.onCreated(function() {
 
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
-				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
-				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				$(`#login-card input[name=${key}], #login-card select[name=${key}]`).addClass('error');
+				$(
+					`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`,
+				).text(value);
 			});
 			instance.loading.set(false);
 			return false;
@@ -249,11 +264,13 @@ Template.loginForm.onCreated(function() {
 		return formObj;
 	};
 	if (FlowRouter.getParam('hash')) {
-		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () => this.validSecretURL.set(true));
+		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () =>
+			this.validSecretURL.set(true),
+		);
 	}
 });
 
-Template.loginForm.onRendered(function() {
+Template.loginForm.onRendered(function () {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		callbacks.run('loginPageStateChange', this.state.get());
@@ -261,11 +278,11 @@ Template.loginForm.onRendered(function() {
 			case 'login':
 			case 'forgot-password':
 			case 'email-verification':
-				return Meteor.defer(function() {
+				return Meteor.defer(function () {
 					return $('input[name=email]').select().focus();
 				});
 			case 'register':
-				return Meteor.defer(function() {
+				return Meteor.defer(function () {
 					return $('input[name=name]').select().focus();
 				});
 		}

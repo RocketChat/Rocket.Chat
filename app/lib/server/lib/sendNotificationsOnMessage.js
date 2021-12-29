@@ -6,7 +6,12 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
-import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
+import {
+	callJoinRoom,
+	messageContainsHighlight,
+	parseMessageTextPerUser,
+	replaceMentionedUsernamesWithFullNames,
+} from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
@@ -39,7 +44,12 @@ export const sendNotification = async ({
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
-	if (!hasMentionToUser && !hasReplyToThread && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
+	if (
+		!hasMentionToUser &&
+		!hasReplyToThread &&
+		subscription.muteGroupMentions &&
+		(hasMentionToAll || hasMentionToHere)
+	) {
 		return;
 	}
 
@@ -72,26 +82,24 @@ export const sendNotification = async ({
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
-	const {
-		desktopNotifications,
-		mobilePushNotifications,
-		emailNotifications,
-	} = subscription;
+	const { desktopNotifications, mobilePushNotifications, emailNotifications } = subscription;
 
 	// busy users don't receive desktop notification
-	if (shouldNotifyDesktop({
-		disableAllMessageNotifications,
-		status: receiver.status,
-		statusConnection: receiver.statusConnection,
-		desktopNotifications,
-		hasMentionToAll,
-		hasMentionToHere,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
+	if (
+		shouldNotifyDesktop({
+			disableAllMessageNotifications,
+			status: receiver.status,
+			statusConnection: receiver.statusConnection,
+			desktopNotifications,
+			hasMentionToAll,
+			hasMentionToHere,
+			isHighlighted,
+			hasMentionToUser,
+			hasReplyToThread,
+			roomType,
+			isThread,
+		})
+	) {
 		notifyDesktopUser({
 			notificationMessage,
 			userId: subscription.u._id,
@@ -103,16 +111,18 @@ export const sendNotification = async ({
 
 	const queueItems = [];
 
-	if (shouldNotifyMobile({
-		disableAllMessageNotifications,
-		mobilePushNotifications,
-		hasMentionToAll,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
+	if (
+		shouldNotifyMobile({
+			disableAllMessageNotifications,
+			mobilePushNotifications,
+			hasMentionToAll,
+			isHighlighted,
+			hasMentionToUser,
+			hasReplyToThread,
+			roomType,
+			isThread,
+		})
+	) {
 		queueItems.push({
 			type: 'push',
 			data: await getPushData({
@@ -127,17 +137,20 @@ export const sendNotification = async ({
 		});
 	}
 
-	if (receiver.emails && shouldNotifyEmail({
-		disableAllMessageNotifications,
-		statusConnection: receiver.statusConnection,
-		emailNotifications,
-		isHighlighted,
-		hasMentionToUser,
-		hasMentionToAll,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
+	if (
+		receiver.emails &&
+		shouldNotifyEmail({
+			disableAllMessageNotifications,
+			statusConnection: receiver.statusConnection,
+			emailNotifications,
+			isHighlighted,
+			hasMentionToUser,
+			hasMentionToAll,
+			hasReplyToThread,
+			roomType,
+			isThread,
+		})
+	) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				queueItems.push({
@@ -172,13 +185,13 @@ export const sendNotification = async ({
 
 const project = {
 	$project: {
-		desktopNotifications: 1,
-		emailNotifications: 1,
-		mobilePushNotifications: 1,
-		muteGroupMentions: 1,
-		name: 1,
-		rid: 1,
-		userHighlights: 1,
+		'desktopNotifications': 1,
+		'emailNotifications': 1,
+		'mobilePushNotifications': 1,
+		'muteGroupMentions': 1,
+		'name': 1,
+		'rid': 1,
+		'userHighlights': 1,
 		'u._id': 1,
 		'receiver.active': 1,
 		'receiver.emails': 1,
@@ -214,11 +227,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return message;
 	}
 
-	const {
-		toAll: hasMentionToAll,
-		toHere: hasMentionToHere,
-		mentionIds,
-	} = getMentions(message);
+	const { toAll: hasMentionToAll, toHere: hasMentionToHere, mentionIds } = getMentions(message);
 
 	const mentionIdsWithoutGroups = [...mentionIds];
 
@@ -241,7 +250,8 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
 	const roomMembersCount = Subscriptions.findByRoomId(room._id).count();
-	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
+	const disableAllMessageNotifications =
+		roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
 		rid: room._id,
@@ -249,17 +259,17 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		disableNotifications: { $ne: true },
 		$or: [
 			{ 'userHighlights.0': { $exists: 1 } },
-			...usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : [],
+			...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : []),
 		],
 	};
 
 	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
-		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
+		const notificationField = `${kind === 'mobile' ? 'mobilePush' : kind}Notifications`;
 
 		const filter = { [notificationField]: 'all' };
 
 		if (disableAllMessageNotifications) {
-			filter[`${ kind }PrefOrigin`] = { $ne: 'user' };
+			filter[`${kind}PrefOrigin`] = { $ne: 'user' };
 		}
 
 		query.$or.push(filter);
@@ -275,9 +285,13 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 			});
 		}
 
-		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
-		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
-		if ((room.t === 'd' && serverPreference !== 'nothing') || (!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))) {
+		const serverField = kind === 'email' ? 'emailNotificationMode' : `${kind}Notifications`;
+		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${serverField}`);
+		if (
+			(room.t === 'd' && serverPreference !== 'nothing') ||
+			(!disableAllMessageNotifications &&
+				(serverPreference === 'all' || hasMentionToAll || hasMentionToHere))
+		) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 			});
@@ -292,25 +306,25 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
-	const subscriptions = await Subscriptions.model.rawCollection().aggregate([
-		{ $match: query },
-		lookup,
-		filter,
-		project,
-	]).toArray();
+	const subscriptions = await Subscriptions.model
+		.rawCollection()
+		.aggregate([{ $match: query }, lookup, filter, project])
+		.toArray();
 
-	subscriptions.forEach((subscription) => sendNotification({
-		subscription,
-		sender,
-		hasMentionToAll,
-		hasMentionToHere,
-		message,
-		notificationMessage,
-		room,
-		mentionIds,
-		disableAllMessageNotifications,
-		hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
-	}));
+	subscriptions.forEach((subscription) =>
+		sendNotification({
+			subscription,
+			sender,
+			hasMentionToAll,
+			hasMentionToHere,
+			message,
+			notificationMessage,
+			room,
+			mentionIds,
+			disableAllMessageNotifications,
+			hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
+		}),
+	);
 
 	return {
 		sender,
@@ -357,49 +371,60 @@ export async function sendAllNotifications(message, room) {
 	if (room.t === 'c') {
 		// get subscriptions from users already in room (to not send them a notification)
 		const mentions = [...mentionIdsWithoutGroups];
-		Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, { fields: { 'u._id': 1 } }).forEach((subscription) => {
+		Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, {
+			fields: { 'u._id': 1 },
+		}).forEach((subscription) => {
 			const index = mentions.indexOf(subscription.u._id);
 			if (index !== -1) {
 				mentions.splice(index, 1);
 			}
 		});
 
-		Promise.all(mentions
-			.map(async (userId) => {
+		Promise.all(
+			mentions.map(async (userId) => {
 				await callJoinRoom(userId, room._id);
 
 				return userId;
 			}),
-		).then((users) => {
-			users.forEach((userId) => {
-				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+		)
+			.then((users) => {
+				users.forEach((userId) => {
+					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
 
-				sendNotification({
-					subscription,
-					sender,
-					hasMentionToAll,
-					hasMentionToHere,
-					message,
-					notificationMessage,
-					room,
-					mentionIds,
+					sendNotification({
+						subscription,
+						sender,
+						hasMentionToAll,
+						hasMentionToHere,
+						message,
+						notificationMessage,
+						room,
+						mentionIds,
+					});
 				});
+			})
+			.catch((error) => {
+				throw new Meteor.Error(error);
 			});
-		}).catch((error) => {
-			throw new Meteor.Error(error);
-		});
 	}
 
 	return message;
 }
 
 settings.watch('Troubleshoot_Disable_Notifications', (value) => {
-	if (TroubleshootDisableNotifications === value) { return; }
+	if (TroubleshootDisableNotifications === value) {
+		return;
+	}
 	TroubleshootDisableNotifications = value;
 
 	if (value) {
 		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
 	}
 
-	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+	callbacks.add(
+		'afterSaveMessage',
+		(message, room) => Promise.await(sendAllNotifications(message, room)),
+		callbacks.priority.LOW,
+		'sendNotificationsOnMessage',
+	);
 });

@@ -1,6 +1,9 @@
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
 
-export const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']): SettingValue => {
+export const convertValue = (
+	value: 'true' | 'false' | string,
+	type: ISetting['type'],
+): SettingValue => {
 	if (value.toLowerCase() === 'true') {
 		return true;
 	}

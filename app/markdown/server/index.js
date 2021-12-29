@@ -32,5 +32,10 @@ Meteor.startup(() => {
 	const renderNotification = createMarkdownNotificationRenderer({
 		supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
 	});
-	callbacks.add('renderNotification', renderNotification, callbacks.priority.HIGH, 'filter-markdown');
+	callbacks.add(
+		'renderNotification',
+		renderNotification,
+		callbacks.priority.HIGH,
+		'filter-markdown',
+	);
 });

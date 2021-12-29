@@ -33,8 +33,15 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
+		if (
+			message.reactions &&
+			message.reactions[reaction] &&
+			message.reactions[reaction].usernames.indexOf(user.username) !== -1
+		) {
+			message.reactions[reaction].usernames.splice(
+				message.reactions[reaction].usernames.indexOf(user.username),
+				1,
+			);
 
 			if (message.reactions[reaction].usernames.length === 0) {
 				delete message.reactions[reaction];

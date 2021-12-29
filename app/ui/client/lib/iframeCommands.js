@@ -11,18 +11,21 @@ import { add, remove } from '../../../../client/views/room/lib/Toolbox/IframeBut
 import { baseURI } from '../../../../client/lib/baseURI';
 
 const commands = {
-	go(data) {
+	'go'(data) {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
-		const newUrl = new URL(`${ s.rtrim(baseURI, '/') }/${ s.ltrim(data.path, '/') }`);
+		const newUrl = new URL(`${s.rtrim(baseURI, '/')}/${s.ltrim(data.path, '/')}`);
 
 		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
 			ret[key] = value;
 			return ret;
 		}, {});
 
-		const newPath = newUrl.pathname.replace(new RegExp(`^${ escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX) }`), '');
+		const newPath = newUrl.pathname.replace(
+			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
+			'',
+		);
 		FlowRouter.go(newPath, null, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 
@@ -32,13 +35,16 @@ const commands = {
 
 	'call-custom-oauth-login'(data, event) {
 		const customOAuthCallback = (response) => {
-			event.source.postMessage({
-				event: 'custom-oauth-callback',
-				response,
-			}, event.origin);
+			event.source.postMessage(
+				{
+					event: 'custom-oauth-callback',
+					response,
+				},
+				event.origin,
+			);
 		};
 
-		const siteUrl = `${ Meteor.settings.Site_Url }/`;
+		const siteUrl = `${Meteor.settings.Site_Url}/`;
 		if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
 			data.redirectUrl = null;
 		}
@@ -47,7 +53,7 @@ const commands = {
 			const customOauth = ServiceConfiguration.configurations.findOne({ service: data.service });
 
 			if (customOauth) {
-				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
+				const customLoginWith = Meteor[`loginWith${s.capitalize(customOauth.service, true)}`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, { redirectUrl: customRedirectUri }, customOAuthCallback);
 			}
@@ -56,7 +62,7 @@ const commands = {
 
 	'login-with-token'(data, ...args) {
 		if (typeof data.token === 'string') {
-			Meteor.loginWithToken(data.token, function() {
+			Meteor.loginWithToken(data.token, function () {
 				console.log('Iframe command [login-with-token]: result', [data, ...args]);
 			});
 		}

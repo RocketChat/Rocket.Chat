@@ -6,7 +6,7 @@ import { actionLinks } from '../../action-links/client';
 import { Rooms } from '../../models';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
-actionLinks.register('joinJitsiCall', function(message, params, instance) {
+actionLinks.register('joinJitsiCall', function (message, params, instance) {
 	if (Session.get('openedRoom')) {
 		const rid = Session.get('openedRoom');
 

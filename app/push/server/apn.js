@@ -10,7 +10,8 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 		notification = Object.assign({}, notification, notification.apn);
 	}
 
-	const priority = notification.priority || notification.priority === 0 ? notification.priority : 10;
+	const priority =
+		notification.priority || notification.priority === 0 ? notification.priority : 10;
 
 	const note = new apn.Notification();
 
@@ -47,10 +48,10 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 
 	apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
-			logger.debug(`Got error code ${ failure.status } for token ${ userToken }`);
+			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
 
 			if (['400', '410'].includes(failure.status)) {
-				logger.debug(`Removing token ${ userToken }`);
+				logger.debug(`Removing token ${userToken}`);
 				_removeToken({
 					apn: userToken,
 				});
@@ -87,15 +88,19 @@ export const initAPN = ({ options, absoluteUrl }) => {
 		} else if (options.apn.gateway === 'gateway.push.apple.com') {
 			// In production - but warn if we are running on localhost
 			if (/http:\/\/localhost/.test(absoluteUrl)) {
-				logger.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
+				logger.warn(
+					'WARNING: Push APN is configured to production mode - but server is running from localhost',
+				);
 			}
 		} else {
 			// Warn about gateways we dont know about
-			logger.warn(`WARNING: Push APN unknown gateway "${ options.apn.gateway }"`);
+			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
 		}
 	} else if (options.apn.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {
-			logger.warn('WARNING: Push APN is configured to production mode - but server is running from localhost');
+			logger.warn(
+				'WARNING: Push APN is configured to production mode - but server is running from localhost',
+			);
 		}
 	} else {
 		logger.warn('WARNING: Push APN is in development mode');

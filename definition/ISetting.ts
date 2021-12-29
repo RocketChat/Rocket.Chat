@@ -7,23 +7,52 @@ export type SectionName = string;
 
 export enum SettingEditor {
 	COLOR = 'color',
-	EXPRESSION = 'expression'
+	EXPRESSION = 'expression',
 }
 type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = (string | number)[];
-export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
-export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined;
+export type SettingValueRoomPick = Array<{ _id: string; name: string }> | string;
+export type SettingValue =
+	| string
+	| boolean
+	| number
+	| SettingValueMultiSelect
+	| Date
+	| AssetValue
+	| undefined;
 
 export interface ISettingSelectOption {
 	key: string | number;
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction;
+export type ISetting =
+	| ISettingBase
+	| ISettingEnterprise
+	| ISettingColor
+	| ISettingCode
+	| ISettingAction;
 
 export interface ISettingBase {
 	_id: SettingId;
-	type: 'boolean' | 'timezone' |'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
+	type:
+		| 'boolean'
+		| 'timezone'
+		| 'string'
+		| 'relativeUrl'
+		| 'password'
+		| 'int'
+		| 'select'
+		| 'multiSelect'
+		| 'language'
+		| 'color'
+		| 'font'
+		| 'code'
+		| 'action'
+		| 'asset'
+		| 'roomPick'
+		| 'group'
+		| 'date';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -79,7 +108,6 @@ export interface ISettingGroup {
 	alert?: string; // todo: check if this is needed
 }
 
-
 export interface ISettingEnterprise extends ISettingBase {
 	enterprise: true;
 	invalidValue: SettingValue;
@@ -110,15 +138,20 @@ export interface ISettingDate extends ISettingBase {
 	value: Date;
 }
 
-export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
+export const isDateSetting = (setting: ISetting): setting is ISettingDate =>
+	setting.type === 'date';
 
+export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise =>
+	setting.enterprise === true;
 
-export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
+export const isSettingColor = (setting: ISettingBase): setting is ISettingColor =>
+	setting.type === 'color';
 
-export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
+export const isSettingCode = (setting: ISettingBase): setting is ISettingCode =>
+	setting.type === 'code';
 
-export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
+export const isSettingAction = (setting: ISettingBase): setting is ISettingAction =>
+	setting.type === 'action';
 
-export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
-
-export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
+export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset =>
+	setting.type === 'asset';

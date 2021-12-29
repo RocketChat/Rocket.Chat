@@ -27,7 +27,10 @@ export const checkMethods = new Map<string, ICodeCheck>();
 checkMethods.set(totpCheck.name, totpCheck);
 checkMethods.set(emailCheck.name, emailCheck);
 
-export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
+export function getMethodByNameOrFirstActiveForUser(
+	user: IUser,
+	name?: string,
+): ICodeCheck | undefined {
 	if (name && checkMethods.has(name)) {
 		return checkMethods.get(name);
 	}
@@ -36,15 +39,19 @@ export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string):
 }
 
 export function getAvailableMethodNames(user: IUser): string[] | [] {
-	return Array.from(checkMethods).filter(([, method]) => method.isEnabled(user)).map(([name]) => name) || [];
+	return (
+		Array.from(checkMethods)
+			.filter(([, method]) => method.isEnabled(user))
+			.map(([name]) => name) || []
+	);
 }
 
 export function getUserForCheck(userId: string): IUser {
 	return Users.findOneById(userId, {
 		fields: {
-			emails: 1,
-			language: 1,
-			createdAt: 1,
+			'emails': 1,
+			'language': 1,
+			'createdAt': 1,
 			'services.totp': 1,
 			'services.email2fa': 1,
 			'services.emailCode': 1,
@@ -64,7 +71,10 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 }
 
 function getRememberDate(from: Date = new Date()): Date | undefined {
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
+	const rememberFor = parseInt(
+		settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string,
+		10,
+	);
 
 	if (rememberFor <= 0) {
 		return;
@@ -76,9 +86,15 @@ function getRememberDate(from: Date = new Date()): Date | undefined {
 	return expires;
 }
 
-export function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
+export function isAuthorizedForToken(
+	connection: IMethodConnection,
+	user: IUser,
+	options: ITwoFactorOptions,
+): boolean {
 	const currentToken = Accounts._getLoginToken(connection.id);
-	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
+	const tokenObject = user.services?.resume?.loginTokens?.find(
+		(i) => i.hashedToken === currentToken,
+	);
 
 	if (!tokenObject) {
 		return false;
@@ -126,7 +142,12 @@ export function rememberAuthorization(connection: IMethodConnection, user: IUser
 		return;
 	}
 
-	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, currentToken, getFingerprintFromConnection(connection), expires);
+	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(
+		user._id,
+		currentToken,
+		getFingerprintFromConnection(connection),
+		expires,
+	);
 }
 
 interface ICheckCodeForUser {
@@ -137,7 +158,11 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
-const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+const getSecondFactorMethod = (
+	user: IUser,
+	method: string | undefined,
+	options: ITwoFactorOptions,
+): ICodeCheck | undefined => {
 	// try first getting one of the available methods or the one that was already provided
 	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 	if (selectedMethod) {
@@ -150,12 +175,21 @@ const getSecondFactorMethod = (user: IUser, method: string | undefined, options:
 	}
 
 	// check if password fallback is enabled
-	if (!options.disablePasswordFallback && passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor)) {
+	if (
+		!options.disablePasswordFallback &&
+		passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor)
+	) {
 		return passwordCheckFallback;
 	}
 };
 
-export function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+export function checkCodeForUser({
+	user,
+	code,
+	method,
+	options = {},
+	connection,
+}: ICheckCodeForUser): boolean {
 	if (process.env.TEST_MODE && !options.requireSecondFactor) {
 		return true;
 	}
@@ -168,7 +202,12 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		user = getUserForCheck(user);
 	}
 
-	if (!code && !method && connection?.httpHeaders?.['x-2fa-code'] && connection.httpHeaders['x-2fa-method']) {
+	if (
+		!code &&
+		!method &&
+		connection?.httpHeaders?.['x-2fa-code'] &&
+		connection.httpHeaders['x-2fa-method']
+	) {
 		code = connection.httpHeaders['x-2fa-code'];
 		method = connection.httpHeaders['x-2fa-method'];
 	}
@@ -187,7 +226,11 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		const data = selectedMethod.processInvalidCode(user);
 		const availableMethods = getAvailableMethodNames(user);
 
-		throw new Meteor.Error('totp-required', 'TOTP Required', { method: selectedMethod.name, ...data, availableMethods });
+		throw new Meteor.Error('totp-required', 'TOTP Required', {
+			method: selectedMethod.name,
+			...data,
+			availableMethods,
+		});
 	}
 
 	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);

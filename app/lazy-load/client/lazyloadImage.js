@@ -4,14 +4,15 @@ import { Template } from 'meteor/templating';
 import './lazyloadImage.html';
 import { addImage } from '.';
 
-const emptyImageEncoded = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
+const emptyImageEncoded =
+	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
 
 const imgsrcs = new Set();
 
 Template.lazyloadImage.helpers({
 	class() {
 		const loaded = Template.instance().loaded.get();
-		return `${ this.class } ${ loaded ? '' : 'lazy-img' }`;
+		return `${this.class} ${loaded ? '' : 'lazy-img'}`;
 	},
 
 	srcUrl() {
@@ -30,14 +31,14 @@ Template.lazyloadImage.helpers({
 		}
 
 		imgsrcs.add(this.src);
-		return `data:image/png;base64,${ preview || emptyImageEncoded }`;
+		return `data:image/png;base64,${preview || emptyImageEncoded}`;
 	},
 });
 
-Template.lazyloadImage.onCreated(function() {
+Template.lazyloadImage.onCreated(function () {
 	this.loaded = new ReactiveVar(false);
 });
 
-Template.lazyloadImage.onRendered(function() {
+Template.lazyloadImage.onRendered(function () {
 	addImage(this);
 });

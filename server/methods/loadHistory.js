@@ -34,7 +34,12 @@ Meteor.methods({
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = hasPermission(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+		if (
+			room.t === 'c' &&
+			!canAnonymous &&
+			!canPreview &&
+			!Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })
+		) {
 			return false;
 		}
 

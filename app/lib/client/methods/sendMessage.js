@@ -19,7 +19,9 @@ Meteor.methods({
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
 		const user = Meteor.user();
-		message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
+		message.ts = isNaN(TimeSync.serverOffset())
+			? new Date()
+			: new Date(Date.now() + TimeSync.serverOffset());
 		message.u = {
 			_id: Meteor.userId(),
 			username: user.username,
@@ -32,7 +34,7 @@ Meteor.methods({
 			message.unread = true;
 		}
 		message = callbacks.run('beforeSaveMessage', message);
-		onClientMessageReceived(message).then(function(message) {
+		onClientMessageReceived(message).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});

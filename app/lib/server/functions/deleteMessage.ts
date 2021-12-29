@@ -10,7 +10,7 @@ import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
-export const deleteMessage = async function(message: IMessage, user: IUser): Promise<void> {
+export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
@@ -18,9 +18,14 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 	const bridges = Apps?.isLoaded() && Apps.getBridges();
 
 	if (deletedMsg && bridges) {
-		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
+		const prevent = Promise.await(
+			bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg),
+		);
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
+			throw new Meteor.Error(
+				'error-app-prevented-deleting',
+				'A Rocket.Chat App prevented the message deleting.',
+			);
 		}
 	}
 
@@ -38,7 +43,7 @@ export const deleteMessage = async function(message: IMessage, user: IUser): Pro
 		}
 
 		for await (const file of files) {
-			file?._id && await Uploads.update({ _id: file._id }, { $set: { _hidden: true } });
+			file?._id && (await Uploads.update({ _id: file._id }, { $set: { _hidden: true } }));
 		}
 	} else {
 		if (!showDeletedStatus) {

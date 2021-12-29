@@ -11,7 +11,13 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import {
+	checkEmailAvailability,
+	checkUsernameAvailability,
+	setUserAvatar,
+	setEmail,
+	setStatusText,
+} from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 
@@ -46,10 +52,14 @@ function _sendUserEmail(subject, html, userData) {
 	try {
 		Mailer.send(email);
 	} catch (error) {
-		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-			function: 'RocketChat.saveUser',
-			message: error.message,
-		});
+		throw new Meteor.Error(
+			'error-email-send-failed',
+			`Error trying to send email: ${error.message}`,
+			{
+				function: 'RocketChat.saveUser',
+				message: error.message,
+			},
+		);
 	}
 }
 
@@ -71,13 +81,21 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
-		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', {
-			method: 'insertOrUpdateUser',
-			action: 'Assign_role',
-		});
+		throw new Meteor.Error(
+			'error-action-not-allowed',
+			'The field Roles consist invalid role name',
+			{
+				method: 'insertOrUpdateUser',
+				action: 'Assign_role',
+			},
+		);
 	}
 
-	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !hasPermission(userId, 'assign-admin-role')) {
+	if (
+		userData.roles &&
+		_.indexOf(userData.roles, 'admin') >= 0 &&
+		!hasPermission(userId, 'assign-admin-role')
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_admin',
@@ -105,17 +123,21 @@ function validateUserData(userId, userData) {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
 
 	if (userData.username && !nameValidation.test(userData.username)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${ _.escape(userData.username) } is not a valid username`, {
-			method: 'insertOrUpdateUser',
-			input: userData.username,
-			field: 'Username',
-		});
+		throw new Meteor.Error(
+			'error-input-is-not-a-valid-field',
+			`${_.escape(userData.username)} is not a valid username`,
+			{
+				method: 'insertOrUpdateUser',
+				input: userData.username,
+				field: 'Username',
+			},
+		);
 	}
 
 	if (!userData._id && !userData.password && !userData.setRandomPassword) {
@@ -127,17 +149,25 @@ function validateUserData(userId, userData) {
 
 	if (!userData._id) {
 		if (!checkUsernameAvailability(userData.username)) {
-			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.username) } is already in use :(`, {
-				method: 'insertOrUpdateUser',
-				field: userData.username,
-			});
+			throw new Meteor.Error(
+				'error-field-unavailable',
+				`${_.escape(userData.username)} is already in use :(`,
+				{
+					method: 'insertOrUpdateUser',
+					field: userData.username,
+				},
+			);
 		}
 
 		if (userData.email && !checkEmailAvailability(userData.email)) {
-			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.email) } is already in use :(`, {
-				method: 'insertOrUpdateUser',
-				field: userData.email,
-			});
+			throw new Meteor.Error(
+				'error-field-unavailable',
+				`${_.escape(userData.email)} is already in use :(`,
+				{
+					method: 'insertOrUpdateUser',
+					field: userData.email,
+				},
+			);
 		}
 	}
 }
@@ -155,8 +185,10 @@ export function validateUserEditing(userId, userData) {
 	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
 	const user = Users.findOneById(userData._id);
 
-	const isEditingUserRoles = (previousRoles, newRoles) => typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
-	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
+	const isEditingUserRoles = (previousRoles, newRoles) =>
+		typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
+	const isEditingField = (previousValue, newValue) =>
+		typeof newValue !== 'undefined' && newValue !== previousValue;
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !hasPermission(userId, 'assign-roles')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
@@ -165,42 +197,67 @@ export function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (!settings.get('Accounts_AllowUserProfileChange') && !canEditOtherUserInfo && !canEditOtherUserPassword) {
+	if (
+		!settings.get('Accounts_AllowUserProfileChange') &&
+		!canEditOtherUserInfo &&
+		!canEditOtherUserPassword
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (isEditingField(user.username, userData.username) && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (
+		isEditingField(user.username, userData.username) &&
+		!settings.get('Accounts_AllowUsernameChange') &&
+		(!canEditOtherUserInfo || editingMyself)
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (isEditingField(user.statusText, userData.statusText) && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (
+		isEditingField(user.statusText, userData.statusText) &&
+		!settings.get('Accounts_AllowUserStatusMessageChange') &&
+		(!canEditOtherUserInfo || editingMyself)
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (isEditingField(user.name, userData.name) && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (
+		isEditingField(user.name, userData.name) &&
+		!settings.get('Accounts_AllowRealNameChange') &&
+		(!canEditOtherUserInfo || editingMyself)
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (user.emails[0] && isEditingField(user.emails[0].address, userData.email) && !settings.get('Accounts_AllowEmailChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (
+		user.emails[0] &&
+		isEditingField(user.emails[0].address, userData.email) &&
+		!settings.get('Accounts_AllowEmailChange') &&
+		(!canEditOtherUserInfo || editingMyself)
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.password && !settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
+	if (
+		userData.password &&
+		!settings.get('Accounts_AllowPasswordChange') &&
+		(!canEditOtherUserPassword || editingMyself)
+	) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
@@ -238,7 +295,7 @@ const handleNickname = (updateUser, nickname) => {
 	}
 };
 
-const saveNewUser = function(userData, sendPassword) {
+const saveNewUser = function (userData, sendPassword) {
 	validateEmailDomain(userData.email);
 
 	const roles = userData.roles || getNewUserRoles();
@@ -260,7 +317,7 @@ const saveNewUser = function(userData, sendPassword) {
 	const updateUser = {
 		$set: {
 			roles,
-			...typeof userData.name !== 'undefined' && { name: userData.name },
+			...(typeof userData.name !== 'undefined' && { name: userData.name }),
 			settings: userData.settings || {},
 		},
 	};
@@ -289,7 +346,11 @@ const saveNewUser = function(userData, sendPassword) {
 	userData._id = _id;
 
 	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
-		const gravatarUrl = Gravatar.imageUrl(userData.email, { default: '404', size: 200, secure: true });
+		const gravatarUrl = Gravatar.imageUrl(userData.email, {
+			default: '404',
+			size: 200,
+			secure: true,
+		});
 
 		try {
 			setUserAvatar(userData, gravatarUrl, '', 'url');
@@ -301,7 +362,7 @@ const saveNewUser = function(userData, sendPassword) {
 	return _id;
 };
 
-export const saveUser = function(userId, userData) {
+export const saveUser = function (userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
 
@@ -323,12 +384,16 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		if (!saveUserIdentity({
-			_id: userData._id,
-			username: userData.username,
-			name: userData.name,
-		})) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+		if (
+			!saveUserIdentity({
+				_id: userData._id,
+				username: userData.username,
+				name: userData.name,
+			})
+		) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				method: 'saveUser',
+			});
 		}
 	}
 
@@ -341,7 +406,12 @@ export const saveUser = function(userId, userData) {
 		setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 	}
 
-	if (userData.password && userData.password.trim() && hasPermission(userId, 'edit-other-user-password') && passwordPolicy.validate(userData.password)) {
+	if (
+		userData.password &&
+		userData.password.trim() &&
+		hasPermission(userId, 'edit-other-user-password') &&
+		passwordPolicy.validate(userData.password)
+	) {
 		Accounts.setPassword(userData._id, userData.password.trim());
 	} else {
 		sendPassword = false;

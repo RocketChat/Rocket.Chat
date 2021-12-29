@@ -26,17 +26,24 @@ function inviteAll(type) {
 		const userId = Meteor.userId();
 		const currentUser = Meteor.users.findOne(userId);
 		const baseChannel = type === 'to' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
-		const targetChannel = type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
+		const targetChannel =
+			type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
 			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
-				}, currentUser.language),
+				msg: TAPi18n.__(
+					'Channel_doesnt_exist',
+					{
+						postProcess: 'sprintf',
+						sprintf: [channel],
+					},
+					currentUser.language,
+				),
 			});
 		}
-		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, { fields: { 'u.username': 1 } });
+		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
+			fields: { 'u.username': 1 },
+		});
 
 		try {
 			if (cursor.count() > settings.get('API_User_Limit')) {
@@ -49,10 +56,14 @@ function inviteAll(type) {
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-					msg: TAPi18n.__('Channel_created', {
-						postProcess: 'sprintf',
-						sprintf: [channel],
-					}, currentUser.language),
+					msg: TAPi18n.__(
+						'Channel_created',
+						{
+							postProcess: 'sprintf',
+							sprintf: [channel],
+						},
+						currentUser.language,
+					),
 				});
 			} else {
 				Meteor.call('addUsersToRoom', {
@@ -64,7 +75,8 @@ function inviteAll(type) {
 				msg: TAPi18n.__('Users_added', null, currentUser.language),
 			});
 		} catch (e) {
-			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
+			const msg =
+				e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
 			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__(msg, null, currentUser.language),
 			});

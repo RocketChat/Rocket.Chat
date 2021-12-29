@@ -1,7 +1,13 @@
 import supertest from 'supertest';
 
 import { publicChannelName, privateChannelName } from './channel.js';
-import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
+import {
+	roleNameUsers,
+	roleNameSubscriptions,
+	roleScopeUsers,
+	roleScopeSubscriptions,
+	roleDescription,
+} from './role.js';
 import { username, email, adminUsername, adminPassword } from './user.js';
 
 export const request = supertest('http://localhost:3000');
@@ -11,22 +17,17 @@ export function wait(cb, time) {
 	return () => setTimeout(cb, time);
 }
 
-export const apiUsername = `api${ username }`;
-export const apiEmail = `api${ email }`;
-export const apiPublicChannelName = `api${ publicChannelName }`;
-export const apiPrivateChannelName = `api${ privateChannelName }`;
+export const apiUsername = `api${username}`;
+export const apiEmail = `api${email}`;
+export const apiPublicChannelName = `api${publicChannelName}`;
+export const apiPrivateChannelName = `api${privateChannelName}`;
 
-export const apiRoleNameUsers = `api${ roleNameUsers }`;
-export const apiRoleNameSubscriptions = `api${ roleNameSubscriptions }`;
-export const apiRoleScopeUsers = `${ roleScopeUsers }`;
-export const apiRoleScopeSubscriptions = `${ roleScopeSubscriptions }`;
-export const apiRoleDescription = `api${ roleDescription }`;
-export const reservedWords = [
-	'admin',
-	'administrator',
-	'system',
-	'user',
-];
+export const apiRoleNameUsers = `api${roleNameUsers}`;
+export const apiRoleNameSubscriptions = `api${roleNameSubscriptions}`;
+export const apiRoleScopeUsers = `${roleScopeUsers}`;
+export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}`;
+export const apiRoleDescription = `api${roleDescription}`;
+export const reservedWords = ['admin', 'administrator', 'system', 'user'];
 
 export const targetUser = {};
 export const channel = {};
@@ -48,7 +49,7 @@ export function api(path) {
 }
 
 export function methodCall(methodName) {
-	return api(`method.call/${ methodName }`);
+	return api(`method.call/${methodName}`);
 }
 
 export function log(res) {
@@ -59,8 +60,9 @@ export function log(res) {
 	});
 }
 
-export function getCredentials(done = function() {}) {
-	request.post(api('login'))
+export function getCredentials(done = function () {}) {
+	request
+		.post(api('login'))
 		.send(login)
 		.expect('Content-Type', 'application/json')
 		.expect(200)

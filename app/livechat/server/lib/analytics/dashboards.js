@@ -1,6 +1,11 @@
 import moment from 'moment';
 
-import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
+import {
+	LivechatRooms,
+	Users,
+	LivechatVisitors,
+	LivechatAgentActivity,
+} from '../../../../models/server/raw';
 import { settings } from '../../../../settings';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
@@ -12,12 +17,7 @@ import {
 	findAllAverageServiceTimeAsync,
 } from './departments';
 
-
-const findAllChatsStatusAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}) => {
+const findAllChatsStatusAsync = async ({ start, end, departmentId = undefined }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -29,12 +29,7 @@ const findAllChatsStatusAsync = async ({
 	};
 };
 
-const getProductivityMetricsAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-	user = {},
-}) => {
+const getProductivityMetricsAsync = async ({ start, end, departmentId = undefined, user = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -62,7 +57,8 @@ const getProductivityMetricsAsync = async ({
 		acc += serviceTime.averageWaitingTimeInSeconds;
 		return acc;
 	}, 0);
-	const totalOfAvarageWaitingTime = totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
+	const totalOfAvarageWaitingTime =
+		totalOfWaitingTime === 0 ? 0 : sumOfWaitingTime / totalOfWaitingTime;
 
 	return {
 		totalizers: [
@@ -81,10 +77,12 @@ const getAgentsProductivityMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const averageOfAvailableServiceTime = (await LivechatAgentActivity.findAllAverageAvailableServiceTime({
-		date: parseInt(moment(start).format('YYYYMMDD')),
-		departmentId,
-	}))[0];
+	const averageOfAvailableServiceTime = (
+		await LivechatAgentActivity.findAllAverageAvailableServiceTime({
+			date: parseInt(moment(start).format('YYYYMMDD')),
+			departmentId,
+		})
+	)[0];
 	const averageOfServiceTime = await findAllAverageServiceTimeAsync({
 		start,
 		end,
@@ -109,23 +107,25 @@ const getAgentsProductivityMetricsAsync = async ({
 		acc += serviceTime.averageServiceTimeInSeconds;
 		return acc;
 	}, 0);
-	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime ? averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds : 0;
-	const totalOfAverageServiceTime = totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
+	const totalOfAverageAvailableServiceTime = averageOfAvailableServiceTime
+		? averageOfAvailableServiceTime.averageAvailableServiceTimeInSeconds
+		: 0;
+	const totalOfAverageServiceTime =
+		totalOfServiceTime === 0 ? 0 : sumOfServiceTime / totalOfServiceTime;
 
 	return {
 		totalizers: [
 			...totalizers.filter((metric) => metric.title === 'Busiest_time'),
-			{ title: 'Avg_of_available_service_time', value: secondsToHHMMSS(totalOfAverageAvailableServiceTime) },
+			{
+				title: 'Avg_of_available_service_time',
+				value: secondsToHHMMSS(totalOfAverageAvailableServiceTime),
+			},
 			{ title: 'Avg_of_service_time', value: secondsToHHMMSS(totalOfAverageServiceTime) },
 		],
 	};
 };
 
-const getChatsMetricsAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}) => {
+const getChatsMetricsAsync = async ({ start, end, departmentId = undefined }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -148,37 +148,43 @@ const getChatsMetricsAsync = async ({
 	const totalOfAbandonedRooms = averageOfAbandonedRooms.departments.length;
 	const totalOfChatDurationTime = averageOfChatDurationTime.departments.length;
 
-	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce((acc, abandonedRoom) => {
-		acc += abandonedRoom.percentageOfAbandonedChats;
-		return acc;
-	}, 0);
-	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce((acc, chatDurationTime) => {
-		acc += chatDurationTime.averageChatDurationTimeInSeconds;
-		return acc;
-	}, 0);
+	const sumOfPercentageOfAbandonedRooms = averageOfAbandonedRooms.departments.reduce(
+		(acc, abandonedRoom) => {
+			acc += abandonedRoom.percentageOfAbandonedChats;
+			return acc;
+		},
+		0,
+	);
+	const sumOfChatDurationTime = averageOfChatDurationTime.departments.reduce(
+		(acc, chatDurationTime) => {
+			acc += chatDurationTime.averageChatDurationTimeInSeconds;
+			return acc;
+		},
+		0,
+	);
 	const totalAbandonedRooms = abandonedRooms.departments.reduce((acc, item) => {
 		acc += item.abandonedRooms;
 		return acc;
 	}, 0);
 
-	const totalOfAverageAbandonedRooms = totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
-	const totalOfAverageChatDurationTime = totalOfChatDurationTime === 0 ? 0 : sumOfChatDurationTime / totalOfChatDurationTime;
+	const totalOfAverageAbandonedRooms =
+		totalOfAbandonedRooms === 0 ? 0 : sumOfPercentageOfAbandonedRooms / totalOfAbandonedRooms;
+	const totalOfAverageChatDurationTime =
+		totalOfChatDurationTime === 0 ? 0 : sumOfChatDurationTime / totalOfChatDurationTime;
 
 	return {
 		totalizers: [
 			{ title: 'Total_abandoned_chats', value: totalAbandonedRooms },
-			{ title: 'Avg_of_abandoned_chats', value: `${ totalOfAverageAbandonedRooms }%` },
-			{ title: 'Avg_of_chat_duration_time', value: secondsToHHMMSS(totalOfAverageChatDurationTime) },
+			{ title: 'Avg_of_abandoned_chats', value: `${totalOfAverageAbandonedRooms}%` },
+			{
+				title: 'Avg_of_chat_duration_time',
+				value: secondsToHHMMSS(totalOfAverageChatDurationTime),
+			},
 		],
 	};
 };
 
-const getConversationsMetricsAsync = async ({
-	start,
-	end,
-	departmentId,
-	user = {},
-}) => {
+const getConversationsMetricsAsync = async ({ start, end, departmentId, user = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -190,12 +196,21 @@ const getConversationsMetricsAsync = async ({
 		analyticsOptions: {
 			name: 'Conversations',
 		},
-		...departmentId && departmentId !== 'undefined' && { departmentId },
+		...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		utcOffset: user.utcOffset,
 		language: user.language || settings.get('Language') || 'en',
 	});
-	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
-	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end, department: departmentId }).count();
+	const metrics = [
+		'Total_conversations',
+		'Open_conversations',
+		'On_Hold_conversations',
+		'Total_messages',
+	];
+	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
+		start,
+		end,
+		department: departmentId,
+	}).count();
 	return {
 		totalizers: [
 			...totalizers.filter((metric) => metrics.includes(metric.title)),
@@ -204,23 +219,34 @@ const getConversationsMetricsAsync = async ({
 	};
 };
 
-const findAllChatMetricsByAgentAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}) => {
+const findAllChatMetricsByAgentAsync = async ({ start, end, departmentId = undefined }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const open = await LivechatRooms.countAllOpenChatsByAgentBetweenDate({ start, end, departmentId });
-	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({ start, end, departmentId });
-	const onhold = await LivechatRooms.countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId });
+	const open = await LivechatRooms.countAllOpenChatsByAgentBetweenDate({
+		start,
+		end,
+		departmentId,
+	});
+	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({
+		start,
+		end,
+		departmentId,
+	});
+	const onhold = await LivechatRooms.countAllOnHoldChatsByAgentBetweenDate({
+		start,
+		end,
+		departmentId,
+	});
 	const result = {};
 	(open || []).forEach((agent) => {
 		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
 	});
 	(closed || []).forEach((agent) => {
-		result[agent._id] = { open: result[agent._id] ? result[agent._id].open : 0, closed: agent.chats };
+		result[agent._id] = {
+			open: result[agent._id] ? result[agent._id].open : 0,
+			closed: agent.chats,
+		};
 	});
 	(onhold || []).forEach((agent) => {
 		result[agent._id] = {
@@ -231,39 +257,49 @@ const findAllChatMetricsByAgentAsync = async ({
 	return result;
 };
 
-const findAllAgentsStatusAsync = async ({ departmentId = undefined }) => (await Users.countAllAgentsStatus({ departmentId }))[0];
+const findAllAgentsStatusAsync = async ({ departmentId = undefined }) =>
+	(await Users.countAllAgentsStatus({ departmentId }))[0];
 
-const findAllChatMetricsByDepartmentAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}) => {
+const findAllChatMetricsByDepartmentAsync = async ({ start, end, departmentId = undefined }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const open = await LivechatRooms.countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId });
-	const closed = await LivechatRooms.countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId });
+	const open = await LivechatRooms.countAllOpenChatsByDepartmentBetweenDate({
+		start,
+		end,
+		departmentId,
+	});
+	const closed = await LivechatRooms.countAllClosedChatsByDepartmentBetweenDate({
+		start,
+		end,
+		departmentId,
+	});
 	const result = {};
 	(open || []).forEach((department) => {
 		result[department.name] = { open: department.chats, closed: 0 };
 	});
 	(closed || []).forEach((department) => {
-		result[department.name] = { open: result[department.name] ? result[department.name].open : 0, closed: department.chats };
+		result[department.name] = {
+			open: result[department.name] ? result[department.name].open : 0,
+			closed: department.chats,
+		};
 	});
 	return result;
 };
 
-const findAllResponseTimeMetricsAsync = async ({
-	start,
-	end,
-	departmentId = undefined,
-}) => {
+const findAllResponseTimeMetricsAsync = async ({ start, end, departmentId = undefined }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const responseTimes = (await LivechatRooms.calculateResponseTimingsBetweenDates({ start, end, departmentId }))[0];
-	const reactionTimes = (await LivechatRooms.calculateReactionTimingsBetweenDates({ start, end, departmentId }))[0];
-	const durationTimings = (await LivechatRooms.calculateDurationTimingsBetweenDates({ start, end, departmentId }))[0];
+	const responseTimes = (
+		await LivechatRooms.calculateResponseTimingsBetweenDates({ start, end, departmentId })
+	)[0];
+	const reactionTimes = (
+		await LivechatRooms.calculateReactionTimingsBetweenDates({ start, end, departmentId })
+	)[0];
+	const durationTimings = (
+		await LivechatRooms.calculateDurationTimingsBetweenDates({ start, end, departmentId })
+	)[0];
 
 	return {
 		response: {
@@ -281,12 +317,21 @@ const findAllResponseTimeMetricsAsync = async ({
 	};
 };
 
-export const findAllChatsStatus = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
-export const getProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId, user }));
-export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId, user }));
-export const getConversationsMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId, user }));
-export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
-export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
-export const findAllResponseTimeMetrics = ({ start, end, departmentId = undefined }) => Promise.await(findAllResponseTimeMetricsAsync({ start, end, departmentId }));
-export const getChatsMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getChatsMetricsAsync({ start, end, departmentId }));
-export const findAllAgentsStatus = ({ departmentId = undefined }) => Promise.await(findAllAgentsStatusAsync({ departmentId }));
+export const findAllChatsStatus = ({ start, end, departmentId = undefined }) =>
+	Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
+export const getProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+	Promise.await(getProductivityMetricsAsync({ start, end, departmentId, user }));
+export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+	Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId, user }));
+export const getConversationsMetrics = ({ start, end, departmentId = undefined, user = {} }) =>
+	Promise.await(getConversationsMetricsAsync({ start, end, departmentId, user }));
+export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) =>
+	Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
+export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) =>
+	Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
+export const findAllResponseTimeMetrics = ({ start, end, departmentId = undefined }) =>
+	Promise.await(findAllResponseTimeMetricsAsync({ start, end, departmentId }));
+export const getChatsMetrics = ({ start, end, departmentId = undefined }) =>
+	Promise.await(getChatsMetricsAsync({ start, end, departmentId }));
+export const findAllAgentsStatus = ({ departmentId = undefined }) =>
+	Promise.await(findAllAgentsStatusAsync({ departmentId }));

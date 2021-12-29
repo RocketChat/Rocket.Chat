@@ -2,7 +2,12 @@ import { Tokenpass } from './Tokenpass';
 import { Users } from '../../models';
 
 export function validateTokenAccess(userData, roomData) {
-	if (!userData || !userData.services || !userData.services.tokenpass || !userData.services.tokenpass.tcaBalances) {
+	if (
+		!userData ||
+		!userData.services ||
+		!userData.services.tokenpass ||
+		!userData.services.tokenpass.tcaBalances
+	) {
 		return false;
 	}
 
@@ -10,7 +15,7 @@ export function validateTokenAccess(userData, roomData) {
 }
 
 export const validators = [
-	function(room, user) {
+	function (room, user) {
 		const userData = Users.getTokenBalancesByUserId(user._id);
 
 		return validateTokenAccess(userData, room);

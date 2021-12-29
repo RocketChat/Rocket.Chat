@@ -11,7 +11,9 @@ Template.selectWebdavAccount.helpers({
 		return WebdavAccounts.find().fetch();
 	},
 	usernamePlusServer(account) {
-		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+		return (
+			account.name || `${account.username}@${account.server_url.replace(/^https?\:\/\//i, '')}`
+		);
 	},
 });
 Template.selectWebdavAccount.events({
@@ -24,7 +26,7 @@ Template.selectWebdavAccount.events({
 		const fileRequest = new XMLHttpRequest();
 		fileRequest.open('GET', url, true);
 		fileRequest.responseType = 'arraybuffer';
-		fileRequest.onload = function() {
+		fileRequest.onload = function () {
 			const arrayBuffer = fileRequest.response;
 			if (arrayBuffer) {
 				const fileData = new Uint8Array(arrayBuffer);

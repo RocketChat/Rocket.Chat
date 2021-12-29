@@ -15,10 +15,13 @@ import { logger } from './logger';
 export const handleAccessToken = (loginRequest) => {
 	logger.debug('Login request received', loginRequest);
 
-	check(loginRequest, Match.ObjectIncluding({
-		authResponse: String,
-		userData: Object,
-	}));
+	check(
+		loginRequest,
+		Match.ObjectIncluding({
+			authResponse: String,
+			userData: Object,
+		}),
+	);
 
 	// Decode auth response for user attributes
 	const { username, profile } = loginRequest.userData;
@@ -34,7 +37,10 @@ export const handleAccessToken = (loginRequest) => {
 	if (!iss) {
 		return {
 			type: 'blockstack',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token'),
+			error: new Meteor.Error(
+				Accounts.LoginCancelledError.numericError,
+				'Insufficient data in auth response token',
+			),
 		};
 	}
 

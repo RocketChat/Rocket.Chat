@@ -4,5 +4,7 @@ import { deleteCustomUserStatus } from '../lib/customUserStatus';
 import { Notifications } from '../../../notifications';
 
 Meteor.startup(() =>
-	Notifications.onLogged('deleteCustomUserStatus', (data) => deleteCustomUserStatus(data.userStatusData)),
+	Notifications.onLogged('deleteCustomUserStatus', (data) =>
+		deleteCustomUserStatus(data.userStatusData),
+	),
 );

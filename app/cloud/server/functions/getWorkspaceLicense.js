@@ -16,14 +16,21 @@ export function getWorkspaceLicense() {
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license?version=${ LICENSE_VERSION }`, {
-			headers: {
-				Authorization: `Bearer ${ token }`,
+		licenseResult = HTTP.get(
+			`${settings.get(
+				'Cloud_Workspace_Registration_Client_Uri',
+			)}/license?version=${LICENSE_VERSION}`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
 			},
-		});
+		);
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(
+				`Failed to update license from Rocket.Chat Cloud.  Error: ${e.response.data.error}`,
+			);
 		} else {
 			SystemLogger.error(e);
 		}

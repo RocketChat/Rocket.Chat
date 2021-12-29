@@ -2,7 +2,11 @@ import { BannerPlatform, IBanner } from '../../../definition/IBanner';
 import { Optional } from '../../../definition/utils';
 
 export interface IBannerService {
-	getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]>;
+	getBannersForUser(
+		userId: string,
+		platform: BannerPlatform,
+		bannerId?: string,
+	): Promise<IBanner[]>;
 	create(banner: Optional<IBanner, '_id'>): Promise<IBanner>;
 	dismiss(userId: string, bannerId: string): Promise<boolean>;
 	discardDismissal(bannerId: string): Promise<boolean>;

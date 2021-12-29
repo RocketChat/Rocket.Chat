@@ -12,7 +12,9 @@ const QUEUE_COUNT = 50;
 
 Template.livechatQueue.helpers({
 	departments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true);
+		return Template.instance()
+			.departments.get()
+			.filter((department) => department.enabled === true);
 	},
 	onSelectAgents() {
 		return Template.instance().onSelectAgents;
@@ -20,7 +22,11 @@ Template.livechatQueue.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${
+				f.length === 0
+					? text
+					: text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)
+			}`;
 		};
 	},
 	selectedAgents() {
@@ -37,7 +43,10 @@ Template.livechatQueue.helpers({
 	},
 	hasPermission() {
 		const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		return hasPermission(Meteor.userId(), 'view-livechat-queue') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
+		return (
+			hasPermission(Meteor.userId(), 'view-livechat-queue') ||
+			(user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'))
+		);
 	},
 	hasMore() {
 		const instance = Template.instance();
@@ -60,7 +69,7 @@ Template.livechatQueue.events({
 		instance.offset.set(0);
 
 		const filter = {};
-		$(':input', event.currentTarget).each(function() {
+		$(':input', event.currentTarget).each(function () {
 			if (!this.name) {
 				return;
 			}
@@ -80,7 +89,7 @@ Template.livechatQueue.events({
 	},
 });
 
-Template.livechatQueue.onCreated(async function() {
+Template.livechatQueue.onCreated(async function () {
 	this.selectedAgents = new ReactiveVar([]);
 	this.departments = new ReactiveVar([]);
 	this.limit = new ReactiveVar(20);
@@ -102,14 +111,16 @@ Template.livechatQueue.onCreated(async function() {
 		this.isLoading.set(true);
 		const filter = this.filter.get();
 		const offset = this.offset.get();
-		let query = `includeOfflineAgents=${ filter.agentStatus === 'offline' }`;
+		let query = `includeOfflineAgents=${filter.agentStatus === 'offline'}`;
 		if (filter.agent) {
-			query += `&agentId=${ filter.agent }`;
+			query += `&agentId=${filter.agent}`;
 		}
 		if (filter.department) {
-			query += `&departmentId=${ filter.department }`;
+			query += `&departmentId=${filter.department}`;
 		}
-		const { queue, total } = await APIClient.v1.get(`livechat/queue?${ query }&count=${ QUEUE_COUNT }&offset=${ offset }`);
+		const { queue, total } = await APIClient.v1.get(
+			`livechat/queue?${query}&count=${QUEUE_COUNT}&offset=${offset}`,
+		);
 		this.total.set(total);
 		this.queue.set(this.queue.get().concat(queue));
 		this.isLoading.set(false);

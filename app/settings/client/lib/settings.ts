@@ -6,7 +6,7 @@ import { SettingsBase } from '../../lib/settings';
 import { SettingValue } from '../../../../definition/ISetting';
 
 class Settings extends SettingsBase {
-	cachedCollection = PublicSettingsCachedCollection.get()
+	cachedCollection = PublicSettingsCachedCollection.get();
 
 	collection = PublicSettingsCachedCollection.get().collection;
 
@@ -22,7 +22,10 @@ class Settings extends SettingsBase {
 		return this.dict.get(_id);
 	}
 
-	private _storeSettingValue(record: { _id: string; value: SettingValue }, initialLoad: boolean): void {
+	private _storeSettingValue(
+		record: { _id: string; value: SettingValue },
+		initialLoad: boolean,
+	): void {
 		Meteor.settings[record._id] = record.value;
 		this.dict.set(record._id, record.value);
 		this.load(record._id, record.value, initialLoad);
@@ -31,8 +34,10 @@ class Settings extends SettingsBase {
 	init(): void {
 		let initialLoad = true;
 		this.collection.find().observe({
-			added: (record: { _id: string; value: SettingValue }) => this._storeSettingValue(record, initialLoad),
-			changed: (record: { _id: string; value: SettingValue }) => this._storeSettingValue(record, initialLoad),
+			added: (record: { _id: string; value: SettingValue }) =>
+				this._storeSettingValue(record, initialLoad),
+			changed: (record: { _id: string; value: SettingValue }) =>
+				this._storeSettingValue(record, initialLoad),
 			removed: (record: { _id: string }) => {
 				delete Meteor.settings[record._id];
 				this.dict.set(record._id, null);

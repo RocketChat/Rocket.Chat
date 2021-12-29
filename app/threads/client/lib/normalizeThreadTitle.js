@@ -22,15 +22,17 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			pattern: () => pattern,
 			useRealName: () => useRealName,
 			me: () => me,
-			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
-			roomTemplate: ({ prefix, mention }) => `${ prefix }<strong> ${ mention } </strong>`,
+			userTemplate: ({ label }) => `<strong> ${label} </strong>`,
+			roomTemplate: ({ prefix, mention }) => `${prefix}<strong> ${mention} </strong>`,
 		});
 		const { html } = emojiParser({ html: filteredMessage });
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+		const attachment = message.attachments.find(
+			(attachment) => attachment.title || attachment.description,
+		);
 
 		if (attachment && attachment.description) {
 			return escapeHTML(attachment.description);

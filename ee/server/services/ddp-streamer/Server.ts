@@ -12,7 +12,7 @@ type SubscriptionFn = (this: Publication, eventName: string, options: object) =>
 type MethodFn = (this: Client, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const SERVER_ID = ejson.stringify({ server_id: '0' });
@@ -27,17 +27,22 @@ export class Server extends EventEmitter {
 	parse = (packet: string): IPacket => {
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
-	}
+	};
 
 	async call(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._methods.has(packet.method)) {
-				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
+				const result = await MeteorService.callMethodWithToken(
+					client.userId,
+					client.userToken,
+					packet.method,
+					packet.params,
+				);
 				if (result?.result) {
 					return this.result(client, packet, result.result);
 				}
 
-				throw new Error(`Method '${ packet.method }' doesn't exist`);
+				throw new Error(`Method '${packet.method}' doesn't exist`);
 			}
 			const fn = this._methods.get(packet.method);
 
@@ -64,7 +69,7 @@ export class Server extends EventEmitter {
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._subscriptions.has(packet.name)) {
-				throw new Error(`Subscription '${ packet.name }' doesn't exist`);
+				throw new Error(`Subscription '${packet.name}' doesn't exist`);
 			}
 			const fn = this._subscriptions.get(packet.name);
 			if (!fn) {
@@ -87,7 +92,7 @@ export class Server extends EventEmitter {
 	}
 
 	stream(stream: string, fn: SubscriptionFn): void {
-		return this.publish(`stream-${ stream }`, fn);
+		return this.publish(`stream-${stream}`, fn);
 	}
 
 	result(client: Client, { id }: IPacket, result?: any, error?: string): void {
@@ -95,8 +100,8 @@ export class Server extends EventEmitter {
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
 				id,
-				...result && { result },
-				...error && { error },
+				...(result && { result }),
+				...(error && { error }),
 			}),
 		);
 		return client.send(
@@ -112,14 +117,17 @@ export class Server extends EventEmitter {
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.NO_SUBSCRIBE,
 				id,
-				...error && { error },
+				...(error && { error }),
 			}),
 		);
 	}
 
 	ready(client: Client, packet: IPacket): void {
 		return client.send(
-			this.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.READY, [DDP_EVENTS.SUBSCRIPTIONS]: [packet.id] }),
+			this.serialize({
+				[DDP_EVENTS.MSG]: DDP_EVENTS.READY,
+				[DDP_EVENTS.SUBSCRIPTIONS]: [packet.id],
+			}),
 		);
 	}
 

@@ -7,7 +7,7 @@ import { API } from '../api';
 
 const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],
-	def: ['$or', '$and', '$regex'],
+	'def': ['$or', '$and', '$regex'],
 };
 
 API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
@@ -16,8 +16,12 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 		try {
 			sort = JSON.parse(this.queryParams.sort);
 		} catch (e) {
-			this.logger.warn(`Invalid sort parameter provided "${ this.queryParams.sort }":`, e);
-			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: "${ this.queryParams.sort }"`, { helperMethod: 'parseJsonQuery' });
+			this.logger.warn(`Invalid sort parameter provided "${this.queryParams.sort}":`, e);
+			throw new Meteor.Error(
+				'error-invalid-sort',
+				`Invalid sort parameter provided: "${this.queryParams.sort}"`,
+				{ helperMethod: 'parseJsonQuery' },
+			);
 		}
 	}
 
@@ -26,8 +30,12 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 		try {
 			fields = JSON.parse(this.queryParams.fields);
 		} catch (e) {
-			this.logger.warn(`Invalid fields parameter provided "${ this.queryParams.fields }":`, e);
-			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: "${ this.queryParams.fields }"`, { helperMethod: 'parseJsonQuery' });
+			this.logger.warn(`Invalid fields parameter provided "${this.queryParams.fields}":`, e);
+			throw new Meteor.Error(
+				'error-invalid-fields',
+				`Invalid fields parameter provided: "${this.queryParams.fields}"`,
+				{ helperMethod: 'parseJsonQuery' },
+			);
 		}
 	}
 
@@ -35,12 +43,20 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			const getFields = () => Object.keys(hasPermission(this.userId, 'view-full-other-user-info') ? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : API.v1.limitedUserFieldsToExclude);
+			const getFields = () =>
+				Object.keys(
+					hasPermission(this.userId, 'view-full-other-user-info')
+						? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser
+						: API.v1.limitedUserFieldsToExclude,
+				);
 			nonSelectableFields = nonSelectableFields.concat(getFields());
 		}
 
 		Object.keys(fields).forEach((k) => {
-			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
+			if (
+				nonSelectableFields.includes(k) ||
+				nonSelectableFields.includes(k.split(API.v1.fieldSeparator)[0])
+			) {
 				delete fields[k];
 			}
 		});
@@ -62,8 +78,12 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 			query = EJSON.parse(this.queryParams.query);
 			query = clean(query, pathAllowConf[this.request.route] || pathAllowConf.def);
 		} catch (e) {
-			this.logger.warn(`Invalid query parameter provided "${ this.queryParams.query }":`, e);
-			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${ this.queryParams.query }"`, { helperMethod: 'parseJsonQuery' });
+			this.logger.warn(`Invalid query parameter provided "${this.queryParams.query}":`, e);
+			throw new Meteor.Error(
+				'error-invalid-query',
+				`Invalid query parameter provided: "${this.queryParams.query}"`,
+				{ helperMethod: 'parseJsonQuery' },
+			);
 		}
 	}
 
@@ -72,14 +92,21 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
 			if (hasPermission(this.userId, 'view-full-other-user-info')) {
-				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
+				nonQueryableFields = nonQueryableFields.concat(
+					Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser),
+				);
 			} else {
-				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
+				nonQueryableFields = nonQueryableFields.concat(
+					Object.keys(API.v1.limitedUserFieldsToExclude),
+				);
 			}
 		}
 
 		Object.keys(query).forEach((k) => {
-			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
+			if (
+				nonQueryableFields.includes(k) ||
+				nonQueryableFields.includes(k.split(API.v1.fieldSeparator)[0])
+			) {
 				delete query[k];
 			}
 		});

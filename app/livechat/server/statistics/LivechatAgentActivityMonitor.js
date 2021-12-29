@@ -68,9 +68,19 @@ export class LivechatAgentActivityMonitor {
 			const startDate = moment(session.lastStartedAt);
 			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
 			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
-			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
+			const availableTime = moment(stoppedAt).diff(
+				moment(new Date(session.lastStartedAt)),
+				'seconds',
+			);
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: { startedAt: session.lastStartedAt, stoppedAt },
+			});
 			this._createOrUpdateSession(session.agentId, startedAt);
 		}
 	}
@@ -140,9 +150,19 @@ export class LivechatAgentActivityMonitor {
 		const livechatSession = LivechatAgentActivity.findOne(data);
 		if (livechatSession) {
 			const stoppedAt = new Date();
-			const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt } });
+			const availableTime = moment(stoppedAt).diff(
+				moment(new Date(livechatSession.lastStartedAt)),
+				'seconds',
+			);
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt },
+			});
 		}
 	}
 }

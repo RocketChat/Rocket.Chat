@@ -22,18 +22,28 @@ export class RoomService extends ServiceClass implements IRoomService {
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
 		const { type, name, members = [], readOnly, extraData = {}, options = {} } = params;
 
-		const hasPermission = await Authorization.hasPermission(uid, `create-${ type }`);
+		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
 		if (!hasPermission) {
 			throw new Error('no-permission');
 		}
 
-		const user = await this.Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, 'username'>>(uid, {
+			projection: { username: 1 },
+		});
 		if (!user) {
 			throw new Error('User not found');
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user.username, members, readOnly, extraData as { teamId: string }, options) as unknown as IRoom;
+		return createRoom(
+			type,
+			name,
+			user.username,
+			members,
+			readOnly,
+			extraData as { teamId: string },
+			options,
+		) as unknown as IRoom;
 	}
 
 	async addMember(uid: string, rid: string): Promise<boolean> {

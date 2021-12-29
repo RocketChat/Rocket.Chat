@@ -8,7 +8,9 @@ import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	'livechat:startFileUploadRoom'(roomId, token) {
-		methodDeprecationLogger.warn('livechat:startFileUploadRoom will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.warn(
+			'livechat:startFileUploadRoom will be deprecated in future versions of Rocket.Chat',
+		);
 		const guest = LivechatVisitors.getVisitorByToken(token);
 
 		const message = {

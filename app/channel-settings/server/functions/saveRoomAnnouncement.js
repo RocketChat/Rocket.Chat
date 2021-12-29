@@ -3,9 +3,11 @@ import { Match } from 'meteor/check';
 
 import { Rooms, Messages } from '../../../models';
 
-export const saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMessage = true) {
+export const saveRoomAnnouncement = function (rid, roomAnnouncement, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
-		throw new Meteor.Error('invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomAnnouncement' });
+		throw new Meteor.Error('invalid-room', 'Invalid room', {
+			function: 'RocketChat.saveRoomAnnouncement',
+		});
 	}
 
 	let message;
@@ -18,7 +20,12 @@ export const saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMe
 
 	const updated = Rooms.setAnnouncementById(rid, message, announcementDetails);
 	if (updated && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_announcement', rid, message, user);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+			'room_changed_announcement',
+			rid,
+			message,
+			user,
+		);
 	}
 
 	return updated;
