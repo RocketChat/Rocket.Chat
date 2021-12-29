@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
@@ -46,20 +46,22 @@ export const AppleOauthButton = (): ReactNode => {
 		ref.current.onload = scriptLoadedHandler;
 	}, [scriptLoadedHandler]);
 
+	useLayoutEffect(() => {
+		const script = document.createElement('script');
+		script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
+		script.async = true;
+		ref.current = script;
+		document.body.appendChild(script);
+		return () => {
+			document.body.removeChild(script);
+		};
+	}, []);
+
 	if (!enabled) {
 		return null;
 	}
 	return (
 		<>
-			{createPortal(
-				<script
-					id='apple-id-script'
-					ref={ref}
-					async
-					src='https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
-				/>,
-				document.head,
-			)}
 			<div id='appleid-signin' data-height='40px'></div>
 		</>
 	);
