@@ -36,15 +36,7 @@ const AuditPage = () => {
 		rid,
 	} = values;
 
-	const {
-		handleMsg,
-		handleType,
-		handleVisitor,
-		handleAgent,
-		handleUsers,
-		handleRid,
-		handleDateRange,
-	} = handlers;
+	const { handleMsg, handleType, handleVisitor, handleAgent, handleUsers, handleRid, handleDateRange } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {

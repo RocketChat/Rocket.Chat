@@ -139,7 +139,7 @@ describe('[Channel]', () => {
 				});
 
 				it('it should edit the name input', () => {
-					flexTab.editNameTextInput.type(`NAME-EDITED-${ publicChannelName }`);
+					flexTab.editNameTextInput.type(`NAME-EDITED-${publicChannelName}`);
 				});
 
 				it('it should save the name', () => {
@@ -147,8 +147,8 @@ describe('[Channel]', () => {
 				});
 
 				it('it should show the new name', () => {
-					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
-					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
+					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
+					channelName.getText().should.equal(`NAME-EDITED-${publicChannelName}`);
 				});
 			});
 
@@ -326,7 +326,7 @@ describe('[Channel]', () => {
 			// no channel quit at the moment
 			describe.skip('channel quit and enter', () => {
 				it('it should leave the channel', () => {
-					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
+					const channel = sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.click();
@@ -342,16 +342,16 @@ describe('[Channel]', () => {
 				});
 
 				it('it should not show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('not.be.visible');
+					sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`).should('not.be.visible');
 				});
 
 				it('it should search and enter the channel with the spotlight', () => {
-					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
+					sideNav.searchChannel(`NAME-EDITED-${publicChannelName}`);
 					mainContent.joinChannelBtn.click();
 				});
 
 				it('it should show the channel on the list', () => {
-					sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`).should('be.visible');
+					sideNav.getChannelFromList(`NAME-EDITED-${publicChannelName}`).should('be.visible');
 				});
 			});
 		});

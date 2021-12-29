@@ -24,14 +24,13 @@ const tooltipCallbacks = {
 	},
 };
 const init = (canvas, context, t) =>
-	drawLineChart(
-		canvas,
-		context,
-		[t('Avg_chat_duration'), t('Longest_chat_duration')],
-		labels,
-		[initialData, initialData.slice()],
-		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
-	);
+	drawLineChart(canvas, context, [t('Avg_chat_duration'), t('Longest_chat_duration')], labels, [initialData, initialData.slice()], {
+		legends: true,
+		anim: true,
+		smallTicks: true,
+		displayColors: false,
+		tooltipCallbacks,
+	});
 
 const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -46,11 +45,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.chatDurationChart = reload;
 

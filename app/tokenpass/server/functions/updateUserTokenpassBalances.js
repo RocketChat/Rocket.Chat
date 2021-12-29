@@ -4,7 +4,7 @@ import { getPublicTokenpassBalances } from './getPublicTokenpassBalances';
 import { getProtectedTokenpassBalances } from './getProtectedTokenpassBalances';
 import { Users } from '../../../models';
 
-export const updateUserTokenpassBalances = function(user) {
+export const updateUserTokenpassBalances = function (user) {
 	if (user && user.services && user.services.tokenpass) {
 		const tcaPublicBalances = getPublicTokenpassBalances(user.services.tokenpass.accessToken);
 		const tcaProtectedBalances = getProtectedTokenpassBalances(user.services.tokenpass.accessToken);

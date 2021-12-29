@@ -11,8 +11,6 @@ const contextValue = {
 	},
 };
 
-const SessionProvider: FC = ({ children }) => (
-	<SessionContext.Provider children={children} value={contextValue} />
-);
+const SessionProvider: FC = ({ children }) => <SessionContext.Provider children={children} value={contextValue} />;
 
 export default SessionProvider;

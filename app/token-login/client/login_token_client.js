@@ -4,11 +4,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { appLayout } from '../../../client/lib/appLayout';
 
-Meteor.loginWithLoginToken = function(token) {
+Meteor.loginWithLoginToken = function (token) {
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			loginToken: token,
-		}],
+		methodArguments: [
+			{
+				loginToken: token,
+			},
+		],
 		userCallback(error) {
 			if (!error) {
 				FlowRouter.go('/');

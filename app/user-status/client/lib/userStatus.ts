@@ -12,7 +12,7 @@ type UserStatusTypes = {
 	list: {
 		[status: string]: Status;
 	};
-}
+};
 
 export const userStatus: UserStatusTypes = {
 	packages: {

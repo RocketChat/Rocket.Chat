@@ -41,11 +41,7 @@ export const Default = () => (
 		</InfoPanel.Section>
 
 		<InfoPanel.Section>
-			<RetentionPolicyCallout
-				maxAgeDefault={30}
-				filesOnlyDefault={false}
-				excludePinnedDefault={true}
-			/>
+			<RetentionPolicyCallout maxAgeDefault={30} filesOnlyDefault={false} excludePinnedDefault={true} />
 		</InfoPanel.Section>
 	</InfoPanel>
 );

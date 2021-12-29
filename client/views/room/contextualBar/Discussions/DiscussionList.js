@@ -11,17 +11,7 @@ import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';
 
-function DiscussionList({
-	total = 10,
-	discussions = [],
-	loadMoreItems,
-	loading,
-	onClose,
-	error,
-	userId,
-	text,
-	setText,
-}) {
+function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const t = useTranslation();
@@ -89,20 +79,11 @@ function DiscussionList({
 								overflow: 'hidden',
 							}}
 							totalCount={total}
-							endReached={
-								loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
-							}
+							endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={discussions}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => (
-								<Row
-									discussion={data}
-									showRealNames={showRealNames}
-									userId={userId}
-									onClick={onClick}
-								/>
-							)}
+							itemContent={(index, data) => <Row discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />}
 						/>
 					)}
 				</Box>

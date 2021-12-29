@@ -6,9 +6,7 @@ import { FormSkeleton } from '../Skeleton';
 import CloseChatModal from './CloseChatModal';
 
 const CloseChatModalData = ({ departmentId, onCancel, onConfirm }) => {
-	const { value: data, phase: state } = useEndpointData(
-		`livechat/department/${departmentId}?includeAgents=false`,
-	);
+	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}?includeAgents=false`);
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}

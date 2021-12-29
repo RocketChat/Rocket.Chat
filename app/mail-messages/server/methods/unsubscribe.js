@@ -9,10 +9,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'Mailer:unsubscribe',
-	connectionId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'Mailer:unsubscribe',
+		connectionId() {
+			return true;
+		},
 	},
-}, 1, 60000);
+	1,
+	60000,
+);

@@ -23,8 +23,7 @@ function ExtractRange(options) {
 }
 util.inherits(ExtractRange, stream.Transform);
 
-
-ExtractRange.prototype._transform = function(chunk, enc, cb) {
+ExtractRange.prototype._transform = function (chunk, enc, cb) {
 	if (this.bytes_read > this.stop) {
 		// done reading
 		this.end();
@@ -39,7 +38,7 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 		} else {
 			start = this.start - this.bytes_read;
 		}
-		if ((this.stop - this.bytes_read + 1) < chunk.length) {
+		if (this.stop - this.bytes_read + 1 < chunk.length) {
 			stop = this.stop - this.bytes_read + 1;
 		} else {
 			stop = chunk.length;
@@ -52,17 +51,19 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 };
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-const readFromGridFS = function(storeName, fileId, file, req, res) {
+const readFromGridFS = function (storeName, fileId, file, req, res) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
-	[rs, ws].forEach((stream) => stream.on('error', function(err) {
-		store.onReadError.call(store, err, fileId, file);
-		res.end();
-	}));
+	[rs, ws].forEach((stream) =>
+		stream.on('error', function (err) {
+			store.onReadError.call(store, err, fileId, file);
+			res.end();
+		}),
+	);
 
-	ws.on('close', function() {
+	ws.on('close', function () {
 		// Close output stream at the end
 		ws.emit('end');
 	});
@@ -107,14 +108,16 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 	ws.pipe(res);
 };
 
-const copyFromGridFS = function(storeName, fileId, file, out) {
+const copyFromGridFS = function (storeName, fileId, file, out) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 
-	[rs, out].forEach((stream) => stream.on('error', function(err) {
-		store.onReadError.call(store, err, fileId, file);
-		out.end();
-	}));
+	[rs, out].forEach((stream) =>
+		stream.on('error', function (err) {
+			store.onReadError.call(store, err, fileId, file);
+			out.end();
+		}),
+	);
 
 	rs.pipe(out);
 };
@@ -140,7 +143,7 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size);
@@ -159,7 +162,7 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type);
 		res.setHeader('Content-Length', file.size);

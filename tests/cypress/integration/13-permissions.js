@@ -40,7 +40,6 @@ describe.skip('[Permissions]', () => {
 			admin.rolesUserMentionAll.click();
 		}
 
-
 		if (!admin.rolesOwnerDeleteMessage.isSelected()) {
 			admin.rolesOwnerDeleteMessage.scrollIntoView();
 			admin.rolesOwnerDeleteMessage.click();
@@ -63,9 +62,9 @@ describe.skip('[Permissions]', () => {
 		});
 
 		it('it should create a user', () => {
-			flexTab.usersAddUserName.type(`adminCreated${ username }`);
-			flexTab.usersAddUserUsername.type(`adminCreated${ username }`);
-			flexTab.usersAddUserEmail.type(`adminCreated${ email }`);
+			flexTab.usersAddUserName.type(`adminCreated${username}`);
+			flexTab.usersAddUserUsername.type(`adminCreated${username}`);
+			flexTab.usersAddUserEmail.type(`adminCreated${email}`);
 			flexTab.usersAddUserVerifiedCheckbox.click();
 			flexTab.usersAddUserPassword.type(password);
 			flexTab.usersAddUserChangePasswordCheckbox.click();
@@ -130,7 +129,7 @@ describe.skip('[Permissions]', () => {
 		before(() => {
 			sideNav.preferencesClose.click();
 
-			checkIfUserIsValid(`adminCreated${ username }`, `adminCreated${ email }`, password);
+			checkIfUserIsValid(`adminCreated${username}`, `adminCreated${email}`, password);
 		});
 
 		it('it should not show the plus icon on toolbar ', () => {
