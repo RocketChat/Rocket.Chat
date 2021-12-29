@@ -22,6 +22,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"typecheck": "NODE_OPTIONS=\"--max-old-space-size=4092\" tsc --noEmit --skipLibCheck",
