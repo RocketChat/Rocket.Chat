@@ -2,6 +2,6 @@ import { IOmnichannelVoipServiceResult } from '../../../definition/IOmnichannelV
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
-	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult> ;
+	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult>;
 	getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult>;
 }

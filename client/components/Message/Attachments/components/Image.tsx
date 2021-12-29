@@ -32,14 +32,7 @@ const getDimensions = (
 	return { width: (height / originalHeight) * originalWidth, height };
 };
 
-const Image: FC<ImageProps> = ({
-	previewUrl,
-	dataSrc,
-	loadImage = true,
-	setLoadImage,
-	src,
-	...size
-}) => {
+const Image: FC<ImageProps> = ({ previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
 	const { width = limits.width, height = limits.height } = size;
 	const [error, setError] = useState(false);

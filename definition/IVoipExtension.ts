@@ -3,13 +3,13 @@ import { ICallServerConfigData } from './IVoipServerConfig';
 export enum EndpointState {
 	UNKNOWN = 'unknown',
 	REGISTERED = 'registered',
-	UNREGISTERED = 'unregistered'
+	UNREGISTERED = 'unregistered',
 }
 export interface IVoipExtensionBase {
 	extension: string;
 	state: EndpointState;
 }
-export interface IVoipExtensionConfig extends IVoipExtensionBase{
+export interface IVoipExtensionConfig extends IVoipExtensionBase {
 	authType: string;
 	password: string;
 }

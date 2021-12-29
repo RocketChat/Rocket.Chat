@@ -5,13 +5,7 @@ import Section from './Section';
 
 const ActionGroup: FC<ComponentProps<typeof ButtonGroup>> = (props) => (
 	<Section>
-		<ButtonGroup
-			flexShrink={0}
-			flexWrap='nowrap'
-			withTruncatedText
-			justifyContent='center'
-			{...props}
-		/>
+		<ButtonGroup flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' {...props} />
 	</Section>
 );
 

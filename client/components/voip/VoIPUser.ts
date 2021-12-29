@@ -343,10 +343,7 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 		}
 		this.logger.info('acceptCall()');
 		// Call state must be in offer_received.
-		if (
-			this._callState === CallState.OFFER_RECEIVED &&
-			this._opInProgress === Operation.OP_PROCESS_INVITE
-		) {
+		if (this._callState === CallState.OFFER_RECEIVED && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = CallState.ANSWER_SENT;
 			const invitationAcceptOptions: InvitationAcceptOptions = {
 				sessionDescriptionHandlerOptions: {
@@ -356,10 +353,7 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 					},
 				},
 			};
-			this.logger.debug(
-				'acceptCall() constraints = ',
-				JSON.stringify(invitationAcceptOptions.sessionDescriptionHandlerOptions),
-			);
+			this.logger.debug('acceptCall() constraints = ', JSON.stringify(invitationAcceptOptions.sessionDescriptionHandlerOptions));
 			// Somethingis wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
 				this.logger.error('acceptCall() Session instance error');

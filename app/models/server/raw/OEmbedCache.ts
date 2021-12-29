@@ -6,9 +6,7 @@ import { IOEmbedCache } from '../../../../definition/IOEmbedCache';
 type T = IOEmbedCache;
 
 export class OEmbedCacheRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { updatedAt: 1 } },
-	]
+	protected indexes: IndexSpecification[] = [{ key: { updatedAt: 1 } }];
 
 	async createWithIdAndData(_id: string, data: any): Promise<T> {
 		const record = {

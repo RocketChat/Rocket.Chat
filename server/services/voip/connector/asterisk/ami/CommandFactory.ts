@@ -13,7 +13,7 @@ import { PJSIPEndpoint } from './PJSIPEndpoint';
 import { Logger } from '../../../../../lib/logger/Logger';
 
 export class CommandFactory {
-	static 	logger: Logger = new Logger('CommandFactory');
+	static logger: Logger = new Logger('CommandFactory');
 
 	static getCommandObject(command: Commands): Command {
 		this.logger.debug({ msg: ' Creating command object for ${ Commands[command] }' });

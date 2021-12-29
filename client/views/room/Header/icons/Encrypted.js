@@ -16,14 +16,7 @@ const Encrypted = ({ room }) => {
 		toggleE2E(room._id, 'encrypted', !(room && room.encrypted));
 	});
 	return e2eEnabled && room?.encrypted ? (
-		<Header.State
-			title={encryptedLabel}
-			icon='key'
-			onClick={handleE2EClick}
-			color={colors.g500}
-			tiny
-			ghost
-		/>
+		<Header.State title={encryptedLabel} icon='key' onClick={handleE2EClick} color={colors.g500} tiny ghost />
 	) : null;
 };
 

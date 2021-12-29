@@ -97,16 +97,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				voipLib?.unregisterEndpoint();
 			}
 		}
-	}, [
-		voipLibIsReady,
-		voipCallAvailable,
-		registered,
-		voipLib,
-		onRegistered,
-		onRegistrationError,
-		onUnregistered,
-		onUnregistrationError,
-	]);
+	}, [voipLibIsReady, voipCallAvailable, registered, voipLib, onRegistered, onRegistrationError, onUnregistered, onUnregistrationError]);
 
 	const handleDirectory = useMutableCallback(() => {
 		sidebar.toggle();
@@ -117,14 +108,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		<Sidebar.TopBar.ToolBox {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && (
-					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
-				)}
+				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />}
 				<Sidebar.TopBar.Action {...voipCallIcon} onClick={handleVoipCallStatusChange} />
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission(['view-omnichannel-contact-center']) && (
-					<Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />
-				)}{' '}
+				{hasPermission(['view-omnichannel-contact-center']) && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}{' '}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

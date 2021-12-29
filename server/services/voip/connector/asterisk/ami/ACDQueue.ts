@@ -1,7 +1,7 @@
 /**
  * This class is responsible for handling ACD Queue summary
  * @remarks
-  */
+ */
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
@@ -19,7 +19,8 @@ export class ACDQueue extends Command {
 
 	onQueueSummary(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueSummary() Unusual behavior. ActionId does not belong to this object',
+			this.logger.error({
+				msg: 'onQueueSummary() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
@@ -45,7 +46,8 @@ export class ACDQueue extends Command {
 
 	onQueueSummaryComplete(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object',
+			this.logger.error({
+				msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
@@ -62,7 +64,8 @@ export class ACDQueue extends Command {
 	 */
 	onQueueParams(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueParams() Unusual behavior. ActionId does not belong to this object',
+			this.logger.error({
+				msg: 'onQueueParams() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
@@ -87,7 +90,8 @@ export class ACDQueue extends Command {
 	 */
 	onQueueMember(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueMember() Unusual behavior. ActionId does not belong to this object',
+			this.logger.error({
+				msg: 'onQueueMember() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
@@ -109,9 +113,9 @@ export class ACDQueue extends Command {
 			wrapuptime: event.wrapuptime,
 		};
 		if (this.result.queueStatus.name !== event.queue) {
-			this.logger.error({ msg: `onQueueMember() : Unknown error. Queue ${ event.queue } not found` });
+			this.logger.error({ msg: `onQueueMember() : Unknown error. Queue ${event.queue} not found` });
 		} else {
-			if (! this.result.queueStatus.members) {
+			if (!this.result.queueStatus.members) {
 				this.result.queueStatus.members = [];
 			}
 			this.result.queueStatus.members.push(member);
@@ -123,7 +127,8 @@ export class ACDQueue extends Command {
 	 */
 	onQueueStatusComplete(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueStatusComplete() Unusual behavior. ActionId does not belong to this object',
+			this.logger.error({
+				msg: 'onQueueStatusComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
@@ -142,7 +147,7 @@ export class ACDQueue extends Command {
 	onActionResult(error: any, result: any): void {
 		if (error) {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
-			this.returnReject(`error${ error } while executing command`);
+			this.returnReject(`error${error} while executing command`);
 		} else {
 			this.logger.info({ msg: 'onActionResult()', result });
 			// Set up actionid for future reference in case of success.
@@ -165,7 +170,7 @@ export class ACDQueue extends Command {
 				break;
 			}
 			default: {
-				this.logger.error({ msg: `setupEventHandlers() : Unimplemented ${ this.commandText }` });
+				this.logger.error({ msg: `setupEventHandlers() : Unimplemented ${this.commandText}` });
 				break;
 			}
 		}
@@ -185,14 +190,14 @@ export class ACDQueue extends Command {
 				break;
 			}
 			default: {
-				this.logger.error({ msg: `resetEventHandlers() : Unimplemented ${ this.commandText }` });
+				this.logger.error({ msg: `resetEventHandlers() : Unimplemented ${this.commandText}` });
 				break;
 			}
 		}
 	}
 
-	async executeCommand(data: any): Promise <IVoipConnectorResult> {
-		this.logger.info({ msg: `executeCommand() executing ${ this.commandText }` });
+	async executeCommand(data: any): Promise<IVoipConnectorResult> {
+		this.logger.info({ msg: `executeCommand() executing ${this.commandText}` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
 		if (this.commandText === Commands.queue_summary.toString()) {
@@ -205,7 +210,7 @@ export class ACDQueue extends Command {
 				queue: data.queueName,
 			};
 		}
-		this.logger.debug({ msg: `executeCommand() executing AMI command ${ JSON.stringify(amiCommand) }`, data });
+		this.logger.debug({ msg: `executeCommand() executing AMI command ${JSON.stringify(amiCommand)}`, data });
 		const actionResultCallback = this.onActionResult.bind(this);
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);
 		return super.prepareCommandAndExecution(amiCommand, actionResultCallback, eventHandlerSetupCallback);

@@ -8,9 +8,7 @@ export default function useClipboardWithToast(text) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useClipboard(text, {
-		onCopySuccess: useMutableCallback(() =>
-			dispatchToastMessage({ type: 'success', message: t('Copied') }),
-		),
+		onCopySuccess: useMutableCallback(() => dispatchToastMessage({ type: 'success', message: t('Copied') })),
 		onCopyError: useMutableCallback((e) => dispatchToastMessage({ type: 'error', message: e })),
 	});
 }

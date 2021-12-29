@@ -33,7 +33,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
-			this.logger.error({ mst: `Error while initialising the connector. error = ${ error }` });
+			this.logger.error({ mst: `Error while initialising the connector. error = ${error}` });
 		}
 	}
 
@@ -49,10 +49,10 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
-			throw new Error(`Error! There already exists an active record of type ${ type }`);
+			throw new Error(`Error! There already exists an active record of type ${type}`);
 		}
 
-		const returnValue = !!await this.VoipServerConfiguration.insertOne(config);
+		const returnValue = !!(await this.VoipServerConfiguration.insertOne(config));
 		if (returnValue && type === ServerType.MANAGEMENT) {
 			// If we have added management server, initialise the connection to it.
 			Promise.await(this.initManagementServerConnection());
@@ -67,7 +67,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
-			throw new Error(`Error! No active record exists of type ${ type }`);
+			throw new Error(`Error! No active record exists of type ${type}`);
 		}
 
 		await this.VoipServerConfiguration.updateOne({ type, active: true }, config);
@@ -108,17 +108,17 @@ export class VoipService extends ServiceClass implements IVoipService {
 		membershipDetails.extension = requestParams.extension;
 		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
 		for (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = Promise.await(this.commandHandler.executeCommand(
-				Commands.queue_details,
-				{ queueName: queue.name })) as IVoipConnectorResult;
+			const queueDetails = Promise.await(
+				this.commandHandler.executeCommand(Commands.queue_details, { queueName: queue.name }),
+			) as IVoipConnectorResult;
 			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetails });
 			if (!(queueDetails.result as unknown as IQueueDetails).members) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
 			}
-			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some(
-				(element) => element.name.endsWith(requestParams.extension),
+			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some((element) =>
+				element.name.endsWith(requestParams.extension),
 			);
 			if (!isAMember) {
 				// Current extension is not a member of queue in question.
@@ -144,25 +144,20 @@ export class VoipService extends ServiceClass implements IVoipService {
 	}
 
 	async getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(
-			Commands.extension_info,
-			requestParams);
+		return this.commandHandler.executeCommand(Commands.extension_info, requestParams);
 	}
 
 	async getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult> {
-		const config: IVoipServerConfig = Promise.await(
-			this.getServerConfigData(ServerType.CALL_SERVER),
-		) as unknown as IVoipServerConfig;
+		const config: IVoipServerConfig = Promise.await(this.getServerConfigData(ServerType.CALL_SERVER)) as unknown as IVoipServerConfig;
 
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			return Promise.reject('Not found');
 		}
 
-		const endpointDetails = Promise.await(this.commandHandler.executeCommand(
-			Commands.extension_info,
-			requestParams,
-		)) as IVoipConnectorResult;
+		const endpointDetails = Promise.await(
+			this.commandHandler.executeCommand(Commands.extension_info, requestParams),
+		) as IVoipConnectorResult;
 		const callServerConfig: ICallServerConfigData = config.configData as ICallServerConfigData;
 		const extensionDetails: IExtensionDetails = endpointDetails.result as unknown as IExtensionDetails;
 		const extensionRegistrationInfo: IRegistrationInfo = {

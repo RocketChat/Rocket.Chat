@@ -1,7 +1,7 @@
 import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const unsubscribe = function(_id, createdAt) {
+export const unsubscribe = function (_id, createdAt) {
 	if (_id && createdAt) {
 		const affectedRows = Users.rocketMailUnsubscribe(_id, createdAt) === 1;
 

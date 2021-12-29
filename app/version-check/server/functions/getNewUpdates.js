@@ -27,7 +27,7 @@ export default () => {
 		const headers = {};
 		const token = getWorkspaceAccessToken();
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		}
 
 		const { data } = HTTP.get('https://releases.rocket.chat/updates/check', {
@@ -35,21 +35,28 @@ export default () => {
 			headers,
 		});
 
-		check(data, Match.ObjectIncluding({
-			versions: [Match.ObjectIncluding({
-				version: Match.Optional(String),
-				security: Match.Optional(Boolean),
-				infoUrl: Match.Optional(String),
-			})],
-			alerts: Match.Optional([Match.ObjectIncluding({
-				id: Match.Optional(String),
-				title: Match.Optional(String),
-				text: Match.Optional(String),
-				textArguments: Match.Optional([Match.Any]),
-				modifiers: Match.Optional([String]),
-				infoUrl: Match.Optional(String),
-			})]),
-		}));
+		check(
+			data,
+			Match.ObjectIncluding({
+				versions: [
+					Match.ObjectIncluding({
+						version: Match.Optional(String),
+						security: Match.Optional(Boolean),
+						infoUrl: Match.Optional(String),
+					}),
+				],
+				alerts: Match.Optional([
+					Match.ObjectIncluding({
+						id: Match.Optional(String),
+						title: Match.Optional(String),
+						text: Match.Optional(String),
+						textArguments: Match.Optional([Match.Any]),
+						modifiers: Match.Optional([String]),
+						infoUrl: Match.Optional(String),
+					}),
+				]),
+			}),
+		);
 
 		return data;
 	} catch (error) {

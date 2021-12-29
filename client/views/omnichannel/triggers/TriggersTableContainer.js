@@ -28,13 +28,7 @@ const TriggersTableContainer = ({ reloadRef }) => {
 	}
 
 	return (
-		<TriggersTable
-			triggers={data?.triggers}
-			totalTriggers={data?.total}
-			params={params}
-			onChangeParams={setParams}
-			onDelete={reload}
-		/>
+		<TriggersTable triggers={data?.triggers} totalTriggers={data?.total} params={params} onChangeParams={setParams} onDelete={reload} />
 	);
 };
 

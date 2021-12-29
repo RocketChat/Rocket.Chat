@@ -51,9 +51,7 @@ export class FileUploadBase {
 		this.store = store;
 	}
 
-	getProgress() {
-
-	}
+	getProgress() {}
 
 	getFileName() {
 		return this.meta.name;

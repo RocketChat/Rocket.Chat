@@ -7,16 +7,22 @@ import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setStatusTextPromise = async function(userId, statusText) {
-	if (!userId) { return false; }
+export const _setStatusTextPromise = async function (userId, statusText) {
+	if (!userId) {
+		return false;
+	}
 
 	statusText = s.trim(statusText).substr(0, 120);
 
 	const user = await UsersRaw.findOneById(userId);
 
-	if (!user) { return false; }
+	if (!user) {
+		return false;
+	}
 
-	if (user.statusText === statusText) { return true; }
+	if (user.statusText === statusText) {
+		return true;
+	}
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
@@ -28,7 +34,7 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 	return true;
 };
 
-export const _setStatusText = function(userId, statusText) {
+export const _setStatusText = function (userId, statusText) {
 	statusText = s.trim(statusText);
 	if (statusText.length > 120) {
 		statusText = statusText.substr(0, 120);

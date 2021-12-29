@@ -10,9 +10,7 @@ type LoginCallback = {
 
 type LoginMethod<A extends unknown[]> = (...args: [...args: A, cb: LoginCallback]) => void;
 
-type LoginMethodWithTotp<A extends unknown[]> = (
-	...args: [...args: A, code: string, cb: LoginCallback]
-) => void;
+type LoginMethodWithTotp<A extends unknown[]> = (...args: [...args: A, code: string, cb: LoginCallback]) => void;
 
 export const overrideLoginMethod = <A extends unknown[]>(
 	loginMethod: LoginMethod<A>,

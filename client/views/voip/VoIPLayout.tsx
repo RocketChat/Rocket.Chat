@@ -203,9 +203,7 @@ const VoIPLayout: FC = () => {
 
 		try {
 			logger.info('Executing GET omnichannel/extension?type=available&username=amol.associate');
-			const extension = await APIClient.v1.get(
-				'omnichannel/extension?type=available&username=amol.associate',
-			);
+			const extension = await APIClient.v1.get('omnichannel/extension?type=available&username=amol.associate');
 			logger.info('list = ', JSON.stringify(extension));
 		} catch (error) {
 			logger.error(`error ${error} in API agent.extension`);
@@ -338,17 +336,9 @@ const VoIPLayout: FC = () => {
 		>
 			<div>
 				{enableVideo ? (
-					<video
-						id='remote_media'
-						ref={remoteVideoMedia}
-						style={{ width: '50%', border: '1px solid #FF0000' }}
-					></video>
+					<video id='remote_media' ref={remoteVideoMedia} style={{ width: '50%', border: '1px solid #FF0000' }}></video>
 				) : (
-					<audio
-						id='remote_media'
-						ref={remoteAudioMedia}
-						style={{ width: '50%', border: '1px solid #FF0000' }}
-					></audio>
+					<audio id='remote_media' ref={remoteAudioMedia} style={{ width: '50%', border: '1px solid #FF0000' }}></audio>
 				)}
 
 				<div className='rcx-box rcx-box--full rcx-css-25ncok'>
@@ -364,17 +354,9 @@ const VoIPLayout: FC = () => {
 						<i aria-hidden='true' className='rcx-box rcx-box--full rcx-toggle-switch__fake' />
 					</label>
 				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label
-						ref={callerId}
-						className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'
-					></label>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
-						SIP User Name
-					</label>
+				<div style={{ width: '20%' }} className='rcx-box rcx-box--full rcx-field rcx-field-group__item'>
+					<label ref={callerId} className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'></label>
+					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>SIP User Name</label>
 					<span className='rcx-box rcx-box--full rcx-field__row'>
 						<input
 							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
@@ -384,13 +366,8 @@ const VoIPLayout: FC = () => {
 						/>
 					</span>
 				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
-						SIP Password
-					</label>
+				<div style={{ width: '20%' }} className='rcx-box rcx-box--full rcx-field rcx-field-group__item'>
+					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>SIP Password</label>
 					<span className='rcx-box rcx-box--full rcx-field__row'>
 						<input
 							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
@@ -400,13 +377,8 @@ const VoIPLayout: FC = () => {
 						/>
 					</span>
 				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
-						SIP Registrar
-					</label>
+				<div style={{ width: '20%' }} className='rcx-box rcx-box--full rcx-field rcx-field-group__item'>
+					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>SIP Registrar</label>
 					<span className='rcx-box rcx-box--full rcx-field__row'>
 						<input
 							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
@@ -416,13 +388,8 @@ const VoIPLayout: FC = () => {
 						/>
 					</span>
 				</div>
-				<div
-					style={{ width: '20%' }}
-					className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
-				>
-					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
-						SIP WebSocket URI
-					</label>
+				<div style={{ width: '20%' }} className='rcx-box rcx-box--full rcx-field rcx-field-group__item'>
+					<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>SIP WebSocket URI</label>
 					<span className='rcx-box rcx-box--full rcx-field__row'>
 						<input
 							className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'

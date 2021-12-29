@@ -31,9 +31,7 @@ export enum VoipEvents {
 	'callterminated',
 	'negotiationfailed',
 }
-export class SimpleVoipUser
-	implements IRegisterHandlerDelegate, IConnectionDelegate, ICallEventDelegate
-{
+export class SimpleVoipUser implements IRegisterHandlerDelegate, IConnectionDelegate, ICallEventDelegate {
 	state: IState;
 
 	userHandler: VoIPUser;

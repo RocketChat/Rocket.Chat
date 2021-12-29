@@ -41,18 +41,9 @@ function HistoryItem({ data, ...props }) {
 
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const dataSentToTriggerCode = useHighlightedCode(
-		'json',
-		JSON.stringify(dataSentToTrigger || '', null, 2),
-	);
-	const prepareSentMessageCode = useHighlightedCode(
-		'json',
-		JSON.stringify(prepareSentMessage || '', null, 2),
-	);
-	const processSentMessageCode = useHighlightedCode(
-		'json',
-		JSON.stringify(processSentMessage || '', null, 2),
-	);
+	const dataSentToTriggerCode = useHighlightedCode('json', JSON.stringify(dataSentToTrigger || '', null, 2));
+	const prepareSentMessageCode = useHighlightedCode('json', JSON.stringify(prepareSentMessage || '', null, 2));
+	const processSentMessageCode = useHighlightedCode('json', JSON.stringify(processSentMessage || '', null, 2));
 	const httpCallDataCode = useHighlightedCode('json', JSON.stringify(httpCallData || '', null, 2));
 	const httpErrorCode = useHighlightedCode('json', JSON.stringify(httpError || '', null, 2));
 	const httpResultCode = useHighlightedCode('json', JSON.stringify(httpResult || '', null, 2));
@@ -116,9 +107,7 @@ function HistoryItem({ data, ...props }) {
 				</Field>
 				{dataSentToTrigger && (
 					<Field>
-						<Field.Label>
-							{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}
-						</Field.Label>
+						<Field.Label>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}</Field.Label>
 						<Field.Row>
 							<Box withRichContent w='full'>
 								<pre>
@@ -130,9 +119,7 @@ function HistoryItem({ data, ...props }) {
 				)}
 				{prepareSentMessage && (
 					<Field>
-						<Field.Label>
-							{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}
-						</Field.Label>
+						<Field.Label>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}</Field.Label>
 						<Field.Row>
 							<Box withRichContent w='full'>
 								<pre>
@@ -144,9 +131,7 @@ function HistoryItem({ data, ...props }) {
 				)}
 				{processSentMessage && (
 					<Field>
-						<Field.Label>
-							{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script')}
-						</Field.Label>
+						<Field.Label>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Process_Script')}</Field.Label>
 						<Field.Row>
 							<Box withRichContent w='full'>
 								<pre>
@@ -168,9 +153,7 @@ function HistoryItem({ data, ...props }) {
 				)}
 				{httpCallData && (
 					<Field>
-						<Field.Label>
-							{t('Integration_Outgoing_WebHook_History_Data_Passed_To_URL')}
-						</Field.Label>
+						<Field.Label>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_URL')}</Field.Label>
 						<Field.Row>
 							<Box withRichContent w='full'>
 								<pre>
@@ -182,9 +165,7 @@ function HistoryItem({ data, ...props }) {
 				)}
 				{httpError && (
 					<Field>
-						<Field.Label>
-							{t('Integration_Outgoing_WebHook_History_Http_Response_Error')}
-						</Field.Label>
+						<Field.Label>{t('Integration_Outgoing_WebHook_History_Http_Response_Error')}</Field.Label>
 						<Field.Row>
 							<Box withRichContent w='full'>
 								<pre>

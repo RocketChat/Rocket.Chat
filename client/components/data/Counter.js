@@ -24,7 +24,7 @@ function Counter({ count, variation = 0, description }) {
 			</Flex.Container>
 			<Margins block='x12'>
 				<Flex.Container alignItems='center'>
-					<Box fontScale='p3' color='hint'>
+					<Box fontScale='p2' color='hint'>
 						{description}
 					</Box>
 				</Flex.Container>

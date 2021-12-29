@@ -1,4 +1,3 @@
-
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
@@ -7,47 +6,69 @@ import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 import { logger } from './logger';
 
 // Get the connector version and type
-API.v1.addRoute('connector.getVersion', { authRequired: true }, {
-	async get() {
-		const version = await Voip.getConnectorVersion();
-		return API.v1.success(version);
+API.v1.addRoute(
+	'connector.getVersion',
+	{ authRequired: true },
+	{
+		async get() {
+			const version = await Voip.getConnectorVersion();
+			return API.v1.success(version);
+		},
 	},
-});
+);
 
 // Get the extensions available on the call server
-API.v1.addRoute('connector.extension.list', { authRequired: true }, {
-	async get() {
-		const list = await Voip.getExtensionList();
-		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
-		logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
-		return API.v1.success({ extensions: result });
+API.v1.addRoute(
+	'connector.extension.list',
+	{ authRequired: true },
+	{
+		async get() {
+			const list = await Voip.getExtensionList();
+			const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
+			logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
+			return API.v1.success({ extensions: result });
+		},
 	},
-});
+);
 
 /* Get the details of a single extension.
  * Note : This API will either be called by  the endpoint
  * or will be consumed internally.
  */
-API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
-	async get() {
-		check(this.requestParams(), Match.ObjectIncluding({
-			extension: String,
-		}));
-		const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
-		logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
-		return API.v1.success({ ...endpointDetails.result });
+API.v1.addRoute(
+	'connector.extension.getDetails',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					extension: String,
+				}),
+			);
+			const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
+			logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
+			return API.v1.success({ ...endpointDetails.result });
+		},
 	},
-});
+);
 
 /* Get the details for registration extension.
  */
-API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
-	async get() {
-		check(this.requestParams(), Match.ObjectIncluding({
-			extension: String,
-		}));
-		const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-		logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
-		return API.v1.success({ ...endpointDetails.result });
+API.v1.addRoute(
+	'connector.extension.getRegistrationInfo',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					extension: String,
+				}),
+			);
+			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
+			logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
+			return API.v1.success({ ...endpointDetails.result });
+		},
 	},
-});
+);

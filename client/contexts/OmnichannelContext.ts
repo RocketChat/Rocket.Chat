@@ -25,8 +25,7 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 
 export const useOmnichannel = (): OmnichannelContextValue => useContext(OmnichannelContext);
 export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;
-export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined =>
-	useOmnichannel().routeConfig;
+export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined => useOmnichannel().routeConfig;
 export const useIsVoipLibReady = (): boolean | undefined => useOmnichannel().voipUser?.isReady();
 export const useVoipUser = (): SimpleVoipUser | undefined => {
 	const { voipUser } = useOmnichannel();

@@ -16,10 +16,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'userSetUtcOffset',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'userSetUtcOffset',
+		userId() {
+			return true;
+		},
 	},
-}, 1, 60000);
+	1,
+	60000,
+);

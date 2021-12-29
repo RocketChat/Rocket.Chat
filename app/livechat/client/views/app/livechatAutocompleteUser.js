@@ -68,15 +68,15 @@ Template.livechatAutocompleteUser.events({
 	},
 });
 
-Template.livechatAutocompleteUser.onRendered(function() {
+Template.livechatAutocompleteUser.onRendered(function () {
 	const { name } = this.data;
 
-	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);
+	this.ac.element = this.firstNode.querySelector(`[name=${name}]`);
 	this.ac.$element = $(this.ac.element);
 	this.deleteLastItem = this.data.deleteLastItem;
 });
 
-Template.livechatAutocompleteUser.onCreated(function() {
+Template.livechatAutocompleteUser.onCreated(function () {
 	this.filter = new ReactiveVar('');
 	this.selected = new ReactiveVar([]);
 	this.onClickTag = this.data.onClickTag;

@@ -53,7 +53,7 @@ if (Meteor.isServer) {
 	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 } else {
 	Meteor.startup(() =>
-		Tracker.autorun(function() {
+		Tracker.autorun(function () {
 			if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);

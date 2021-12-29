@@ -11,21 +11,13 @@ export declare const APIClient: {
 		xhrOptions?: {
 			progress: (amount: number) => void;
 			error: (ev: ProgressEvent<XMLHttpRequestEventTarget>) => void;
-		}
+		},
 	): { promise: Promise<Serialized<R>> };
 	getCredentials(): {
 		'X-User-Id': string;
 		'X-Auth-Token': string;
 	};
-	_jqueryCall(
-		method?: string,
-		endpoint?: string,
-		params?: any,
-		body?: any,
-		headers?: Record<string,
-		string>,
-		dataType?: string
-	): any;
+	_jqueryCall(method?: string, endpoint?: string, params?: any, body?: any, headers?: Record<string, string>, dataType?: string): any;
 	v1: {
 		delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
 		get<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
@@ -38,7 +30,7 @@ export declare const APIClient: {
 			xhrOptions?: {
 				progress: (amount: number) => void;
 				error: (ev: ProgressEvent<XMLHttpRequestEventTarget>) => void;
-			}
+			},
 		): { promise: Promise<Serialized<R>> };
 	};
 };

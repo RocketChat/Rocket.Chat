@@ -1,13 +1,4 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	Margins,
-	Box,
-	MultiSelect,
-	Icon,
-	Select,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -40,14 +31,7 @@ type AgentEditProps = {
 	reset: () => void;
 };
 
-const AgentEdit: FC<AgentEditProps> = ({
-	data,
-	userDepartments,
-	availableDepartments,
-	uid,
-	reset,
-	...props
-}) => {
+const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartments, uid, reset, ...props }) => {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
 	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
@@ -60,16 +44,11 @@ const AgentEdit: FC<AgentEditProps> = ({
 
 	const options: [string, string][] = useMemo(
 		() =>
-			availableDepartments?.departments
-				? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id]))
-				: [],
+			availableDepartments?.departments ? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id])) : [],
 		[availableDepartments],
 	);
 	const initialDepartmentValue = useMemo(
-		() =>
-			userDepartments?.departments
-				? userDepartments.departments.map(({ departmentId }) => departmentId)
-				: [],
+		() => (userDepartments?.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
 	const eeForms = useSubscription(formsSubscription);
@@ -190,11 +169,7 @@ const AgentEdit: FC<AgentEditProps> = ({
 				<Field>
 					<Field.Label>{t('VoIP_Extension')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							flexGrow={1}
-							value={voipExtension as string}
-							onChange={handleVoipExtension}
-						/>
+						<TextInput flexGrow={1} value={voipExtension as string} onChange={handleVoipExtension} />
 					</Field.Row>
 				</Field>
 			)}
@@ -202,20 +177,10 @@ const AgentEdit: FC<AgentEditProps> = ({
 			<Field.Row>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<Margins inlineEnd='x4'>
-						<Button
-							flexGrow={1}
-							type='reset'
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleReset}
-						>
+						<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleReset}>
 							{t('Reset')}
 						</Button>
-						<Button
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges && !maxChatUnsaved}
-							onClick={handleSave}
-						>
+						<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !maxChatUnsaved} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</Margins>

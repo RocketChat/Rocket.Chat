@@ -47,8 +47,10 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 		});
-		const filtered = _.difference(_.pluck(allExtensions.result as IVoipExtensionBase [], 'extension'),
-			_.pluck(allocatedExtensions, 'extension')) as string[];
+		const filtered = _.difference(
+			_.pluck(allExtensions.result as IVoipExtensionBase[], 'extension'),
+			_.pluck(allocatedExtensions, 'extension'),
+		) as string[];
 		this.logger.debug({ msg: 'getAvailableExtensions()', found: filtered.length });
 		return {
 			result: filtered,
@@ -61,9 +63,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			roles: 1,
 			extension: 1,
 		});
-		this.logger.debug({ msg: 'getExtensionAllocationDetails() all extension length ',
-			length: allocatedExtensions.length,
-		});
+		this.logger.debug({ msg: 'getExtensionAllocationDetails() all extension length ', length: allocatedExtensions.length });
 		return {
 			result: allocatedExtensions.map((user: any) => ({
 				_id: user._id,

@@ -24,7 +24,8 @@ function getCursorPosition(input) {
 	}
 	if (input.selectionStart != null) {
 		return input.selectionStart;
-	} if (document.selection != null) {
+	}
+	if (document.selection != null) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -40,7 +41,8 @@ function setCursorPosition(input, caretPos) {
 	if (input.selectionStart != null) {
 		input.focus();
 		return input.setSelectionRange(caretPos, caretPos);
-	} if (document.selection != null) {
+	}
+	if (document.selection != null) {
 		const range = input.createTextRange();
 		range.move('character', caretPos);
 		return range.select();
@@ -54,7 +56,7 @@ function val(v, d) {
 	return d;
 }
 
-Template.messagePopup.onCreated(function() {
+Template.messagePopup.onCreated(function () {
 	const template = this;
 	template.textFilter = new ReactiveVar('');
 	template.textFilterDelay = val(template.data.textFilterDelay, 0);
@@ -68,13 +70,13 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${template.trigger}[^\\s]*$`));
 	} else {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${template.trigger}[^\\s]*$`));
 	}
-	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${ template.trigger }([^\\s]*)$`));
-	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${ template.trigger }[^\\s]*$`));
-	template.getValue = val(template.data.getValue, function(_id) {
+	template.selectorRegex = val(template.data.selectorRegex, new RegExp(`${template.trigger}([^\\s]*)$`));
+	template.replaceRegex = val(template.data.replaceRegex, new RegExp(`${template.trigger}[^\\s]*$`));
+	template.getValue = val(template.data.getValue, function (_id) {
 		return _id;
 	});
 	template.up = () => {
@@ -142,7 +144,7 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 
-	template.setTextFilter = _.debounce(function(value) {
+	template.setTextFilter = _.debounce(function (value) {
 		return template.textFilter.set(value);
 	}, template.textFilterDelay);
 
@@ -165,7 +167,7 @@ Template.messagePopup.onCreated(function() {
 			return;
 		}
 		if (event.which !== keys.ARROW_UP && event.which !== keys.ARROW_DOWN) {
-			return Meteor.defer(function() {
+			return Meteor.defer(function () {
 				template.verifySelection();
 			});
 		}
@@ -179,7 +181,7 @@ Template.messagePopup.onCreated(function() {
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex)[1]);
 			template.open.set(true);
-			return Meteor.defer(function() {
+			return Meteor.defer(function () {
 				return template.verifySelection();
 			});
 		}
@@ -196,7 +198,7 @@ Template.messagePopup.onCreated(function() {
 		return template.open.set(false);
 	};
 
-	template.enterValue = function() {
+	template.enterValue = function () {
 		if (template.value.curValue == null) {
 			return;
 		}
@@ -213,13 +215,13 @@ Template.messagePopup.onCreated(function() {
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
 	template.records = new ReactiveVar([]);
-	template.autorun(function() {
+	template.autorun(function () {
 		const filter = template.textFilter.get();
 		if (filter != null) {
 			const filterCallback = (result) => {
 				template.hasData.set(result && result.length > 0);
 				template.records.set(result);
-				return Meteor.defer(function() {
+				return Meteor.defer(function () {
 					return template.verifySelection();
 				});
 			};
@@ -231,7 +233,7 @@ Template.messagePopup.onCreated(function() {
 	});
 });
 
-Template.messagePopup.onRendered(function() {
+Template.messagePopup.onRendered(function () {
 	if (this.data.getInput != null) {
 		this.input = typeof this.data.getInput === 'function' && this.data.getInput();
 	} else if (this.data.input) {
@@ -262,7 +264,7 @@ Template.messagePopup.onRendered(function() {
 	$(this.input).on('blur', this.onBlur.bind(this));
 });
 
-Template.messagePopup.onDestroyed(function() {
+Template.messagePopup.onDestroyed(function () {
 	$(this.input).off('keyup', this.onInputKeyup);
 	$(this.input).off('keydown', this.onInputKeydown);
 	$(this.input).off('focus', this.onFocus);
@@ -301,7 +303,12 @@ Template.messagePopup.events({
 
 Template.messagePopup.helpers({
 	isOpen() {
-		return Template.instance().open.get() && ((Template.instance().hasData.get() || (Template.instance().data.emptyTemplate != null)) || !Template.instance().parentTemplate(1).subscriptionsReady());
+		return (
+			Template.instance().open.get() &&
+			(Template.instance().hasData.get() ||
+				Template.instance().data.emptyTemplate != null ||
+				!Template.instance().parentTemplate(1).subscriptionsReady())
+		);
 	},
 	data() {
 		const template = Template.instance();
@@ -311,9 +318,9 @@ Template.messagePopup.helpers({
 		return { ...Template.currentData(), toolbar: true };
 	},
 	sidebarHeaderHeight() {
-		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
+		return `${document.querySelector('.sidebar__header').offsetHeight}px`;
 	},
 	sidebarWidth() {
-		return `${ document.querySelector('.sidebar').offsetWidth }px`;
+		return `${document.querySelector('.sidebar').offsetWidth}px`;
 	},
 });

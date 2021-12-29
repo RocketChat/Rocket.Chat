@@ -31,5 +31,5 @@ export interface IQueueDetails {
 	completed: string;
 	abandoned: string;
 	logestholdtime: string;
-	members: IQueueMember [];
+	members: IQueueMember[];
 }

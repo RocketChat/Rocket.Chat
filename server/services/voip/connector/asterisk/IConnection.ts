@@ -13,12 +13,7 @@ export interface IConnection {
 	 * @remarks
 	 * Callback for handling incoming call
 	 */
-	connect(
-		connectionIpOrHostname: string,
-		connectionPort: string,
-		userName: string,
-		password: string,
-	): void;
+	connect(connectionIpOrHostname: string, connectionPort: string, userName: string, password: string): void;
 	/**
 	 * Called for executing the command to the connection
 	 * @remarks
