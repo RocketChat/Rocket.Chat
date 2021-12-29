@@ -9,7 +9,7 @@ import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { sendMessage as _sendMessage } from '../functions';
 
-export const processDirectEmail = function(email) {
+export const processDirectEmail = function (email) {
 	function sendMessage(email) {
 		const message = {
 			ts: new Date(email.headers.date),
@@ -62,18 +62,18 @@ export const processDirectEmail = function(email) {
 		}
 
 		// check mention
-		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1 && room.t !== 'd') {
-			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
+		if (message.msg.indexOf(`@${prevMessage.u.username}`) === -1 && room.t !== 'd') {
+			message.msg = `@${prevMessage.u.username} ${message.msg}`;
 		}
 
 		// reply message link
-		let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
+		let prevMessageLink = `[ ](${Meteor.absoluteUrl().replace(/\/$/, '')}`;
 		if (room.t === 'c') {
-			prevMessageLink += `/channel/${ room.name }?msg=${ email.headers.mid }) `;
+			prevMessageLink += `/channel/${room.name}?msg=${email.headers.mid}) `;
 		} else if (room.t === 'd') {
-			prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ email.headers.mid }) `;
+			prevMessageLink += `/direct/${prevMessage.u.username}?msg=${email.headers.mid}) `;
 		} else if (room.t === 'p') {
-			prevMessageLink += `/group/${ room.name }?msg=${ email.headers.mid }) `;
+			prevMessageLink += `/group/${room.name}?msg=${email.headers.mid}) `;
 		}
 		// add reply message link
 		message.msg = prevMessageLink + message.msg;

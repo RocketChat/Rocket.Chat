@@ -73,13 +73,7 @@ function DepartmentsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -100,13 +94,7 @@ function DepartmentsRoute() {
 				>
 					{t('Num_Agents')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'enabled'}
-					direction={sort[1]}
-					active={sort[0] === 'enabled'}
-					onClick={onHeaderClick}
-					sort='enabled'
-				>
+				<GenericTable.HeaderCell key={'enabled'} direction={sort[1]} active={sort[0] === 'enabled'} onClick={onHeaderClick} sort='enabled'>
 					{t('Enabled')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -129,14 +117,7 @@ function DepartmentsRoute() {
 
 	const renderRow = useCallback(
 		({ name, _id, description, numAgents, enabled, showOnRegistration }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{description}</Table.Cell>
 				<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
@@ -153,13 +134,7 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'edit' || context === 'new') {
-		return (
-			<EditDepartmentWithData
-				reload={reload}
-				id={id}
-				title={context === 'edit' ? t('Edit_Department') : t('New_Department')}
-			/>
-		);
+		return <EditDepartmentWithData reload={reload} id={id} title={context === 'edit' ? t('Edit_Department') : t('New_Department')} />;
 	}
 
 	return (

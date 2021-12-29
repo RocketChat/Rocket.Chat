@@ -13,22 +13,24 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 			service: 'blockstack',
 		});
 
-		options.blockstackIDHost = Meteor.Device.isDesktop()
-			? 'http://localhost:8888/auth'
-			: 'https://blockstack.org/auth';
+		options.blockstackIDHost = Meteor.Device.isDesktop() ? 'http://localhost:8888/auth' : 'https://blockstack.org/auth';
 
 		options.scopes = ['store_write'];
 	}
 
 	try {
-		check(options, Match.ObjectIncluding({
-			blockstackIDHost: String,
-			redirectURI: String,
-			manifestURI: String,
-		}));
+		check(
+			options,
+			Match.ObjectIncluding({
+				blockstackIDHost: String,
+				redirectURI: String,
+				manifestURI: String,
+			}),
+		);
 
 		import('blockstack/dist/blockstack').then(({ redirectToSignIn }) =>
-			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes));
+			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes),
+		);
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
@@ -44,8 +46,7 @@ Meteor.logout = (...args) => {
 
 	if (serviceConfig && blockstackAuth) {
 		Session.delete('blockstack_auth');
-		import('blockstack/dist/blockstack').then(({ signUserOut }) =>
-			signUserOut(window.location.href));
+		import('blockstack/dist/blockstack').then(({ signUserOut }) => signUserOut(window.location.href));
 	}
 
 	return meteorLogout(...args);

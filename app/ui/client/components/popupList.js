@@ -12,8 +12,12 @@ Template.popupList.helpers({
 				noMatchTemplate: this.data.noMatchTemplate,
 				template_item: this.data.template_item || 'popupList_item_default',
 				items: this.items,
-				onClick: this.data.onClick || function() {},
-				modifier: this.data.modifier || function(text) { return text; },
+				onClick: this.data.onClick || function () {},
+				modifier:
+					this.data.modifier ||
+					function (text) {
+						return text;
+					},
 			},
 		};
 	},

@@ -13,46 +13,58 @@ function licenseTransform(license: ILicense): ILicense {
 	};
 }
 
-API.v1.addRoute('licenses.get', { authRequired: true }, {
-	get() {
-		if (!hasPermission(this.userId, 'view-privileged-setting')) {
-			return API.v1.unauthorized();
-		}
+API.v1.addRoute(
+	'licenses.get',
+	{ authRequired: true },
+	{
+		get() {
+			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+				return API.v1.unauthorized();
+			}
 
-		const licenses = getLicenses()
-			.filter(({ valid }) => valid)
-			.map(({ license }) => licenseTransform(license));
+			const licenses = getLicenses()
+				.filter(({ valid }) => valid)
+				.map(({ license }) => licenseTransform(license));
 
-		return API.v1.success({ licenses });
+			return API.v1.success({ licenses });
+		},
 	},
-});
+);
 
-API.v1.addRoute('licenses.add', { authRequired: true }, {
-	post() {
-		check(this.bodyParams, {
-			license: String,
-		});
+API.v1.addRoute(
+	'licenses.add',
+	{ authRequired: true },
+	{
+		post() {
+			check(this.bodyParams, {
+				license: String,
+			});
 
-		if (!hasPermission(this.userId, 'edit-privileged-setting')) {
-			return API.v1.unauthorized();
-		}
+			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				return API.v1.unauthorized();
+			}
 
-		const { license } = this.bodyParams;
-		if (!validateFormat(license)) {
-			return API.v1.failure('Invalid license');
-		}
+			const { license } = this.bodyParams;
+			if (!validateFormat(license)) {
+				return API.v1.failure('Invalid license');
+			}
 
-		Settings.updateValueById('Enterprise_License', license);
+			Settings.updateValueById('Enterprise_License', license);
 
-		return API.v1.success();
+			return API.v1.success();
+		},
 	},
-});
+);
 
-API.v1.addRoute('licenses.maxActiveUsers', { authRequired: true }, {
-	get() {
-		const maxActiveUsers = getMaxActiveUsers() || null;
-		const activeUsers = Users.getActiveLocalUserCount();
+API.v1.addRoute(
+	'licenses.maxActiveUsers',
+	{ authRequired: true },
+	{
+		get() {
+			const maxActiveUsers = getMaxActiveUsers() || null;
+			const activeUsers = Users.getActiveLocalUserCount();
 
-		return API.v1.success({ maxActiveUsers, activeUsers });
+			return API.v1.success({ maxActiveUsers, activeUsers });
+		},
 	},
-});
+);

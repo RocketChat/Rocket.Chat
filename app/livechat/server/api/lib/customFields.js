@@ -4,11 +4,15 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { LivechatCustomField } from '../../../../models/server/raw';
 
 export async function findLivechatCustomFields({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const query = { ...text && { $or: [{ label: new RegExp(escapeRegExp(text), 'i') }, { _id: new RegExp(escapeRegExp(text), 'i') }] } };
+	const query = {
+		...(text && {
+			$or: [{ label: new RegExp(escapeRegExp(text), 'i') }, { _id: new RegExp(escapeRegExp(text), 'i') }],
+		}),
+	};
 
 	const cursor = await LivechatCustomField.find(query, {
 		sort: sort || { label: 1 },
@@ -29,7 +33,7 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 }
 
 export async function findCustomFieldById({ userId, customFieldId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

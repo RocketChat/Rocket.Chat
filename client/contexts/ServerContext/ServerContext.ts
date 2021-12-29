@@ -2,21 +2,8 @@ import { createContext, useCallback, useContext, useMemo } from 'react';
 
 import type { IServerInfo } from '../../../definition/IServerInfo';
 import type { Serialized } from '../../../definition/Serialized';
-import type {
-	Method,
-	PathFor,
-	OperationParams,
-	MatchPathPattern,
-	OperationResult,
-	PathPattern,
-} from '../../../definition/rest';
-import {
-	ServerMethodFunction,
-	ServerMethodName,
-	ServerMethodParameters,
-	ServerMethodReturn,
-	ServerMethods,
-} from './methods';
+import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '../../../definition/rest';
+import { ServerMethodFunction, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from './methods';
 
 type ServerContextValue = {
 	info?: IServerInfo;
@@ -31,10 +18,7 @@ type ServerContextValue = {
 		params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
 	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
-	getStream: (
-		streamName: string,
-		options?: {},
-	) => <T>(eventName: string, callback: (data: T) => void) => () => void;
+	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -55,20 +39,15 @@ export const useServerInformation = (): IServerInfo => {
 	return info;
 };
 
-export const useAbsoluteUrl = (): ((path: string) => string) =>
-	useContext(ServerContext).absoluteUrl;
+export const useAbsoluteUrl = (): ((path: string) => string) => useContext(ServerContext).absoluteUrl;
 
-export const useMethod = <MethodName extends keyof ServerMethods>(
-	methodName: MethodName,
-): ServerMethodFunction<MethodName> => {
+export const useMethod = <MethodName extends keyof ServerMethods>(methodName: MethodName): ServerMethodFunction<MethodName> => {
 	const { callMethod } = useContext(ServerContext);
 
 	return useCallback(
 		(...args: ServerMethodParameters<MethodName>) => {
 			if (!callMethod) {
-				throw new Error(
-					`cannot use useMethod(${methodName}) hook without a wrapping ServerContext`,
-				);
+				throw new Error(`cannot use useMethod(${methodName}) hook without a wrapping ServerContext`);
 			}
 
 			return callMethod(methodName, ...args);
@@ -78,9 +57,7 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 };
 
 type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
-	params: void extends OperationParams<TMethod, TPathPattern>
-		? void
-		: Serialized<OperationParams<TMethod, TPathPattern>>,
+	params: void extends OperationParams<TMethod, TPathPattern> ? void : Serialized<OperationParams<TMethod, TPathPattern>>,
 ) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
@@ -94,16 +71,10 @@ export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMetho
 
 export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback(
-		(params, formData: any) => uploadToEndpoint(endpoint, params, formData),
-		[endpoint, uploadToEndpoint],
-	);
+	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
-export const useStream = (
-	streamName: string,
-	options?: {},
-): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+export const useStream = (streamName: string, options?: {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };

@@ -22,7 +22,7 @@ function check() {
 }
 
 let _isDocker;
-export const isDocker = function() {
+export const isDocker = function () {
 	if (_isDocker === undefined) {
 		_isDocker = check();
 	}

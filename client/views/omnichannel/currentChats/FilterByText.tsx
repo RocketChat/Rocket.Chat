@@ -34,20 +34,14 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		['onhold', t('On_Hold_Chats')],
 	];
 	const customFieldsOptions: [string, string][] = useMemo(
-		() =>
-			allCustomFields?.customFields
-				? allCustomFields.customFields.map(({ _id, label }) => [_id, label])
-				: [],
+		() => (allCustomFields?.customFields ? allCustomFields.customFields.map(({ _id, label }) => [_id, label]) : []),
 		[allCustomFields],
 	);
 
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>(
-		'department',
-		{ value: 'all', label: t('All') },
-	);
+	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
@@ -121,13 +115,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteAll}
-				onClose={handleClose}
-				onCancel={handleClose}
-				confirmText={t('Delete')}
-			/>,
+			<GenericModal variant='danger' onConfirm={onDeleteAll} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
 		);
 	});
 
@@ -144,50 +132,23 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
-					<Select
-						flexShrink={0}
-						options={statusOptions}
-						value={status}
-						onChange={handleStatus}
-						placeholder={t('Status')}
-					/>
+					<Select flexShrink={0} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('From')}</Label>
-					<InputBox
-						type='date'
-						flexShrink={0}
-						placeholder={t('From')}
-						onChange={handleFrom}
-						value={from}
-					/>
+					<InputBox type='date' flexShrink={0} placeholder={t('From')} onChange={handleFrom} value={from} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('To')}</Label>
-					<InputBox
-						type='date'
-						flexShrink={0}
-						placeholder={t('To')}
-						onChange={handleTo}
-						value={to}
-					/>
+					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
 				</Box>
 
-				<RemoveAllClosed
-					handleClearFilters={handleClearFilters}
-					handleRemoveClosed={handleRemoveClosed}
-				/>
+				<RemoveAllClosed handleClearFilters={handleClearFilters} handleRemoveClosed={handleRemoveClosed} />
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment
-						haveAll
-						value={department}
-						onChange={handleDepartment}
-						label={t('All')}
-						onlyMyDepartments
-					/>
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
 				</Box>
 			</Box>
 			{Tags && (
@@ -202,13 +163,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Custom_Fields')}</Label>
-						<MultiSelect
-							options={customFieldsOptions}
-							value={customFields}
-							onChange={handleCustomFields}
-							flexGrow={1}
-							{...props}
-						/>
+						<MultiSelect options={customFieldsOptions} value={customFields} onChange={handleCustomFields} flexGrow={1} {...props} />
 					</Box>
 				</Box>
 			)}

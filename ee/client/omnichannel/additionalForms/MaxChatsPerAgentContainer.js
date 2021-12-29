@@ -3,10 +3,7 @@ import React from 'react';
 import { useForm } from '../../../../client/hooks/useForm';
 import MaxChatsPerAgent from './MaxChatsPerAgent';
 
-const MaxChatsPerAgentContainer = ({
-	data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {},
-	onChange,
-}) => {
+const MaxChatsPerAgentContainer = ({ data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {}, onChange }) => {
 	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm({
 		maxNumberSimultaneousChat,
 	});

@@ -21,7 +21,9 @@ class Discussion extends Page {
 	}
 
 	// Action Menu
-	get startDiscussionContextItem() { return browser.element('[data-id="start-discussion"][data-type="message-action"]'); }
+	get startDiscussionContextItem() {
+		return browser.element('[data-id="start-discussion"][data-type="message-action"]');
+	}
 
 	// Modal
 	get createDiscussionModal() {

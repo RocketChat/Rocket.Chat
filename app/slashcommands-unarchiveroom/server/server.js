@@ -27,10 +27,14 @@ function Unarchive(command, params, item) {
 
 	if (!room) {
 		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 	}
 
@@ -41,10 +45,14 @@ function Unarchive(command, params, item) {
 
 	if (!room.archived) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_already_Unarchived', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_already_Unarchived',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 		return;
 	}
@@ -53,10 +61,14 @@ function Unarchive(command, params, item) {
 
 	Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
 	api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-		msg: TAPi18n.__('Channel_Unarchived', {
-			postProcess: 'sprintf',
-			sprintf: [channel],
-		}, user.language),
+		msg: TAPi18n.__(
+			'Channel_Unarchived',
+			{
+				postProcess: 'sprintf',
+				sprintf: [channel],
+			},
+			user.language,
+		),
 	});
 
 	return Unarchive;

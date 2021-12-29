@@ -1,20 +1,28 @@
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 
-function getCustomOAuthServices(): Record<string, {
-	enabled: boolean;
-	mergeRoles: boolean;
-	users: number;
-}> {
-	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(Object.entries(customOauth).map(([key, value]) => {
-		const name = key.replace('Accounts_OAuth_Custom-', '');
-		return [name, {
-			enabled: Boolean(value),
-			mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${ name }-merge_roles`),
-			users: Users.countActiveUsersByService(name),
-		}];
-	}));
+function getCustomOAuthServices(): Record<
+	string,
+	{
+		enabled: boolean;
+		mergeRoles: boolean;
+		users: number;
+	}
+> {
+	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
+	return Object.fromEntries(
+		Object.entries(customOauth).map(([key, value]) => {
+			const name = key.replace('Accounts_OAuth_Custom-', '');
+			return [
+				name,
+				{
+					enabled: Boolean(value),
+					mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-merge_roles`),
+					users: Users.countActiveUsersByService(name),
+				},
+			];
+		}),
+	);
 }
 
 export function getServicesStatistics(): Record<string, unknown> {
