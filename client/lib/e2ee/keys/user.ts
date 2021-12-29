@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
+import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
+import type { E2EEKeyPair } from '../../../../server/sdk/types/e2ee/E2EEKeyPair';
+import { assertAbortSignal } from '../../utils/assertAbortSignal';
 import {
 	decryptAES,
 	encryptAES,
@@ -10,10 +13,7 @@ import {
 	splitVectorAndEncryptedData,
 	fromStringToBuffer,
 	fromBufferToString,
-} from '../../../../app/e2e/client/helpers';
-import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
-import type { E2EEKeyPair } from '../../../../server/sdk/types/e2ee/E2EEKeyPair';
-import { assertAbortSignal } from '../../utils/assertAbortSignal';
+} from '../helpers';
 
 // Utilities to handle the user's key pair
 

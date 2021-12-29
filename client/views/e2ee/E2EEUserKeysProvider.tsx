@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode, useEffect } from 'react';
 
-import { attachE2EEManagement } from '../../../app/e2e/client/attachE2EEManagement';
 import { IUser } from '../../../definition/IUser';
+import { attachE2EEManagement } from '../../lib/e2ee/attachE2EEManagement';
 import { useUserKeys } from './useUserKeys';
 
 type EffectiveE2EEProviderProps = {

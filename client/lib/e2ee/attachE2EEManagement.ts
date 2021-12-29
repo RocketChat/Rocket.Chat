@@ -1,8 +1,8 @@
 import { Tracker } from 'meteor/tracker';
 
-import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
-import { e2ee } from './e2ee';
+import { e2ee } from '../../../app/e2e/client/e2ee';
+import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../onClientMessageReceived';
 
 export const attachE2EEManagement = (): (() => void) | undefined => {
 	let detachKeyRequestHandler: (() => void) | undefined;
@@ -14,7 +14,9 @@ export const attachE2EEManagement = (): (() => void) | undefined => {
 		if (e2ee.isReady()) {
 			detachKeyRequestHandler = e2ee.watchKeyRequests();
 			detachSubscriptionWatcher = e2ee.watchSubscriptions();
-			detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2ee.transformReceivedMessage(msg));
+			detachMessageReceivedTransform = onClientMessageReceived.use((msg) =>
+				e2ee.transformReceivedMessage(msg),
+			);
 			detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) =>
 				e2ee.transformSendingMessage(msg),
 			);

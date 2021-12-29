@@ -1,18 +1,27 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
+import { Subscriptions } from '../../../app/models/client';
+import { Notifications } from '../../../app/notifications/client';
+import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
-import { Subscriptions } from '../../models/client';
-import { E2EERoomClient } from './E2EERoomClient';
 import { ISubscription } from '../../../definition/ISubscription';
-import { Notifications } from '../../notifications/client';
 import { NotificationEvent } from '../../../definition/NotificationEvent';
-import { decryptAES, deriveKey, encryptAES, importRawKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, fromStringToBuffer, fromBufferToString } from './helpers';
-import { APIClient } from '../../utils/client/lib/RestApiClient';
 import { E2EEKeyPair } from '../../../server/sdk/types/e2ee/E2EEKeyPair';
+import { E2EERoomClient } from './E2EERoomClient';
+import {
+	decryptAES,
+	deriveKey,
+	encryptAES,
+	importRawKey,
+	joinVectorAndEncryptedData,
+	splitVectorAndEncryptedData,
+	fromStringToBuffer,
+	fromBufferToString,
+} from './helpers';
 
 interface IE2EERoomClientPool {
 	track(rid: IRoom['_id']): E2EERoomClient;
@@ -99,7 +108,7 @@ export class E2EEManager extends Emitter {
 		return this.isEnabled() && this._ready.get();
 	}
 
-	watchSubscriptions(): (() => void) {
+	watchSubscriptions(): () => void {
 		const subscriptionWatcher: Meteor.LiveQueryHandle = Subscriptions.find().observe({
 			added: ({ rid }: ISubscription) => {
 				this.roomClients?.track(rid);
@@ -114,7 +123,7 @@ export class E2EEManager extends Emitter {
 		};
 	}
 
-	watchKeyRequests(): (() => void) {
+	watchKeyRequests(): () => void {
 		const handleKeyRequest = (roomId: IRoom['_id'], keyId: string): void => {
 			const roomClient = this.roomClients?.track(roomId);
 			roomClient?.provideKeyToUser(keyId);
@@ -129,11 +138,14 @@ export class E2EEManager extends Emitter {
 
 	async decryptNotification(notification: NotificationEvent): Promise<NotificationEvent> {
 		const roomClient = this.roomClients?.track(notification.payload.rid);
-		const message = await roomClient?.decryptMessage({
-			msg: notification.payload.message.msg,
-			t: notification.payload.message.t,
-			e2e: 'pending',
-		}, { waitForKey: true });
+		const message = await roomClient?.decryptMessage(
+			{
+				msg: notification.payload.message.msg,
+				t: notification.payload.message.t,
+				e2e: 'pending',
+			},
+			{ waitForKey: true },
+		);
 
 		return {
 			...notification,

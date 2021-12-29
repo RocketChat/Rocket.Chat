@@ -2,20 +2,33 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Base64 } from 'meteor/base64';
 import { EJSON } from 'meteor/ejson';
+import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { Tracker } from 'meteor/tracker';
-import { Meteor } from 'meteor/meteor';
 
+import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
+import { Notifications } from '../../../app/notifications/client';
+import { APIClient, RoomSettingsEnum, roomTypes } from '../../../app/utils/client';
 import { IMessage } from '../../../definition/IMessage';
-import { decryptAES, decryptRSA, encryptAES, encryptRSA, exportJWKKey, generateAESKey, importAESKey, importRSAKey, joinVectorAndEncryptedData, splitVectorAndEncryptedData, fromStringToBuffer, fromBufferToString } from './helpers';
 import { IRoom } from '../../../definition/IRoom';
-import { Messages, Rooms, Subscriptions } from '../../models/client';
 import { ISubscription } from '../../../definition/ISubscription';
-import { APIClient, RoomSettingsEnum, roomTypes } from '../../utils/client';
 import { IUser } from '../../../definition/IUser';
-import { isShallowEqual } from '../../../lib/utils/isShallowEqual';
-import { Notifications } from '../../notifications/client';
 import { Serialized } from '../../../definition/Serialized';
+import { isShallowEqual } from '../../../lib/utils/isShallowEqual';
+import {
+	decryptAES,
+	decryptRSA,
+	encryptAES,
+	encryptRSA,
+	exportJWKKey,
+	generateAESKey,
+	importAESKey,
+	importRSAKey,
+	joinVectorAndEncryptedData,
+	splitVectorAndEncryptedData,
+	fromStringToBuffer,
+	fromBufferToString,
+} from './helpers';
 
 type EncryptableMessage = {
 	_id: IMessage['_id'];
@@ -26,7 +39,8 @@ type EncryptableMessage = {
 
 const extractEncryptedKeyId = (encryptedData: string): string => encryptedData.slice(0, 12);
 
-const extractEncryptedBody = (encryptedData: string): Uint8Array => Base64.decode(encryptedData.slice(12));
+const extractEncryptedBody = (encryptedData: string): Uint8Array =>
+	Base64.decode(encryptedData.slice(12));
 
 interface ICipher {
 	encrypt(input: EncryptableMessage, key: CryptoKey, keyID: string): Promise<string>;
@@ -136,16 +150,18 @@ export class E2EERoomClient extends Emitter<{
 	}
 
 	start(): void {
-		this.computation = this.computation ?? Tracker.autorun(() => {
-			const metadata = getRoomMetadata(this.rid);
+		this.computation =
+			this.computation ??
+			Tracker.autorun(() => {
+				const metadata = getRoomMetadata(this.rid);
 
-			if (isShallowEqual(this.metadata, metadata)) {
-				return;
-			}
+				if (isShallowEqual(this.metadata, metadata)) {
+					return;
+				}
 
-			this.metadata = metadata;
-			this.emit('metadataChanged');
-		});
+				this.metadata = metadata;
+				this.emit('metadataChanged');
+			});
 	}
 
 	stop(): void {
@@ -235,7 +251,9 @@ export class E2EERoomClient extends Emitter<{
 
 	async importSubscriptionKey(encryptedSubscriptionKey: string): Promise<void> {
 		const encryptedBody = extractEncryptedBody(encryptedSubscriptionKey);
-		const unencryptedSubscriptionKey = fromBufferToString(await decryptRSA(this.userPrivateKey, encryptedBody));
+		const unencryptedSubscriptionKey = fromBufferToString(
+			await decryptRSA(this.userPrivateKey, encryptedBody),
+		);
 		const jwkSubscriptionKey: JsonWebKey = JSON.parse(unencryptedSubscriptionKey);
 		const subscriptionKey = await importAESKey(jwkSubscriptionKey);
 
@@ -333,35 +351,45 @@ export class E2EERoomClient extends Emitter<{
 
 		const decryptedLastMessage = await this.decryptMessage(lastMessage, { waitForKey: true });
 
-		Rooms.direct.update({
-			_id: this.rid,
-		}, {
-			$set: {
-				'lastMessage.msg': decryptedLastMessage.msg,
-				'lastMessage.e2e': decryptedLastMessage.e2e,
+		Rooms.direct.update(
+			{
+				_id: this.rid,
 			},
-		});
+			{
+				$set: {
+					'lastMessage.msg': decryptedLastMessage.msg,
+					'lastMessage.e2e': decryptedLastMessage.e2e,
+				},
+			},
+		);
 
-		Subscriptions.direct.update({
-			rid: this.rid,
-		}, {
-			$set: {
-				'lastMessage.msg': decryptedLastMessage.msg,
-				'lastMessage.e2e': decryptedLastMessage.e2e,
+		Subscriptions.direct.update(
+			{
+				rid: this.rid,
 			},
-		});
+			{
+				$set: {
+					'lastMessage.msg': decryptedLastMessage.msg,
+					'lastMessage.e2e': decryptedLastMessage.e2e,
+				},
+			},
+		);
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		return Messages.find({ rid: this.rid, t: 'e2e', e2e: 'pending' })
-			.forEach(async (message: IMessage) => {
+		return Messages.find({ rid: this.rid, t: 'e2e', e2e: 'pending' }).forEach(
+			async (message: IMessage) => {
 				const { _id, ...rest } = await this.decryptMessage(message);
 				Messages.direct.update({ _id }, rest);
-			});
+			},
+		);
 	}
 
 	async encryptKeyForOtherParticipants(): Promise<void> {
-		const { users } = await APIClient.v1.get<{ rid: IRoom['_id'] }, { users: IUser[] }>('e2e.getUsersOfRoomWithoutKey', { rid: this.rid });
+		const { users } = await APIClient.v1.get<{ rid: IRoom['_id'] }, { users: IUser[] }>(
+			'e2e.getUsersOfRoomWithoutKey',
+			{ rid: this.rid },
+		);
 		users.forEach((user) => {
 			this.encryptForParticipant(user);
 		});
@@ -378,7 +406,10 @@ export class E2EERoomClient extends Emitter<{
 			return;
 		}
 
-		const encryptedUserKey = await encryptRSA(userKey, fromStringToBuffer(this.sessionKeyExportedString));
+		const encryptedUserKey = await encryptRSA(
+			userKey,
+			fromStringToBuffer(this.sessionKeyExportedString),
+		);
 		await APIClient.v1.post('e2e.updateGroupKey', {
 			rid: this.rid,
 			uid: user._id,
@@ -394,7 +425,10 @@ export class E2EERoomClient extends Emitter<{
 		this.encryptKeyForOtherParticipants();
 	}
 
-	async decryptMessage<T extends Pick<IMessage, 't' | 'e2e' | 'msg'>>(message: T, { waitForKey = false }: { waitForKey?: boolean } = {}): Promise<T> {
+	async decryptMessage<T extends Pick<IMessage, 't' | 'e2e' | 'msg'>>(
+		message: T,
+		{ waitForKey = false }: { waitForKey?: boolean } = {},
+	): Promise<T> {
 		// the message is not encrypted / already encryted
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
@@ -416,7 +450,9 @@ export class E2EERoomClient extends Emitter<{
 		};
 	}
 
-	async encryptMessage<T extends Pick<IMessage, '_id' | 't' | 'e2e' | 'msg'>>(message: T): Promise<T> {
+	async encryptMessage<T extends Pick<IMessage, '_id' | 't' | 'e2e' | 'msg'>>(
+		message: T,
+	): Promise<T> {
 		const metadata = this.getMetadata();
 
 		if (metadata === undefined) {
@@ -441,12 +477,16 @@ export class E2EERoomClient extends Emitter<{
 		const tsServerOffset = TimeSync.serverOffset();
 		const ts = new Date(Date.now() + (isNaN(tsServerOffset) ? 0 : tsServerOffset));
 
-		const msg = await this.cipher.encrypt({
-			_id: message._id,
-			text: message.msg,
-			userId: uid,
-			ts,
-		}, key, keyID);
+		const msg = await this.cipher.encrypt(
+			{
+				_id: message._id,
+				text: message.msg,
+				userId: uid,
+				ts,
+			},
+			key,
+			keyID,
+		);
 
 		return {
 			...message,
