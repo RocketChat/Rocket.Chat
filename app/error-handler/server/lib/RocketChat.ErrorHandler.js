@@ -30,16 +30,19 @@ class ErrorHandler {
 	}
 
 	registerHandlers() {
-		process.on('uncaughtException', Meteor.bindEnvironment((error) => {
-			if (!this.reporting) {
-				return;
-			}
-			this.trackError(error.message, error.stack);
-		}));
+		process.on(
+			'uncaughtException',
+			Meteor.bindEnvironment((error) => {
+				if (!this.reporting) {
+					return;
+				}
+				this.trackError(error.message, error.stack);
+			}),
+		);
 
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
-		Meteor._debug = function(message, stack, ...args) {
+		Meteor._debug = function (message, stack, ...args) {
 			if (!self.reporting) {
 				return originalMeteorDebug.call(this, message, stack);
 			}
@@ -65,7 +68,7 @@ class ErrorHandler {
 		const user = Users.findOneById('rocket.cat');
 
 		if (stack) {
-			message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
+			message = `${message}\n\`\`\`\n${stack}\n\`\`\``;
 		}
 
 		sendMessage(user, { msg: message }, { _id: this.rid });

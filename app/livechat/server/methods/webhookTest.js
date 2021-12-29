@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const postCatchError = function(url, options) {
+const postCatchError = function (url, options) {
 	try {
 		return HTTP.post(url, options);
 	} catch (e) {
@@ -23,11 +23,7 @@ Meteor.methods({
 			topic: 'asiodojf',
 			createdAt: new Date(),
 			lastMessageAt: new Date(),
-			tags: [
-				'tag1',
-				'tag2',
-				'tag3',
-			],
+			tags: ['tag1', 'tag2', 'tag3'],
 			customFields: {
 				productId: '123456',
 			},
@@ -51,16 +47,19 @@ Meteor.methods({
 				name: 'Agent Name',
 				email: 'agent@email.com',
 			},
-			messages: [{
-				username: 'visitor-username',
-				msg: 'message content',
-				ts: new Date(),
-			}, {
-				username: 'agent.username',
-				agentId: 'asdf89as6df8',
-				msg: 'message content from agent',
-				ts: new Date(),
-			}],
+			messages: [
+				{
+					username: 'visitor-username',
+					msg: 'message content',
+					ts: new Date(),
+				},
+				{
+					username: 'agent.username',
+					agentId: 'asdf89as6df8',
+					msg: 'message content from agent',
+					ts: new Date(),
+				},
+			],
 		};
 
 		const options = {

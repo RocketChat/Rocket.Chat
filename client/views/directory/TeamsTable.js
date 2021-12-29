@@ -43,13 +43,7 @@ function TeamsTable() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'channelsCount'} style={{ width: '100px' }}>
@@ -94,14 +88,7 @@ function TeamsTable() {
 			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(team);
 
 			return (
-				<Table.Row
-					key={_id}
-					onKeyDown={onClick(name, t)}
-					onClick={onClick(name, t)}
-					tabIndex={0}
-					role='link'
-					action
-				>
+				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
 					<Table.Cell>
 						<Box display='flex'>
 							<Box flexGrow={0}>
@@ -115,15 +102,7 @@ function TeamsTable() {
 									</Box>
 									<RoomTags room={team} style={style} />
 								</Box>
-								{topic && (
-									<MarkdownText
-										variant='inlineWithoutBreaks'
-										fontScale='p2'
-										color='hint'
-										style={style}
-										content={topic}
-									/>
-								)}
+								{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' style={style} content={topic} />}
 							</Box>
 						</Box>
 					</Table.Cell>
@@ -145,12 +124,7 @@ function TeamsTable() {
 		<GenericTable
 			header={header}
 			renderFilter={({ onChange, ...props }) => (
-				<FilterByText
-					placeholder={t('Teams_Search_teams')}
-					inputRef={refAutoFocus}
-					onChange={onChange}
-					{...props}
-				/>
+				<FilterByText placeholder={t('Teams_Search_teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />
 			)}
 			renderRow={renderRow}
 			results={data.result}

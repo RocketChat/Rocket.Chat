@@ -58,15 +58,7 @@ function EmailInboxTable() {
 
 	const renderRow = useCallback(
 		({ _id, name, email, active }) => (
-			<Table.Row
-				action
-				key={_id}
-				onKeyDown={onClick(_id)}
-				onClick={onClick(_id)}
-				tabIndex={0}
-				role='link'
-				qa-room-id={_id}
-			>
+			<Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{email}</Table.Cell>
 				<Table.Cell withTruncatedText>{active ? t('Yes') : t('No')}</Table.Cell>

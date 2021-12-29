@@ -66,13 +66,7 @@ const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {
 			onMouseLeave={(): void => setHovered(false)}
 		>
 			<Table.Cell withTruncatedText display='flex' flexDirection='row'>
-				<AppAvatar
-					size='x40'
-					mie='x8'
-					alignSelf='center'
-					iconFileContent={iconFileContent}
-					iconFileData={iconFileData}
-				/>
+				<AppAvatar size='x40' mie='x8' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' flexDirection='column' alignSelf='flex-start'>
 					<Box color='default' fontScale='p2m'>
 						{name}
@@ -99,13 +93,7 @@ const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {
 				</Table.Cell>
 			)}
 			<Table.Cell withTruncatedText>
-				<Box
-					display='flex'
-					flexDirection='row'
-					alignItems='center'
-					marginInline='neg-x8'
-					onClick={preventClickPropagation}
-				>
+				<Box display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8' onClick={preventClickPropagation}>
 					<AppStatus app={props} showStatus={isStatusVisible} marginInline='x8' />
 					{installed && <AppMenu app={props} invisible={!isStatusVisible} marginInline='x8' />}
 				</Box>

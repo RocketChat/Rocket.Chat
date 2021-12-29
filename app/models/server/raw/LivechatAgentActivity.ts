@@ -27,19 +27,14 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 			},
 		};
 		const sumAvailableTimeWithCurrentTime = {
-			$sum: [
-				{ $divide: [{ $subtract: [new Date(), '$lastStartedAt'] }, 1000] },
-				'$availableTime',
-			],
+			$sum: [{ $divide: [{ $subtract: [new Date(), '$lastStartedAt'] }, 1000] }, '$availableTime'],
 		};
 		const group = {
 			$group: {
 				_id: null,
 				allAvailableTimeInSeconds: {
 					$sum: {
-						$cond: [{ $ifNull: ['$lastStoppedAt', false] },
-							'$availableTime',
-							sumAvailableTimeWithCurrentTime],
+						$cond: [{ $ifNull: ['$lastStoppedAt', false] }, '$availableTime', sumAvailableTimeWithCurrentTime],
 					},
 				},
 				rooms: { $sum: 1 },
@@ -49,11 +44,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 			$project: {
 				averageAvailableServiceTimeInSeconds: {
 					$trunc: {
-						$cond: [
-							{ $eq: ['$rooms', 0] },
-							0,
-							{ $divide: ['$allAvailableTimeInSeconds', '$rooms'] },
-						],
+						$cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allAvailableTimeInSeconds', '$rooms'] }],
 					},
 				},
 			},
@@ -115,7 +106,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 				_id: 0,
 				username: '$_id.username',
 				availableTimeInSeconds: 1,
-				...fullReport && { serviceHistory: 1 },
+				...(fullReport && { serviceHistory: 1 }),
 			},
 		};
 

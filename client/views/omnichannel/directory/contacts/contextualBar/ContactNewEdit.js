@@ -48,14 +48,9 @@ const getInitialValues = (data) => {
 function ContactNewEdit({ id, data, close }) {
 	const t = useTranslation();
 
-	const canViewCustomFields = () =>
-		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const {
-		values,
-		handlers,
-		hasUnsavedChanges: hasUnsavedChangesContact,
-	} = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
 
 	const eeForms = useSubscription(formsSubscription);
 
@@ -100,10 +95,7 @@ function ContactNewEdit({ id, data, close }) {
 	};
 
 	const jsonCustomField = useMemo(
-		() =>
-			allCustomFields && allCustomFields.customFields
-				? jsonConverterToValidFormat(allCustomFields.customFields)
-				: {},
+		() => (allCustomFields && allCustomFields.customFields ? jsonConverterToValidFormat(allCustomFields.customFields) : {}),
 		[allCustomFields],
 	);
 
@@ -186,11 +178,7 @@ function ContactNewEdit({ id, data, close }) {
 	});
 
 	const formIsValid =
-		(hasUnsavedChangesContact || hasUnsavedChangesCustomFields) &&
-		name &&
-		!emailError &&
-		!phoneError &&
-		customFieldsError.length === 0;
+		(hasUnsavedChangesContact || hasUnsavedChangesCustomFields) && name && !emailError && !phoneError && customFieldsError.length === 0;
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -209,26 +197,14 @@ function ContactNewEdit({ id, data, close }) {
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							onBlur={checkEmailExists}
-							error={emailError}
-							flexGrow={1}
-							value={email}
-							onChange={handleEmail}
-						/>
+						<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 					</Field.Row>
 					<Field.Error>{t(emailError)}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							onBlur={checkPhoneExists}
-							error={phoneError}
-							flexGrow={1}
-							value={phone}
-							onChange={handlePhone}
-						/>
+						<TextInput onBlur={checkPhoneExists} error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
 					</Field.Row>
 					<Field.Error>{t(phoneError)}</Field.Error>
 				</Field>

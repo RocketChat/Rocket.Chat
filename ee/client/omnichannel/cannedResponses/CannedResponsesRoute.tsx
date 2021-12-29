@@ -107,11 +107,7 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	const { value: data, reload } = useEndpointData('canned-responses', query);
-	const {
-		value: totalData,
-		phase: totalDataPhase,
-		reload: totalDataReload,
-	} = useEndpointData('canned-responses');
+	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
@@ -127,13 +123,7 @@ const CannedResponsesRoute: FC = () => {
 				>
 					{t('Shortcut')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'sharing'}
-					direction={sort[1]}
-					active={sort[0] === 'sharing'}
-					onClick={onHeaderClick}
-					sort='sharing'
-				>
+				<GenericTable.HeaderCell key={'sharing'} direction={sort[1]} active={sort[0] === 'sharing'} onClick={onHeaderClick} sort='sharing'>
 					{t('Sharing')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -154,13 +144,7 @@ const CannedResponsesRoute: FC = () => {
 				>
 					{t('Created_at')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'tags'}
-					direction={sort[1]}
-					active={sort[0] === 'tags'}
-					onClick={onHeaderClick}
-					sort='tags'
-				>
+				<GenericTable.HeaderCell key={'tags'} direction={sort[1]} active={sort[0] === 'tags'} onClick={onHeaderClick} sort='tags'>
 					{t('Tags')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'remove'} w='x60'>
@@ -172,14 +156,7 @@ const CannedResponsesRoute: FC = () => {
 
 	const renderRow = useCallback(
 		({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }): ReactElement => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id, scope)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{shortcut}</Table.Cell>
 				<Table.Cell withTruncatedText>{defaultOptions[scope as Scope]}</Table.Cell>
 				<Table.Cell withTruncatedText>
@@ -205,13 +182,7 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	if (context === 'edit' && id) {
-		return (
-			<CannedResponseEditWithData
-				reload={reload}
-				totalDataReload={totalDataReload}
-				cannedResponseId={id}
-			/>
-		);
+		return <CannedResponseEditWithData reload={reload} totalDataReload={totalDataReload} cannedResponseId={id} />;
 	}
 
 	if (context === 'new') {

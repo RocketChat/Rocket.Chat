@@ -36,9 +36,7 @@ export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const onToggleAllRooms = useMutableCallback(() => {
 		setSelectedRooms((selectedRooms) => {
 			if (Object.values(selectedRooms).filter(Boolean).length === 0) {
-				return Object.fromEntries(
-					rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room._id, room]),
-				);
+				return Object.fromEntries(rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room._id, room]));
 			}
 
 			return {};
@@ -46,14 +44,7 @@ export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	});
 
 	if (step === STEPS.CONFIRM_LEAVE) {
-		return (
-			<StepTwo
-				onConfirm={onConfirm}
-				onCancel={rooms.length > 0 && onReturn}
-				onClose={onCancel}
-				rooms={rooms}
-			/>
-		);
+		return <StepTwo onConfirm={onConfirm} onCancel={rooms.length > 0 && onReturn} onClose={onCancel} rooms={rooms} />;
 	}
 
 	return (

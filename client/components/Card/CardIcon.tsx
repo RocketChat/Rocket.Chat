@@ -3,17 +3,10 @@ import React, { ComponentProps, ReactElement, ReactNode } from 'react';
 
 type CardIconProps = { children: ReactNode } | ComponentProps<typeof Icon>;
 
-const hasChildrenProp = (props: CardIconProps): props is { children: ReactNode } =>
-	'children' in props;
+const hasChildrenProp = (props: CardIconProps): props is { children: ReactNode } => 'children' in props;
 
 const CardIcon = (props: CardIconProps): ReactElement => (
-	<Box
-		minWidth='x16'
-		display='inline-flex'
-		flexDirection='row'
-		alignItems='flex-end'
-		justifyContent='center'
-	>
+	<Box minWidth='x16' display='inline-flex' flexDirection='row' alignItems='flex-end' justifyContent='center'>
 		{hasChildrenProp(props) ? props.children : <Icon size='x16' {...props} />}
 	</Box>
 );

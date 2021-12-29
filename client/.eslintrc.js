@@ -16,10 +16,7 @@ module.exports = {
 			},
 		],
 		'jsx-quotes': ['error', 'prefer-single'],
-		'new-cap': [
-			'error',
-			{ capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] },
-		],
+		'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 		'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
 		'prettier/prettier': 2,
 		'react/display-name': 'error',
@@ -90,10 +87,7 @@ module.exports = {
 					},
 				],
 				'jsx-quotes': ['error', 'prefer-single'],
-				'new-cap': [
-					'error',
-					{ capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] },
-				],
+				'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 				'no-extra-parens': 'off',
 				'no-spaced-func': 'off',
 				'no-unused-vars': 'off',

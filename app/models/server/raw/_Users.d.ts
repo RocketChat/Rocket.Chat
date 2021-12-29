@@ -9,6 +9,6 @@ export interface IUserRaw extends BaseRaw<IUser> {
 	findUsersInRoles(roles: IRole['name'][]): Promise<IUser[]>;
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['name'][]): Promise<UpdateWriteOpResult>;
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
-	new(...args: any): IUser;
+	new (...args: any): IUser;
 }
 export const UsersRaw: IUserRaw;

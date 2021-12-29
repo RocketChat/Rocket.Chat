@@ -35,14 +35,7 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onBusinessHour}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onBusinessHour} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
