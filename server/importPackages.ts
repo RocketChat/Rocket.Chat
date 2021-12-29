@@ -76,6 +76,7 @@ import '../app/slashcommands-mute';
 import '../app/slashcommands-status';
 import '../app/slashcommands-topic/server';
 import '../app/slashcommands-unarchiveroom/server';
+import '../app/slashcommands-discuss/server';
 import '../app/smarsh-connector';
 import '../app/spotify/server';
 import '../app/theme/server';
