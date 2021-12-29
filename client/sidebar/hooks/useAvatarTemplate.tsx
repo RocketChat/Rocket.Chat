@@ -8,9 +8,7 @@ export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
 	sidebarDisplayAvatar?: boolean,
 ): null | ((room: IRoom & { rid: string }) => ReactNode) => {
-	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>(
-		'sidebarViewMode',
-	);
+	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 	const sidebarDisplayAvatarFromSettings = useUserPreference('sidebarDisplayAvatar');
 
 	const viewMode = sidebarViewMode ?? sidebarViewModeFromSettings;

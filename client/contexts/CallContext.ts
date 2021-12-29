@@ -4,11 +4,7 @@ import { useSubscription } from 'use-subscription';
 import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
-export type CallContextValue =
-	| CallContextDisabled
-	| CallContextEnabled
-	| CallContextReady
-	| CallContextError;
+export type CallContextValue = CallContextDisabled | CallContextEnabled | CallContextReady | CallContextError;
 
 type CallContextDisabled = {
 	enabled: false;
@@ -31,8 +27,7 @@ type CallContextError = {
 	error: Error;
 };
 
-export const isCallContextReady = (context: CallContextValue): context is CallContextReady =>
-	(context as CallContextReady).ready;
+export const isCallContextReady = (context: CallContextValue): context is CallContextReady => (context as CallContextReady).ready;
 
 export const isCallContextError = (context: CallContextValue): context is CallContextError =>
 	(context as CallContextError).error !== undefined;

@@ -68,15 +68,9 @@ const VoiceController: FC = (): ReactElement | null => {
 				</SidebarItemContent>
 				<SidebarItemContainer>
 					<SidebarItemActions>
-						{call.state === 'IN_CALL' && (
-							<SidebarItemAction icon='phone-off' danger primary onClick={actions.end} />
-						)}
-						{call.state === 'OFFER_RECEIVED' && (
-							<SidebarItemAction icon='phone-off' danger primary onClick={actions.reject} />
-						)}
-						{call.state === 'OFFER_RECEIVED' && (
-							<SidebarItemAction icon='phone' success primary onClick={actions.pickUp} />
-						)}
+						{call.state === 'IN_CALL' && <SidebarItemAction icon='phone-off' danger primary onClick={actions.end} />}
+						{call.state === 'OFFER_RECEIVED' && <SidebarItemAction icon='phone-off' danger primary onClick={actions.reject} />}
+						{call.state === 'OFFER_RECEIVED' && <SidebarItemAction icon='phone' success primary onClick={actions.pickUp} />}
 					</SidebarItemActions>
 				</SidebarItemContainer>
 			</SidebarItem>

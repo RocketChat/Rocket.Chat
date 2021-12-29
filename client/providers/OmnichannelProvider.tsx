@@ -26,9 +26,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting(
-		'Livechat_guest_pool_max_number_incoming_livechats_displayed',
-	) as number;
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
@@ -40,9 +38,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
-	const [routeConfig, setRouteConfig] = useSafely(
-		useState<OmichannelRoutingConfig | undefined>(undefined),
-	);
+	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -64,23 +60,11 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [
-		accessible,
-		getRoutingConfig,
-		iceServersSetting,
-		omnichannelRouting,
-		setRouteConfig,
-		voipCallAvailable,
-	]);
+	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
 	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
-		enabled &&
-		canViewOmnichannelQueue &&
-		!!routeConfig &&
-		routeConfig.showQueue &&
-		!routeConfig.autoAssignAgent &&
-		agentAvailable;
+		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
 	useEffect(() => {
 		if (!manuallySelected) {
@@ -151,15 +135,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 		};
-	}, [
-		agentAvailable,
-		voipCallAvailable,
-		enabled,
-		manuallySelected,
-		queue,
-		routeConfig,
-		showOmnichannelQueueLink,
-	]);
+	}, [agentAvailable, voipCallAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };

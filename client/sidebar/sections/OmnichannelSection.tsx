@@ -5,11 +5,7 @@ import React, { memo, ReactElement } from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useLayout } from '../../contexts/LayoutContext';
-import {
-	useOmnichannelShowQueueLink,
-	useOmnichannelQueueLink,
-	useOmnichannelAgentAvailable,
-} from '../../contexts/OmnichannelContext';
+import { useOmnichannelShowQueueLink, useOmnichannelQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -59,9 +55,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		<Sidebar.TopBar.ToolBox {...Object.assign(props, { className: 'omnichannel-sidebar' })}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && (
-					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
-				)}
+				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
 				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}

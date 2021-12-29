@@ -8,10 +8,7 @@ import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
 import { useWebRtcServers } from './useWebRtcServers';
 
-type UseVoipClientResult =
-	| UseVoipClientResultResolved
-	| UseVoipClientResultError
-	| UseVoipClientResultLoading;
+type UseVoipClientResult = UseVoipClientResultResolved | UseVoipClientResultError | UseVoipClientResultLoading;
 
 type UseVoipClientResultResolved = {
 	voipClient: VoIPUser;
@@ -20,13 +17,11 @@ type UseVoipClientResultResolved = {
 type UseVoipClientResultError = { error: Error };
 type UseVoipClientResultLoading = Record<string, never>;
 
-export const isUseVoipClientResultError = (
-	result: UseVoipClientResult,
-): result is UseVoipClientResultError => !!(result as UseVoipClientResultError).error;
+export const isUseVoipClientResultError = (result: UseVoipClientResult): result is UseVoipClientResultError =>
+	!!(result as UseVoipClientResultError).error;
 
-export const isUseVoipClientResultLoading = (
-	result: UseVoipClientResult,
-): result is UseVoipClientResultLoading => Object.keys(result).length === 0;
+export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
+	Object.keys(result).length === 0;
 
 export const useVoipClient = (): UseVoipClientResult => {
 	const config = useEndpointData(
@@ -59,14 +54,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 		let client: VoIPUser;
 		(async (): Promise<void> => {
 			try {
-				client = await SimpleVoipUser.create(
-					extension,
-					password,
-					host,
-					websocketPath,
-					iceServers,
-					'video',
-				);
+				client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
 				setResult({ voipClient: client, registrationInfo: config.value });
 			} catch (e) {
 				setResult({ error: e as Error });
