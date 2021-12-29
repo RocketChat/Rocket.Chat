@@ -145,12 +145,10 @@ export class VoipService extends ServiceClass implements IVoipService {
 	}
 
 	async getExtensionDetails(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(
-			Commands.extension_info,
-			requestParams);
+		return this.commandHandler.executeCommand(Commands.extension_info, requestParams);
 	}
 
-	async getRegistrationInfo(requestParams: { extension: string }): Promise<{result: IRegistrationInfo}> {
+	async getRegistrationInfo(requestParams: { extension: string }): Promise<{ result: IRegistrationInfo }> {
 		const config = await this.getServerConfigData(ServerType.CALL_SERVER);
 
 		if (!config) {
@@ -158,11 +156,9 @@ export class VoipService extends ServiceClass implements IVoipService {
 			throw new Error('Not found');
 		}
 
-		const endpointDetails = await this.commandHandler.executeCommand(
-			Commands.extension_info,
-			requestParams,
-		);
-		if (!isIExtensionDetails(endpointDetails.result)) { // TODO The result and the assertion doenst match amol please check
+		const endpointDetails = await this.commandHandler.executeCommand(Commands.extension_info, requestParams);
+		if (!isIExtensionDetails(endpointDetails.result)) {
+			// TODO The result and the assertion doenst match amol please check
 			throw new Error('getRegistrationInfo Invalid endpointDetails response');
 		}
 		if (!isICallServerConfigData(config.configData)) {

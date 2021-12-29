@@ -17,9 +17,7 @@ describe('parseStringToIceServers', () => {
 		});
 
 		it('should parse string to servers with multiple urls', () => {
-			const servers = parseStringToIceServers(
-				'stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302',
-			);
+			const servers = parseStringToIceServers('stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302');
 			assert.equal(servers.length, 2);
 			assert.equal(servers[0].urls, 'stun:stun.l.google.com:19302');
 			assert.equal(servers[1].urls, 'stun:stun1.l.google.com:19302');

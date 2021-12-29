@@ -25,10 +25,7 @@ import { CallStates } from '../../../definition/voip/CallStates';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
 import { Operation } from '../../../definition/voip/Operations';
 import { UserState } from '../../../definition/voip/UserState';
-import {
-	IMediaStreamRenderer,
-	VoIPUserConfiguration,
-} from '../../../definition/voip/VoIPUserConfiguration';
+import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
 import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
 import { VoipEvents } from '../../../definition/voip/VoipEvents';
 import Stream from './Stream';
@@ -102,10 +99,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	/* Media Stream functions end */
-	constructor(
-		private readonly config: VoIPUserConfiguration,
-		mediaRenderer?: IMediaStreamRenderer,
-	) {
+	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
 
@@ -310,10 +304,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		await this.userAgent.start();
 	}
 
-	static async create(
-		config: VoIPUserConfiguration,
-		mediaRenderer?: IMediaStreamRenderer,
-	): Promise<VoIPUser> {
+	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {
 		const voip = new VoIPUser(config, mediaRenderer);
 		await voip.init();
 		return voip;
@@ -353,10 +344,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			this.mediaStreamRendered = mediaRenderer;
 		}
 		// Call state must be in offer_received.
-		if (
-			this._callState === 'OFFER_RECEIVED' &&
-			this._opInProgress === Operation.OP_PROCESS_INVITE
-		) {
+		if (this._callState === 'OFFER_RECEIVED' && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = 'ANSWER_SENT';
 			const invitationAcceptOptions: InvitationAcceptOptions = {
 				sessionDescriptionHandlerOptions: {

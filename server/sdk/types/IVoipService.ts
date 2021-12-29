@@ -15,5 +15,5 @@ export interface IVoipService {
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
 	getExtensionList(): Promise<IVoipConnectorResult>;
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
-	getRegistrationInfo(requestParams: any): Promise<{result: IRegistrationInfo}>; // TODO: Check the reason behind IVoipConnectorResult
+	getRegistrationInfo(requestParams: any): Promise<{ result: IRegistrationInfo }>; // TODO: Check the reason behind IVoipConnectorResult
 }

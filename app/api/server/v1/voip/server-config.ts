@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { API } from '../../api';
 import { hasPermission } from '../../../../authorization/server';
 import { Voip } from '../../../../../server/sdk';
-import { ICallServerConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
+import { ServerType } from '../../../../../definition/IVoipServerConfig';
 
 // management api(s)
 API.v1.addRoute(

@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useSetting } from '../../../hooks/useSetting';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
