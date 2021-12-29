@@ -14,6 +14,4 @@ export const withBackButton = () => <Pager onBackClick={action('backClick')} />;
 
 export const disabled = () => <Pager disabled onBackClick={action('backClick')} />;
 
-export const withContinueDisabled = () => (
-	<Pager isContinueEnabled={false} onBackClick={action('backClick')} />
-);
+export const withContinueDisabled = () => <Pager isContinueEnabled={false} onBackClick={action('backClick')} />;

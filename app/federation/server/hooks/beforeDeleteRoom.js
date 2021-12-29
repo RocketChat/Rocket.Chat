@@ -8,10 +8,14 @@ async function beforeDeleteRoom(roomId) {
 	const room = Rooms.findOneById(roomId, { fields: { federation: 1 } });
 
 	// If room does not exist, skip
-	if (!room) { return roomId; }
+	if (!room) {
+		return roomId;
+	}
 
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return roomId; }
+	if (!hasExternalDomain(room)) {
+		return roomId;
+	}
 
 	clientLogger.debug({ msg: 'beforeDeleteRoom', room });
 

@@ -9,43 +9,57 @@ addMigration({
 		const pinned = await Settings.findOneById('RetentionPolicy_ExcludePinned');
 
 		if (discussion) {
-			await Settings.update({
-				_id: 'RetentionPolicy_DoNotPruneDiscussion',
-			}, {
-				$set: {
-					value: discussion.value,
+			await Settings.update(
+				{
+					_id: 'RetentionPolicy_DoNotPruneDiscussion',
 				},
-			}, {
-				upsert: true,
-			});
+				{
+					$set: {
+						value: discussion.value,
+					},
+				},
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		if (thread) {
-			await Settings.update({
-				_id: 'RetentionPolicy_DoNotPruneThreads',
-			}, {
-				$set: {
-					value: thread.value,
+			await Settings.update(
+				{
+					_id: 'RetentionPolicy_DoNotPruneThreads',
 				},
-			}, {
-				upsert: true,
-			});
+				{
+					$set: {
+						value: thread.value,
+					},
+				},
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		if (pinned) {
-			await Settings.update({
-				_id: 'RetentionPolicy_DoNotPrunePinned',
-			}, {
-				$set: {
-					value: pinned.value,
+			await Settings.update(
+				{
+					_id: 'RetentionPolicy_DoNotPrunePinned',
 				},
-			}, {
-				upsert: true,
-			});
+				{
+					$set: {
+						value: pinned.value,
+					},
+				},
+				{
+					upsert: true,
+				},
+			);
 		}
 
 		return Settings.deleteMany({
-			_id: { $in: ['RetentionPolicy_DoNotExcludeDiscussion', 'RetentionPolicy_DoNotExcludeThreads', 'RetentionPolicy_ExcludePinned'] },
+			_id: {
+				$in: ['RetentionPolicy_DoNotExcludeDiscussion', 'RetentionPolicy_DoNotExcludeThreads', 'RetentionPolicy_ExcludePinned'],
+			},
 		});
 	},
 });

@@ -10,7 +10,7 @@ Template.visitorInfoCustomForm.helpers({
 	},
 });
 
-Template.visitorInfoCustomForm.onCreated(function() {
+Template.visitorInfoCustomForm.onCreated(function () {
 	this.priority = new ReactiveVar(null);
 
 	this.autorun(async () => {
@@ -20,7 +20,7 @@ Template.visitorInfoCustomForm.onCreated(function() {
 		let priority;
 
 		if (priorityId) {
-			priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${ priorityId }`);
+			priority = await APIClient.v1.get(`livechat/priorities.getOne?priorityId=${priorityId}`);
 		}
 
 		this.priority.set(priority);

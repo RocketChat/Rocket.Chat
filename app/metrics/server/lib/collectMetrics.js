@@ -15,16 +15,19 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 
-Facts.incrementServerFact = function(pkg, fact, increment) {
+Facts.incrementServerFact = function (pkg, fact, increment) {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
 };
 
 const setPrometheusData = async () => {
-	metrics.info.set({
-		version: Info.version,
-		unique_id: settings.get('uniqueID'),
-		site_url: settings.get('Site_Url'),
-	}, 1);
+	metrics.info.set(
+		{
+			version: Info.version,
+			unique_id: settings.get('uniqueID'),
+			site_url: settings.get('Site_Url'),
+		},
+		1,
+	);
 
 	const sessions = Array.from(Meteor.server.sessions.values());
 	const authenticatedSessions = sessions.filter((s) => s.userId);
@@ -159,7 +162,9 @@ const updatePrometheusConfig = async () => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+			client.register.getMetricsAsArray().forEach((metric) => {
+				metric.hashMap = {};
+			});
 		}, is.resetInterval);
 	}
 

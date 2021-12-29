@@ -32,5 +32,5 @@ export class MessagesMock extends BaseModelMock {
 			mentions: [],
 			channels: [],
 		},
-	}
+	};
 }

@@ -12,9 +12,7 @@ const getReconnectCountdown = (retryTime) => {
 
 const useReconnectCountdown = (retryTime, status) => {
 	const reconnectionTimerRef = useRef();
-	const [reconnectCountdown, setReconnectCountdown] = useState(() =>
-		getReconnectCountdown(retryTime),
-	);
+	const [reconnectCountdown, setReconnectCountdown] = useState(() => getReconnectCountdown(retryTime));
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -62,9 +60,7 @@ function ConnectionStatusBar() {
 				<Icon name='warning' /> {t('meteor_status', { context: status })}
 			</strong>
 
-			{status === 'waiting' && (
-				<> {t('meteor_status_reconnect_in', { count: reconnectCountdown })}</>
-			)}
+			{status === 'waiting' && <> {t('meteor_status_reconnect_in', { count: reconnectCountdown })}</>}
 
 			{['waiting', 'offline'].includes(status) && (
 				<>

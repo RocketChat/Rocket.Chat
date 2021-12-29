@@ -7,7 +7,9 @@ import { APIClient } from '../../../utils/client';
 import './gameContainer.html';
 
 const getExternalComponent = async () => {
-	const { data: { game: externalComponent } } = Template.instance();
+	const {
+		data: { game: externalComponent },
+	} = Template.instance();
 	const realAppClientUIHost = Apps.getUIHost();
 	const currentUser = await realAppClientUIHost.getClientUserInfo();
 	const currentRoom = await realAppClientUIHost.getClientRoomInfo();
@@ -22,13 +24,17 @@ const getExternalComponent = async () => {
 
 Template.GameContainer.helpers({
 	isContextualBar() {
-		const { data: { game } } = Template.instance();
+		const {
+			data: { game },
+		} = Template.instance();
 		const { location } = game;
 
 		return location === 'CONTEXTUAL_BAR';
 	},
 	isModal() {
-		const { data: { game } } = Template.instance();
+		const {
+			data: { game },
+		} = Template.instance();
 		const { location } = game;
 
 		return location === 'MODAL';
@@ -37,13 +43,17 @@ Template.GameContainer.helpers({
 
 Template.GameContainer.events({
 	'click .rc-game__close'() {
-		const { data: { clearGameManifestInfo } } = Template.instance();
+		const {
+			data: { clearGameManifestInfo },
+		} = Template.instance();
 
 		clearGameManifestInfo();
 		modal.cancel();
 	},
 	'click .js-back'() {
-		const { data: { clearGameManifestInfo } } = Template.instance();
+		const {
+			data: { clearGameManifestInfo },
+		} = Template.instance();
 
 		clearGameManifestInfo();
 	},

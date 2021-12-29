@@ -11,13 +11,15 @@ async function migrateTeamNames(fut) {
 	const Team = new TeamRaw(mongo.db.collection('rocketchat_team'));
 
 	const rooms = await Rooms.find({ teamMain: true }, { projection: { name: 1, fname: 1, teamId: 1, t: 1 } }).toArray();
-	await Promise.all(rooms.map(async ({ name, fname, t, teamId }) => {
-		const update = {
-			name: fname || name,
-			type: t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
-		};
-		Team.updateNameAndType(teamId, update);
-	}));
+	await Promise.all(
+		rooms.map(async ({ name, fname, t, teamId }) => {
+			const update = {
+				name: fname || name,
+				type: t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+			};
+			Team.updateNameAndType(teamId, update);
+		}),
+	);
 	fut.return();
 }
 

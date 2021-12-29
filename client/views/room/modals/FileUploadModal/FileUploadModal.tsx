@@ -1,21 +1,6 @@
-import {
-	Modal,
-	Box,
-	Field,
-	FieldGroup,
-	TextInput,
-	ButtonGroup,
-	Button,
-} from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, {
-	ReactElement,
-	memo,
-	useState,
-	ChangeEvent,
-	FormEventHandler,
-	useEffect,
-} from 'react';
+import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
 
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -29,13 +14,7 @@ type FileUploadModalProps = {
 	invalidContentType: boolean;
 };
 
-const FileUploadModal = ({
-	onClose,
-	file,
-	fileName,
-	onSubmit,
-	invalidContentType,
-}: FileUploadModalProps): ReactElement => {
+const FileUploadModal = ({ onClose, file, fileName, onSubmit, invalidContentType }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
@@ -89,14 +68,7 @@ const FileUploadModal = ({
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content overflow='hidden'>
-					<Box
-						display='flex'
-						maxHeight='x360'
-						w='full'
-						justifyContent='center'
-						alignContent='center'
-						mbe='x16'
-					>
+					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe='x16'>
 						<FilePreview file={file} />
 					</Box>
 					<FieldGroup>
@@ -105,19 +77,12 @@ const FileUploadModal = ({
 							<Field.Row>
 								<TextInput value={name} onChange={handleName} />
 							</Field.Row>
-							{!name && (
-								<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
-							)}
+							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 						</Field>
 						<Field>
 							<Field.Label>{t('Upload_file_description')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									value={description}
-									onChange={handleDescription}
-									placeholder={t('Description')}
-									ref={ref}
-								/>
+								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
 							</Field.Row>
 						</Field>
 					</FieldGroup>

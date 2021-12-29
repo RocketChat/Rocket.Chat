@@ -1,27 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import React, { FC, useCallback, useEffect } from 'react';
 
-import {
-	hasPermission,
-	hasAtLeastOnePermission,
-	hasAllPermission,
-	hasRole,
-} from '../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client/models/Roles';
 import { AuthorizationContext, RoleStore } from '../contexts/AuthorizationContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 const contextValue = {
-	queryPermission: createReactiveSubscriptionFactory((permission, scope) =>
-		hasPermission(permission, scope),
-	),
-	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) =>
-		hasAtLeastOnePermission(permissions, scope),
-	),
-	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) =>
-		hasAllPermission(permissions, scope),
-	),
+	queryPermission: createReactiveSubscriptionFactory((permission, scope) => hasPermission(permission, scope)),
+	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),
+	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(permissions, scope)),
 	queryRole: createReactiveSubscriptionFactory((role) => hasRole(Meteor.userId(), role)),
 	roleStore: new RoleStore(),
 };

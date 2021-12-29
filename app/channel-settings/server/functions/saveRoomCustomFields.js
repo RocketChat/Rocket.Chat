@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 
 import { Rooms, Subscriptions } from '../../../models';
 
-export const saveRoomCustomFields = function(rid, roomCustomFields) {
+export const saveRoomCustomFields = function (rid, roomCustomFields) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomCustomFields',

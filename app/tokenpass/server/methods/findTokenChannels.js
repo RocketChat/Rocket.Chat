@@ -17,8 +17,9 @@ Meteor.methods({
 				tokens[token.asset] = 1;
 			});
 
-			return Rooms.findByTokenpass(Object.keys(tokens))
-				.filter((room) => Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
+			return Rooms.findByTokenpass(Object.keys(tokens)).filter((room) =>
+				Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances),
+			);
 		}
 
 		return [];

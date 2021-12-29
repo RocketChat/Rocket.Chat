@@ -12,11 +12,10 @@ export const createRoom = ({ name, type, username, members = [], credentials: cu
 		p: 'groups.create',
 		d: 'im.create',
 	};
-	const params = type === 'd'
-		? { username }
-		: { name };
+	const params = type === 'd' ? { username } : { name };
 
-	return request.post(api(endpoints[type]))
+	return request
+		.post(api(endpoints[type]))
 		.set(customCredentials || credentials)
 		.send({
 			...params,
@@ -24,17 +23,17 @@ export const createRoom = ({ name, type, username, members = [], credentials: cu
 		});
 };
 
-export const asyncCreateRoom = ({ name, type, username, members = [] }) => new Promise((resolve) => {
-	createRoom({ name, type, username, members })
-		.end(resolve);
-});
+export const asyncCreateRoom = ({ name, type, username, members = [] }) =>
+	new Promise((resolve) => {
+		createRoom({ name, type, username, members }).end(resolve);
+	});
 
 function actionRoom({ action, type, roomId }) {
 	if (!type) {
-		throw new Error(`"type" is required in "${ action }Room" test helper`);
+		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
 	if (!roomId) {
-		throw new Error(`"roomId" is required in "${ action }Room" test helper`);
+		throw new Error(`"roomId" is required in "${action}Room" test helper`);
 	}
 	const endpoints = {
 		c: 'channels',
@@ -42,7 +41,8 @@ function actionRoom({ action, type, roomId }) {
 		d: 'im',
 	};
 	return new Promise((resolve) => {
-		request.post(api(`${ endpoints[type] }.${ action }`))
+		request
+			.post(api(`${endpoints[type]}.${action}`))
 			.set(credentials)
 			.send({
 				roomId,

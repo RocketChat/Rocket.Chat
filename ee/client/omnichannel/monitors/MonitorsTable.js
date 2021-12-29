@@ -6,15 +6,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../../client/hooks/useResizeInlineBreakpoint';
 import MonitorsRow from './MonitorsRow';
 
-function MonitorsTable({
-	monitors,
-	totalMonitors,
-	params,
-	sort,
-	onHeaderClick,
-	onChangeParams,
-	onDelete,
-}) {
+function MonitorsTable({ monitors, totalMonitors, params, sort, onHeaderClick, onChangeParams, onDelete }) {
 	const t = useTranslation();
 
 	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
@@ -24,13 +16,7 @@ function MonitorsTable({
 			ref={ref}
 			header={
 				<>
-					<GenericTable.HeaderCell
-						key={'name'}
-						sort='name'
-						active={sort[0] === 'name'}
-						direction={sort[1]}
-						onClick={onHeaderClick}
-					>
+					<GenericTable.HeaderCell key={'name'} sort='name' active={sort[0] === 'name'} direction={sort[1]} onClick={onHeaderClick}>
 						{t('Name')}
 					</GenericTable.HeaderCell>
 					<GenericTable.HeaderCell>{t('Username')}</GenericTable.HeaderCell>
@@ -44,9 +30,7 @@ function MonitorsTable({
 			setParams={onChangeParams}
 			renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 		>
-			{(props) => (
-				<MonitorsRow key={props._id} medium={onMediumBreakpoint} onDelete={onDelete} {...props} />
-			)}
+			{(props) => <MonitorsRow key={props._id} medium={onMediumBreakpoint} onDelete={onDelete} {...props} />}
 		</GenericTable>
 	);
 }

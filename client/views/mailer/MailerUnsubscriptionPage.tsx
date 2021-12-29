@@ -52,12 +52,8 @@ const MailerUnsubscriptionPage: FC = () => {
 				</header>
 				<Box color='default' marginInline='auto' marginBlock={16} maxWidth={800}>
 					{(phase === AsyncStatePhase.LOADING && <Throbber disabled />) ||
-						(phase === AsyncStatePhase.REJECTED && (
-							<Callout type='danger' title={error?.message} />
-						)) ||
-						(phase === AsyncStatePhase.RESOLVED && (
-							<Callout type='success' title={t('You_have_successfully_unsubscribed')} />
-						))}
+						(phase === AsyncStatePhase.REJECTED && <Callout type='danger' title={error?.message} />) ||
+						(phase === AsyncStatePhase.RESOLVED && <Callout type='success' title={t('You_have_successfully_unsubscribed')} />)}
 				</Box>
 			</div>
 		</section>
