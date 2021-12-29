@@ -34,7 +34,7 @@ const OTR = ({
 				{isEstablishing && !isEstablished && isOnline && (
 					<>
 						{' '}
-						<Box fontScale='p3'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
+						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
 						<Throbber inheritColor />{' '}
 					</>
 				)}
@@ -54,7 +54,7 @@ const OTR = ({
 				)}
 
 				{!isOnline && (
-					<Box fontScale='p4'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
+					<Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
 				)}
 			</VerticalBar.ScrollableContent>
 		</>

@@ -157,7 +157,7 @@ const MessagesSentSection = (): ReactElement => {
 											},
 										}}
 										tooltip={({ value }): ReactElement => (
-											<Box fontScale='p2' color='alternative'>
+											<Box fontScale='p1m' color='alternative'>
 												{t('Value_messages', { value })}
 											</Box>
 										)}

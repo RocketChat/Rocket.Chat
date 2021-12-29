@@ -37,10 +37,10 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
 			>
 				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
 				<Box mis='x8' flexShrink={1} overflow='hidden'>
-					<Box withTruncatedText color='default' fontScale='p4'>
+					<Box withTruncatedText color='default' fontScale='p2m'>
 						{name}
 					</Box>
-					<Box withTruncatedText color='hint' fontScale='p3'>
+					<Box withTruncatedText color='hint' fontScale='p2'>
 						@{user?.username}
 					</Box>
 					<Box color='hint' fontScale='micro'>

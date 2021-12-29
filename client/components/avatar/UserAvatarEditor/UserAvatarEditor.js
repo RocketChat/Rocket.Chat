@@ -59,7 +59,7 @@ function UserAvatarEditor({
 	};
 
 	return (
-		<Box display='flex' flexDirection='column' fontScale='p4'>
+		<Box display='flex' flexDirection='column' fontScale='p2m'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
 				<UserAvatar

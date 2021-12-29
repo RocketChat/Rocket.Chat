@@ -4,7 +4,7 @@ import React, { FC, ComponentProps } from 'react';
 const Details: FC<ComponentProps<typeof Box>> = ({ ...props }) => (
 	<Box
 		rcx-attachment__details
-		fontScale='p3'
+		fontScale='p2'
 		color='info'
 		bg='neutral-100'
 		pi='x16'
