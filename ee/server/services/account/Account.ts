@@ -11,48 +11,51 @@ import { IUser } from '../../../../definition/IUser';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { IAccount, ILoginResult } from '../../../../server/sdk/types/IAccount';
 
-
 const saveSession = async (uid: string, newToken: IHashedStampedToken): Promise<void> => {
 	const Users = await getCollection<IUser>(Collections.User);
-	await Users.updateOne({ _id: uid }, {
-		$push: {
-			'services.resume.loginTokens': newToken.hashedToken,
+	await Users.updateOne(
+		{ _id: uid },
+		{
+			$push: {
+				'services.resume.loginTokens': newToken.hashedToken,
+			},
 		},
-	});
+	);
 };
 
 const removeSession = async (uid: string, loginToken: string): Promise<void> => {
 	const Users = await getCollection<IUser>(Collections.User);
-	await Users.updateOne({ _id: uid }, {
-		$pull: {
-			'services.resume.loginTokens': {
-				$or: [
-					{ hashedToken: loginToken },
-					{ token: loginToken },
-				],
+	await Users.updateOne(
+		{ _id: uid },
+		{
+			$pull: {
+				'services.resume.loginTokens': {
+					$or: [{ hashedToken: loginToken }, { token: loginToken }],
+				},
 			},
 		},
-	});
+	);
 };
 
 const loginViaResume = async (resume: string): Promise<false | ILoginResult> => {
 	const Users = await getCollection<IUser>(Collections.User);
 	const hashedToken = _hashLoginToken(resume);
 
-	const user = await Users.findOne<IUser>({
-		'services.resume.loginTokens.hashedToken': hashedToken,
-	}, {
-		projection: {
-			'services.resume.loginTokens': 1,
+	const user = await Users.findOne<IUser>(
+		{
+			'services.resume.loginTokens.hashedToken': hashedToken,
 		},
-	});
+		{
+			projection: {
+				'services.resume.loginTokens': 1,
+			},
+		},
+	);
 	if (!user) {
 		return false;
 	}
 
-	const { when } = user.services?.resume?.loginTokens?.find((token) =>
-		token.hashedToken === hashedToken,
-	) || {};
+	const { when } = user.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken) || {};
 
 	return {
 		uid: user._id,
@@ -63,7 +66,7 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 	};
 };
 
-const loginViaUsername = async ({ username }: {username: string}, password: string): Promise<false | ILoginResult> => {
+const loginViaUsername = async ({ username }: { username: string }, password: string): Promise<false | ILoginResult> => {
 	const Users = await getCollection<IUser>(Collections.User);
 	const user = await Users.findOne<IUser>({ username }, { projection: { 'services.password.bcrypt': 1 } });
 	if (!user) {
@@ -93,7 +96,7 @@ const loginViaUsername = async ({ username }: {username: string}, password: stri
 export class Account extends ServiceClass implements IAccount {
 	protected name = 'accounts';
 
-	async login({ resume, user, password }: {resume: string; user: {username: string}; password: string}): Promise<false | ILoginResult> {
+	async login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult> {
 		if (resume) {
 			return loginViaResume(resume);
 		}
@@ -105,7 +108,7 @@ export class Account extends ServiceClass implements IAccount {
 		return false;
 	}
 
-	async logout({ userId, token }: {userId: string; token: string}): Promise<void> {
+	async logout({ userId, token }: { userId: string; token: string }): Promise<void> {
 		return removeSession(userId, token);
 	}
 }

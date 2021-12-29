@@ -4,7 +4,7 @@ import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export async function findUsersToAutocomplete({ uid, selector }) {
-	if (!await hasPermissionAsync(uid, 'view-outside-room')) {
+	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
 	}
 	const exceptions = selector.exceptions || [];
@@ -23,7 +23,12 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(new RegExp(escapeRegExp(selector.term), 'i'), exceptions, conditions, options).toArray();
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		new RegExp(escapeRegExp(selector.term), 'i'),
+		exceptions,
+		conditions,
+		options,
+	).toArray();
 
 	return {
 		items: users,
@@ -59,6 +64,7 @@ export function getNonEmptyFields(fields) {
 		status: 1,
 		active: 1,
 		avatarETag: 1,
+		lastLogin: 1,
 	};
 
 	if (!fields || Object.keys(fields).length === 0) {

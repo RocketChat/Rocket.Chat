@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../settings/server';
 
 settingsRegistry.addGroup('Analytics', function addSettings() {
-	this.section('Piwik', function() {
+	this.section('Piwik', function () {
 		const enableQuery = { _id: 'PiwikAnalytics_enabled', value: true };
 		this.add('PiwikAnalytics_enabled', false, {
 			type: 'boolean',
@@ -48,7 +48,7 @@ settingsRegistry.addGroup('Analytics', function addSettings() {
 		});
 	});
 
-	this.section('Analytics_Google', function() {
+	this.section('Analytics_Google', function () {
 		const enableQuery = { _id: 'GoogleAnalytics_enabled', value: true };
 		this.add('GoogleAnalytics_enabled', false, {
 			type: 'boolean',

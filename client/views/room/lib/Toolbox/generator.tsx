@@ -28,8 +28,7 @@ export const generator = function generator<T>(name?: string): {
 		return result;
 	};
 
-	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): Function =>
-		emitter.on('change', handler);
+	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): Function => emitter.on('change', handler);
 
 	return Object.freeze({
 		store,

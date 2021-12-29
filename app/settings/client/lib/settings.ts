@@ -6,7 +6,7 @@ import { SettingsBase } from '../../lib/settings';
 import { SettingValue } from '../../../../definition/ISetting';
 
 class Settings extends SettingsBase {
-	cachedCollection = PublicSettingsCachedCollection.get()
+	cachedCollection = PublicSettingsCachedCollection.get();
 
 	collection = PublicSettingsCachedCollection.get().collection;
 

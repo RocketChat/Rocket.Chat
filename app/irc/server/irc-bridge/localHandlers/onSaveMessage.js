@@ -26,7 +26,7 @@ export default function handleOnSaveMessage(message, to) {
 			return;
 		}
 	} else {
-		toIdentification = `#${ to.name }`;
+		toIdentification = `#${to.name}`;
 	}
 
 	const user = Users.findOne({ _id: message.u._id });

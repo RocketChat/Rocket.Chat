@@ -1,11 +1,11 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
+import { RocketChatRecordDeleted } from '../../IRocketChatRecord';
 import { IRole, IUser } from '../../IUser';
 
 const ajv = new Ajv();
 
-type RoleCreateProps = Pick<IRole, 'name'> &
-	Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
+type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
 const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
 	type: 'object',
@@ -150,7 +150,7 @@ export type RolesEndpoints = {
 		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
-				remove: IRole[];
+				remove: RocketChatRecordDeleted<IRole>[];
 			};
 		};
 	};

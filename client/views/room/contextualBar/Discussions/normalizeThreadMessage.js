@@ -8,9 +8,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find(
-			(attachment) => attachment.title || attachment.description,
-		);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
 			return escapeHTML(attachment.description);

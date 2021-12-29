@@ -35,14 +35,10 @@ export const TranslationContext = createContext<TranslationContextValue>({
 	}),
 });
 
-export const useLanguages = (): TranslationContextValue['languages'] =>
-	useContext(TranslationContext).languages;
+export const useLanguages = (): TranslationContextValue['languages'] => useContext(TranslationContext).languages;
 
-export const useLanguage = (): TranslationContextValue['language'] =>
-	useContext(TranslationContext).language;
+export const useLanguage = (): TranslationContextValue['language'] => useContext(TranslationContext).language;
 
-export const useLoadLanguage = (): TranslationContextValue['loadLanguage'] =>
-	useContext(TranslationContext).loadLanguage;
+export const useLoadLanguage = (): TranslationContextValue['loadLanguage'] => useContext(TranslationContext).loadLanguage;
 
-export const useTranslation = (): TranslationContextValue['translate'] =>
-	useContext(TranslationContext).translate;
+export const useTranslation = (): TranslationContextValue['translate'] => useContext(TranslationContext).translate;

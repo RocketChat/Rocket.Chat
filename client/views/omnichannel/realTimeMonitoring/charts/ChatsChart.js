@@ -38,11 +38,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('livechat/analytics/dashboards/charts/chats', params);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/chats', params);
 
 	reloadRef.current.chatsChart = reload;
 
