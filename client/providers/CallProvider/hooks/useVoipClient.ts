@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useSetting } from '../../../hooks/useSetting';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
 import { VoIPUser } from '../../../lib/voip/VoIPUser';
@@ -31,10 +32,10 @@ export const isUseVoipClientResultLoading = (
 export const useVoipClient = (): UseVoipClientResult => {
 	const config = useEndpointData(
 		'connector.extension.getRegistrationInfo',
-		useMemo(() => ({ extension: '80000' }), []),
+		useMemo(() => ({ extension: '80000' }), []), // TODO: When we have the extension handler UI, use Agent Extension value
 	);
 
-	// TODO: should we recreate the client if the server list changes? this can disrupt the call
+	// TODO: should we recreate the client if the iceServers list changes? this can disrupt the call
 
 	const iceServers = useWebRtcServers();
 

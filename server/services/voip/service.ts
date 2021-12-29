@@ -27,6 +27,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		super();
 
 		this.logger = new Logger('voip service');
+		// TODO: If we decide to move away from this approach after the MVP, don't forget do do a migration to remove the collection!
 		this.VoipServerConfiguration = new VoipServerConfigurationRaw(db.collection('rocketchat_voip_server_configuration'));
 
 		this.commandHandler = new CommandHandler(this);
