@@ -1,12 +1,8 @@
 export const getDefaultSubscriptionPref = (userPref) => {
 	const subscription = {};
 
-	const {
-		desktopNotifications,
-		pushNotifications,
-		emailNotificationMode,
-		highlights,
-	} = (userPref.settings && userPref.settings.preferences) || {};
+	const { desktopNotifications, pushNotifications, emailNotificationMode, highlights } =
+		(userPref.settings && userPref.settings.preferences) || {};
 
 	if (Array.isArray(highlights) && highlights.length) {
 		subscription.userHighlights = highlights;

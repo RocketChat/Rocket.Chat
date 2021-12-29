@@ -35,7 +35,8 @@ Template.customFieldsForm.helpers({
 
 		if (typeof formData[field.fieldName] !== 'undefined') {
 			return formData[field.fieldName] === current;
-		} if (typeof field.defaultValue !== 'undefined') {
+		}
+		if (typeof field.defaultValue !== 'undefined') {
 			return field.defaultValue === current;
 		}
 	},
@@ -46,7 +47,7 @@ Template.customFieldsForm.helpers({
 	},
 });
 
-Template.customFieldsForm.onCreated(function() {
+Template.customFieldsForm.onCreated(function () {
 	this.customFields = new ReactiveVar();
 
 	const currentData = Template.currentData();

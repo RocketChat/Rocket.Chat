@@ -2143,7 +2143,7 @@
   "RetentionPolicyRoom_FilesOnly": "Bereinigen Sie nur Dateien, behalten Sie Nachrichten",
   "RetentionPolicyRoom_MaxAge": "Maximales Nachrichtenalter in Tagen (Standard: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Globale Aufbewahrungsrichtlinie außer Kraft setzen",
-  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'>hier</a>aktivieren.",
+  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'>hier</a>aktivieren.",
   "Retry_Count": "Wiederholungsanzahl",
   "Role": "Rolle",
   "Role_Editing": "Rolle bearbeiten",

@@ -22,8 +22,8 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			pattern: () => pattern,
 			useRealName: () => useRealName,
 			me: () => me,
-			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
-			roomTemplate: ({ prefix, mention }) => `${ prefix }<strong> ${ mention } </strong>`,
+			userTemplate: ({ label }) => `<strong> ${label} </strong>`,
+			roomTemplate: ({ prefix, mention }) => `${prefix}<strong> ${mention} </strong>`,
 		});
 		const { html } = emojiParser({ html: filteredMessage });
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;

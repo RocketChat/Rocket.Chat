@@ -1,12 +1,4 @@
-import {
-	Accordion,
-	Field,
-	FieldGroup,
-	ButtonGroup,
-	Button,
-	Icon,
-	Box,
-} from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useSetModal } from '../../../contexts/ModalContext';

@@ -6,7 +6,9 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 Meteor.methods({
 	'livechat:removeMonitor'(username) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-monitors')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeMonitor' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:removeMonitor',
+			});
 		}
 
 		return LivechatEnterprise.removeMonitor(username);

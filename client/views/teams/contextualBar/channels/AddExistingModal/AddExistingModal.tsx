@@ -22,11 +22,7 @@ type AddExistingModalProps = {
 	reload: () => void;
 };
 
-const useAddExistingModalState = (
-	onClose: () => void,
-	teamId: string,
-	reload: () => void,
-): AddExistingModalState => {
+const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
 	const t = useTranslation();
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -73,11 +69,7 @@ const useAddExistingModalState = (
 
 const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }) => {
 	const t = useTranslation();
-	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(
-		onClose,
-		teamId,
-		reload,
-	);
+	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(onClose, teamId, reload);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 

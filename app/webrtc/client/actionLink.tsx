@@ -13,7 +13,7 @@ actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 		toastr.info(TAPi18n.__('Call_Already_Ended'));
 		return;
 	}
-	window.open(`/meet/${ _id }`, _id);
+	window.open(`/meet/${_id}`, _id);
 });
 
 actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
@@ -22,6 +22,6 @@ actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
 		toastr.info(TAPi18n.__('Call_Already_Ended'));
 		return;
 	}
-	await APIClient.v1.put(`livechat/webrtc.call/${ message._id }`, {}, { rid: _id, status: 'ended' });
+	await APIClient.v1.put(`livechat/webrtc.call/${message._id}`, {}, { rid: _id, status: 'ended' });
 	Notifications.notifyRoom(_id, 'webrtc', 'callStatus', { callStatus: 'ended' });
 });

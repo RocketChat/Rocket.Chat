@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { settings } from '../../settings';
 
-Template.body.onRendered(function() {
+Template.body.onRendered(function () {
 	this.autorun((c) => {
 		const piwikUrl = settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url');
 		const piwikSiteId = piwikUrl && settings.get('PiwikAnalytics_siteId');
@@ -24,9 +24,9 @@ Template.body.onRendered(function() {
 				window._paq.push(['trackPageView']);
 				window._paq.push(['enableLinkTracking']);
 				if (piwikPrependDomain) {
-					window._paq.push(['setDocumentTitle', `${ window.location.hostname }/${ document.title }`]);
+					window._paq.push(['setDocumentTitle', `${window.location.hostname}/${document.title}`]);
 				}
-				const upperLevelDomain = `*.${ window.location.hostname.split('.').slice(1).join('.') }`;
+				const upperLevelDomain = `*.${window.location.hostname.split('.').slice(1).join('.')}`;
 				if (piwikCookieDomain) {
 					window._paq.push(['setCookieDomain', upperLevelDomain]);
 				}
@@ -37,7 +37,7 @@ Template.body.onRendered(function() {
 					for (let i = 0; i < domainsArray.length; i++) {
 						// only push domain if it contains a non whitespace character.
 						if (/\S/.test(domainsArray[i])) {
-							domains.push(`*.${ domainsArray[i].trim() }`);
+							domains.push(`*.${domainsArray[i].trim()}`);
 						}
 					}
 					window._paq.push(['setDomains', domains]);
@@ -49,14 +49,14 @@ Template.body.onRendered(function() {
 							const addTrackers = JSON.parse(piwikAdditionalTracker);
 							for (let i = 0; i < addTrackers.length; i++) {
 								const tracker = addTrackers[i];
-								window._paq.push(['addTracker', `${ tracker.trackerURL }js/`, tracker.siteId]);
+								window._paq.push(['addTracker', `${tracker.trackerURL}js/`, tracker.siteId]);
 							}
 						}
 					} catch (e) {
 						// parsing JSON faild
 						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
-					window._paq.push(['setTrackerUrl', `${ piwikUrl }js/`]);
+					window._paq.push(['setTrackerUrl', `${piwikUrl}js/`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;
 					const g = d.createElement('script');
@@ -64,7 +64,7 @@ Template.body.onRendered(function() {
 					g.type = 'text/javascript';
 					g.async = true;
 					g.defer = true;
-					g.src = `${ piwikUrl }js/`;
+					g.src = `${piwikUrl}js/`;
 					s.parentNode.insertBefore(g, s);
 				})();
 			}

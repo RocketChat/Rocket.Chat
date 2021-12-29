@@ -7,7 +7,7 @@ userStatus.packages.customUserStatus = {
 	list: [],
 };
 
-export const deleteCustomUserStatus = function(customUserStatusData) {
+export const deleteCustomUserStatus = function (customUserStatusData) {
 	delete userStatus.list[customUserStatusData._id];
 
 	const arrayIndex = userStatus.packages.customUserStatus.list.indexOf(customUserStatusData._id);
@@ -16,7 +16,7 @@ export const deleteCustomUserStatus = function(customUserStatusData) {
 	}
 };
 
-export const updateCustomUserStatus = function(customUserStatusData) {
+export const updateCustomUserStatus = function (customUserStatusData) {
 	const newUserStatus = {
 		name: customUserStatusData.name,
 		id: customUserStatusData._id,

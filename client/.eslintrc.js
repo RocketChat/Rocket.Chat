@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: ['@rocket.chat/eslint-config', 'prettier'],
 	parser: 'babel-eslint',
-	plugins: ['react', 'react-hooks', 'prettier', 'testing-library'],
+	plugins: ['react', 'react-hooks', 'prettier', 'testing-library', 'anti-trojan-source'],
 	rules: {
 		'import/named': 'error',
 		'import/order': [
@@ -16,10 +16,7 @@ module.exports = {
 			},
 		],
 		'jsx-quotes': ['error', 'prefer-single'],
-		'new-cap': [
-			'error',
-			{ capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] },
-		],
+		'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 		'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
 		'prettier/prettier': 2,
 		'react/display-name': 'error',
@@ -35,6 +32,7 @@ module.exports = {
 				additionalHooks: '(useComponentDidUpdate)',
 			},
 		],
+		'anti-trojan-source/no-bidi': 'error',
 	},
 	settings: {
 		'import/resolver': {
@@ -75,6 +73,7 @@ module.exports = {
 						argsIgnorePattern: '^_',
 					},
 				],
+				'@typescript-eslint/prefer-optional-chain': 'warn',
 				'func-call-spacing': 'off',
 				'indent': 'off',
 				'import/order': [
@@ -88,10 +87,7 @@ module.exports = {
 					},
 				],
 				'jsx-quotes': ['error', 'prefer-single'],
-				'new-cap': [
-					'error',
-					{ capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] },
-				],
+				'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 				'no-extra-parens': 'off',
 				'no-spaced-func': 'off',
 				'no-unused-vars': 'off',
@@ -112,6 +108,7 @@ module.exports = {
 						additionalHooks: '(useComponentDidUpdate)',
 					},
 				],
+				'anti-trojan-source/no-bidi': 'error',
 			},
 			env: {
 				browser: true,

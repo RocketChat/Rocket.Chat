@@ -16,19 +16,11 @@ export type OmnichannelBusinessUnitsEndpoints = {
 	};
 	'livechat/units': {
 		GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
-		POST: (params: {
-			unitData: string;
-			unitMonitors: string;
-			unitDepartments: string;
-		}) => IOmnichannelBusinessUnit;
+		POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => IOmnichannelBusinessUnit;
 	};
 	'livechat/units/:id': {
 		GET: () => IOmnichannelBusinessUnit;
-		POST: (params: {
-			unitData: string;
-			unitMonitors: string;
-			unitDepartments: string;
-		}) => IOmnichannelBusinessUnit;
+		POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => IOmnichannelBusinessUnit;
 		DELETE: () => number;
 	};
 };

@@ -62,9 +62,7 @@ const CustomEmojiRoute = (): ReactElement => {
 						{context === 'new' && t('Custom_Emoji_Add')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'edit' && id && (
-						<EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />
-					)}
+					{context === 'edit' && id && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
 				</VerticalBar>
 			)}

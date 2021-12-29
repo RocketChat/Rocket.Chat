@@ -11,12 +11,7 @@ const ChannelTab = ({ errors, rid, handleRid }) => {
 		<Field>
 			<Field.Label>{t('Channel_name')}</Field.Label>
 			<Field.Row>
-				<RoomAutoComplete
-					error={errors.rid}
-					value={rid}
-					onChange={handleRid}
-					placeholder={t('Channel_Name_Placeholder')}
-				/>
+				<RoomAutoComplete error={errors.rid} value={rid} onChange={handleRid} placeholder={t('Channel_Name_Placeholder')} />
 			</Field.Row>
 			{errors.rid && <Field.Error>{errors.rid}</Field.Error>}
 		</Field>

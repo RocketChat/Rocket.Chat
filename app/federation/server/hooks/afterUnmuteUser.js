@@ -7,7 +7,9 @@ import { dispatchEvent } from '../handler';
 
 async function afterUnmuteUser(involvedUsers, room) {
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return involvedUsers; }
+	if (!hasExternalDomain(room)) {
+		return involvedUsers;
+	}
 
 	clientLogger.debug({ msg: 'afterUnmuteUser', involvedUsers, room });
 
