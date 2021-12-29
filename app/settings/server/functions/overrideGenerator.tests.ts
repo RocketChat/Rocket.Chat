@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { getSettingDefaults } from './getSettingDefaults';
@@ -12,7 +10,6 @@ describe('overrideGenerator', () => {
 		const setting = getSettingDefaults({ _id: 'test', value: 'test', type: 'string' });
 		const overwritten = overwrite(setting);
 
-
 		expect(overwritten).to.be.an('object');
 		expect(overwritten).to.have.property('_id');
 
@@ -21,7 +18,6 @@ describe('overrideGenerator', () => {
 		expect(overwritten).to.have.property('value').that.equals('value');
 		expect(overwritten).to.have.property('valueSource').that.equals('processEnvValue');
 	});
-
 
 	it('should return the same object since the value didnt change', () => {
 		const overwrite = overrideGenerator(() => 'test');

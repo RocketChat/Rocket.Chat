@@ -29,14 +29,7 @@ const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => 
 				<div>{t('Seats_Available', { seatsLeft })}</div>
 				<Box color={reachedLimit ? color : 'neutral-700'}>{`${members}/${limit}`}</Box>
 			</Box>
-			<ProgressBar
-				borderRadius='x8'
-				overflow='hidden'
-				percentage={percentage}
-				barColor={color}
-				animated={false}
-				w='full'
-			/>
+			<ProgressBar borderRadius='x8' overflow='hidden' percentage={percentage} barColor={color} animated={false} w='full' />
 		</Box>
 	);
 };

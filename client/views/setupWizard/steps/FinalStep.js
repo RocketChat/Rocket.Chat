@@ -20,11 +20,11 @@ function FinalStep() {
 					<Box is='span' color='hint' fontScale='c2'>
 						{t('Launched_successfully')}
 					</Box>
-					<Box is='h1' fontScale='h1' marginBlockEnd='x32'>
+					<Box is='h2' fontScale='h2' marginBlockEnd='x32'>
 						{t('Your_workspace_is_ready')}
 					</Box>
 					<Box fontScale='micro'>{t('Your_server_link')}</Box>
-					<Box color='primary' fontScale='s1' marginBlockEnd='x24'>
+					<Box color='primary' fontScale='h4' marginBlockEnd='x24'>
 						{siteUrl}
 					</Box>
 					<Button primary data-qa='go-to-workspace' onClick={handleClick}>

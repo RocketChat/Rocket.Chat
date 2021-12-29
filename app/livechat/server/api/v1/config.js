@@ -17,7 +17,7 @@ API.v1.addRoute('livechat/config', {
 				return API.v1.success({ config: { enabled: false } });
 			}
 
-			const config = settings();
+			const config = Promise.await(settings());
 
 			const { token, department } = this.queryParams;
 			const status = Livechat.online(department);
@@ -27,7 +27,9 @@ API.v1.addRoute('livechat/config', {
 			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
 			const extra = Promise.await(getExtraConfigInfo(room));
-			return API.v1.success({ config: { ...config, online: status, guest, room, agent, ...extra } });
+			return API.v1.success({
+				config: { ...config, online: status, guest, room, agent, ...extra },
+			});
 		} catch (e) {
 			return API.v1.failure(e);
 		}

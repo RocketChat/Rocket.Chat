@@ -11,7 +11,9 @@ Meteor.methods({
 	async 'livechat:startVideoCall'(roomId) {
 		methodDeprecationLogger.warn('livechat:startVideoCall will be deprecated in future versions of Rocket.Chat');
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'livechat:closeByVisitor',
+			});
 		}
 
 		const guest = Meteor.user();

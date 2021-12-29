@@ -4,8 +4,8 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import { RateLimiter } from 'meteor/rate-limit';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -87,7 +87,7 @@ export class APIClass extends Restivus {
 
 	setLimitedCustomFields(customFields) {
 		const nonPublicFieds = customFields.reduce((acc, customField) => {
-			acc[`customFields.${ customField }`] = 0;
+			acc[`customFields.${customField}`] = 0;
 			return acc;
 		}, {});
 		this.limitedUserFieldsToExclude = {
@@ -115,7 +115,12 @@ export class APIClass extends Restivus {
 	shouldAddRateLimitToRoute(options) {
 		const { version } = this._config;
 		const { rateLimiterOptions } = options;
-		return (typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+		return (
+			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
+			Boolean(version) &&
+			!process.env.TEST_MODE &&
+			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
+		);
 	}
 
 	success(result = {}) {
@@ -207,10 +212,12 @@ export class APIClass extends Restivus {
 	}
 
 	shouldVerifyRateLimit(route, userId) {
-		return rateLimiterDictionary.hasOwnProperty(route)
-			&& settings.get('API_Enable_Rate_Limiter') === true
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
-			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
+		return (
+			rateLimiterDictionary.hasOwnProperty(route) &&
+			settings.get('API_Enable_Rate_Limiter') === true &&
+			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true) &&
+			!(userId && hasPermission(userId, 'api-bypass-rate-limit'))
+		);
 	}
 
 	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
@@ -226,10 +233,14 @@ export class APIClass extends Restivus {
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 
 		if (!attemptResult.allowed) {
-			throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
-				timeToReset: attemptResult.timeToReset,
-				seconds: timeToResetAttempsInSeconds,
-			});
+			throw new Meteor.Error(
+				'error-too-many-requests',
+				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
+				{
+					timeToReset: attemptResult.timeToReset,
+					seconds: timeToResetAttempsInSeconds,
+				},
+			);
 		}
 	}
 
@@ -264,29 +275,34 @@ export class APIClass extends Restivus {
 					IPAddr: (input) => input,
 					route,
 				};
-				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+				rateLimiterDictionary[route].rateLimiter.addRule(
+					rateLimitRule,
+					rateLimiterOptions.numRequestsAllowed,
+					rateLimiterOptions.intervalTimeInMS,
+				);
 			});
 		};
-		routes
-			.map((route) => this.namedRoutes(route, endpoints, apiVersion))
-			.map(addRateLimitRuleToEveryRoute);
+		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
 	}
 
 	processTwoFactor({ userId, request, invocation, options, connection }) {
+		if (!options.twoFactorRequired) {
+			return;
+		}
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({ user: userId, code, method, options, connection });
+		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
 
 	getFullRouteName(route, method, apiVersion = null) {
-		let prefix = `/${ this.apiPath || '' }`;
+		let prefix = `/${this.apiPath || ''}`;
 		if (apiVersion) {
-			prefix += `${ apiVersion }/`;
+			prefix += `${apiVersion}/`;
 		}
-		return `${ prefix }${ route }${ method }`;
+		return `${prefix}${route}${method}`;
 	}
 
 	namedRoutes(route, endpoints, apiVersion) {
@@ -310,7 +326,6 @@ export class APIClass extends Restivus {
 		} else {
 			shouldVerifyPermissions = !!options.permissionsRequired.length;
 		}
-
 
 		// Allow for more than one route using the same option and endpoints
 		if (!_.isArray(routes)) {
@@ -344,7 +359,7 @@ export class APIClass extends Restivus {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
-						...prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] },
+						...(prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] }),
 						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
@@ -366,7 +381,7 @@ export class APIClass extends Restivus {
 
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
-						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
+						route: `${this.request.route}${this.request.method.toLowerCase()}`,
 					};
 
 					let result;
@@ -399,21 +414,26 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						if (_options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
-						}
+						api.processTwoFactor({
+							userId: this.userId,
+							request: this.request,
+							invocation,
+							options: _options,
+							connection,
+						});
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
+						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
 						log.http({
 							status: result.statusCode,
 							responseTime: Date.now() - startTime,
 						});
 					} catch (e) {
-						const apiMethod = {
-							'error-too-many-requests': 'tooManyRequests',
-							'error-unauthorized': 'unauthorized',
-						}[e.error] || 'failure';
+						const apiMethod =
+							{
+								'error-too-many-requests': 'tooManyRequests',
+								'error-unauthorized': 'unauthorized',
+							}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 
@@ -445,6 +465,15 @@ export class APIClass extends Restivus {
 
 			super.addRoute(route, options, endpoints);
 		});
+	}
+
+	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
+		if (rateLimiterDictionary[route]) {
+			rateLimiterDictionary[route].options.numRequestsAllowed =
+				numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
+			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
+			API.v1.reloadRoutesToRefreshRateLimiter();
+		}
 	}
 
 	_initAuth() {
@@ -513,72 +542,79 @@ export class APIClass extends Restivus {
 
 		const self = this;
 
-		this.addRoute('login', { authRequired: false }, {
-			post() {
-				const args = loginCompatibility(this.bodyParams, this.request);
-				const getUserInfo = self.getHelperMethod('getUserInfo');
+		this.addRoute(
+			'login',
+			{ authRequired: false },
+			{
+				post() {
+					const args = loginCompatibility(this.bodyParams, this.request);
+					const getUserInfo = self.getHelperMethod('getUserInfo');
 
-				const invocation = new DDPCommon.MethodInvocation({
-					connection: {
-						close() {},
-						httpHeaders: this.request.headers,
-						clientAddress: getRequestIP(this.request),
-					},
-				});
+					const invocation = new DDPCommon.MethodInvocation({
+						connection: {
+							close() {},
+							httpHeaders: this.request.headers,
+							clientAddress: getRequestIP(this.request),
+						},
+					});
 
-				let auth;
-				try {
-					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
-				} catch (error) {
-					let e = error;
-					if (error.reason === 'User not found') {
-						e = {
-							error: 'Unauthorized',
-							reason: 'Unauthorized',
+					let auth;
+					try {
+						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+					} catch (error) {
+						let e = error;
+						if (error.reason === 'User not found') {
+							e = {
+								error: 'Unauthorized',
+								reason: 'Unauthorized',
+							};
+						}
+
+						return {
+							statusCode: 401,
+							body: {
+								status: 'error',
+								error: e.error,
+								details: e.details,
+								message: e.reason || e.message,
+							},
 						};
 					}
 
-					return {
-						statusCode: 401,
-						body: {
-							status: 'error',
-							error: e.error,
-							details: e.details,
-							message: e.reason || e.message,
+					this.user = Meteor.users.findOne(
+						{
+							_id: auth.id,
+						},
+						{
+							fields: getDefaultUserFields(),
+						},
+					);
+
+					this.userId = this.user._id;
+
+					const response = {
+						status: 'success',
+						data: {
+							userId: this.userId,
+							authToken: auth.token,
+							me: getUserInfo(this.user),
 						},
 					};
-				}
 
-				this.user = Meteor.users.findOne({
-					_id: auth.id,
-				}, {
-					fields: getDefaultUserFields(),
-				});
+					const extraData = self._config.onLoggedIn && self._config.onLoggedIn.call(this);
 
-				this.userId = this.user._id;
+					if (extraData != null) {
+						_.extend(response.data, {
+							extra: extraData,
+						});
+					}
 
-				const response = {
-					status: 'success',
-					data: {
-						userId: this.userId,
-						authToken: auth.token,
-						me: getUserInfo(this.user),
-					},
-				};
-
-				const extraData = self._config.onLoggedIn && self._config.onLoggedIn.call(this);
-
-				if (extraData != null) {
-					_.extend(response.data, {
-						extra: extraData,
-					});
-				}
-
-				return response;
+					return response;
+				},
 			},
-		});
+		);
 
-		const logout = function() {
+		const logout = function () {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -598,7 +634,7 @@ export class APIClass extends Restivus {
 			const response = {
 				status: 'success',
 				data: {
-					message: 'You\'ve been logged out!',
+					message: "You've been logged out!",
 				},
 			};
 
@@ -617,16 +653,20 @@ export class APIClass extends Restivus {
 			After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
 			adding hook).
 		*/
-		return this.addRoute('logout', {
-			authRequired: true,
-		}, {
-			get() {
-				console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
-				console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
-				return logout.call(this);
+		return this.addRoute(
+			'logout',
+			{
+				authRequired: true,
 			},
-			post: logout,
-		});
+			{
+				get() {
+					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
+					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+					return logout.call(this);
+				},
+				post: logout,
+			},
+		);
 	}
 }
 
@@ -689,7 +729,8 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 
 	const defaultHeaders = {
 		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-		'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+		'Access-Control-Allow-Headers':
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 	};
 
 	if (CORSOriginSetting === '*') {
@@ -701,8 +742,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		return;
 	}
 
-	const origins = CORSOriginSetting
-		.trim()
+	const origins = CORSOriginSetting.trim()
 		.split(',')
 		.map((origin) => String(origin).trim().toLocaleLowerCase());
 
@@ -714,20 +754,27 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 
 	this.response.writeHead(200, {
 		'Access-Control-Allow-Origin': this.request.headers.origin,
-		Vary: 'Origin',
+		'Vary': 'Origin',
 		...defaultHeaders,
 	});
 	this.done();
 };
 
 const createApi = function _createApi(_api, options = {}) {
-	_api = _api || new APIClass(Object.assign({
-		apiPath: 'api/',
-		useDefaultAuth: true,
-		prettyJson: process.env.NODE_ENV === 'development',
-		defaultOptionsEndpoint,
-		auth: getUserAuth(),
-	}, options));
+	_api =
+		_api ||
+		new APIClass(
+			Object.assign(
+				{
+					apiPath: 'api/',
+					useDefaultAuth: true,
+					prettyJson: process.env.NODE_ENV === 'development',
+					defaultOptionsEndpoint,
+					auth: getUserAuth(),
+				},
+				options,
+			),
+		);
 
 	return _api;
 };

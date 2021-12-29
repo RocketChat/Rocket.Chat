@@ -22,7 +22,6 @@ const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	});
 });
 
-
 Meteor.startup(() => {
 	Meteor.defer(() => {
 		if (settings.get('Register_Server') && settings.get('Update_EnableChecker')) {

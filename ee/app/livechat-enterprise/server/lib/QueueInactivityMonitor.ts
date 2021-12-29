@@ -42,19 +42,22 @@ export class OmnichannelQueueInactivityMonitorClass {
 		});
 		this.createIndex();
 		this.user = Users.findOneById('rocket.cat');
-		const language = settings.get('Language') || 'en';
+		const language = settings.get<string>('Language') || 'en';
 		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
 		this.bindedCloseRoom = Meteor.bindEnvironment(this.closeRoom.bind(this));
 	}
 
 	getName(inquiryId: string): string {
-		return `${ this._name }-${ inquiryId }`;
+		return `${this._name}-${inquiryId}`;
 	}
 
 	createIndex(): void {
-		this._db.collection(SCHEDULER_NAME).createIndex({
-			'data.inquiryId': 1,
-		}, { unique: true });
+		this._db.collection(SCHEDULER_NAME).createIndex(
+			{
+				'data.inquiryId': 1,
+			},
+			{ unique: true },
+		);
 	}
 
 	start(): void {
@@ -68,7 +71,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	scheduleInquiry(inquiryId: string, time: Date): void {
 		Promise.await(this.stopInquiry(inquiryId));
-		this.logger.debug(`Scheduling automatic close of inquiry ${ inquiryId } at ${ time }`);
+		this.logger.debug(`Scheduling automatic close of inquiry ${inquiryId} at ${time}`);
 		const name = this.getName(inquiryId);
 		this.scheduler.define(name, this.bindedCloseRoom);
 
@@ -104,15 +107,15 @@ export class OmnichannelQueueInactivityMonitorClass {
 		const { inquiryId } = data;
 		const inquiry = LivechatInquiry.findOneById(inquiryId);
 
-		this.logger.debug(`Processing inquiry item ${ inquiryId }`);
+		this.logger.debug(`Processing inquiry item ${inquiryId}`);
 		if (!inquiry || inquiry.status !== 'queued') {
-			this.logger.debug(`Skipping inquiry ${ inquiryId }. Invalid or not queued anymore`);
+			this.logger.debug(`Skipping inquiry ${inquiryId}. Invalid or not queued anymore`);
 			return;
 		}
 
 		this.closeRoomAction(LivechatRooms.findOneById(inquiry.rid));
 		Promise.await(this.stopInquiry(inquiryId));
-		this.logger.debug(`Running succesful. Closed inquiry ${ inquiry._id } because of inactivity`);
+		this.logger.debug(`Running succesful. Closed inquiry ${inquiry._id} because of inactivity`);
 	}
 }
 

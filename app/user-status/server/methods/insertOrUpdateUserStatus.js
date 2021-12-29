@@ -2,17 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization';
-import { CustomUserStatus } from '../../../models';
+import { CustomUserStatus } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
-	insertOrUpdateUserStatus(userStatusData) {
+	async insertOrUpdateUserStatus(userStatusData) {
 		if (!hasPermission(this.userId, 'manage-user-status')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
 		if (!s.trim(userStatusData.name)) {
-			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUserStatus', field: 'Name' });
+			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
+				method: 'insertOrUpdateUserStatus',
+				field: 'Name',
+			});
 		}
 
 		// allow all characters except >, <, &, ", '
@@ -20,24 +23,34 @@ Meteor.methods({
 		const nameValidation = /[><&"']/;
 
 		if (nameValidation.test(userStatusData.name)) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ userStatusData.name } is not a valid name`, { method: 'insertOrUpdateUserStatus', input: userStatusData.name, field: 'Name' });
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.name} is not a valid name`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.name,
+				field: 'Name',
+			});
 		}
 
 		let matchingResults = [];
 
 		if (userStatusData._id) {
-			matchingResults = CustomUserStatus.findByNameExceptId(userStatusData.name, userStatusData._id).fetch();
+			matchingResults = await CustomUserStatus.findByNameExceptId(userStatusData.name, userStatusData._id).toArray();
 		} else {
-			matchingResults = CustomUserStatus.findByName(userStatusData.name).fetch();
+			matchingResults = await CustomUserStatus.findByName(userStatusData.name).toArray();
 		}
 
 		if (matchingResults.length > 0) {
-			throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', { method: 'insertOrUpdateUserStatus' });
+			throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', {
+				method: 'insertOrUpdateUserStatus',
+			});
 		}
 
 		const validStatusTypes = ['online', 'away', 'busy', 'offline'];
 		if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ userStatusData.statusType } is not a valid status type`, { method: 'insertOrUpdateUserStatus', input: userStatusData.statusType, field: 'StatusType' });
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.statusType} is not a valid status type`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.statusType,
+				field: 'StatusType',
+			});
 		}
 
 		if (!userStatusData._id) {
@@ -47,7 +60,7 @@ Meteor.methods({
 				statusType: userStatusData.statusType || null,
 			};
 
-			const _id = CustomUserStatus.create(createUserStatus);
+			const _id = await (await CustomUserStatus.create(createUserStatus)).insertedId;
 
 			api.broadcast('user.updateCustomStatus', createUserStatus);
 
@@ -56,11 +69,11 @@ Meteor.methods({
 
 		// update User status
 		if (userStatusData.name !== userStatusData.previousName) {
-			CustomUserStatus.setName(userStatusData._id, userStatusData.name);
+			await CustomUserStatus.setName(userStatusData._id, userStatusData.name);
 		}
 
 		if (userStatusData.statusType !== userStatusData.previousStatusType) {
-			CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
+			await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 		}
 
 		api.broadcast('user.updateCustomStatus', userStatusData);

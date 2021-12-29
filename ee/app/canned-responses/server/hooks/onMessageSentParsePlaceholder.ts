@@ -29,6 +29,8 @@ const placeholderFields = {
 	},
 };
 
+const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
+
 const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any => {
 	if (!message.msg || message.msg === '') {
 		return message;
@@ -46,11 +48,11 @@ const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any
 	const visitor = LivechatVisitors.findOneById(visitorId) || {};
 
 	Object.keys(placeholderFields).map((field) => {
-		const templateKey = `{{${ field }}}`;
+		const templateKey = `{{${field}}}`;
 		const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
 		const from = placeholderConfig.from === 'agent' ? agent : visitor;
 		const data = get(from, placeholderConfig.dataKey, '');
-		messageText = messageText.replace(templateKey, data);
+		messageText = replaceAll(messageText, templateKey, data);
 
 		return messageText;
 	});
@@ -59,7 +61,7 @@ const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any
 	return message;
 };
 
-settings.watch('Canned_Responses_Enable', function(value) {
+settings.watch('Canned_Responses_Enable', function (value) {
 	if (!value) {
 		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
 		return;

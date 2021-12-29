@@ -5,7 +5,7 @@ import { FileUpload } from '../../app/file-upload';
 import { Messages } from '../../app/models';
 
 Meteor.methods({
-	deleteFileMessage(fileID) {
+	async deleteFileMessage(fileID) {
 		check(fileID, String);
 
 		const msg = Messages.getMessageByFileId(fileID);

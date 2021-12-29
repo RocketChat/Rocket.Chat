@@ -27,9 +27,7 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 
 	const renderFunction =
 		('renderContainerView' in options && options.renderContainerView) ||
-		('attachment' in options &&
-			options.attachment === 'at-parent' &&
-			((): unknown => HTML.Comment('anchor'))) ||
+		('attachment' in options && options.attachment === 'at-parent' && ((): unknown => HTML.Comment('anchor'))) ||
 		((): unknown => HTML.DIV());
 
 	const template = new Blaze.Template(name, renderFunction);
@@ -44,9 +42,7 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 
 		const container =
 			('renderContainerView' in options && (this.firstNode as Element)) ||
-			('attachment' in options &&
-				options.attachment === 'at-parent' &&
-				(this.firstNode as Node).parentElement) ||
+			('attachment' in options && options.attachment === 'at-parent' && (this.firstNode as Node).parentElement) ||
 			null;
 
 		if (!container) {

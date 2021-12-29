@@ -1,14 +1,4 @@
-import {
-	Box,
-	Modal,
-	ButtonGroup,
-	Button,
-	TextInput,
-	Icon,
-	Field,
-	ToggleSwitch,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -99,10 +89,7 @@ const CreateChannel = ({
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput
-								placeholder={t('Channel_what_is_this_channel_about')}
-								onChange={handlers.handleDescription}
-							/>
+							<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -110,16 +97,10 @@ const CreateChannel = ({
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Private')}</Field.Label>
 								<Field.Description>
-									{values.type
-										? t('Only_invited_users_can_acess_this_channel')
-										: t('Everyone_can_access_this_channel')}
+									{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch
-								checked={values.type}
-								disabled={!!canOnlyCreateOneType}
-								onChange={onChangeType}
-							/>
+							<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
 						</Box>
 					</Field>
 					<Field>
@@ -132,26 +113,16 @@ const CreateChannel = ({
 										: t('All_users_in_the_channel_can_write_new_messages')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch
-								checked={values.readOnly}
-								disabled={values.broadcast}
-								onChange={handlers.handleReadOnly}
-							/>
+							<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly} />
 						</Box>
 					</Field>
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Encrypted')}</Field.Label>
-								<Field.Description>
-									{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-								</Field.Description>
+								<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 							</Box>
-							<ToggleSwitch
-								checked={values.encrypted}
-								disabled={e2edisabled}
-								onChange={handlers.handleEncrypted}
-							/>
+							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
 						</Box>
 					</Field>
 					<Field>

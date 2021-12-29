@@ -4,8 +4,8 @@ import path from 'path';
 import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 
-import { ExportOperations, UserDataFiles } from '../../app/models';
-import { settings } from '../../app/settings';
+import { ExportOperations, UserDataFiles } from '../../app/models/server/raw';
+import { settings } from '../../app/settings/server';
 import { DataExport } from '../../app/user-data-download/server/DataExport';
 
 let tempFolder = '/tmp/userData';
@@ -16,13 +16,13 @@ if (settings.get('UserData_FileSystemPath') != null) {
 }
 
 Meteor.methods({
-	requestDataDownload({ fullExport = false }) {
+	async requestDataDownload({ fullExport = false }) {
 		const currentUserData = Meteor.user();
 		const userId = currentUserData._id;
 
-		const lastOperation = ExportOperations.findLastOperationByUser(userId, fullExport);
+		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
 		const requestDay = lastOperation ? lastOperation.createdAt : new Date();
-		const pendingOperationsBeforeMyRequestCount = ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
+		const pendingOperationsBeforeMyRequestCount = await ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
 
 		if (lastOperation) {
 			const yesterday = new Date();
@@ -30,7 +30,9 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const file = lastOperation.fileId ? UserDataFiles.findOneById(lastOperation.fileId) : UserDataFiles.findLastFileByUser(userId);
+					const file = lastOperation.fileId
+						? await UserDataFiles.findOneById(lastOperation.fileId)
+						: await UserDataFiles.findLastFileByUser(userId);
 					if (file) {
 						return {
 							requested: false,
@@ -64,7 +66,7 @@ Meteor.methods({
 			userData: currentUserData,
 		};
 
-		const id = ExportOperations.create(exportOperation);
+		const id = await ExportOperations.create(exportOperation);
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
@@ -81,7 +83,7 @@ Meteor.methods({
 		exportOperation.assetsPath = assetsFolder;
 		exportOperation.status = 'pending';
 
-		ExportOperations.updateOperation(exportOperation);
+		await ExportOperations.updateOperation(exportOperation);
 
 		return {
 			requested: true,
