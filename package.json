@@ -93,7 +93,7 @@
 		"@types/lodash.get": "^4.4.6",
 		"@types/mailparser": "^3.0.2",
 		"@types/marked": "^1.2.2",
-		"@types/meteor": "1.4.74",
+		"@types/meteor": "1.4.86",
 		"@types/mkdirp": "^1.0.1",
 		"@types/mocha": "^8.2.3",
 		"@types/mock-require": "^2.0.0",
