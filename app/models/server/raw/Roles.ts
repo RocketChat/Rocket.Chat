@@ -40,6 +40,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 	async addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.addUserRoles method received a role scope instead of a scope value.');
+		}
+
 		if (!Array.isArray(roles)) {
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
@@ -66,6 +70,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 
 	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.isUserInRoles method received a role scope instead of a scope value.');
+		}
+
 		if (!Array.isArray(roles)) { // TODO: remove this check
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.isUserInRoles: roles should be an array');
@@ -95,6 +103,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
+		}
+
 		if (!Array.isArray(roles)) { // TODO: remove this check
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
@@ -155,6 +167,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 	findUsersInRole<P>(name: IRole['name'], scope: IRoom['_id'] | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P extends IUser ? IUser : P>>;
 
 	async findUsersInRole<P>(name: IRole['name'], scope: IRoom['_id'] | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
+		}
+
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
 		if (!role) {
@@ -185,6 +201,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 
 	async canAddUserToRole(uid: IUser['_id'], name: IRole['name'], scope?: IRoom['_id']): Promise<boolean> {
+		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
+			throw new Error('Roles.canAddUserToRole method received a role scope instead of a scope value.');
+		}
+
 		const role = await this.findOne({ name }, { fields: { scope: 1 } } as FindOneOptions<IRole>);
 		if (!role) {
 			return false;
