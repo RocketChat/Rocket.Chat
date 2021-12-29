@@ -44,7 +44,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 					<Box fontScale='h2'>{name}</Box>
 					<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
-						<Box fontScale='p4' mie='x4'>
+						<Box fontScale='p2m' mie='x4'>
 							{t('By_author', { author: authorName })}
 						</Box>
 						|<Box mis='x4'>{t('Version_version', { version })}</Box>
@@ -161,7 +161,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 										))}
 									</Box>
 									<Box display='flex' flexDirection='column' mis='x12'>
-										<Box fontScale='p4'>{bundle.bundleName}</Box>
+										<Box fontScale='p2m'>{bundle.bundleName}</Box>
 										{bundle.apps.map((app) => (
 											<Box key={app.latest.name}>{app.latest.name},</Box>
 										))}

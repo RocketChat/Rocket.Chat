@@ -24,7 +24,15 @@ const resolveLegacyIcon = (
 	return legacyIcon?.replace(/^icon-/, '') as IconProps['name'];
 };
 
-const Action: FC<ActionOptions> = ({ icon, methodId, i18nLabel, label, runAction, danger }) => {
+const Action: FC<ActionOptions> = ({
+	icon,
+	methodId,
+	icon,
+	i18nLabel,
+	label,
+	runAction,
+	danger,
+}) => {
 	const t = useTranslation();
 
 	const resolvedIcon = resolveLegacyIcon(icon);
