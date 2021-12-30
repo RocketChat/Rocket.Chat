@@ -1,7 +1,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Cursor, FindOneOptions } from 'mongodb';
+import { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
@@ -18,11 +18,11 @@ import { callbacks } from '../../../callbacks/server';
 export class Voip {
 	static logger: Logger = new Logger('Voip');;
 
-	static async getVisitorByToken(token: string, _options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
+	static async getVisitorByToken(token: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
 		return LivechatVisitors.getVisitorByToken(token, _options);
 	}
 
-	static async getVisitorById(id: string, _options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
+	static async getVisitorById(id: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
 		return LivechatVisitors.findOneById(id, _options);
 	}
 
@@ -75,7 +75,7 @@ export class Voip {
 			this.logger.debug(`Assigning visitor ${ token } to department ${ dep._id }`);
 			updateUser.$set.department = dep._id;
 		}
-		const user = await LivechatVisitors.getVisitorByToken(token);
+		const user = await LivechatVisitors.getVisitorByToken(token.toString(), {});
 		const existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email);
 
 		if (user) {
@@ -108,7 +108,7 @@ export class Voip {
 
 	static async removeGuest(_id: string): Promise<any> {
 		check(_id, String);
-		const guest = LivechatVisitors.findOneById(_id);
+		const guest = LivechatVisitors.findOneById(_id, {});
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
 		}
@@ -118,7 +118,7 @@ export class Voip {
 	}
 
 	static async cleanGuestHistory(_id: string): Promise<void> {
-		const guest = await LivechatVisitors.findOneById(_id);
+		const guest = await LivechatVisitors.findOneById(_id, {});
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
 		}

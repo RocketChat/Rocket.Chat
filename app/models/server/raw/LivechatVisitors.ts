@@ -114,7 +114,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		};
 
 		const livechatCount = await Settings.findAndModify(query, update);
-		if (livechatCount && livechatCount.value && livechatCount.value.value) {
+		if (livechatCount?.value?.value) {
 			const count = livechatCount.value.value;
 			return `guest-${ Number(count) + 1 }`;
 		}
