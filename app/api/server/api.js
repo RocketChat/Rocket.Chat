@@ -780,11 +780,8 @@ const createApi = function _createApi(_api, options = {}) {
 	return _api;
 };
 
-WebApp.connectHandlers.use('/api/v1', function(req, res) {
-	res.writeHead(404, {
-		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': '*',
-	});
+WebApp.connectHandlers.use('/api/v1', function (req, res) {
+	res.writeHead(404);
 	const response = {
 		statusCode: 404,
 		body: {
