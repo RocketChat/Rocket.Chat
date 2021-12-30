@@ -14,20 +14,20 @@ export class UsersMock extends BaseModelMock {
 			active: true,
 			type: 'bot',
 			_updatedAt: new Date('2019-03-30T01:11:50.496Z'),
-			roles: [
-				'bot',
-			],
+			roles: ['bot'],
 		},
-	}
+	};
 
 	static convertedData = {
 		'rocket.cat': {
 			id: 'rocket.cat',
 			username: 'rocket.cat',
-			emails: [{
-				address: 'rocketcat@rocket.chat',
-				verified: true,
-			}],
+			emails: [
+				{
+					address: 'rocketcat@rocket.chat',
+					verified: true,
+				},
+			],
 			type: 'bot',
 			isEnabled: true,
 			name: 'Rocket.Cat',
@@ -39,5 +39,5 @@ export class UsersMock extends BaseModelMock {
 			updatedAt: new Date(),
 			lastLoginAt: undefined,
 		},
-	}
+	};
 }

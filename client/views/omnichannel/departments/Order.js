@@ -6,9 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 
 function Order({ agentId, setAgentList, agentList }) {
 	const t = useTranslation();
-	const [agentOrder, setAgentOrder] = useState(
-		agentList.find((agent) => agent.agentId === agentId).order || 0,
-	);
+	const [agentOrder, setAgentOrder] = useState(agentList.find((agent) => agent.agentId === agentId).order || 0);
 
 	const handleOrder = useMutableCallback(async (e) => {
 		const orderValue = Number(e.currentTarget.value);
@@ -25,13 +23,7 @@ function Order({ agentId, setAgentList, agentList }) {
 
 	return (
 		<Box display='flex'>
-			<NumberInput
-				flexShrink={1}
-				key={`${agentId}-order`}
-				title={t('Order')}
-				value={agentOrder}
-				onChange={handleOrder}
-			/>
+			<NumberInput flexShrink={1} key={`${agentId}-order`} title={t('Order')} value={agentOrder} onChange={handleOrder} />
 		</Box>
 	);
 }

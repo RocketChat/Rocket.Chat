@@ -11,10 +11,7 @@ const VisitorAutoComplete = (props) => {
 		'livechat/visitors.autocomplete',
 		useMemo(() => query(filter), [filter]),
 	);
-	const options = useMemo(
-		() => (data && data.items.map((user) => ({ value: user._id, label: user.name }))) || [],
-		[data],
-	);
+	const options = useMemo(() => (data && data.items.map((user) => ({ value: user._id, label: user.name }))) || [], [data]);
 	return (
 		<AutoComplete
 			{...props}

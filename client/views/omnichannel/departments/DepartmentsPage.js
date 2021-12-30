@@ -34,9 +34,7 @@ function DepartmentsPage({ data, header, setParams, params, title, renderRow, ch
 						total={data && data.total}
 						setParams={setParams}
 						params={params}
-						renderFilter={({ onChange, ...props }) => (
-							<FilterByText onChange={onChange} {...props} />
-						)}
+						renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 					/>
 				</Page.Content>
 			</Page>

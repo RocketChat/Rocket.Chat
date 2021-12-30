@@ -17,9 +17,13 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 		}
 	}
 
-	httpLogger.debug(`[${ method }] ${ url }`);
+	httpLogger.debug(`[${method}] ${url}`);
 
-	return MeteorHTTP.call(method, url, { data, timeout: 2000, headers: { ...headers, 'x-federation-domain': getFederationDomain() } });
+	return MeteorHTTP.call(method, url, {
+		data,
+		timeout: 2000,
+		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
+	});
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
@@ -37,11 +41,11 @@ export async function federationRequestToPeer(method, peerDomain, uri, body, opt
 	let result;
 
 	try {
-		httpLogger.debug({ msg: 'federationRequestToPeer', url: `${ baseUrl }${ uri }` });
+		httpLogger.debug({ msg: 'federationRequestToPeer', url: `${baseUrl}${uri}` });
 
-		result = await federationRequest(method, `${ baseUrl }${ uri }`, body, options.headers || {}, peerKey);
+		result = await federationRequest(method, `${baseUrl}${uri}`, body, options.headers || {}, peerKey);
 	} catch (err) {
-		httpLogger.error({ msg: `${ ignoreErrors ? '[IGNORED] ' : '' }Error`, err });
+		httpLogger.error({ msg: `${ignoreErrors ? '[IGNORED] ' : ''}Error`, err });
 
 		if (!ignoreErrors) {
 			throw err;

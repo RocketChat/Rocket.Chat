@@ -4,13 +4,15 @@ import { hasPermissionAsync } from '../../../../../../app/authorization/server/f
 import { Users } from '../../../../../../app/models/server/raw';
 
 export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'manage-livechat-monitors')) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
 		throw new Error('error-not-authorized');
 	}
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
-		Object.assign(query, { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
+		Object.assign(query, {
+			$or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }],
+		});
 	}
 
 	const cursor = Users.findUsersInRolesWithQuery('livechat-monitor', query, {
@@ -40,21 +42,24 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 }
 
 export async function findMonitorByUsername({ userId, username }) {
-	if (!await hasPermissionAsync(userId, 'manage-livechat-monitors')) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-monitors'))) {
 		throw new Error('error-not-authorized');
 	}
-	const user = await Users.findOne({ username }, {
-		projection: {
-			username: 1,
-			name: 1,
-			status: 1,
-			statusLivechat: 1,
-			emails: 1,
-			livechat: 1,
+	const user = await Users.findOne(
+		{ username },
+		{
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				statusLivechat: 1,
+				emails: 1,
+				livechat: 1,
+			},
 		},
-	});
+	);
 
-	if (!user || !await Users.isUserInRole(user._id, 'livechat-monitor')) {
+	if (!user || !(await Users.isUserInRole(user._id, 'livechat-monitor'))) {
 		throw new Error('invalid-user');
 	}
 

@@ -1,30 +1,27 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe('[Video Conference]', function() {
+describe('[Video Conference]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('POST [/video-conference/jitsi.update-timeout]', () => {
 		it('should return an error when call the endpoint without roomId required parameter', (done) => {
-			request.post(api('video-conference/jitsi.update-timeout'))
+			request
+				.post(api('video-conference/jitsi.update-timeout'))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The \"roomId\" parameter is required!');
+					expect(res.body.error).to.be.equal('The "roomId" parameter is required!');
 				})
 				.end(done);
 		});
 		it('should return an error when call the endpoint withan invalid roomId', (done) => {
-			request.post(api('video-conference/jitsi.update-timeout'))
+			request
+				.post(api('video-conference/jitsi.update-timeout'))
 				.set(credentials)
 				.send({
 					roomId: 'invalid-id',
@@ -37,7 +34,8 @@ describe('[Video Conference]', function() {
 				.end(done);
 		});
 		it('should return success when parameters are correct', (done) => {
-			request.post(api('video-conference/jitsi.update-timeout'))
+			request
+				.post(api('video-conference/jitsi.update-timeout'))
 				.set(credentials)
 				.send({
 					roomId: 'GENERAL',

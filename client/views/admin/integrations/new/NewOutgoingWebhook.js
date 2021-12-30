@@ -32,12 +32,7 @@ const defaultData = {
 	runOnEdits: true,
 };
 
-export default function NewOutgoingWebhook({
-	data = defaultData,
-	onChange,
-	setSaveAction,
-	...props
-}) {
+export default function NewOutgoingWebhook({ data = defaultData, onChange, setSaveAction, ...props }) {
 	const t = useTranslation();
 	const router = useRoute('admin-integrations');
 
@@ -53,12 +48,7 @@ export default function NewOutgoingWebhook({
 		}),
 		[formValues, triggerWords, urls],
 	);
-	const saveIntegration = useEndpointAction(
-		'POST',
-		'integrations.create',
-		params,
-		t('Integration_added'),
-	);
+	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveIntegration();
@@ -80,12 +70,5 @@ export default function NewOutgoingWebhook({
 		[handleSave, t],
 	);
 
-	return (
-		<OutgoingWebhookForm
-			formValues={formValues}
-			formHandlers={formHandlers}
-			append={saveButton}
-			{...props}
-		/>
-	);
+	return <OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={saveButton} {...props} />;
 }

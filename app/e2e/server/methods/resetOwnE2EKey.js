@@ -4,7 +4,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 
 Meteor.methods({
-	'e2e.resetOwnE2EKey': twoFactorRequired(function() {
+	'e2e.resetOwnE2EKey': twoFactorRequired(function () {
 		const userId = Meteor.userId();
 
 		if (!userId) {

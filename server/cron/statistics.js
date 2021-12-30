@@ -19,7 +19,7 @@ async function generateStatistics(logger) {
 		const token = getWorkspaceAccessToken();
 
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		}
 
 		HTTP.post('https://collector.rocket.chat/', {

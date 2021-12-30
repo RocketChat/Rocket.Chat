@@ -1,20 +1,16 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions.js';
 
-describe('[Assets]', function() {
+describe('[Assets]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	it('giving "manage-assets" permission to user', (done) => {
-		request.post(api('permissions.update'))
+		request
+			.post(api('permissions.update'))
 			.set(credentials)
 			.send({ permissions: [{ _id: 'manage-assets', roles: ['admin'] }] })
 			.expect('Content-Type', 'application/json')
@@ -27,7 +23,8 @@ describe('[Assets]', function() {
 
 	describe('[/assets.setAsset]', () => {
 		it('should set the "logo" asset', (done) => {
-			request.post(api('assets.setAsset'))
+			request
+				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('logo', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -38,7 +35,8 @@ describe('[Assets]', function() {
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
-			request.post(api('assets.setAsset'))
+			request
+				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('invalidAsset', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -52,7 +50,8 @@ describe('[Assets]', function() {
 
 	describe('[/assets.unsetAsset]', () => {
 		it('should unset the "logo" asset', (done) => {
-			request.post(api('assets.unsetAsset'))
+			request
+				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
 					assetName: 'logo',
@@ -65,7 +64,8 @@ describe('[Assets]', function() {
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
-			request.post(api('assets.unsetAsset'))
+			request
+				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
 					assetName: 'invalidAsset',

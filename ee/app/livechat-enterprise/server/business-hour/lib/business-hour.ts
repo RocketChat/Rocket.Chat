@@ -10,7 +10,7 @@ interface IResponse extends IPaginatedResponse {
 }
 
 export async function findBusinessHours(userId: string, { offset, count, sort }: IPagination, name?: string): Promise<IResponse> {
-	if (!await hasPermissionAsync(userId, 'view-livechat-business-hours')) {
+	if (!(await hasPermissionAsync(userId, 'view-livechat-business-hours'))) {
 		throw new Error('error-not-authorized');
 	}
 	const query = {};

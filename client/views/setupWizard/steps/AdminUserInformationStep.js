@@ -1,12 +1,4 @@
-import {
-	EmailInput,
-	Field,
-	FieldGroup,
-	Icon,
-	Margins,
-	PasswordInput,
-	TextInput,
-} from '@rocket.chat/fuselage';
+import { EmailInput, Field, FieldGroup, Icon, Margins, PasswordInput, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -30,13 +22,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const registerAdminUser = async ({
-		name,
-		username,
-		email,
-		password,
-		onRegistrationEmailSent,
-	}) => {
+	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
 		await registerUser({ name, username, email, pass: password });
 		callbacks.run('userRegistered');
 
@@ -58,10 +44,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	};
 
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
-	const usernameRegExp = useMemo(
-		() => new RegExp(`^${regexpForUsernameValidation}$`),
-		[regexpForUsernameValidation],
-	);
+	const usernameRegExp = useMemo(() => new RegExp(`^${regexpForUsernameValidation}$`), [regexpForUsernameValidation]);
 
 	const [name, setName] = useState('');
 	const [username, setUsername] = useState('');
@@ -71,10 +54,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
 
-	const isContinueEnabled = useMemo(
-		() => name && username && email && password,
-		[name, username, email, password],
-	);
+	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
 
 	const [commiting, setCommiting] = useState(false);
 

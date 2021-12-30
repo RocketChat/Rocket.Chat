@@ -17,10 +17,7 @@ type ActionOptions = {
 	actionLinksAlignment?: string;
 };
 
-const Actions: FC<{ actions: Array<ActionOptions>; runAction: RunAction; mid: string }> = ({
-	actions,
-	runAction,
-}) => {
+const Actions: FC<{ actions: Array<ActionOptions>; runAction: RunAction; mid: string }> = ({ actions, runAction }) => {
 	const alignment = actions[0]?.actionLinksAlignment || 'center';
 
 	return (

@@ -22,9 +22,7 @@ export class Base {
 		return '_db';
 	}
 
-	roleBaseQuery() {
-
-	}
+	roleBaseQuery() {}
 
 	findRolesByUserId(userId) {
 		const query = this.roleBaseQuery(userId);
@@ -96,7 +94,7 @@ export class Base {
 		};
 	}
 
-	setUpdatedAt(...args/* record, checkQuery, query*/) {
+	setUpdatedAt(...args /* record, checkQuery, query*/) {
 		return this._db.setUpdatedAt(...args);
 	}
 
@@ -142,19 +140,19 @@ export class Base {
 		}
 	}
 
-	insert(...args/* record*/) {
+	insert(...args /* record*/) {
 		return this._db.insert(...args);
 	}
 
-	update(...args/* query, update, options*/) {
+	update(...args /* query, update, options*/) {
 		return this._db.update(...args);
 	}
 
-	upsert(...args/* query, update*/) {
+	upsert(...args /* query, update*/) {
 		return this._db.upsert(...args);
 	}
 
-	remove(...args/* query*/) {
+	remove(...args /* query*/) {
 		return this._db.remove(...args);
 	}
 
@@ -186,15 +184,15 @@ export class Base {
 		return this._db.tryDropIndex(...args);
 	}
 
-	trashFind(...args/* query, options*/) {
+	trashFind(...args /* query, options*/) {
 		return this._db.trashFind(...args);
 	}
 
-	trashFindOneById(...args/* _id, options*/) {
+	trashFindOneById(...args /* _id, options*/) {
 		return this._db.trashFindOneById(...args);
 	}
 
-	trashFindDeletedAfter(...args/* deletedAt, query, options*/) {
+	trashFindDeletedAfter(...args /* deletedAt, query, options*/) {
 		return this._db.trashFindDeletedAfter(...args);
 	}
 
