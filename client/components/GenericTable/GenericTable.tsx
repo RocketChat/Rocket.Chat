@@ -56,7 +56,7 @@ const GenericTable = forwardRef(function GenericTable<
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ text: params.text || '', current, itemsPerPage });
+		setParams({ ...params, text: params.text || '', current, itemsPerPage });
 	}, [params, current, itemsPerPage, setParams]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
