@@ -33,7 +33,7 @@
 		"esModuleInterop": true,
 		"preserveSymlinks": true,
 
-		"outDir": "./dist",
+		"outDir": "./dist"
 
 		// "sourceMap": true,
 		// "declaration": true,
@@ -41,12 +41,6 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": [
-		"./**/*",
-		"../../../definition"
-	],
-	"exclude": [
-		"./dist",
-		"./ecosystem.config.js"
-	]
+	"include": ["./**/*", "../../../definition"],
+	"exclude": ["./dist", "./ecosystem.config.js"]
 }

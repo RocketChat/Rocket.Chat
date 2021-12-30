@@ -1,5 +1,4 @@
-import { ComponentProps } from 'react';
-import { Icon } from '@rocket.chat/fuselage';
+import Icons from '@rocket.chat/icons';
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
@@ -77,8 +76,9 @@ export interface IMessage extends IRocketChatRecord {
 		meta: Record<string, string>;
 	}[];
 
+	/** @deprecated Deprecated */
 	actionLinks?: {
-		icon: ComponentProps<typeof Icon>['name'];
+		icon: keyof Icons;
 		i18nLabel: unknown;
 		label: string;
 		method_id: string;
