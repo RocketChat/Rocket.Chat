@@ -4,6 +4,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
 
@@ -778,6 +779,18 @@ const createApi = function _createApi(_api, options = {}) {
 
 	return _api;
 };
+
+WebApp.connectHandlers.use('/api', function (req, res) {
+	res.writeHead(404);
+	const response = {
+		statusCode: 404,
+		body: {
+			success: false,
+			error: 'Resource not found',
+		},
+	};
+	res.end(JSON.stringify(response, null, 2));
+});
 
 const createApis = function _createApis() {
 	API.v1 = createApi(API.v1, {
