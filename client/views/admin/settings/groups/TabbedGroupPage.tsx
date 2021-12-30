@@ -1,10 +1,7 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import React, { ReactNode, memo, useState, useMemo } from 'react';
 
-import {
-	useEditableSettingsGroupSections,
-	useEditableSettingsGroupTabs,
-} from '../../../../contexts/EditableSettingsContext';
+import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../../../contexts/EditableSettingsContext';
 import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
@@ -51,13 +48,7 @@ function TabbedGroupPage({
 	return (
 		<GroupPage _id={_id} {...group} tabs={tabsComponent}>
 			{sections.map((sectionName) => (
-				<Section
-					key={sectionName || ''}
-					groupId={_id}
-					sectionName={sectionName}
-					tabName={tab}
-					solo={solo}
-				/>
+				<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={solo} />
 			))}
 		</GroupPage>
 	);

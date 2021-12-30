@@ -22,11 +22,7 @@ const OmnichannelRouter: FC<OmnichannelRouterProps> = ({ renderRoute }) => {
 		SideNav.openFlex(() => undefined);
 	}, []);
 
-	return renderRoute ? (
-		<Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense>
-	) : (
-		<PageSkeleton />
-	);
+	return renderRoute ? <Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense> : <PageSkeleton />;
 };
 
 export default OmnichannelRouter;

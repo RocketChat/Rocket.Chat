@@ -29,10 +29,10 @@ const placeTip = () => {
 	const tipWidth = tip.outerWidth();
 	const tipHeight = tip.outerHeight();
 
-	left = left + (sourceWidth / 2) - (tipWidth / 2);
+	left = left + sourceWidth / 2 - tipWidth / 2;
 
 	$('.tooltip-arrow', tip).css({
-		'margin-left': left < 0 ? `${ left - arrowSize }px` : '',
+		'margin-left': left < 0 ? `${left - arrowSize}px` : '',
 	});
 
 	if (left < 0) {
@@ -48,8 +48,8 @@ const placeTip = () => {
 	}
 
 	return tip.css({
-		left: `${ left }px`,
-		top: `${ top }px`,
+		left: `${left}px`,
+		top: `${top}px`,
 	});
 };
 

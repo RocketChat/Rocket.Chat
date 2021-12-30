@@ -12,10 +12,12 @@ export const Message = {
 		if (messageType) {
 			if (messageType.render) {
 				return messageType.render(msg);
-			} if (messageType.template) {
+			}
+			if (messageType.template) {
 				// Render message
 				return;
-			} if (messageType.message) {
+			}
+			if (messageType.message) {
 				if (!language) {
 					language = Meteor._localStorage.getItem('userLanguage');
 				}

@@ -27,5 +27,7 @@ Meteor.methods({
 });
 
 RateLimiter.limitMethod('checkUsernameAvailability', 1, 1000, {
-	userId() { return true; },
+	userId() {
+		return true;
+	},
 });

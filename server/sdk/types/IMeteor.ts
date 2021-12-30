@@ -6,10 +6,12 @@ export type AutoUpdateRecord = {
 	version: string;
 	versionRefreshable?: string;
 	versionNonRefreshable?: string;
-	assets?: [{
-		url: string;
-	}];
-}
+	assets?: [
+		{
+			url: string;
+		},
+	];
+};
 
 export interface IMeteor extends IServiceClass {
 	getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]>;

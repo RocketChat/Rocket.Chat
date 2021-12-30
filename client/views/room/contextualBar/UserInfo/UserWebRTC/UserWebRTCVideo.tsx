@@ -11,13 +11,7 @@ type UserWebRTCVideoProps = {
 	videoEnabled: boolean;
 };
 
-const UserWebRTCVideo = ({
-	url,
-	muted,
-	ownUser,
-	screen,
-	isMainVideo,
-}: UserWebRTCVideoProps): ReactElement => {
+const UserWebRTCVideo = ({ url, muted, ownUser, screen, isMainVideo }: UserWebRTCVideoProps): ReactElement => {
 	const videoStream = useRef<HTMLVideoElement>(null);
 
 	const videoFlipStyle = css`

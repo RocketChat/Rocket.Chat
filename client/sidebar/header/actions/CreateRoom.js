@@ -6,13 +6,7 @@ import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext'
 import { useDropdownVisibility } from '../hooks/useDropdownVisibility';
 import CreateRoomList from './CreateRoomList';
 
-const CREATE_ROOM_PERMISSIONS = [
-	'create-c',
-	'create-p',
-	'create-d',
-	'start-discussion',
-	'start-discussion-other-user',
-];
+const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
 const CreateRoom = (props) => {
 	const reference = useRef(null);

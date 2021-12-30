@@ -18,14 +18,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 	const onClick = usePreventProgation();
 
 	return (
-		<Option
-			id={_id}
-			style={style}
-			data-username={username}
-			presence={status}
-			onClick={onClickView}
-			{...handleMenuEvent}
-		>
+		<Option id={_id} style={style} data-username={username} presence={status} onClick={onClickView} {...handleMenuEvent}>
 			<Option.Avatar>
 				<UserAvatar username={username} size='x28' />
 			</Option.Avatar>
@@ -36,11 +29,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 				{name} <Option.Description>({username})</Option.Description>
 			</Option.Content>
 			<Option.Menu onClick={onClick}>
-				{showButton ? (
-					<UserActions username={username} rid={rid} _id={_id} reload={reload} />
-				) : (
-					<ActionButton ghost tiny icon='kebab' />
-				)}
+				{showButton ? <UserActions username={username} rid={rid} _id={_id} reload={reload} /> : <ActionButton ghost tiny icon='kebab' />}
 			</Option.Menu>
 		</Option>
 	);

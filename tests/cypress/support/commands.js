@@ -10,26 +10,36 @@
 //
 //
 // -- This is a parent command --
-Cypress.Commands.add('login', (email, password) => cy.window().then(({ Meteor }) => new Promise((resolve) => {
-	Meteor.loginWithPassword(email, password, resolve);
-})));
+Cypress.Commands.add('login', (email, password) =>
+	cy.window().then(
+		({ Meteor }) =>
+			new Promise((resolve) => {
+				Meteor.loginWithPassword(email, password, resolve);
+			}),
+	),
+);
 
-Cypress.Commands.add('logout', () => cy.window().then(({ Meteor, FlowRouter }) => new Promise((resolve) => {
-	Meteor.startup(() => {
-		setTimeout(() => {
-			const user = Meteor.user();
-			if (!user) {
-				return resolve();
-			}
+Cypress.Commands.add('logout', () =>
+	cy.window().then(
+		({ Meteor, FlowRouter }) =>
+			new Promise((resolve) => {
+				Meteor.startup(() => {
+					setTimeout(() => {
+						const user = Meteor.user();
+						if (!user) {
+							return resolve();
+						}
 
-			Meteor.logout(() => {
-				Meteor.call('logoutCleanUp', user);
-				FlowRouter.go('home');
-				resolve();
-			});
-		}, 500);
-	});
-})));
+						Meteor.logout(() => {
+							Meteor.call('logoutCleanUp', user);
+							FlowRouter.go('home');
+							resolve();
+						});
+					}, 500);
+				});
+			}),
+	),
+);
 
 //
 // -- This is a child command --

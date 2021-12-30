@@ -15,6 +15,4 @@ export const _default: Story = () => <GenericModal {...defaultProps} />;
 export const Danger: Story = () => <GenericModal {...defaultProps} variant='danger' />;
 export const Warning: Story = () => <GenericModal {...defaultProps} variant='warning' />;
 export const Success: Story = () => <GenericModal {...defaultProps} variant='success' />;
-export const WithDontAskAgain: Story = () => (
-	<GenericModalDoNotAskAgain dontAskAgain={{ action: '', label: '' }} {...defaultProps} />
-);
+export const WithDontAskAgain: Story = () => <GenericModalDoNotAskAgain dontAskAgain={{ action: '', label: '' }} {...defaultProps} />;

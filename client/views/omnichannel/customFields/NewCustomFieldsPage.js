@@ -39,11 +39,7 @@ const NewCustomFieldsPage = ({ reload }) => {
 
 	const save = useMethod('livechat:saveCustomField');
 
-	const {
-		hasError,
-		data: additionalData,
-		hasUnsavedChanges: additionalFormChanged,
-	} = additionalValues;
+	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
 	const { label, field } = values;
 
