@@ -780,7 +780,7 @@ const createApi = function _createApi(_api, options = {}) {
 	return _api;
 };
 
-WebApp.connectHandlers.use('/api/v1', function (req, res) {
+WebApp.connectHandlers.use('/api', function (req, res) {
 	res.writeHead(404);
 	const response = {
 		statusCode: 404,
