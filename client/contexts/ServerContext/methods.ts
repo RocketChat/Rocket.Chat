@@ -1,5 +1,6 @@
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
@@ -18,6 +19,7 @@ export type ServerMethods = {
 	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
+	'addWebdavAccount': AddWebdavAccountMethod;
 	'apps/go-enable': (...args: any[]) => any;
 	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
