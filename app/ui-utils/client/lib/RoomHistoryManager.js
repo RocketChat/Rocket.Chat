@@ -303,7 +303,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 		const instance = Blaze.getView(w).templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-			const msgElement = $(`#${message._id}`, w);
+			const msgElement = $(`#${message._id}, [data-mid=${message._id}]`, w);
 			if (msgElement.length === 0) {
 				return;
 			}
@@ -349,7 +349,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 
 			Tracker.afterFlush(() => {
 				const wrapper = $('.messages-box .wrapper');
-				const msgElement = $(`#${message._id}`, wrapper);
+				const msgElement = $(`#${message._id}, [data-mid=${message._id}]`, wrapper);
 				const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
 				wrapper.animate(
 					{

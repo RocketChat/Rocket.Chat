@@ -24,7 +24,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'>> & Required<Pick<IUser, '_id' | 'username'>>
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
 type UsersPresencePayload = {
@@ -47,7 +47,7 @@ const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 const notify = (presence: UserPresence): void => {
 	if (presence._id) {
 		update(presence);
-		emitter.emit(presence._id, presence);
+		emitter.emit(presence._id, store.get(presence._id));
 	}
 };
 
@@ -91,7 +91,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					notify({ _id: uid, username: '', status: UserStatus.OFFLINE, roles: [] });
+					notify({ _id: uid, status: UserStatus.OFFLINE });
 				});
 
 				currentUids.clear();

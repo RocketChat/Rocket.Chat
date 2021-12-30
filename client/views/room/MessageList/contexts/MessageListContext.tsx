@@ -12,7 +12,8 @@ export type MessageListContextValue = {
 	useReactionsFilter: (message: IMessage) => (reaction: string) => string[];
 	useOpenEmojiPicker: (message: IMessage) => (event: React.MouseEvent) => void;
 	showRoles: boolean;
-	showUsernames: boolean;
+	showRealName: boolean;
+	showUsername: boolean;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -31,7 +32,8 @@ export const MessageListContext = createContext<MessageListContextValue>({
 		(reaction: string): string[] =>
 			message.reactions ? message.reactions[reaction]?.usernames || [] : [],
 	showRoles: false,
-	showUsernames: false,
+	showRealName: false,
+	showUsername: false,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -43,7 +45,9 @@ export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (..
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
-export const useMessageListShowUsernames = (): MessageListContextValue['showUsernames'] => useContext(MessageListContext).showUsernames;
+export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
+export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
+
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);
 export const useReactToMessage: MessageListContextValue['useReactToMessage'] = (message: IMessage) =>

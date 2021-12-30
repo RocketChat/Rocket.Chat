@@ -40,7 +40,8 @@ import {
 } from '../../contexts/MessageContext';
 import {
 	useMessageListShowRoles,
-	useMessageListShowUsernames,
+	useMessageListShowUsername,
+	useMessageListShowRealName,
 	useOpenEmojiPicker,
 	useReactionsFilter,
 	useReactToMessage,
@@ -76,11 +77,13 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const openEmojiPicker = useOpenEmojiPicker(message);
 
 	const showRoles = useMessageListShowRoles();
-	const showUsername = useMessageListShowUsernames();
+	const showRealName = useMessageListShowRealName();
+	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
+	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
 	const mineUid = useUserId();
 
-	const user: UserPresence = useUserData(message.u._id) || { ...message.u, roles: [] };
 	return (
 		<MessageTemplate {...props}>
 			<MessageLeftContainer>
@@ -90,22 +93,31 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 			<MessageContainer>
 				{!sequential && (
 					<MessageHeader>
-						<MessageName data-username={user.username} onClick={openUserCard(user.username)}>
-							{(showUsername && user.name) || user.username}
+						<MessageName
+							title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
+							data-username={user.username}
+							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+						>
+							{(showRealName && user.name) || user.username}
 						</MessageName>
-						{!showUsername && user.name && user.name !== user.username && (
-							<MessageUsername data-username={user.username} onClick={openUserCard(user.username)}>
+						{showUsername && (
+							<MessageUsername
+								data-username={user.username}
+								onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+							>
 								@{user.username}
 							</MessageUsername>
 						)}
-						{showRoles && Array.isArray(user.roles) && user.roles.length > 0 && (
-							<MessageRoles>
-								{user.roles.map((role, index) => (
-									<MessageRole key={index}>{role}</MessageRole>
-								))}
-								{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
-							</MessageRoles>
-						)}
+						<MessageRoles>
+							{showRoles && Array.isArray(user.roles) && user.roles.length > 0 && (
+								<>
+									{user.roles.map((role, index) => (
+										<MessageRole key={index}>{role}</MessageRole>
+									))}
+								</>
+							)}
+							{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
+						</MessageRoles>
 						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
 						{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 						<MessageIndicators message={message} />

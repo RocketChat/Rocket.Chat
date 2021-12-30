@@ -23,9 +23,10 @@ export const MessageListProvider: FC<{
 
 	const { isMobile } = useLayout();
 
-	const showUsernames = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 
 	const autoTranslateLanguage = useAutotranslateLanguage(rid);
 
@@ -35,7 +36,7 @@ export const MessageListProvider: FC<{
 		() => ({
 			useReactionsFilter: (message: IMessage): ((reaction: string) => string[]) => {
 				const { reactions } = message;
-				return !showUsernames
+				return !showRealName
 					? (reaction: string): string[] =>
 							reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || []
 					: (reaction: string): string[] => {
@@ -78,7 +79,8 @@ export const MessageListProvider: FC<{
 					date.toLocaleString(),
 
 			showRoles,
-			showUsernames,
+			showRealName,
+			showUsername,
 
 			useReactToMessage: uid
 				? (message) =>
@@ -97,7 +99,7 @@ export const MessageListProvider: FC<{
 						}
 				: () => (): void => undefined,
 		}),
-		[uid, autoTranslateEnabled, hasSubscription, autoTranslateLanguage, showRoles, username, reactToMessage, showUsernames],
+		[uid, autoTranslateEnabled, hasSubscription, autoTranslateLanguage, showRoles, username, reactToMessage, showRealName, showUsername],
 	);
 
 	return <MessageListContext.Provider value={context} {...props} />;

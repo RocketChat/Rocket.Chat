@@ -17,13 +17,13 @@ import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowUsernames } from '../contexts/MessageListContext';
+import { useMessageListShowRealName } from '../contexts/MessageListContext';
 
 export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
 	const { formatters } = useMessageActions();
 	const runActionLink = useMessageRunActionLink();
-	const showUsername = useMessageListShowUsernames();
+	const showUsername = useMessageListShowRealName();
 
 	const messageType = MessageTypes.getType(message);
 
