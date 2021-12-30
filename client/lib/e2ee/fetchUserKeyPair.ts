@@ -12,19 +12,25 @@ import {
 	RemoteKeyPair,
 } from './keys/user';
 
+/** a callback triggered when the (remote) key pair should be fetched (from the server) */
+export type OnDecryptingRemoteKeyPair = ({ onConfirm }: { onConfirm: () => void }) => void;
+
+/** a callback triggered when the user should input the master key */
+export type OnPromptingForPassword = ({ onInput, onCancel }: { onInput: (password: string) => void; onCancel: () => void }) => void;
+
+/** a callback triggered when the decryption of the remote key pair fails */
+export type OnFailureToDecrypt = ({ onRetry, onAccept }: { onRetry: () => void; onAccept: () => void }) => void;
+
+/** a callback triggered when a random master key is generated */
+export type OnGenerateRandomPassword = (password: string) => void;
+
 type FetchUserKeyPairContext = {
-	/** the user ID */
-	uid: IUser['_id'];
-	/** a callback triggered when the (remote) key pair should be fetched (from the server) */
-	onDecryptingRemoteKeyPair: (options: { onConfirm: () => void }) => void;
-	/** a callback triggered when the user should input the master key */
-	onPromptingForPassword: (options: { onInput: (password: string) => void; onCancel: () => void }) => void;
-	/** a callback triggered when the decryption of the remote key pair fails */
-	onFailureToDecrypt: (options: { onRetry: () => void; onAccept: () => void }) => void;
-	/** a callback triggered when a random master key is generated */
-	onGenerateRandomPassword: (password: string) => void;
-	/** a signal to abort the operation */
 	signal?: AbortSignal;
+	uid: IUser['_id'];
+	onDecryptingRemoteKeyPair: OnDecryptingRemoteKeyPair;
+	onPromptingForPassword: OnPromptingForPassword;
+	onFailureToDecrypt: OnFailureToDecrypt;
+	onGenerateRandomPassword: OnGenerateRandomPassword;
 };
 
 const pushKeyPair = async (keyPair: CryptoKeyPair, context: FetchUserKeyPairContext): Promise<void> => {
