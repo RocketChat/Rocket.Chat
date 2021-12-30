@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setRealName = function(userId, name, fullUser) {
+export const _setRealName = function (userId, name, fullUser) {
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -41,5 +41,7 @@ export const _setRealName = function(userId, name, fullUser) {
 };
 
 export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
-	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others names, so don't limit those
+	0() {
+		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
+	}, // Administrators have permission to change others names, so don't limit those
 });

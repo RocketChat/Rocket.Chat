@@ -10,7 +10,7 @@ Package.registerBuildPlugin({
 	sources: ['plugin/compile-version.js'],
 });
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
 	api.use('ecmascript');
 	api.use('isobuild:compiler-plugin@1.0.0');
 });

@@ -20,13 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<FontSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <FontSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<FontSettingInput _id='setting_id' label='Label' value='FiraCode' placeholder='Placeholder' />
-);
+export const withValue = () => <FontSettingInput _id='setting_id' label='Label' value='FiraCode' placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<FontSettingInput

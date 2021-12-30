@@ -16,37 +16,39 @@ Template.userActionIndicator.helpers({
 		}
 
 		const activities = Object.entries(roomAction);
-		const userActions = activities.map(([key, _users]) => {
-			const users = Object.keys(_users);
-			if (users.length === 0) {
-				return {
-					end: false,
-				};
-			}
+		const userActions = activities
+			.map(([key, _users]) => {
+				const users = Object.keys(_users);
+				if (users.length === 0) {
+					return {
+						end: false,
+					};
+				}
 
-			const action = key.split('-')[1];
-			if (users.length === 1) {
+				const action = key.split('-')[1];
+				if (users.length === 1) {
+					return {
+						action,
+						multi: false,
+						users: users[0],
+						end: false,
+					};
+				}
+
+				let last = users.pop();
+				if (users.length >= maxUsernames) {
+					last = t('others');
+				}
+
+				const usernames = [users.slice(0, maxUsernames - 1).join(', '), last];
 				return {
 					action,
-					multi: false,
-					users: users[0],
+					multi: true,
+					users: usernames.join(` ${t('and')} `),
 					end: false,
 				};
-			}
-
-			let last = users.pop();
-			if (users.length >= maxUsernames) {
-				last = t('others');
-			}
-
-			const usernames = [users.slice(0, maxUsernames - 1).join(', '), last];
-			return {
-				action,
-				multi: true,
-				users: usernames.join(` ${ t('and') } `),
-				end: false,
-			};
-		}).filter((i) => i.action);
+			})
+			.filter((i) => i.action);
 
 		if (!Object.keys(userActions).length) {
 			return [];

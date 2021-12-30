@@ -18,7 +18,9 @@ Meteor.methods({
 		}
 
 		if (!setRealName(Meteor.userId(), name)) {
-			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', { method: 'setRealName' });
+			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', {
+				method: 'setRealName',
+			});
 		}
 
 		return name;

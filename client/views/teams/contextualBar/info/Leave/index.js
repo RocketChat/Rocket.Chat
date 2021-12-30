@@ -35,13 +35,7 @@ const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<GenericModal
-				variant='warning'
-				onClose={onCancel}
-				onConfirm={onCancel}
-				title={<Skeleton width='50%' />}
-				confirmText={t('Cancel')}
-			>
+			<GenericModal variant='warning' onClose={onCancel} onConfirm={onCancel} title={<Skeleton width='50%' />} confirmText={t('Cancel')}>
 				<Skeleton width='full' />
 			</GenericModal>
 		);

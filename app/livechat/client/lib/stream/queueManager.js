@@ -40,7 +40,9 @@ const events = {
 	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
 };
 
-const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
+const updateCollection = (inquiry) => {
+	events[inquiry.type](inquiry);
+};
 
 const getInquiriesFromAPI = async () => {
 	const { inquiries } = await APIClient.v1.get('livechat/inquiries.queued?sort={"ts": 1}');
@@ -48,13 +50,13 @@ const getInquiriesFromAPI = async () => {
 };
 
 const removeListenerOfDepartment = (departmentId) => {
-	inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
+	inquiryDataStream.removeListener(`department/${departmentId}`, updateCollection);
 	departments.delete(departmentId);
 };
 
 const appendListenerToDepartment = (departmentId) => {
 	departments.add(departmentId);
-	inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
+	inquiryDataStream.on(`department/${departmentId}`, updateCollection);
 	return () => removeListenerOfDepartment(departmentId);
 };
 const addListenerForeachDepartment = async (departments = []) => {
@@ -62,11 +64,11 @@ const addListenerForeachDepartment = async (departments = []) => {
 	return () => cleanupFunctions.forEach((cleanup) => cleanup());
 };
 
-
-const updateInquiries = async (inquiries = []) => inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
+const updateInquiries = async (inquiries = []) =>
+	inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId) => {
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments?enabledDepartmentsOnly=true`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${userId}/departments?enabledDepartmentsOnly=true`);
 	return departments;
 };
 
@@ -76,7 +78,6 @@ const addGlobalListener = () => {
 	inquiryDataStream.on('public', updateCollection);
 	return removeGlobalListener;
 };
-
 
 const subscribe = async (userId) => {
 	const config = await callWithErrorHandling('livechat:getRoutingConfig');

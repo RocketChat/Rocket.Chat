@@ -82,19 +82,13 @@ export const useRoomList = (): Array<ISubscription> => {
 
 			const groups = new Map();
 			showOmnichannel && groups.set('Omnichannel', []);
-			showOmnichannel &&
-				inquiries.enabled &&
-				queue.length &&
-				groups.set('Incoming_Livechats', queue);
+			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			sidebarGroupByType && team.size && groups.set('Teams', team);
-			sidebarGroupByType &&
-				isDiscussionEnabled &&
-				discussion.size &&
-				groups.set('Discussions', discussion);
+			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
 			sidebarGroupByType && channels.size && groups.set('Channels', channels);
 			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);

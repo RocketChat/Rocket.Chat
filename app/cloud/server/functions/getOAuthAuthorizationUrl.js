@@ -16,5 +16,5 @@ export function getOAuthAuthorizationUrl() {
 
 	const scope = userScopes.join(' ');
 
-	return `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUri }&scope=${ scope }&state=${ state }`;
+	return `${cloudUrl}/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
 }

@@ -23,13 +23,8 @@ const OmnichannelSidebar: FC = () => {
 	}, []);
 
 	const currentRoute = useCurrentRoute();
-	const [currentRouteName, currentRouteParams, currentQueryStringParams, currentRouteGroupName] =
-		currentRoute;
-	const currentPath = useRoutePath(
-		currentRouteName ?? '',
-		currentRouteParams,
-		currentQueryStringParams,
-	);
+	const [currentRouteName, currentRouteParams, currentQueryStringParams, currentRouteGroupName] = currentRoute;
+	const currentPath = useRoutePath(currentRouteName ?? '', currentRouteParams, currentQueryStringParams);
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'omnichannel') {

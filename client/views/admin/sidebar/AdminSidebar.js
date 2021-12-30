@@ -15,10 +15,7 @@ function AdminSidebar() {
 	const t = useTranslation();
 
 	const canViewSettings = useAtLeastOnePermission(
-		useMemo(
-			() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'],
-			[],
-		),
+		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
 	);
 
 	const closeAdminFlex = useCallback(() => {

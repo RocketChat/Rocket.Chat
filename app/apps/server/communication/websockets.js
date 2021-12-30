@@ -41,7 +41,6 @@ export class AppServerListener {
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 
-
 	async onAppStatusUpdated({ appId, status }) {
 		const app = this.orch.getManager().getOneById(appId);
 
@@ -49,7 +48,11 @@ export class AppServerListener {
 			return;
 		}
 
-		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
+		this.received.set(`${AppEvents.APP_STATUS_CHANGE}_${appId}`, {
+			appId,
+			status,
+			when: new Date(),
+		});
 
 		if (AppStatusUtils.isEnabled(status)) {
 			await this.orch.getManager().enable(appId).catch(SystemLogger.error);
@@ -61,13 +64,17 @@ export class AppServerListener {
 	}
 
 	async onAppSettingUpdated({ appId, setting }) {
-		this.received.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
+		this.received.set(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`, {
+			appId,
+			setting,
+			when: new Date(),
+		});
 		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
 	async onAppUpdated(appId) {
-		this.received.set(`${ AppEvents.APP_UPDATED }_${ appId }`, { appId, when: new Date() });
+		this.received.set(`${AppEvents.APP_UPDATED}_${appId}`, { appId, when: new Date() });
 
 		const storageItem = await this.orch.getStorage().retrieveOne(appId);
 
@@ -132,8 +139,8 @@ export class AppServerNotifier {
 	}
 
 	async appUpdated(appId) {
-		if (this.received.has(`${ AppEvents.APP_UPDATED }_${ appId }`)) {
-			this.received.delete(`${ AppEvents.APP_UPDATED }_${ appId }`);
+		if (this.received.has(`${AppEvents.APP_UPDATED}_${appId}`)) {
+			this.received.delete(`${AppEvents.APP_UPDATED}_${appId}`);
 			return;
 		}
 
@@ -142,10 +149,10 @@ export class AppServerNotifier {
 	}
 
 	async appStatusUpdated(appId, status) {
-		if (this.received.has(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`)) {
-			const details = this.received.get(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+		if (this.received.has(`${AppEvents.APP_STATUS_CHANGE}_${appId}`)) {
+			const details = this.received.get(`${AppEvents.APP_STATUS_CHANGE}_${appId}`);
 			if (details.status === status) {
-				this.received.delete(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+				this.received.delete(`${AppEvents.APP_STATUS_CHANGE}_${appId}`);
 				return;
 			}
 		}
@@ -155,8 +162,8 @@ export class AppServerNotifier {
 	}
 
 	async appSettingsChange(appId, setting) {
-		if (this.received.has(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`)) {
-			this.received.delete(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`);
+		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`)) {
+			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting.id}`);
 			return;
 		}
 

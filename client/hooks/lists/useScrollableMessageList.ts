@@ -9,10 +9,7 @@ import { useScrollableRecordList } from './useScrollableRecordList';
 
 export const useScrollableMessageList = (
 	messageList: MessageList,
-	fetchMessages: (
-		start: number,
-		end: number,
-	) => Promise<RecordListBatchChanges<Serialized<IMessage>>>,
+	fetchMessages: (start: number, end: number) => Promise<RecordListBatchChanges<Serialized<IMessage>>>,
 	initialItemCount?: number,
 ): ReturnType<typeof useScrollableRecordList> => {
 	const fetchItems = useCallback(

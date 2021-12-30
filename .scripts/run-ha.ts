@@ -36,7 +36,11 @@ function buildConfig(cwd: string): IConfig {
 }
 
 async function runMain(config: IConfig): Promise<void> {
-	const { customEnv: { INSTANCE_IP }, parentEnv, ...mainConfig } = config;
+	const {
+		customEnv: { INSTANCE_IP },
+		parentEnv,
+		...mainConfig
+	} = config;
 
 	const spawnConfig = {
 		...mainConfig,
@@ -60,7 +64,7 @@ async function runInstance(config: IConfig): Promise<void> {
 		...mainConfig.env,
 	};
 
-	env.ROOT_URL = `http://localhost:${ env.PORT }`;
+	env.ROOT_URL = `http://localhost:${env.PORT}`;
 
 	const spawnConfig = {
 		...mainConfig,
@@ -75,9 +79,7 @@ async function main(mode: any): Promise<void> {
 		mode = 'main';
 	}
 
-	const config = buildConfig(
-		path.resolve(__dirname, '..'),
-	);
+	const config = buildConfig(path.resolve(__dirname, '..'));
 
 	switch (mode) {
 		case ModeParam.MAIN:
