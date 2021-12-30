@@ -62,7 +62,6 @@ import LivechatDepartmentModel from '../models/LivechatDepartment';
 import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import LivechatInquiryModel from '../models/LivechatInquiry';
 import LivechatRoomsModel from '../models/LivechatRooms';
-import LivechatTriggerModel from '../models/LivechatTrigger';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
 import MessagesModel from '../models/Messages';
@@ -79,7 +78,6 @@ export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCo
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection(), trashCollection);
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection(), trashCollection);
-export const LivechatTrigger = new LivechatTriggerRaw(LivechatTriggerModel.model.rawCollection(), trashCollection);
 export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection(), trashCollection);
 export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection(), trashCollection);
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection(), trashCollection);
@@ -112,6 +110,7 @@ export const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), 
 export const Integrations = new IntegrationsRaw(db.collection(`${ prefix }integrations`), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(db.collection(`${ prefix }integration_history`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
+export const LivechatTrigger = new LivechatTriggerRaw(db.collection(`${ prefix }livechat_trigger`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const OAuthApps = new OAuthAppsRaw(db.collection(`${ prefix }oauth_apps`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);

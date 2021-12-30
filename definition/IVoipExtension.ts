@@ -6,7 +6,7 @@ export enum EndpointState {
 	UNREGISTERED = 'unregistered'
 }
 export interface IVoipExtensionBase {
-	name: string;
+	extension: string;
 	state: EndpointState;
 }
 export interface IVoipExtensionConfig extends IVoipExtensionBase{

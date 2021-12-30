@@ -15,7 +15,7 @@ import { ITeamService } from './types/ITeamService';
 import { IRoomService } from './types/IRoomService';
 import { IMediaService } from './types/IMediaService';
 import { IVoipService } from './types/IVoipService';
-import { ILivechatVoipService } from './types/IOmnichannelVoipService';
+import { IOmnichannelVoipService } from './types/IOmnichannelVoipService';
 import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
 
@@ -32,7 +32,7 @@ export const Team = proxifyWithWait<ITeamService>('team');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
-export const LivechatVoip = proxifyWithWait<ILivechatVoipService>('omnichannel-voip');
+export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 

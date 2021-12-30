@@ -13,10 +13,9 @@ const Attachments: FC<{ attachments: Array<MessageAttachmentBase>; file?: FilePr
 	return (
 		<>
 			<div className={className} ref={ref as any} />
-			{attachments &&
-				attachments.map((attachment, index) => (
-					<Item key={index} file={file} attachment={attachment} />
-				))}
+			{attachments?.map((attachment, index) => (
+				<Item key={index} file={file} attachment={attachment} />
+			))}
 		</>
 	);
 };

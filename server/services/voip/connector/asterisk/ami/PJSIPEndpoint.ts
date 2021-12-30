@@ -219,7 +219,6 @@ export class PJSIPEndpoint extends Command {
 	}
 
 	async executeCommand(data: any): Promise <IVoipConnectorResult> {
-		let action = 'none';
 		this.logger.info({ msg: `executeCommand() executing ${ this.commandText }` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
@@ -228,11 +227,10 @@ export class PJSIPEndpoint extends Command {
 				action: 'pjsipshowendpoints',
 			};
 		} else if (this.commandText === Commands.extension_info.toString()) {
-			action = 'pjsipshowendpoint';
 			// |pjsipshowendpoint| needs input parameter |endpoint| indicating
 			// which endpoint information is to be queried.
 			amiCommand = {
-				action,
+				action: 'pjsipshowendpoint',
 				endpoint: data.extension,
 			};
 		}

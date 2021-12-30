@@ -24,6 +24,20 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
+	/**
+	 * (Amol) Delete this comment and code (if needed)
+	 * after the review.
+	 *
+	 * We have findOneByIdOrName. Do we still need findOneVoipRoomById?
+	 *
+	*/
+	findOneVoipRoomById(id: string, options = {}): Promise<T|null> {
+		return this.findOne({
+			t: 'v',
+			_id: id,
+		}, options);
+	}
+
 	findOneByIdOrName(_idOrName: string, options: any): Promise<T|null> {
 		const query: FilterQuery <T> = {
 			t: 'v',

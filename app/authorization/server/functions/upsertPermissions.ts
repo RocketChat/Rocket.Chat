@@ -146,6 +146,9 @@ export const upsertPermissions = async (): Promise<void> => {
 		// allows to manage voip calls configuration
 		{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
+		// allows agent-extension association.
+		{ _id: 'manage-agent-extension-association', roles: ['admin'] },
+		{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
 		// allows to receive a voip call
 		{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
 
@@ -159,7 +162,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
-		{ _id: 'mobile-download-file', roles: ['user', 'admin'] },
 	];
 
 

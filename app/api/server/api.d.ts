@@ -80,6 +80,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
 	// TODO make it unsafe
 	readonly bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
+	readonly request: Request;
 	requestParams(): OperationParams<TMethod, TPathPattern>;
 	getPaginationItems(): {
 		readonly offset: number;
@@ -173,14 +174,14 @@ declare class APIClass<TBasePath extends string = '/'> {
 
 	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 
+	notFound(msg?: string): NotFoundResult;
+
 	defaultFieldsToExclude: {
 		joinCode: 0;
 		members: 0;
 		importIds: 0;
 		e2e: 0;
 	}
-
-	notFound(msg?: string): NotFoundResult;
 }
 
 export declare const API: {

@@ -1,11 +1,27 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateQuery, WriteOpResult } from 'mongodb';
+import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateQuery, WriteOpResult, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 import { Settings } from '.';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
+	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
+		const query = {
+			_id,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	getVisitorByToken(token: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
+		const query = {
+			token,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): Cursor<ILivechatVisitor> {
 		const query = {
 			_updatedAt: {
@@ -76,21 +92,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		};
 
 		return this.find(query, options);
-	}
-
-	getVisitorByToken(token: string, options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
-		const query = {
-			token,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findOneById(_id: string, options: FindOneOptions<ILivechatVisitor> = {}): Promise<ILivechatVisitor | null> {
-		const query = {
-			_id,
-		};
-		return this.findOne(query, options);
 	}
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor|null> {

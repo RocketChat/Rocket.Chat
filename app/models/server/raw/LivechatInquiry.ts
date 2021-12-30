@@ -22,4 +22,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> {
 	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<string[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
+
+	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | undefined> {
+		const updated = await this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
+		return updated.value;
+	}
 }

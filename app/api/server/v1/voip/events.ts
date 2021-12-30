@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { canAccessRoom } from '../../../../authorization/server';
-import { LivechatRooms } from '../../../../models/server/raw';
+import { VoipRoom } from '../../../../models/server/raw';
 
 API.v1.addRoute('voip/events', { authRequired: true }, {
 	async post() {
@@ -16,12 +16,13 @@ API.v1.addRoute('voip/events', { authRequired: true }, {
 
 		const { rid, event, comment } = this.requestParams();
 
-		const room = await LivechatRooms.findOneVoipRoomById(rid);
-
-		if (!canAccessRoom(room, this.user)) {
-			return API.v1.unauthorized();
+		const room = await VoipRoom.findOneVoipRoomById(rid);
+		if (room) {
+			if (!canAccessRoom(room, this.user)) {
+				return API.v1.unauthorized();
+			}
+			return Voip.handleEvent(event, room, this.user, comment);
 		}
-
-		return Voip.handleEvent(event, room, this.user, comment);
+		return API.v1.notFound();
 	},
 });

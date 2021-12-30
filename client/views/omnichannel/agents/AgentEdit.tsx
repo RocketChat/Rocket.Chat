@@ -60,14 +60,14 @@ const AgentEdit: FC<AgentEditProps> = ({
 
 	const options: [string, string][] = useMemo(
 		() =>
-			availableDepartments && availableDepartments.departments
+			availableDepartments?.departments
 				? availableDepartments.departments.map(({ _id, name }) => (name ? [_id, name] : [_id, _id]))
 				: [],
 		[availableDepartments],
 	);
 	const initialDepartmentValue = useMemo(
 		() =>
-			userDepartments && userDepartments.departments
+			userDepartments?.departments
 				? userDepartments.departments.map(({ departmentId }) => departmentId)
 				: [],
 		[userDepartments],
