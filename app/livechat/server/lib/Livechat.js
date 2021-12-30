@@ -49,6 +49,7 @@ const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
+	omnichannelEnabled: false,
 
 	logger,
 	webhookLogger: logger.section('Webhook'),
@@ -156,6 +157,9 @@ export const Livechat = {
 	},
 
 	async getRoom(guest, message, roomInfo, agent, extraData) {
+		if (!this.omnichannelEnabled) {
+			throw new Meteor.Error('error-omnichannel-is-disabled');
+		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
@@ -1406,4 +1410,8 @@ export const Livechat = {
 
 settings.watch('Livechat_history_monitor_type', (value) => {
 	Livechat.historyMonitorType = value;
+});
+
+settings.watch('Livechat_enabled', (value) => {
+	Livechat.omnichannelEnabled = value;
 });
