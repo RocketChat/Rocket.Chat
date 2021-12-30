@@ -17,7 +17,6 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef } from 'react';
 
-import { e2ee } from '../../../../../../app/e2e/client/e2ee';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';
 import GenericModal from '../../../../../components/GenericModal';
@@ -31,6 +30,7 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
+import { useE2EECapabilities } from '../../../../e2ee/E2EEContext';
 
 const typeMap = {
 	c: 'Channels',
@@ -214,7 +214,8 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		room._id,
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
-	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2ee.isReady());
+	const { canEncrypt } = useE2EECapabilities();
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || canEncrypt);
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';

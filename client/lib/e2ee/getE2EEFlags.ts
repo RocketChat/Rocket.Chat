@@ -11,10 +11,12 @@ type GetFlagsParams = {
 export const getE2EEFlags = ({ uid, embeddedLayout, currentRoutePath, enabled }: GetFlagsParams): E2EEFlags => {
 	const supported = Boolean(window.crypto);
 	const activable = Boolean(uid) && (!embeddedLayout || !currentRoutePath?.startsWith('/admin'));
+	const active = supported && activable && enabled;
 
 	return {
 		supported,
 		activable,
 		enabled,
+		active,
 	};
 };

@@ -21,11 +21,9 @@ const E2EEProvider = ({ children }: E2EEProviderProps): ReactElement => {
 
 	const value: ContextType<typeof E2EEContext> = useMemo(
 		() => ({
-			flags: {
-				supported,
-				activable,
-				enabled,
-			},
+			supported,
+			activable,
+			enabled,
 			active,
 			keyPair,
 		}),
