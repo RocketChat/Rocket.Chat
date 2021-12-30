@@ -6,7 +6,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import { UserStatus } from '../../../components/UserStatus';
-import { useRolesDescription } from '../../../contexts/AuthorizationContext';
+import { useRolesName } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -18,7 +18,7 @@ import { UserInfoActions } from './UserInfoActions';
 export function UserInfoWithData({ uid, username, onReload, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const getRoles = useRolesDescription();
+	const getRoles = useRolesName();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const {

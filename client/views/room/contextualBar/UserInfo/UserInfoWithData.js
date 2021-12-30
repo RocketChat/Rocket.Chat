@@ -6,7 +6,7 @@ import { FormSkeleton } from '../../../../components/Skeleton';
 import UserCard from '../../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useRolesDescription } from '../../../../contexts/AuthorizationContext';
+import { useRolesName } from '../../../../contexts/AuthorizationContext';
 import { useSession } from '../../../../contexts/SessionContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -21,7 +21,7 @@ import UserActions from './actions/UserActions';
 function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const getRoles = useRolesDescription();
+	const getRoles = useRolesName();
 	const openedRoom = useSession('openedRoom');
 	const { showUserWebRTC } = useWebRTC(openedRoom);
 
