@@ -1,7 +1,8 @@
-import { Box, Select, Field, Button } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import { Box, Select, SelectOptions, Field, Button } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 
 import { WebdavAccounts } from '../../../app/models/client';
+import { IWebdavAccount } from '../../../definition/IWebdavAccount';
 import Page from '../../components/Page';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -9,29 +10,29 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
-const getWebdavAccounts = () => WebdavAccounts.find().fetch();
+type WebdavAccountIntegration = Omit<IWebdavAccount, 'userId' | 'password' | '_updatedAt'>;
 
-const getServerName = ({ name, server_url, username }) => name || `${username}@${server_url.replace(/^https?\:\/\//i, '')}`;
+const getWebdavAccounts = (): Array<WebdavAccountIntegration> => WebdavAccounts.find().fetch();
 
-const AccountIntegrationsPage = () => {
+const getServerName = ({ name, serverURL, username }: Omit<WebdavAccountIntegration, '_id'>): string =>
+	name || `${username}@${serverURL?.replace(/^https?\:\/\//i, '')}`;
+
+const AccountIntegrationsPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const accounts = useReactiveValue(getWebdavAccounts);
+	const removeWebdavAccount = useMethod('removeWebdavAccount');
 
 	const { values, handlers } = useForm({ selected: [] });
-
 	const { selected } = values;
 	const { handleSelected } = handlers;
 
-	const removeWebdavAccount = useMethod('removeWebdavAccount');
-
-	const options = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
+	const options: SelectOptions = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
 
 	const handleClickRemove = useCallback(() => {
 		try {
 			removeWebdavAccount(selected);
-			dispatchToastMessage({ type: 'success', message: t('webdav-account-removed') });
+			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -45,7 +46,7 @@ const AccountIntegrationsPage = () => {
 					<Field>
 						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
 						<Field.Row>
-							<Select options={options} onChange={handleSelected} value={selected} placeholder={t('Select_an_option')} />
+							<Select options={options} onChange={handleSelected} value={selected as string} placeholder={t('Select_an_option')} />
 							<Button primary danger onClick={handleClickRemove}>
 								{t('Remove')}
 							</Button>
