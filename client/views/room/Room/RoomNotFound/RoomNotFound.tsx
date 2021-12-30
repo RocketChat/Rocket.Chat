@@ -37,11 +37,7 @@ const RoomNotFound = (): ReactElement => {
 					<States>
 						<StatesIcon name='emoji-neutral' />
 						<StatesTitle>{t('Name_not_found', { name })}</StatesTitle>
-						<StatesSubtitle>
-							{type === 'd'
-								? t('User_not_exist_or_not_permission')
-								: t('Room_not_exist_or_not_permission')}
-						</StatesSubtitle>
+						<StatesSubtitle>{type === 'd' ? t('User_not_exist_or_not_permission') : t('Room_not_exist_or_not_permission')}</StatesSubtitle>
 					</States>
 				</Box>
 			</RoomTemplate.Body>
