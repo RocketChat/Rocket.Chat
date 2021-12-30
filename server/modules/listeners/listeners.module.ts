@@ -59,14 +59,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }, keepMessages) => {
-			// Keep messages is set to true when Message_ErasureType is "Keep"
-			// Don't delete messages if keepMessages is true
-			if (!keepMessages) {
-				notifications.notifyLoggedInThisInstance('Users:Deleted', {
-					userId,
-				});
-			}
+		service.onEvent('user.deleted', ({ _id: userId }) => {
+			notifications.notifyLoggedInThisInstance('Users:Deleted', {
+				userId,
+			});
 		});
 
 		service.onEvent('user.deleteCustomStatus', (userStatus) => {
