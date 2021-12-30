@@ -39,18 +39,6 @@ export const generateAESKey = (): Promise<CryptoKey> =>
 		['encrypt', 'decrypt'],
 	);
 
-export const generateRSAKey = (): Promise<CryptoKeyPair> =>
-	crypto.subtle.generateKey(
-		{
-			name: 'RSA-OAEP',
-			modulusLength: 2048,
-			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-			hash: { name: 'SHA-256' },
-		},
-		true,
-		['encrypt', 'decrypt'],
-	);
-
 export const exportJWKKey = (key: CryptoKey): Promise<JsonWebKey> => crypto.subtle.exportKey('jwk', key);
 
 export const importRSAKey = (keyData: JsonWebKey, keyUsages: KeyUsage[] = ['encrypt', 'decrypt']): Promise<CryptoKey> =>
@@ -58,23 +46,3 @@ export const importRSAKey = (keyData: JsonWebKey, keyUsages: KeyUsage[] = ['encr
 
 export const importAESKey = (keyData: JsonWebKey, keyUsages: KeyUsage[] = ['encrypt', 'decrypt']): Promise<CryptoKey> =>
 	crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
-
-export const importRawKey = (keyData: ArrayBuffer, keyUsages: KeyUsage[] = ['deriveKey']): Promise<CryptoKey> =>
-	crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
-
-export const deriveKey = (salt: ArrayBuffer, baseKey: CryptoKey, keyUsages: KeyUsage[] = ['encrypt', 'decrypt']): Promise<CryptoKey> =>
-	crypto.subtle.deriveKey(
-		{
-			name: 'PBKDF2',
-			salt,
-			iterations: 1000,
-			hash: 'SHA-256',
-		},
-		baseKey,
-		{
-			name: 'AES-CBC',
-			length: 256,
-		},
-		true,
-		keyUsages,
-	);

@@ -65,6 +65,7 @@ module.exports = {
 				// '@typescript-eslint/explicit-module-boundary-types': 'off',
 				'@typescript-eslint/indent': 'off',
 				'@typescript-eslint/interface-name-prefix': ['error', 'always'],
+				'@typescript-eslint/no-empty-function': ['error'],
 				'@typescript-eslint/no-extra-parens': 'off',
 				'@typescript-eslint/no-explicit-any': 'off',
 				'@typescript-eslint/no-unused-vars': [
@@ -88,6 +89,7 @@ module.exports = {
 				],
 				'jsx-quotes': ['error', 'prefer-single'],
 				'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
+				'no-empty-function': 'off',
 				'no-extra-parens': 'off',
 				'no-spaced-func': 'off',
 				'no-unused-vars': 'off',

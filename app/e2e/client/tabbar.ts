@@ -4,7 +4,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { usePermission } from '../../../client/contexts/AuthorizationContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
-import { useE2EECapabilities, useE2EEFlags } from '../../../client/views/e2ee/E2EEContext';
+import { useE2EECapabilities } from '../../../client/views/e2ee/useE2EECapabilities';
+import { useE2EEFlags } from '../../../client/views/e2ee/useE2EEFlags';
 
 addAction('e2e', ({ room }) => {
 	const { canEncrypt } = useE2EECapabilities();

@@ -1,5 +1,4 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -10,18 +9,7 @@ import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
 import { NotificationEvent } from '../../../definition/NotificationEvent';
-import { E2EEKeyPair } from '../../../server/sdk/types/e2ee/E2EEKeyPair';
 import { E2EERoomClient } from './E2EERoomClient';
-import {
-	decryptAES,
-	deriveKey,
-	encryptAES,
-	importRawKey,
-	joinVectorAndEncryptedData,
-	splitVectorAndEncryptedData,
-	fromStringToBuffer,
-	fromBufferToString,
-} from './helpers';
 
 interface IE2EERoomClientPool {
 	track(rid: IRoom['_id']): E2EERoomClient;
@@ -32,7 +20,6 @@ interface IE2EERoomClientPool {
 class E2EERoomClientPool implements IE2EERoomClientPool {
 	protected roomClients: Map<IRoom['_id'], E2EERoomClient> = new Map();
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private userPrivateKey: CryptoKey) {}
 
 	track(rid: IRoom['_id']): E2EERoomClient {
@@ -184,57 +171,7 @@ export class E2EEManager extends Emitter {
 		this._ready.set(false);
 	}
 
-	async changePassword(newPassword: string): Promise<void> {
-		const publicKey = Meteor._localStorage.getItem('public_key');
-		const privateKey = Meteor._localStorage.getItem('private_key');
-
-		if (!publicKey || !privateKey) {
-			throw new Error();
-		}
-
-		await APIClient.v1.post<E2EEKeyPair, void>('e2e.setUserPublicAndPrivateKeys', {
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			public_key: publicKey,
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			private_key: await this.encodePrivateKey(privateKey, newPassword),
-		});
-
-		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
-			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
-		}
-	}
-
 	async requestSubscriptionKeys(): Promise<void> {
 		await APIClient.v1.post('e2e.requestSubscriptionKeys');
-	}
-
-	async getMasterKey(password: string): Promise<CryptoKey> {
-		const baseKey = await importRawKey(fromStringToBuffer(password));
-
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Error();
-		}
-
-		return deriveKey(fromStringToBuffer(uid), baseKey);
-	}
-
-	async encodePrivateKey(privateKey: string, password: string): Promise<string> {
-		const masterKey = await this.getMasterKey(password);
-
-		const vector = crypto.getRandomValues(new Uint8Array(16));
-		const encodedPrivateKey = await encryptAES(vector, masterKey, fromStringToBuffer(privateKey));
-
-		return EJSON.stringify(joinVectorAndEncryptedData(vector, encodedPrivateKey));
-	}
-
-	async decodePrivateKey(privateKey: string, password: string): Promise<string> {
-		const masterKey = await this.getMasterKey(password);
-
-		const [vector, cipherText] = splitVectorAndEncryptedData(EJSON.parse(privateKey) as Uint8Array);
-
-		const privKey = await decryptAES(vector, masterKey, cipherText);
-		return fromBufferToString(privKey);
 	}
 }

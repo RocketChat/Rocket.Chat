@@ -1,16 +1,8 @@
 import { IUser } from '../../../definition/IUserAction';
 import { isAbortError } from '../utils/isAbortError';
-import { createMasterKey, generateRandomPassword } from './keys/master';
-import {
-	createKeyPair,
-	decryptKeyPair,
-	encryptKeyPair,
-	fetchKeyPair,
-	fetchRemoteKeyPair,
-	persistKeyPair,
-	persistRemoteKeyPair,
-	RemoteKeyPair,
-} from './keys/user';
+import * as local from './keys/local';
+import * as master from './keys/master';
+import * as remote from './keys/remote';
 
 /** a callback triggered when the (remote) key pair should be fetched (from the server) */
 export type OnDecryptingRemoteKeyPair = ({ onConfirm }: { onConfirm: () => void }) => void;
@@ -36,14 +28,14 @@ type FetchUserKeyPairContext = {
 const pushKeyPair = async (keyPair: CryptoKeyPair, context: FetchUserKeyPairContext): Promise<void> => {
 	const { uid, onGenerateRandomPassword, signal } = context;
 
-	const password = generateRandomPassword();
-	const masterKey = await createMasterKey(uid, password);
-	const remoteKeyPair = await encryptKeyPair(keyPair, masterKey);
-	await persistRemoteKeyPair(remoteKeyPair, signal);
+	const password = master.generateRandomPassword();
+	const masterKey = await master.createMasterKey(uid, password);
+	const remoteKeyPair = await remote.encryptKeyPair(keyPair, masterKey);
+	await remote.persistRemoteKeyPair(remoteKeyPair, signal);
 	onGenerateRandomPassword(password);
 };
 
-const pullKeyPair = async (remoteKeyPair: RemoteKeyPair, context: FetchUserKeyPairContext): Promise<CryptoKeyPair> =>
+const pullKeyPair = async (remoteKeyPair: remote.RemoteKeyPair, context: FetchUserKeyPairContext): Promise<CryptoKeyPair> =>
 	new Promise((resolve) => {
 		const { uid, onDecryptingRemoteKeyPair, onPromptingForPassword, onFailureToDecrypt, signal } = context;
 
@@ -67,9 +59,9 @@ const pullKeyPair = async (remoteKeyPair: RemoteKeyPair, context: FetchUserKeyPa
 			},
 			async decrypting(password: string): Promise<void> {
 				try {
-					const masterKey = await createMasterKey(uid, password);
-					const keyPair = await decryptKeyPair(remoteKeyPair, masterKey);
-					await persistKeyPair(keyPair, signal);
+					const masterKey = await master.createMasterKey(uid, password);
+					const keyPair = await remote.decryptKeyPair(remoteKeyPair, masterKey);
+					await local.persistKeyPair(keyPair, signal);
 					resolve(keyPair);
 				} catch (error) {
 					console.error(error);
@@ -96,14 +88,11 @@ const pullKeyPair = async (remoteKeyPair: RemoteKeyPair, context: FetchUserKeyPa
 		states.informingKeyDecryption();
 	});
 
-/**
- * @return the user key pair
- */
-export const fetchUserKeyPair = async (context: FetchUserKeyPairContext): Promise<CryptoKeyPair> => {
+export const fetchKeys = async (context: FetchUserKeyPairContext): Promise<CryptoKeyPair> => {
 	const { signal } = context;
 
-	const keyPair = await fetchKeyPair(signal);
-	const remoteKeyPair = await fetchRemoteKeyPair(signal);
+	const keyPair = await local.fetchKeyPair(signal);
+	const remoteKeyPair = await remote.fetchRemoteKeyPair(signal);
 
 	if (keyPair) {
 		if (!remoteKeyPair) {
@@ -114,11 +103,36 @@ export const fetchUserKeyPair = async (context: FetchUserKeyPairContext): Promis
 	}
 
 	if (!remoteKeyPair) {
-		const keyPair = await createKeyPair();
+		const keyPair = await local.createKeyPair();
 		await pushKeyPair(keyPair, context);
-		await persistKeyPair(keyPair, signal);
+		await local.persistKeyPair(keyPair, signal);
 		return keyPair;
 	}
 
 	return pullKeyPair(remoteKeyPair, context);
+};
+
+export const forgetKeys = (): void => {
+	local.resetKeyPair();
+};
+
+type ChangePasswordParams = {
+	keyPair: CryptoKeyPair;
+	uid: IUser['_id'];
+	password: string;
+	signal?: AbortSignal;
+};
+
+export const changePassword = async ({ keyPair, uid, password, signal }: ChangePasswordParams): Promise<void> => {
+	const masterKey = await master.createMasterKey(uid, password);
+	const remoteKeyPair = await remote.encryptKeyPair(keyPair, masterKey);
+	await remote.persistRemoteKeyPair(remoteKeyPair, signal);
+};
+
+type ResetUserKeyPairParams = {
+	signal?: AbortSignal;
+};
+
+export const resetKeys = async ({ signal }: ResetUserKeyPairParams = {}): Promise<void> => {
+	await remote.resetRemoteKeyPair(signal);
 };

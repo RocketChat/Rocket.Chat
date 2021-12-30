@@ -1,27 +1,24 @@
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useMutation } from 'react-query';
 
 import { callbacks } from '../../../../app/callbacks/lib/callbacks';
-import { e2ee } from '../../../../app/e2e/client/e2ee';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
+import { useChangeE2EEPasswordMutation } from '../../e2ee/useChangeE2EEPasswordMutation';
+import { useResetE2EEKeysMutation } from '../../e2ee/useResetE2EEKeysMutation';
 
 const EndToEnd = (props) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const homeRoute = useRoute('home');
 	const user = useUser();
 
 	const publicKey = useLocalStorage('public_key');
 	const privateKey = useLocalStorage('private_key');
-
-	const resetE2eKey = useEndpoint('POST', '/v1/e2e.resetOwnE2EKey');
 
 	const { values, handlers, reset } = useForm({ password: '', passwordConfirm: '' });
 	const { password, passwordConfirm } = values;
@@ -33,35 +30,45 @@ const EndToEnd = (props) => {
 	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
+	// TODO: fix logout reaction on client
 	const handleLogout = useMutableCallback(() => {
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
 			Meteor.call('logoutCleanUp', user);
-			homeRoute.push({});
 		});
 	});
 
-	const saveNewPassword = useCallback(async () => {
-		try {
-			await e2ee.changePassword(password);
-			reset();
-			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [dispatchToastMessage, password, reset, t]);
+	const changeE2EEPasswordMutation = useChangeE2EEPasswordMutation();
+	const saveNewPasswordMutation = useMutation(
+		async () => {
+			await changeE2EEPasswordMutation.mutateAsync(password);
+		},
+		{
+			onSuccess: () => {
+				reset();
+				dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
+			},
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
-	const handleResetE2eKey = useCallback(async () => {
-		try {
-			const result = await resetE2eKey();
-			if (result) {
+	const resetE2EEKeysMutation = useResetE2EEKeysMutation();
+	const handleResetE2eKeyMutation = useMutation(
+		async () => {
+			await resetE2EEKeysMutation.mutateAsync(password);
+		},
+		{
+			onSuccess: () => {
 				dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
 				handleLogout();
-			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
+			},
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	useEffect(() => {
 		if (password.trim() === '') {
@@ -95,14 +102,14 @@ const EndToEnd = (props) => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!canSave} onClick={saveNewPassword}>
+				<Button primary disabled={!canSave} onClick={saveNewPasswordMutation.mutate}>
 					{t('Save_changes')}
 				</Button>
 				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
-				<Button onClick={handleResetE2eKey}>{t('Reset_E2E_Key')}</Button>
+				<Button onClick={handleResetE2eKeyMutation.mutate}>{t('Reset_E2E_Key')}</Button>
 			</Margins>
 		</Box>
 	);

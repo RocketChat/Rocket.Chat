@@ -1,6 +1,8 @@
 import React, { ContextType, ReactElement, ReactNode, useEffect, useMemo } from 'react';
 
-import { attachE2EEManagement } from '../../../lib/e2ee/attachE2EEManagement';
+import { e2ee } from '../../../../app/e2e/client';
+import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { E2EEContext } from '../E2EEContext';
 import { useFlags } from './useFlags';
 import { useUserKeys } from './useUserKeys';
@@ -16,11 +18,28 @@ const E2EEProvider = ({ children }: E2EEProviderProps): ReactElement => {
 
 	const { data: keyPair } = useUserKeys({ enabled: active });
 
-	// TODO: remove it ASAP
-	useEffect(() => attachE2EEManagement(), []);
+	useEffect(() => {
+		if (!keyPair) {
+			return;
+		}
+
+		e2ee.use(keyPair);
+		const detachKeyRequestHandler = e2ee.watchKeyRequests();
+		const detachSubscriptionWatcher = e2ee.watchSubscriptions();
+		const detachMessageReceivedTransform = onClientMessageReceived.use((msg) => e2ee.transformReceivedMessage(msg));
+		const detachSendingMessageTransform = onClientBeforeSendMessage.use((msg) => e2ee.transformSendingMessage(msg));
+
+		return (): void => {
+			e2ee.unuse();
+			detachKeyRequestHandler();
+			detachSubscriptionWatcher();
+			detachMessageReceivedTransform();
+			detachSendingMessageTransform();
+		};
+	}, [keyPair]);
 
 	const value: ContextType<typeof E2EEContext> = useMemo(
-		() => ({
+		(): ContextType<typeof E2EEContext> => ({
 			supported,
 			activable,
 			enabled,

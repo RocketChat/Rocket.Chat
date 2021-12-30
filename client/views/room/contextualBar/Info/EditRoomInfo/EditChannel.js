@@ -30,7 +30,7 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
-import { useE2EECapabilities } from '../../../../e2ee/E2EEContext';
+import { useE2EECapabilities } from '../../../../e2ee/useE2EECapabilities';
 
 const typeMap = {
 	c: 'Channels',

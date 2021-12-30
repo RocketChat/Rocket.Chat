@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 
-import { e2ee } from '../../../../app/e2e/client';
 import { useModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import * as banners from '../../../lib/banners';
@@ -9,7 +8,7 @@ import {
 	OnFailureToDecrypt,
 	OnGenerateRandomPassword,
 	OnPromptingForPassword,
-} from '../../../lib/e2ee/fetchUserKeyPair';
+} from '../../../lib/e2ee/operations';
 import EnterE2EEPasswordModal from '../EnterE2EEPasswordModal';
 import SaveE2EEPasswordModal from '../SaveE2EEPasswordModal';
 
@@ -27,7 +26,6 @@ export const useFetchUserKeysEffects = (): FetchUserKeysEffects => {
 	useEffect(
 		() => (): void => {
 			banners.closeById('e2e');
-			e2ee.unuse();
 		},
 		[],
 	);

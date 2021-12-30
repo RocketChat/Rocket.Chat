@@ -1,9 +1,27 @@
 import { Random } from 'meteor/random';
 
 import { IUser } from '../../../../definition/IUserAction';
-import { deriveKey, importRawKey, fromStringToBuffer } from '../helpers';
+import { fromStringToBuffer } from '../helpers';
 
-// Utilities to handle the master key (the one that encrypts user keys on server)
+const deriveKey = (salt: ArrayBuffer, baseKey: CryptoKey, keyUsages: KeyUsage[] = ['encrypt', 'decrypt']): Promise<CryptoKey> =>
+	crypto.subtle.deriveKey(
+		{
+			name: 'PBKDF2',
+			salt,
+			iterations: 1000,
+			hash: 'SHA-256',
+		},
+		baseKey,
+		{
+			name: 'AES-CBC',
+			length: 256,
+		},
+		true,
+		keyUsages,
+	);
+
+const importRawKey = (keyData: ArrayBuffer, keyUsages: KeyUsage[] = ['deriveKey']): Promise<CryptoKey> =>
+	crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 
 export const generateRandomPassword = (): string => `${Random.id(3)}-${Random.id(3)}-${Random.id(3)}`.toLowerCase();
 

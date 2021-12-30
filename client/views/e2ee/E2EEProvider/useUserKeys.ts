@@ -1,13 +1,24 @@
+import { Accounts } from 'meteor/accounts-base';
+import { useEffect } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
-import { e2ee } from '../../../../app/e2e/client';
 import { useUserId } from '../../../contexts/UserContext';
-import { fetchUserKeyPair } from '../../../lib/e2ee/fetchUserKeyPair';
+import * as operations from '../../../lib/e2ee/operations';
 import { useFetchUserKeysEffects } from './useFetchUserKeysEffects';
 
 export const useUserKeys = ({ enabled = true }: { enabled?: boolean } = {}): UseQueryResult<CryptoKeyPair, Error> => {
 	const { onDecryptingRemoteKeyPair, onFailureToDecrypt, onGenerateRandomPassword, onPromptingForPassword } = useFetchUserKeysEffects();
 	const uid = useUserId();
+
+	useEffect(() => {
+		const { stop } = Accounts.onLogout(() => {
+			operations.forgetKeys();
+		}) as unknown as { stop: () => void };
+
+		return (): void => {
+			stop();
+		};
+	}, []);
 
 	return useQuery<CryptoKeyPair, Error>(
 		['e2ee', 'userKeys', { uid, enabled }],
@@ -16,25 +27,19 @@ export const useUserKeys = ({ enabled = true }: { enabled?: boolean } = {}): Use
 				throw new Error('missing user ID');
 			}
 
-			return fetchUserKeyPair({
+			return operations.fetchKeys({
+				signal,
 				uid,
 				onDecryptingRemoteKeyPair,
 				onPromptingForPassword,
 				onFailureToDecrypt,
 				onGenerateRandomPassword,
-				signal,
 			});
 		},
 		{
 			staleTime: Infinity,
 			cacheTime: 0,
 			refetchOnMount: 'always',
-			onSuccess: (data) => {
-				e2ee.use(data);
-			},
-			onError: (error) => {
-				console.error(error);
-			},
 			enabled,
 		},
 	);
