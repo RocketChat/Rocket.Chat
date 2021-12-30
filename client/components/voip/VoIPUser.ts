@@ -281,7 +281,7 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 		this.logger.verbose('init() endpoint identity = ', sipUri);
 		const transportOptions = {
 			server: this.config.webSocketURI,
-			connectionTimeout: 10, // Replace this with config
+			connectionTimeout: 100, // Replace this with config
 			keepAliveInterval: 20,
 			// traceSip: true
 		};

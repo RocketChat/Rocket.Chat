@@ -9,7 +9,7 @@ import { Livechat } from '../../lib/Livechat';
 import { ILivechatVisitorDTO } from '../../../../../definition/ILivechatVisitor';
 import { IRoom } from '../../../../../definition/IRoom';
 
-API.v1.addRoute('livechat/visitor', {
+API.v1.addRoute(['livechat/visitor', 'voip/visitor'], {
 	async post() {
 		check(this.bodyParams, {
 			visitor: Match.ObjectIncluding({
@@ -69,7 +69,7 @@ API.v1.addRoute('livechat/visitor', {
 	},
 });
 
-API.v1.addRoute('livechat/visitor/:token', {
+API.v1.addRoute(['livechat/visitor/:token', 'voip/visitor/:token'], {
 	async get() {
 		check(this.urlParams, {
 			token: String,

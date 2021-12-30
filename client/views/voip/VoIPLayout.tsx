@@ -149,7 +149,7 @@ const VoIPLayout: FC = () => {
 				'omnichannel/agent/extension',
 				{},
 				{
-					username: 'amol.associate',
+					username: Meteor.user()?.username,
 					extension: '80001',
 				},
 			);
@@ -161,7 +161,7 @@ const VoIPLayout: FC = () => {
 		try {
 			logger.info('Executing GET omnichannel/agent/extension');
 			const extension = await APIClient.v1.get('omnichannel/agent/extension', {
-				username: 'amol.associate',
+				username: Meteor.user()?.username,
 			});
 			logger.info('list = ', JSON.stringify(extension));
 		} catch (error) {
@@ -211,9 +211,11 @@ const VoIPLayout: FC = () => {
 		}
 
 		try {
-			logger.info('Executing GET omnichannel/extension?type=available&username=amol.associate');
+			logger.info(
+				`Executing GET omnichannel/extension?type=available&username=${Meteor.user()?.username}`,
+			);
 			const extension = await APIClient.v1.get(
-				'omnichannel/extension?type=available&username=amol.associate',
+				`omnichannel/extension?type=available&username=${Meteor.user()?.username}`,
 			);
 			logger.info('list = ', JSON.stringify(extension));
 		} catch (error) {
@@ -223,9 +225,9 @@ const VoIPLayout: FC = () => {
 	const testVoipRooms = async (): Promise<void> => {
 		const token = createToken();
 		try {
-			logger.info('Executing POST livechat/visitor');
+			logger.info('Executing POST voip/visitor');
 			const output = await APIClient.v1.post(
-				'livechat/visitor',
+				'voip/visitor',
 				{},
 				{
 					visitor: {
@@ -236,9 +238,9 @@ const VoIPLayout: FC = () => {
 					},
 				},
 			);
-			logger.info('livechat/visitor output = ', JSON.stringify(output));
+			logger.info('voip/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API POST livechat/visitor`);
+			logger.error(`error ${error} in API POST voip/visitor`);
 		}
 
 		try {
@@ -250,19 +252,19 @@ const VoIPLayout: FC = () => {
 		}
 
 		try {
-			logger.info('Executing GET livechat/visitor');
-			const output = await APIClient.v1.get(`livechat/visitor/${token}`);
-			logger.info('GET livechat/visitor output = ', JSON.stringify(output));
+			logger.info('Executing GET voip/visitor');
+			const output = await APIClient.v1.get(`voip/visitor/${token}`);
+			logger.info('GET voip/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API GET livechat/visitor`);
+			logger.error(`error ${error} in API GET voip/visitor`);
 		}
 
 		try {
-			logger.info('Executing DELETE livechat/visitor');
-			const output = await APIClient.v1.delete(`livechat/visitor/${token}`);
-			logger.info('DELETE livechat/visitor output = ', JSON.stringify(output));
+			logger.info('Executing DELETE voip/visitor');
+			const output = await APIClient.v1.delete(`voip/visitor/${token}`);
+			logger.info('DELETE voip/visitor output = ', JSON.stringify(output));
 		} catch (error) {
-			logger.error(`error ${error} in API DELETE livechat/visitor`);
+			logger.error(`error ${error} in API DELETE voip/visitor`);
 		}
 	};
 	const registerCallback = (): void => {
@@ -312,7 +314,7 @@ const VoIPLayout: FC = () => {
 			// Create a new visitor
 			logger.info('Creating new visitor');
 			visitor = await APIClient.v1.post(
-				'livechat/visitor',
+				'voip/visitor',
 				{},
 				{
 					visitor: {

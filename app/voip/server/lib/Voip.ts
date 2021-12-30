@@ -181,7 +181,7 @@ export class Voip {
 			// delegate room creation to QueueManager
 			this.logger.debug(`Calling QueueManager to request a room for visitor ${ guest._id }`);
 			// room = await QueueManager.requestRoom({ guest, message, roomInfo, agent: defaultAgent, extraData });
-			const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
+			const name = roomInfo?.fname || guest.name || guest.username;
 			room = await VoipRoom.findOneById(await createVoipRoom(rid, name, agent, guest));
 			newRoom = true;
 
