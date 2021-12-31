@@ -59,7 +59,7 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 		(event) => {
 			if (event.keyCode === 13) {
 				// ENTER
-				if (event?.target?.nodeName !== 'TEXTAREA' && event?.target?.localName !== 'textarea') {
+				if (event?.target?.nodeName !== 'TEXTAREA') {
 					return onSubmit(event);
 				}
 			}
