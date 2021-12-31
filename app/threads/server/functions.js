@@ -13,7 +13,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		...new Set([
 			...followers,
 			...mentionIds,
-			...Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id],
+			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
 	];
 
@@ -21,19 +21,17 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
 
-	const repliesFiltered = replies
-		.filter((userId) => userId !== u._id)
-		.filter((userId) => !mentionIds.includes(userId));
+	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
 	if (toAll || toHere) {
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, { groupMention: true });
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {
+			groupMention: true,
+		});
 	} else {
 		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid);
 	}
 
-	mentionIds.forEach((mentionId) =>
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }),
-	);
+	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
 };
 
 export const undoReply = ({ tmid }) => {

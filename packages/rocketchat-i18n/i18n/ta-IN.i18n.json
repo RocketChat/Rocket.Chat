@@ -2139,7 +2139,7 @@
   "RetentionPolicyRoom_FilesOnly": "கோப்புகளை மட்டும் ப்ரூனே செய்யுங்கள், செய்திகளை வைத்திருக்கவும்",
   "RetentionPolicyRoom_MaxAge": "நாட்களில் அதிகபட்ச செய்தி வயது (இயல்புநிலை: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "உலகளாவிய தக்க கொள்கையை மீறவும்",
-  "RetentionPolicyRoom_ReadTheDocs": "பாருங்கள்! மிகுந்த கவனிப்பு இல்லாமல் இந்த அமைப்புகள் முறுக்குவதை அனைத்து செய்தி வரலாற்றை அழிக்க முடியும். <a href = 'https: //rocket.chat/docs/administrator-guides/retention-policies/'LL_HTML_END> இங்கே</a>அம்சத்தை மாற்றுவதற்கு முன் ஆவணம் படிக்கவும்.",
+  "RetentionPolicyRoom_ReadTheDocs": "பாருங்கள்! மிகுந்த கவனிப்பு இல்லாமல் இந்த அமைப்புகள் முறுக்குவதை அனைத்து செய்தி வரலாற்றை அழிக்க முடியும். <a href = 'https://rocket.chat/docs/administrator-guides/retention-policies/'LL_HTML_END> இங்கே</a>அம்சத்தை மாற்றுவதற்கு முன் ஆவணம் படிக்கவும்.",
   "Retry_Count": "மீண்டும் முயற்சி செய்",
   "Role": "பங்கு",
   "Role_Editing": "பங்கு எடிட்டிங்",

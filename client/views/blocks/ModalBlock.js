@@ -162,3 +162,4 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 }
 
 export default ModalBlock;
+export { modalParser };

@@ -7,11 +7,13 @@ import { Subscriptions } from '../../models';
 
 Template.tokenChannelsList.helpers({
 	rooms() {
-		return Template.instance().tokenpassRooms.get().filter((room) => Subscriptions.find({ rid: room._id }).count() === 0);
+		return Template.instance()
+			.tokenpassRooms.get()
+			.filter((room) => Subscriptions.find({ rid: room._id }).count() === 0);
 	},
 });
 
-Template.tokenChannelsList.onRendered(function() {
+Template.tokenChannelsList.onRendered(function () {
 	Tracker.autorun((c) => {
 		const user = Meteor.user();
 		if (user && user.services && user.services.tokenpass) {
@@ -26,6 +28,6 @@ Template.tokenChannelsList.onRendered(function() {
 	});
 });
 
-Template.tokenChannelsList.onCreated(function() {
+Template.tokenChannelsList.onCreated(function () {
 	this.tokenpassRooms = new ReactiveVar([]);
 });

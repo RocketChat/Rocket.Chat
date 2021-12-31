@@ -4,13 +4,21 @@ import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
 import { targetUser, imgURL } from '../../data/interactions.js';
-import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
+import {
+	checkIfUserIsValid,
+	publicChannelCreated,
+	privateChannelCreated,
+	directMessageCreated,
+	setPublicChannelCreated,
+	setPrivateChannelCreated,
+	setDirectMessageCreated,
+} from '../../data/checks';
 import { updatePermission } from '../../data/permissions.helper';
 import { api, getCredentials, credentials, request } from '../../data/api-data';
 import { createUser, login } from '../../data/users.helper';
 
 // Test data
-const message = `message from ${ username }`;
+const message = `message from ${username}`;
 let testDMUsername;
 
 function messagingTest(currentTest) {
@@ -37,8 +45,7 @@ function messagingTest(currentTest) {
 	});
 
 	describe.skip('fileUpload:', () => {
-		after(() => {
-		});
+		after(() => {});
 		it('it should send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
@@ -117,14 +124,17 @@ function createDMUserAndPost(testChannel, done) {
 		createUser().then((createdUser) => {
 			testDMUsername = createdUser.username;
 
-			request.post(api('users.setActiveStatus'))
+			request
+				.post(api('users.setActiveStatus'))
 				.set(credentials)
 				.send({
 					activeStatus: true,
 					userId: createdUser._id,
-				}).then(() => {
+				})
+				.then(() => {
 					login(testDMUsername, password).then((userCredentials) => {
-						request.post(api('chat.postMessage'))
+						request
+							.post(api('chat.postMessage'))
 							.set(userCredentials)
 							.send({
 								channel: testChannel,
@@ -309,7 +319,7 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			describe('Quote:', () => {
-				const message = `Message for quote Tests - ${ Date.now() }`;
+				const message = `Message for quote Tests - ${Date.now()}`;
 
 				before(() => {
 					mainContent.sendMessage(message);
@@ -350,7 +360,6 @@ function messageActionsTest(currentTest, testChannel) {
 					mainContent.sendMessage('Message for permalink Tests');
 					mainContent.openMessageActionMenu();
 				});
-
 
 				it('it should permalink the message', () => {
 					mainContent.selectAction('permalink');

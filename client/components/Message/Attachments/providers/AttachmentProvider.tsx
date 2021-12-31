@@ -17,8 +17,7 @@ const AttachmentProvider: FC = ({ children }) => {
 		() => ({
 			getURL: (url: string): string => getURL(url, { full: true }),
 			collapsedByDefault,
-			autoLoadEmbedMedias:
-				!reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
+			autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 			dimensions: {
 				width: 480,
 				height: 360,

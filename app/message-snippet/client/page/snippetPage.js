@@ -35,10 +35,10 @@ Template.snippetPage.helpers({
 	},
 });
 
-Template.snippetPage.onCreated(async function() {
+Template.snippetPage.onCreated(async function () {
 	const snippetId = FlowRouter.getParam('snippetId');
 	this.message = new ReactiveVar({});
 
-	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${ snippetId }`);
+	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${snippetId}`);
 	this.message.set(message);
 });

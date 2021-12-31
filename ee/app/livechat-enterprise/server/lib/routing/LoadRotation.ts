@@ -4,8 +4,8 @@ import { IRoutingManagerConfig } from '../../../../../../definition/IRoutingMana
 import { IOmnichannelCustomAgent } from '../../../../../../definition/IOmnichannelCustomAgent';
 
 /* Load Rotation Queuing method:
-	* Routing method where the agent with the oldest routing time is the next agent to serve incoming chats
-*/
+ * Routing method where the agent with the oldest routing time is the next agent to serve incoming chats
+ */
 class LoadRotation {
 	private _config: IRoutingManagerConfig;
 

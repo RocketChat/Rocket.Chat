@@ -11,16 +11,16 @@ const fs = require('fs');
 const fg = require('fast-glob');
 
 const fixFiles = (path, source, newlineAtEnd = false) => {
-	const sourceFile = JSON.parse(fs.readFileSync(`${ path }${ source }`, 'utf8'));
+	const sourceFile = JSON.parse(fs.readFileSync(`${path}${source}`, 'utf8'));
 	const sourceKeys = Object.keys(sourceFile);
 
-	fg([`${ path }/**/*.i18n.json`]).then((entries) => {
+	fg([`${path}/**/*.i18n.json`]).then((entries) => {
 		entries.forEach((file) => {
 			console.log(file);
 
 			const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 
-			fs.writeFileSync(file, `${ JSON.stringify(json, sourceKeys, 2) }${ newlineAtEnd ? '\n' : '' }`);
+			fs.writeFileSync(file, `${JSON.stringify(json, sourceKeys, 2)}${newlineAtEnd ? '\n' : ''}`);
 		});
 	});
 };

@@ -7,7 +7,7 @@ import { Permissions, Roles } from '../../../../app/models/server/raw';
 onLicense('auditing', () => {
 	require('./methods');
 
-	Meteor.startup(function() {
+	Meteor.startup(function () {
 		const permissions = [
 			{ _id: 'can-audit', roles: ['admin', 'auditor'] },
 			{ _id: 'can-audit-log', roles: ['admin', 'auditor-log'] },
@@ -22,8 +22,6 @@ onLicense('auditing', () => {
 			Permissions.create(permission._id, permission.roles);
 		});
 
-		defaultRoles.forEach((role) =>
-			Roles.createOrUpdate(role.name, role.scope),
-		);
+		defaultRoles.forEach((role) => Roles.createOrUpdate(role.name, role.scope));
 	});
 });

@@ -18,7 +18,7 @@ let maxGuestUsers = 0;
 let maxActiveUsers = 0;
 
 class LicenseClass {
-	private url: string|null = null;
+	private url: string | null = null;
 
 	private licenses: IValidLicense[] = [];
 
@@ -36,34 +36,30 @@ class LicenseClass {
 		licenseURL = licenseURL
 			.replace(/\./g, '\\.') // convert dots to literal
 			.replace(/\*/g, '.*'); // convert * to .*
-		const regex = new RegExp(`^${ licenseURL }$`, 'i');
+		const regex = new RegExp(`^${licenseURL}$`, 'i');
 
 		return !!regex.exec(url);
 	}
 
 	private _validModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
-			const modules = isBundle(licenseModule)
-				? getBundleModules(licenseModule)
-				: [licenseModule];
+			const modules = isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule];
 
 			modules.forEach((module) => {
 				this.modules.add(module);
 				EnterpriseLicenses.emit('module', { module, valid: true });
-				EnterpriseLicenses.emit(`valid:${ module }`);
+				EnterpriseLicenses.emit(`valid:${module}`);
 			});
 		});
 	}
 
 	private _invalidModules(licenseModules: string[]): void {
 		licenseModules.forEach((licenseModule) => {
-			const modules = isBundle(licenseModule)
-				? getBundleModules(licenseModule)
-				: [licenseModule];
+			const modules = isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule];
 
 			modules.forEach((module) => {
 				EnterpriseLicenses.emit('module', { module, valid: false });
-				EnterpriseLicenses.emit(`invalid:${ module }`);
+				EnterpriseLicenses.emit(`invalid:${module}`);
 			});
 		});
 	}
@@ -149,7 +145,7 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
-					console.error(`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`);
+					console.error(`#### License error: invalid url, licensed to ${license.url}, used on ${this.url}`);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -157,7 +153,7 @@ class LicenseClass {
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
 				item.valid = false;
-				console.error(`#### License error: expired, valid until ${ license.expiry }`);
+				console.error(`#### License error: expired, valid until ${license.expiry}`);
 				this._invalidModules(license.modules);
 				return item;
 			}
@@ -300,40 +296,43 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 		return cb();
 	}
 
-	EnterpriseLicenses.once(`valid:${ feature }`, cb);
+	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): (() => void) {
-	EnterpriseLicenses.on(`valid:${ feature }`, cb);
+export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
 		cb();
 	}
 
 	return (): void => {
-		EnterpriseLicenses.off(`valid:${ feature }`, cb);
+		EnterpriseLicenses.off(`valid:${feature}`, cb);
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): (() => void) {
-	EnterpriseLicenses.on(`invalid:${ feature }`, cb);
+export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
 		cb();
 	}
 
 	return (): void => {
-		EnterpriseLicenses.off(`invalid:${ feature }`, cb);
+		EnterpriseLicenses.off(`invalid:${feature}`, cb);
 	};
 }
 
-export function onToggledFeature(feature: BundleFeature, {
-	up,
-	down,
-}: {
-	up?: () => void;
-	down?: () => void;
-}): (() => void) {
+export function onToggledFeature(
+	feature: BundleFeature,
+	{
+		up,
+		down,
+	}: {
+		up?: () => void;
+		down?: () => void;
+	},
+): () => void {
 	let enabled = hasLicense(feature);
 
 	const offValidFeature = onValidFeature(feature, () => {
@@ -381,13 +380,13 @@ export interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 
-type Class = { new(...args: any[]): any };
+type Class = { new (...args: any[]): any };
 
 export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
 	onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
-			original.prototype[key] = function(...args: any[]): any {
+			original.prototype[key] = function (...args: any[]): any {
 				return value.call(this, originalFn, ...args);
 			};
 		});

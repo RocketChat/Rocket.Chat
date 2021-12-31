@@ -1,13 +1,14 @@
-import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
+import { Box, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
 import { callbacks } from '../../../app/callbacks/lib/callbacks';
-import { popover, AccountBox, SideNav } from '../../../app/ui-utils/client';
+import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import { IUser } from '../../../definition/IUser';
 import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
+import { ValueOf } from '../../../definition/utils';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
@@ -40,11 +41,9 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const isDefaultStatus = (id: string): boolean =>
-	(Object.values(UserStatusEnum) as string[]).includes(id);
+const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
 
-const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum =>
-	isDefaultStatus(id);
+const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
 const setStatus = (status: typeof userStatus.list['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
@@ -53,10 +52,7 @@ const setStatus = (status: typeof userStatus.list['']): void => {
 
 const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
 
-const translateStatusName = (
-	t: ReturnType<typeof useTranslation>,
-	status: typeof userStatus.list[''],
-): string => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
 		return t(status.name);
 	}
@@ -65,7 +61,7 @@ const translateStatusName = (
 };
 
 type UserDropdownProps = {
-	user: IUser;
+	user: Pick<IUser, 'username' | 'name' | 'avatarETag' | 'status' | 'statusText'>;
 	onClose: () => void;
 };
 
@@ -74,14 +70,14 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
 	const logout = useLogout();
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const { username, avatarETag, status, statusText } = user;
 
 	const displayName = useUserDisplayName(user);
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (key: keyof typeof userStatus['list']): boolean => userStatus.list[key].name !== 'invisible'
+		? (status: ValueOf<typeof userStatus['list']>): boolean => status.name !== 'invisible'
 		: (): boolean => true;
 
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
@@ -97,26 +93,26 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
-		popover.close();
+		onClose();
 	});
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
 		sidebar.toggle();
-		popover.close();
+		onClose();
 	});
 
 	const handleLogout = useMutableCallback(() => {
 		logout();
-		popover.close();
+		onClose();
 	});
 
 	const accountBoxItems = useReactiveValue(getItems);
 
 	return (
-		<Box display='flex' flexDirection='column' maxWidth='244px'>
-			<Box display='flex' flexDirection='row' mi='neg-x8'>
-				<Box mie='x4' mis='x8'>
+		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
+			<Box display='flex' flexDirection='row'>
+				<Box mie='x4' mis='x16'>
 					<UserAvatar size='x36' username={username || ''} etag={avatarETag} />
 				</Box>
 				<Box
@@ -125,7 +121,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					display='flex'
 					overflow='hidden'
 					flexDirection='column'
-					fontScale='p3'
+					fontScale='p2'
 					mb='neg-x4'
 					flexGrow={1}
 					flexShrink={1}
@@ -139,85 +135,62 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						</Margins>
 					</Box>
 					<Box color='hint'>
-						<MarkdownText
-							withTruncatedText
-							content={statusText || t(status || 'offline')}
-							variant='inlineWithoutBreaks'
-						/>
+						<MarkdownText withTruncatedText content={statusText || t(status || 'offline')} variant='inlineWithoutBreaks' />
 					</Box>
 				</Box>
 			</Box>
-			<Divider mi='neg-x16' mb='x16' borderColor='muted' />
-			<Box mi='neg-x16'>
-				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
-					{t('Status')}
-				</Box>
-				{Object.keys(userStatus.list)
-					.filter(filterInvisibleStatus)
-					.map((key, i) => {
-						const status = userStatus.list[key];
-						const name = status.localizeName ? translateStatusName(t, status) : status.name;
-						const modifier = status.statusType || user.status;
-
-						return (
-							<Option
-								key={i}
-								onClick={(): void => {
-									setStatus(status);
-									onClose();
-								}}
-							>
-								<Option.Column>
-									<UserStatus status={modifier} />
-								</Option.Column>
-								<Option.Content>{name}</Option.Content>
-							</Option>
-						);
-					})}
-				<Option
-					icon='emoji'
-					label={`${t('Custom_Status')}...`}
-					onClick={handleCustomStatus}
-				></Option>
+			<Option.Divider />
+			<Box pi='x16' fontScale='c1' textTransform='uppercase'>
+				{t('Status')}
 			</Box>
+			{Object.values(userStatus.list)
+				.filter(filterInvisibleStatus)
+				.map((status, i) => {
+					const name = status.localizeName ? translateStatusName(t, status) : status.name;
+					const modifier = status.statusType || user.status;
+
+					return (
+						<Option
+							key={i}
+							onClick={(): void => {
+								setStatus(status);
+								onClose();
+							}}
+						>
+							<Option.Column>
+								<UserStatus status={modifier} />
+							</Option.Column>
+							<Option.Content>{name}</Option.Content>
+						</Option>
+					);
+				})}
+			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
 
 			{(accountBoxItems.length || showAdmin) && (
 				<>
-					<Divider mi='neg-x16' mb='x16' />
-					<Box mi='neg-x16'>
-						{showAdmin && (
-							<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
-						)}
-						{accountBoxItems.map((item, i) => {
-							let action;
-
-							if (item.href || item.sideNav) {
-								action = (): void => {
-									if (item.href) {
-										FlowRouter.go(item.href);
-										popover.close();
-									}
-									if (item.sideNav) {
-										SideNav.setFlex(item.sideNav);
-										SideNav.openFlex();
-										popover.close();
-									}
-								};
+					<Option.Divider />
+					{showAdmin && <Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>}
+					{accountBoxItems.map((item, i) => {
+						const action = (): void => {
+							if (item.href) {
+								FlowRouter.go(item.href);
+								onClose();
 							}
+							if (item.sideNav) {
+								SideNav.setFlex(item.sideNav);
+								SideNav.openFlex();
+								onClose();
+							}
+						};
 
-							return (
-								<Option icon={item.icon} label={t(item.name)} onClick={action} key={i}></Option>
-							);
-						})}
-					</Box>
+						return <Option icon={item.icon} label={t(item.name)} onClick={item.href || item.sideNav ? action : undefined} key={i}></Option>;
+					})}
 				</>
 			)}
 
-			<Divider mi='neg-x16' mb='x16' />
-			<Box mi='neg-x16'>
-				<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
-				<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
-			</Box>
+			<Option.Divider />
+			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
+			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
 	);
 };

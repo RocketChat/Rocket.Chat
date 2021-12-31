@@ -8,7 +8,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			name: t('Online'),
 			modifier: 'online',
 			action: () => {
-				(typeof actionCallback === 'function') && actionCallback('online');
+				typeof actionCallback === 'function' && actionCallback('online');
 				$('input[name=statusType]').val('online');
 				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--online');
 			},
@@ -18,7 +18,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			name: t('Away'),
 			modifier: 'away',
 			action: () => {
-				(typeof actionCallback === 'function') && actionCallback('away');
+				typeof actionCallback === 'function' && actionCallback('away');
 				$('input[name=statusType]').val('away');
 				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--away');
 			},
@@ -28,7 +28,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			name: t('Busy'),
 			modifier: 'busy',
 			action: () => {
-				(typeof actionCallback === 'function') && actionCallback('busy');
+				typeof actionCallback === 'function' && actionCallback('busy');
 				$('input[name=statusType]').val('busy');
 				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--busy');
 			},
@@ -41,7 +41,7 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 			name: t('Invisible'),
 			modifier: 'offline',
 			action: () => {
-				(typeof actionCallback === 'function') && actionCallback('offline');
+				typeof actionCallback === 'function' && actionCallback('offline');
 				$('input[name=statusType]').val('offline');
 				$(currentTarget).prop('class', 'rc-input__icon js-status-type edit-status-type-icon--offline');
 			},

@@ -18,10 +18,7 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }) {
 		'livechat/department.listByIds',
 		useMemo(
 			() => ({
-				ids:
-					data && data.department && data.department.departmentsAllowedToForward
-						? data.department.departmentsAllowedToForward
-						: [],
+				ids: data && data.department && data.department.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],
 			}),
 			[data],
 		),

@@ -42,13 +42,12 @@ const CurrentChatsPage: FC<{
 			<GenericTable
 				header={header}
 				renderRow={renderRow}
-				results={data && data.rooms}
-				total={data && data.total}
+				results={data?.rooms}
+				total={data?.total}
 				params={params}
+				setParams={setParams}
 				reload={reload}
-				renderFilter={({ onChange, ...props }: any): any => (
-					<FilterByText setFilter={onChange} setParams={setParams} {...props} />
-				)}
+				renderFilter={({ onChange, ...props }: any): any => <FilterByText setFilter={onChange} {...props} />}
 			/>
 		</Page.Content>
 	</Page>

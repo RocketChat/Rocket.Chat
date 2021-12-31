@@ -31,21 +31,23 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	const users = usernames.filter((username) => username !== me.username).map((username) => {
-		let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = usernames
+		.filter((username) => username !== me.username)
+		.map((username) => {
+			let to = Users.findOneByUsernameIgnoringCase(username);
 
-		// If the username does have an `@`, but does not exist locally, we create it first
-		if (!to && username.indexOf('@') !== -1) {
-			to = Promise.await(addUser(username));
-		}
+			// If the username does have an `@`, but does not exist locally, we create it first
+			if (!to && username.indexOf('@') !== -1) {
+				to = Promise.await(addUser(username));
+			}
 
-		if (!to) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createDirectMessage',
-			});
-		}
-		return to;
-	});
+			if (!to) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'createDirectMessage',
+				});
+			}
+			return to;
+		});
 
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
@@ -80,7 +82,7 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	if (excludeSelf && hasPermission(this.userId, 'view-room-administration')) {
 		options.subscriptionExtra = { open: true };
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, { }, options);
+	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, {}, options);
 
 	return {
 		t: 'd',

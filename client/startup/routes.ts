@@ -106,11 +106,9 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		const DirectoryPage = createTemplateForComponent(
-			'DirectoryPage',
-			() => import('../views/directory/DirectoryPage'),
-			{ attachment: 'at-parent' },
-		);
+		const DirectoryPage = createTemplateForComponent('DirectoryPage', () => import('../views/directory/DirectoryPage'), {
+			attachment: 'at-parent',
+		});
 		appLayout.render('main', { center: DirectoryPage });
 	},
 });
@@ -130,11 +128,9 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		const AccountRoute = createTemplateForComponent(
-			'AccountRoute',
-			() => import('../views/account/AccountRoute'),
-			{ attachment: 'at-parent' },
-		);
+		const AccountRoute = createTemplateForComponent('AccountRoute', () => import('../views/account/AccountRoute'), {
+			attachment: 'at-parent',
+		});
 		appLayout.render('main', { center: AccountRoute });
 	},
 });

@@ -1,8 +1,4 @@
-import {
-	useDebouncedValue,
-	useLocalStorage,
-	useMutableCallback,
-} from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, MouseEvent, useCallback, useMemo, useState } from 'react';
 
 import { chatMessages } from '../../../../../../app/ui';
@@ -41,12 +37,11 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	const onClickItem = useMutableCallback((data) => {
 		const { _id: context } = data;
 
-		channelRoute &&
-			channelRoute.push({
-				id: room._id,
-				tab: 'canned-responses',
-				context,
-			});
+		channelRoute?.push({
+			id: room._id,
+			tab: 'canned-responses',
+			context,
+		});
 	});
 
 	const onClickUse = (e: MouseEvent<HTMLOrSVGElement>, text: string): void => {

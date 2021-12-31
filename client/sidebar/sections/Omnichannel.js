@@ -4,11 +4,7 @@ import React, { memo } from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { useLayout } from '../../contexts/LayoutContext';
-import {
-	useOmnichannelShowQueueLink,
-	useOmnichannelAgentAvailable,
-	useOmnichannelQueueLink,
-} from '../../contexts/OmnichannelContext';
+import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable, useOmnichannelQueueLink } from '../../contexts/OmnichannelContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -53,13 +49,9 @@ const OmnichannelSection = (props) => {
 		<Sidebar.TopBar.ToolBox {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && (
-					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
-				)}
+				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />}
 				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
-				{hasPermission(['view-omnichannel-contact-center']) && (
-					<Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />
-				)}
+				{hasPermission(['view-omnichannel-contact-center']) && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);
