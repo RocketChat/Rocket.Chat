@@ -1,4 +1,4 @@
-import { Cursor, FilterQuery, FindAndModifyWriteOpResultObject, UpdateQuery, WriteOpResult } from 'mongodb';
+import { Cursor, FilterQuery, UpdateQuery, WriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ISetting, ISettingColor, ISettingSelectOption } from '../../../../definition/ISetting';
@@ -152,9 +152,5 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 		};
 
 		return this.find(filter, { projection: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
-	}
-
-	findAndModify(query: any, update: any): Promise<FindAndModifyWriteOpResultObject<ISetting>> {
-		return this.col.findOneAndUpdate(query, update);
 	}
 }

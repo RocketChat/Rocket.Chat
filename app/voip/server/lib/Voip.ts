@@ -1,16 +1,11 @@
 
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import {
-	LivechatDepartment,
-} from '../../../models/server';
-import { LivechatVisitors, VoipRoom } from '../../../models/server/raw';
+import { VoipRoom } from '../../../models/server/raw';
 import { Logger } from '../../../logger/server';
-import { normalizeAgent, validateEmail, createVoipRoom, updateSubscriptionDisplayNameByRoomId, removeSubscriptionByRoomId } from './Helper';
+import { normalizeAgent, createVoipRoom, updateSubscriptionDisplayNameByRoomId, removeSubscriptionByRoomId } from './Helper';
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 import { IOmnichannelRoom, IRoom } from '../../../../definition/IRoom';
 import { callbacks } from '../../../callbacks/server';
@@ -18,147 +13,9 @@ import { callbacks } from '../../../callbacks/server';
 export class Voip {
 	static logger: Logger = new Logger('Voip');;
 
-	static async getVisitorByToken(token: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
-		return LivechatVisitors.getVisitorByToken(token, _options);
-	}
-
-	static async getVisitorById(id: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
-		return LivechatVisitors.findOneById(id, _options);
-	}
-
-	static findOpenRoomByVisitorToken(token: string, _options: FindOneOptions<IOmnichannelRoom> = {}): Cursor<IOmnichannelRoom> {
-		return VoipRoom.findOpenByVisitorToken(token, _options);
-	}
-
-	static async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
-		VoipRoom.updateVisitorStatus(token, status);
-	}
-
-	static async registerGuest(id: string,
-		token: string,
-		name: string,
-		email: string,
-		department: string,
-		phone: any,
-		username: string): Promise<any> {
-		this.logger.debug({ msg: 'registerGuest' });
-		check(token, String);
-		check(id, Match.Maybe(String));
-
-		this.logger.debug(`New incoming conversation: id: ${ id } | token: ${ token }`);
-		let userId;
-		const updateUser = {
-			$set: {
-				token,
-				...phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {},
-				...name ? { name } : {},
-				visitorEmails: [{ address: '' }],
-				department: '',
-			},
-
-		};
-
-		if (email) {
-			email = email.trim();
-			validateEmail(email);
-			updateUser.$set.visitorEmails = [
-				{ address: email },
-			];
-		}
-		if (department) {
-			this.logger.debug(`Attempt to find a department with id/name ${ department }`);
-			const dep = LivechatDepartment.findOneByIdOrName(department);
-			if (!dep) {
-				this.logger.debug('Invalid department provided');
-				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
-			}
-			this.logger.debug(`Assigning visitor ${ token } to department ${ dep._id }`);
-			updateUser.$set.department = dep._id;
-		}
-		const user = await LivechatVisitors.getVisitorByToken(token.toString(), {});
-		const existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email);
-
-		if (user) {
-			this.logger.debug('Found matching user by token');
-			userId = user._id;
-		} else if (email && existingUser) {
-			this.logger.debug('Found matching user by email');
-			userId = existingUser._id;
-		} else {
-			this.logger.debug(`No matches found. Attempting to create new user with token ${ token }`);
-			if (!username) {
-				username = await LivechatVisitors.getNextVisitorUsername();
-			}
-			const userData = {
-				username,
-				ts: new Date(),
-				_id: id,
-				token,
-				_updatedAt: new Date(),
-			};
-			this.logger.debug({ msg: 'registerGuest inserting user ', userData });
-			userId = await LivechatVisitors.insert(userData);
-		}
-		if (userId) {
-			LivechatVisitors.updateById(userId, updateUser);
-			return userId;
-		}
-		return '';
-	}
-
-	static async removeGuest(_id: string): Promise<any> {
-		check(_id, String);
-		const guest = LivechatVisitors.findOneById(_id, {});
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
-		}
-
-		await this.cleanGuestHistory(_id);
-		return LivechatVisitors.removeById(_id);
-	}
-
-	static async cleanGuestHistory(_id: string): Promise<void> {
-		const guest = await LivechatVisitors.findOneById(_id, {});
-		if (!guest) {
-			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
-		}
-
-		const { token } = guest;
-		check(token, String);
-		/*
-		Note(Amol): We need to determine if we need the functions below
-		or we can safely delete this function for VoIP.
-		!!!!!!!!Delete this comment before mergning the PR!!!!!!!!
-		LivechatRooms.findByVisitorToken(token).forEach((room) => {
-			FileUpload.removeFilesByRoomId(room._id);
-			Messages.removeByRoomId(room._id);
-		});
-
-		Subscriptions.removeByVisitorToken(token);
-		LivechatRooms.removeByVisitorToken(token);
-		LivechatInquiry.removeByVisitorToken(token);
-		*/
-	}
-
 	static findAgent(agentId: string): any {
 		return normalizeAgent(agentId);
 	}
-
-	/*
-	static async getRoom(guest: IVisitor, rid: string, roomInfo: string, agent: string): Promise<IRoom> {
-		const token = guest && guest.token;
-
-		const message = {
-			_id: Random.id(),
-			rid,
-			msg: '',
-			token,
-			ts: new Date(),
-		};
-
-		return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
-	}
-	*/
 
 	static async getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<any> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${ guest._id }`);
@@ -299,4 +156,143 @@ export class Voip {
 		*/
 		return true;
 	}
+
+	/*
+	static async getVisitorByToken(token: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
+		return LivechatVisitors.getVisitorByToken(token, _options);
+	}
+
+	static async getVisitorById(id: string, _options: WithoutProjection<FindOneOptions<ILivechatVisitor>> = {}): Promise<ILivechatVisitor | null> {
+		return LivechatVisitors.findOneById(id, _options);
+	}
+
+	static findOpenRoomByVisitorToken(token: string, _options: FindOneOptions<IOmnichannelRoom> = {}): Cursor<IOmnichannelRoom> {
+		return VoipRoom.findOpenByVisitorToken(token, _options);
+	}
+
+	static async notifyGuestStatusChanged(token: string, status: string): Promise<void> {
+		VoipRoom.updateVisitorStatus(token, status);
+	}
+
+	static async registerGuest(id: string,
+		token: string,
+		name: string,
+		email: string,
+		department: string,
+		phone: any,
+		username: string): Promise<any> {
+		this.logger.debug({ msg: 'registerGuest' });
+		check(token, String);
+		check(id, Match.Maybe(String));
+
+		this.logger.debug(`New incoming conversation: id: ${ id } | token: ${ token }`);
+		let userId;
+		const updateUser = {
+			$set: {
+				token,
+				...phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {},
+				...name ? { name } : {},
+				visitorEmails: [{ address: '' }],
+				department: '',
+			},
+
+		};
+
+		if (email) {
+			email = email.trim();
+			validateEmail(email);
+			updateUser.$set.visitorEmails = [
+				{ address: email },
+			];
+		}
+		if (department) {
+			this.logger.debug(`Attempt to find a department with id/name ${ department }`);
+			const dep = LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				this.logger.debug('Invalid department provided');
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
+			}
+			this.logger.debug(`Assigning visitor ${ token } to department ${ dep._id }`);
+			updateUser.$set.department = dep._id;
+		}
+		const user = await LivechatVisitors.getVisitorByToken(token.toString(), {});
+		const existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email);
+
+		if (user) {
+			this.logger.debug('Found matching user by token');
+			userId = user._id;
+		} else if (email && existingUser) {
+			this.logger.debug('Found matching user by email');
+			userId = existingUser._id;
+		} else {
+			this.logger.debug(`No matches found. Attempting to create new user with token ${ token }`);
+			if (!username) {
+				username = await LivechatVisitors.getNextVisitorUsername();
+			}
+			const userData = {
+				username,
+				ts: new Date(),
+				_id: id,
+				token,
+				_updatedAt: new Date(),
+			};
+			this.logger.debug({ msg: 'registerGuest inserting user ', userData });
+			userId = await LivechatVisitors.insert(userData);
+		}
+		if (userId) {
+			LivechatVisitors.updateById(userId, updateUser);
+			return userId;
+		}
+		return '';
+	}
+
+	static async removeGuest(_id: string): Promise<any> {
+		check(_id, String);
+		const guest = LivechatVisitors.findOneById(_id, {});
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
+		}
+
+		await this.cleanGuestHistory(_id);
+		return LivechatVisitors.removeById(_id);
+	}
+
+
+	static async cleanGuestHistory(_id: string): Promise<void> {
+		const guest = await LivechatVisitors.findOneById(_id, {});
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
+		}
+
+		const { token } = guest;
+		check(token, String);
+		/*
+		Note(Amol): We need to determine if we need the functions below
+		or we can safely delete this function for VoIP.
+		!!!!!!!!Delete this comment before mergning the PR!!!!!!!!
+		LivechatRooms.findByVisitorToken(token).forEach((room) => {
+			FileUpload.removeFilesByRoomId(room._id);
+			Messages.removeByRoomId(room._id);
+		});
+
+		Subscriptions.removeByVisitorToken(token);
+		LivechatRooms.removeByVisitorToken(token);
+		LivechatInquiry.removeByVisitorToken(token);
+	}
+
+	static async getRoom(guest: IVisitor, rid: string, roomInfo: string, agent: string): Promise<IRoom> {
+		const token = guest && guest.token;
+
+		const message = {
+			_id: Random.id(),
+			rid,
+			msg: '',
+			token,
+			ts: new Date(),
+		};
+
+		return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
+	}
+
+	*/
 }

@@ -1,6 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-
 
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 import { VoipRoom } from '../../../models/server/raw';
@@ -11,6 +9,7 @@ import { Logger } from '../../../../server/lib/logger/Logger';
 const logger = new Logger('VoipHelper');
 
 
+/*
 const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export function validateEmail(email: string): boolean {
@@ -19,7 +18,7 @@ export function validateEmail(email: string): boolean {
 	}
 	return true;
 }
-
+*/
 /**
  * How to deal with custom field? Commenting it for timebeibng
  */

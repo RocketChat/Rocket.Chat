@@ -1,9 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, UpdateQuery, WriteOpResult, WithoutProjection } from 'mongodb';
+import { AggregationCursor, Cursor, FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
-import { Settings } from '.';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 	findOneById(_id: string, options: WithoutProjection<FindOneOptions<ILivechatVisitor>>): Promise<ILivechatVisitor | null> {
@@ -92,41 +91,5 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		};
 
 		return this.find(query, options);
-	}
-
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor|null> {
-		const query = {
-			'visitorEmails.address': new RegExp(`^${ escapeRegExp(emailAddress) }$`, 'i'),
-		};
-
-		return this.findOne(query);
-	}
-
-	async getNextVisitorUsername(): Promise<string> {
-		const query = {
-			_id: 'Livechat_guest_count',
-		};
-
-		const update = {
-			$inc: {
-				value: 1,
-			},
-		};
-
-		const livechatCount = await Settings.findAndModify(query, update);
-		if (livechatCount?.value?.value) {
-			const count = livechatCount.value.value;
-			return `guest-${ Number(count) + 1 }`;
-		}
-		return Promise.resolve('');
-	}
-
-	async insert(args: ILivechatVisitor): Promise<any> {
-		const result = await this.insertOne(args);
-		return result.insertedId;
-	}
-
-	updateById(_id: any, update: UpdateQuery<ILivechatVisitor> | Partial<ILivechatVisitor>): Promise<WriteOpResult> {
-		return this.update({ _id }, update);
 	}
 }

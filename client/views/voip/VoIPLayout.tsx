@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
+import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
-import { IVisitor } from '../../../definition/IVisitor';
 import { ClientLogger } from '../../../lib/ClientLogger';
 import { ICallerInfo } from '../../components/voip/ICallEventDelegate';
 import { VoipEvents } from '../../components/voip/SimpleVoipUser';
@@ -30,7 +30,7 @@ const VoIPLayout: FC = () => {
 	const endCall = useRef<HTMLButtonElement>(null);
 	const roomVisitorToken = createToken();
 	let caller: ICallerInfo;
-	let visitor: IVisitor;
+	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 	const logger: ClientLogger = useMemo(() => new ClientLogger('VoIPLayout'), []);
 	const onChange = useCallback((): void => {
@@ -313,7 +313,7 @@ const VoIPLayout: FC = () => {
 		try {
 			// Create a new visitor
 			logger.info('Creating new visitor');
-			visitor = await APIClient.v1.post(
+			visitor = (await APIClient.v1.post(
 				'voip/visitor',
 				{},
 				{
@@ -324,7 +324,7 @@ const VoIPLayout: FC = () => {
 						phone: caller.callerId,
 					},
 				},
-			);
+			)) as unknown as ILivechatVisitor;
 			logger.info('Created new Visitor = ', JSON.stringify(visitor));
 
 			// Now create a new room
@@ -337,7 +337,7 @@ const VoIPLayout: FC = () => {
 			room = output.room;
 			logger.info('New Room created', JSON.stringify(room));
 		} catch (error) {
-			logger.error(`error ${error} in vhile creating the room`);
+			logger.error(`error ${error} while creating the room`);
 			throw error;
 		}
 	};

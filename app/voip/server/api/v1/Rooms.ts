@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../../api/server';
-import { VoipRoom } from '../../../../models/server/raw';
+import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
 import { Voip } from '../../lib/Voip';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
@@ -18,7 +18,7 @@ API.v1.addRoute('voip/room', {
 		check(this.queryParams, defaultCheckParams);
 
 		const { token, rid: roomId, agentId } = this.queryParams;
-		const guest = await Voip.getVisitorByToken(token);
+		const guest = await LivechatVisitors.getVisitorByToken(token, {});
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
@@ -60,7 +60,7 @@ API.v1.addRoute('voip/room.close', {
 			});
 			const { rid, token } = this.bodyParams;
 
-			const visitor = await Voip.getVisitorByToken(token);
+			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
 				throw new Meteor.Error('invalid-token');
 			}
