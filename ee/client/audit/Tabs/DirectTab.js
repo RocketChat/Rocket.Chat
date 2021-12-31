@@ -11,12 +11,7 @@ const DirectTab = ({ errors, users, onChangeUsers }) => {
 		<Field>
 			<Field.Label>{t('Users')}</Field.Label>
 			<Field.Row>
-				<UserAutoCompleteMultiple
-					error={errors.users}
-					value={users}
-					onChange={onChangeUsers}
-					placeholder={t('Username_Placeholder')}
-				/>
+				<UserAutoCompleteMultiple error={errors.users} value={users} onChange={onChangeUsers} placeholder={t('Username_Placeholder')} />
 			</Field.Row>
 			{errors.users && <Field.Error>{errors.users}</Field.Error>}
 		</Field>

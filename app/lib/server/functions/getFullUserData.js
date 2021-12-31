@@ -48,12 +48,12 @@ settings.watch('Accounts_CustomFields', (value) => {
 		Object.keys(customFieldsOnServer).forEach((key) => {
 			const element = customFieldsOnServer[key];
 			if (element.public) {
-				publicCustomFields[`customFields.${ key }`] = 1;
+				publicCustomFields[`customFields.${key}`] = 1;
 			}
-			customFields[`customFields.${ key }`] = 1;
+			customFields[`customFields.${key}`] = 1;
 		});
 	} catch (e) {
-		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
+		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${e}`);
 	}
 });
 
@@ -61,7 +61,7 @@ const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : pub
 
 const getFields = (canViewAllInfo) => ({
 	...defaultFields,
-	...canViewAllInfo && fullFields,
+	...(canViewAllInfo && fullFields),
 	...getCustomFields(canViewAllInfo),
 });
 

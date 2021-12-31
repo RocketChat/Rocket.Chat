@@ -7,7 +7,9 @@ import { dispatchEvent } from '../handler';
 
 async function afterSaveMessage(message, room) {
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return message; }
+	if (!hasExternalDomain(room)) {
+		return message;
+	}
 
 	clientLogger.debug({ msg: 'afterSaveMessage', message, room });
 

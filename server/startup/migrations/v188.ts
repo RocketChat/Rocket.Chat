@@ -1,11 +1,7 @@
 import { Permissions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
-
-const newRolePermissions = [
-	'view-d-room',
-	'view-p-room',
-];
+const newRolePermissions = ['view-d-room', 'view-p-room'];
 
 const roleName = 'guest';
 

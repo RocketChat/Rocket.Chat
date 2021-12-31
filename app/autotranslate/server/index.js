@@ -16,7 +16,4 @@ import './deeplTranslate.js';
 import './msTranslate.js';
 import './methods/getProviderUiMetadata.js';
 
-export {
-	AutoTranslate,
-	TranslationProviderRegistry,
-};
+export { AutoTranslate, TranslationProviderRegistry };

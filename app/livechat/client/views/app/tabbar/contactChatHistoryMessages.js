@@ -36,18 +36,24 @@ Template.contactChatHistoryMessages.helpers({
 	empty() {
 		return Template.instance().messages.get().length === 0;
 	},
+	hasError() {
+		return Template.instance().hasError.get();
+	},
+	error() {
+		return Template.instance().error.get();
+	},
 });
 
 Template.contactChatHistoryMessages.events({
 	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
 	}, 200),
-	'keyup #message-search': _.debounce(function(e, instance) {
+	'keyup #message-search': _.debounce(function (e, instance) {
 		if (e.keyCode === 13) {
 			return e.preventDefault();
 		}
@@ -63,7 +69,7 @@ Template.contactChatHistoryMessages.events({
 	}, 300),
 });
 
-Template.contactChatHistoryMessages.onCreated(function() {
+Template.contactChatHistoryMessages.onCreated(function () {
 	const currentData = Template.currentData();
 	this.rid = currentData.rid;
 	this.messages = new ReactiveVar([]);
@@ -72,15 +78,23 @@ Template.contactChatHistoryMessages.onCreated(function() {
 	this.searchTerm = new ReactiveVar('');
 	this.isLoading = new ReactiveVar(true);
 	this.limit = new ReactiveVar(MESSAGES_LIMIT);
+	this.hasError = new ReactiveVar(false);
+	this.error = new ReactiveVar(null);
 
 	this.loadMessages = async (url) => {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
 
-		const { messages, total } = await APIClient.v1.get(url);
-		this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
-		this.hasMore.set(total > this.messages.get().length);
-		this.isLoading.set(false);
+		try {
+			const { messages, total } = await APIClient.v1.get(url);
+			this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
+			this.hasMore.set(total > this.messages.get().length);
+		} catch (e) {
+			this.hasError.set(true);
+			this.error.set(e);
+		} finally {
+			this.isLoading.set(false);
+		}
 	};
 
 	this.autorun(() => {
@@ -89,10 +103,10 @@ Template.contactChatHistoryMessages.onCreated(function() {
 		const searchTerm = this.searchTerm.get();
 
 		if (searchTerm !== '') {
-			return this.loadMessages(`chat.search/?roomId=${ this.rid }&searchText=${ searchTerm }&count=${ limit }&offset=${ offset }&sort={"ts": 1}`);
+			return this.loadMessages(`chat.search/?roomId=${this.rid}&searchText=${searchTerm}&count=${limit}&offset=${offset}&sort={"ts": 1}`);
 		}
 
-		this.loadMessages(`channels.messages/?roomId=${ this.rid }&count=${ limit }&offset=${ offset }&sort={"ts": 1}&query={"$or": [ {"t": {"$exists": false} }, {"t": "livechat-close"} ] }`);
+		this.loadMessages(`livechat/${this.rid}/messages?count=${limit}&offset=${offset}&sort={"ts": 1}`);
 	});
 
 	this.autorun(() => {

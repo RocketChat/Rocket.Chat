@@ -5,13 +5,15 @@ import { TEAM_TYPE } from '../../../ITeam';
 const ajv = new Ajv();
 
 export type TeamsUpdateProps = ({ teamId: string } | { teamName: string }) & {
-	data: ({
-		name: string;
-		type?: TEAM_TYPE;
-	} | {
-		name?: string;
-		type: TEAM_TYPE;
-	});
+	data:
+		| {
+				name: string;
+				type?: TEAM_TYPE;
+		  }
+		| {
+				name?: string;
+				type: TEAM_TYPE;
+		  };
 };
 
 const teamsUpdatePropsSchema: JSONSchemaType<TeamsUpdateProps> = {
@@ -38,10 +40,7 @@ const teamsUpdatePropsSchema: JSONSchemaType<TeamsUpdateProps> = {
 				},
 				type: {
 					type: 'number',
-					enum: [
-						TEAM_TYPE.PUBLIC,
-						TEAM_TYPE.PRIVATE,
-					],
+					enum: [TEAM_TYPE.PUBLIC, TEAM_TYPE.PRIVATE],
 				},
 			},
 			additionalProperties: false,

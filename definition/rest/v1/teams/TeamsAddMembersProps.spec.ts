@@ -52,19 +52,41 @@ describe('TeamsAddMemberProps (definition/rest/v1)', () => {
 		});
 
 		it('should return false if teamName was provided and members contains an invalid property', () => {
-			assert.isFalse(isTeamsAddMembersProps({ teamName: '123', members: [{ userId: '123', roles: ['123'], invalid: true }] }));
+			assert.isFalse(
+				isTeamsAddMembersProps({
+					teamName: '123',
+					members: [{ userId: '123', roles: ['123'], invalid: true }],
+				}),
+			);
 		});
 
 		it('should return false if teamId was provided and members contains an invalid property', () => {
-			assert.isFalse(isTeamsAddMembersProps({ teamId: '123', members: [{ userId: '123', roles: ['123'], invalid: true }] }));
+			assert.isFalse(
+				isTeamsAddMembersProps({
+					teamId: '123',
+					members: [{ userId: '123', roles: ['123'], invalid: true }],
+				}),
+			);
 		});
 
 		it('should return false if teamName informed but contains an invalid property', () => {
-			assert.isFalse(isTeamsAddMembersProps({ member: [{ userId: '123', roles: ['123'] }], teamName: '123', invalid: true }));
+			assert.isFalse(
+				isTeamsAddMembersProps({
+					member: [{ userId: '123', roles: ['123'] }],
+					teamName: '123',
+					invalid: true,
+				}),
+			);
 		});
 
 		it('should return false if teamId informed but contains an invalid property', () => {
-			assert.isFalse(isTeamsAddMembersProps({ member: [{ userId: '123', roles: ['123'] }], teamId: '123', invalid: true }));
+			assert.isFalse(
+				isTeamsAddMembersProps({
+					member: [{ userId: '123', roles: ['123'] }],
+					teamId: '123',
+					invalid: true,
+				}),
+			);
 		});
 	});
 });

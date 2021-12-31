@@ -4,7 +4,9 @@ import { ITeamMemberParams } from '../../../../server/sdk/types/ITeamService';
 
 const ajv = new Ajv();
 
-export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & { members: ITeamMemberParams[] };
+export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & {
+	members: ITeamMemberParams[];
+};
 
 const teamsAddMembersPropsSchema: JSONSchemaType<TeamsAddMembersProps> = {
 	oneOf: [
@@ -17,7 +19,6 @@ const teamsAddMembersPropsSchema: JSONSchemaType<TeamsAddMembersProps> = {
 				members: {
 					type: 'array',
 					items: {
-
 						type: 'object',
 						properties: {
 							userId: {
@@ -50,7 +51,6 @@ const teamsAddMembersPropsSchema: JSONSchemaType<TeamsAddMembersProps> = {
 				members: {
 					type: 'array',
 					items: {
-
 						type: 'object',
 						properties: {
 							userId: {

@@ -6,20 +6,18 @@ import type { IUser } from '../../../../definition/IUser';
 export type UserPresenseStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
-}
+};
 
 export type UserPresenseStreamArgs = {
-	'uid': string;
+	uid: string;
 	args: unknown;
-}
+};
 
 const e = new Emitter<{
 	[key: string]: UserPresenseStreamArgs;
 }>();
 
-
 const clients = new WeakMap<Connection, UserPresence>();
-
 
 export class UserPresence {
 	private readonly streamer: IStreamer;
@@ -45,12 +43,15 @@ export class UserPresence {
 	off = (uid: string): void => {
 		e.off(uid, this.run);
 		this.listeners.delete(uid);
-	}
+	};
 
 	run = (args: UserPresenseStreamArgs): void => {
-		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
+		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, {
+			...args,
+			eventName: args.uid,
+		}); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
 		(this.publication as any)._session.socket.send(payload);
-	}
+	};
 
 	stop(): void {
 		this.listeners.forEach(this.off);
@@ -73,16 +74,18 @@ export class UserPresence {
 
 export class StreamPresence {
 	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer {
-		return new class StreamPresence extends Streamer {
-			async _publish(publication: IPublication, _eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+		return new (class StreamPresence extends Streamer {
+			async _publish(
+				publication: IPublication,
+				_eventName: string,
+				options: boolean | { useCollection?: boolean; args?: any } = false,
+			): Promise<void> {
 				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenseStreamProps;
-
 
 				const [client, main] = UserPresence.getClient(publication, this);
 
 				added?.forEach((uid) => client.listen(uid));
 				removed?.forEach((uid) => client.off(uid));
-
 
 				if (!main) {
 					publication.stop();
@@ -93,10 +96,9 @@ export class StreamPresence {
 
 				publication.onStop(() => client.stop());
 			}
-		}(name);
+		})(name);
 	}
 }
-
 
 export const emit = (uid: string, args: UserPresenseStreamArgs): void => {
 	e.emit(uid, { uid, args });

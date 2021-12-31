@@ -49,25 +49,11 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteTrigger}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteTrigger} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Row
-			key={_id}
-			role='link'
-			action
-			tabIndex={0}
-			onClick={handleClick}
-			onKeyDown={handleKeyDown}
-		>
+		<Table.Row key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<Table.Cell withTruncatedText>{name}</Table.Cell>
 			<Table.Cell withTruncatedText>{description}</Table.Cell>
 			<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>

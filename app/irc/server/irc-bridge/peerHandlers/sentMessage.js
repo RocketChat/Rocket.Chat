@@ -31,7 +31,7 @@ export default function handleSentMessage(args) {
 	});
 
 	if (!user) {
-		throw new Error(`Could not find a user with nick ${ args.nick }`);
+		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
 	let room;

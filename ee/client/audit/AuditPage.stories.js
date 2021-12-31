@@ -3,7 +3,7 @@ import React from 'react';
 import AuditPage from './AuditPage';
 
 export default {
-	title: 'ee/Audit',
+	title: 'auditing/Audit',
 	component: AuditPage,
 };
 
