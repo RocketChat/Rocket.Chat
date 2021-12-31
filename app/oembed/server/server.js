@@ -2,7 +2,7 @@ import URL from 'url';
 import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import { HTTPInternals } from 'meteor/http';
+// import { HTTPInternals } from 'meteor/http';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
@@ -17,7 +17,7 @@ import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
-const request = HTTPInternals.NpmModules.request.module;
+// const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
 
 //  Detect encoding
@@ -112,42 +112,44 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 	let error = null;
 	const chunks = [];
 	let chunksTotalLength = 0;
-	const stream = request(opts);
-	stream.on('response', function (response) {
-		statusCode = response.statusCode;
-		headers = response.headers;
-		if (response.statusCode !== 200) {
-			return stream.abort();
-		}
-	});
-	stream.on('data', function (chunk) {
-		chunks.push(chunk);
-		chunksTotalLength += chunk.length;
-		if (chunksTotalLength > 250000) {
-			return stream.abort();
-		}
-	});
-	stream.on(
-		'end',
-		Meteor.bindEnvironment(function () {
-			if (error != null) {
-				return callback(null, {
-					error,
-					parsedUrl,
-				});
-			}
-			const buffer = Buffer.concat(chunks);
-			return callback(null, {
-				headers,
-				body: toUtf8(headers['content-type'], buffer),
-				parsedUrl,
-				statusCode,
-			});
-		}),
-	);
-	return stream.on('error', function (err) {
-		error = err;
-	});
+	// TODO convert code to no use "request"
+	console.warn('TODO convert code to no use "request"');
+	// const stream = request(opts);
+	// stream.on('response', function (response) {
+	// 	statusCode = response.statusCode;
+	// 	headers = response.headers;
+	// 	if (response.statusCode !== 200) {
+	// 		return stream.abort();
+	// 	}
+	// });
+	// stream.on('data', function (chunk) {
+	// 	chunks.push(chunk);
+	// 	chunksTotalLength += chunk.length;
+	// 	if (chunksTotalLength > 250000) {
+	// 		return stream.abort();
+	// 	}
+	// });
+	// stream.on(
+	// 	'end',
+	// 	Meteor.bindEnvironment(function () {
+	// 		if (error != null) {
+	// 			return callback(null, {
+	// 				error,
+	// 				parsedUrl,
+	// 			});
+	// 		}
+	// 		const buffer = Buffer.concat(chunks);
+	// 		return callback(null, {
+	// 			headers,
+	// 			body: toUtf8(headers['content-type'], buffer),
+	// 			parsedUrl,
+	// 			statusCode,
+	// 		});
+	// 	}),
+	// );
+	// return stream.on('error', function (err) {
+	// 	error = err;
+	// });
 });
 
 OEmbed.getUrlMeta = function (url, withFragment) {
