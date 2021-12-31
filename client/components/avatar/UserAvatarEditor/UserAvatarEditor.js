@@ -6,23 +6,26 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import UserAvatar from '../UserAvatar';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 
-function UserAvatarEditor({
-	currentUsername,
-	username,
-	setAvatarObj,
-	suggestions,
-	disabled,
-	etag,
-}) {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
 	const [urlEmpty, setUrlEmpty] = useState(true);
 
+	const toDataURL = (file, callback) => {
+		const reader = new FileReader();
+		reader.onload = function (e) {
+			callback(e.target.result);
+		};
+		reader.readAsDataURL(file);
+	};
+
 	const setUploadedPreview = useCallback(
 		async (file, avatarObj) => {
 			setAvatarObj(avatarObj);
-			setNewAvatarSource(URL.createObjectURL(file));
+			toDataURL(file, (dataurl) => {
+				setNewAvatarSource(dataurl);
+			});
 		},
 		[setAvatarObj],
 	);
@@ -49,46 +52,20 @@ function UserAvatarEditor({
 	};
 
 	return (
-		<Box display='flex' flexDirection='column' fontScale='p2'>
+		<Box display='flex' flexDirection='column' fontScale='p2m'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
-				<UserAvatar
-					size='x124'
-					url={url}
-					username={currentUsername}
-					etag={etag}
-					style={{ objectFit: 'contain' }}
-					mie='x4'
-				/>
-				<Box
-					display='flex'
-					flexDirection='column'
-					flexGrow='1'
-					justifyContent='space-between'
-					mis='x4'
-				>
+				<UserAvatar size='x124' url={url} username={currentUsername} etag={etag} style={{ objectFit: 'contain' }} mie='x4' />
+				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Margins inline='x4'>
-							<Button
-								square
-								mis='none'
-								onClick={clickReset}
-								disabled={disabled}
-								mie='x4'
-								title={t('Accounts_SetDefaultAvatar')}
-							>
+							<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
 								<Avatar url={`/avatar/%40${username}`} />
 							</Button>
 							<Button square onClick={clickUpload} disabled={disabled} title={t('Upload')}>
 								<Icon name='upload' size='x20' />
 							</Button>
-							<Button
-								square
-								mie='none'
-								onClick={clickUrl}
-								disabled={disabled || urlEmpty}
-								title={t('Add URL')}
-							>
+							<Button square mie='none' onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')}>
 								<Icon name='permalink' size='x20' />
 							</Button>
 							{suggestions && (
@@ -103,12 +80,7 @@ function UserAvatarEditor({
 					</Box>
 					<Margins inlineStart='x4'>
 						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput
-							flexGrow={0}
-							placeholder={t('Use_url_for_avatar')}
-							value={avatarFromUrl}
-							onChange={handleAvatarFromUrlChange}
-						/>
+						<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange} />
 					</Margins>
 				</Box>
 			</Box>

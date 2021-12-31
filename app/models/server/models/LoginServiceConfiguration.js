@@ -4,4 +4,6 @@ import { Base } from './_Base';
 
 export class LoginServiceConfiguration extends Base {}
 
-export default new LoginServiceConfiguration(ServiceConfiguration.configurations, { preventSetUpdatedAt: true });
+export default new LoginServiceConfiguration(ServiceConfiguration.configurations, {
+	preventSetUpdatedAt: true,
+});

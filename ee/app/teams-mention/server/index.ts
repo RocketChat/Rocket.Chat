@@ -1,5 +1,3 @@
-import { Promise } from 'meteor/promise';
-
 import { onLicense } from '../../license/server';
 import { overwriteClassOnLicense } from '../../license/server/license';
 import { SpotlightEnterprise } from './EESpotlight';
@@ -25,20 +23,16 @@ onLicense('teams-mention', () => {
 	callbacks.add('beforeGetMentions', (mentionIds: Array<string>, extra: IExtraDataForNotification) => {
 		const { otherMentions } = extra;
 
-		const teamIds = otherMentions
-			.filter(({ type }) => type === 'team')
-			.map(({ _id }) => _id);
+		const teamIds = otherMentions.filter(({ type }) => type === 'team').map(({ _id }) => _id);
 
 		if (!teamIds.length) {
 			return mentionIds;
 		}
 
 		const members: ITeamMember[] = Promise.await(Team.getMembersByTeamIds(teamIds, { projection: { userId: 1 } }));
-		mentionIds.push(...new Set(
-			members
-				.map(({ userId }: { userId: string }) => userId)
-				.filter((userId: string) => !mentionIds.includes(userId)),
-		));
+		mentionIds.push(
+			...new Set(members.map(({ userId }: { userId: string }) => userId).filter((userId: string) => !mentionIds.includes(userId))),
+		);
 
 		return mentionIds;
 	});

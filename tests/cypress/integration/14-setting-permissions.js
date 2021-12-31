@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import { assert } from 'chai';
 
 import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
@@ -17,10 +16,10 @@ function logoutRocketchat() {
 	sideNav.logout.click();
 }
 
-describe.skip('[Rocket.Chat Settings based permissions]', function() {
+describe.skip('[Rocket.Chat Settings based permissions]', function () {
 	const newTitle = 'Testtitle';
 
-	describe('Give User Permissions', function() {
+	describe('Give User Permissions', function () {
 		before(() => {
 			try {
 				// If the tests run as a suite,a user may already be logged-in
@@ -33,7 +32,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			admin.permissionsLink.click();
 		});
 
-		it('Set permission for user to manage settings', function(done) {
+		it('Set permission for user to manage settings', function (done) {
 			if (!admin.rolesManageSettingsPermissions.isSelected()) {
 				admin.rolesManageSettingsPermissions.click();
 			}
@@ -41,7 +40,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			done();
 		});
 
-		it('Set Permission for user to change titlepage title', function(done) {
+		it('Set Permission for user to change titlepage title', function (done) {
 			admin.rolesSettingsTab.click();
 			admin.rolesSettingsFindInput.type('Layout');
 			if (!admin.rolesSettingLayoutTitle.isSelected()) {
@@ -57,7 +56,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 	});
 
-	describe('Test new user setting permissions', function() {
+	describe('Test new user setting permissions', function () {
 		before(() => {
 			try {
 				checkIfUserIsValid(username, email, password);
@@ -68,7 +67,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			openAdminView();
 		});
 
-		it('Change titlepage title is allowed', function(done) {
+		it('Change titlepage title is allowed', function (done) {
 			admin.layoutLink.click();
 			admin.generalLayoutTitle.type(newTitle);
 			browser.pause(2000);
@@ -82,14 +81,14 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 		});
 	});
 
-	describe('Verify settings change and cleanup', function() {
+	describe('Verify settings change and cleanup', function () {
 		before(() => {
 			console.log('Switching back to Admin');
 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
 			openAdminView();
 		});
 
-		it('New settings value visible for admin as well', function(done) {
+		it('New settings value visible for admin as well', function (done) {
 			admin.layoutLink.click();
 			admin.layoutButtonExpandContent.click();
 			assert(admin.generalLayoutTitle.getValue() === newTitle, 'Title setting value not changed properly');
@@ -98,7 +97,7 @@ describe.skip('[Rocket.Chat Settings based permissions]', function() {
 			done();
 		});
 
-		it('Cleanup permissions', function(done) {
+		it('Cleanup permissions', function (done) {
 			admin.permissionsLink.click();
 
 			admin.rolesManageSettingsPermissions.click();

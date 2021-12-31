@@ -1,22 +1,20 @@
-/* eslint-env mocha */
-import chai, { expect } from 'chai';
-import spies from 'chai-spies';
+import { expect, spy } from 'chai';
 import rewire from 'rewire';
-
-chai.use(spies);
 
 describe('Raw Settings', () => {
 	let rawModule;
 	const cache = new Map();
 
 	before('rewire deps', () => {
-		const spy = chai.spy(async (id) => {
-			if (id === '1') { return 'some-setting-value'; }
+		const spied = spy(async (id) => {
+			if (id === '1') {
+				return 'some-setting-value';
+			}
 			return null;
 		});
 
 		rawModule = rewire('./raw');
-		rawModule.__set__('setFromDB', spy);
+		rawModule.__set__('setFromDB', spied);
 		rawModule.__set__('cache', cache);
 	});
 

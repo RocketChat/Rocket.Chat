@@ -4,11 +4,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const blockstackLogin = (authResponse, userData = {}) => {
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			blockstack: true,
-			authResponse,
-			userData,
-		}],
+		methodArguments: [
+			{
+				blockstack: true,
+				authResponse,
+				userData,
+			},
+		],
 		userCallback() {
 			FlowRouter.go('home');
 		},

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { settings } from '../../../app/settings/client';
 
 Meteor.startup(() => {
@@ -11,11 +11,6 @@ Meteor.startup(() => {
 	import('../../../app/markdown/client').then(({ createMarkdownNotificationRenderer }) => {
 		const renderNotification = createMarkdownNotificationRenderer(options);
 		callbacks.remove('renderNotification', 'filter-markdown');
-		callbacks.add(
-			'renderNotification',
-			renderNotification,
-			callbacks.priority.HIGH,
-			'filter-markdown',
-		);
+		callbacks.add('renderNotification', renderNotification, callbacks.priority.HIGH, 'filter-markdown');
 	});
 });

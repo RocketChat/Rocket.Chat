@@ -7,11 +7,11 @@ export type SectionName = string;
 
 export enum SettingEditor {
 	COLOR = 'color',
-	EXPRESSION = 'expression'
+	EXPRESSION = 'expression',
 }
 type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = (string | number)[];
-export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
+export type SettingValueRoomPick = Array<{ _id: string; name: string }> | string;
 export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined;
 
 export interface ISettingSelectOption {
@@ -23,7 +23,24 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 export interface ISettingBase {
 	_id: SettingId;
-	type: 'boolean' | 'timezone' |'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
+	type:
+		| 'boolean'
+		| 'timezone'
+		| 'string'
+		| 'relativeUrl'
+		| 'password'
+		| 'int'
+		| 'select'
+		| 'multiSelect'
+		| 'language'
+		| 'color'
+		| 'font'
+		| 'code'
+		| 'action'
+		| 'asset'
+		| 'roomPick'
+		| 'group'
+		| 'date';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -57,7 +74,7 @@ export interface ISettingBase {
 	wizard?: {
 		step: number;
 		order: number;
-	};
+	} | null;
 	persistent?: boolean; // todo: remove
 	readonly?: boolean; // todo: remove
 	alert?: string; // todo: check if this is still used
@@ -79,7 +96,6 @@ export interface ISettingGroup {
 	alert?: string; // todo: check if this is needed
 }
 
-
 export interface ISettingEnterprise extends ISettingBase {
 	enterprise: true;
 	invalidValue: SettingValue;
@@ -97,12 +113,20 @@ export interface ISettingCode extends ISettingBase {
 
 export interface ISettingAction extends ISettingBase {
 	type: 'action';
+	value: string;
 	actionText?: string;
 }
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: AssetValue;
 }
+
+export interface ISettingDate extends ISettingBase {
+	type: 'date';
+	value: Date;
+}
+
+export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
 
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 

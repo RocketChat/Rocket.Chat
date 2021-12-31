@@ -1,11 +1,4 @@
-import {
-	Accordion,
-	Field,
-	FieldGroup,
-	MultiSelect,
-	ToggleSwitch,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -16,14 +9,9 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
-	const userEnableMessageParserEarlyAdoption = useUserPreference(
-		'enableMessageParserEarlyAdoption',
-	);
+	const userEnableMessageParserEarlyAdoption = useUserPreference('enableMessageParserEarlyAdoption');
 
-	const options = useMemo(
-		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]),
-		[userDontAskAgainList],
-	);
+	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
 
 	const selectedOptions = options.map(([action]) => action);
 
@@ -60,10 +48,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 				<Field>
 					<Field.Label>{t('Enable_message_parser_early_adoption')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch
-							checked={enableMessageParserEarlyAdoption}
-							onChange={handleEnableMessageParserEarlyAdoption}
-						/>
+						<ToggleSwitch checked={enableMessageParserEarlyAdoption} onChange={handleEnableMessageParserEarlyAdoption} />
 					</Field.Row>
 				</Field>
 				<Callout type='warning'>{t('Enable_message_parser_early_adoption_alert')}</Callout>

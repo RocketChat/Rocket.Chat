@@ -30,7 +30,7 @@ async function runFederation(): Promise<void> {
 
 	// Load public key info
 	try {
-		const resolvedTXT = await resolveTXT(`rocketchat-public-key.${ federationDomain }`);
+		const resolvedTXT = await resolveTXT(`rocketchat-public-key.${federationDomain}`);
 		updateSetting('FEDERATION_ResolvedPublicKeyTXT', resolvedTXT);
 	} catch (err) {
 		updateSetting('FEDERATION_ResolvedPublicKeyTXT', null);
@@ -38,7 +38,7 @@ async function runFederation(): Promise<void> {
 
 	// Load legacy tcp protocol info
 	try {
-		const resolvedTXT = await resolveTXT(`rocketchat-tcp-protocol.${ federationDomain }`);
+		const resolvedTXT = await resolveTXT(`rocketchat-tcp-protocol.${federationDomain}`);
 		updateSetting('FEDERATION_ResolvedProtocolTXT', resolvedTXT);
 	} catch (err) {
 		updateSetting('FEDERATION_ResolvedProtocolTXT', null);
@@ -47,9 +47,9 @@ async function runFederation(): Promise<void> {
 	// Load SRV info
 	try {
 		// If there is a protocol entry on DNS, we use it
-		const protocol = settings.get('FEDERATION_ResolvedProtocolTXT') as string ? 'tcp' : rocketChatProtocol;
+		const protocol = (settings.get('FEDERATION_ResolvedProtocolTXT') as string) ? 'tcp' : rocketChatProtocol;
 
-		const resolvedSRV = await resolveSRV(`_rocketchat._${ protocol }.${ federationDomain }`);
+		const resolvedSRV = await resolveSRV(`_rocketchat._${protocol}.${federationDomain}`);
 		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
 	} catch (err) {
 		updateSetting('FEDERATION_ResolvedSRV', '{}');

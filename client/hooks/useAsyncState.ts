@@ -17,9 +17,7 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 				return asyncState.loading<T>();
 			}
 
-			return asyncState.resolved<T>(
-				typeof initialValue === 'function' ? (initialValue as () => T)() : initialValue,
-			);
+			return asyncState.resolved<T>(typeof initialValue === 'function' ? (initialValue as () => T)() : initialValue);
 		}),
 	);
 

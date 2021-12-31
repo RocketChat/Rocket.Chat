@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createDepartment } from '../../../data/livechat/department.js';
 
-describe('LIVECHAT - departments', function() {
+describe('LIVECHAT - departments', function () {
 	this.retries(0);
 	let department;
 
@@ -16,7 +16,8 @@ describe('LIVECHAT - departments', function() {
 			.then((createdDepartment) => {
 				department = createdDepartment;
 				done();
-			}).catch(console.log);
+			})
+			.catch(console.log);
 	});
 
 	describe('livechat/department', () => {
@@ -24,7 +25,8 @@ describe('LIVECHAT - departments', function() {
 			updatePermission('view-l-room', [])
 				.then(() => updatePermission('view-livechat-departments', []))
 				.then(() => {
-					request.get(api('livechat/department'))
+					request
+						.get(api('livechat/department'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -39,7 +41,8 @@ describe('LIVECHAT - departments', function() {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => updatePermission('view-livechat-departments', ['admin']))
 				.then(() => {
-					request.get(api('livechat/department'))
+					request
+						.get(api('livechat/department'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -60,7 +63,8 @@ describe('LIVECHAT - departments', function() {
 			updatePermission('view-l-room', [])
 				.then(() => updatePermission('view-livechat-departments', []))
 				.then(() => {
-					request.get(api(`livechat/department/${ department._id }`))
+					request
+						.get(api(`livechat/department/${department._id}`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -75,7 +79,8 @@ describe('LIVECHAT - departments', function() {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => updatePermission('view-livechat-departments', []))
 				.then(() => {
-					request.get(api(`livechat/department/${ department._id }`))
+					request
+						.get(api(`livechat/department/${department._id}`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -89,26 +94,27 @@ describe('LIVECHAT - departments', function() {
 				});
 		});
 		it('should return the created department without the agents if the user does have the permission but request to no include the agents', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => {
-					request.get(api(`livechat/department/${ department._id }?includeAgents=false`))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('department');
-							expect(res.body).to.not.have.property('agents');
-							expect(res.body.department._id).to.be.equal(department._id);
-						})
-						.end(done);
-				});
+			updatePermission('view-livechat-departments', ['admin']).then(() => {
+				request
+					.get(api(`livechat/department/${department._id}?includeAgents=false`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('department');
+						expect(res.body).to.not.have.property('agents');
+						expect(res.body.department._id).to.be.equal(department._id);
+					})
+					.end(done);
+			});
 		});
 		it('should return the created department', (done) => {
 			updatePermission('view-l-room', ['admin'])
 				.then(() => updatePermission('view-livechat-departments', ['admin']))
 				.then(() => {
-					request.get(api(`livechat/department/${ department._id }`))
+					request
+						.get(api(`livechat/department/${department._id}`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)

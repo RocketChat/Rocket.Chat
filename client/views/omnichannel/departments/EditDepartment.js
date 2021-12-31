@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {
 	FieldGroup,
 	Field,
@@ -31,13 +30,13 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import { formsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
+function withDefault(key, defaultValue) {
+	return key || defaultValue;
+}
+
 function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-departments');
-	const eeForms = useSubscription(formsSubscription);
-	const initialAgents = useRef((data && data.agents) || []);
-
-	const router = useRoute('omnichannel-departments');
+	const departmentsRoute = useRoute('omnichannel-departments');
 
 	const {
 		useEeNumberInput = () => {},
@@ -45,7 +44,10 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useEeTextAreaInput = () => {},
 		useDepartmentForwarding = () => {},
 		useDepartmentBusinessHours = () => {},
-	} = eeForms;
+		useSelectForwardDepartment = () => {},
+	} = useSubscription(formsSubscription);
+
+	const initialAgents = useRef((data && data.agents) || []);
 
 	const MaxChats = useEeNumberInput();
 	const VisitorInactivity = useEeNumberInput();
@@ -53,33 +55,30 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const AbandonedMessageInput = useEeTextInput();
 	const DepartmentForwarding = useDepartmentForwarding();
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
+	const AutoCompleteDepartment = useSelectForwardDepartment();
 	const [agentList, setAgentList] = useState([]);
+	const [agentsRemoved, setAgentsRemoved] = useState([]);
+	const [agentsAdded, setAgentsAdded] = useState([]);
 
 	const { department } = data || { department: {} };
 
-	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
-	const [tagsText, setTagsText] = useState();
+	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		name: (department && department.name) || '',
-		email: (department && department.email) || '',
-		description: (department && department.description) || '',
-		enabled: !!(department && department.enabled),
-		maxNumberSimultaneousChat: (department && department.maxNumberSimultaneousChat) || undefined,
-		showOnRegistration: !!(department && department.showOnRegistration),
-		showOnOfflineForm: !!(department && department.showOnOfflineForm),
-		abandonedRoomsCloseCustomMessage:
-			(department && department.abandonedRoomsCloseCustomMessage) || '',
-		requestTagBeforeClosingChat: (department && department.requestTagBeforeClosingChat) || false,
-		offlineMessageChannelName: (department && department.offlineMessageChannelName) || '',
-		visitorInactivityTimeoutInSeconds:
-			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
-		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
-		departmentsAllowedToForward:
-			(allowedToForwardData &&
-				allowedToForwardData.departments &&
-				allowedToForwardData.departments.map((dep) => ({ label: dep.name, value: dep._id }))) ||
-			[],
+		name: withDefault(department?.name, ''),
+		email: withDefault(department?.email, ''),
+		description: withDefault(department?.description, ''),
+		enabled: !!department?.enabled,
+		maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat,
+		showOnRegistration: !!department?.showOnRegistration,
+		showOnOfflineForm: !!department?.showOnOfflineForm,
+		abandonedRoomsCloseCustomMessage: withDefault(department?.abandonedRoomsCloseCustomMessage, ''),
+		requestTagBeforeClosingChat: !!department?.requestTagBeforeClosingChat,
+		offlineMessageChannelName: withDefault(department?.offlineMessageChannelName, ''),
+		visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds,
+		waitingQueueMessage: withDefault(department?.waitingQueueMessage, ''),
+		departmentsAllowedToForward: allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
+		fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
 	});
 	const {
 		handleName,
@@ -95,7 +94,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		handleVisitorInactivityTimeoutInSeconds,
 		handleWaitingQueueMessage,
 		handleDepartmentsAllowedToForward,
+		handleFallbackForwardDepartment,
 	} = handlers;
+
 	const {
 		name,
 		email,
@@ -110,6 +111,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		visitorInactivityTimeoutInSeconds,
 		waitingQueueMessage,
 		departmentsAllowedToForward,
+		fallbackForwardDepartment,
 	} = values;
 
 	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
@@ -119,19 +121,24 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
 
 	const handleTagChipClick = (tag) => () => {
-		setTags((tags) => tags.filter((_tag) => _tag !== tag));
+		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
-		if (!tags.includes(tagsText)) {
-			setTags([...tags, tagsText]);
-			setTagsText('');
-		}
+		setTagsState((state) => {
+			const [tags, tagsText] = state;
+
+			if (tags.includes(tagsText)) {
+				return state;
+			}
+
+			return [[...tags, tagsText], ''];
+		});
 	});
 
-	const handleTagTextChange = useMutableCallback((e) => {
-		setTagsText(e.target.value);
-	});
+	const handleTagTextChange = (e) => {
+		setTagsState(([tags]) => [tags, e.target.value]);
+	};
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
 	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `livechat/department/${id}/agents`);
@@ -152,11 +159,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
 	}, [t, email]);
 	useComponentDidUpdate(() => {
-		setTagError(
-			requestTagBeforeClosingChat && (!tags || tags.length === 0)
-				? t('The_field_is_required', 'name')
-				: '',
-		);
+		setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : '');
 	}, [requestTagBeforeClosingChat, t, tags]);
 
 	const handleSubmit = useMutableCallback(async (e) => {
@@ -197,23 +200,18 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.value).join(),
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
+			fallbackForwardDepartment: fallbackForwardDepartment.value,
 		};
 
 		const agentListPayload = {
 			upsert: agentList.filter(
 				(agent) =>
 					!initialAgents.current.some(
-						(initialAgent) =>
-							initialAgent._id === agent._id &&
-							agent.count === initialAgent.count &&
-							agent.order === initialAgent.order,
+						(initialAgent) => initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
 					),
 			),
-			remove: initialAgents.current.filter(
-				(initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id),
-			),
+			remove: initialAgents.current.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
 		};
 
 		try {
@@ -227,29 +225,47 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
-			agentsRoute.push({});
+			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
 	const handleReturn = useMutableCallback(() => {
-		router.push({});
+		departmentsRoute.push({});
 	});
 
 	const invalidForm =
-		!name ||
-		!email ||
-		!isEmail(email) ||
-		!hasUnsavedChanges ||
-		(requestTagBeforeClosingChat && (!tags || tags.length === 0));
+		!name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
-	const hasNewAgent = useMemo(
-		() => data.agents.length === agentList.length,
-		[data.agents, agentList],
-	);
+	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
+
+	const agentsHaveChanged = () => {
+		let hasChanges = false;
+		if (agentList.length !== initialAgents.current.length) {
+			hasChanges = true;
+		}
+
+		if (agentsAdded.length > 0 && agentsRemoved.length > 0) {
+			hasChanges = true;
+		}
+
+		agentList.forEach((agent) => {
+			const existingAgent = initialAgents.current.find((initial) => initial.agentId === agent.agentId);
+			if (existingAgent) {
+				if (agent.count !== existingAgent.count) {
+					hasChanges = true;
+				}
+				if (agent.order !== existingAgent.order) {
+					hasChanges = true;
+				}
+			}
+		});
+
+		return hasChanges;
+	};
 
 	return (
 		<Page flexDirection='row'>
@@ -259,21 +275,13 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>
+						<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent && !(id && agentsHaveChanged())}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.ScrollableContentWithShadow>
-					<FieldGroup
-						w='full'
-						alignSelf='center'
-						maxWidth='x600'
-						id={formId}
-						is='form'
-						autoComplete='off'
-						onSubmit={handleSubmit}
-					>
+					<FieldGroup w='full' alignSelf='center' maxWidth='x600' id={formId} is='form' autoComplete='off' onSubmit={handleSubmit}>
 						<Field>
 							<Box display='flex' flexDirection='row'>
 								<Field.Label>{t('Enabled')}</Field.Label>
@@ -285,35 +293,20 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Field>
 							<Field.Label>{t('Name')}*</Field.Label>
 							<Field.Row>
-								<TextInput
-									flexGrow={1}
-									error={nameError}
-									value={name}
-									onChange={handleName}
-									placeholder={t('Name')}
-								/>
+								<TextInput flexGrow={1} error={nameError} value={name} onChange={handleName} placeholder={t('Name')} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput
-									flexGrow={1}
-									value={description}
-									onChange={handleDescription}
-									placeholder={t('Description')}
-								/>
+								<TextAreaInput flexGrow={1} value={description} onChange={handleDescription} placeholder={t('Description')} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Box display='flex' flexDirection='row'>
 								<Field.Label>{t('Show_on_registration_page')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch
-										flexGrow={1}
-										checked={showOnRegistration}
-										onChange={handleShowOnRegistration}
-									/>
+									<ToggleSwitch flexGrow={1} checked={showOnRegistration} onChange={handleShowOnRegistration} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -334,11 +327,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Box display='flex' flexDirection='row'>
 								<Field.Label>{t('Show_on_offline_page')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch
-										flexGrow={1}
-										checked={showOnOfflineForm}
-										onChange={handleShowOnOfflineForm}
-									/>
+									<ToggleSwitch flexGrow={1} checked={showOnOfflineForm} onChange={handleShowOnOfflineForm} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -353,11 +342,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									setFilter={handleOfflineMessageChannelName}
 									options={roomsItems}
 									placeholder={t('Channel_name')}
-									endReached={
-										roomsPhase === AsyncStatePhase.LOADING
-											? () => {}
-											: (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
-									}
+									endReached={roomsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))}
 								/>
 							</Field.Row>
 						</Field>
@@ -393,11 +378,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						)}
 						{WaitingQueueMessageInput && (
 							<Field>
-								<WaitingQueueMessageInput
-									value={waitingQueueMessage}
-									handler={handleWaitingQueueMessage}
-									label={'Waiting_queue_message'}
-								/>
+								<WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />
 							</Field>
 						)}
 						{DepartmentForwarding && (
@@ -411,15 +392,25 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 								/>
 							</Field>
 						)}
+						{AutoCompleteDepartment && (
+							<Field>
+								<Field.Label>{t('Fallback_forward_department')}</Field.Label>
+								<AutoCompleteDepartment
+									haveNone
+									excludeDepartmentId={department?._id}
+									value={fallbackForwardDepartment}
+									onChange={handleFallbackForwardDepartment}
+									placeholder={t('Fallback_forward_department')}
+									label={t('Fallback_forward_department')}
+									onlyMyDepartments
+								/>
+							</Field>
+						)}
 						<Field>
 							<Box display='flex' flexDirection='row'>
 								<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch
-										flexGrow={1}
-										checked={requestTagBeforeClosingChat}
-										onChange={handleRequestTagBeforeClosingChat}
-									/>
+									<ToggleSwitch flexGrow={1} checked={requestTagBeforeClosingChat} onChange={handleRequestTagBeforeClosingChat} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -427,18 +418,13 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field>
 								<Field.Label alignSelf='stretch'>{t('Conversation_closing_tags')}*</Field.Label>
 								<Field.Row>
-									<TextInput
-										error={tagError}
-										value={tagsText}
-										onChange={handleTagTextChange}
-										placeholder={t('Enter_a_tag')}
-									/>
+									<TextInput error={tagError} value={tagsText} onChange={handleTagTextChange} placeholder={t('Enter_a_tag')} />
 									<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
 										{t('Add')}
 									</Button>
 								</Field.Row>
 								<Field.Hint>{t('Conversation_closing_tags_description')}</Field.Hint>
-								{tags && tags.length > 0 && (
+								{tags?.length > 0 && (
 									<Field.Row justifyContent='flex-start'>
 										{tags.map((tag, i) => (
 											<Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>
@@ -451,7 +437,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						)}
 						{DepartmentBusinessHours && (
 							<Field>
-								<DepartmentBusinessHours bhId={department && department.businessHourId} />
+								<DepartmentBusinessHours bhId={department?.businessHourId} />
 							</Field>
 						)}
 						<Divider mb='x16' />
@@ -461,6 +447,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 								<DepartmentsAgentsTable
 									agents={data && data.agents}
 									setAgentListFinal={setAgentList}
+									setAgentsAdded={setAgentsAdded}
+									setAgentsRemoved={setAgentsRemoved}
 								/>
 							</Box>
 						</Field>
