@@ -5,10 +5,10 @@ import { Meteor } from 'meteor/meteor';
 // import { HTTPInternals } from 'meteor/http';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
-import iconv from 'iconv-lite';
+// import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
-import jschardet from 'jschardet';
+// import jschardet from 'jschardet';
 
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
@@ -24,39 +24,39 @@ const OEmbed = {};
 //  Priority:
 //  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
 //  See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
-const getCharset = function (contentType, body) {
-	let detectedCharset;
-	let httpHeaderCharset;
-	let htmlMetaCharset;
-	let result;
+// const getCharset = function (contentType, body) {
+// 	let detectedCharset;
+// 	let httpHeaderCharset;
+// 	let htmlMetaCharset;
+// 	let result;
 
-	contentType = contentType || '';
+// 	contentType = contentType || '';
 
-	const binary = body.toString('binary');
-	const detected = jschardet.detect(binary);
-	if (detected.confidence > 0.8) {
-		detectedCharset = detected.encoding.toLowerCase();
-	}
-	const m1 = contentType.match(/charset=([\w\-]+)/i);
-	if (m1) {
-		httpHeaderCharset = m1[1].toLowerCase();
-	}
-	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i);
-	if (m2) {
-		htmlMetaCharset = m2[1].toLowerCase();
-	}
-	if (detectedCharset) {
-		if (detectedCharset === httpHeaderCharset) {
-			result = httpHeaderCharset;
-		} else if (detectedCharset === htmlMetaCharset) {
-			result = htmlMetaCharset;
-		}
-	}
-	if (!result) {
-		result = httpHeaderCharset || htmlMetaCharset || detectedCharset;
-	}
-	return result || 'utf-8';
-};
+// 	const binary = body.toString('binary');
+// 	const detected = jschardet.detect(binary);
+// 	if (detected.confidence > 0.8) {
+// 		detectedCharset = detected.encoding.toLowerCase();
+// 	}
+// 	const m1 = contentType.match(/charset=([\w\-]+)/i);
+// 	if (m1) {
+// 		httpHeaderCharset = m1[1].toLowerCase();
+// 	}
+// 	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i);
+// 	if (m2) {
+// 		htmlMetaCharset = m2[1].toLowerCase();
+// 	}
+// 	if (detectedCharset) {
+// 		if (detectedCharset === httpHeaderCharset) {
+// 			result = httpHeaderCharset;
+// 		} else if (detectedCharset === htmlMetaCharset) {
+// 			result = htmlMetaCharset;
+// 		}
+// 	}
+// 	if (!result) {
+// 		result = httpHeaderCharset || htmlMetaCharset || detectedCharset;
+// 	}
+// 	return result || 'utf-8';
+// };
 
 // const toUtf8 = function (contentType, body) {
 // 	return iconv.decode(body, getCharset(contentType, body));
