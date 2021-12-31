@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
-import { asyncLocalStorage } from '..';
+// import { asyncLocalStorage } from '..';
 import { EventSignatures } from './Events';
 import { StreamerCentral } from '../../modules/streamer/streamer.module';
 

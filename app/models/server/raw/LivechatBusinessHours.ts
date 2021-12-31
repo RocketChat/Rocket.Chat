@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
+import { FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';

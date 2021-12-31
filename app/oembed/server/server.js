@@ -58,9 +58,9 @@ const getCharset = function (contentType, body) {
 	return result || 'utf-8';
 };
 
-const toUtf8 = function (contentType, body) {
-	return iconv.decode(body, getCharset(contentType, body));
-};
+// const toUtf8 = function (contentType, body) {
+// 	return iconv.decode(body, getCharset(contentType, body));
+// };
 
 const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, callback) {
 	if (_.isString(urlObj)) {
@@ -107,13 +107,13 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
-	let headers = null;
-	let statusCode = null;
-	let error = null;
-	const chunks = [];
-	let chunksTotalLength = 0;
+	// let headers = null;
+	// let statusCode = null;
+	// let error = null;
+	// const chunks = [];
+	// let chunksTotalLength = 0;
 	// TODO convert code to no use "request"
-	console.warn('TODO convert code to no use "request"');
+	console.warn('TODO convert code to no use "request"', opts);
 	// const stream = request(opts);
 	// stream.on('response', function (response) {
 	// 	statusCode = response.statusCode;
