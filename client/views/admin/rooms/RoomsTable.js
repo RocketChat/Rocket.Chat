@@ -81,7 +81,7 @@ function RoomsTable({ asyncState, params, onChangeParams, sort, onChangeSort }) 
 			}
 			onChangeSort([id, 'asc']);
 		},
-		[sort],
+		[sort, onChangeSort],
 	);
 
 	const displayData = useDisplayData(asyncState, sort);
