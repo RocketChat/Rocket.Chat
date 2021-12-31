@@ -32,12 +32,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <NotAuthorizedPage />;
 	}
 
-	return (
-		<EngagementDashboardPage
-			tab={tab}
-			onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })}
-		/>
-	);
+	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
 };
 
 export default EngagementDashboardRoute;

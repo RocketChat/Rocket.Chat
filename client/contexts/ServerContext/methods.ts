@@ -143,13 +143,9 @@ export type ServerMethods = {
 
 export type ServerMethodName = keyof ServerMethods;
 
-export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<
-	ServerMethods[MethodName]
->;
+export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<
-	ServerMethods[MethodName]
->;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
 
 export type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>

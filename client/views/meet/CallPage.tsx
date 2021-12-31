@@ -151,19 +151,11 @@ const CallPage: FC<CallPageProps> = ({
 		return window.close();
 	};
 
-	const getCallDuration = (callStartTime: any): any =>
-		moment.duration(moment(new Date()).diff(moment(callStartTime))).asSeconds();
+	const getCallDuration = (callStartTime: any): any => moment.duration(moment(new Date()).diff(moment(callStartTime))).asSeconds();
 
 	const showCallPage = (localAvatar: any, remoteAvatar: any): any => (
 		<Flex.Container direction='column' justifyContent='center'>
-			<Box
-				width='full'
-				minHeight='sh'
-				alignItems='center'
-				backgroundColor='neutral-900'
-				overflow='hidden'
-				position='relative'
-			>
+			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
 				<Box
 					position='absolute'
 					zIndex={1}
@@ -211,11 +203,7 @@ const CallPage: FC<CallPageProps> = ({
 						className={isMicOn ? 'On' : 'Off'}
 						size={Number(buttonSize)}
 					>
-						{isMicOn ? (
-							<Icon name='mic' size={iconSize} />
-						) : (
-							<Icon name='mic-off' size={iconSize} />
-						)}
+						{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
 					</Button>
 					<Button
 						id='camera'
@@ -225,11 +213,7 @@ const CallPage: FC<CallPageProps> = ({
 						className={isCameraOn ? 'On' : 'Off'}
 						size={parseInt(buttonSize)}
 					>
-						{isCameraOn ? (
-							<Icon name='video' size={iconSize} />
-						) : (
-							<Icon name='video-off' size={iconSize} />
-						)}
+						{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
 					</Button>
 					{layout === 'embedded' && (
 						<Button
@@ -243,14 +227,7 @@ const CallPage: FC<CallPageProps> = ({
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
 					)}
-					<Button
-						square
-						primary
-						danger
-						data-title={t('End_call')}
-						onClick={closeWindow}
-						size={parseInt(buttonSize)}
-					>
+					<Button square primary danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
 				</ButtonGroup>
@@ -306,14 +283,7 @@ const CallPage: FC<CallPageProps> = ({
 		<>
 			{status === 'ringing' && (
 				<Flex.Container direction='column' justifyContent='center'>
-					<Box
-						width='full'
-						minHeight='sh'
-						alignItems='center'
-						backgroundColor='neutral-900'
-						overflow='hidden'
-						position='relative'
-					>
+					<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
 						<Box
 							position='absolute'
 							zIndex={1}
@@ -371,22 +341,13 @@ const CallPage: FC<CallPageProps> = ({
 				</Flex.Container>
 			)}
 			{status === 'declined' && (
-				<Box
-					minHeight='90%'
-					display='flex'
-					justifyContent='center'
-					alignItems='center'
-					color='white'
-					fontSize='s1'
-				>
+				<Box minHeight='90%' display='flex' justifyContent='center' alignItems='center' color='white' fontSize='s1'>
 					{t('Call_declined')}
 				</Box>
 			)}
 			{status === 'inProgress' && (
 				<Flex.Container direction='column' justifyContent='center'>
-					{visitorToken
-						? showCallPage(visitorName, agentName)
-						: showCallPage(agentName, visitorName)}
+					{visitorToken ? showCallPage(visitorName, agentName) : showCallPage(agentName, visitorName)}
 				</Flex.Container>
 			)}
 		</>

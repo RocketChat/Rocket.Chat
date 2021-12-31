@@ -10,7 +10,9 @@ Meteor.methods({
 		check(members, Match.Optional([String]));
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createPrivateGroup' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'createPrivateGroup',
+			});
 		}
 
 		if (!hasPermission(Meteor.userId(), 'create-p')) {
@@ -18,16 +20,24 @@ Meteor.methods({
 		}
 
 		// validate extra data schema
-		check(extraData, Match.ObjectIncluding({
-			tokenpass: Match.Maybe({
-				require: String,
-				tokens: [{
-					token: String,
-					balance: String,
-				}],
+		check(
+			extraData,
+			Match.ObjectIncluding({
+				tokenpass: Match.Maybe({
+					require: String,
+					tokens: [
+						{
+							token: String,
+							balance: String,
+						},
+					],
+				}),
 			}),
-		}));
+		);
 
-		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, {
+			customFields,
+			...extraData,
+		});
 	},
 });

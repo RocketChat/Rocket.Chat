@@ -38,7 +38,7 @@ function Open(command, params /* , item*/) {
 	if (type && type.indexOf('d') === -1) {
 		return;
 	}
-	return Meteor.call('createDirectMessage', room, function(err) {
+	return Meteor.call('createDirectMessage', room, function (err) {
 		if (err) {
 			return;
 		}

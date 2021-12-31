@@ -42,14 +42,10 @@ onLicense('livechat-enterprise', () => {
 	const { createPermissions } = require('./permissions');
 	const { createSettings } = require('./settings');
 
-	Meteor.startup(function() {
+	Meteor.startup(function () {
 		createSettings();
 		createPermissions();
 	});
 });
 
-export {
-	LivechatUnit,
-	LivechatTag,
-	LivechatUnitMonitors,
-};
+export { LivechatUnit, LivechatTag, LivechatUnitMonitors };

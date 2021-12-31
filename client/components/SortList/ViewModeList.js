@@ -20,8 +20,7 @@ function ViewModeList() {
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const useHandleChange = (value) =>
-		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
+	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);

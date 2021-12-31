@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setRealName = function(userId, name, fullUser) {
+export const _setRealName = function (userId, name, fullUser) {
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {

@@ -5,7 +5,7 @@ type ENTERPRISE_STATISTICS = {
 	modules: string[];
 	tags: string[];
 	seatRequests: number;
-}
+};
 
 export function getStatistics(): ENTERPRISE_STATISTICS {
 	const modules = getModules();

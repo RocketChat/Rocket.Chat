@@ -14,9 +14,11 @@ export interface IHashedStampedToken {
 	hashedToken: string;
 }
 
-type Password = string | {
-	digest: string;
-}
+type Password =
+	| string
+	| {
+			digest: string;
+	  };
 
 export const getPassword = (password: Password): string => {
 	if (typeof password === 'string') {
@@ -44,9 +46,7 @@ export const _hashLoginToken = (loginToken: string): string => {
 // https://github.com/meteor/meteor/blob/c5b51b0fc2a8cef498b9390ebcb4925e02de83e8/packages/accounts-base/accounts_server.js#L787
 export const _hashStampedToken = (stampedToken: IStampedToken): IHashedStampedToken => {
 	const hashedStampedToken = Object.keys(stampedToken).reduce(
-		(prev, key) => (key === 'token'
-			? prev
-			: { ...prev, [key]: stampedToken[key] }),
+		(prev, key) => (key === 'token' ? prev : { ...prev, [key]: stampedToken[key] }),
 		{},
 	);
 
@@ -56,7 +56,8 @@ export const _hashStampedToken = (stampedToken: IStampedToken): IHashedStampedTo
 	} as IHashedStampedToken;
 };
 
-export const validatePassword = (password: string, bcryptPassword: string): Promise<boolean> => bcrypt.compare(getPassword(password), bcryptPassword);
+export const validatePassword = (password: string, bcryptPassword: string): Promise<boolean> =>
+	bcrypt.compare(getPassword(password), bcryptPassword);
 
 const expiryDaysInMS = 15 * 60 * 60 * 24 * 1000;
 export const _tokenExpiration = (when: string | Date): Date => new Date(new Date(when).getTime() + expiryDaysInMS);

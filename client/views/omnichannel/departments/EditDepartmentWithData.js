@@ -22,10 +22,7 @@ function EditDepartmentWithData({ id, reload, title }) {
 	}
 	return (
 		<>
-			{data &&
-			data.department &&
-			data.department.departmentsAllowedToForward &&
-			data.department.departmentsAllowedToForward.length > 0 ? (
+			{data && data.department && data.department.departmentsAllowedToForward && data.department.departmentsAllowedToForward.length > 0 ? (
 				<EditDepartmentWithAllowedForwardData id={id} data={data} reload={reload} title={title} />
 			) : (
 				<EditDepartment id={id} data={data} reload={reload} title={title} />

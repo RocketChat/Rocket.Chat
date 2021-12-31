@@ -11,7 +11,7 @@ import { IBrokerNode } from '../../../../server/sdk/types/IBroker';
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
-	async onNodeDisconnected({ node }: {node: IBrokerNode}): Promise<void> {
+	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
 		const affectedUsers = await this.removeLostConnections(node.id);
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
@@ -23,13 +23,13 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 100);
 	}
 
-	async newConnection(uid: string, session: string): Promise<{uid: string; connectionId: string} | undefined> {
+	async newConnection(uid: string, session: string): Promise<{ uid: string; connectionId: string } | undefined> {
 		const result = await newConnection(uid, session, this.context);
 		await updateUserPresence(uid);
 		return result;
 	}
 
-	async removeConnection(uid: string, session: string): Promise<{uid: string; session: string}> {
+	async removeConnection(uid: string, session: string): Promise<{ uid: string; session: string }> {
 		const result = await removeConnection(uid, session);
 		await updateUserPresence(uid);
 		return result;

@@ -6,10 +6,7 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'postcss',
-	use: [
-		'ecmascript',
-		'minifier-css',
-	],
+	use: ['ecmascript', 'minifier-css'],
 	sources: ['build.js'],
 });
 

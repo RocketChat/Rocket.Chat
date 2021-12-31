@@ -29,9 +29,7 @@ function BusinessHoursTable({ businessHours, totalbusinessHours, params, onChang
 			setParams={onChangeParams}
 			renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 		>
-			{(props) => (
-				<BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />
-			)}
+			{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
 		</GenericTable>
 	);
 }

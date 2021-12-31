@@ -41,11 +41,7 @@ const AutoCompleteTag = (props) => {
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
 			options={sortedByName}
-			endReached={
-				tagsPhase === AsyncStatePhase.LOADING
-					? () => {}
-					: (start) => loadMoreTags(start, Math.min(50, tagsTotal))
-			}
+			endReached={tagsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreTags(start, Math.min(50, tagsTotal))}
 		/>
 	);
 };
