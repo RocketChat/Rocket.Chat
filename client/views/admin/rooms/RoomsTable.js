@@ -27,8 +27,7 @@ const getRoomType = (room) => {
 	return roomTypeI18nMap[room.t];
 };
 
-const getRoomDisplayName = (room) =>
-	room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room);
+const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room));
 
 const useDisplayData = (asyncState, sort) =>
 	useMemo(() => {

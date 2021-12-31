@@ -55,13 +55,7 @@ export function RoomsPage() {
 			<Page>
 				<Page.Header title={t('Rooms')} />
 				<Page.Content>
-					<RoomsTable
-						asyncState={asyncState}
-						params={params}
-						onChangeParams={setParams}
-						sort={sort}
-						onChangeSort={setSort}
-					/>
+					<RoomsTable asyncState={asyncState} params={params} onChangeParams={setParams} sort={sort} onChangeSort={setSort} />
 				</Page.Content>
 			</Page>
 			{context && (
