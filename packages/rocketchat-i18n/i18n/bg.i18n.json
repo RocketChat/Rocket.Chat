@@ -1004,7 +1004,7 @@
   "Enter_a_regex": "Въведете регенериране",
   "Enter_a_room_name": "Въведете име на стая",
   "Enter_a_username": "Въведете потребителско име",
-  "Enter_Alternative": "Алтернативен режим (изпратете с Enter + Ctrl / Alt / Shift / CMD)",
+  "Enter_Alternative": "Алтернативен режим (изпратете с Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Въведете код за удостоверяване",
   "Enter_Behaviour": "Въведете ключовото поведение",
   "Enter_Behaviour_Description": "Това се променя, ако клавишът за въвеждане ще изпрати съобщение или ще направи прекъсване на линията",

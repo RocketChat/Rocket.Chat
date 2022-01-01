@@ -1423,7 +1423,7 @@
   "Enter_a_room_name": "Indtast et rumnavn",
   "Enter_a_tag": "Indtast et Tag",
   "Enter_a_username": "Indtast et brugernavn",
-  "Enter_Alternative": "Alternativ mode (send med Enter + Ctrl/Alt/Shift/CMD)",
+  "Enter_Alternative": "Alternativ mode (send med Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Angiv godkendelseskode",
   "Enter_Behaviour": "Indtast nøgle-adfærd",
   "Enter_Behaviour_Description": "Dette ændres hvis Enter-tasten sender en besked eller foretager et linjeskift",

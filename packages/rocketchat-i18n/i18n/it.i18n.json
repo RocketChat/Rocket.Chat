@@ -1035,7 +1035,7 @@
   "Enter_a_regex": "Inserisci una regex",
   "Enter_a_room_name": "Inserisci un nome al canale",
   "Enter_a_username": "Inserisci un nome utente",
-  "Enter_Alternative": "Modalità alternativa (invio con Invio + Ctrl/Alt/Shift/CMD)",
+  "Enter_Alternative": "Modalità alternativa (invio con Ctrl/Alt/Shift/CMD + Invio)",
   "Enter_authentication_code": "Inserisci codice di autenticazione",
   "Enter_Behaviour": "Comportamento Pulsante Invio",
   "Enter_Behaviour_Description": "Questi cambiamenti se il pulsante invio invierà un messaggio o il cursore andrà accapo",

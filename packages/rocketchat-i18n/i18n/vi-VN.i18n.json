@@ -995,7 +995,7 @@
   "Enter_a_regex": "Nhập regex",
   "Enter_a_room_name": "Nhập tên phòng",
   "Enter_a_username": "Nhập tên người sử dụng",
-  "Enter_Alternative": "Chế độ thay thế (gửi kèm với Enter + Ctrl / Alt / Shift / CMD)",
+  "Enter_Alternative": "Chế độ thay thế (gửi kèm với Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Nhập mã xác thực",
   "Enter_Behaviour": "Hành vi của nút Enter",
   "Enter_Behaviour_Description": "Điều này thay đổi nếu nhập phím sẽ gửi một tin nhắn hoặc làm một ngắt dòng",

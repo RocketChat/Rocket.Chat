@@ -1629,7 +1629,7 @@
   "Enter_a_room_name": "Introduzca un nombre de sala",
   "Enter_a_tag": "Introduzca una etiqueta",
   "Enter_a_username": "Introduzca un nombre de usuario",
-  "Enter_Alternative": "Modo alternativo (enviar con Enter + Ctrl/Alt/Shift/CMD)",
+  "Enter_Alternative": "Modo alternativo (enviar con Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Ingrese el código de autenticación",
   "Enter_Behaviour": "Comportamiento de tecla Enter",
   "Enter_Behaviour_Description": "Esto cambia si la tecla Intro enviará un mensaje o hará un salto de línea",

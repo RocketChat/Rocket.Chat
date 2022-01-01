@@ -1166,7 +1166,7 @@
   "Enter_a_regex": "Regulären Ausdruck eingeben",
   "Enter_a_room_name": "Raumnamen eingeben",
   "Enter_a_username": "Benutzernamen eingeben",
-  "Enter_Alternative": "Alternativer Modus (Senden mit Eingabetaste + Strg/Alt/Shift/Command)",
+  "Enter_Alternative": "Alternativer Modus (Senden mit Strg/Alt/Shift/Command + Eingabetaste)",
   "Enter_authentication_code": "Dateisystem für eigene Emojis",
   "Enter_Behaviour": "Verhalten der Eingabetaste:",
   "Enter_Behaviour_Description": "Das verändert, ob die Eingabetaste eine Nachricht versendet oder einen Zeilenumbruch erzeugt",

@@ -1071,7 +1071,7 @@
   "Enter_a_regex": "Skriv inn en regex",
   "Enter_a_room_name": "Skriv inn et romnavn",
   "Enter_a_username": "Skriv inn et brukernavn",
-  "Enter_Alternative": "Alternativ modus (send med Enter + Ctrl / Alt / Shift / CMD)",
+  "Enter_Alternative": "Alternativ modus (send med Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Skriv inn autentiseringskode",
   "Enter_Behaviour": "Skriv inn nøkkeladferd",
   "Enter_Behaviour_Description": "Dette endres hvis enter-tasten sender en melding eller gjør en linjeskift",

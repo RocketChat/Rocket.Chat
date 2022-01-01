@@ -1430,7 +1430,7 @@
   "Enter_a_room_name": "Írja be a szoba nevét",
   "Enter_a_tag": "Írja be a címkét",
   "Enter_a_username": "Adjon meg egy felhasználónevet",
-  "Enter_Alternative": "Alternatív mód (küldés az Enter + Ctrl/Alt/Shift/CMD billentyűkkel)",
+  "Enter_Alternative": "Alternatív mód (küldés az Ctrl/Alt/Shift/CMD + Enter billentyűkkel)",
   "Enter_authentication_code": "Írja be a hitelesítési kódot",
   "Enter_Behaviour": "Írja be a kulcsmódot",
   "Enter_Behaviour_Description": "Ez megváltozik, ha az Enter gomb elküldi az üzenetet vagy megszakítja a sort",

@@ -1496,7 +1496,7 @@
   "Enter_a_room_name": "输入聊天室名称",
   "Enter_a_tag": "输入标签",
   "Enter_a_username": "输入用户名",
-  "Enter_Alternative": "备选模式（Enter +  Ctrl/Alt/Shift/CMD 发送消息）",
+  "Enter_Alternative": "备选模式（Ctrl/Alt/Shift/CMD + Enter 发送消息）",
   "Enter_authentication_code": "输入验证码",
   "Enter_Behaviour": "回车键",
   "Enter_Behaviour_Description": "此项用来设置回车键发送消息还是换行",
