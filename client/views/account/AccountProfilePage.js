@@ -37,7 +37,7 @@ const AccountProfilePage = () => {
 
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user ?? {}));
+	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
 	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -221,6 +221,7 @@ const AccountProfilePage = () => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
+					<Button primary onClick={reset}>{t('Reset')}</Button>
 					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
 						{t('Save_changes')}
 					</Button>
