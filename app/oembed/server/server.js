@@ -104,7 +104,7 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': `${ settings.get('API_Embed_UserAgent') } Rocket.Chat/${ Info.version }`,
+			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
