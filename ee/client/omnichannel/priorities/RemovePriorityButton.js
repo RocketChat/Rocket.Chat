@@ -38,18 +38,11 @@ function RemovePriorityButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteAgent}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
 			<Button small ghost title={t('Remove')} onClick={handleDelete}>
 				<Icon name='trash' size='x16' />
 			</Button>

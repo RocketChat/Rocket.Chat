@@ -87,20 +87,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 
 		onClose();
 		reload();
-	}, [
-		broadcast,
-		createChannel,
-		createPrivateChannel,
-		description,
-		encrypted,
-		name,
-		onClose,
-		readOnly,
-		teamId,
-		type,
-		users,
-		reload,
-	]);
+	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users, reload]);
 
 	return (
 		<CreateChannel

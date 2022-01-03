@@ -12,14 +12,7 @@ import { roomTypes } from '../../../../utils';
  * @param {number} duration Duration of notification
  * @param {string} notificationMessage The message text to send on notification body
  */
-export function notifyDesktopUser({
-	userId,
-	user,
-	message,
-	room,
-	duration,
-	notificationMessage,
-}) {
+export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
 	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
@@ -72,5 +65,12 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) ||
+			isHighlighted ||
+			desktopNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

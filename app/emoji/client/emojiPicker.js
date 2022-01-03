@@ -15,19 +15,25 @@ const ESCAPE = 27;
 
 const emojiListByCategory = new ReactiveDict('emojiList');
 
-const getEmojiElement = (emoji, image) => image && `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+const getEmojiElement = (emoji, image) =>
+	image && `<li class="emoji-${emoji} emoji-picker-item" data-emoji="${emoji}" title="${emoji}">${image}</li>`;
 
 const createEmojiList = (category, actualTone) => {
-	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
-			return;
-		}
+	const html =
+		Object.values(emoji.packages)
+			.map((emojiPackage) => {
+				if (!emojiPackage.emojisByCategory || !emojiPackage.emojisByCategory[category]) {
+					return;
+				}
 
-		return emojiPackage.emojisByCategory[category].map((current) => {
-			const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
-			return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
-		}).join('');
-	}).join('') || `<li>${ t('No_emojis_found') }</li>`;
+				return emojiPackage.emojisByCategory[category]
+					.map((current) => {
+						const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
+						return getEmojiElement(current, emojiPackage.renderPicker(`:${current}${tone}:`));
+					})
+					.join('');
+			})
+			.join('') || `<li>${t('No_emojis_found')}</li>`;
 
 	return html;
 };
@@ -65,7 +71,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
 
 			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-				tone = `_tone${ actualTone }`;
+				tone = `_tone${actualTone}`;
 			}
 
 			let emojiFound = false;
@@ -82,7 +88,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = emoji.packages[emojiPackage].renderPicker(`:${ current }${ tone }:`);
+				const image = emoji.packages[emojiPackage].renderPicker(`:${current}${tone}:`);
 				html += getEmojiElement(current, image);
 			}
 		}
@@ -117,7 +123,7 @@ Template.emojiPicker.helpers({
 		return emojiListByCategory.get(category);
 	},
 	currentTone() {
-		return `tone-${ Template.instance().tone }`;
+		return `tone-${Template.instance().tone}`;
 	},
 	/**
 	 * Returns true if a given emoji category is active
@@ -193,7 +199,7 @@ Template.emojiPicker.events({
 		let newTone;
 
 		if (tone > 0) {
-			newTone = `_tone${ tone }`;
+			newTone = `_tone${tone}`;
 		} else {
 			newTone = '';
 		}
@@ -203,7 +209,7 @@ Template.emojiPicker.events({
 				if (emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
 					for (const _emoji in emoji.packages[emojiPackage].toneList) {
 						if (emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-							$(`.emoji-${ _emoji }`).html(emoji.packages[emojiPackage].render(`:${ _emoji }${ newTone }:`));
+							$(`.emoji-${_emoji}`).html(emoji.packages[emojiPackage].render(`:${_emoji}${newTone}:`));
 						}
 					}
 				}
@@ -226,7 +232,7 @@ Template.emojiPicker.events({
 		for (const emojiPackage in emoji.packages) {
 			if (emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-					tone = `_tone${ actualTone }`;
+					tone = `_tone${actualTone}`;
 				}
 			}
 		}
@@ -256,7 +262,7 @@ Template.emojiPicker.events({
 	},
 });
 
-Template.emojiPicker.onCreated(function() {
+Template.emojiPicker.onCreated(function () {
 	this.tone = EmojiPicker.getTone();
 	const recent = EmojiPicker.getRecent();
 
@@ -280,8 +286,8 @@ Template.emojiPicker.onCreated(function() {
 	});
 
 	this.setCurrentTone = (newTone) => {
-		$('.current-tone').removeClass(`tone-${ this.tone }`);
-		$('.current-tone').addClass(`tone-${ newTone }`);
+		$('.current-tone').removeClass(`tone-${this.tone}`);
+		$('.current-tone').addClass(`tone-${newTone}`);
 		this.tone = newTone;
 	};
 

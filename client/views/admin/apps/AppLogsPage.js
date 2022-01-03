@@ -30,9 +30,7 @@ const useAppWithLogs = ({ id, current, itemsPerPage }) => {
 
 	const sliceStart = data.logs && current > data.logs.length ? 0 : current;
 	const total = data.logs ? data.logs.length : 0;
-	const filteredData = data.logs
-		? { ...data, logs: data.logs.slice(sliceStart, itemsPerPage + current) }
-		: data;
+	const filteredData = data.logs ? { ...data, logs: data.logs.slice(sliceStart, itemsPerPage + current) } : data;
 
 	return [filteredData, total, fetchData];
 };
@@ -60,8 +58,7 @@ function AppLogsPage({ id, ...props }) {
 	const showData = !loading && !app.error;
 
 	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
+		({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
 		[t],
 	);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
@@ -81,7 +78,7 @@ function AppLogsPage({ id, ...props }) {
 			<Page.ScrollableContent>
 				{loading && <LogsLoading />}
 				{app.error && (
-					<Box maxWidth='x600' alignSelf='center' fontScale='h1'>
+					<Box maxWidth='x600' alignSelf='center' fontScale='hh21'>
 						{app.error.message}
 					</Box>
 				)}
@@ -92,9 +89,7 @@ function AppLogsPage({ id, ...props }) {
 								app.logs.map((log) => (
 									<LogItem
 										key={log._createdAt}
-										title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${
-											log.totalTime
-										}ms)`}
+										title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
 										instanceId={log.instanceId}
 										entries={log.entries}
 									/>

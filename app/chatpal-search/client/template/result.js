@@ -8,9 +8,9 @@ import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvat
 import { formatTime } from '../../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../../client/lib/utils/formatDate';
 
-const getDMUrl = (username) => getURL(`/direct/${ username }`);
+const getDMUrl = (username) => getURL(`/direct/${username}`);
 
-Template.ChatpalSearchResultTemplate.onCreated(function() {
+Template.ChatpalSearchResultTemplate.onCreated(function () {
 	this.badRequest = new ReactiveVar(false);
 	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
 	this.data.parentPayload.resultType = this.resultType.get();
@@ -56,7 +56,9 @@ Template.ChatpalSearchResultTemplate.helpers({
 	resultsFoundForAllSearch() {
 		const result = Template.instance().data.result.get();
 
-		if (!result) { return true; }
+		if (!result) {
+			return true;
+		}
 
 		return result.message.numFound > 0 || result.user.numFound > 0 || result.room.numFound > 0;
 	},
@@ -79,8 +81,7 @@ Template.ChatpalSearchResultTemplate.helpers({
 		}
 	},
 	resultMessagesOnly() {
-		return Template.instance().resultType.get() === 'Messages'
-			|| Template.instance().resultType.get() === 'Room';
+		return Template.instance().resultType.get() === 'Messages' || Template.instance().resultType.get() === 'Room';
 	},
 	resultPaging() {
 		const result = Template.instance().data.result.get();
@@ -144,7 +145,7 @@ Template.ChatpalSearchSingleRoom.helpers({
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
 		const username = this.user_username || this.username; // varies whether users or messages of users are displayed
-		return username.replace(/<\/?em>/ig, '');
+		return username.replace(/<\/?em>/gi, '');
 	},
 	getAvatarUrl,
 	getDMUrl,

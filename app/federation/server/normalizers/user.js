@@ -9,9 +9,11 @@ const denormalizeUser = (originalResource) => {
 
 	// Only denormalize local emails
 	if (resource.federation && resource.federation.origin === getFederationDomain()) {
-		resource.emails = [{
-			address: resource.federation.originalInfo.email,
-		}];
+		resource.emails = [
+			{
+				address: resource.federation.originalInfo.email,
+			},
+		];
 	}
 
 	const [username, domain] = getNameAndDomain(resource.username);
@@ -25,18 +27,30 @@ const denormalizeAllUsers = (resources) => resources.map(denormalizeUser);
 
 const normalizeUser = (originalResource) => {
 	// Get only what we need, non-sensitive data
-	const resource = _.pick(originalResource, '_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt');
+	const resource = _.pick(
+		originalResource,
+		'_id',
+		'username',
+		'type',
+		'emails',
+		'name',
+		'federation',
+		'isRemote',
+		'createdAt',
+		'_updatedAt',
+	);
 
+	resource.emails = [
+		{
+			address: `${resource._id}@${getFederationDomain()}`,
+		},
+	];
 	const email = resource.emails[0].address;
-
-	resource.emails = [{
-		address: `${ resource._id }@${ getFederationDomain() }`,
-	}];
 
 	resource.active = true;
 	resource.roles = ['user'];
 	resource.status = 'online';
-	resource.username = !isFullyQualified(resource.username) ? `${ resource.username }@${ getFederationDomain() }` : resource.username;
+	resource.username = !isFullyQualified(resource.username) ? `${resource.username}@${getFederationDomain()}` : resource.username;
 
 	// Federation
 	resource.federation = resource.federation || {

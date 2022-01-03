@@ -1,15 +1,4 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Field,
-	FieldGroup,
-	Modal,
-	Select,
-	SelectOptions,
-	Tabs,
-	TextInput,
-} from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldGroup, Modal, Select, SelectOptions, Tabs, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { parse as parseDomain, ParsedDomain } from 'psl';
 import React, { FC, ReactElement, useCallback, useState } from 'react';
@@ -21,10 +10,7 @@ import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';
 import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
 
-export const FederationModal: FC<{ onClose: () => void }> = ({
-	onClose,
-	...props
-}): ReactElement => {
+export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
 	const t = useTranslation();
 
 	// State
@@ -86,16 +72,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 		} else {
 			setCurrentStep(currentStep + 1);
 		}
-	}, [
-		currentStep,
-		hasUnsavedChanges,
-		domain,
-		discoveryMethod,
-		commit,
-		onClose,
-		setFederationDomain,
-		setFederationDiscoveryMethod,
-	]);
+	}, [currentStep, hasUnsavedChanges, domain, discoveryMethod, commit, onClose, setFederationDomain, setFederationDiscoveryMethod]);
 
 	const previousStep = useCallback(() => {
 		if (currentStep === 1) {
@@ -141,12 +118,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 								<Field.Label>{t('Federation_Discovery_method')}</Field.Label>
 								<Field.Description>{t('Federation_Discovery_method_details')}</Field.Description>
 								<Field.Row>
-									<Select
-										width='250px'
-										value={discoveryMethod || 'dns'}
-										options={discoveryOptions}
-										onChange={onChangeDiscoveryMethod}
-									/>
+									<Select width='250px' value={discoveryMethod || 'dns'} options={discoveryOptions} onChange={onChangeDiscoveryMethod} />
 								</Field.Row>
 							</Field>
 						</FieldGroup>
@@ -182,7 +154,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 							{currentTab === 2 && (
 								<>
 									<Box mbe='x16'>
-										<Box is='p' fontWeight='c2' fontSize='p1'>
+										<Box is='p' fontWeight='c2' fontSize='p2'>
 											{t('Federation_SRV_no_support')}
 										</Box>
 										<Box is='p' mbs='x8' fontSize='x12'>

@@ -59,13 +59,7 @@ const UserWebRTCRemote = (props: UserWebRTCRemoteProps): ReactElement => {
 			key={id}
 			onClick={handleSetMainVideo}
 		>
-			<UserWebRTCVideo
-				videoEnabled={videoEnabled}
-				ownUser={ownUser}
-				muted={muted}
-				url={url}
-				screen={screen}
-			/>
+			<UserWebRTCVideo videoEnabled={videoEnabled} ownUser={ownUser} muted={muted} url={url} screen={screen} />
 			<Box display='flex' width='full' alignItems='center' justifyContent='center'>
 				<Box margin='x4'>{ownUser ? t('You') : peerName}</Box>
 				<Box>

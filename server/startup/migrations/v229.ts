@@ -4,9 +4,7 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 229,
 	async up() {
-		const oldNamesValidationSetting = await Settings.findOneById(
-			'UTF8_Names_Validation',
-		);
+		const oldNamesValidationSetting = await Settings.findOneById('UTF8_Names_Validation');
 		const oldNamesValidationSettingValue = oldNamesValidationSetting?.value || '[0-9a-zA-Z-_.]+';
 
 		Settings.update(
@@ -31,7 +29,8 @@ addMigration({
 				$set: {
 					value: oldNamesValidationSettingValue,
 				},
-			}, {
+			},
+			{
 				upsert: true,
 			},
 		);

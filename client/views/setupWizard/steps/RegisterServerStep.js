@@ -91,7 +91,7 @@ function RegisterServerStep({ step, title, active }) {
 
 			<Margins blockEnd='x32'>
 				<Box>
-					<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>
+					<Box is='p' fontScale='h4' color='hint' marginBlockEnd='x16'>
 						{t('Register_Server_Info')}
 					</Box>
 
@@ -126,9 +126,7 @@ function RegisterServerStep({ step, title, active }) {
 											setOptInMarketingEmails(checked);
 										}}
 									/>
-									<Field.Label htmlFor={optInMarketingEmailsId}>
-										{t('Register_Server_Opt_In')}
-									</Field.Label>
+									<Field.Label htmlFor={optInMarketingEmailsId}>{t('Register_Server_Opt_In')}</Field.Label>
 								</Field.Row>
 							</Field>
 						</Option>
@@ -166,8 +164,7 @@ function RegisterServerStep({ step, title, active }) {
 										}}
 									/>
 									<Field.Label htmlFor={agreeTermsAndPrivacyId}>
-										{t('Register_Server_Registered_I_Agree')}{' '}
-										<a href='https://rocket.chat/terms'>{t('Terms')}</a> &{' '}
+										{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> &{' '}
 										<a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a>
 									</Field.Label>
 								</Field.Row>

@@ -6,6 +6,6 @@ export interface IInvite extends IRocketChatRecord {
 	rid: string;
 	userId: string;
 	createdAt: Date;
-	expires: Date;
+	expires: Date | null;
 	uses: number;
 }

@@ -94,18 +94,7 @@ const AccountProfilePage = () => {
 		],
 	);
 
-	const {
-		realname,
-		email,
-		avatar,
-		username,
-		password,
-		statusText,
-		statusType,
-		customFields,
-		bio,
-		nickname,
-	} = values;
+	const { realname, email, avatar, username, password, statusText, statusType, customFields, bio, nickname } = values;
 
 	const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
 
@@ -225,23 +214,8 @@ const AccountProfilePage = () => {
 			}
 		};
 
-		return setModal(() => (
-			<ActionConfirmModal
-				onConfirm={handleConfirm}
-				onCancel={closeModal}
-				isPassword={localPassword}
-			/>
-		));
-	}, [
-		closeModal,
-		dispatchToastMessage,
-		localPassword,
-		setModal,
-		handleConfirmOwnerChange,
-		deleteOwnAccount,
-		logout,
-		t,
-	]);
+		return setModal(() => <ActionConfirmModal onConfirm={handleConfirm} onCancel={closeModal} isPassword={localPassword} />);
+	}, [closeModal, dispatchToastMessage, localPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, logout, t]);
 
 	return (
 		<Page>

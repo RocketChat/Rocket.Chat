@@ -36,14 +36,7 @@ const Line = ({ animated, moved }: { animated: boolean; moved?: boolean }): Reac
 		: '';
 
 	return (
-		<Box
-			is='span'
-			width='x20'
-			height='x2'
-			backgroundColor='currentColor'
-			className={[animatedStyle, movedStyle]}
-			aria-hidden='true'
-		/>
+		<Box is='span' width='x20' height='x2' backgroundColor='currentColor' className={[animatedStyle, movedStyle]} aria-hidden='true' />
 	);
 };
 
