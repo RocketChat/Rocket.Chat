@@ -978,6 +978,7 @@ API.v1.addRoute(
 	{
 		post() {
 			try {
+				// TODO logoutOtherClients has been removed, need to create a new method
 				const result = Meteor.call('logoutOtherClients');
 
 				return API.v1.success(result);

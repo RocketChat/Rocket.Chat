@@ -82,6 +82,7 @@ export const setUserAvatar = function (user, dataURI, contentType, service, etag
 
 	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function () {
+			// TODO validate if `etag` is being returned correctly
 			Users.setAvatarData(user._id, service, etag || result.etag);
 			api.broadcast('user.avatarUpdate', {
 				username: user.username,
