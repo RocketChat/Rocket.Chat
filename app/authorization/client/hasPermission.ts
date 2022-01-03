@@ -7,10 +7,10 @@ import { IUser } from '../../../definition/IUser';
 import { IRole } from '../../../definition/IRole';
 import { IPermission } from '../../../definition/IPermission';
 
-const isValidScope = (scope: IRole['scope']): boolean =>
-	typeof scope === 'string' && scope in Models;
+const isValidScope = (scope: IRole['scope']): boolean => typeof scope === 'string' && scope in Models;
 
-const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
+const createPermissionValidator =
+	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id']): boolean => {
 		const user: IUser | null = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
@@ -23,7 +23,9 @@ const createPermissionValidator = (quantifier: (predicate: (permissionId: IPermi
 				}
 			}
 
-			const permission: IPermission | null = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
+			const permission: IPermission | null = ChatPermissions.findOne(permissionId, {
+				fields: { roles: 1 },
+			});
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleName) => {
@@ -63,15 +65,11 @@ const validatePermissions = (
 	return predicate(([] as IPermission['_id'][]).concat(permissions), scope, userId);
 };
 
-export const hasAllPermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: string,
-): boolean => validatePermissions(permissions, scope, all);
+export const hasAllPermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, all);
 
-export const hasAtLeastOnePermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: string,
-): boolean => validatePermissions(permissions, scope, atLeastOne);
+export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, atLeastOne);
 
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],

@@ -32,16 +32,15 @@ class AutoCloseOnHoldSchedulerClass {
 	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
 		await this.unscheduleRoom(roomId);
 
-		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
+		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		const when = moment(new Date()).add(timeout, 's').toDate();
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		await this.scheduler.schedule(when, jobName, { roomId, comment });
 	}
 
-
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
+		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		await this.scheduler.cancel({ name: jobName });
 	}
 

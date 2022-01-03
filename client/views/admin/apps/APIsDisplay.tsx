@@ -26,7 +26,7 @@ const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 				</Box>
 				{apis.map((api) => (
 					<Box key={api.path} mb='x8'>
-						<Box fontScale='p4'>
+						<Box fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
 						</Box>
 						{api.methods.map((method) => (

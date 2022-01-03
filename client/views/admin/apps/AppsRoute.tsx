@@ -61,8 +61,8 @@ const AppsRoute: FC = () => {
 
 	return (
 		<AppsProvider>
-			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} />) ||
-				(context === 'details' && id && <AppDetailsPage id={id} />) ||
+			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} context={context} />) ||
+				(context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version} />) ||
 				(context === 'logs' && <AppLogsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>

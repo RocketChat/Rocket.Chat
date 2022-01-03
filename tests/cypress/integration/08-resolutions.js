@@ -4,7 +4,6 @@ import sideNav from '../pageobjects/side-nav.page';
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
-
 // skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
 describe('[Resolution]', () => {
 	describe('[Mobile Render]', () => {
@@ -29,11 +28,14 @@ describe('[Resolution]', () => {
 		describe('moving elements:', () => {
 			beforeEach(() => {
 				cy.wait(100);
-				sideNav.sideNavBar.getLocation().its('x').then((x) => {
-					if (x !== 0) {
-						sideNav.burgerBtn.click();
-					}
-				});
+				sideNav.sideNavBar
+					.getLocation()
+					.its('x')
+					.then((x) => {
+						if (x !== 0) {
+							sideNav.burgerBtn.click();
+						}
+					});
 				cy.wait(100);
 			});
 

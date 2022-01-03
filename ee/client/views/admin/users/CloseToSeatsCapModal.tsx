@@ -14,14 +14,7 @@ type CloseToSeatsCapModalProps = {
 	onClose: () => void;
 };
 
-const CloseToSeatsCapModal = ({
-	members,
-	limit,
-	title,
-	onConfirm,
-	onClose,
-	requestSeatsLink,
-}: CloseToSeatsCapModalProps): ReactElement => {
+const CloseToSeatsCapModal = ({ members, limit, title, onConfirm, onClose, requestSeatsLink }: CloseToSeatsCapModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal>
@@ -31,8 +24,7 @@ const CloseToSeatsCapModal = ({
 			</Modal.Header>
 			<Modal.Content>
 				<Box is='p' mbe='x24'>
-					{t('Close_to_seat_limit_warning')}{' '}
-					<ExternalLink to={requestSeatsLink}>{t('Request_more_seats')}</ExternalLink>
+					{t('Close_to_seat_limit_warning')} <ExternalLink to={requestSeatsLink}>{t('Request_more_seats')}</ExternalLink>
 				</Box>
 				<MemberCapUsage members={members} limit={limit} />
 			</Modal.Content>

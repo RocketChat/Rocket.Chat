@@ -27,9 +27,7 @@ export const RoomIcon: FC<{
 			return <Icon name='balloon' size={size} />;
 		}
 		if (room.uids && room.uids.length > 0) {
-			return (
-				<ReactiveUserStatus uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} />
-			);
+			return <ReactiveUserStatus uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} />;
 		}
 		return <Icon name='at' size={size} />;
 	}

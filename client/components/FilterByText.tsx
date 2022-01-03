@@ -18,13 +18,7 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({
-	placeholder,
-	onChange: setFilter,
-	inputRef,
-	children,
-	...props
-}) => {
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children: _, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -42,14 +36,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	}, []);
 
 	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={handleFormSubmit}
-			display='flex'
-			flexDirection='row'
-			{...props}
-		>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
 			<TextInput
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}

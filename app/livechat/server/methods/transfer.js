@@ -29,16 +29,24 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), {
+			fields: { _id: 1 },
+		});
 		if (!subscription && !hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'livechat:transfer',
+			});
 		}
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
 		transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
 		if (transferData.userId) {
 			const userToTransfer = Users.findOneById(transferData.userId);
-			transferData.transferredTo = { _id: userToTransfer._id, username: userToTransfer.username, name: userToTransfer.name };
+			transferData.transferredTo = {
+				_id: userToTransfer._id,
+				username: userToTransfer.username,
+				name: userToTransfer.name,
+			};
 		}
 
 		return Livechat.transfer(room, guest, transferData);

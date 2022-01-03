@@ -2170,6 +2170,7 @@
   "Importer_ExternalUrl_Description": "You can also use an URL for a publicly accessible file:",
   "Importer_finishing": "Finishing up the import.",
   "Importer_From_Description": "Imports __from__ data into Rocket.Chat.",
+  "Importer_From_Description_CSV": "Imports CSV data into Rocket.Chat. The uploaded file must be a ZIP file.",
   "Importer_HipChatEnterprise_BetaWarning": "Please be aware that this import is still a work in progress, please report any errors which occur in GitHub:",
   "Importer_HipChatEnterprise_Information": "The file uploaded must be a decrypted tar.gz, please read the documentation for further information:",
   "Importer_import_cancelled": "Import cancelled.",

@@ -27,7 +27,7 @@ export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };
 
-const enumToFilter: {[k in RoomTypeFilter]: (room: IRoom) => boolean} = {
+const enumToFilter: { [k in RoomTypeFilter]: (room: IRoom) => boolean } = {
 	[RoomTypeFilter.PUBLIC_CHANNEL]: (room) => room.t === 'c',
 	[RoomTypeFilter.PRIVATE_CHANNEL]: (room) => room.t === 'p',
 	[RoomTypeFilter.PUBLIC_TEAM]: isPublicTeamRoom,

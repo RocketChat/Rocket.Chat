@@ -25,7 +25,9 @@ Meteor.methods({
 		const room = Rooms.findOneById(rid, { fields: { e2eKeyId: 1 } });
 
 		if (room.e2eKeyId) {
-			throw new Meteor.Error('error-room-e2e-key-already-exists', 'E2E Key ID already exists', { method: 'e2e.setRoomKeyID' });
+			throw new Meteor.Error('error-room-e2e-key-already-exists', 'E2E Key ID already exists', {
+				method: 'e2e.setRoomKeyID',
+			});
 		}
 
 		return Rooms.setE2eKeyId(room._id, keyID);

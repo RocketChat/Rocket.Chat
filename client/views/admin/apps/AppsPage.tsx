@@ -61,16 +61,10 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: '' })}
-					selected={isMarketplace}
-				>
+				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
-					selected={!isMarketplace}
-				>
+				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: 'installed' })} selected={context === 'installed'}>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>

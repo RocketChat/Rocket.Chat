@@ -5,16 +5,22 @@ import { logLevel, LogLevelSetting } from './logLevel';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
-		case '0': return 'warn';
-		case '1': return 'info';
-		case '2': return 'debug';
-		default: return 'warn';
+		case '0':
+			return 'warn';
+		case '1':
+			return 'info';
+		case '2':
+			return 'debug';
+		default:
+			return 'warn';
 	}
 };
 
 let defaultLevel = 'warn';
 
-logLevel.once('changed', (level) => { defaultLevel = getLevel(level); });
+logLevel.once('changed', (level) => {
+	defaultLevel = getLevel(level);
+});
 
 export class Logger {
 	readonly logger: P.Logger;

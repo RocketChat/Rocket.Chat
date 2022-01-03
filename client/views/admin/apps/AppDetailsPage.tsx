@@ -70,11 +70,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 							<AppDetailsPageContent app={data} />
 							{!!showApis && <APIsDisplay apis={apis} />}
 							{!!showSettings && (
-								<SettingsDisplay
-									settings={settings}
-									setHasUnsavedChanges={setHasUnsavedChanges}
-									settingsRef={settingsRef}
-								/>
+								<SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef} />
 							)}
 						</>
 					)}

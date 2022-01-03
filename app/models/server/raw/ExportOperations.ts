@@ -6,10 +6,7 @@ import { IExportOperation } from '../../../../definition/IExportOperation';
 type T = IExportOperation;
 
 export class ExportOperationsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { userId: 1 } },
-		{ key: { status: 1 } },
-	]
+	protected indexes: IndexSpecification[] = [{ key: { userId: 1 } }, { key: { status: 1 } }];
 
 	findOnePending(): Promise<T | null> {
 		const query = {

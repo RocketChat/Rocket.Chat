@@ -1,5 +1,10 @@
 function registerUser(parameters) {
-	const { name, profile: { irc: { nick, username } } } = parameters;
+	const {
+		name,
+		profile: {
+			irc: { nick, username },
+		},
+	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
@@ -12,13 +17,17 @@ function registerUser(parameters) {
 function joinChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
 		command: 'NJOIN',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 		trailer: nick,
 	});
 }
@@ -40,26 +49,34 @@ function joinedChannel(parameters, handler) {
 	this.write({
 		prefix: nick,
 		command: 'JOIN',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 	});
 }
 
 function leftChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({
 		prefix: nick,
 		command: 'PART',
-		parameters: [`#${ roomName }`],
+		parameters: [`#${roomName}`],
 	});
 }
 
 function sentMessage(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 		to,
 		message,
 	} = parameters;
@@ -78,7 +95,11 @@ function sentMessage(parameters) {
 
 function disconnected(parameters) {
 	const {
-		user: { profile: { irc: { nick } } },
+		user: {
+			profile: {
+				irc: { nick },
+			},
+		},
 	} = parameters;
 
 	this.write({

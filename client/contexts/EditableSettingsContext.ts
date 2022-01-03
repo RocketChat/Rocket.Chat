@@ -16,9 +16,7 @@ export type EditableSettingsContextQuery = SettingsContextQuery & {
 
 export type EditableSettingsContextValue = {
 	readonly queryEditableSetting: (_id: SettingId) => Subscription<IEditableSetting | undefined>;
-	readonly queryEditableSettings: (
-		query: EditableSettingsContextQuery,
-	) => Subscription<IEditableSetting[]>;
+	readonly queryEditableSettings: (query: EditableSettingsContextQuery) => Subscription<IEditableSetting[]>;
 	readonly queryGroupSections: (_id: GroupId, tab?: TabId) => Subscription<SectionName[]>;
 	readonly queryGroupTabs: (_id: GroupId) => Subscription<TabId[]>;
 	readonly dispatch: (changes: Partial<IEditableSetting>[]) => void;
@@ -53,10 +51,7 @@ export const useEditableSetting = (_id: SettingId): IEditableSetting | undefined
 
 export const useEditableSettings = (query?: EditableSettingsContextQuery): IEditableSetting[] => {
 	const { queryEditableSettings } = useContext(EditableSettingsContext);
-	const subscription = useMemo(
-		() => queryEditableSettings(query ?? {}),
-		[queryEditableSettings, query],
-	);
+	const subscription = useMemo(() => queryEditableSettings(query ?? {}), [queryEditableSettings, query]);
 	return useSubscription(subscription);
 };
 
