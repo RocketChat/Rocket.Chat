@@ -336,7 +336,8 @@
 		]
 	},
 	"browserslist": [
-		"last 2 versions"
+		"last 2 versions",
+		"Firefox ESR"
 	],
 	"volta": {
 		"node": "12.22.8",
