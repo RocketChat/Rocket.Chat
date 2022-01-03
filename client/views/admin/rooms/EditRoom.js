@@ -221,7 +221,7 @@ function EditRoom({ room, onChange }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Favorite')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={favorite} onChange={handleFavorite} />
+						<ToggleSwitch disabled={deleted || !isDefault} checked={favorite} onChange={handleFavorite} />
 					</Box>
 				</Field.Row>
 			</Field>
