@@ -91,29 +91,28 @@ export class VoipService extends ServiceClass implements IVoipService {
 		// const config = this.VoipServerConfiguration.findOne({ type, active: true });
 
 		const management = type === ServerType.MANAGEMENT;
-		const config = {
+		return {
 			_id: '',
 			type,
 			host: settings.get(management ? 'VoIP_Management_Server_Host' : 'VoIP_Server_Host'),
 			name: settings.get(management ? 'VoIP_Management_Server_Name' : 'VoIP_Server_Name'),
 			active: true,
 			_updatedAt: new Date(),
+			...(management
+				? {
+						configData: {
+							port: parseInt(settings.get('VoIP_Management_Server_Port')),
+							username: settings.get('VoIP_Management_Server_Username'),
+							password: settings.get('VoIP_Management_Server_Password'),
+						},
+				  }
+				: {
+						configData: {
+							websocketPort: parseInt(settings.get('VoIP_Server_Websocket_Port')),
+							websocketPath: settings.get('VoIP_Server_Websocket_Path'),
+						},
+				  }),
 		} as IVoipServerConfig;
-
-		if (management) {
-			config.configData = {
-				port: parseInt(settings.get('VoIP_Management_Server_Port')),
-				username: settings.get('VoIP_Management_Server_Username'),
-				password: settings.get('VoIP_Management_Server_Password'),
-			};
-		} else {
-			config.configData = {
-				websocketPort: parseInt(settings.get('VoIP_Server_Websocket_Port')),
-				websocketPath: settings.get('VoIP_Server_Websocket_Path'),
-			};
-		}
-
-		return config;
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface
