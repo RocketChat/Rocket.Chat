@@ -35,18 +35,16 @@ export const useFilteredApps = ({
 		let shouldShowSearchText = true;
 
 		if (Boolean(categories.length) && Boolean(text)) {
-			filtered = apps
-				.filter((app) => filterAppByCategories(app, categories))
-				.filter(({ name }) => filterAppByText(name, text));
+			filtered = apps.filter((app) => filterAppByCategories(app, categories)).filter(({ name }) => filterAppByText(name, text));
 			shouldShowSearchText = true;
 		}
 
-		if (Boolean(categories.length) && !Boolean(text)) {
+		if (Boolean(categories.length) && !text) {
 			filtered = apps.filter((app) => filterAppByCategories(app, categories));
 			shouldShowSearchText = false;
 		}
 
-		if (!Boolean(categories.length) && Boolean(text)) {
+		if (!categories.length && Boolean(text)) {
 			filtered = apps.filter(({ name }) => filterAppByText(name, text));
 			shouldShowSearchText = true;
 		}

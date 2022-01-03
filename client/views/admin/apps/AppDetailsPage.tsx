@@ -40,7 +40,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		try {
 			await Apps.setAppSettings(
 				id,
-				Object.values(settings).map((value) => ({ ...value, value: current && current[value.id] })),
+				Object.values(settings).map((value) => ({ ...value, value: current?.[value.id] })),
 			);
 		} catch (e) {
 			handleAPIError(e);

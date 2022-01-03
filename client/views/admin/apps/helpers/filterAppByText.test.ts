@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { filterAppByText } from './filterAppByText';

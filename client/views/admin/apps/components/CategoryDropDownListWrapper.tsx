@@ -15,18 +15,17 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
-const CategoryDropDownListWrapper = forwardRef<
-	Element,
-	ComponentProps<typeof Box> & { onClose: (e: unknown) => void }
->(function CategoryDropDownListWrapper({ children, onClose }, ref) {
-	const target = useRef<HTMLDivElement>(null);
-	useOutsideClick(target, onClose);
-	const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
-	return (
-		<Box ref={target} style={style} minWidth={224} zIndex='99999'>
-			{children}
-		</Box>
-	);
-});
+const CategoryDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: unknown) => void }>(
+	function CategoryDropDownListWrapper({ children, onClose }, ref) {
+		const target = useRef<HTMLDivElement>(null);
+		useOutsideClick(target, onClose);
+		const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
+		return (
+			<Box ref={target} style={style} minWidth={224} zIndex='99999'>
+				{children}
+			</Box>
+		);
+	},
+);
 
 export default CategoryDropDownListWrapper;

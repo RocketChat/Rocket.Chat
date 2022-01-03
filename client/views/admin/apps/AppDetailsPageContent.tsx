@@ -46,7 +46,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 					</Box>
 					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
-							<AppStatus app={data} marginInline='x8' />
+							<AppStatus app={app} marginInline='x8' />
 							{!installed && (
 								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 							)}
