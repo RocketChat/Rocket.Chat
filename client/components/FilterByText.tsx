@@ -18,7 +18,7 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children: _, ...props }) => {
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');

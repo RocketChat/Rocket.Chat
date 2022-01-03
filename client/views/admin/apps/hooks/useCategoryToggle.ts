@@ -1,9 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from 'react';
 
-import {
-	CategoryDropdownItem,
-	CategoryDropDownListProps,
-} from '../definitions/CategoryDropdownDefinitions';
+import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 
 export const useCategoryToggle = (
 	setData: Dispatch<SetStateAction<CategoryDropDownListProps['groups']>>,
@@ -28,10 +25,7 @@ export const useCategoryToggle = (
 					toggledCategory.checked = !toggledCategory.checked;
 				}
 
-				if (
-					allCategoriesOption &&
-					categoriesWithoutAll.some((currentCategory) => currentCategory.checked === false)
-				) {
+				if (allCategoriesOption && categoriesWithoutAll.some((currentCategory) => currentCategory.checked === false)) {
 					allCategoriesOption.checked = false;
 				}
 

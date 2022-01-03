@@ -45,10 +45,11 @@ const AppsTable: FC<{
 }> = ({ isMarketplace }) => {
 	const t = useTranslation();
 
-	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint(
-		[800, 600],
-		200,
-	) as [React.RefObject<HTMLElement>, boolean, boolean];
+	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200) as [
+		React.RefObject<HTMLElement>,
+		boolean,
+		boolean,
+	];
 
 	const marketplaceRoute = useRoute('admin-marketplace');
 
@@ -62,13 +63,7 @@ const AppsTable: FC<{
 
 	const reload = useAppsReload();
 
-	const {
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination();
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 
@@ -101,9 +96,7 @@ const AppsTable: FC<{
 							>
 								{t('Name')}
 							</GenericTableHeaderCell>
-							{onMediumBreakpoint && (
-								<GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>
-							)}
+							{onMediumBreakpoint && <GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>}
 							{isMarketplace && <GenericTableHeaderCell>{t('Price')}</GenericTableHeaderCell>}
 
 							<GenericTableHeaderCell width='x160'>{t('Status')}</GenericTableHeaderCell>
@@ -116,14 +109,7 @@ const AppsTable: FC<{
 								/>
 							)}
 							{appsResult.phase === AsyncStatePhase.RESOLVED &&
-								appsResult.value.items.map((app) => (
-									<Row
-										key={app.id}
-										large={onLargeBreakpoint}
-										medium={onMediumBreakpoint}
-										{...app}
-									/>
-								))}
+								appsResult.value.items.map((app) => <Row key={app.id} large={onLargeBreakpoint} medium={onMediumBreakpoint} {...app} />)}
 						</GenericTableBody>
 					</GenericTable>
 					{appsResult.phase === AsyncStatePhase.RESOLVED && (
@@ -138,84 +124,65 @@ const AppsTable: FC<{
 					)}
 				</>
 			)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED &&
-				isMarketplace &&
-				appsResult.value.count === 0 && (
-					<Box mbs='x20'>
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_app_matches')}</StatesTitle>
-							{appsResult.value.shouldShowSearchText ? (
-								<StatesSubtitle>
-									{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
-								</StatesSubtitle>
-							) : (
-								''
-							)}
-							<StatesSuggestion>
-								<StatesSuggestionText>{t('You_can_try_to')}:</StatesSuggestionText>
-								<StatesSuggestionList>
-									<StatesSuggestionListItem>{t('Search_by_category')}</StatesSuggestionListItem>
-									<StatesSuggestionListItem>
-										{t('Search_for_a_more_general_term')}
-									</StatesSuggestionListItem>
-									<StatesSuggestionListItem>
-										{t('Search_for_a_more_specific_term')}
-									</StatesSuggestionListItem>
-									<StatesSuggestionListItem>
-										{t('Check_if_the_spelling_is_correct')}
-									</StatesSuggestionListItem>
-								</StatesSuggestionList>
-							</StatesSuggestion>
-						</States>
-					</Box>
-				)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED &&
-				!isMarketplace &&
-				appsResult.value.total === 0 && (
-					<Box mbs='x20'>
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_apps_installed')}</StatesTitle>
-							<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
-							<StatesActions>
-								<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
-									{t('Explore_marketplace')}
-								</StatesAction>
-							</StatesActions>
-						</States>
-					</Box>
-				)}
-			{appsResult.phase === AsyncStatePhase.RESOLVED &&
-				!isMarketplace &&
-				appsResult.value.total !== 0 &&
-				appsResult.value.count === 0 && (
-					<Box mbs='x20'>
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-							{appsResult.value.shouldShowSearchText ? (
-								<StatesSubtitle>
-									<span>
-										{t('No_app_matches_for')} <strong>"{text}"</strong>
-									</span>
-								</StatesSubtitle>
-							) : (
-								''
-							)}
-							<StatesSuggestion>
-								<StatesSuggestionText>
-									{t('Try_searching_in_the_marketplace_instead')}
-								</StatesSuggestionText>
-							</StatesSuggestion>
-							<StatesActions>
-								<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
-									{t('Search_on_marketplace')}
-								</StatesAction>
-							</StatesActions>
-						</States>
-					</Box>
-				)}
+			{appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0 && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_app_matches')}</StatesTitle>
+						{appsResult.value.shouldShowSearchText ? (
+							<StatesSubtitle>
+								{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+							</StatesSubtitle>
+						) : (
+							''
+						)}
+						<StatesSuggestion>
+							<StatesSuggestionText>{t('You_can_try_to')}:</StatesSuggestionText>
+							<StatesSuggestionList>
+								<StatesSuggestionListItem>{t('Search_by_category')}</StatesSuggestionListItem>
+								<StatesSuggestionListItem>{t('Search_for_a_more_general_term')}</StatesSuggestionListItem>
+								<StatesSuggestionListItem>{t('Search_for_a_more_specific_term')}</StatesSuggestionListItem>
+								<StatesSuggestionListItem>{t('Check_if_the_spelling_is_correct')}</StatesSuggestionListItem>
+							</StatesSuggestionList>
+						</StatesSuggestion>
+					</States>
+				</Box>
+			)}
+			{appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0 && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_apps_installed')}</StatesTitle>
+						<StatesSubtitle>{t('Explore_the_marketplace_to_find_awesome_apps')}</StatesSubtitle>
+						<StatesActions>
+							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Explore_marketplace')}</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
+			{appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0 && (
+				<Box mbs='x20'>
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
+						{appsResult.value.shouldShowSearchText ? (
+							<StatesSubtitle>
+								<span>
+									{t('No_app_matches_for')} <strong>"{text}"</strong>
+								</span>
+							</StatesSubtitle>
+						) : (
+							''
+						)}
+						<StatesSuggestion>
+							<StatesSuggestionText>{t('Try_searching_in_the_marketplace_instead')}</StatesSuggestionText>
+						</StatesSuggestion>
+						<StatesActions>
+							<StatesAction onClick={(): void => marketplaceRoute.push({ context: '' })}>{t('Search_on_marketplace')}</StatesAction>
+						</StatesActions>
+					</States>
+				</Box>
+			)}
 			{/* TODO: Create error variations for empty search message */}
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>

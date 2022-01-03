@@ -28,10 +28,7 @@ const getBundledIn = async (appId: string, appVersion: string): Promise<App['bun
 	}
 };
 
-const getSettings = async (
-	appId: string,
-	installed: boolean,
-): Promise<ReturnType<AppSettingsManager['getAppSettings']>> => {
+const getSettings = async (appId: string, installed: boolean): Promise<ReturnType<AppSettingsManager['getAppSettings']>> => {
 	if (!installed) {
 		return {};
 	}

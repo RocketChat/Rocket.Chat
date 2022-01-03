@@ -1,9 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import {
-	CategoryDropdownItem,
-	CategoryDropDownListProps,
-} from '../definitions/CategoryDropdownDefinitions';
+import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
@@ -63,10 +60,5 @@ export const useCategories = (): [
 		() => flatCategories.filter((category) => Boolean(category.checked)),
 		[flatCategories],
 	) as (CategoryDropdownItem & { checked: true })[];
-	return [
-		data,
-		selectedCategories,
-		originalSize === selectedCategories.length ? [] : selectedCategories,
-		onSelected,
-	];
+	return [data, selectedCategories, originalSize === selectedCategories.length ? [] : selectedCategories, onSelected];
 };
