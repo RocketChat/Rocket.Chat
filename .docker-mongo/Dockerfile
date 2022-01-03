@@ -1,10 +1,10 @@
-FROM node:12.22.8-buster-slim
+FROM node:14.18.2-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
 # Install MongoDB and dependencies
-ENV MONGO_MAJOR 4.2
-ENV MONGO_VERSION 4.2.10
+ENV MONGO_MAJOR 5.0 \
+    MONGO_VERSION 5.0.5
 
 RUN set -x \
     && apt-get update \
@@ -13,12 +13,12 @@ RUN set -x \
     && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list" \
     && apt-get update \
     && apt-get install -y \
-       mongodb-org=$MONGO_VERSION \
-       mongodb-org-server=$MONGO_VERSION \
-       mongodb-org-shell=$MONGO_VERSION \
-       mongodb-org-mongos=$MONGO_VERSION \
-       mongodb-org-tools=$MONGO_VERSION \
-       fontconfig \
+    mongodb-org=$MONGO_VERSION \
+    mongodb-org-server=$MONGO_VERSION \
+    mongodb-org-shell=$MONGO_VERSION \
+    mongodb-org-mongos=$MONGO_VERSION \
+    mongodb-org-tools=$MONGO_VERSION \
+    fontconfig \
     && apt-get clean my room \
     && groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
@@ -36,12 +36,12 @@ RUN aptMark="$(apt-mark showmanual)" \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \
-       | awk '/=>/ { print $(NF-1) }' \
-       | sort -u \
-       | xargs -r dpkg-query --search \
-       | cut -d: -f1 \
-       | sort -u \
-       | xargs -r apt-mark manual \
+    | awk '/=>/ { print $(NF-1) }' \
+    | sort -u \
+    | xargs -r dpkg-query --search \
+    | cut -d: -f1 \
+    | sort -u \
+    | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && npm cache clear --force
 
