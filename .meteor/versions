@@ -89,7 +89,7 @@ mongo-dev-server@1.1.0
 mongo-id@1.0.8
 mrt:reactive-store@0.0.1
 mystor:device-detection@0.2.0
-nimble:restivus@1.0.0
+rocketchat:restivus@1.0.0
 nooitaf:colors@1.2.0
 npm-mongo@3.9.1
 oauth@2.1.0
