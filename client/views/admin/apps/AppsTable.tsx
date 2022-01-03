@@ -145,9 +145,13 @@ const AppsTable: FC<{
 						<States>
 							<StatesIcon name='magnifier' />
 							<StatesTitle>{t('No_app_matches')}</StatesTitle>
-							<StatesSubtitle>
-								{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
-							</StatesSubtitle>
+							{appsResult.value.shouldShowSearchText ? (
+								<StatesSubtitle>
+									{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+								</StatesSubtitle>
+							) : (
+								''
+							)}
 							<StatesSuggestion>
 								<StatesSuggestionText>{t('You_can_try_to')}:</StatesSuggestionText>
 								<StatesSuggestionList>
@@ -190,11 +194,15 @@ const AppsTable: FC<{
 						<States>
 							<StatesIcon name='magnifier' />
 							<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-							<StatesSubtitle>
-								<span>
-									{t('No_app_matches_for')} <strong>"{text}"</strong>
-								</span>
-							</StatesSubtitle>
+							{appsResult.value.shouldShowSearchText ? (
+								<StatesSubtitle>
+									<span>
+										{t('No_app_matches_for')} <strong>"{text}"</strong>
+									</span>
+								</StatesSubtitle>
+							) : (
+								''
+							)}
 							<StatesSuggestion>
 								<StatesSuggestionText>
 									{t('Try_searching_in_the_marketplace_instead')}
