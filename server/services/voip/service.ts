@@ -11,6 +11,7 @@ import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
+import { settings } from '../../../app/settings/server';
 
 export class VoipService extends ServiceClass implements IVoipService {
 	protected name = 'voip';
@@ -84,7 +85,35 @@ export class VoipService extends ServiceClass implements IVoipService {
 	}
 
 	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
-		return this.VoipServerConfiguration.findOne({ type, active: true });
+		// TODO: Decide the approach we will take regarding settings after the MVP,
+		// For now this work around should be enough.
+
+		// const config = this.VoipServerConfiguration.findOne({ type, active: true });
+
+		const management = type === ServerType.MANAGEMENT;
+		const config = {
+			_id: '',
+			type,
+			host: settings.get(management ? 'VoIP_Management_Server_Host' : 'VoIP_Server_Host'),
+			name: settings.get(management ? 'VoIP_Management_Server_Name' : 'VoIP_Server_Name'),
+			active: true,
+			_updatedAt: new Date(),
+		} as IVoipServerConfig;
+
+		if (management) {
+			config.configData = {
+				port: parseInt(settings.get('VoIP_Management_Server_Port')),
+				username: settings.get('VoIP_Management_Server_Username'),
+				password: settings.get('VoIP_Management_Server_Password'),
+			};
+		} else {
+			config.configData = {
+				websocketPort: parseInt(settings.get('VoIP_Server_Websocket_Port')),
+				websocketPath: settings.get('VoIP_Server_Websocket_Path'),
+			};
+		}
+
+		return config;
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface
