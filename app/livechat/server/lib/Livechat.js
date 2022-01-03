@@ -156,6 +156,9 @@ export const Livechat = {
 	},
 
 	async getRoom(guest, message, roomInfo, agent, extraData) {
+		if (!this.enabled()) {
+			throw new Meteor.Error('error-omnichannel-is-disabled');
+		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${ guest._id }`);
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
