@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-import { logger } from './logger';
 
 // Get the connector version and type
 API.v1.addRoute(
@@ -25,7 +24,6 @@ API.v1.addRoute(
 		async get() {
 			const list = await Voip.getExtensionList();
 			const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
-			logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
 			return API.v1.success({ extensions: result });
 		},
 	},
@@ -47,7 +45,6 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
-			logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},
@@ -55,6 +52,7 @@ API.v1.addRoute(
 
 /* Get the details for registration extension.
  */
+
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfo',
 	{ authRequired: true },
@@ -67,7 +65,6 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-			logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},

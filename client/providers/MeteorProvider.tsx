@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import AttachmentProvider from '../components/Message/Attachments/providers/AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
+import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import LayoutProvider from './LayoutProvider';
@@ -31,11 +32,13 @@ const MeteorProvider: FC = ({ children }) => (
 											<CustomSoundProvider>
 												<UserProvider>
 													<AuthorizationProvider>
-														<OmnichannelProvider>
-															<ModalProvider>
-																<AttachmentProvider>{children}</AttachmentProvider>
-															</ModalProvider>
-														</OmnichannelProvider>
+														<CallProvider>
+															<OmnichannelProvider>
+																<ModalProvider>
+																	<AttachmentProvider>{children}</AttachmentProvider>
+																</ModalProvider>
+															</OmnichannelProvider>
+														</CallProvider>
 													</AuthorizationProvider>
 												</UserProvider>
 											</CustomSoundProvider>

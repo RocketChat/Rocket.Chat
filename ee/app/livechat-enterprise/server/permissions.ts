@@ -16,10 +16,7 @@ export const createPermissions = async (): Promise<void> => {
 		Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
-		// VOIP permissions
-		// allows to hook on an ongoing call and listen
 		Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]),
-		// allows to perform an outgoing voip call
 		Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]),
 	]);
 };
