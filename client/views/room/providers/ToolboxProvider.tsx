@@ -1,5 +1,5 @@
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect, MouseEventHandler } from 'react';
+import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, MouseEventHandler } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
