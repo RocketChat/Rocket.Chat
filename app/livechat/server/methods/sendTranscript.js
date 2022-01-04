@@ -12,18 +12,26 @@ Meteor.methods({
 		check(email, String);
 
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'send-omnichannel-chat-transcript')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:sendTranscript' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:sendTranscript',
+			});
 		}
 
-		const user = Users.findOneById(Meteor.userId(), { fields: { _id: 1, username: 1, name: 1 } });
+		const user = Users.findOneById(Meteor.userId(), {
+			fields: { _id: 1, username: 1, name: 1, utcOffset: 1 },
+		});
 		return Livechat.sendTranscript({ token, rid, email, subject, user });
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'livechat:sendTranscript',
-	connectionId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'livechat:sendTranscript',
+		connectionId() {
+			return true;
+		},
 	},
-}, 1, 5000);
+	1,
+	5000,
+);

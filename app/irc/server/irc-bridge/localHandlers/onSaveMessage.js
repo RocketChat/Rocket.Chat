@@ -1,3 +1,4 @@
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Subscriptions, Users } from '../../../../models';
 
 export default function handleOnSaveMessage(message, to) {
@@ -21,11 +22,11 @@ export default function handleOnSaveMessage(message, to) {
 		});
 
 		if (!toIdentification) {
-			console.error('[irc][server] Target user not found');
+			SystemLogger.error('[irc][server] Target user not found');
 			return;
 		}
 	} else {
-		toIdentification = `#${ to.name }`;
+		toIdentification = `#${to.name}`;
 	}
 
 	const user = Users.findOne({ _id: message.u._id });

@@ -25,7 +25,7 @@ function DolphinOnCreateUser(options, user) {
 	if (user && user.services && user.services.dolphin && user.services.dolphin.NickName) {
 		user.username = user.services.dolphin.NickName;
 	}
-	return user;
+	return options;
 }
 
 if (Meteor.isServer) {
@@ -53,7 +53,7 @@ if (Meteor.isServer) {
 	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
 } else {
 	Meteor.startup(() =>
-		Tracker.autorun(function() {
+		Tracker.autorun(function () {
 			if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);

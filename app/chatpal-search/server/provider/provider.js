@@ -4,7 +4,6 @@ import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions, Rooms } from '../../../models';
 import { baseUrl } from '../utils/settings';
-
 import Index from './index';
 
 /**
@@ -17,9 +16,9 @@ class ChatpalProvider extends SearchProvider {
 	constructor() {
 		super('chatpalProvider');
 
-		this.chatpalBaseUrl = `${ baseUrl }`;
+		this.chatpalBaseUrl = `${baseUrl}`;
 
-		ChatpalLogger.debug(`Using ${ this.chatpalBaseUrl } as chatpal base url`);
+		ChatpalLogger.debug(`Using ${this.chatpalBaseUrl} as chatpal base url`);
 
 		this._settings.add('Backend', 'select', 'cloud', {
 			values: [
@@ -30,26 +29,32 @@ class ChatpalProvider extends SearchProvider {
 			i18nDescription: 'Chatpal_Backend_Description',
 		});
 		this._settings.add('API_Key', 'string', '', {
-			enableQuery: [{
-				_id: 'Search.chatpalProvider.Backend',
-				value: 'cloud',
-			}],
+			enableQuery: [
+				{
+					_id: 'Search.chatpalProvider.Backend',
+					value: 'cloud',
+				},
+			],
 			i18nLabel: 'Chatpal_API_Key',
 			i18nDescription: 'Chatpal_API_Key_Description',
 		});
 		this._settings.add('Base_URL', 'string', '', {
-			enableQuery: [{
-				_id: 'Search.chatpalProvider.Backend',
-				value: 'onsite',
-			}],
+			enableQuery: [
+				{
+					_id: 'Search.chatpalProvider.Backend',
+					value: 'onsite',
+				},
+			],
 			i18nLabel: 'Chatpal_Base_URL',
 			i18nDescription: 'Chatpal_Base_URL_Description',
 		});
 		this._settings.add('HTTP_Headers', 'string', '', {
-			enableQuery: [{
-				_id: 'Search.chatpalProvider.Backend',
-				value: 'onsite',
-			}],
+			enableQuery: [
+				{
+					_id: 'Search.chatpalProvider.Backend',
+					value: 'onsite',
+				},
+			],
 			multiline: true,
 			i18nLabel: 'Chatpal_HTTP_Headers',
 			i18nDescription: 'Chatpal_HTTP_Headers_Description',
@@ -144,12 +149,18 @@ class ChatpalProvider extends SearchProvider {
 		}
 
 		switch (name) {
-			case 'message.save': return this.index.indexDoc('message', payload);
-			case 'user.save': return this.index.indexDoc('user', payload);
-			case 'room.save': return this.index.indexDoc('room', payload);
-			case 'message.delete': return this.index.removeDoc('message', value);
-			case 'user.delete': return this.index.removeDoc('user', value);
-			case 'room.delete': return this.index.removeDoc('room', value);
+			case 'message.save':
+				return this.index.indexDoc('message', payload);
+			case 'user.save':
+				return this.index.indexDoc('user', payload);
+			case 'room.save':
+				return this.index.indexDoc('room', payload);
+			case 'message.delete':
+				return this.index.removeDoc('message', value);
+			case 'user.delete':
+				return this.index.removeDoc('user', value);
+			case 'room.delete':
+				return this.index.removeDoc('room', value);
 		}
 
 		return true;
@@ -162,14 +173,22 @@ class ChatpalProvider extends SearchProvider {
 	 * @private
 	 */
 	_checkForClear(reason) {
-		if (reason === 'startup') { return false; }
+		if (reason === 'startup') {
+			return false;
+		}
 
-		if (reason === 'switch') { return true; }
+		if (reason === 'switch') {
+			return true;
+		}
 
-		return this._indexConfig.backendtype !== this._settings.get('Backend')
-			|| (this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== (this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL')))
-			|| (this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key'))
-			|| this._indexConfig.language !== this._settings.get('Main_Language');
+		return (
+			this._indexConfig.backendtype !== this._settings.get('Backend') ||
+			(this._indexConfig.backendtype === 'onsite' &&
+				this._indexConfig.baseurl !==
+					(this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL'))) ||
+			(this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
+			this._indexConfig.language !== this._settings.get('Main_Language')
+		);
 	}
 
 	/**
@@ -180,7 +199,7 @@ class ChatpalProvider extends SearchProvider {
 	_parseHeaders() {
 		const headers = {};
 		const sh = this._settings.get('HTTP_Headers').split('\n');
-		sh.forEach(function(d) {
+		sh.forEach(function (d) {
 			const ds = d.split(':');
 			if (ds.length === 2 && ds[0].trim() !== '') {
 				headers[ds[0]] = ds[1];
@@ -206,7 +225,7 @@ class ChatpalProvider extends SearchProvider {
 			ChatpalLogger.debug('ping was successfull');
 			resolve({ config, stats });
 		} else {
-			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
+			ChatpalLogger.warn(`ping failed, retry in ${timeout} ms`);
 
 			this._pingTimeout = Meteor.setTimeout(() => {
 				this._ping(config, resolve, reject, Math.min(maxTimeout, 2 * timeout));
@@ -280,15 +299,15 @@ class ChatpalProvider extends SearchProvider {
 	start(reason, resolve, reject) {
 		const clear = this._checkForClear(reason);
 
-		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
+		ChatpalLogger.debug(`clear = ${clear} with reason '${reason}'`);
 
 		this._getIndexConfig().then((server) => {
 			this._indexConfig = server.config;
 
 			this._stats = server.stats;
 
-			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
-			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
+			ChatpalLogger.debug({ config: this._indexConfig });
+			ChatpalLogger.debug({ stats: this._stats });
 
 			this.index = new Index(this._indexConfig, this.indexFail || clear, this._stats.message.oldest || new Date().valueOf());
 
@@ -304,11 +323,15 @@ class ChatpalProvider extends SearchProvider {
 	_getAcl(context) {
 		let aclRoomsIds = [];
 
-		const subscribedRooms = Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
+		const subscribedRooms = Subscriptions.find({ 'u._id': context.uid })
+			.fetch()
+			.map((room) => room.rid);
 		aclRoomsIds = aclRoomsIds.concat(subscribedRooms);
 
 		if (this._settings.get('IncludeAllPublicChannels')) {
-			const publicRooms = Rooms.findByType('c').fetch().map((room) => room._id);
+			const publicRooms = Rooms.findByType('c')
+				.fetch()
+				.map((room) => room._id);
 			aclRoomsIds = aclRoomsIds.concat(publicRooms);
 		}
 
@@ -321,7 +344,9 @@ class ChatpalProvider extends SearchProvider {
 	 * @returns {*}
 	 */
 	search(text, context, payload, callback) {
-		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
+		if (!this.index) {
+			return callback({ msg: 'Chatpal_currently_not_active' });
+		}
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
 		const params = Object.assign({}, payload.custom);
@@ -342,17 +367,13 @@ class ChatpalProvider extends SearchProvider {
 	 * @inheritDoc
 	 */
 	suggest(text, context, payload, callback) {
-		if (!this.index) { return callback({ msg: 'Chatpal_currently_not_active' }); }
+		if (!this.index) {
+			return callback({ msg: 'Chatpal_currently_not_active' });
+		}
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
 
-		this.index.suggest(
-			text,
-			this._settings.get('Main_Language'),
-			this._getAcl(context),
-			type,
-			callback,
-		);
+		this.index.suggest(text, this._settings.get('Main_Language'), this._getAcl(context), type, callback);
 	}
 }
 

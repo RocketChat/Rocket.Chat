@@ -4,7 +4,7 @@ import { getValue } from '../../../settings/server/raw';
 
 export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
-	if (!await canAccessRoomAsync(room, { _id: uid })) {
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -32,7 +32,7 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 
 export async function findStarredMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
-	if (!await canAccessRoomAsync(room, { _id: uid })) {
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 	const user = await Users.findOneById(uid, { fields: { username: 1 } });
@@ -59,7 +59,7 @@ export async function findStarredMessages({ uid, roomId, pagination: { offset, c
 }
 
 export async function findSnippetedMessageById({ uid, messageId }) {
-	if (!await getValue('Message_AllowSnippeting')) {
+	if (!(await getValue('Message_AllowSnippeting'))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -79,7 +79,7 @@ export async function findSnippetedMessageById({ uid, messageId }) {
 		throw new Error('invalid-message');
 	}
 
-	if (!await canAccessRoomAsync(room, { _id: uid })) {
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -89,12 +89,12 @@ export async function findSnippetedMessageById({ uid, messageId }) {
 }
 
 export async function findSnippetedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
-	if (!await getValue('Message_AllowSnippeting')) {
+	if (!(await getValue('Message_AllowSnippeting'))) {
 		throw new Error('error-not-allowed');
 	}
 	const room = await Rooms.findOneById(roomId);
 
-	if (!await canAccessRoomAsync(room, { _id: uid })) {
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -119,7 +119,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
 
-	if (!await canAccessRoomAsync(room, { _id: uid })) {
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
 

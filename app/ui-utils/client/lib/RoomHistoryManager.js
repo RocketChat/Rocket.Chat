@@ -2,17 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
+import { v4 as uuidv4 } from 'uuid';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { Emitter } from '@rocket.chat/emitter';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
-import { getConfig } from '../config';
+import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-import { call } from './callMethod';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 import { getUserPreference } from '../../../utils/client';
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -34,20 +37,21 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-
-export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => document.querySelector(selector) || new Promise((resolve) => {
-	const observer = new MutationObserver(function(mutations, obs) {
-		const element = document.querySelector(selector);
-		if (element) {
-			obs.disconnect(); // stop observing
-			return resolve(element);
-		}
+export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') =>
+	document.querySelector(selector) ||
+	new Promise((resolve) => {
+		const observer = new MutationObserver(function (mutations, obs) {
+			const element = document.querySelector(selector);
+			if (element) {
+				obs.disconnect(); // stop observing
+				return resolve(element);
+			}
+		});
+		observer.observe(document, {
+			childList: true,
+			subtree: true,
+		});
 	});
-	observer.observe(document, {
-		childList: true,
-		subtree: true,
-	});
-});
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
@@ -62,22 +66,25 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	// ].map((e) => e.roles);
 	// msg.roles = _.union.apply(_.union, roles);
 
-
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
-	msg = await promises.run('onClientMessageReceived', msg) || msg;
+	msg = (await onClientMessageReceived(msg)) || msg;
 
 	const { _id, ...messageToUpsert } = msg;
 
 	if (msg.tcount) {
-		collection.direct.update({ tmid: _id }, {
-			$set: {
-				following: msg.replies && msg.replies.indexOf(uid) > -1,
-				threadMsg: normalizeThreadMessage(messageToUpsert),
-				repliesCount: msg.tcount,
+		collection.direct.update(
+			{ tmid: _id },
+			{
+				$set: {
+					following: msg.replies && msg.replies.indexOf(uid) > -1,
+					threadMsg: normalizeThreadMessage(messageToUpsert),
+					repliesCount: msg.tcount,
+				},
 			},
-		}, { multi: true });
+			{ multi: true },
+		);
 	}
 
 	return collection.direct.upsert({ _id }, messageToUpsert);
@@ -99,9 +106,11 @@ const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
 const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
-export const RoomHistoryManager = new class {
+export const RoomHistoryManager = new (class extends Emitter {
 	constructor() {
+		super();
 		this.histories = {};
+		this.requestsList = [];
 	}
 
 	getRoom(rid) {
@@ -119,6 +128,37 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
+	async queue() {
+		return new Promise((resolve) => {
+			const requestId = uuidv4();
+			const done = () => {
+				this.lastRequest = new Date();
+				resolve();
+			};
+			if (this.requestsList.length === 0) {
+				return this.run(done);
+			}
+			this.requestsList.push(requestId);
+			this.once(requestId, done);
+		});
+	}
+
+	run(fn) {
+		const difference = differenceInMilliseconds(new Date(), this.lastRequest);
+		if (!this.lastRequest || difference > 500) {
+			return fn();
+		}
+		return setTimeout(fn, 500 - difference);
+	}
+
+	unqueue() {
+		const requestId = this.requestsList.pop();
+		if (!requestId) {
+			return;
+		}
+		this.run(() => this.emit(requestId));
+	}
+
 	async getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
@@ -128,6 +168,8 @@ export const RoomHistoryManager = new class {
 		}
 
 		room.isLoading.set(true);
+
+		await this.queue();
 
 		// ScrollListener.setLoader true
 		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
@@ -151,8 +193,10 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const result = await call('loadHistory', rid, ts, limit, ls);
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
 
+		this.unqueue();
 
 		let previousHeight;
 		let scroll;
@@ -175,8 +219,6 @@ export const RoomHistoryManager = new class {
 		if (!room.loaded) {
 			room.loaded = 0;
 		}
-
-		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 
 		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
 
@@ -202,12 +244,13 @@ export const RoomHistoryManager = new class {
 		});
 	}
 
-	getMoreNext(rid, limit = defaultLimit) {
+	async getMoreNext(rid, limit = defaultLimit) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext.curValue !== true) {
 			return;
 		}
 
+		await this.queue();
 		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
 		instance.atBottom = false;
 
@@ -229,25 +272,25 @@ export const RoomHistoryManager = new class {
 		const { ts } = lastMessage;
 
 		if (ts) {
-			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
-				upsertMessageBulk({
-					msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
-					subscription,
-				});
-
-				Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
-
-				room.isLoading.set(false);
-				if (!room.loaded) {
-					room.loaded = 0;
-				}
-
-				room.loaded += result.messages.length;
-				if (result.messages.length < limit) {
-					room.hasMoreNext.set(false);
-				}
+			const result = await callWithErrorHandling('loadNextMessages', rid, ts, limit);
+			upsertMessageBulk({
+				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
+				subscription,
 			});
+
+			Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+			room.isLoading.set(false);
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+
+			room.loaded += result.messages.length;
+			if (result.messages.length < limit) {
+				room.hasMoreNext.set(false);
+			}
 		}
+		await this.unqueue();
 	}
 
 	async getSurroundingMessages(message, limit = defaultLimit) {
@@ -260,16 +303,19 @@ export const RoomHistoryManager = new class {
 		const instance = Blaze.getView(w).templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-			const msgElement = $(`#${ message._id }`, w);
+			const msgElement = $(`#${message._id}`, w);
 			if (msgElement.length === 0) {
 				return;
 			}
 
 			const wrapper = $('.messages-box .wrapper');
-			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
-			wrapper.animate({
-				scrollTop: pos,
-			}, 500);
+			const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
+			wrapper.animate(
+				{
+					scrollTop: pos,
+				},
+				500,
+			);
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		}
@@ -287,7 +333,7 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
+		return Meteor.call('loadSurroundingMessages', message, limit, function (err, result) {
 			if (!result || !result.messages) {
 				return;
 			}
@@ -303,16 +349,19 @@ export const RoomHistoryManager = new class {
 
 			Tracker.afterFlush(() => {
 				const wrapper = $('.messages-box .wrapper');
-				const msgElement = $(`#${ message._id }`, wrapper);
-				const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
-				wrapper.animate({
-					scrollTop: pos,
-				}, 500);
+				const msgElement = $(`#${message._id}`, wrapper);
+				const pos = wrapper.scrollTop() + msgElement.offset().top - wrapper.height() / 2;
+				wrapper.animate(
+					{
+						scrollTop: pos,
+					},
+					500,
+				);
 
 				msgElement.addClass('highlight');
 				room.isLoading.set(false);
 				const messages = wrapper[0];
-				instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
+				instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 				setTimeout(() => msgElement.removeClass('highlight'), 500);
 			});
 
@@ -335,7 +384,6 @@ export const RoomHistoryManager = new class {
 		return room.hasMoreNext.get();
 	}
 
-
 	getMoreIfIsEmpty(rid) {
 		const room = this.getRoom(rid);
 
@@ -343,7 +391,6 @@ export const RoomHistoryManager = new class {
 			return this.getMore(rid);
 		}
 	}
-
 
 	isLoading(rid) {
 		const room = this.getRoom(rid);
@@ -358,4 +405,4 @@ export const RoomHistoryManager = new class {
 			this.histories[rid].loaded = undefined;
 		}
 	}
-}();
+})();

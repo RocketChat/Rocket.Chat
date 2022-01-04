@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
+import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
-	'authorization:removeUserFromRole'(roleName, username, scope) {
+	async 'authorization:removeUserFromRole'(roleName, username, scope) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
@@ -21,14 +21,17 @@ Meteor.methods({
 			});
 		}
 
-		const user = Meteor.users.findOne({
-			username,
-		}, {
-			fields: {
-				_id: 1,
-				roles: 1,
+		const user = Meteor.users.findOne(
+			{
+				username,
 			},
-		});
+			{
+				fields: {
+					_id: 1,
+					roles: 1,
+				},
+			},
+		);
 
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -38,13 +41,15 @@ Meteor.methods({
 
 		// prevent removing last user from admin role
 		if (roleName === 'admin') {
-			const adminCount = Meteor.users.find({
-				roles: {
-					$in: ['admin'],
-				},
-			}).count();
+			const adminCount = Meteor.users
+				.find({
+					roles: {
+						$in: ['admin'],
+					},
+				})
+				.count();
 
-			const userIsAdmin = user.roles.indexOf('admin') > -1;
+			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
 				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
 					method: 'removeUserFromRole',
@@ -53,7 +58,7 @@ Meteor.methods({
 			}
 		}
 
-		const remove = Roles.removeUserRoles(user._id, roleName, scope);
+		const remove = await Roles.removeUserRoles(user._id, [roleName], scope);
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'removed',

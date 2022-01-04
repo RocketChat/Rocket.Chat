@@ -1,16 +1,16 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
 
 export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities') && !await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 
-	const query = { ...text && { $or: [{ name: filterReg }, { description: filterReg }] } };
-
+	const query = { ...(text && { $or: [{ name: filterReg }, { description: filterReg }] }) };
 
 	const cursor = LivechatPriority.find(query, {
 		sort: sort || { name: 1 },
@@ -31,7 +31,7 @@ export async function findPriorities({ userId, text, pagination: { offset, count
 }
 
 export async function findPriorityById({ userId, priorityId }) {
-	if (!await hasPermissionAsync(userId, 'manage-livechat-priorities') && !await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'manage-livechat-priorities')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	return LivechatPriority.findOneById(priorityId);

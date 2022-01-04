@@ -1,8 +1,8 @@
-import React from 'react';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
-import TriggersForm from './TriggersForm';
 import { useForm } from '../../../hooks/useForm';
+import TriggersForm from './TriggersForm';
 
 export default {
 	title: 'omnichannel/TriggersForm',
@@ -28,9 +28,11 @@ export const Default = () => {
 			},
 		},
 	});
-	return <Box maxWidth='x600'>
-		<FieldGroup>
-			<TriggersForm values={values} handlers={handlers}/>;
-		</FieldGroup>
-	</Box>;
+	return (
+		<Box maxWidth='x600'>
+			<FieldGroup>
+				<TriggersForm values={values} handlers={handlers} />;
+			</FieldGroup>
+		</Box>
+	);
 };

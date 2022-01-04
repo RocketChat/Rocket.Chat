@@ -10,13 +10,19 @@ const avatarProviders = {
 		if (user.services && user.services.facebook && user.services.facebook.id && settings.get('Accounts_OAuth_Facebook')) {
 			return {
 				service: 'facebook',
-				url: `https://graph.facebook.com/${ user.services.facebook.id }/picture?type=large`,
+				url: `https://graph.facebook.com/${user.services.facebook.id}/picture?type=large`,
 			};
 		}
 	},
 
 	google(user) {
-		if (user.services && user.services.google && user.services.google.picture && user.services.google.picture !== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg' && settings.get('Accounts_OAuth_Google')) {
+		if (
+			user.services &&
+			user.services.google &&
+			user.services.google.picture &&
+			user.services.google.picture !== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg' &&
+			settings.get('Accounts_OAuth_Google')
+		) {
 			return {
 				service: 'google',
 				url: user.services.google.picture,
@@ -28,13 +34,20 @@ const avatarProviders = {
 		if (user.services && user.services.github && user.services.github.username && settings.get('Accounts_OAuth_Github')) {
 			return {
 				service: 'github',
-				url: `https://avatars.githubusercontent.com/${ user.services.github.username }?s=200`,
+				url: `https://avatars.githubusercontent.com/${user.services.github.username}?s=200`,
 			};
 		}
 	},
 
 	linkedin(user) {
-		if (user.services && user.services.linkedin && user.services.linkedin.profilePicture && user.services.linkedin.profilePicture.identifiersUrl && user.services.linkedin.profilePicture.identifiersUrl.length > 0 && settings.get('Accounts_OAuth_Linkedin')) {
+		if (
+			user.services &&
+			user.services.linkedin &&
+			user.services.linkedin.profilePicture &&
+			user.services.linkedin.profilePicture.identifiersUrl &&
+			user.services.linkedin.profilePicture.identifiersUrl.length > 0 &&
+			settings.get('Accounts_OAuth_Linkedin')
+		) {
 			const total = user.services.linkedin.profilePicture.identifiersUrl.length;
 			return {
 				service: 'linkedin',
@@ -146,7 +159,7 @@ export function getAvatarSuggestionForUser(user) {
 			});
 
 			if (result.statusCode === 200) {
-				let blob = `data:${ result.headers['content-type'] };base64,`;
+				let blob = `data:${result.headers['content-type']};base64,`;
 				blob += Buffer.from(result.content, 'binary').toString('base64');
 				avatar.blob = blob;
 				avatar.contentType = result.headers['content-type'];

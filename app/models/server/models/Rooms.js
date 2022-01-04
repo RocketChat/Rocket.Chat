@@ -1,11 +1,10 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
-import { getValidRoomName } from '../../../utils';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -26,20 +25,30 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+
+		this.tryEnsureIndex(
+			{
+				teamId: 1,
+				teamDefault: 1,
+			},
+			{ sparse: true },
+		);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
 	}
-
 
 	setJitsiTimeout(_id, time) {
 		const query = {
@@ -49,6 +58,35 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				jitsiTimeout: time,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatus(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setCallStatusAndCallStartTime(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+				webRtcCallStartTime: new Date(),
 			},
 		};
 
@@ -133,9 +171,9 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		const query =	{ _id: roomId };
+		const query = { _id: roomId };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
@@ -165,13 +203,16 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageAsRead(roomId) {
-		return this.update({
-			_id: roomId,
-		}, {
-			$unset: {
-				'lastMessage.unread': 1,
+		return this.update(
+			{
+				_id: roomId,
 			},
-		});
+			{
+				$unset: {
+					'lastMessage.unread': 1,
+				},
+			},
+		);
 	}
 
 	setSentiment(roomId, sentiment) {
@@ -225,7 +266,31 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
+	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
+		const query = {
+			uids: {
+				$size: 2,
+				$in: [_id],
+			},
+			...(ids && Array.isArray(ids) ? { _id: { $in: ids } } : {}),
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	getDirectConversationsByUserId(_id, options) {
+		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
+	}
+
+	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
 		const query = {
 			_id,
 		};
@@ -235,7 +300,7 @@ export class Rooms extends Base {
 			},
 		};
 		return this.update(query, update);
-	}
+	};
 
 	setAvatarData(_id, origin, etag) {
 		const update = {
@@ -261,22 +326,25 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-
-	setSystemMessagesById = function(_id, systemMessages) {
+	setSystemMessagesById = function (_id, systemMessages) {
 		const query = {
 			_id,
 		};
-		const update = systemMessages && systemMessages.length > 0 ? {
-			$set: {
-				sysMes: systemMessages,
-			},
-		} : {
-			$unset: {
-				sysMes: '',
-			},
-		};
+		const update =
+			systemMessages && systemMessages.length > 0
+				? {
+						$set: {
+							sysMes: systemMessages,
+						},
+				  }
+				: {
+						$unset: {
+							sysMes: '',
+						},
+				  };
+
 		return this.update(query, update);
-	}
+	};
 
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
@@ -306,6 +374,8 @@ export class Rooms extends Base {
 
 		let channelName = s.trim(name);
 		try {
+			// TODO evaluate if this function call should be here
+			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
@@ -339,6 +409,9 @@ export class Rooms extends Base {
 		const query = {
 			name,
 			t: type,
+			teamId: {
+				$exists: false,
+			},
 		};
 
 		return this.findOne(query, options);
@@ -388,20 +461,39 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		const data = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.cachedFindByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
 			_id: {
 				$in: data,
 			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: data,
+					},
+				},
+			],
 		};
 
 		return this.find(query, options);
 	}
 
 	findBySubscriptionTypeAndUserId(type, userId, options) {
-		const data = Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.findByUserIdAndType(userId, type, {
+			fields: { rid: 1 },
+		})
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -415,7 +507,8 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -425,6 +518,21 @@ export class Rooms extends Base {
 			_updatedAt: {
 				$gt: _updatedAt,
 			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+			],
 		};
 
 		return this.find(query, options);
@@ -478,14 +586,106 @@ export class Rooms extends Base {
 	findByNameOrFNameAndType(name, type, options) {
 		const query = {
 			t: type,
-			$or: [{
-				name,
-			}, {
-				fname: name,
-			}],
+			teamId: {
+				$exists: false,
+			},
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
 		};
 
 		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameOrFNameAndRoomIdsIncludingTeamRooms(text, teamIds, roomIds, options) {
+		const searchTerm = text && new RegExp(text, 'i');
+
+		const query = {
+			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
+				{
+					$or: [
+						{
+							t: 'c',
+							teamId: { $exists: false },
+						},
+						{
+							t: 'c',
+							teamId: { $in: teamIds },
+						},
+						...(roomIds?.length > 0
+							? [
+									{
+										_id: {
+											$in: roomIds,
+										},
+									},
+							  ]
+							: []),
+					],
+				},
+				...(searchTerm
+					? [
+							{
+								$or: [
+									{
+										name: searchTerm,
+									},
+									{
+										fname: searchTerm,
+									},
+								],
+							},
+					  ]
+					: []),
+			],
+		};
+
+		return this._db.find(query, options);
+	}
+
+	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
+		const query = {
+			teamMain: true,
+			$and: [
+				{
+					$or: [
+						{
+							t: 'p',
+							_id: {
+								$in: rids,
+							},
+						},
+						{
+							t: 'c',
+						},
+					],
+				},
+			],
+		};
+
+		if (text) {
+			const regex = new RegExp(text, 'i');
+
+			query.$and.push({
+				$or: [
+					{
+						name: regex,
+					},
+					{
+						fname: regex,
+					},
+				],
+			});
+		}
+
 		return this._db.find(query, options);
 	}
 
@@ -496,6 +696,16 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
+				},
+			],
 		};
 
 		// do not use cache
@@ -510,6 +720,27 @@ export class Rooms extends Base {
 			t: {
 				$in: types,
 			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+				{
+					// Also return the main room of public teams
+					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+					teamMain: true,
+					t: 'c',
+				},
+			],
 			name,
 		};
 
@@ -517,14 +748,32 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: sIds,
+					},
+				},
+			],
 		};
 
 		return this.find(query, options);
@@ -572,10 +821,7 @@ export class Rooms extends Base {
 	findByTypeAndNameOrId(type, identifier, options) {
 		const query = {
 			t: type,
-			$or: [
-				{ name: identifier },
-				{ _id: identifier },
-			],
+			$or: [{ name: identifier }, { _id: identifier }],
 		};
 
 		return this.findOne(query, options);
@@ -619,17 +865,23 @@ export class Rooms extends Base {
 	}
 
 	findGroupDMsByUids(uids, options) {
-		return this.find({
-			usersCount: { $gt: 2 },
-			uids,
-		}, options);
+		return this.find(
+			{
+				usersCount: { $gt: 2 },
+				uids,
+			},
+			options,
+		);
 	}
 
 	find1On1ByUserId(userId, options) {
-		return this.find({
-			uids: userId,
-			usersCount: 2,
-		}, options);
+		return this.find(
+			{
+				uids: userId,
+				usersCount: 2,
+			},
+			options,
+		);
 	}
 
 	// UPDATE
@@ -710,7 +962,9 @@ export class Rooms extends Base {
 	}
 
 	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
-		if (inc == null) { inc = 1; }
+		if (inc == null) {
+			inc = 1;
+		}
 		const query = { _id };
 
 		const update = {
@@ -745,6 +999,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	incUsersCountNotDMsByIds(ids, inc = 1) {
 		const query = {
 			_id: {
@@ -774,19 +1044,21 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id, messageId) {
+	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
-		const update = lastMessage ? {
-			$set: {
-				lastMessage,
-			},
-		} : {
-			$unset: {
-				lastMessage: 1,
-			},
-		};
+		const update = lastMessage
+			? {
+					$set: {
+						lastMessage,
+					},
+			  }
+			: {
+					$unset: {
+						lastMessage: 1,
+					},
+			  };
 
 		return this.update(query, update);
 	}
@@ -977,8 +1249,8 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		const update = {
-			...favorite && defaultValue && { $set: { favorite } },
-			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
+			...(favorite && defaultValue && { $set: { favorite } }),
+			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
 		};
 
 		return this.update(query, update);
@@ -1031,7 +1303,7 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		const update = {
-			[value === true ? '$set' : '$unset']: {
+			[value === true ? '$set' : '$unset']: {
 				'retention.ignoreThreads': true,
 			},
 		};
@@ -1075,7 +1347,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	updateGroupDMsRemovingUsernamesByUsername(username) {
+	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
 		const query = {
 			t: 'd',
 			usernames: username,
@@ -1085,6 +1357,7 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				usernames: username,
+				uids: userId,
 			},
 		};
 
@@ -1160,7 +1433,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {

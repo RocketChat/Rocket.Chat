@@ -1,7 +1,7 @@
 import { useClipboard, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useTranslation } from '../contexts/TranslationContext';
 
 export default function useClipboardWithToast(text) {
 	const t = useTranslation();

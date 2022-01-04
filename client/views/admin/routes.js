@@ -4,12 +4,6 @@ import { createRouteGroup } from '../../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
-registerAdminRoute('/', {
-	triggersEnter: [(context, redirect) => {
-		redirect('admin-info');
-	}],
-});
-
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),
@@ -22,6 +16,11 @@ registerAdminRoute('/apps/what-is-it', {
 
 registerAdminRoute('/marketplace/:context?/:id?/:version?', {
 	name: 'admin-marketplace',
+	lazyRouteComponent: () => import('./apps/AppsRoute'),
+});
+
+registerAdminRoute('/apps/:context?/:id?/:version?', {
+	name: 'admin-apps',
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });
 

@@ -1,46 +1,65 @@
-import React, { ReactNode, useContext, useMemo } from 'react';
+import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { RoomContext } from '../contexts/RoomContext';
-import { ToolboxProvider } from './ToolboxProvider';
+import { UserAction } from '../../../../app/ui';
 import { roomTypes } from '../../../../app/utils/client';
-import { useUserRoom } from '../hooks/useUserRoom';
-
-const fields = {};
+import { IRoom } from '../../../../definition/IRoom';
+import { useUserSubscription } from '../../../contexts/UserContext';
+import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
+import { AsyncStatePhase } from '../../../lib/asyncState';
+import Skeleton from '../Room/Skeleton';
+import { RoomContext } from '../contexts/RoomContext';
+import ToolboxProvider from './ToolboxProvider';
 
 export type Props = {
 	children: ReactNode;
 	rid: IRoom['_id'];
 };
 
-const RoomProvider = ({ rid, children }: Props): JSX.Element => {
-	const uid = useUserId();
-	const subscription = useUserSubscription(rid, fields) as unknown as IRoom;
-	const _room = useUserRoom(rid, fields) as unknown as IRoom;
+const fields = {};
 
-	const room = uid ? subscription || _room : _room;
+const RoomProvider = ({ rid, children }: Props): JSX.Element => {
+	const { phase, value: room } = useHandleRoom(rid);
+
+	const subscribed = Boolean(useUserSubscription(rid, fields));
 	const context = useMemo(() => {
 		if (!room) {
 			return null;
 		}
 		room._id = rid;
 		return {
+			subscribed,
 			rid,
 			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 		};
-	}, [room, rid]);
+	}, [room, rid, subscribed]);
 
-	if (!room) {
-		return <></>;
+	useEffect(() => {
+		RoomManager.open(rid);
+		return (): void => {
+			RoomManager.back(rid);
+		};
+	}, [rid]);
+
+	useEffect(() => {
+		if (!subscribed) {
+			return (): void => undefined;
+		}
+
+		UserAction.addStream(rid);
+		return (): void => {
+			UserAction.cancel(rid);
+		};
+	}, [rid, subscribed]);
+
+	if (phase === AsyncStatePhase.LOADING || !room) {
+		return <Skeleton />;
 	}
 
-	return <RoomContext.Provider value={context}>
-		<ToolboxProvider room={room}>
-			{children}
-		</ToolboxProvider>
-	</RoomContext.Provider>;
+	return (
+		<RoomContext.Provider value={context}>
+			<ToolboxProvider room={room}>{children}</ToolboxProvider>
+		</RoomContext.Provider>
+	);
 };
 
-export const useRoom = (): undefined | IRoom => useContext(RoomContext)?.room;
-export default RoomProvider;
+export default memo(RoomProvider);

@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 
-export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
+export const roomTypes = new (class roomTypesServer extends RoomTypesCommon {
 	/**
 	 * Add a publish for a room type
 	 *
 	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
 	 * @param {function} callback function that will return the publish's data
-	*/
+	 */
 	setPublish(roomType, callback) {
 		if (this.roomTypes[roomType] && this.roomTypes[roomType].publish != null) {
 			throw new Meteor.Error('route-publish-exists', 'Publish for the given type already exists');
@@ -43,8 +43,13 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	 * @param scope Meteor publish scope
 	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
 	 * @param identifier identifier of the room
-	*/
+	 */
 	runPublish(scope, roomType, identifier) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
 	}
-}();
+})();
+
+export const searchableRoomTypes = () =>
+	Object.entries(roomTypes.roomTypes)
+		.filter((roomType) => roomType[1].includeInRoomSearch())
+		.map((roomType) => roomType[0]);

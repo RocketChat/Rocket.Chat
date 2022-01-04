@@ -1,9 +1,6 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-import assert from 'assert';
+import { expect } from 'chai';
 
 import { timeAgo } from '../helpers';
-
 
 describe('Helpers', () => {
 	describe('timeAgo', () => {
@@ -16,9 +13,9 @@ describe('Helpers', () => {
 
 			const func = (a) => a;
 
-			assert.equal(timeAgo(t1, func, now), '1:00 AM');
-			assert.equal(timeAgo(t2, func, now), '10:00 AM');
-			assert.equal(timeAgo(t3, func, now), '2:30 PM');
+			expect(timeAgo(t1, func, now)).to.be.equal('1:00 AM');
+			expect(timeAgo(t2, func, now)).to.be.equal('10:00 AM');
+			expect(timeAgo(t3, func, now)).to.be.equal('2:30 PM');
 		});
 
 		it('returns "yesterday" when the passed value is on the day before', () => {
@@ -30,9 +27,9 @@ describe('Helpers', () => {
 
 			const func = (a) => a;
 
-			assert.equal(timeAgo(t1, func, now), 'yesterday');
-			assert.equal(timeAgo(t2, func, now), 'yesterday');
-			assert.equal(timeAgo(t3, func, now), 'yesterday');
+			expect(timeAgo(t1, func, now)).to.be.equal('yesterday');
+			expect(timeAgo(t2, func, now)).to.be.equal('yesterday');
+			expect(timeAgo(t3, func, now)).to.be.equal('yesterday');
 		});
 
 		it('returns formated date when the passed value two or more days before', () => {
@@ -46,11 +43,11 @@ describe('Helpers', () => {
 
 			const func = () => 'should not be called';
 
-			assert.equal(timeAgo(t1, func, now), 'Jun 18, 2018');
-			assert.equal(timeAgo(t2, func, now), 'Jun 10, 2018');
-			assert.equal(timeAgo(t3, func, now), 'May 10, 2018');
-			assert.equal(timeAgo(t4, func, now), 'May 20, 2018');
-			assert.equal(timeAgo(t5, func, now), 'Nov 10, 2017');
+			expect(timeAgo(t1, func, now)).to.be.equal('Jun 18, 2018');
+			expect(timeAgo(t2, func, now)).to.be.equal('Jun 10, 2018');
+			expect(timeAgo(t3, func, now)).to.be.equal('May 10, 2018');
+			expect(timeAgo(t4, func, now)).to.be.equal('May 20, 2018');
+			expect(timeAgo(t5, func, now)).to.be.equal('Nov 10, 2017');
 		});
 	});
 });

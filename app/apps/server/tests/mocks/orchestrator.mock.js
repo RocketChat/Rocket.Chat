@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export class AppServerOrchestratorMock {
 	constructor() {
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
@@ -86,8 +88,9 @@ export class AppServerOrchestratorMock {
 			return;
 		}
 
-		this._manager.load()
-			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
+		this._manager
+			.load()
+			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`))
 			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
 	}
 
@@ -98,7 +101,8 @@ export class AppServerOrchestratorMock {
 			return;
 		}
 
-		this._manager.unload()
+		this._manager
+			.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
 	}

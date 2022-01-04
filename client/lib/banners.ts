@@ -1,7 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { Icon } from '@rocket.chat/fuselage';
+import { ComponentProps } from 'react';
 import { Subscription } from 'use-subscription';
 
-import { mountRoot } from '../reactAdapters';
 import { UiKitBannerPayload } from '../../definition/UIKit';
 
 export type LegacyBannerPayload = {
@@ -10,7 +11,7 @@ export type LegacyBannerPayload = {
 	title?: string;
 	text?: string;
 	html?: string;
-	icon?: string;
+	icon?: ComponentProps<typeof Icon>['name'];
 	modifiers?: ('large' | 'danger')[];
 	timer?: number;
 	action?: () => void;
@@ -23,7 +24,7 @@ export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBanner
 
 const queue: BannerPayload[] = [];
 const emitter = new Emitter<{
-	update: undefined;
+	'update': undefined;
 	'update-first': undefined;
 }>();
 
@@ -33,8 +34,6 @@ export const firstSubscription: Subscription<BannerPayload | null> = {
 };
 
 export const open = (payload: BannerPayload): void => {
-	mountRoot();
-
 	let index = queue.findIndex((_payload) => {
 		if (isLegacyPayload(_payload)) {
 			return _payload.id === (payload as LegacyBannerPayload).id;
@@ -54,7 +53,6 @@ export const open = (payload: BannerPayload): void => {
 		emitter.emit('update-first');
 	}
 };
-
 
 export const closeById = (id: string): void => {
 	const index = queue.findIndex((banner) => {

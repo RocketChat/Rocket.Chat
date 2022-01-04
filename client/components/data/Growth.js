@@ -9,10 +9,12 @@ function Growth({ children, ...props }) {
 		return null;
 	}
 
-	return <Box is='span' color={children < 0 ? 'danger' : 'success'} {...props}>
-		{children < 0 ? <NegativeGrowthSymbol /> : <PositiveGrowthSymbol />}
-		{String(Math.abs(children))}
-	</Box>;
+	return (
+		<Box is='span' color={children < 0 ? 'danger' : 'success'} {...props}>
+			{children < 0 ? <NegativeGrowthSymbol /> : <PositiveGrowthSymbol />}
+			{String(Math.abs(children))}
+		</Box>
+	);
 }
 
 export default Growth;

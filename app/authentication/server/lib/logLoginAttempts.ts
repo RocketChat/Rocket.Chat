@@ -1,5 +1,6 @@
 import { ILoginAttempt } from '../ILoginAttempt';
 import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_Enabled')) {
@@ -25,5 +26,7 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}
-	console.log('Failed login detected - Username[%s] ClientAddress[%s] ForwardedFor[%s] XRealIp[%s] UserAgent[%s]', user, clientAddress, forwardedFor, realIp, userAgent);
+	SystemLogger.info(
+		`Failed login detected - Username[${user}] ClientAddress[${clientAddress}] ForwardedFor[${forwardedFor}] XRealIp[${realIp}] UserAgent[${userAgent}]`,
+	);
 };

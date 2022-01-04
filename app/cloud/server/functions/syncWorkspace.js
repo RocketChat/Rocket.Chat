@@ -6,15 +6,17 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
+import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function syncWorkspace(reconnectCheck = false) {
+export async function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
 
-	const info = buildWorkspaceRegistrationData();
+	const info = await buildWorkspaceRegistrationData();
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
@@ -24,12 +26,12 @@ export function syncWorkspace(reconnectCheck = false) {
 		const token = getWorkspaceAccessToken(true);
 
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		} else {
 			return false;
 		}
 
-		result = HTTP.post(`${ workspaceUrl }/client`, {
+		result = HTTP.post(`${workspaceUrl}/client`, {
 			data: info,
 			headers,
 		});
@@ -37,9 +39,9 @@ export function syncWorkspace(reconnectCheck = false) {
 		getWorkspaceLicense();
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return false;
@@ -55,34 +57,34 @@ export function syncWorkspace(reconnectCheck = false) {
 	}
 
 	if (data.nps) {
-		const {
-			id: npsId,
-			startAt,
-			expireAt,
-		} = data.nps;
+		const { id: npsId, expireAt } = data.nps;
 
-		Promise.await(NPS.create({
+		const startAt = new Date(data.nps.startAt);
+
+		await NPS.create({
 			npsId,
-			startAt: new Date(startAt),
+			startAt,
 			expireAt: new Date(expireAt),
-		}));
+		});
+
+		const now = new Date();
+
+		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
+			getAndCreateNpsSurvey(npsId);
+		}
 	}
 
 	// add banners
 	if (data.banners) {
-		for (const banner of data.banners) {
-			const {
-				createdAt,
-				expireAt,
-				startAt,
-			} = banner;
+		for await (const banner of data.banners) {
+			const { createdAt, expireAt, startAt } = banner;
 
-			Promise.await(Banner.create({
+			await Banner.create({
 				...banner,
 				createdAt: new Date(createdAt),
 				expireAt: new Date(expireAt),
 				startAt: new Date(startAt),
-			}));
+			});
 		}
 	}
 

@@ -1,4 +1,3 @@
-
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
@@ -31,10 +30,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'getRoomById',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'getRoomById',
+		userId() {
+			return true;
+		},
 	},
-}, 10, 60000);
+	10,
+	60000,
+);

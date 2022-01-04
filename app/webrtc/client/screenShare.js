@@ -1,4 +1,4 @@
-import { fireGlobalEvent } from '../../ui-utils';
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 
 export const ChromeScreenShare = {
 	callbacks: {},
@@ -25,7 +25,7 @@ export const ChromeScreenShare = {
 
 ChromeScreenShare.init();
 
-window.addEventListener('message', function(e) {
+window.addEventListener('message', function (e) {
 	if (e.origin !== window.location.origin) {
 		return;
 	}
@@ -36,7 +36,8 @@ window.addEventListener('message', function(e) {
 		throw new Error('PermissionDeniedError');
 	}
 	if (e.data.version != null) {
-		ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'] && ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'](e.data.version);
+		ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'] &&
+			ChromeScreenShare.callbacks['get-RocketChatScreenSharingExtensionVersion'](e.data.version);
 	} else if (e.data.sourceId != null) {
 		return typeof ChromeScreenShare.callbacks.getSourceId === 'function' && ChromeScreenShare.callbacks.getSourceId(e.data.sourceId);
 	}

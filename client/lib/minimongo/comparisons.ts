@@ -16,7 +16,9 @@ export const equals = <T>(a: T, b: T): boolean => {
 	}
 
 	if (a instanceof Uint8Array && b instanceof Uint8Array) {
-		if (a.length !== b.length) { return false; }
+		if (a.length !== b.length) {
+			return false;
+		}
 		for (let i = 0; i < a.length; i++) {
 			if (a[i] !== b[i]) {
 				return false;
@@ -80,5 +82,4 @@ export const some = <T>(x: T | T[], f: (x: T | T[]) => boolean): boolean => {
 	return Array.isArray(x) && x.some(f);
 };
 
-export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } =>
-	Array.isArray(value) && value.length === 0;
+export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } => Array.isArray(value) && value.length === 0;

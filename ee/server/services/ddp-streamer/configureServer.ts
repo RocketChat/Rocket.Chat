@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
-import { USER_STATUS } from '../../../../definition/UserStatus';
+import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
 import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
 
@@ -14,9 +14,9 @@ const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfigu
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();
 
-MeteorService.getLoginServiceConfiguration().then((records) => records.forEach((record) => loginServices.set(record._id, record)));
+MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
 
-server.publish(loginServiceConfigurationPublication, async function() {
+server.publish(loginServiceConfigurationPublication, async function () {
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
 
 	const fn = (action: string, record: any): void => {
@@ -43,12 +43,12 @@ server.publish(loginServiceConfigurationPublication, async function() {
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
 
-MeteorService.getLastAutoUpdateClientVersions().then((records) => {
+MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 	records.forEach((record) => autoUpdateRecords.set(record._id, record));
 });
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
-server.publish(autoUpdateCollection, function() {
+server.publish(autoUpdateCollection, function () {
 	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
 
 	const fn = (record: any): void => {
@@ -66,7 +66,7 @@ server.publish(autoUpdateCollection, function() {
 });
 
 server.methods({
-	async login({ resume, user, password }: {resume: string; user: {username: string}; password: string}) {
+	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
 		const result = await Account.login({ resume, user, password });
 		if (!result) {
 			throw new Error('login error');
@@ -86,7 +86,7 @@ server.methods({
 			type: result.type,
 		};
 	},
-	async logout() {
+	async 'logout'() {
 		if (this.userToken && this.userId) {
 			await Account.logout({ userId: this.userId, token: this.userToken });
 		}
@@ -116,14 +116,14 @@ server.methods({
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, USER_STATUS.ONLINE, session);
+		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, session);
 	},
 	'UserPresence:away'() {
 		const { userId, session } = this;
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, USER_STATUS.AWAY, session);
+		return Presence.setConnectionStatus(userId, UserStatus.AWAY, session);
 	},
 	'setUserStatus'(status, statusText) {
 		const { userId } = this;

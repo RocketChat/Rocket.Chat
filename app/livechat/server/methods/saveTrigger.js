@@ -2,12 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatTrigger } from '../../../models';
+import { LivechatTrigger } from '../../../models/server/raw';
 
 Meteor.methods({
-	'livechat:saveTrigger'(trigger) {
+	async 'livechat:saveTrigger'(trigger) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTrigger' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveTrigger',
+			});
 		}
 
 		check(trigger, {
@@ -21,8 +23,11 @@ Meteor.methods({
 		});
 
 		if (trigger._id) {
-			return LivechatTrigger.updateById(trigger._id, trigger);
+			await LivechatTrigger.updateById(trigger._id, trigger);
+			return true;
 		}
-		return LivechatTrigger.insert(trigger);
+		await LivechatTrigger.insertOne(trigger);
+
+		return true;
 	},
 });

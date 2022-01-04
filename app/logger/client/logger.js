@@ -1,14 +1,14 @@
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { getConfig } from '../../ui-utils/client/config';
+import { getConfig } from '../../../client/lib/utils/getConfig';
 
 Template.log = !!(getConfig('debug') || getConfig('debug-template'));
 
 if (Template.log) {
 	Template.logMatch = /.*/;
 
-	Template.enableLogs = function(log) {
+	Template.enableLogs = function (log) {
 		Template.logMatch = /.*/;
 		if (log === false) {
 			Template.log = false;
@@ -21,17 +21,17 @@ if (Template.log) {
 		}
 	};
 
-	const wrapHelpersAndEvents = function(original, prefix, color) {
-		return function(dict) {
+	const wrapHelpersAndEvents = function (original, prefix, color) {
+		return function (dict) {
 			const template = this;
-			const fn1 = function(name, fn) {
+			const fn1 = function (name, fn) {
 				if (fn instanceof Function) {
-					dict[name] = function(...args) {
+					dict[name] = function (...args) {
 						const result = fn.apply(this, args);
 						if (Template.log === true) {
-							const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+							const completeName = `${prefix}:${template.viewName.replace('Template.', '')}.${name}`;
 							if (Template.logMatch.test(completeName)) {
-								console.log(`%c${ completeName }`, `color: ${ color }`, {
+								console.log(`%c${completeName}`, `color: ${color}`, {
 									args,
 									scope: this,
 									result,
@@ -54,16 +54,16 @@ if (Template.log) {
 
 	Template.prototype.events = wrapHelpersAndEvents(Template.prototype.events, 'event', 'green');
 
-	const wrapLifeCycle = function(original, prefix, color) {
-		return function(fn) {
+	const wrapLifeCycle = function (original, prefix, color) {
+		return function (fn) {
 			const template = this;
 			if (fn instanceof Function) {
-				const wrap = function(...args) {
+				const wrap = function (...args) {
 					const result = fn.apply(this, args);
 					if (Template.log === true) {
-						const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
+						const completeName = `${prefix}:${template.viewName.replace('Template.', '')}.${name}`;
 						if (Template.logMatch.test(completeName)) {
-							console.log(`%c${ completeName }`, `color: ${ color }; font-weight: bold`, {
+							console.log(`%c${completeName}`, `color: ${color}; font-weight: bold`, {
 								args,
 								scope: this,
 								result,

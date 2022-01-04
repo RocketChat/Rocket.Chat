@@ -11,6 +11,7 @@ export class LivechatDepartment extends Base {
 
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ type: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,
@@ -50,7 +51,9 @@ export class LivechatDepartment extends Base {
 
 	saveDepartmentsByAgent(agent, departments = []) {
 		const { _id: agentId, username } = agent;
-		const savedDepartments = LivechatDepartmentAgents.findByAgentId(agentId).fetch().map((d) => d.departmentId);
+		const savedDepartments = LivechatDepartmentAgents.findByAgentId(agentId)
+			.fetch()
+			.map((d) => d.departmentId);
 
 		const incNumAgents = (_id, numAgents) => this.update(_id, { $inc: { numAgents } });
 		// remove other departments
@@ -60,7 +63,9 @@ export class LivechatDepartment extends Base {
 		});
 
 		departments.forEach((departmentId) => {
-			const { enabled: departmentEnabled } = this.findOneById(departmentId, { fields: { enabled: 1 } });
+			const { enabled: departmentEnabled } = this.findOneById(departmentId, {
+				fields: { enabled: 1 },
+			});
 			const saveResult = LivechatDepartmentAgents.saveAgent({
 				agentId,
 				departmentId,
@@ -91,24 +96,50 @@ export class LivechatDepartment extends Base {
 		return this.remove(query);
 	}
 
-	findEnabledWithAgents() {
+	findEnabledWithAgents(fields = undefined) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.find(query);
+		return this.find(query, fields && { fields });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUnitIds(unitIds, options) {
+		const query = {
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	unsetFallbackDepartmentByDepartmentId(_id) {
+		return this.update(
+			{ fallbackForwardDepartment: _id },
+			{
+				$unset: {
+					fallbackForwardDepartment: 1,
+				},
+			},
+			{ multi: true },
+		);
 	}
 }
 

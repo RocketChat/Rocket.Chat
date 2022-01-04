@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Mailer } from '../lib/Mailer';
-import { hasRole } from '../../../authorization';
+import { hasRole } from '../../../authorization/server';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
@@ -19,7 +19,6 @@ Meteor.methods({
 		return Mailer.sendMail(from, subject, body, dryrun, query);
 	},
 });
-
 
 // Limit setting username once per minute
 // DDPRateLimiter.addRule

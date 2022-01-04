@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../app/models';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Messages } from '../../app/models/server';
 
 Meteor.methods({
 	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
@@ -15,7 +16,11 @@ Meteor.methods({
 			});
 		}
 
-		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
+		}
+
+		if (!canAccessRoom({ _id: rid }, { _id: fromId })) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'messages/get',
 			});
@@ -34,6 +39,13 @@ Meteor.methods({
 			};
 		}
 
-		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+		return Meteor.call('getChannelHistory', {
+			rid,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			count,
+			unreads,
+		});
 	},
 });

@@ -1,19 +1,24 @@
 import { MongoInternals } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 
-Migrations.add({
+addMigration({
 	version: 212,
 	up() {
 		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 		const apps = mongo.db.collection('rocketchat_apps');
 
-		Promise.await(apps.updateMany({
-			status: 'initialized',
-		}, {
-			$set: {
-				status: 'manually_disabled',
-			},
-		}));
+		Promise.await(
+			apps.updateMany(
+				{
+					status: 'initialized',
+				},
+				{
+					$set: {
+						status: 'manually_disabled',
+					},
+				},
+			),
+		);
 	},
 });

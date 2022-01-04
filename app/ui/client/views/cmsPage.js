@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../settings';
 
-Template.cmsPage.onCreated(function() {
+Template.cmsPage.onCreated(function () {
 	this.page = new ReactiveVar('');
 	return Tracker.autorun(() => {
 		const cmsPage = Session.get('cmsPage');
@@ -26,8 +26,4 @@ Template.cmsPage.events({
 	'click .cms-page-close'() {
 		return FlowRouter.go('/');
 	},
-});
-
-Template.cmsPage.onRendered(function() {
-	return $('#initial-page-loading').remove();
 });

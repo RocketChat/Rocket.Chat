@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Subscriptions, Messages } from '../../../models';
-import { settings } from '../../../settings';
-import { roomTypes, RoomSettingsEnum } from '../../../utils';
+import { Rooms, Subscriptions, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
 
-export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
+export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomType',
@@ -27,13 +27,17 @@ export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
 	}
 
 	if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
-		throw new Meteor.Error('error-direct-room', 'Can\'t change type of direct rooms', {
+		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});
 	}
 
 	const result = Rooms.setTypeById(rid, roomType) && Subscriptions.updateTypeByRoomId(rid, roomType);
-	if (result && sendMessage) {
+	if (!result) {
+		return result;
+	}
+
+	if (sendMessage) {
 		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('Channel', {

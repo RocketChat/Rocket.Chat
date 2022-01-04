@@ -5,6 +5,7 @@ import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 import { IUser } from '../../../definition/IUser';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,
@@ -21,7 +22,7 @@ class NotificationClass {
 
 	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds: {[key: string]: number} = {
+	private maxScheduleDelaySeconds: { [key: string]: number } = {
 		online: Number(NOTIFICATIONS_SCHEDULE_DELAY_ONLINE),
 		away: Number(NOTIFICATIONS_SCHEDULE_DELAY_AWAY),
 		offline: Number(NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE),
@@ -45,7 +46,7 @@ class NotificationClass {
 			try {
 				this.worker();
 			} catch (e) {
-				console.error('Error sending notification', e);
+				SystemLogger.error('Error sending notification', e);
 				this.executeWorkerLater();
 			}
 		}, this.cyclePause);
@@ -81,7 +82,7 @@ class NotificationClass {
 
 			NotificationQueue.removeById(notification._id);
 		} catch (e) {
-			console.error(e);
+			SystemLogger.error(e);
 			await NotificationQueue.setErrorById(notification._id, e.message);
 		}
 
@@ -111,18 +112,32 @@ class NotificationClass {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
-		const receiver = user || await Users.findOneById(uid, {
-			projection: {
-				statusConnection: 1,
-			},
-		});
+	async scheduleItem({
+		uid,
+		rid,
+		mid,
+		items,
+		user,
+	}: {
+		uid: string;
+		rid: string;
+		mid: string;
+		items: NotificationItem[];
+		user?: Partial<IUser>;
+	}): Promise<void> {
+		const receiver =
+			user ||
+			(await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
+				projection: {
+					statusConnection: 1,
+				},
+			}));
 
 		if (!receiver) {
 			return;
 		}
 
-		const { statusConnection } = receiver;
+		const { statusConnection = 'offline' } = receiver;
 
 		let schedule: Date | undefined;
 

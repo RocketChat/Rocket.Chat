@@ -24,9 +24,8 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
-				messageViewMode: 1,
+				'messageViewMode': 1,
 			},
 		});
 
@@ -39,16 +38,16 @@ Template.roomList.helpers({
 
 		if (sortBy === 'activity') {
 			sort.lm = -1;
-		} else { // alphabetical
-			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
+		} else {
+			// alphabetical
+			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy)
+				? -1
+				: 1;
 		}
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.$or = [
-				{ hideUnreadStatus: { $ne: true } },
-				{ unread: { $gt: 0 } },
-			];
+			query.$or = [{ hideUnreadStatus: { $ne: true } }, { unread: { $gt: 0 } }];
 
 			return ChatSubscription.find(query, { sort });
 		}
@@ -79,19 +78,11 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
-				query.prid = { $exists: false };
-			}
-
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
 					{
-						$and: [
-							{ hideUnreadStatus: true },
-							{ unread: 0 },
-						],
+						$and: [{ hideUnreadStatus: true }, { unread: 0 }],
 					},
 				];
 			}
@@ -114,12 +105,12 @@ Template.roomList.helpers({
 		or is unread and has one room
 		*/
 
-		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
+		return !['unread', 'f'].includes(group.identifier) || rooms.length || (rooms.count && rooms.count());
 	},
 
 	roomType(room) {
 		if (room.header || room.identifier) {
-			return `type-${ room.header || room.identifier }`;
+			return `type-${room.header || room.identifier}`;
 		}
 	},
 
@@ -147,48 +138,118 @@ const mergeSubRoom = (subscription) => {
 			lm: 1,
 			lastMessage: 1,
 			uids: 1,
-			v: 1,
 			streamingOptions: 1,
 			usernames: 1,
 			topic: 1,
 			encrypted: 1,
+			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
 			announcement: 1,
 			broadcast: 1,
 			archived: 1,
+			avatarETag: 1,
 			retention: 1,
+			teamId: 1,
+			teamMain: 1,
+
+			onHold: 1,
+			metrics: 1,
+			muted: 1,
+			servedBy: 1,
+			ts: 1,
+			waitingResponse: 1,
+			v: 1,
+			transcriptRequest: 1,
+			tags: 1,
+			closedAt: 1,
+			responseBy: 1,
+			priorityId: 1,
+			livechatData: 1,
+			departmentId: 1,
+			source: 1,
+			queuedAt: 1,
 		},
 	};
 
-	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || {};
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
-	if (room.uids) {
-		subscription.uids = room.uids;
-	}
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		avatarETag,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
 
-	if (room.v) {
-		subscription.v = room.v;
-	}
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+		source,
+		queuedAt,
+	} = room;
 
-	subscription.usernames = room.usernames;
-
-	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
-	subscription.streamingOptions = room.streamingOptions;
 
-	subscription.encrypted = room.encrypted;
-	subscription.description = room.description;
-	subscription.cl = room.cl;
-	subscription.topic = room.topic;
-	subscription.announcement = room.announcement;
-	subscription.broadcast = room.broadcast;
-	subscription.archived = room.archived;
-	subscription.retention = room.retention;
-	return Object.assign(subscription, getLowerCaseNames(subscription));
+	return Object.assign(subscription, getLowerCaseNames(subscription), {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		avatarETag,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+		source,
+		queuedAt,
+	});
 };
 
 const mergeRoomSub = (room) => {
@@ -196,35 +257,97 @@ const mergeRoomSub = (room) => {
 	if (!sub) {
 		return room;
 	}
-	Subscriptions.update({
-		rid: room._id,
-	}, {
-		$set: {
-			encrypted: room.encrypted,
-			description: room.description,
-			cl: room.cl,
-			topic: room.topic,
-			announcement: room.announcement,
-			broadcast: room.broadcast,
-			archived: room.archived,
-			retention: room.retention,
-			...Array.isArray(room.uids) && { uids: room.uids },
-			...Array.isArray(room.uids) && { usernames: room.usernames },
-			...room.v && { v: room.v },
-			lastMessage: room.lastMessage,
-			streamingOptions: room.streamingOptions,
-			...getLowerCaseNames(room, sub.name, sub.fname),
-		},
-	});
 
-	Subscriptions.update({
-		rid: room._id,
-		lm: { $lt: room.lm },
-	}, {
-		$set: {
-			lm: room.lm,
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		avatarETag,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+		source,
+		queuedAt,
+	} = room;
+
+	Subscriptions.update(
+		{
+			rid: room._id,
 		},
-	});
+		{
+			$set: {
+				encrypted,
+				description,
+				cl,
+				topic,
+				announcement,
+				broadcast,
+				archived,
+				avatarETag,
+				retention,
+				uids,
+				usernames,
+				lastMessage,
+				streamingOptions,
+				teamId,
+				teamMain,
+				v,
+				transcriptRequest,
+				servedBy,
+				onHold,
+				tags,
+				closedAt,
+				metrics,
+				muted,
+				waitingResponse,
+				responseBy,
+				priorityId,
+				livechatData,
+				departmentId,
+				jitsiTimeout,
+				ts,
+				source,
+				queuedAt,
+				...getLowerCaseNames(room, sub.name, sub.fname),
+			},
+		},
+	);
+
+	Subscriptions.update(
+		{
+			rid: room._id,
+			lm: { $lt: room.lm },
+		},
+		{
+			$set: {
+				lm: room.lm,
+			},
+		},
+	);
 
 	return room;
 };

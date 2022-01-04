@@ -3,24 +3,30 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models/server';
+import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
-const logger = new Logger('WebDAV_Upload', {});
+const logger = new Logger('WebDAV_Upload');
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
-		const account = WebdavAccounts.findOne({ _id: accountId });
+		const account = await WebdavAccounts.findOneById(accountId);
 		if (!account) {
-			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
 		const uploadFolder = 'Rocket.Chat Uploads/';
@@ -28,10 +34,10 @@ Meteor.methods({
 
 		try {
 			const cred = getWebdavCredentials(account);
-			const client = new WebdavClientAdapter(account.server_url, cred);
+			const client = new WebdavClientAdapter(account.serverURL, cred);
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			await client.createDirectory(uploadFolder).catch(() => {});
-			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
+			await client.putFileContents(`${uploadFolder}/${name}`, buffer, { overwrite: false });
 			return { success: true };
 		} catch (error) {
 			// @ts-ignore

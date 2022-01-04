@@ -2,15 +2,20 @@ import type { Subscription } from 'use-subscription';
 
 type SidebarItem = {
 	i18nLabel: string;
+	href?: string;
+	icon?: string;
+	permissionGranted?: boolean | (() => boolean);
 };
 
-export const createSidebarItems = (initialItems: SidebarItem[] = []): {
+export const createSidebarItems = (
+	initialItems: SidebarItem[] = [],
+): {
 	registerSidebarItem: (item: SidebarItem) => void;
 	unregisterSidebarItem: (i18nLabel: SidebarItem['i18nLabel']) => void;
 	itemsSubscription: Subscription<SidebarItem[]>;
 } => {
 	const items = initialItems;
-	let updateCb: (() => void) = () => undefined;
+	let updateCb: () => void = () => undefined;
 
 	const itemsSubscription: Subscription<SidebarItem[]> = {
 		subscribe: (cb) => {

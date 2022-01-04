@@ -26,16 +26,16 @@ class Backend {
 		};
 
 		try {
-			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.updatepath }`, options);
+			const response = HTTP.call('POST', `${this._options.baseurl}${this._options.updatepath}`, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
-				ChatpalLogger.debug(`indexed ${ docs.length } documents`, JSON.stringify(response.data, null, 2));
+				ChatpalLogger.debug({ msg: `indexed ${docs.length} documents`, data: response.data });
 			} else {
 				throw new Error(response);
 			}
 		} catch (e) {
 			// TODO how to deal with this
-			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
+			ChatpalLogger.error({ msg: 'indexing failed', err: e });
 			return false;
 		}
 	}
@@ -47,12 +47,12 @@ class Backend {
 	 * @returns {boolean}
 	 */
 	remove(type, id) {
-		ChatpalLogger.debug(`Remove ${ type }(${ id }) from Index`);
+		ChatpalLogger.debug(`Remove ${type}(${id}) from Index`);
 
 		const options = {
 			data: {
 				delete: {
-					query: `id:${ id } AND type:${ type }`,
+					query: `id:${id} AND type:${type}`,
 				},
 				commit: {},
 			},
@@ -83,12 +83,14 @@ class Backend {
 			...this._options.httpOptions,
 		};
 
-		ChatpalLogger.debug('query: ', JSON.stringify(options, null, 2));
+		ChatpalLogger.debug({ query: options });
 
 		try {
 			if (callback) {
 				HTTP.call('POST', this._options.baseurl + this._options.searchpath, options, (err, result) => {
-					if (err) { return callback(err); }
+					if (err) {
+						return callback(err);
+					}
 
 					callback(undefined, result.data);
 				});
@@ -101,7 +103,7 @@ class Backend {
 				throw new Error(response);
 			}
 		} catch (e) {
-			ChatpalLogger.error('query failed', JSON.stringify(e, null, 2));
+			ChatpalLogger.error({ msg: 'query failed', err: e });
 			throw e;
 		}
 	}
@@ -113,7 +115,9 @@ class Backend {
 		};
 
 		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
-			if (err) { return callback(err); }
+			if (err) {
+				return callback(err);
+			}
 
 			try {
 				callback(undefined, result.data.suggestion);
@@ -190,7 +194,7 @@ class BatchIndexer {
 	}
 
 	flush() {
-		this._func(this._values, this._rest);// TODO if flush does not work
+		this._func(this._values, this._rest); // TODO if flush does not work
 		this._values = [];
 	}
 }
@@ -257,7 +261,8 @@ export default class Index {
 					user_name: doc.name,
 					user_email: doc.emails && doc.emails.map((e) => e.address),
 				};
-			default: throw new Error(`Cannot index type '${ type }'`);
+			default:
+				throw new Error(`Cannot index type '${type}'`);
 		}
 	}
 
@@ -285,13 +290,13 @@ export default class Index {
 	_indexUsers() {
 		const cursor = Meteor.users.find({ active: true });
 
-		ChatpalLogger.debug(`Start indexing ${ cursor.count() } users`);
+		ChatpalLogger.debug(`Start indexing ${cursor.count()} users`);
 
 		cursor.forEach((user) => {
 			this.indexDoc('user', user, false);
 		});
 
-		ChatpalLogger.info(`Users indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(`Users indexed successfully (index-id: ${this._id})`);
 	}
 
 	/**
@@ -301,13 +306,13 @@ export default class Index {
 	_indexRooms() {
 		const cursor = Rooms.find({ t: { $ne: 'd' } });
 
-		ChatpalLogger.debug(`Start indexing ${ cursor.count() } rooms`);
+		ChatpalLogger.debug(`Start indexing ${cursor.count()} rooms`);
 
 		cursor.forEach((room) => {
 			this.indexDoc('room', room, false);
 		});
 
-		ChatpalLogger.info(`Rooms indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(`Rooms indexed successfully (index-id: ${this._id})`);
 	}
 
 	_indexMessages(date, gap) {
@@ -316,13 +321,13 @@ export default class Index {
 
 		const cursor = Messages.model.find({ ts: { $gt: start, $lt: end }, t: { $exists: false } });
 
-		ChatpalLogger.debug(`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`);
+		ChatpalLogger.debug(`Start indexing ${cursor.count()} messages between ${start.toString()} and ${end.toString()}`);
 
 		cursor.forEach((message) => {
 			this.indexDoc('message', message, false);
 		});
 
-		ChatpalLogger.info(`Messages between ${ start.toString() } and ${ end.toString() } indexed successfully (index-id: ${ this._id })`);
+		ChatpalLogger.info(`Messages between ${start.toString()} and ${end.toString()} indexed successfully (index-id: ${this._id})`);
 
 		return start.getTime();
 	}
@@ -337,7 +342,7 @@ export default class Index {
 				this._run(date, resolve, reject);
 			}, this._options.timeout || 1000);
 		} else if (this._break) {
-			ChatpalLogger.info(`stopped bootstrap (index-id: ${ this._id })`);
+			ChatpalLogger.info(`stopped bootstrap (index-id: ${this._id})`);
 
 			this._batchIndexer.flush();
 
@@ -345,7 +350,7 @@ export default class Index {
 
 			resolve();
 		} else {
-			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
+			ChatpalLogger.info(`No messages older than already indexed date ${new Date(date).toString()}`);
 
 			if (this._doesUserCountDiffer() && !this._break) {
 				this._indexUsers();
@@ -361,7 +366,7 @@ export default class Index {
 
 			this._batchIndexer.flush();
 
-			ChatpalLogger.info(`finished bootstrap (index-id: ${ this._id })`);
+			ChatpalLogger.info(`finished bootstrap (index-id: ${this._id})`);
 
 			this._running = false;
 
@@ -399,7 +404,9 @@ export default class Index {
 	indexDoc(type, doc, flush = true) {
 		this._batchIndexer.add(this._getIndexDocument(type, doc));
 
-		if (flush) { this._batchIndexer.flush(); }
+		if (flush) {
+			this._batchIndexer.flush();
+		}
 
 		return true;
 	}
@@ -409,23 +416,29 @@ export default class Index {
 	}
 
 	query(text, language, acl, type, start, rows, callback, params = {}) {
-		this._backend.query({
-			text,
-			language,
-			acl,
-			type,
-			start,
-			rows,
-			...params,
-		}, callback);
+		this._backend.query(
+			{
+				text,
+				language,
+				acl,
+				type,
+				start,
+				rows,
+				...params,
+			},
+			callback,
+		);
 	}
 
 	suggest(text, language, acl, type, callback) {
-		this._backend.suggest({
-			text,
-			language,
-			acl,
-			type,
-		}, callback);
+		this._backend.suggest(
+			{
+				text,
+				language,
+				acl,
+				type,
+			},
+			callback,
+		);
 	}
 }

@@ -3,7 +3,7 @@ import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
 
-export const sendGCM = function({ userTokens, notification, _replaceToken, _removeToken, options }) {
+export const sendGCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }) {
 	if (typeof notification.gcm === 'object') {
 		notification = Object.assign({}, notification, notification.gcm);
 	}
@@ -35,7 +35,9 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	if (notification.android_channel_id != null) {
 		data.android_channel_id = notification.android_channel_id;
 	} else {
-		logger.debug('For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info');
+		logger.debug(
+			'For devices running Android 8.0 or later you are required to provide an android_channel_id. See https://github.com/raix/push/issues/341 for more info',
+		);
 	}
 
 	// Set extra details
@@ -83,16 +85,16 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 		data,
 	});
 
-	logger.debug(`Create GCM Sender using "${ options.gcm.apiKey }"`);
+	logger.debug(`Create GCM Sender using "${options.gcm.apiKey}"`);
 	const sender = new gcm.Sender(options.gcm.apiKey);
 
-	userTokens.forEach((value) => logger.debug(`A:Send message to: ${ value }`));
+	userTokens.forEach((value) => logger.debug(`A:Send message to: ${value}`));
 
 	const userToken = userTokens.length === 1 ? userTokens[0] : null;
 
-	sender.send(message, userTokens, 5, function(err, result) {
+	sender.send(message, userTokens, 5, function (err, result) {
 		if (err) {
-			logger.debug(`ANDROID ERROR: result of sender: ${ result }`);
+			logger.debug({ msg: 'ANDROID ERROR: result of sender', result });
 			return;
 		}
 
@@ -101,14 +103,14 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 			return;
 		}
 
-		logger.debug(`ANDROID: Result of sender: ${ JSON.stringify(result) }`);
+		logger.debug({ msg: 'ANDROID: Result of sender', result });
 
 		if (result.canonical_ids === 1 && userToken) {
 			// This is an old device, token is replaced
 			try {
 				_replaceToken({ gcm: userToken }, { gcm: result.results[0].registration_id });
 			} catch (err) {
-				logger.error('Error replacing token', err);
+				logger.error({ msg: 'Error replacing token', err });
 			}
 		}
 		// We cant send to that token - might not be registered
@@ -118,7 +120,7 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 			try {
 				_removeToken({ gcm: userToken });
 			} catch (err) {
-				logger.error('Error removing token', err);
+				logger.error({ msg: 'Error removing token', err });
 			}
 		}
 	});

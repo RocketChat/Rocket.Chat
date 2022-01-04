@@ -25,19 +25,25 @@ export const downloadAs = ({ data, ...options }: { data: BlobPart[] } & BlobProp
 };
 
 export const downloadJsonAs = (jsonObject: unknown, basename: string): void => {
-	downloadAs({
-		data: [decodeURIComponent(encodeURI(JSON.stringify(jsonObject, null, 2)))],
-		type: 'application/json;charset=utf-8',
-	}, `${ basename }.json`);
+	downloadAs(
+		{
+			data: [decodeURIComponent(encodeURI(JSON.stringify(jsonObject, null, 2)))],
+			type: 'application/json;charset=utf-8',
+		},
+		`${basename}.json`,
+	);
 };
 
-export const downloadCsvAs = (csvData: unknown[][], basename: string): void => {
-	const escapeCell = (cell: unknown): string => `"${ String(cell).replace(/"/g, '""') }"`;
-	const content = csvData.reduce((content, row) => `${ content + row.map(escapeCell).join(';') }\n`, '');
+export const downloadCsvAs = (csvData: readonly (readonly unknown[])[], basename: string): void => {
+	const escapeCell = (cell: unknown): string => `"${String(cell).replace(/"/g, '""')}"`;
+	const content = csvData.reduce((content, row) => `${content + row.map(escapeCell).join(';')}\n`, '');
 
-	downloadAs({
-		data: [decodeURIComponent(encodeURI(content))],
-		type: 'text/csv;charset=utf-8',
-		endings: 'native',
-	}, `${ basename }.csv`);
+	downloadAs(
+		{
+			data: [decodeURIComponent(encodeURI(content))],
+			type: 'text/csv;charset=utf-8',
+			endings: 'native',
+		},
+		`${basename}.csv`,
+	);
 };

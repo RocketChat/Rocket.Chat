@@ -3,10 +3,10 @@ import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 
-function generateStatistics(logger) {
-	const cronStatistics = statistics.save();
+async function generateStatistics(logger) {
+	const cronStatistics = await statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 
@@ -19,7 +19,7 @@ function generateStatistics(logger) {
 		const token = getWorkspaceAccessToken();
 
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		}
 
 		HTTP.post('https://collector.rocket.chat/', {
@@ -40,7 +40,7 @@ export function statsCron(SyncedCron, logger) {
 	const name = 'Generate and save statistics';
 
 	let previousValue;
-	settings.get('Troubleshoot_Disable_Statistics_Generator', (key, value) => {
+	settings.watch('Troubleshoot_Disable_Statistics_Generator', (value) => {
 		if (value === previousValue) {
 			return;
 		}

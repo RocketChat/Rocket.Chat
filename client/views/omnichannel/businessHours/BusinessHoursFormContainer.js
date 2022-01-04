@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useEffect, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import BusinessHourForm from './BusinessHoursForm';
-import { formsSubscription } from '../additionalForms';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useForm } from '../../../hooks/useForm';
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
+import { useForm } from '../../../hooks/useForm';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { formsSubscription } from '../additionalForms';
+import BusinessHourForm from './BusinessHoursForm';
 
-const useChangeHandler = (name, ref) => useMutableCallback((val) => {
-	ref.current[name] = { ...ref.current[name], ...val };
-});
+const useChangeHandler = (name, ref) =>
+	useMutableCallback((val) => {
+		ref.current[name] = { ...ref.current[name], ...val };
+	});
 
 const getInitalData = ({ workHours }) => ({
 	daysOpen: workHours.filter(({ open }) => !!open).map(({ day }) => day),
@@ -29,10 +30,7 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	const [hasChangesMultiple, setHasChangesMultiple] = useState(false);
 	const [hasChangesTimeZone, setHasChangesTimeZone] = useState(false);
 
-	const {
-		useBusinessHoursTimeZone = cleanFunc,
-		useBusinessHoursMultiple = cleanFunc,
-	} = forms;
+	const { useBusinessHoursTimeZone = cleanFunc, useBusinessHoursMultiple = cleanFunc } = forms;
 
 	const TimezoneForm = useBusinessHoursTimeZone();
 	const MultipleBHForm = useBusinessHoursMultiple();
@@ -51,13 +49,19 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 		onChange(hasUnsavedChanges || (showMultipleBHForm && hasChangesMultiple) || (showTimezone && hasChangesTimeZone));
 	});
 
-	return <Box maxWidth='600px' w='full' alignSelf='center'>
-		<FieldGroup>
-			{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />}
-			{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName} hasChanges={setHasChangesTimeZone}/>}
-			<BusinessHourForm values={values} handlers={handlers}/>
-		</FieldGroup>
-	</Box>;
+	return (
+		<Box maxWidth='600px' w='full' alignSelf='center'>
+			<FieldGroup>
+				{showMultipleBHForm && MultipleBHForm && (
+					<MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />
+				)}
+				{showTimezone && TimezoneForm && (
+					<TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName} hasChanges={setHasChangesTimeZone} />
+				)}
+				<BusinessHourForm values={values} handlers={handlers} />
+			</FieldGroup>
+		</Box>
+	);
 };
 
 export default BusinessHoursFormContainer;

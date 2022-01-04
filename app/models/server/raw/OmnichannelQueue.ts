@@ -5,61 +5,92 @@ import { IOmnichannelQueueStatus } from '../../../../definition/IOmnichannel';
 const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 	initQueue() {
-		return this.col.updateOne({
-			_id: UNIQUE_QUEUE_ID,
-		}, {
-			$unset: {
-				stoppedAt: 1,
+		return this.col.updateOne(
+			{
+				_id: UNIQUE_QUEUE_ID,
 			},
-			$set: {
-				startedAt: new Date(),
-				locked: false,
+			{
+				$unset: {
+					stoppedAt: 1,
+				},
+				$set: {
+					startedAt: new Date(),
+					locked: false,
+				},
 			},
-		}, {
-			upsert: true,
-		});
+			{
+				upsert: true,
+			},
+		);
 	}
 
 	stopQueue() {
-		return this.col.updateOne({
-			_id: UNIQUE_QUEUE_ID,
-		}, {
-			$set: {
-				stoppedAt: new Date(),
-				locked: false,
+		return this.col.updateOne(
+			{
+				_id: UNIQUE_QUEUE_ID,
 			},
-		});
+			{
+				$set: {
+					stoppedAt: new Date(),
+					locked: false,
+				},
+			},
+		);
 	}
 
 	async lockQueue() {
-		const result = await this.col.findOneAndUpdate({
-			_id: UNIQUE_QUEUE_ID,
-			locked: false,
-		}, {
-			$set: {
-				locked: true,
+		const date = new Date();
+		const result = await this.col.findOneAndUpdate(
+			{
+				_id: UNIQUE_QUEUE_ID,
+				$or: [
+					{
+						locked: true,
+						lockedAt: {
+							$lte: new Date(date.getTime() - 5000),
+						},
+					},
+					{
+						locked: false,
+					},
+				],
 			},
-		}, {
-			sort: {
-				_id: 1,
+			{
+				$set: {
+					locked: true,
+					// apply 5 secs lock lifetime
+					lockedAt: new Date(),
+				},
 			},
-		});
+			{
+				sort: {
+					_id: 1,
+				},
+			},
+		);
 
 		return result.value;
 	}
 
 	async unlockQueue() {
-		const result = await this.col.findOneAndUpdate({
-			_id: UNIQUE_QUEUE_ID,
-		}, {
-			$set: {
-				locked: false,
+		const result = await this.col.findOneAndUpdate(
+			{
+				_id: UNIQUE_QUEUE_ID,
 			},
-		}, {
-			sort: {
-				_id: 1,
+			{
+				$set: {
+					locked: false,
+				},
+				$unset: {
+					lockedAt: 1,
+				},
 			},
-		});
+			{
+				sort: {
+					_id: 1,
+				},
+			},
+		);
 
 		return result.value;
 	}

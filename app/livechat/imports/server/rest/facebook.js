@@ -42,8 +42,11 @@ API.v1.addRoute('livechat/facebook', {
 		}
 
 		// validate if request come from omni
-		const signature = crypto.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
-		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
+		const signature = crypto
+			.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret'))
+			.update(JSON.stringify(this.request.body))
+			.digest('hex');
+		if (this.request.headers['x-hub-signature'] !== `sha1=${signature}`) {
 			return {
 				success: false,
 				error: 'Invalid signature',
@@ -75,7 +78,7 @@ API.v1.addRoute('livechat/facebook', {
 
 			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
-				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
+				name: `${this.bodyParams.first_name} ${this.bodyParams.last_name}`,
 			});
 
 			visitor = LivechatVisitors.findOneById(userId);
@@ -90,7 +93,7 @@ API.v1.addRoute('livechat/facebook', {
 				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
-			console.error('Error using Facebook ->', e);
+			Livechat.logger.error('Error using Facebook ->', e);
 		}
 	},
 });

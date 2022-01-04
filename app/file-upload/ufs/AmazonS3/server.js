@@ -6,6 +6,8 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+
 /**
  * AmazonS3 store
  * @param options
@@ -19,12 +21,15 @@ export class AmazonS3Store extends UploadFS.Store {
 		// options.region,
 		// options.sslEnabled // optional
 
-		options = _.extend({
-			httpOptions: {
-				timeout: 6000,
-				agent: false,
+		options = _.extend(
+			{
+				httpOptions: {
+					timeout: 6000,
+					agent: false,
+				},
 			},
-		}, options);
+			options,
+		);
 
 		super(options);
 
@@ -32,11 +37,13 @@ export class AmazonS3Store extends UploadFS.Store {
 
 		const s3 = new S3(options.connection);
 
-		options.getPath = options.getPath || function(file) {
-			return file._id;
-		};
+		options.getPath =
+			options.getPath ||
+			function (file) {
+				return file._id;
+			};
 
-		this.getPath = function(file) {
+		this.getPath = function (file) {
 			if (file.AmazonS3) {
 				return file.AmazonS3.path;
 			}
@@ -47,11 +54,11 @@ export class AmazonS3Store extends UploadFS.Store {
 			}
 		};
 
-		this.getRedirectURL = function(file, forceDownload = false, callback) {
+		this.getRedirectURL = function (file, forceDownload = false, callback) {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
-				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
+				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name)}"`,
 			};
 
 			return s3.getSignedUrl('getObject', params, callback);
@@ -63,7 +70,7 @@ export class AmazonS3Store extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function(file, callback) {
+		this.create = function (file, callback) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -83,7 +90,7 @@ export class AmazonS3Store extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function(fileId, callback) {
+		this.delete = function (fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
 			const params = {
 				Key: this.getPath(file),
@@ -91,7 +98,7 @@ export class AmazonS3Store extends UploadFS.Store {
 
 			s3.deleteObject(params, (err, data) => {
 				if (err) {
-					console.error(err);
+					SystemLogger.error(err);
 				}
 
 				callback && callback(err, data);
@@ -105,13 +112,13 @@ export class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function(fileId, file, options = {}) {
+		this.getReadStream = function (fileId, file, options = {}) {
 			const params = {
 				Key: this.getPath(file),
 			};
 
 			if (options.start && options.end) {
-				params.Range = `${ options.start } - ${ options.end }`;
+				params.Range = `${options.start} - ${options.end}`;
 			}
 
 			return s3.getObject(params).createReadStream();
@@ -124,7 +131,7 @@ export class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file/* , options*/) {
+		this.getWriteStream = function (fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
 			writeStream.length = file.size;
 
@@ -137,18 +144,20 @@ export class AmazonS3Store extends UploadFS.Store {
 				}
 			});
 
-			s3.putObject({
-				Key: this.getPath(file),
-				Body: writeStream,
-				ContentType: file.type,
+			s3.putObject(
+				{
+					Key: this.getPath(file),
+					Body: writeStream,
+					ContentType: file.type,
+				},
+				(error) => {
+					if (error) {
+						SystemLogger.error(error);
+					}
 
-			}, (error) => {
-				if (error) {
-					console.error(error);
-				}
-
-				writeStream.emit('real_finish');
-			});
+					writeStream.emit('real_finish');
+				},
+			);
 
 			return writeStream;
 		};

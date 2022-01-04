@@ -3,37 +3,29 @@ import os from 'os';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { MongoInternals } from 'meteor/mongo';
 
-import {
-	Sessions,
-	Settings,
-	Users,
-	Rooms,
-	Subscriptions,
-	Uploads,
-	Messages,
-	LivechatVisitors,
-	Integrations,
-	Statistics,
-} from '../../../models/server';
+import { Settings, Users, Rooms, Subscriptions, Messages, LivechatVisitors } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations/server';
+import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
+import {
+	NotificationQueue,
+	Users as UsersRaw,
+	Rooms as RoomsRaw,
+	Statistics,
+	Sessions,
+	Integrations,
+	Uploads,
+} from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { Team, Analytics } from '../../../../server/sdk';
 
-const wizardFields = [
-	'Organization_Type',
-	'Industry',
-	'Size',
-	'Country',
-	'Language',
-	'Server_Type',
-	'Register_Server',
-];
+const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = (totalUsers) => {
 	const result = Promise.await(UsersRaw.getUserLanguages());
@@ -53,9 +45,11 @@ const getUserLanguages = (totalUsers) => {
 	return languages;
 };
 
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
 export const statistics = {
 	get: function _getStatistics() {
-		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+		const readPreference = readSecondaryPreferred(db);
 
 		const statistics = {};
 
@@ -103,6 +97,9 @@ export const statistics = {
 		statistics.totalDiscussions = Rooms.countDiscussions();
 		statistics.totalThreads = Messages.countThreads();
 
+		// Teams statistics
+		statistics.teams = Promise.await(Team.getStatistics());
+
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
@@ -112,12 +109,48 @@ export const statistics = {
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
+		// Count and types of omnichannel rooms
+		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
+			id,
+			alias,
+			type,
+			count,
+		}));
+
 		// Message statistics
-		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
-		statistics.totalMessages = statistics.totalChannelMessages + statistics.totalPrivateGroupMessages + statistics.totalDirectMessages + statistics.totalLivechatMessages;
+		statistics.totalChannelMessages = _.reduce(
+			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
+			function _countChannelMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalPrivateGroupMessages = _.reduce(
+			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
+			function _countPrivateGroupMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalDirectMessages = _.reduce(
+			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
+			function _countDirectMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalLivechatMessages = _.reduce(
+			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
+			function _countLivechatMessages(num, room) {
+				return num + room.msgs;
+			},
+			0,
+		);
+		statistics.totalMessages =
+			statistics.totalChannelMessages +
+			statistics.totalPrivateGroupMessages +
+			statistics.totalDirectMessages +
+			statistics.totalLivechatMessages;
 
 		// Federation statistics
 		const federationOverviewData = federationGetStatistics();
@@ -152,63 +185,86 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
+		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+
 		statistics.enterpriseReady = true;
 
-		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
-			$group: { _id: 'total', total: { $sum: '$size' } },
-		}], { readPreference }).toArray());
+		statistics.uploadsTotal = Promise.await(Uploads.find().count());
+		const [result] = Promise.await(
+			Uploads.col
+				.aggregate(
+					[
+						{
+							$group: { _id: 'total', total: { $sum: '$size' } },
+						},
+					],
+					{ readPreference },
+				)
+				.toArray(),
+		);
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
-		statistics.migration = Migrations._getControl();
-		statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
+		statistics.migration = getControl();
+		statistics.instanceCount = InstanceStatus.getCollection()
+			.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
+			.count();
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
-		statistics.uniqueUsersOfLastWeek = Sessions.getUniqueUsersOfLastWeek();
-		statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
-		statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
-		statistics.uniqueDevicesOfLastWeek = Sessions.getUniqueDevicesOfLastWeek();
-		statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
-		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
-		statistics.uniqueOSOfLastWeek = Sessions.getUniqueOSOfLastWeek();
-		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
+		statistics.uniqueUsersOfYesterday = Promise.await(Sessions.getUniqueUsersOfYesterday());
+		statistics.uniqueUsersOfLastWeek = Promise.await(Sessions.getUniqueUsersOfLastWeek());
+		statistics.uniqueUsersOfLastMonth = Promise.await(Sessions.getUniqueUsersOfLastMonth());
+		statistics.uniqueDevicesOfYesterday = Promise.await(Sessions.getUniqueDevicesOfYesterday());
+		statistics.uniqueDevicesOfLastWeek = Promise.await(Sessions.getUniqueDevicesOfLastWeek());
+		statistics.uniqueDevicesOfLastMonth = Promise.await(Sessions.getUniqueDevicesOfLastMonth());
+		statistics.uniqueOSOfYesterday = Promise.await(Sessions.getUniqueOSOfYesterday());
+		statistics.uniqueOSOfLastWeek = Promise.await(Sessions.getUniqueOSOfLastWeek());
+		statistics.uniqueOSOfLastMonth = Promise.await(Sessions.getUniqueOSOfLastMonth());
 
 		statistics.apps = getAppsStatistics();
+		statistics.services = getServicesStatistics();
 
-		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
-			projection: {
-				_id: 0,
-				type: 1,
-				enabled: 1,
-				scriptEnabled: 1,
-			},
-			readPreference,
-		}).toArray());
+		const integrations = Promise.await(
+			Integrations.find(
+				{},
+				{
+					projection: {
+						_id: 0,
+						type: 1,
+						enabled: 1,
+						scriptEnabled: 1,
+					},
+					readPreference,
+				},
+			).toArray(),
+		);
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
 			totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
-			totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming').length,
+			totalIncomingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-incoming')
+				.length,
 			totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
+			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing')
+				.length,
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		statistics.enterprise = getEnterpriseStatistics();
+		Promise.await(Analytics.resetSeatRequestCount());
 
 		return statistics;
 	},
-	save() {
+	async save() {
 		const rcStatistics = statistics.get();
 		rcStatistics.createdAt = new Date();
-		Statistics.insert(rcStatistics);
+		await Statistics.insertOne(rcStatistics);
 		return rcStatistics;
 	},
 };

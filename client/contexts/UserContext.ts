@@ -1,45 +1,53 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FilterQuery } from 'mongodb';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { ISubscription } from '../../definition/ISubscription';
 import { IRoom } from '../../definition/IRoom';
+import { ISubscription } from '../../definition/ISubscription';
+import { useRoute } from './RouterContext';
 
-type SubscriptionQuery = {
-	rid: string | Mongo.ObjectID;
-} | {
-	name: string;
-} | {
-	open: boolean;
-} | object;
+type SubscriptionQuery =
+	| {
+			rid: string | Mongo.ObjectID;
+	  }
+	| {
+			name: string;
+	  }
+	| {
+			open: boolean;
+	  }
+	| object;
 
 type Fields = {
 	[key: string]: boolean;
-}
+};
 
 type Sort = {
 	[key: string]: -1 | 1 | number;
-}
+};
 
 type FindOptions = {
 	fields?: Fields;
 	sort?: Sort;
-}
+};
 
 type UserContextValue = {
 	userId: string | null;
 	user: Meteor.User | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
+	logout: () => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
-	querySubscription: (query: FilterQuery<ISubscription>, fields: Fields, sort?: Sort) => Subscription <ISubscription | undefined>;
-	queryRoom: (query: FilterQuery<IRoom>, fields?: Fields, sort?: Sort) => Subscription <IRoom | undefined>;
-	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription <Array<ISubscription> | []>;
+	querySubscription: (query: FilterQuery<ISubscription>, fields?: Fields, sort?: Sort) => Subscription<ISubscription | undefined>;
+	queryRoom: (query: FilterQuery<IRoom>, fields?: Fields, sort?: Sort) => Subscription<IRoom | undefined>;
+	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription<Array<ISubscription> | []>;
 };
 
 export const UserContext = createContext<UserContextValue>({
 	userId: null,
 	user: null,
 	loginWithPassword: async () => undefined,
+	logout: () => Promise.resolve(),
 	queryPreference: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: (): Unsubscribe => (): void => undefined,
@@ -58,14 +66,25 @@ export const UserContext = createContext<UserContextValue>({
 	}),
 });
 
-export const useUserId = (): string | null =>
-	useContext(UserContext).userId;
+export const useUserId = (): string | null => useContext(UserContext).userId;
 
-export const useUser = (): Meteor.User | null =>
-	useContext(UserContext).user;
+// TODO: Use IUser instead
+export const useUser = (): Meteor.User | null => useContext(UserContext).user;
 
 export const useLoginWithPassword = (): ((user: string | object, password: string) => Promise<void>) =>
 	useContext(UserContext).loginWithPassword;
+
+export const useLogout = (): (() => void) => {
+	const router = useRoute('home');
+	const { logout } = useContext(UserContext);
+
+	const handleLogout = useMutableCallback(() => {
+		logout();
+		router.push({});
+	});
+
+	return handleLogout;
+};
 
 export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefined => {
 	const { queryPreference } = useContext(UserContext);
@@ -73,7 +92,7 @@ export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefin
 	return useSubscription(subscription);
 };
 
-export const useUserSubscription = (rid: string, fields: Fields): ISubscription | undefined => {
+export const useUserSubscription = (rid: string, fields?: Fields): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
 	const subscription = useMemo(() => querySubscription({ rid }, fields), [querySubscription, rid, fields]);
 	return useSubscription(subscription);

@@ -8,8 +8,10 @@ const SAUMonitor = new SAUMonitorClass();
 
 Meteor.startup(() => {
 	let TroubleshootDisableSessionsMonitor;
-	settings.get('Troubleshoot_Disable_Sessions_Monitor', (key, value) => {
-		if (TroubleshootDisableSessionsMonitor === value) { return; }
+	settings.watch('Troubleshoot_Disable_Sessions_Monitor', (value) => {
+		if (TroubleshootDisableSessionsMonitor === value) {
+			return;
+		}
 		TroubleshootDisableSessionsMonitor = value;
 
 		if (value) {

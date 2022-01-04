@@ -1,16 +1,22 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
 
-Migrations.add({
+addMigration({
 	version: 205,
 	up() {
 		// Disable this new enforcement setting for existent installations.
-		Settings.upsert({
-			_id: 'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
-		}, {
-			$set: {
-				value: false,
+		Settings.update(
+			{
+				_id: 'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
 			},
-		});
+			{
+				$set: {
+					value: false,
+				},
+			},
+			{
+				upsert: true,
+			},
+		);
 	},
 });

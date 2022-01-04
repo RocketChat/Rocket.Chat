@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { Announcement } from './Announcement';
+import Announcement from '.';
 
 export default {
-	title: 'components/Announcement',
+	title: 'room/Announcement',
 	component: Announcement,
 };
 
-export const Default = () =>
-	<Announcement onClickOpen={alert}>Lorem Ipsum Indolor</Announcement>;
+export const Default = () => <Announcement announcement='Lorem Ipsum Indolor' />;

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-Meteor.startup(function() {
-	settings.addGroup('Accounts', function() {
+Meteor.startup(function () {
+	settingsRegistry.addGroup('Accounts', function () {
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
-		this.section('Login_Attempts', function() {
+		this.section('Login_Attempts', function () {
 			this.add('Block_Multiple_Failed_Logins_Enabled', false, {
 				type: 'boolean',
 			});
@@ -49,10 +49,20 @@ Meteor.startup(function() {
 				type: 'string',
 				enableQuery: enableQueryByIp,
 			});
+
+			this.add('Block_Multiple_Failed_Logins_Notify_Failed', false, {
+				type: 'boolean',
+				enableQuery: [enableQueryCollectData],
+			});
+
+			this.add('Block_Multiple_Failed_Logins_Notify_Failed_Channel', '', {
+				type: 'string',
+				i18nDescription: 'Block_Multiple_Failed_Logins_Notify_Failed_Channel_Desc',
+				enableQuery: [enableQueryCollectData, { _id: 'Block_Multiple_Failed_Logins_Notify_Failed', value: true }],
+			});
 		});
 
-
-		this.section('Login_Logs', function() {
+		this.section('Login_Logs', function () {
 			const enableQueryAudit = { _id: 'Login_Logs_Enabled', value: true };
 
 			this.add('Login_Logs_Enabled', false, { type: 'boolean' });
@@ -63,7 +73,10 @@ Meteor.startup(function() {
 
 			this.add('Login_Logs_ClientIp', false, { type: 'boolean', enableQuery: enableQueryAudit });
 
-			this.add('Login_Logs_ForwardedForIp', false, { type: 'boolean', enableQuery: enableQueryAudit });
+			this.add('Login_Logs_ForwardedForIp', false, {
+				type: 'boolean',
+				enableQuery: enableQueryAudit,
+			});
 		});
 	});
 });

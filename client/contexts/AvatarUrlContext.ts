@@ -5,7 +5,7 @@ const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcS
 type AvatarContextValue = {
 	getUserPathAvatar: (uid: string, etag?: string) => string;
 	getRoomPathAvatar: (...args: any) => string;
-}
+};
 const AvatarUrlContextValueDefault: AvatarContextValue = {
 	getUserPathAvatar: () => dummy,
 	getRoomPathAvatar: () => dummy,
@@ -13,6 +13,6 @@ const AvatarUrlContextValueDefault: AvatarContextValue = {
 
 export const AvatarUrlContext = createContext<AvatarContextValue>(AvatarUrlContextValueDefault);
 
-export const useRoomAvatarPath = (): (uid: string, etag?: string) => string => useContext(AvatarUrlContext).getRoomPathAvatar;
+export const useRoomAvatarPath = (): ((uid: string, etag?: string) => string) => useContext(AvatarUrlContext).getRoomPathAvatar;
 
-export const useUserAvatarPath = (): (...args: any) => string => useContext(AvatarUrlContext).getUserPathAvatar;
+export const useUserAvatarPath = (): ((...args: any) => string) => useContext(AvatarUrlContext).getUserPathAvatar;

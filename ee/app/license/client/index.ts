@@ -1,17 +1,16 @@
-import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
-import { callMethod } from '../../../../app/ui-utils/client/lib/callMethod';
+import { fetchFeatures } from '../../../client/lib/fetchFeatures';
+import { queryClient } from '../../../../client/lib/queryClient';
 
-const allModules = new Promise<Set<string>>((resolve, reject) => {
-	CachedCollectionManager.onLogin(async () => {
-		try {
-			const features: string[] = await callMethod('license:getModules');
-			resolve(new Set(features));
-		} catch (e) {
-			console.error('Error getting modules', e);
-			reject(e);
-		}
+const allModules = queryClient
+	.fetchQuery({
+		queryKey: ['ee.features'],
+		queryFn: fetchFeatures,
+	})
+	.then((features) => new Set<string>(features))
+	.catch((e) => {
+		console.error('Error getting modules', e);
+		return Promise.reject(e);
 	});
-});
 
 export async function hasLicense(feature: string): Promise<boolean> {
 	try {

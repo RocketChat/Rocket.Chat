@@ -1,10 +1,10 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
-import { BusinessHoursTable } from './BusinessHoursTable';
+import BusinessHoursTable from './BusinessHoursTable';
 
 export default {
-	title: 'omnichannel/businessHours/ee/BusinessHoursTable',
+	title: 'omnichannel/businessHours/BusinessHoursTable',
 	component: BusinessHoursTable,
 };
 
@@ -18,7 +18,8 @@ const businessHours = [
 			{ day: 'Wednesday', open: true },
 			{ day: 'Saturday', open: true },
 		],
-	}, {
+	},
+	{
 		name: 'Extra',
 		timezone: { name: 'America/Sao_Paulo' },
 		workHours: [
@@ -26,7 +27,8 @@ const businessHours = [
 			{ day: 'Tuesday', open: true },
 			{ day: 'Saturday', open: true },
 		],
-	}, {
+	},
+	{
 		name: 'Extra2',
 		timezone: { name: 'America/Sao_Paulo' },
 		workHours: [
@@ -34,7 +36,8 @@ const businessHours = [
 			{ day: 'Sunday', open: true },
 			{ day: 'Monday', open: false },
 		],
-	}, {
+	},
+	{
 		name: 'Extra3',
 		timezone: { name: 'America/Sao_Paulo' },
 		workHours: [
@@ -44,6 +47,8 @@ const businessHours = [
 	},
 ];
 
-export const Default = () => <Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
-	<BusinessHoursTable businessHours={businessHours} businessHoursTotal={businessHours.length} params={{}} onChangeParams={() => {}}/>
-</Box>;
+export const Default = () => (
+	<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
+		<BusinessHoursTable businessHours={businessHours} businessHoursTotal={businessHours.length} params={{}} onChangeParams={() => {}} />
+	</Box>
+);

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { Base } from './_Base';
 
 export class Settings extends Base {
@@ -6,6 +8,9 @@ export class Settings extends Base {
 
 		this.tryEnsureIndex({ blocked: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ hidden: 1 }, { sparse: 1 });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	// FIND
@@ -58,7 +63,17 @@ export class Settings extends Base {
 			filter._id = { $in: ids };
 		}
 
-		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			fields: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 
 	findNotHiddenPublicUpdatedAfter(updatedAt) {
@@ -70,7 +85,17 @@ export class Settings extends Base {
 			},
 		};
 
-		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
+		return this.find(filter, {
+			fields: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+			},
+		});
 	}
 
 	findNotHiddenPrivate() {
@@ -241,6 +266,10 @@ export class Settings extends Base {
 				this.insert(newSetting);
 			}
 		}
+	}
+
+	insert(record, ...args) {
+		return super.insert({ createdAt: new Date(), ...record }, ...args);
 	}
 }
 

@@ -1,5 +1,5 @@
-import { MessageList } from './MessageList';
 import type { IMessage } from '../../../definition/IMessage';
+import { MessageList } from './MessageList';
 
 type FilesMessage = Omit<IMessage, 'rid'> & Required<Pick<IMessage, 'rid'>>;
 
@@ -9,8 +9,7 @@ export type FilesListOptions = {
 	text: string;
 };
 
-const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage =>
-	message.rid === rid && 'rid' in message;
+const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage => message.rid === rid && 'rid' in message;
 
 export class FilesList extends MessageList {
 	public constructor(private _options: FilesListOptions) {

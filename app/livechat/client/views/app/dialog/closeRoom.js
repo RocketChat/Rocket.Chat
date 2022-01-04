@@ -5,9 +5,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
-import { APIClient, handleError, t } from '../../../../../utils';
+import { APIClient, t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import './closeRoom.html';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const validateRoomComment = (comment) => {
 	if (!settings.get('Livechat_request_comment_when_closing_conversation')) {
@@ -50,7 +51,7 @@ Template.closeRoom.helpers({
 		let placeholder = TAPi18n.__('Enter_a_tag');
 
 		if (!Template.instance().tagsRequired.get()) {
-			placeholder = placeholder.concat(`(${ TAPi18n.__('Optional') })`);
+			placeholder = placeholder.concat(`(${TAPi18n.__('Optional')})`);
 		}
 
 		return placeholder;
@@ -83,7 +84,7 @@ Template.closeRoom.events({
 			return;
 		}
 
-		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function(error/* , result*/) {
+		Meteor.call('livechat:closeRoom', this.rid, comment, { clientAction: true, tags }, function (error /* , result*/) {
 			if (error) {
 				console.log(error);
 				return handleError(error);
@@ -150,11 +151,11 @@ Template.closeRoom.events({
 	},
 });
 
-Template.closeRoom.onRendered(function() {
+Template.closeRoom.onRendered(function () {
 	this.find('#comment').focus();
 });
 
-Template.closeRoom.onCreated(async function() {
+Template.closeRoom.onCreated(async function () {
 	this.tags = new ReactiveVar([]);
 	this.invalidComment = new ReactiveVar(false);
 	this.invalidTags = new ReactiveVar(false);
@@ -166,16 +167,16 @@ Template.closeRoom.onCreated(async function() {
 	this.onEnterTag = () => this.invalidTags.set(!validateRoomTags(this.tagsRequired.get(), this.tags.get()));
 
 	const { rid } = Template.currentData();
-	const { room } = await APIClient.v1.get(`rooms.info?roomId=${ rid }`);
+	const { room } = await APIClient.v1.get(`rooms.info?roomId=${rid}`);
 	this.tags.set(room?.tags || []);
 
 	if (room?.departmentId) {
-		const { department } = await APIClient.v1.get(`livechat/department/${ room.departmentId }?includeAgents=false`);
+		const { department } = await APIClient.v1.get(`livechat/department/${room.departmentId}?includeAgents=false`);
 		this.tagsRequired.set(department?.requestTagBeforeClosingChat);
 	}
 
 	const uid = Meteor.userId();
-	const { departments } = await APIClient.v1.get(`livechat/agents/${ uid }/departments`);
+	const { departments } = await APIClient.v1.get(`livechat/agents/${uid}/departments`);
 	const agentDepartments = departments.map((dept) => dept.departmentId);
 	this.agentDepartments.set(agentDepartments);
 
@@ -183,7 +184,7 @@ Template.closeRoom.onCreated(async function() {
 		this.availableTags.set(tagsList);
 		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
 		const availableTags = tagsList
-			.filter(({ departments }) => isAdmin || (departments.length === 0 || departments.some((i) => agentDepartments.includes(i))))
+			.filter(({ departments }) => isAdmin || departments.length === 0 || departments.some((i) => agentDepartments.includes(i)))
 			.map(({ name }) => name);
 		this.availableUserTags.set(availableTags);
 	});

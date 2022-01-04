@@ -7,7 +7,7 @@ import { HTML } from 'meteor/htmljs';
 import { Spacebars } from 'meteor/spacebars';
 import { Tracker } from 'meteor/tracker';
 
-const makeCursorReactive = function(obj) {
+const makeCursorReactive = function (obj) {
 	if (obj instanceof Meteor.Collection.Cursor) {
 		return obj._depend({
 			added: true,
@@ -17,7 +17,7 @@ const makeCursorReactive = function(obj) {
 	}
 };
 
-Blaze.toHTMLWithDataNonReactive = function(content, data) {
+const toHTMLWithDataNonReactive = function (content, data) {
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {
@@ -27,20 +27,14 @@ Blaze.toHTMLWithDataNonReactive = function(content, data) {
 	return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data));
 };
 
-Blaze.registerHelper('nrrargs', function(...args) {
-	return {
-		_arguments: args,
-	};
-});
-
-Blaze.renderNonReactive = function(templateName, data) {
+const renderNonReactive = function (templateName, data) {
 	const { _arguments } = this.parentView.dataVar.get();
 
 	[templateName, data] = _arguments;
 
 	return Tracker.nonreactive(() => {
 		console.warn('Nrr template is deprecated');
-		const view = new Blaze.View('nrr', () => HTML.Raw(Blaze.toHTMLWithDataNonReactive(Template[templateName], data)));
+		const view = new Blaze.View('nrr', () => HTML.Raw(toHTMLWithDataNonReactive(Template[templateName], data)));
 
 		view.onViewReady(() => {
 			const { onViewReady } = Template[templateName];
@@ -56,4 +50,4 @@ Blaze.renderNonReactive = function(templateName, data) {
 	});
 };
 
-Blaze.registerHelper('nrr', Blaze.Template('nrr', Blaze.renderNonReactive));
+Template.nrr = new Blaze.Template('nrr', renderNonReactive);
