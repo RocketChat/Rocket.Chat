@@ -10,7 +10,7 @@ import { Livechat } from '../../../server/lib/Livechat';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 const getUploadFile = (details, fileUrl) => {
-	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
+	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } }); // TODO npmRequestOptions has been removed from HTTP.call
 	if (response.statusCode !== 200 || !response.content || response.content.length === 0) {
 		throw new Meteor.Error('error-invalid-file-uploaded', 'Invalid file uploaded');
 	}

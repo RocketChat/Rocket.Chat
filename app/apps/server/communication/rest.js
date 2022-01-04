@@ -162,7 +162,7 @@ export class AppsRestApi {
 						let result;
 						try {
 							result = HTTP.call('GET', this.bodyParams.url, {
-								npmRequestOptions: { encoding: null },
+								npmRequestOptions: { encoding: null }, // TODO npmRequestOptions has been removed from HTTP.call
 							});
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
@@ -192,7 +192,7 @@ export class AppsRestApi {
 								`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`,
 								{
 									headers,
-									npmRequestOptions: { encoding: null },
+									npmRequestOptions: { encoding: null }, // TODO npmRequestOptions has been removed from HTTP.call
 								},
 								(error, result) => {
 									if (error) {
@@ -453,7 +453,7 @@ export class AppsRestApi {
 						}
 
 						const result = HTTP.call('GET', this.bodyParams.url, {
-							npmRequestOptions: { encoding: null },
+							npmRequestOptions: { encoding: null }, // TODO npmRequestOptions has been removed from HTTP.call
 						});
 
 						if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
@@ -473,7 +473,7 @@ export class AppsRestApi {
 						try {
 							result = HTTP.get(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
 								headers,
-								npmRequestOptions: { encoding: null },
+								npmRequestOptions: { encoding: null }, // TODO npmRequestOptions has been removed from HTTP.call
 							});
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);

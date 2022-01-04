@@ -19,7 +19,7 @@ export const setUserAvatar = function (user, dataURI, contentType, service, etag
 
 		try {
 			result = HTTP.get(dataURI, {
-				npmRequestOptions: { encoding: 'binary', rejectUnauthorized: false },
+				npmRequestOptions: { encoding: 'binary', rejectUnauthorized: false }, // TODO npmRequestOptions has been removed from HTTP.call
 			});
 			if (!result) {
 				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);

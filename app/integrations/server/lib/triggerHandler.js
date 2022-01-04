@@ -712,7 +712,7 @@ export class RocketChatIntegrationHandler {
 			url,
 			data,
 			auth: undefined,
-			npmRequestOptions: {
+			npmRequestOptions: { // TODO npmRequestOptions has been removed from HTTP.call
 				rejectUnauthorized: !settings.get('Allow_Invalid_SelfSigned_Certs'),
 				strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
 			},

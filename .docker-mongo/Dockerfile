@@ -9,8 +9,8 @@ ENV MONGO_MAJOR 5.0 \
 RUN set -x \
     && apt-get update \
     && apt-get install -y wget gnupg dirmngr pwgen \
-    && wget -qO - "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" | apt-key add - \
-    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list" \
+    && wget -qO - "https://www.mongodb.org/static/pgp/server-$MONGO_MAJOR.asc" | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-$MONGO_MAJOR.list" \
     && apt-get update \
     && apt-get install -y \
     mongodb-org=$MONGO_VERSION \
