@@ -745,7 +745,8 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		describe('oembed', () => {
+		// TODO skip for now - oembed needs a rewrite
+		describe.skip('oembed', () => {
 			let ytEmbedMsgId;
 			let imgUrlMsgId;
 
@@ -773,8 +774,7 @@ describe('[Chat]', function () {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			// TODO skip for now - oembed needs a rewrite
-			it.skip('should have an iframe oembed with style max-width', (done) => {
+			it('should have an iframe oembed with style max-width', (done) => {
 				setTimeout(() => {
 					request
 						.get(api('chat.getMessage'))
