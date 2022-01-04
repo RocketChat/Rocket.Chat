@@ -10,21 +10,10 @@ let logger = {
 	error() {},
 };
 
-if (Meteor.isClient) {
-	const { getConfig } = require('../../../client/lib/utils/getConfig');
-	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
-}
-
-if (Meteor.isServer) {
-	const { Logger } = require('../../../server/lib/logger/Logger');
-	logger = new Logger('Callbacks');
-}
-
 const combinedCallbacks = new Map();
 
 /**
  * Callback hooks provide an easy way to add extra steps to common operations.
- * @namespace RocketChat.callbacks
  * @deprecated
  */
 export const callbacks = {};
@@ -32,6 +21,14 @@ export const callbacks = {};
 Object.defineProperty(callbacks, 'length', {
 	get: () => combinedCallbacks.size,
 });
+
+callbacks.setLogger = function (_logger) {
+	logger = _logger;
+};
+
+callbacks.setTimed = function (_timed) {
+	timed = _timed;
+};
 
 const wrapCallback =
 	(callback) =>
@@ -150,18 +147,19 @@ callbacks.run = function (hook, item, constant) {
  * @param {Object} [constant] - An optional constant that will be passed along to each callback
  */
 
-callbacks.runAsync = Meteor.isServer
-	? function (hook, item, constant) {
-			const callbackItems = callbacks[hook];
-			if (callbackItems && callbackItems.length) {
-				callbackItems.forEach((callback) =>
-					Meteor.defer(function () {
-						callback(item, constant);
-					}),
-				);
-			}
-			return item;
-	  }
-	: () => {
-			throw new Error('callbacks.runAsync on client server not allowed');
-	  };
+callbacks.runAsync =
+	typeof window === 'undefined'
+		? function (hook, item, constant) {
+				const callbackItems = callbacks[hook];
+				if (callbackItems && callbackItems.length) {
+					callbackItems.forEach((callback) =>
+						Meteor.defer(function () {
+							callback(item, constant);
+						}),
+					);
+				}
+				return item;
+		  }
+		: () => {
+				throw new Error('callbacks.runAsync on client server not allowed');
+		  };
