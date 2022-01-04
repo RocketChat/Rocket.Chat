@@ -3,8 +3,8 @@ FROM node:14.18.2-bullseye-slim
 LABEL maintainer="buildmaster@rocket.chat"
 
 # Install MongoDB and dependencies
-ENV MONGO_MAJOR 5.0 \
-    MONGO_VERSION 5.0.5
+ENV MONGO_MAJOR=5.0 \
+    MONGO_VERSION=5.0.5
 
 RUN set -x \
     && apt-get update \
