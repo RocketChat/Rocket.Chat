@@ -65,22 +65,19 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		});
 	});
 
-	const openUserInfo = useCallback(
-		(username) => {
-			switch (room.t) {
-				case 'l':
-					open('room-info', username);
-					break;
-				case 'd':
-					open('user-info', username);
-					break;
-				default:
-					open('members-list', username);
-					break;
-			}
-		},
-		[room.t, open],
-	);
+	const openUserInfo = useMutableCallback((username) => {
+		switch (room.t) {
+			case 'l':
+				open('room-info', username);
+				break;
+			case 'd':
+				open('user-info', username);
+				break;
+			default:
+				open('members-list', username);
+				break;
+		}
+	});
 
 	useLayoutEffect(() => {
 		if (!tab) {
