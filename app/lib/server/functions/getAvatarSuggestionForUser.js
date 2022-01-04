@@ -153,7 +153,8 @@ export function getAvatarSuggestionForUser(user) {
 	for (const avatar of avatars) {
 		try {
 			const result = HTTP.get(avatar.url, {
-				npmRequestOptions: { // TODO npmRequestOptions has been removed from HTTP.call
+				// TODO npmRequestOptions has been removed from HTTP.call
+				npmRequestOptions: {
 					encoding: 'binary',
 				},
 			});
