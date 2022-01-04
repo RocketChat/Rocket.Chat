@@ -174,7 +174,7 @@ export const useForm = (
 				}),
 				{},
 			),
-		[onChange, state.fields],
+		[onChange, state.fields, state.values],
 	);
 
 	return {
