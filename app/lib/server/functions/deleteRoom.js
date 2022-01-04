@@ -1,5 +1,5 @@
 import { Messages, Subscriptions, Rooms } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/lib/callbacks';
 import { FileUpload } from '../../../file-upload/server';
 
 export const deleteRoom = function (rid) {

@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../app/callbacks/lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';

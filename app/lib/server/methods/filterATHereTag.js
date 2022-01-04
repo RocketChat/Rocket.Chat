@@ -4,7 +4,7 @@ import _ from 'underscore';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/lib/callbacks';
 import { Users } from '../../../models';
 import { api } from '../../../../server/sdk/api';
 

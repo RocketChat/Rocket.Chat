@@ -1,12 +1,13 @@
 import { metrics } from './lib/metrics';
 import StatsTracker from './lib/statsTracker';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../callbacks/lib/callbacks';
 
 const { run: originalRun, runItem: originalRunItem } = callbacks;
 
-callbacks.run = function (hook, item, constant) {
+callbacks.run = function (hook, item, constant): unknown {
 	const rocketchatHooksEnd = metrics.rocketchatHooks.startTimer({
 		hook,
+		// eslint-disable-next-line @typescript-eslint/camelcase
 		callbacks_length: callbacks.length,
 	});
 
@@ -17,7 +18,7 @@ callbacks.run = function (hook, item, constant) {
 	return result;
 };
 
-callbacks.runItem = function ({ callback, result, constant, hook, time = Date.now() }) {
+callbacks.runItem = function ({ callback, result, constant, hook, time = Date.now() }): unknown {
 	const rocketchatCallbacksEnd = metrics.rocketchatCallbacks.startTimer({
 		hook,
 		callback: callback.id,

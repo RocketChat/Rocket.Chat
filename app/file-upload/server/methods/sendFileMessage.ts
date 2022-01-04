@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
 import { Rooms, Uploads } from '../../../models/server/raw';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../callbacks/lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';

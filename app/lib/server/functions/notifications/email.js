@@ -7,7 +7,7 @@ import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings/server';
 import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
-import { callbacks } from '../../../../callbacks';
+import { callbacks } from '../../../../callbacks/lib/callbacks';
 import { getURL } from '../../../../utils/server';
 
 let advice = '';

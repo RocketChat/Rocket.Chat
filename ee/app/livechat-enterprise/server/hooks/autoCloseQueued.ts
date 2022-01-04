@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../app/callbacks/lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 

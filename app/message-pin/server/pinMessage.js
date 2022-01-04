@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { settings } from '../../settings/server';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../callbacks/lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission } from '../../authorization/server';

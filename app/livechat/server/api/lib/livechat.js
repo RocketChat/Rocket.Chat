@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
 import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
-import { callbacks } from '../../../../callbacks/server';
+import { callbacks } from '../../../../callbacks/lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {

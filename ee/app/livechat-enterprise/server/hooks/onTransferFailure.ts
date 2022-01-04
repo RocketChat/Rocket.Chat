@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../app/callbacks/lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
 import { IRoom } from '../../../../../definition/IRoom';
 import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';

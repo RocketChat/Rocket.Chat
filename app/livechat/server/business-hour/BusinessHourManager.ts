@@ -3,7 +3,7 @@ import moment from 'moment';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../callbacks/lib/callbacks';
 import { Users } from '../../../models/server/raw';
 import { ICronJobs } from '../../../../definition/ICronJobs';
 

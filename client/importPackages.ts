@@ -81,7 +81,7 @@ import '../app/user-status/client';
 import '../app/utils/client';
 import '../app/settings/client';
 import '../app/models/client';
-import '../app/callbacks/client';
+import '../app/callbacks/lib/callbacks';
 import '../app/notifications/client';
 import '../app/ui-utils/client';
 import '../app/ui-cached-collection/client';

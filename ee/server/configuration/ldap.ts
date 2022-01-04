@@ -6,7 +6,7 @@ import { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { IUser } from '../../../definition/IUser';

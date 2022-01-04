@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import {
 	createSeatsLimitBanners,

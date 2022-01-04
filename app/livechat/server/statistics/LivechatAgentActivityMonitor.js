@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../callbacks/lib/callbacks';
 import { LivechatAgentActivity, Users } from '../../../models/server';
 import { Sessions } from '../../../models/server/raw';
 

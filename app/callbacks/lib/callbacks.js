@@ -20,12 +20,18 @@ if (Meteor.isServer) {
 	logger = new Logger('Callbacks');
 }
 
-/*
+const combinedCallbacks = new Map();
+
+/**
  * Callback hooks provide an easy way to add extra steps to common operations.
  * @namespace RocketChat.callbacks
+ * @deprecated
  */
-
 export const callbacks = {};
+
+Object.defineProperty(callbacks, 'length', {
+	get: () => combinedCallbacks.size,
+});
 
 const wrapCallback =
 	(callback) =>
@@ -65,7 +71,6 @@ const createCallback = (hook, callbacks) => callbacks.map(handleResult).reduce(p
 const createCallbackTimed = (hook, callbacks) => wrapRun(hook, callbacks.map(wrapCallback).map(handleResult).reduce(pipe, identity));
 
 const create = (hook, cbs) => (timed ? createCallbackTimed(hook, cbs) : createCallback(hook, cbs));
-const combinedCallbacks = new Map();
 
 /*
  * Callback priorities
@@ -112,7 +117,8 @@ callbacks.remove = function (hook, id) {
 	combinedCallbacks.set(hook, create(hook, callbacks[hook]));
 };
 
-callbacks.runItem = ({ callback, result, constant /* , hook */ }) => callback(result, constant);
+// eslint-disable-next-line no-unused-vars
+callbacks.runItem = ({ callback, result, constant, hook = undefined, time = undefined }) => callback(result, constant);
 
 /*
  * Successively run all of a hook's callbacks on an item

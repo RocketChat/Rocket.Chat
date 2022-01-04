@@ -102,7 +102,7 @@ import '../app/utils';
 import '../app/settings';
 import '../app/models';
 import '../app/metrics';
-import '../app/callbacks';
+import '../app/callbacks/lib/callbacks';
 import '../app/notifications';
 import '../app/ui-utils';
 import '../app/action-links/server';

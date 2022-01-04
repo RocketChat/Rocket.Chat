@@ -1,4 +1,4 @@
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../callbacks/lib/callbacks';
 import { settings } from '../../settings/server';
 
 callbacks.add('beforeCreateRoom', ({ type, extraData }) => {
