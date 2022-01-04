@@ -178,7 +178,7 @@
 		"@rocket.chat/css-in-js": "^0.31.0",
 		"@rocket.chat/emitter": "^0.31.0",
 		"@rocket.chat/fuselage": "^0.31.0",
-		"@rocket.chat/fuselage-hooks": "^0.31.0",
+		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.385",
 		"@rocket.chat/fuselage-polyfills": "^0.31.0",
 		"@rocket.chat/fuselage-tokens": "^0.31.0",
 		"@rocket.chat/fuselage-ui-kit": "^0.31.0",
@@ -336,7 +336,8 @@
 		]
 	},
 	"browserslist": [
-		"last 2 versions"
+		"last 2 versions",
+		"Firefox ESR"
 	],
 	"volta": {
 		"node": "12.22.8",
