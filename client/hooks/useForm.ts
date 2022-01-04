@@ -168,6 +168,7 @@ export const useForm = (
 							initialValue,
 							value: newValue,
 							key: name,
+							values: state.values,
 						});
 					},
 				}),
