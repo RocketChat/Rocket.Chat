@@ -1,4 +1,3 @@
-
 // Kick is a named function that will replace /kick commands
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
@@ -8,7 +7,7 @@ import { Users, Subscriptions } from '../../models';
 import { slashCommands } from '../../utils';
 import { api } from '../../../server/sdk/api';
 
-const Kick = function(command, params, { rid }) {
+const Kick = function (command, params, { rid }) {
 	if (command !== 'kick' || !Match.test(params, String)) {
 		return;
 	}
@@ -22,20 +21,30 @@ const Kick = function(command, params, { rid }) {
 
 	if (kickedUser == null) {
 		return api.broadcast('notify.ephemeralMessage', userId, rid, {
-			msg: TAPi18n.__('Username_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [username],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Username_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [username],
+				},
+				user.language,
+			),
 		});
 	}
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+		fields: { _id: 1 },
+	});
 	if (!subscription) {
 		return api.broadcast('notify.ephemeralMessage', userId, rid, {
-			msg: TAPi18n.__('Username_is_not_in_this_room', {
-				postProcess: 'sprintf',
-				sprintf: [username],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Username_is_not_in_this_room',
+				{
+					postProcess: 'sprintf',
+					sprintf: [username],
+				},
+				user.language,
+			),
 		});
 	}
 	Meteor.call('removeUserFromRoom', { rid, username });

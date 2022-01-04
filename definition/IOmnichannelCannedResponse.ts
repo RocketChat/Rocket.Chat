@@ -2,7 +2,6 @@ import { ILivechatDepartment } from './ILivechatDepartment';
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 
-
 export interface IOmnichannelCannedResponse extends IRocketChatRecord {
 	shortcut: string;
 	text: string;

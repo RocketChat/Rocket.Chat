@@ -5,19 +5,12 @@ import { BaseRaw } from './BaseRaw';
 
 type T = IBanner;
 export class BannersRaw extends BaseRaw<T> {
-	constructor(
-		public readonly col: Collection<T>,
-		trash?: Collection<T>,
-	) {
+	constructor(public readonly col: Collection<T>, trash?: Collection<T>) {
 		super(col, trash);
 
-		this.col.createIndexes([
-			{ key: { platform: 1, startAt: 1, expireAt: 1 } },
-		]);
+		this.col.createIndexes([{ key: { platform: 1, startAt: 1, expireAt: 1 } }]);
 
-		this.col.createIndexes([
-			{ key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } },
-		]);
+		this.col.createIndexes([{ key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }]);
 	}
 
 	create(doc: IBanner): Promise<InsertOneWriteOpResult<IBanner>> {
@@ -40,19 +33,21 @@ export class BannersRaw extends BaseRaw<T> {
 		});
 	}
 
-	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
+	findActiveByRoleOrId(
+		roles: string[],
+		platform: BannerPlatform,
+		bannerId?: string,
+		options?: WithoutProjection<FindOneOptions<T>>,
+	): Cursor<T> {
 		const today = new Date();
 
 		const query = {
-			...bannerId && { _id: bannerId },
+			...(bannerId && { _id: bannerId }),
 			platform,
 			startAt: { $lte: today },
 			expireAt: { $gte: today },
 			active: { $ne: false },
-			$or: [
-				{ roles: { $in: roles } },
-				{ roles: { $exists: false } },
-			],
+			$or: [{ roles: { $in: roles } }, { roles: { $exists: false } }],
 		};
 
 		return this.col.find(query, options);

@@ -57,7 +57,7 @@ class RFC2813 {
 	 * Connect
 	 */
 	register() {
-		this.log(`Connecting to @${ this.config.server.host }:${ this.config.server.port }`);
+		this.log(`Connecting to @${this.config.server.host}:${this.config.server.port}`);
 
 		if (!this.socket) {
 			this.setupSocket();
@@ -102,20 +102,20 @@ class RFC2813 {
 	 * Sends a command message through the socket
 	 */
 	write(command) {
-		let buffer = command.prefix ? `:${ command.prefix } ` : '';
+		let buffer = command.prefix ? `:${command.prefix} ` : '';
 		buffer += command.command;
 
 		if (command.parameters && command.parameters.length > 0) {
-			buffer += ` ${ command.parameters.join(' ') }`;
+			buffer += ` ${command.parameters.join(' ')}`;
 		}
 
 		if (command.trailer) {
-			buffer += ` :${ command.trailer }`;
+			buffer += ` :${command.trailer}`;
 		}
 
-		this.log(`Sending Command: ${ buffer }`);
+		this.log(`Sending Command: ${buffer}`);
 
-		return this.socket.write(`${ buffer }\r\n`);
+		return this.socket.write(`${buffer}\r\n`);
 	}
 
 	/**
@@ -143,11 +143,11 @@ class RFC2813 {
 		this.receiveBuffer = Buffer.from('');
 
 		lines.forEach((line) => {
-			if (line.length && !line.startsWith('\a')) {
+			if (line.length && !line.startsWith('a')) {
 				const parsedMessage = parseMessage(line);
 
 				if (peerCommandHandlers[parsedMessage.command]) {
-					this.log(`Handling peer message: ${ line }`);
+					this.log(`Handling peer message: ${line}`);
 
 					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
 
@@ -171,7 +171,7 @@ class RFC2813 {
 	 */
 	onReceiveFromLocal(command, parameters) {
 		if (localCommandHandlers[command]) {
-			this.log(`Handling local command: ${ command }`);
+			this.log(`Handling local command: ${command}`);
 
 			localCommandHandlers[command].call(this, parameters, this);
 		} else {

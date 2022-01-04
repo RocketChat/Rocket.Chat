@@ -75,4 +75,5 @@ import './v248';
 import './v249';
 import './v250';
 import './v251';
+import './v252';
 import './xrun';

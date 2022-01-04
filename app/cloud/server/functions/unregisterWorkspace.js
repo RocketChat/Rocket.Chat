@@ -1,7 +1,6 @@
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Settings } from '../../../models';
 
-
 export function unregisterWorkspace() {
 	const { workspaceRegistered } = retrieveRegistrationStatus();
 	if (!workspaceRegistered) {

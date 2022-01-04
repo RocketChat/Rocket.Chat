@@ -13,10 +13,13 @@ Meteor.methods({
 		check(rid, String);
 		check(msg, String);
 
-		check(agent, Match.Maybe({
-			agentId: String,
-			username: String,
-		}));
+		check(
+			agent,
+			Match.Maybe({
+				agentId: String,
+				username: String,
+			}),
+		);
 
 		const guest = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
@@ -31,7 +34,10 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-token');
 		}
 
-		if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+		if (
+			settings.get('Livechat_enable_message_character_limit') &&
+			msg.length > parseInt(settings.get('Livechat_message_character_limit'))
+		) {
 			throw new Meteor.Error('message-length-exceeds-character-limit');
 		}
 

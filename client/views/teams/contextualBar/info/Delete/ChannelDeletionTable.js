@@ -5,14 +5,7 @@ import GenericTable from '../../../../../components/GenericTable';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import ChannelRow from './ChannelRow';
 
-const ChannelDeletionTable = ({
-	rooms,
-	params,
-	onChangeParams,
-	onChangeRoomSelection,
-	selectedRooms,
-	onToggleAllRooms,
-}) => {
+const ChannelDeletionTable = ({ rooms, params, onChangeParams, onChangeRoomSelection, selectedRooms, onToggleAllRooms }) => {
 	const t = useTranslation();
 
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
@@ -26,11 +19,7 @@ const ChannelDeletionTable = ({
 				header={
 					<>
 						<GenericTable.HeaderCell key='name' sort='name'>
-							<CheckBox
-								indeterminate={indeterminate}
-								checked={checked}
-								onChange={onToggleAllRooms}
-							/>
+							<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
 							<Box mi='x8'>{t('Channel_name')}</Box>
 						</GenericTable.HeaderCell>
 						<GenericTable.HeaderCell key='usersCount' sort='usersCount'>
@@ -46,14 +35,7 @@ const ChannelDeletionTable = ({
 				fixed={false}
 				pagination={false}
 			>
-				{({ key, ...room }) => (
-					<ChannelRow
-						room={room}
-						key={key}
-						onChange={onChangeRoomSelection}
-						selected={!!selectedRooms[room._id]}
-					/>
-				)}
+				{({ key, ...room }) => <ChannelRow room={room} key={key} onChange={onChangeRoomSelection} selected={!!selectedRooms[room._id]} />}
 			</GenericTable>
 		</Box>
 	);

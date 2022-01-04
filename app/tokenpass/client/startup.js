@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ChannelSettings } from '../../channel-settings';
 import { Rooms } from '../../models';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	ChannelSettings.addOption({
 		group: ['room'],
 		id: 'tokenpass',
