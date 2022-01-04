@@ -10,7 +10,7 @@ export function useExampleData({ additionalFields, url }) {
 					title: 'Rocket.Chat',
 					title_link: 'https://rocket.chat',
 					text: 'Rocket.Chat, the best open source chat',
-					image_url: '/images/integration-attachment-example.png',
+					image_url: 'https://open.rocket.chat/images/logo/logo.svg',
 					color: '#764FA5',
 				},
 			],
