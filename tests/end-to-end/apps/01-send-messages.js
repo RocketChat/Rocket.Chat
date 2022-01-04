@@ -6,7 +6,7 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { getMessageById } from '../../data/chat.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 
-describe('Apps - Send Messages As APP User', function () {
+describe.skip('Apps - Send Messages As APP User', function () {
 	this.retries(0);
 	let app;
 
