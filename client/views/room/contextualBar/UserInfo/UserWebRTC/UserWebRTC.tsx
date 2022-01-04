@@ -7,13 +7,7 @@ import { useWebRTCProps } from '../../../hooks/useWebRTC';
 import UserWebRTCRemote from './UserWebRTCRemote';
 import UserWebRTCVideo from './UserWebRTCVideo';
 
-const UserWebRTC = ({
-	peerName,
-	webRTCData,
-}: {
-	peerName: IUser['username'];
-	webRTCData: useWebRTCProps;
-}): ReactElement => {
+const UserWebRTC = ({ peerName, webRTCData }: { peerName: IUser['username']; webRTCData: useWebRTCProps }): ReactElement => {
 	const t = useTranslation();
 
 	const {

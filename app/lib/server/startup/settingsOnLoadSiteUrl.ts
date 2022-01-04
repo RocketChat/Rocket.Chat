@@ -5,7 +5,7 @@ import { settings } from '../../../settings/server';
 
 export let hostname: string;
 
-settings.watch<string>('Site_Url', function(value) {
+settings.watch<string>('Site_Url', function (value) {
 	if (value == null || value.trim() === '') {
 		return;
 	}

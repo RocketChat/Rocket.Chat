@@ -1,8 +1,8 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { ComponentProps, FC, memo } from 'react';
 
 type IconButtonProps = {
-	name: string;
+	name: ComponentProps<typeof Icon>['name'];
 	action: () => void;
 };
 

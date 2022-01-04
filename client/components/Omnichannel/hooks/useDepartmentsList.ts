@@ -13,6 +13,7 @@ type DepartmentsListOptions = {
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
+	excludeDepartmentId?: string;
 };
 
 export const useDepartmentsList = (
@@ -26,7 +27,7 @@ export const useDepartmentsList = (
 	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = 'livechat/department' as 'livechat/department';
+	const endpoint = 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
@@ -42,6 +43,7 @@ export const useDepartmentsList = (
 				offset: start,
 				count: end + start,
 				sort: `{ "name": 1 }`,
+				excludeDepartmentId: options.excludeDepartmentId,
 			});
 
 			const items = departments
@@ -84,6 +86,7 @@ export const useDepartmentsList = (
 			options.haveAll,
 			options.onlyMyDepartments,
 			options.haveNone,
+			options.excludeDepartmentId,
 			t,
 		],
 	);

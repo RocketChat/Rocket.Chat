@@ -12,7 +12,9 @@ Meteor.methods({
 		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 
 		if (!visitor) {
-			throw new Meteor.Error('invalid-visitor', 'Invalid Visitor', { method: 'livechat:loadHistory' });
+			throw new Meteor.Error('invalid-visitor', 'Invalid Visitor', {
+				method: 'livechat:loadHistory',
+			});
 		}
 
 		const room = LivechatRooms.findOneByIdAndVisitorToken(rid, token, { _id: 1 });

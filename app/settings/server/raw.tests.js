@@ -7,7 +7,9 @@ describe('Raw Settings', () => {
 
 	before('rewire deps', () => {
 		const spied = spy(async (id) => {
-			if (id === '1') { return 'some-setting-value'; }
+			if (id === '1') {
+				return 'some-setting-value';
+			}
 			return null;
 		});
 

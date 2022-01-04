@@ -16,10 +16,12 @@ Meteor.methods({
 		}
 
 		if (sound == null) {
-			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', { method: 'deleteCustomSound' });
+			throw new Meteor.Error('Custom_Sound_Error_Invalid_Sound', 'Invalid sound', {
+				method: 'deleteCustomSound',
+			});
 		}
 
-		RocketChatFileCustomSoundsInstance.deleteFile(`${ sound._id }.${ sound.extension }`);
+		RocketChatFileCustomSoundsInstance.deleteFile(`${sound._id}.${sound.extension}`);
 		await CustomSounds.removeById(_id);
 		Notifications.notifyAll('deleteCustomSound', { soundData: sound });
 

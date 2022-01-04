@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settingsRegistry } from '../../settings/server';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	settingsRegistry.add('AutoTranslate_Enabled', false, {
 		type: 'boolean',
 		group: 'Message',
@@ -14,16 +14,20 @@ Meteor.startup(function() {
 		type: 'select',
 		group: 'Message',
 		section: 'AutoTranslate',
-		values: [{
-			key: 'google-translate',
-			i18nLabel: 'AutoTranslate_Google',
-		}, {
-			key: 'deepl-translate',
-			i18nLabel: 'AutoTranslate_DeepL',
-		}, {
-			key: 'microsoft-translate',
-			i18nLabel: 'AutoTranslate_Microsoft',
-		}],
+		values: [
+			{
+				key: 'google-translate',
+				i18nLabel: 'AutoTranslate_Google',
+			},
+			{
+				key: 'deepl-translate',
+				i18nLabel: 'AutoTranslate_DeepL',
+			},
+			{
+				key: 'microsoft-translate',
+				i18nLabel: 'AutoTranslate_Microsoft',
+			},
+		],
 		enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 		i18nLabel: 'AutoTranslate_ServiceProvider',
 		public: true,
@@ -37,11 +41,14 @@ Meteor.startup(function() {
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
-				_id: 'AutoTranslate_Enabled', value: true,
+				_id: 'AutoTranslate_Enabled',
+				value: true,
 			},
 			{
-				_id: 'AutoTranslate_ServiceProvider', value: 'google-translate',
-			}],
+				_id: 'AutoTranslate_ServiceProvider',
+				value: 'google-translate',
+			},
+		],
 	});
 
 	settingsRegistry.add('AutoTranslate_DeepLAPIKey', '', {
@@ -52,10 +59,14 @@ Meteor.startup(function() {
 		i18nLabel: 'AutoTranslate_APIKey',
 		enableQuery: [
 			{
-				_id: 'AutoTranslate_Enabled', value: true,
-			}, {
-				_id: 'AutoTranslate_ServiceProvider', value: 'deepl-translate',
-			}],
+				_id: 'AutoTranslate_Enabled',
+				value: true,
+			},
+			{
+				_id: 'AutoTranslate_ServiceProvider',
+				value: 'deepl-translate',
+			},
+		],
 	});
 
 	settingsRegistry.add('AutoTranslate_MicrosoftAPIKey', '', {
@@ -66,9 +77,13 @@ Meteor.startup(function() {
 		i18nLabel: 'AutoTranslate_Microsoft_API_Key',
 		enableQuery: [
 			{
-				_id: 'AutoTranslate_Enabled', value: true,
-			}, {
-				_id: 'AutoTranslate_ServiceProvider', value: 'microsoft-translate',
-			}],
+				_id: 'AutoTranslate_Enabled',
+				value: true,
+			},
+			{
+				_id: 'AutoTranslate_ServiceProvider',
+				value: 'microsoft-translate',
+			},
+		],
 	});
 });

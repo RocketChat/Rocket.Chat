@@ -7,7 +7,7 @@ export default function handleJoinedChannel(args) {
 	});
 
 	if (!user) {
-		throw new Error(`Could not find a user with nick ${ args.nick }`);
+		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
 	let room = Rooms.findOneByName(args.roomName);
@@ -16,10 +16,10 @@ export default function handleJoinedChannel(args) {
 		const createdRoom = createRoom('c', args.roomName, user.username, []);
 		room = Rooms.findOne({ _id: createdRoom.rid });
 
-		this.log(`${ user.username } created room ${ args.roomName }`);
+		this.log(`${user.username} created room ${args.roomName}`);
 	} else {
 		addUserToRoom(room._id, user);
 
-		this.log(`${ user.username } joined room ${ room.name }`);
+		this.log(`${user.username} joined room ${room.name}`);
 	}
 }
