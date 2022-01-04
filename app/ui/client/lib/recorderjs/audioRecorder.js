@@ -5,13 +5,14 @@ const getUserMedia = ((navigator) => {
 		return navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
 	}
 
-	const legacyGetUserMedia = navigator.getUserMedia
-		|| navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+	const legacyGetUserMedia =
+		navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 	if (legacyGetUserMedia) {
-		return (options) => new Promise((resolve, reject) => {
-			legacyGetUserMedia.call(navigator, options, resolve, reject);
-		});
+		return (options) =>
+			new Promise((resolve, reject) => {
+				legacyGetUserMedia.call(navigator, options, resolve, reject);
+			});
 	}
 })(window.navigator);
 

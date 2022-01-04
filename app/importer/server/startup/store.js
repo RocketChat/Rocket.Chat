@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 
 export let RocketChatImportFileInstance;
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	const RocketChatStore = RocketChatFile.FileSystem;
 
 	let path = '/tmp/rocketchat-importer';

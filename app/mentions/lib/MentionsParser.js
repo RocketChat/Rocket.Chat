@@ -1,7 +1,9 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) => `${ prefix }<a class="${ className }" data-${ type }="${ mention }"${ title ? ` title="${ title }"` : '' }>${ label }</a>`;
-const roomTemplateDefault = ({ prefix, reference, mention }) => `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
+const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) =>
+	`${prefix}<a class="${className}" data-${type}="${mention}"${title ? ` title="${title}"` : ''}>${label}</a>`;
+const roomTemplateDefault = ({ prefix, reference, mention }) =>
+	`${prefix}<a class="mention-link mention-link--room" data-channel="${reference}">${`#${mention}`}</a>`;
 export class MentionsParser {
 	constructor({ pattern, useRealName, me, roomTemplate = roomTemplateDefault, userTemplate = userTemplateDefault }) {
 		this.pattern = pattern;
@@ -36,15 +38,15 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|> ?)@(${this.pattern}(@(${this.pattern}))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)#(${this.pattern}(@(${this.pattern}))?)`, 'gm');
 	}
 
-	replaceUsers = (msg, { mentions, temp }, me) => msg
-		.replace(this.userMentionRegex, (match, prefix, mention) => {
+	replaceUsers = (msg, { mentions, temp }, me) =>
+		msg.replace(this.userMentionRegex, (match, prefix, mention) => {
 			const classNames = ['mention-link'];
 
 			if (mention === 'all') {
@@ -87,19 +89,30 @@ export class MentionsParser {
 				type: mentionObj?.type === 'team' ? 'team' : 'username',
 				title: this.useRealName ? mention : label,
 			});
-		})
+		});
 
-	replaceChannels = (msg, { temp, channels }) => msg
-		.replace(/&#39;/g, '\'')
-		.replace(this.channelMentionRegex, (match, prefix, mention) => {
-			if (!temp && !(channels && channels.find(function(c) { return c.dname ? c.dname === mention : c.name === mention; }))) {
+	replaceChannels = (msg, { temp, channels }) =>
+		msg.replace(/&#39;/g, "'").replace(this.channelMentionRegex, (match, prefix, mention) => {
+			if (
+				!temp &&
+				!(
+					channels &&
+					channels.find(function (c) {
+						return c.dname ? c.dname === mention : c.name === mention;
+					})
+				)
+			) {
 				return match;
 			}
 
-			const channel = channels && channels.find(function({ name, dname }) { return dname ? dname === mention : name === mention; });
+			const channel =
+				channels &&
+				channels.find(function ({ name, dname }) {
+					return dname ? dname === mention : name === mention;
+				});
 			const reference = channel ? channel._id : mention;
 			return this.roomTemplate({ prefix, reference, channel, mention });
-		})
+		});
 
 	getUserMentions(str) {
 		return (str.match(this.userMentionRegex) || []).map((match) => match.trim());

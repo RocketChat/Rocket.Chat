@@ -98,12 +98,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 
 	const confirmDeleteUser = useCallback(() => {
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={deleteUser}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={() => setModal()} confirmText={t('Delete')}>
 				{t(`Delete_User_Warning_${erasureType}`)}
 			</GenericModal>,
 		);
@@ -151,12 +146,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={resetE2EEKey}
-				onCancel={() => setModal()}
-				confirmText={t('Reset')}
-			>
+			<GenericModal variant='danger' onConfirm={resetE2EEKey} onCancel={() => setModal()} confirmText={t('Reset')}>
 				{t('E2E_Reset_Other_Key_Warning')}
 			</GenericModal>,
 		);
@@ -164,12 +154,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 
 	const confirmResetTOTP = useCallback(() => {
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={resetTOTP}
-				onCancel={() => setModal()}
-				confirmText={t('Reset')}
-			>
+			<GenericModal variant='danger' onConfirm={resetTOTP} onCancel={() => setModal()} confirmText={t('Reset')}>
 				{t('TOTP_Reset_Other_Key_Warning')}
 			</GenericModal>,
 		);
@@ -182,9 +167,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 		}),
 		[_id, isActive],
 	);
-	const changeActiveStatusMessage = isActive
-		? 'User_has_been_deactivated'
-		: 'User_has_been_activated';
+	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
 	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
 
 	const changeActiveStatus = confirmOwnerChanges(
@@ -318,9 +301,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 				ghost={false}
 				flexShrink={0}
 				key='menu'
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option label={label} title={label} icon={icon} {...props} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
 				options={menuOptions}
 			/>
 		);

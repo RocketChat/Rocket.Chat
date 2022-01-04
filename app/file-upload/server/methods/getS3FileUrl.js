@@ -6,7 +6,7 @@ import { Uploads } from '../../../models/server/raw';
 
 let protectedFiles;
 
-settings.watch('FileUpload_ProtectFiles', function(value) {
+settings.watch('FileUpload_ProtectFiles', function (value) {
 	protectedFiles = value;
 });
 

@@ -13,24 +13,14 @@ const VisitorsTab = ({ errors, visitor, handleVisitor, agent, handleAgent }) => 
 			<Field>
 				<Field.Label flexGrow={0}>{t('Visitor')}</Field.Label>
 				<Field.Row>
-					<VisitorAutoComplete
-						error={errors.visitor}
-						value={visitor}
-						onChange={handleVisitor}
-						placeholder={t('Username_Placeholder')}
-					/>
+					<VisitorAutoComplete error={errors.visitor} value={visitor} onChange={handleVisitor} placeholder={t('Username_Placeholder')} />
 				</Field.Row>
 				{errors.visitor && <Field.Error>{errors.visitor}</Field.Error>}
 			</Field>
 			<Field>
 				<Field.Label flexGrow={0}>{t('Agent')}</Field.Label>
 				<Field.Row>
-					<AutoCompleteAgent
-						error={errors.agent}
-						value={agent}
-						onChange={handleAgent}
-						placeholder={t('Username_Placeholder')}
-					/>
+					<AutoCompleteAgent error={errors.agent} value={agent} onChange={handleAgent} placeholder={t('Username_Placeholder')} />
 				</Field.Row>
 				{errors.agent && <Field.Error>{errors.agent}</Field.Error>}
 			</Field>

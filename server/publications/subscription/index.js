@@ -15,17 +15,21 @@ Meteor.methods({
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: records.filter(function(record) {
+				update: records.filter(function (record) {
 					return record._updatedAt > updatedAt;
 				}),
-				remove: Subscriptions.trashFindDeletedAfter(updatedAt, {
-					'u._id': Meteor.userId(),
-				}, {
-					fields: {
-						_id: 1,
-						_deletedAt: 1,
+				remove: Subscriptions.trashFindDeletedAfter(
+					updatedAt,
+					{
+						'u._id': Meteor.userId(),
 					},
-				}).fetch(),
+					{
+						fields: {
+							_id: 1,
+							_deletedAt: 1,
+						},
+					},
+				).fetch(),
 			};
 		}
 

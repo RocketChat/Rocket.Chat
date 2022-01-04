@@ -13,7 +13,10 @@ Meteor.methods({
 		}
 
 		if (hasPermission(Meteor.userId(), 'add-oauth-service') !== true) {
-			throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', { method: 'addOAuthService', action: 'Adding_OAuth_Services' });
+			throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
+				method: 'addOAuthService',
+				action: 'Adding_OAuth_Services',
+			});
 		}
 
 		addOAuthService(name);

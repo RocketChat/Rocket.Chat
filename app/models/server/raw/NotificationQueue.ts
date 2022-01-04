@@ -13,35 +13,44 @@ export class NotificationQueueRaw extends BaseRaw<INotification> {
 	];
 
 	unsetSendingById(_id: string): Promise<UpdateWriteOpResult> {
-		return this.updateOne({ _id }, {
-			$unset: {
-				sending: 1,
+		return this.updateOne(
+			{ _id },
+			{
+				$unset: {
+					sending: 1,
+				},
 			},
-		});
+		);
 	}
 
 	setErrorById(_id: string, error: any): Promise<UpdateWriteOpResult> {
-		return this.updateOne({
-			_id,
-		}, {
-			$set: {
-				error,
+		return this.updateOne(
+			{
+				_id,
 			},
-			$unset: {
-				sending: 1,
+			{
+				$set: {
+					error,
+				},
+				$unset: {
+					sending: 1,
+				},
 			},
-		});
+		);
 	}
 
 	clearScheduleByUserId(uid: string): Promise<UpdateWriteOpResult> {
-		return this.updateMany({
-			uid,
-			schedule: { $exists: true },
-		}, {
-			$unset: {
-				schedule: 1,
+		return this.updateMany(
+			{
+				uid,
+				schedule: { $exists: true },
 			},
-		});
+			{
+				$unset: {
+					schedule: 1,
+				},
+			},
+		);
 	}
 
 	async clearQueueByUserId(uid: string): Promise<number | undefined> {
@@ -55,29 +64,31 @@ export class NotificationQueueRaw extends BaseRaw<INotification> {
 	async findNextInQueueOrExpired(expired: Date): Promise<INotification | undefined> {
 		const now = new Date();
 
-		const result = await this.col.findOneAndUpdate({
-			$and: [{
-				$or: [
-					{ sending: { $exists: false } },
-					{ sending: { $lte: expired } },
+		const result = await this.col.findOneAndUpdate(
+			{
+				$and: [
+					{
+						$or: [{ sending: { $exists: false } }, { sending: { $lte: expired } }],
+					},
+					{
+						$or: [{ schedule: { $exists: false } }, { schedule: { $lte: now } }],
+					},
+					{
+						error: { $exists: false },
+					},
 				],
-			}, {
-				$or: [
-					{ schedule: { $exists: false } },
-					{ schedule: { $lte: now } },
-				],
-			}, {
-				error: { $exists: false },
-			}],
-		}, {
-			$set: {
-				sending: now,
 			},
-		}, {
-			sort: {
-				ts: 1,
+			{
+				$set: {
+					sending: now,
+				},
 			},
-		});
+			{
+				sort: {
+					ts: 1,
+				},
+			},
+		);
 
 		return result.value;
 	}

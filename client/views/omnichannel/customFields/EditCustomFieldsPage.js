@@ -40,11 +40,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 
 	const save = useMethod('livechat:saveCustomField');
 
-	const {
-		hasError,
-		data: additionalData,
-		hasUnsavedChanges: additionalFormChanged,
-	} = additionalValues;
+	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
 	const { label, field } = values;
 
@@ -87,9 +83,7 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<FieldGroup>
 						<CustomFieldsForm values={values} handlers={handlers} />
-						{AdditionalForm && (
-							<AdditionalForm onChange={handleAdditionalForm} state={values} data={customField} />
-						)}
+						{AdditionalForm && <AdditionalForm onChange={handleAdditionalForm} state={values} data={customField} />}
 					</FieldGroup>
 				</Box>
 			</Page.ScrollableContentWithShadow>

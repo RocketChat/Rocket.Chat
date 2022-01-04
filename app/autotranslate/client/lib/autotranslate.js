@@ -127,7 +127,13 @@ export const createAutoTranslateMessageStreamHandler = () => {
 		if (message.u && message.u._id !== Meteor.userId()) {
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);
-			if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
+			if (
+				subscription &&
+				subscription.autoTranslate === true &&
+				message.msg &&
+				(!message.translations || !message.translations[language])
+			) {
+				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
 				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });

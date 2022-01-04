@@ -70,12 +70,7 @@ const FileExport = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('Output_format')}</Field.Label>
 				<Field.Row>
-					<Select
-						value={format}
-						onChange={handleFormat}
-						placeholder={t('Format')}
-						options={outputOptions}
-					/>
+					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions} />
 				</Field.Row>
 			</Field>
 			<ButtonGroup stretch mb='x12'>
