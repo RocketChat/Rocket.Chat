@@ -21,6 +21,7 @@ function IntegrationsPage() {
 
 	const showTable = !['zapier', 'bots'].includes(context);
 
+	const goToAll = useCallback(() => router.push({ context: '' }), [router]);
 	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), [router]);
 	const goToOutgoing = useCallback(() => router.push({ context: 'webhook-outgoing' }), [router]);
 	const goToZapier = useCallback(() => router.push({ context: 'zapier' }), [router]);
@@ -36,7 +37,10 @@ function IntegrationsPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item selected={!context || context === 'webhook-incoming'} onClick={goToIncoming}>
+				<Tabs.Item selected={!context} onClick={goToAll}>
+					{t('All')}
+				</Tabs.Item>
+				<Tabs.Item selected={context === 'webhook-incoming'} onClick={goToIncoming}>
 					{t('Incoming')}
 				</Tabs.Item>
 				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={goToOutgoing}>
