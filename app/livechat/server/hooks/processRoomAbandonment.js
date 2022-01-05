@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
 import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';

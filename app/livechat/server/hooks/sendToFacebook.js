@@ -1,4 +1,4 @@
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
