@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Subscriptions } from '../../../models/server';
 
 callbacks.add(

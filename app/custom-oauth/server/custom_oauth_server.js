@@ -11,7 +11,7 @@ import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
-import { callbacks } from '../../callbacks/lib/callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 const logger = new Logger('CustomOAuth');
 

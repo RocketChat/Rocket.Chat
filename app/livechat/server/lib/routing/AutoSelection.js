@@ -1,6 +1,6 @@
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
-import { callbacks } from '../../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 
 /* Auto Selection Queuing method:
  *

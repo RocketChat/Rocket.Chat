@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatDepartment } from '../../../../../app/models/server/raw';
 
 export const findAllDepartmentsAvailable = async (uid, unitId, offset, count, text, onlyMyDepartments = false) => {

@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { Integrations } from '../../../models/server/raw';
 import { roomTypes, getValidRoomName } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {

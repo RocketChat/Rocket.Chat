@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LivechatDepartment } from '../../../models';
 
 const concatUnique = (...arrays) => [...new Set([].concat(...arrays.filter(Array.isArray)))];

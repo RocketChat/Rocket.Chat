@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../lib/callbacks';
 import { LDAP } from '../sdk';
 import { settings } from '../../app/settings/server';
 

@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import Filter from 'bad-words';
 
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { IMessage } from '../../../../definition/IMessage';
 
 const Dep = new Tracker.Dependency();
@@ -47,7 +47,7 @@ Meteor.startup(() => {
 
 		callbacks.add(
 			'beforeSaveMessage',
-			function (message: IMessage) {
+			(message: IMessage) => {
 				if (!message.msg) {
 					return message;
 				}

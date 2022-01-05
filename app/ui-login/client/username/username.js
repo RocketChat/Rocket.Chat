@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { Button } from '../../../ui';
 import { t } from '../../../utils';
-import { callbacks } from '../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.username.onCreated(function () {

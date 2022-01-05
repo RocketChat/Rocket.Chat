@@ -3,7 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
-import { callbacks } from '../../../../callbacks/lib/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { ILivechatDepartmentRecord } from '../../../../../definition/ILivechatDepartmentRecord';
 import { ILivechatDepartmentAgents } from '../../../../../definition/ILivechatDepartmentAgents';
