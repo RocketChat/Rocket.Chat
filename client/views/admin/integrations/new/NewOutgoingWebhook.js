@@ -1,4 +1,4 @@
-import { Field, Button } from '@rocket.chat/fuselage';
+import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback } from 'react';
 
@@ -36,7 +36,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 	const t = useTranslation();
 	const router = useRoute('admin-integrations');
 
-	const { values: formValues, handlers: formHandlers } = useForm({ ...data, token: useUniqueId() });
+	const { values: formValues, handlers: formHandlers, hasUnsavedChanges, reset } = useForm({ ...data, token: useUniqueId() });
 
 	const { urls, triggerWords } = formValues;
 
@@ -61,9 +61,16 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		() => (
 			<Field>
 				<Field.Row>
-					<Button w='full' mie='none' flexGrow={1} onClick={handleSave}>
-						{t('Save')}
-					</Button>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+						<Margins inlineEnd='x4'>
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
+								{t('Reset')}
+							</Button>
+							<Button mie='none' flexGrow={1} primary disabled={!hasUnsavedChanges} onClick={handleSave}>
+								{t('Save')}
+							</Button>
+						</Margins>
+					</Box>
 				</Field.Row>
 			</Field>
 		),
