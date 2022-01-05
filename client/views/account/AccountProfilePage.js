@@ -221,7 +221,7 @@ const AccountProfilePage = () => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
-					<Button primary onClick={reset}>
+					<Button primary danger disabled={!hasUnsavedChanges} onClick={reset}>
 						{t('Reset')}
 					</Button>
 					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
