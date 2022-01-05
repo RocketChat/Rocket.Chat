@@ -198,7 +198,7 @@ export class AppsRestApi {
 								}),
 							]);
 
-							if (!downloadResponse.headers.get('content-type') !== 'application/zip') {
+							if (downloadResponse.headers.get('content-type') !== 'application/zip') {
 								throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
 							}
 
@@ -213,11 +213,9 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const formData = Promise.await(
-							getUploadFormData({
-								request: this.request,
-							}),
-						);
+						const formData = await getUploadFormData({
+							request: this.request,
+						});
 						buff = formData?.app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
@@ -235,7 +233,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
+					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -424,7 +422,7 @@ export class AppsRestApi {
 
 						const response = await fetch(this.bodyParams.url);
 
-						if (response.status !== 200 || !response.headers.get('content-type') !== 'application/zip') {
+						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 							return API.v1.failure({
 								error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
 							});
@@ -450,7 +448,7 @@ export class AppsRestApi {
 								return API.v1.failure();
 							}
 
-							if (!response.headers.get('content-type') !== 'application/zip') {
+							if (response.headers.get('content-type') !== 'application/zip') {
 								return API.v1.failure({
 									error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
 								});
