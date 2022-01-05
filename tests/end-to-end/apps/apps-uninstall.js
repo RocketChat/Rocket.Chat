@@ -4,7 +4,7 @@ import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { installTestApp, cleanupApps } from '../../data/apps/helper.js';
 
-describe.skip('Apps - Uninstall', function () {
+describe('Apps - Uninstall', function () {
 	this.retries(0);
 	let app;
 

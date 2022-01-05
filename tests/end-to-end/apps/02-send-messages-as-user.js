@@ -8,7 +8,7 @@ import { createRoom } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper.js';
 
-describe.skip('Apps - Send Messages As User', function () {
+describe('Apps - Send Messages As User', function () {
 	this.retries(0);
 	let app;
 
