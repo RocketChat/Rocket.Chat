@@ -3,10 +3,14 @@ import { FilterQuery } from 'mongodb';
 
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
-import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
 import type { IMessage } from '../definition/IMessage';
 import type { IRoom } from '../definition/IRoom';
 import type { IUser } from '../definition/IUser';
+import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
+import type { ILivechatAgent } from '../definition/ILivechatAgent';
+import type { OmnichannelAgentStatus } from '../definition/IOmnichannelAgent';
+import type { ILivechatInquiryRecord } from '../definition/IInquiry';
+import type { ILivechatVisitor } from '../definition/ILivechatVisitor';
 import { getRandomId } from './random';
 
 enum CallbackPriority {
@@ -21,16 +25,26 @@ enum CallbackPriority {
  * TODO: move those to event-based systems
  */
 type EventLikeCallbackSignatures = {
-	afterActivateUser: (user: IUser) => void;
-	afterCreateChannel: (owner: IUser, room: IRoom) => void;
-	afterCreatePrivateGroup: (owner: IUser, room: IRoom) => void;
-	afterDeactivateUser: (user: IUser) => void;
-	afterDeleteMessage: (message: IMessage, room: IRoom) => void;
-	validateUserRoles: (userData: Partial<IUser>) => void;
-	workspaceLicenseChanged: (license: string) => void;
-	afterReadMessages: (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
-	beforeReadMessages: (rid: IRoom['_id'], uid: IUser['_id']) => void;
-	afterDeleteUser: (user: IUser) => void;
+	'afterActivateUser': (user: IUser) => void;
+	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
+	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
+	'afterDeactivateUser': (user: IUser) => void;
+	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
+	'validateUserRoles': (userData: Partial<IUser>) => void;
+	'workspaceLicenseChanged': (license: string) => void;
+	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
+	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
+	'afterDeleteUser': (user: IUser) => void;
+	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
+	'afterSaveMessage': (message: IMessage, room: IRoom) => void;
+	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
+	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
+	'livechat.closeRoom': (room: IRoom) => void;
+	'livechat.saveRoom': (room: IRoom) => void;
+	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
+	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
+	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
+	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
 };
 
 /**
@@ -41,25 +55,48 @@ type EventLikeCallbackSignatures = {
 type ChainedCallbackSignatures = {
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
+	'livechat:afterOnHold': (room: IRoom) => IRoom;
+	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
+		room: IRoom;
+		guest: ILivechatVisitor;
+		transferData: { [k: string]: string | any };
+	};
+	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+		rid: IRoom['_id'];
+		servedBy: unknown;
+		oldServedBy: unknown;
+	};
+	'livechat.afterForwardChatToDepartment': (params: {
+		rid: IRoom['_id'];
+		newDepartmentId: ILivechatDepartmentRecord['_id'];
+		oldDepartmentId: ILivechatDepartmentRecord['_id'];
+	}) => {
+		rid: IRoom['_id'];
+		newDepartmentId: ILivechatDepartmentRecord['_id'];
+		oldDepartmentId: ILivechatDepartmentRecord['_id'];
+	};
+	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
+	'livechat.afterRemoveDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => {
+		departmentId: ILivechatDepartmentRecord['_id'];
+		agentsId: ILivechatAgent['_id'][];
+	};
+	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
+	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
+	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterQuery<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterQuery<ILivechatDepartmentRecord>;
-	'on-business-hour-start': (params: {
-		BusinessHourBehaviorClass: {
-			new (): IBusinessHourBehavior;
-		};
-	}) => {
-		BusinessHourBehaviorClass: {
-			new (): IBusinessHourBehavior;
-		};
+	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
+	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
+		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 };
 
 type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
-	| 'afterFileUpload'
 	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
@@ -67,7 +104,6 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
-	| 'afterSaveMessage'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
@@ -90,20 +126,6 @@ type Hook =
 	| 'cachedCollection-sync-rooms'
 	| 'cachedCollection-sync-subscriptions'
 	| 'enter-room'
-	| 'livechat:afterOnHold'
-	| 'livechat:afterOnHoldChatResumed'
-	| 'livechat:afterReturnRoomAsInquiry'
-	| 'livechat:onTransferFailure'
-	| 'livechat.afterForwardChatToAgent'
-	| 'livechat.afterForwardChatToDepartment'
-	| 'livechat.afterInquiryQueued'
-	| 'livechat.afterRemoveDepartment'
-	| 'livechat.afterTakeInquiry'
-	| 'livechat.agentStatusChanged'
-	| 'livechat.applyDepartmentRestrictions'
-	| 'livechat.applySimultaneousChatRestrictions'
-	| 'livechat.beforeCloseRoom'
-	| 'livechat.beforeDelegateAgent'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
 	| 'livechat.beforeListTags'
@@ -120,11 +142,7 @@ type Hook =
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
 	| 'livechat.onLoadForwardDepartmentRestrictions'
-	| 'livechat.onMaxNumberSimultaneousChatsReached'
-	| 'livechat.removeAgentDepartment'
-	| 'livechat.saveAgentDepartment'
 	| 'livechat.saveInfo'
-	| 'livechat.setUserStatusLivechat'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'oembed:afterParseContent'
@@ -346,8 +364,6 @@ class Callbacks {
 	 * @returns the post, comment, modifier, etc. on which to run the callbacks
 	 */
 	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
-
-	runAsync<TItem, TConstant>(hook: Hook, item: TItem, constant?: TConstant): TItem;
 
 	runAsync(hook: Hook, item: unknown, constant?: unknown): unknown {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
