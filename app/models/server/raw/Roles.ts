@@ -200,11 +200,15 @@ export class RolesRaw extends BaseRaw<IRole> {
 		scope: IRoom['_id'] | undefined,
 		options: FindOneOptions<P extends IUser ? IUser : P>,
 	): Promise<Cursor<P extends IUser ? IUser : P>>;
- 
-  async findUsersInRole<P>(name: IRole['name'], scope: IRoom['_id'] | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
+
+	async findUsersInRole<P>(
+		name: IRole['name'],
+		scope: IRoom['_id'] | undefined,
+		options?: any | undefined,
+	): Promise<Cursor<IUser> | Cursor<P>> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
-	  }
+		}
 
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
