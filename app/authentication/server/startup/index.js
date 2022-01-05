@@ -263,7 +263,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = getAvatarSuggestionForUser(user);
+			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {

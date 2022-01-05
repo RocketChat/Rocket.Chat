@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getAvatarSuggestionForUser } from '../../app/lib';
+import { getAvatarSuggestionForUser } from '../../app/lib/server/functions/getAvatarSuggestionForUser';
 
 Meteor.methods({
-	getAvatarSuggestion() {
+	async getAvatarSuggestion() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getAvatarSuggestion',
