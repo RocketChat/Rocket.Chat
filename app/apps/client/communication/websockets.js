@@ -38,7 +38,7 @@ export class AppWebsocketReceiver extends Emitter {
 		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandAddedOrUpdated);
 		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemovedOrDisabled);
 		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandRemovedOrDisabled);
-		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onActionsChanged);
+		this.streamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged);
 	}
 
 	registerListener(event, listener) {

@@ -18,11 +18,10 @@ import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;
-	setParams: Dispatch<SetStateAction<any>>;
 	reload?: () => void;
 }>;
 
-const FilterByText: FilterByTextType = ({ setFilter, setParams, reload, ...props }) => {
+const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -97,17 +96,7 @@ const FilterByText: FilterByTextType = ({ setFilter, setParams, reload, ...props
 			tags: tags.map((tag) => tag.label),
 			customFields: customFields.reduce(reducer, {}),
 		});
-		setParams({
-			guest,
-			servedBy,
-			status,
-			...(department?.value && department.value !== 'all' && { department: department.value }),
-			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
-			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
-			tags: tags.map((tag) => tag.label),
-			customFields: customFields.reduce(reducer, {}),
-		});
-	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields, setParams]);
+	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
 
 	const handleClearFilters = useMutableCallback(() => {
 		reset();
