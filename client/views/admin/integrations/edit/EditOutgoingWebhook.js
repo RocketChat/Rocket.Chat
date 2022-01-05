@@ -42,7 +42,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { handlers: formHandlers, values: formValues, reset } = useForm(getInitialValue(data));
+	const { handlers: formHandlers, values: formValues, hasUnsavedChanges, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
 	const saveIntegration = useMethod('updateOutgoingIntegration');
@@ -101,10 +101,10 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 				<Field.Row display='flex' flexDirection='column'>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' onClick={reset}>
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
 								{t('Reset')}
 							</Button>
-							<Button mie='none' flexGrow={1} onClick={handleSave}>
+							<Button mie='none' flexGrow={1} primary disabled={!hasUnsavedChanges} onClick={handleSave}>
 								{t('Save')}
 							</Button>
 						</Margins>
