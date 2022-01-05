@@ -24,7 +24,7 @@ export default function NewIncomingWebhook(props) {
 
 	const router = useRoute('admin-integrations');
 
-	const { values: formValues, handlers: formHandlers, reset } = useForm(initialState);
+	const { values: formValues, handlers: formHandlers, hasUnsavedChanges, reset } = useForm(initialState);
 
 	const params = useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [formValues]);
 	const saveAction = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
@@ -42,10 +42,10 @@ export default function NewIncomingWebhook(props) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<Margins inlineEnd='x4'>
-							<Button flexGrow={1} type='reset' onClick={reset}>
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={reset}>
 								{t('Reset')}
 							</Button>
-							<Button mie='none' flexGrow={1} onClick={handleSave}>
+							<Button mie='none' flexGrow={1} primary disabled={!hasUnsavedChanges} onClick={handleSave}>
 								{t('Save')}
 							</Button>
 						</Margins>
