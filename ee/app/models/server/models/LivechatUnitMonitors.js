@@ -19,14 +19,17 @@ export class LivechatUnitMonitors extends Base {
 	}
 
 	saveMonitor(monitor) {
-		return this.upsert({
-			monitorId: monitor.monitorId,
-			unitId: monitor.unitId,
-		}, {
-			$set: {
-				username: monitor.username,
+		return this.upsert(
+			{
+				monitorId: monitor.monitorId,
+				unitId: monitor.unitId,
 			},
-		});
+			{
+				$set: {
+					username: monitor.username,
+				},
+			},
+		);
 	}
 
 	removeByUnitIdAndMonitorId(unitId, monitorId) {

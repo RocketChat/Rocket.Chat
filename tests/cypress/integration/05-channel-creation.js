@@ -5,27 +5,27 @@ import { checkIfUserIsValid, setPublicChannelCreated, setPrivateChannelCreated, 
 import { username, email, password } from '../../data/user.js';
 
 // Basic usage test start
-describe('[Channel creation]', function() {
+describe('[Channel creation]', function () {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 	});
 
-	describe('public channel:', function() {
-		it('it should create a public channel', function() {
+	describe('public channel:', function () {
+		it('it should create a public channel', function () {
 			sideNav.createChannel(publicChannelName, false, false);
 			setPublicChannelCreated(true);
 		});
 	});
 
-	describe('private channel:', function() {
-		it('it should create a private channel', function() {
+	describe('private channel:', function () {
+		it('it should create a private channel', function () {
 			sideNav.createChannel(privateChannelName, true, false);
 			setPrivateChannelCreated(true);
 		});
 	});
 
-	describe('direct message:', function() {
-		it('it should start a direct message with rocket.cat', function() {
+	describe('direct message:', function () {
+		it('it should start a direct message with rocket.cat', function () {
 			sideNav.spotlightSearchIcon.click();
 			sideNav.searchChannel(targetUser);
 			setDirectMessageCreated(true);

@@ -60,7 +60,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 							<Box is='h2' fontScale='h2' color='default'>
 								{t('Setup_Wizard')}
 							</Box>
-							<Box is='p' color='hint' fontScale='p3'>
+							<Box is='p' color='hint' fontScale='p2'>
 								{t('Setup_Wizard_Info')}
 							</Box>
 						</Margins>
@@ -70,10 +70,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 								<Box
 									key={step}
 									is='li'
-									className={[
-										'SetupWizard__SideBar-step',
-										step < currentStep && 'SetupWizard__SideBar-step--past',
-									]
+									className={['SetupWizard__SideBar-step', step < currentStep && 'SetupWizard__SideBar-step--past']
 										.filter(Boolean)
 										.join(' ')}
 									data-number={step}
@@ -81,12 +78,8 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 									marginInline='neg-x8'
 									display='flex'
 									alignItems='center'
-									fontScale='p4'
-									color={
-										(step === currentStep && 'primary') ||
-										(step < currentStep && 'default') ||
-										'disabled'
-									}
+									fontScale='p2m'
+									color={(step === currentStep && 'primary') || (step < currentStep && 'default') || 'disabled'}
 									style={{ position: 'relative' }}
 								>
 									{title}

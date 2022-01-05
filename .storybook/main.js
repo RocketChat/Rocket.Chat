@@ -62,10 +62,7 @@ module.exports = {
 
 		config.plugins.push(
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
-			new webpack.NormalModuleReplacementPlugin(
-				/(app)\/*.*\/(server)\/*/,
-				require.resolve('./mocks/empty.ts'),
-			),
+			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
 		);
 
 		config.mode = 'development';

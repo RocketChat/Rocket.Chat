@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../models/server/raw';
 
-
 Meteor.startup(() => {
 	// Add permissions for discussion
 	const permissions = [

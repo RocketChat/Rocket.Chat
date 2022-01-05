@@ -4,10 +4,7 @@ import React, { FC, memo } from 'react';
 import { useUserId } from '../../../contexts/UserContext';
 import { UserMention } from './definitions/UserMention';
 
-const Mention: FC<{ value: ASTUserMention['value']; mentions: UserMention[] }> = ({
-	value: { value: mention },
-	mentions,
-}) => {
+const Mention: FC<{ value: ASTUserMention['value']; mentions: UserMention[] }> = ({ value: { value: mention }, mentions }) => {
 	const uid = useUserId();
 	const mentioned = mentions.find((mentioned) => mentioned.username === mention);
 	const classNames = ['mention-link'];

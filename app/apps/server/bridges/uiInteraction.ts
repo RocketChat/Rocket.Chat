@@ -12,7 +12,7 @@ export class UiInteractionBridge extends UiIntBridge {
 	}
 
 	protected async notifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {
-		this.orch.debugLog(`The App ${ appId } is sending an interaction to user.`);
+		this.orch.debugLog(`The App ${appId} is sending an interaction to user.`);
 
 		const app = this.orch.getManager()?.getOneById(appId);
 

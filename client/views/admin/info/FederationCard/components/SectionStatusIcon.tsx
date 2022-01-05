@@ -9,13 +9,7 @@ export default function getStatusIcon(type: SectionStatus): ReactElement {
 	switch (type) {
 		case SectionStatus.SUCCESS:
 			svg = (
-				<svg
-					width='16'
-					height='16'
-					viewBox='0 0 16 16'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<path
 						fillRule='evenodd'
 						clipRule='evenodd'
@@ -27,13 +21,7 @@ export default function getStatusIcon(type: SectionStatus): ReactElement {
 			break;
 		case SectionStatus.FAILED:
 			svg = (
-				<svg
-					width='16'
-					height='16'
-					viewBox='0 0 16 16'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<path
 						fillRule='evenodd'
 						clipRule='evenodd'
@@ -45,13 +33,7 @@ export default function getStatusIcon(type: SectionStatus): ReactElement {
 			break;
 		case SectionStatus.UNKNOWN:
 			svg = (
-				<svg
-					width='16'
-					height='16'
-					viewBox='0 0 16 16'
-					fill='none'
-					xmlns='http://www.w3.org/2000/svg'
-				>
+				<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
 					<path
 						fillRule='evenodd'
 						clipRule='evenodd'

@@ -15,8 +15,7 @@ function getUsersWhoAreInTheSameGroupDMsAs(user) {
 
 	rooms.forEach((room) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
 
-	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } })
-		.forEach((user) => users.set(user._id, user));
+	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user) => users.set(user._id, user));
 
 	return users;
 }
@@ -46,7 +45,7 @@ export const updateGroupDMsName = (userThatChangedName) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
-		const subs = Subscriptions.findByRoomId(room._id, { fields: { _id: 1, 'u._id': 1 } });
+		const subs = Subscriptions.findByRoomId(room._id, { fields: { '_id': 1, 'u._id': 1 } });
 		subs.forEach((sub) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
 			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));

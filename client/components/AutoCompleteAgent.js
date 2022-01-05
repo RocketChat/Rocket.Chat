@@ -16,11 +16,7 @@ const AutoCompleteAgent = (props) => {
 		useMemo(() => ({ text: debouncedAgentsFilter, haveAll }), [debouncedAgentsFilter, haveAll]),
 	);
 
-	const {
-		phase: agentsPhase,
-		items: agentsItems,
-		itemCount: agentsTotal,
-	} = useRecordList(AgentsList);
+	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(AgentsList);
 
 	const sortedByName = agentsItems.sort((a, b) => {
 		if (a.value === 'all') {
@@ -45,11 +41,7 @@ const AutoCompleteAgent = (props) => {
 			filter={agentsFilter}
 			setFilter={setAgentsFilter}
 			options={sortedByName}
-			endReached={
-				agentsPhase === AsyncStatePhase.LOADING
-					? () => {}
-					: (start) => loadMoreAgents(start, Math.min(50, agentsTotal))
-			}
+			endReached={agentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreAgents(start, Math.min(50, agentsTotal))}
 		/>
 	);
 };

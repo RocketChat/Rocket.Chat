@@ -9,9 +9,5 @@ module.exports = {
 	timeout: 10000,
 	bail: true,
 	file: 'tests/end-to-end/teardown.js',
-	spec: [
-		'tests/end-to-end/api/*.js',
-		'tests/end-to-end/api/*.ts',
-		'tests/end-to-end/apps/*.js',
-	],
+	spec: ['tests/end-to-end/api/*.js', 'tests/end-to-end/api/*.ts', 'tests/end-to-end/apps/*.js'],
 };

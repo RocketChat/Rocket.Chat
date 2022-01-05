@@ -18,11 +18,7 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }) =
 			<VerticalBar.ScrollableContent>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultiple
-						value={value}
-						onChange={onChange}
-						placeholder={t('Choose_users')}
-					/>
+					<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Choose_users')} />
 				</Field>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

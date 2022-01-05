@@ -26,12 +26,7 @@ export type QuickActionsActionConfig = ToolboxActionConfig & {
 
 export type QuickActionsAction = QuickActionsHook | QuickActionsActionConfig;
 
-const {
-	listen,
-	add: addAction,
-	remove: deleteAction,
-	store: actions,
-} = generator<QuickActionsAction>();
+const { listen, add: addAction, remove: deleteAction, store: actions } = generator<QuickActionsAction>();
 
 export type Events = GeneratorEvents<QuickActionsAction>;
 

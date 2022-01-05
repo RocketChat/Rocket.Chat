@@ -5,24 +5,30 @@ import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 
-export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
+export const cleanRoomHistory = function ({
+	rid,
+	latest = new Date(),
+	oldest = new Date('0001-01-01T00:00:00Z'),
+	inclusive = true,
+	limit = 0,
+	excludePinned = true,
+	ignoreDiscussion = true,
+	filesOnly = false,
+	fromUsers = [],
+	ignoreThreads = true,
+}) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
 	const ts = { [gt]: oldest, [lt]: latest };
 
-	const text = `_${ TAPi18n.__('File_removed_by_prune') }_`;
+	const text = `_${TAPi18n.__('File_removed_by_prune')}_`;
 
 	let fileCount = 0;
-	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
-		rid,
-		excludePinned,
-		ignoreDiscussion,
-		ts,
-		fromUsers,
-		ignoreThreads,
-		{ fields: { 'file._id': 1, pinned: 1 }, limit },
-	).forEach((document) => {
+	Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
+		fields: { 'file._id': 1, 'pinned': 1 },
+		limit,
+	}).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
@@ -35,14 +41,24 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 
 	if (!ignoreDiscussion) {
-		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...limit && { limit } }, ignoreThreads).fetch()
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(
+			rid,
+			excludePinned,
+			ts,
+			fromUsers,
+			{ fields: { drid: 1 }, ...(limit && { limit }) },
+			ignoreThreads,
+		)
+			.fetch()
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
 		const threads = new Set();
-		Messages.findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } })
-			.forEach(({ _id }) => threads.add(_id));
+		Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
+			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
+			{ fields: { _id: 1 } },
+		).forEach(({ _id }) => threads.add(_id));
 
 		if (threads.size > 0) {
 			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
