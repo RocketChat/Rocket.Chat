@@ -1,14 +1,15 @@
+import http from 'http';
+import https from 'https';
 import URL from 'url';
 import querystring from 'querystring';
 
-import { Meteor } from 'meteor/meteor';
-// import { HTTPInternals } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
-// import iconv from 'iconv-lite';
+import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
-// import jschardet from 'jschardet';
+import jschardet from 'jschardet';
 
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
@@ -18,52 +19,64 @@ import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
 
-// const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
 
 //  Detect encoding
 //  Priority:
 //  Detected == HTTP Header > Detected == HTML meta > HTTP Header > HTML meta > Detected > Default (utf-8)
 //  See also: https://www.w3.org/International/questions/qa-html-encoding-declarations.en#quickanswer
-// const getCharset = function (contentType, body) {
-// 	let detectedCharset;
-// 	let httpHeaderCharset;
-// 	let htmlMetaCharset;
-// 	let result;
+const getCharset = function (contentType, body) {
+	let detectedCharset;
+	let httpHeaderCharset;
+	let htmlMetaCharset;
+	let result;
 
-// 	contentType = contentType || '';
+	contentType = contentType || '';
 
-// 	const binary = body.toString('binary');
-// 	const detected = jschardet.detect(binary);
-// 	if (detected.confidence > 0.8) {
-// 		detectedCharset = detected.encoding.toLowerCase();
-// 	}
-// 	const m1 = contentType.match(/charset=([\w\-]+)/i);
-// 	if (m1) {
-// 		httpHeaderCharset = m1[1].toLowerCase();
-// 	}
-// 	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i);
-// 	if (m2) {
-// 		htmlMetaCharset = m2[1].toLowerCase();
-// 	}
-// 	if (detectedCharset) {
-// 		if (detectedCharset === httpHeaderCharset) {
-// 			result = httpHeaderCharset;
-// 		} else if (detectedCharset === htmlMetaCharset) {
-// 			result = htmlMetaCharset;
-// 		}
-// 	}
-// 	if (!result) {
-// 		result = httpHeaderCharset || htmlMetaCharset || detectedCharset;
-// 	}
-// 	return result || 'utf-8';
-// };
+	const binary = body.toString('binary');
+	const detected = jschardet.detect(binary);
+	if (detected.confidence > 0.8) {
+		detectedCharset = detected.encoding.toLowerCase();
+	}
+	const m1 = contentType.match(/charset=([\w\-]+)/i);
+	if (m1) {
+		httpHeaderCharset = m1[1].toLowerCase();
+	}
+	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i);
+	if (m2) {
+		htmlMetaCharset = m2[1].toLowerCase();
+	}
+	if (detectedCharset) {
+		if (detectedCharset === httpHeaderCharset) {
+			result = httpHeaderCharset;
+		} else if (detectedCharset === htmlMetaCharset) {
+			result = htmlMetaCharset;
+		}
+	}
+	if (!result) {
+		result = httpHeaderCharset || htmlMetaCharset || detectedCharset;
+	}
+	return result || 'utf-8';
+};
 
-// const toUtf8 = function (contentType, body) {
-// 	return iconv.decode(body, getCharset(contentType, body));
-// };
+const toUtf8 = function (contentType, body) {
+	return iconv.decode(body, getCharset(contentType, body));
+};
 
-const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, callback) {
+const getUnsafeAgent = (protocol) => {
+	const options = {
+		rejectUnauthorized: false,
+	};
+	if (protocol === 'http:') {
+		return new http.Agent(options);
+	}
+	if (protocol === 'https:') {
+		return new https.Agent(options);
+	}
+	return null;
+};
+
+const getUrlContent = async function (urlObj, redirectCount = 5) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -77,17 +90,17 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
-		return callback();
+		throw new Error('invalid host');
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
 	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	const data = callbacks.run('oembed:beforeGetUrlContent', {
@@ -95,63 +108,38 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 		parsedUrl,
 	});
 	if (data.attachments != null) {
-		return callback(null, data);
+		return data;
 	}
+
 	const url = URL.format(data.urlObj);
-	const opts = {
-		url,
-		strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
-		gzip: true,
-		maxRedirects: redirectCount,
+
+	const chunks = [];
+
+	const response = await fetch(url, {
+		compress: true,
+		follow: redirectCount,
 		headers: {
 			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
+		size: 250000, // max size of the response body
+		...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
+			agent: getUnsafeAgent(parsedUrl.protocol),
+		}),
+	});
+
+	for await (const chunk of response.body) {
+		chunks.push(chunk);
+	}
+
+	const buffer = Buffer.concat(chunks);
+	return {
+		headers: response.headers.raw(),
+		body: toUtf8(response.headers.get('content-type'), buffer),
+		parsedUrl,
+		statusCode: response.status,
 	};
-	// let headers = null;
-	// let statusCode = null;
-	// let error = null;
-	// const chunks = [];
-	// let chunksTotalLength = 0;
-	// TODO convert code to no use "request"
-	console.warn('TODO convert code to no use "request"', opts);
-	// const stream = request(opts);
-	// stream.on('response', function (response) {
-	// 	statusCode = response.statusCode;
-	// 	headers = response.headers;
-	// 	if (response.statusCode !== 200) {
-	// 		return stream.abort();
-	// 	}
-	// });
-	// stream.on('data', function (chunk) {
-	// 	chunks.push(chunk);
-	// 	chunksTotalLength += chunk.length;
-	// 	if (chunksTotalLength > 250000) {
-	// 		return stream.abort();
-	// 	}
-	// });
-	// stream.on(
-	// 	'end',
-	// 	Meteor.bindEnvironment(function () {
-	// 		if (error != null) {
-	// 			return callback(null, {
-	// 				error,
-	// 				parsedUrl,
-	// 			});
-	// 		}
-	// 		const buffer = Buffer.concat(chunks);
-	// 		return callback(null, {
-	// 			headers,
-	// 			body: toUtf8(headers['content-type'], buffer),
-	// 			parsedUrl,
-	// 			statusCode,
-	// 		});
-	// 	}),
-	// );
-	// return stream.on('error', function (err) {
-	// 	error = err;
-	// });
-});
+};
 
 OEmbed.getUrlMeta = function (url, withFragment) {
 	const urlObj = URL.parse(url);
@@ -166,13 +154,16 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContent(urlObj, 5);
+	const content = Promise.await(getUrlContent(urlObj, 5));
+
 	if (!content) {
 		return;
 	}
+
 	if (content.attachments != null) {
 		return content;
 	}
+
 	let metas = undefined;
 	if (content && content.body) {
 		metas = {};
@@ -206,7 +197,7 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
-			headers[camelCase(header)] = headerObj[header];
+			headers[camelCase(header)] = headerObj[header].join(';');
 		});
 	}
 	if (content && content.statusCode !== 200) {

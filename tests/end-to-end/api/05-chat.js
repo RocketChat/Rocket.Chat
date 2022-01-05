@@ -745,8 +745,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		// TODO skip for now - oembed needs a rewrite
-		describe.skip('oembed', () => {
+		describe('oembed', () => {
 			let ytEmbedMsgId;
 			let imgUrlMsgId;
 
