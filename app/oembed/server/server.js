@@ -16,6 +16,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { Info } from '../../utils/server';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -103,7 +104,7 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
