@@ -35,8 +35,7 @@ type Action =
 	| { type: 'success'; apps: App[]; reload: () => Promise<void> }
 	| { type: 'failure'; error: Error; reload: () => Promise<void> };
 
-const sortByName = (apps: App[]): App[] =>
-	apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
 const reducer = (
 	state: AsyncState<{ apps: App[] }> & {
