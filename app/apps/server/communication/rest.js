@@ -464,11 +464,9 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const formData = Promise.await(
-							getUploadFormData({
-								request: this.request,
-							}),
-						);
+						const formData = await getUploadFormData({
+							request: this.request,
+						});
 						buff = formData?.app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
@@ -484,7 +482,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const aff = Promise.await(manager.update(buff, permissionsGranted));
+					const aff = await manager.update(buff, permissionsGranted);
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
