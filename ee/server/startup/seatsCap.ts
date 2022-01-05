@@ -50,7 +50,7 @@ callbacks.add(
 
 callbacks.add(
 	'validateUserRoles',
-	(userData: Record<string, any>) => {
+	(userData: Partial<IUser>) => {
 		const isGuest = userData.roles?.includes('guest');
 		if (isGuest) {
 			validateUserRoles(Meteor.userId(), userData);

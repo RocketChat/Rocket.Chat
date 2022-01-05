@@ -1,6 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { FilterQuery } from 'mongodb';
 
+import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
+import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
+import type { IMessage } from '../definition/IMessage';
+import type { IRoom } from '../definition/IRoom';
+import type { IUser } from '../definition/IUser';
 import { getRandomId } from './random';
 
 enum CallbackPriority {
@@ -9,21 +15,55 @@ enum CallbackPriority {
 	LOW = 1000,
 }
 
+/**
+ * Callbacks returning void, like event listeners.
+ *
+ * TODO: move those to event-based systems
+ */
+type EventLikeCallbackSignatures = {
+	afterActivateUser: (user: IUser) => void;
+	afterCreateChannel: (owner: IUser, room: IRoom) => void;
+	afterCreatePrivateGroup: (owner: IUser, room: IRoom) => void;
+	afterDeactivateUser: (user: IUser) => void;
+	afterDeleteMessage: (message: IMessage, room: IRoom) => void;
+	validateUserRoles: (userData: Partial<IUser>) => void;
+	workspaceLicenseChanged: (license: string) => void;
+	afterReadMessages: (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
+	beforeReadMessages: (rid: IRoom['_id'], uid: IUser['_id']) => void;
+	afterDeleteUser: (user: IUser) => void;
+};
+
+/**
+ * Callbacks that are supposed to be composed like a chain.
+ *
+ * TODO: develop a middleware alternative and grant independence of execution order
+ */
+type ChainedCallbackSignatures = {
+	'afterCreateUser': (user: IUser) => IUser;
+	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
+	'livechat.applyDepartmentRestrictions': (
+		query: FilterQuery<ILivechatDepartmentRecord>,
+		params: { userId: IUser['_id'] },
+	) => FilterQuery<ILivechatDepartmentRecord>;
+	'on-business-hour-start': (params: {
+		BusinessHourBehaviorClass: {
+			new (): IBusinessHourBehavior;
+		};
+	}) => {
+		BusinessHourBehaviorClass: {
+			new (): IBusinessHourBehavior;
+		};
+	};
+};
+
 type Hook =
-	| 'afterActivateUser'
-	| 'afterCreateChannel'
-	| 'afterCreatePrivateGroup'
-	| 'afterCreateUser'
-	| 'afterDeactivateUser'
-	| 'afterDeleteMessage'
-	| 'afterDeleteRoom'
-	| 'afterDeleteUser'
+	| keyof EventLikeCallbackSignatures
+	| keyof ChainedCallbackSignatures
 	| 'afterFileUpload'
 	| 'afterJoinRoom'
 	| 'afterLeaveRoom'
 	| 'afterLogoutCleanUp'
 	| 'afterProcessOAuthUser'
-	| 'afterReadMessages'
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
@@ -89,7 +129,6 @@ type Hook =
 	| 'mapLDAPUserData'
 	| 'oembed:afterParseContent'
 	| 'oembed:beforeGetUrlContent'
-	| 'on-business-hour-start'
 	| 'onCreateUser'
 	| 'onLDAPLogin'
 	| 'onValidateLogin'
@@ -112,9 +151,7 @@ type Hook =
 	| 'usernameSet'
 	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet'
-	| 'validateUserRoles'
-	| 'workspaceLicenseChanged';
+	| 'userStatusManuallySet';
 
 type Callback = {
 	(item: unknown, constant?: unknown): unknown;
@@ -225,12 +262,28 @@ class Callbacks {
 	 * @param priority the callback run priority (order)
 	 * @param id human friendly name for this callback
 	 */
+	add<THook extends keyof EventLikeCallbackSignatures>(
+		hook: THook,
+		callback: EventLikeCallbackSignatures[THook],
+		priority?: CallbackPriority,
+		id?: string,
+	): void;
+
+	add<THook extends keyof ChainedCallbackSignatures>(
+		hook: THook,
+		callback: ChainedCallbackSignatures[THook],
+		priority?: CallbackPriority,
+		id?: string,
+	): void;
+
 	add<TItem, TConstant, TNextItem = TItem>(
 		hook: Hook,
 		callback: (item: TItem, constant?: TConstant) => TNextItem,
-		priority = this.priority.MEDIUM,
-		id = getRandomId(),
-	): void {
+		priority?: CallbackPriority,
+		id?: string,
+	): void;
+
+	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = getRandomId()): void {
 		const callbacks = this.getCallbacks(hook);
 
 		if (callbacks.some((cb) => cb.id === id)) {
@@ -270,9 +323,18 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: TItem, _constant?: TConstant): TItem => item);
-		return runner(item, constant) as TNextItem;
+	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
+
+	run<THook extends keyof ChainedCallbackSignatures>(
+		hook: THook,
+		...args: Parameters<ChainedCallbackSignatures[THook]>
+	): ReturnType<ChainedCallbackSignatures[THook]>;
+
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+
+	run(hook: Hook, item: unknown, constant?: unknown): unknown {
+		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+		return runner(item, constant);
 	}
 
 	/**
@@ -283,9 +345,13 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns the post, comment, modifier, etc. on which to run the callbacks
 	 */
-	runAsync<TItem, TConstant>(hook: Hook, item: TItem, constant?: TConstant): TItem {
-		const runner = this.asyncRunners.get(hook) ?? ((item: TItem, _constant?: TConstant): TItem => item);
-		return runner(item, constant) as TItem;
+	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
+
+	runAsync<TItem, TConstant>(hook: Hook, item: TItem, constant?: TConstant): TItem;
+
+	runAsync(hook: Hook, item: unknown, constant?: unknown): unknown {
+		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+		return runner(item, constant);
 	}
 }
 
