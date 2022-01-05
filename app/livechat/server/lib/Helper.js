@@ -16,7 +16,7 @@ import {
 } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
@@ -504,7 +504,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 			return false;
 		}
 		// if a chat has a fallback department, attempt to redirect chat to there [EE]
-		return callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
+		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
 	Livechat.saveTransferHistory(room, transferData);
