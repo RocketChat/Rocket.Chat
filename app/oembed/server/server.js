@@ -13,7 +13,7 @@ import jschardet from 'jschardet';
 
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
