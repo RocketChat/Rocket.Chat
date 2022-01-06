@@ -3,8 +3,8 @@ import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useEffect } from 'react';
 
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
+import { callbacks } from '../../../../lib/callbacks';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
