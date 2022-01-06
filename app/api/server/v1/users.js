@@ -402,7 +402,7 @@ API.v1.addRoute(
 	'users.setAvatar',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -433,11 +433,9 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { image, ...fields } = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
-			);
+			const { image, ...fields } = await getUploadFormData({
+				request: this.request,
+			});
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
