@@ -46,6 +46,23 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
+	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
+		businessHourIds: string[],
+		departmentIds: string[],
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
+		const query: FilterQuery<ILivechatDepartmentRecord> = {
+			enabled: true,
+			businessHourId: {
+				$in: businessHourIds,
+			},
+			_id: {
+				$in: departmentIds,
+			},
+		};
+		return this.find(query, options);
+	}
+
 	addBusinessHourToDepartmentsByIds(ids: string[] = [], businessHourId: string): Promise<WriteOpResult> {
 		const query = {
 			_id: { $in: ids },
