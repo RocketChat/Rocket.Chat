@@ -45,7 +45,7 @@ const getInitialValues = (data) => {
 	};
 };
 
-function ContactNewEdit({ id, data, close }) {
+function ContactNewEdit({ id, data, close, reload }) {
 	const t = useTranslation();
 
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -171,6 +171,7 @@ function ContactNewEdit({ id, data, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

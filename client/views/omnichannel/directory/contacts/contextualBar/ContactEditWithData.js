@@ -7,7 +7,7 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../Skeleton';
 import ContactNewEdit from './ContactNewEdit';
 
-function ContactEditWithData({ id, close }) {
+function ContactEditWithData({ id, close, reload }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${id}`); // TODO OMNICHANNEL
 
@@ -19,7 +19,7 @@ function ContactEditWithData({ id, close }) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
 
-	return <ContactNewEdit id={id} data={data} close={close} />;
+	return <ContactNewEdit id={id} data={data} close={close} reload={reload} />;
 }
 
 export default ContactEditWithData;
