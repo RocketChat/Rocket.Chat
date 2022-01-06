@@ -1,4 +1,4 @@
-FROM node:12 as build
+FROM node:14 as build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ ADD ./package.json .
 
 RUN npm install --production
 
-FROM node:12-alpine
+FROM node:14-alpine
 
 ARG SERVICE
 
