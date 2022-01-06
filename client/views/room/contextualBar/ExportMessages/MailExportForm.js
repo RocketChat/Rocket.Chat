@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
-import { isEmail } from '../../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -85,7 +85,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
-		if (additionalEmails !== '' && !isEmail(additionalEmails)) {
+		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;
 		}
