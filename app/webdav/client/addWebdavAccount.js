@@ -10,7 +10,7 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {
 		if (Template.instance().loading.get()) {
-			return `${ t('Please_wait') }...`;
+			return `${t('Please_wait')}...`;
 		}
 		return t('Webdav_add_new_account');
 	},
@@ -24,7 +24,7 @@ Template.addWebdavAccount.events({
 			return;
 		}
 		instance.loading.set(true);
-		Meteor.call('addWebdavAccount', formData, function(error, success) {
+		Meteor.call('addWebdavAccount', formData, function (error, success) {
 			modal.close();
 			instance.loading.set(false);
 			if (error) {
@@ -38,7 +38,7 @@ Template.addWebdavAccount.events({
 	},
 });
 
-const validate = function() {
+const validate = function () {
 	const form = $(this.firstNode);
 	const formData = form.serializeArray();
 	const validationObj = {};
@@ -64,14 +64,14 @@ const validate = function() {
 		return formObj;
 	}
 	Object.entries(validationObj).forEach(([key, value]) => {
-		form.find(`input[name=${ key }], select[name=${ key }]`).addClass('error');
-		form.find(`input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
+		form.find(`input[name=${key}], select[name=${key}]`).addClass('error');
+		form.find(`input[name=${key}]~.input-error, select[name=${key}]~.input-error`).text(value);
 	});
 	this.loading.set(false);
 	return false;
 };
 
-Template.addWebdavAccount.onCreated(function() {
+Template.addWebdavAccount.onCreated(function () {
 	this.loading = new ReactiveVar(false);
 	this.validate = validate.bind(this);
 });

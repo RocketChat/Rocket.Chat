@@ -1,4 +1,3 @@
-
 import { check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
@@ -8,40 +7,44 @@ import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalize
 import { canAccessRoom } from '../../../../authorization/server';
 import { IMessage } from '../../../../../definition/IMessage';
 
-API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequired: ['view-l-room'] }, {
-	async get() {
-		check(this.urlParams, {
-			rid: String,
-		});
+API.v1.addRoute(
+	'livechat/:rid/messages',
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		async get() {
+			check(this.urlParams, {
+				rid: String,
+			});
 
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
 
-		const room = LivechatRooms.findOneById(this.urlParams.rid);
+			const room = LivechatRooms.findOneById(this.urlParams.rid);
 
-		if (!room) {
-			throw new Error('invalid-room');
-		}
+			if (!room) {
+				throw new Error('invalid-room');
+			}
 
-		if (!canAccessRoom(room, this.user)) {
-			throw new Error('not-allowed');
-		}
+			if (!canAccessRoom(room, this.user)) {
+				throw new Error('not-allowed');
+			}
 
-		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-		});
+			const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+			});
 
-		const total = await cursor.count();
+			const total = await cursor.count();
 
-		const messages = await cursor.toArray() as IMessage[];
+			const messages = (await cursor.toArray()) as IMessage[];
 
-		return API.v1.success({
-			messages: normalizeMessagesForUser(messages, this.userId),
-			offset,
-			count,
-			total,
-		});
+			return API.v1.success({
+				messages: normalizeMessagesForUser(messages, this.userId),
+				offset,
+				count,
+				total,
+			});
+		},
 	},
-});
+);

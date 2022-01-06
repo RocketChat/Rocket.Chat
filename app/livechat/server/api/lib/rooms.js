@@ -10,12 +10,7 @@ export async function findRooms({
 	tags,
 	customFields,
 	onhold,
-	options: {
-		offset,
-		count,
-		fields,
-		sort,
-	},
+	options: { offset, count, fields, sort },
 }) {
 	const cursor = LivechatRooms.findRoomsWithCriteria({
 		agents,
@@ -41,7 +36,9 @@ export async function findRooms({
 
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
 	if (departmentsIds.length) {
-		const departments = await LivechatDepartment.findInIds(departmentsIds, { fields: { name: 1 } }).toArray();
+		const departments = await LivechatDepartment.findInIds(departmentsIds, {
+			fields: { name: 1 },
+		}).toArray();
 
 		rooms.forEach((room) => {
 			if (!room.departmentId) {

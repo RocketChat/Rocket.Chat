@@ -19,16 +19,20 @@ export async function federationGetOverviewData() {
 	const { numberOfEvents, numberOfFederatedUsers, numberOfServers } = await getStatistics();
 
 	return {
-		data: [{
-			title: 'Number_of_events',
-			value: numberOfEvents,
-		}, {
-			title: 'Number_of_federated_users',
-			value: numberOfFederatedUsers,
-		}, {
-			title: 'Number_of_federated_servers',
-			value: numberOfServers,
-		}],
+		data: [
+			{
+				title: 'Number_of_events',
+				value: numberOfEvents,
+			},
+			{
+				title: 'Number_of_federated_users',
+				value: numberOfFederatedUsers,
+			},
+			{
+				title: 'Number_of_federated_servers',
+				value: numberOfServers,
+			},
+		],
 	};
 }
 

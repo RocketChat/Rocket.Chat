@@ -20,9 +20,7 @@ export const appMessageMock = {
 			type: 'bot',
 			isEnabled: true,
 			name: 'Rocket.Cat',
-			roles: [
-				'bot',
-			],
+			roles: ['bot'],
 			status: 'online',
 			statusConnection: 'online',
 			utcOffset: 0,
@@ -42,9 +40,7 @@ export const appMessageMock = {
 		type: 'bot',
 		isEnabled: true,
 		name: 'Rocket.Cat',
-		roles: [
-			'bot',
-		],
+		roles: ['bot'],
 		status: 'online',
 		statusConnection: 'online',
 		utcOffset: 0,
@@ -78,9 +74,7 @@ export const appMessageInvalidRoomMock = {
 			type: 'bot',
 			isEnabled: true,
 			name: 'Rocket.Cat',
-			roles: [
-				'bot',
-			],
+			roles: ['bot'],
 			status: 'online',
 			statusConnection: 'online',
 			utcOffset: 0,
@@ -100,9 +94,7 @@ export const appMessageInvalidRoomMock = {
 		type: 'bot',
 		isEnabled: true,
 		name: 'Rocket.Cat',
-		roles: [
-			'bot',
-		],
+		roles: ['bot'],
 		status: 'online',
 		statusConnection: 'online',
 		utcOffset: 0,

@@ -30,7 +30,9 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const file = lastOperation.fileId ? await UserDataFiles.findOneById(lastOperation.fileId) : await UserDataFiles.findLastFileByUser(userId);
+					const file = lastOperation.fileId
+						? await UserDataFiles.findOneById(lastOperation.fileId)
+						: await UserDataFiles.findLastFileByUser(userId);
 					if (file) {
 						return {
 							requested: false,

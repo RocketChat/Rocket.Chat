@@ -13,7 +13,7 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
@@ -132,7 +132,7 @@ function EmailInboxForm({ id, data }) {
 	const emailAlreadyExistsAction = useEndpoint('GET', `email-inbox.search?email=${email}`);
 
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : null);
+		setEmailError(!validateEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
 	useComponentDidUpdate(() => {
 		!email && setEmailError(null);
@@ -158,12 +158,7 @@ function EmailInboxForm({ id, data }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteManager}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onDeleteManager} onCancel={() => setModal()} confirmText={t('Delete')}>
 				{t('You_will_not_be_able_to_recover_email_inbox')}
 			</GenericModal>,
 		);
@@ -208,7 +203,7 @@ function EmailInboxForm({ id, data }) {
 	});
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!email && !isEmail(email)) {
+		if (!email && !validateEmail(email)) {
 			return;
 		}
 		const { emailInbox } = await emailAlreadyExistsAction();
@@ -222,7 +217,7 @@ function EmailInboxForm({ id, data }) {
 		hasUnsavedChanges &&
 		name &&
 		email &&
-		isEmail(email) &&
+		validateEmail(email) &&
 		!emailError &&
 		smtpServer &&
 		smtpPort &&
@@ -254,12 +249,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Email')}*</Field.Label>
 								<Field.Row>
-									<TextInput
-										onBlur={checkEmailExists}
-										error={emailError}
-										value={email}
-										onChange={handleEmail}
-									/>
+									<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} />
 								</Field.Row>
 								<Field.Error>{t(emailError)}</Field.Error>
 							</Field>
@@ -272,11 +262,7 @@ function EmailInboxForm({ id, data }) {
 							<Field>
 								<Field.Label>{t('Sender_Info')}</Field.Label>
 								<Field.Row>
-									<TextInput
-										value={senderInfo}
-										onChange={handleSenderInfo}
-										placeholder={t('Optional')}
-									/>
+									<TextInput value={senderInfo} onChange={handleSenderInfo} placeholder={t('Optional')} />
 								</Field.Row>
 								<Field.Hint>{t('Will_Appear_In_From')}</Field.Hint>
 							</Field>

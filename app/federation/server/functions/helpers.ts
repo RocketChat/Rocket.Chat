@@ -5,7 +5,7 @@ import { Subscriptions, Users } from '../../../models/server';
 import { Settings } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
-export const getNameAndDomain = (fullyQualifiedName: string): string [] => fullyQualifiedName.split('@');
+export const getNameAndDomain = (fullyQualifiedName: string): string[] => fullyQualifiedName.split('@');
 
 export const isFullyQualified = (name: string): boolean => name.indexOf('@') !== -1;
 
@@ -31,14 +31,15 @@ export const hasExternalDomain = ({ federation }: { federation: { origin: string
 		return false;
 	}
 
-	return federation.domains
-		.some((domain) => domain !== federation.origin);
+	return federation.domains.some((domain) => domain !== federation.origin);
 };
 
 export const isLocalUser = ({ federation }: { federation: { origin: string } }, localDomain: string): boolean =>
 	!federation || federation.origin === localDomain;
 
-export const getFederatedRoomData = (room: IRoom): {
+export const getFederatedRoomData = (
+	room: IRoom,
+): {
 	hasFederatedUser: boolean;
 	users: IUser[];
 	subscriptions: { [k: string]: ISubscription } | undefined;

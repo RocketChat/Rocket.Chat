@@ -10,13 +10,10 @@ export type DiscussionsListOptions = {
 	text?: string;
 };
 
-const isDiscussionMessageInRoom = (
-	message: IMessage,
-	rid: IMessage['rid'],
-): message is DiscussionMessage => message.rid === rid && 'drid' in message;
+const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is DiscussionMessage =>
+	message.rid === rid && 'drid' in message;
 
-const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean =>
-	regex.test(discussionMessage.msg);
+const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean => regex.test(discussionMessage.msg);
 
 export class DiscussionsList extends MessageList {
 	public constructor(private _options: DiscussionsListOptions) {

@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
 export const popout = {
 	context: null,
@@ -44,7 +44,7 @@ export const popout = {
 	dragstart(event) {
 		if (!event.target.classList.contains('dropzone-overlay')) {
 			const popoutElement = document.querySelector('.rc-popout-wrapper');
-			setTimeout(function() {
+			setTimeout(function () {
 				popoutElement.style.display = 'none';
 			}, 0);
 		}
@@ -68,8 +68,8 @@ export const popout = {
 			const popoutElement = document.querySelector('.rc-popout-wrapper');
 			const positionTop = e.clientY - popout.y;
 			const positionLeft = e.clientX - popout.x;
-			popoutElement.style.left = `${ positionLeft >= 0 ? positionLeft : 0 }px`;
-			popoutElement.style.top = `${ positionTop >= 0 ? positionTop : 0 }px`;
+			popoutElement.style.left = `${positionLeft >= 0 ? positionLeft : 0}px`;
+			popoutElement.style.top = `${positionTop >= 0 ? positionTop : 0}px`;
 		}
 	},
 };
@@ -98,18 +98,17 @@ Template.popout.helpers({
 	},
 });
 
-Template.popout.onRendered(function() {
+Template.popout.onRendered(function () {
 	Template.instance().isMinimized.set(popout.isAudioOnly);
 	Template.instance().isAudioOnly.set(popout.isAudioOnly);
 	Template.instance().showVideoControls.set(popout.showVideoControls);
 	Template.instance().showStreamControls.set(popout.showStreamControls);
 
-
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
 });
-Template.popout.onCreated(function() {
+Template.popout.onCreated(function () {
 	this.isMinimized = new ReactiveVar(popout.isAudioOnly);
 	this.isAudioOnly = new ReactiveVar(popout.isAudioOnly);
 	this.canOpenExternal = new ReactiveVar(popout.canOpenExternal);
@@ -125,7 +124,7 @@ Template.popout.onCreated(function() {
 	document.body.addEventListener('drop', popout.drop, true);
 });
 
-Template.popout.onDestroyed(function() {
+Template.popout.onDestroyed(function () {
 	popout.context = null;
 	document.body.removeEventListener('dragstart', popout.dragstart, true);
 	document.body.removeEventListener('dragover', popout.dragover, true);

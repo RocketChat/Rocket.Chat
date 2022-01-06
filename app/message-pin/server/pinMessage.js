@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { settings } from '../../settings/server';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
@@ -18,14 +18,13 @@ const recursiveRemove = (msg, deep = 1) => {
 		return msg;
 	}
 
-	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map(
-		(nestedMsg) => recursiveRemove(nestedMsg, deep + 1),
-	) : null;
+	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1)) : null;
 
 	return msg;
 };
 
-const shouldAdd = (attachments, attachment) => !attachments.some(({ message_link }) => message_link && message_link === attachment.message_link);
+const shouldAdd = (attachments, attachment) =>
+	!attachments.some(({ message_link }) => message_link && message_link === attachment.message_link);
 
 Meteor.methods({
 	pinMessage(message, pinnedAt) {
@@ -102,23 +101,17 @@ Meteor.methods({
 			});
 		}
 
-		return Messages.createWithTypeRoomIdMessageAndUser(
-			'message_pinned',
-			originalMessage.rid,
-			'',
-			me,
-			{
-				attachments: [
-					{
-						text: originalMessage.msg,
-						author_name: originalMessage.u.username,
-						author_icon: getUserAvatarURL(originalMessage.u.username),
-						ts: originalMessage.ts,
-						attachments: recursiveRemove(attachments),
-					},
-				],
-			},
-		);
+		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
+			attachments: [
+				{
+					text: originalMessage.msg,
+					author_name: originalMessage.u.username,
+					author_icon: getUserAvatarURL(originalMessage.u.username),
+					ts: originalMessage.ts,
+					attachments: recursiveRemove(attachments),
+				},
+			],
+		});
 	},
 	unpinMessage(message) {
 		check(message._id, String);

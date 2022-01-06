@@ -29,9 +29,7 @@ const MeetPage: FC = () => {
 		if (room?.room?.v?.token === visitorToken) {
 			setVisitorId(room.room.v._id);
 			setVisitorName(room.room.fname);
-			room?.room?.responseBy?.username
-				? setAgentName(room.room.responseBy.username)
-				: setAgentName(room.room.servedBy.username);
+			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);
 			setStatus(room?.room?.callStatus || 'ended');
 			setCallStartTime(room.room.webRtcCallStartTime);
 			return setIsRoomMember(true);
@@ -42,9 +40,7 @@ const MeetPage: FC = () => {
 		const room = await APIClient.v1.get(`rooms.info?roomId=${roomId}`);
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setVisitorName(room.room.fname);
-			room?.room?.responseBy?.username
-				? setAgentName(room.room.responseBy.username)
-				: setAgentName(room.room.servedBy.username);
+			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);
 			setStatus(room?.room?.callStatus || 'ended');
 			setCallStartTime(room.room.webRtcCallStartTime);
 			return setIsRoomMember(true);
@@ -67,14 +63,7 @@ const MeetPage: FC = () => {
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>
-				<Box
-					width='full'
-					minHeight='sh'
-					alignItems='center'
-					backgroundColor='neutral-900'
-					overflow='hidden'
-					position='relative'
-				>
+				<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
 					<Box
 						position='absolute'
 						style={{
@@ -126,13 +115,7 @@ const MeetPage: FC = () => {
 						</p>
 					</Box>
 					<Box position='absolute' alignItems='center' style={{ bottom: '20%' }}>
-						<Button
-							square
-							title='Close Window'
-							onClick={closeCallTab}
-							backgroundColor='#2F343D'
-							borderColor='#2F343D'
-						>
+						<Button square title='Close Window' onClick={closeCallTab} backgroundColor='#2F343D' borderColor='#2F343D'>
 							<Icon name='cross' size='x16' color='white' />
 						</Button>
 					</Box>

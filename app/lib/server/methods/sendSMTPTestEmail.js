@@ -25,7 +25,7 @@ Meteor.methods({
 				html: '<p>You have successfully sent an email</p>',
 			});
 		} catch ({ message }) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendSMTPTestEmail',
 				message,
 			});
@@ -37,10 +37,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'sendSMTPTestEmail',
-	userId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'sendSMTPTestEmail',
+		userId() {
+			return true;
+		},
 	},
-}, 1, 1000);
+	1,
+	1000,
+);

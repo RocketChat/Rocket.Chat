@@ -9,7 +9,9 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 Meteor.methods({
 	'jitsi:generateAccessToken': (rid) => {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'jitsi:generateToken',
+			});
 		}
 
 		const room = Rooms.findOneById(rid);
@@ -36,7 +38,7 @@ Meteor.methods({
 				user: {
 					name: user.name,
 					email: getUserEmailAddress(user),
-					avatar: Meteor.absoluteUrl(`avatar/${ user.username }`),
+					avatar: Meteor.absoluteUrl(`avatar/${user.username}`),
 					id: user._id,
 				},
 			};
@@ -61,7 +63,7 @@ Meteor.methods({
 			sub: JITSI_OPTIONS.jitsi_domain,
 			iat: jws.IntDate.get('now'),
 			nbf: jws.IntDate.get('now'),
-			exp: jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
+			exp: jws.IntDate.get(`now + ${JITSI_OPTIONS.jitsi_lifetime_token}`),
 			aud: 'RocketChat',
 			room: jitsiLimitTokenToRoom ? jitsiRoom : '*',
 			context: '', // first empty
@@ -70,6 +72,8 @@ Meteor.methods({
 		const header = JSON.stringify(HEADER);
 		const payload = JSON.stringify(addUserContextToPayload(commonPayload));
 
-		return jws.JWS.sign(HEADER.alg, header, payload, { rstr: JITSI_OPTIONS.jitsi_application_secret });
+		return jws.JWS.sign(HEADER.alg, header, payload, {
+			rstr: JITSI_OPTIONS.jitsi_application_secret,
+		});
 	},
 });

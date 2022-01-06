@@ -9,15 +9,13 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	}
 
 	registerForm({
-		useCustomFieldsAdditionalForm: () =>
-			useMemo(() => lazy(() => import('./CustomFieldsAdditionalFormContainer')), []),
+		useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalFormContainer')), []),
 	});
 	registerForm({
 		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentContainer')), []),
 	});
 	registerForm({
-		useMaxChatsPerAgentDisplay: () =>
-			useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []),
+		useMaxChatsPerAgentDisplay: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []),
 	});
 	registerForm({
 		useEeNumberInput: () => useMemo(() => lazy(() => import('./EeNumberInput')), []),
@@ -27,12 +25,10 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	});
 	registerForm({ useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []) });
 	registerForm({
-		useBusinessHoursMultiple: () =>
-			useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
+		useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
 	});
 	registerForm({
-		useBusinessHoursTimeZone: () =>
-			useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []),
+		useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []),
 	});
 	registerForm({
 		useContactManager: () => useMemo(() => lazy(() => import('./ContactManager')), []),
@@ -41,8 +37,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
 	});
 	registerForm({
-		useDepartmentBusinessHours: () =>
-			useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
+		useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
 	});
 	registerForm({
 		useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []),
@@ -51,7 +46,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 		usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []),
 	});
 	registerForm({
-		useSelectForwardDepartment: () =>
-			useMemo(() => lazy(() => import('../../../../client/components/AutoCompleteDepartment')), []),
+		useSelectForwardDepartment: () => useMemo(() => lazy(() => import('../../../../client/components/AutoCompleteDepartment')), []),
 	});
 });

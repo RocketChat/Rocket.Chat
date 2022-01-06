@@ -39,8 +39,8 @@ function removeUsersFromTokenChannels() {
 	});
 }
 
-Meteor.startup(function() {
-	Meteor.defer(function() {
+Meteor.startup(function () {
+	Meteor.defer(function () {
 		removeUsersFromTokenChannels();
 
 		SyncedCron.add({

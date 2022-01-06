@@ -24,16 +24,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 
 				if (char === '[]()') {
 					if (startPos !== endPos) {
-						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(
-							startPos,
-							endPos,
-						)}]()${text.slice(endPos)}`;
+						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
 					}
 				} else {
-					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(
-						startPos,
-						endPos,
-					)}${char}${text.slice(endPos)}`;
+					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
 				}
 				textAreaRef.current.focus();
 
@@ -60,10 +54,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
 			textAreaRef.current.focus();
-			textAreaRef.current.setSelectionRange(
-				startPos + emojiValue.length,
-				startPos + emojiValue.length,
-			);
+			textAreaRef.current.setSelectionRange(startPos + emojiValue.length, startPos + emojiValue.length);
 
 			onChange(textAreaRef.current.value);
 		}
@@ -99,11 +90,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} />
 					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} />
 				</Box>
-				<TextEditor.Toolbox.TextButton
-					text='Insert_Placeholder'
-					action={openPlaceholderSelect}
-					ref={ref}
-				/>
+				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />
 				<Backdrop
 					display={visible ? 'block' : 'none'}
 					onClick={(): void => {
@@ -113,11 +100,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 				/>
 				<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
 					<Tile elevation='1' w='224px'>
-						<InsertPlaceholderDropdown
-							onChange={onChange}
-							textAreaRef={textAreaRef}
-							setVisible={setVisible}
-						/>
+						<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
 					</Tile>
 				</PositionAnimated>
 			</TextEditor.Toolbox>

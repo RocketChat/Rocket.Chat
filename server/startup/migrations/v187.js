@@ -9,7 +9,7 @@ function convertNotification(notification) {
 		const username = notification.payload.sender?.username;
 		const roomName = notification.title !== username ? notification.title : '';
 
-		const message = roomName === '' ? notification.text : notification.text.replace(`${ username }: `, '');
+		const message = roomName === '' ? notification.text : notification.text.replace(`${username}: `, '');
 
 		return {
 			_id: notification._id,
@@ -17,17 +17,19 @@ function convertNotification(notification) {
 			rid: notification.payload.rid,
 			mid: notification.payload.messageId,
 			ts: notification.createdAt,
-			items: [{
-				type: 'push',
-				data: {
-					payload: notification.payload,
-					roomName,
-					username,
-					message,
-					badge: notification.badge,
-					category: notification.apn?.category,
+			items: [
+				{
+					type: 'push',
+					data: {
+						payload: notification.payload,
+						roomName,
+						username,
+						message,
+						badge: notification.badge,
+						category: notification.apn?.category,
+					},
 				},
-			}],
+			],
 		};
 	} catch (e) {
 		//

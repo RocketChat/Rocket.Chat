@@ -39,8 +39,7 @@ export const OmnichannelRoomIconProvider: FC = ({ children }) => {
 								error: undefined,
 							};
 						},
-						subscribe: (callback): (() => void) =>
-							OmnichannelRoomIcon.on(`${app}-${iconName}`, callback),
+						subscribe: (callback): (() => void) => OmnichannelRoomIcon.on(`${app}-${iconName}`, callback),
 					}),
 				}),
 				[],
