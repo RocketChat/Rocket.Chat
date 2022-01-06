@@ -1,32 +1,37 @@
-import { Promise } from 'meteor/promise';
-
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Sessions } from '../../../app/models/server/raw';
 import { getMostImportantRole } from '../../../app/statistics/server/lib/getMostImportantRole';
 
 async function migrateSessions() {
-	const cursor = Sessions.col.aggregate([{
-		$match: { $or: [{ mostImportantRole: { $exists: 0 } }, { mostImportantRole: null }] },
-	}, {
-		$group: {
-			_id: '$userId',
+	const cursor = Sessions.col.aggregate([
+		{
+			$match: { $or: [{ mostImportantRole: { $exists: 0 } }, { mostImportantRole: null }] },
 		},
-	}, {
-		$lookup: {
-			from: 'users',
-			localField: '_id',
-			foreignField: '_id',
-			as: 'user',
+		{
+			$group: {
+				_id: '$userId',
+			},
 		},
-	}, {
-		$unwind: '$user',
-	}, {
-		$project: {
-			'user.roles': 1,
+		{
+			$lookup: {
+				from: 'users',
+				localField: '_id',
+				foreignField: '_id',
+				as: 'user',
+			},
 		},
-	}, {
-		$match: { 'user.roles.0': { $exists: 1 } },
-	}]);
+		{
+			$unwind: '$user',
+		},
+		{
+			$project: {
+				'user.roles': 1,
+			},
+		},
+		{
+			$match: { 'user.roles.0': { $exists: 1 } },
+		},
+	]);
 
 	let actions = [];
 	for await (const session of cursor) {
@@ -46,7 +51,7 @@ async function migrateSessions() {
 	}
 }
 
-Migrations.add({
+addMigration({
 	version: 211,
 	up() {
 		Promise.await(migrateSessions());

@@ -42,6 +42,7 @@ export class AppUsersConverter {
 			updatedAt: user._updatedAt,
 			lastLoginAt: user.lastLogin,
 			appId: user.appId,
+			customFields: user.customFields,
 		};
 	}
 
@@ -80,7 +81,7 @@ export class AppUsersConverter {
 			case undefined:
 				return UserType.UNKNOWN;
 			default:
-				console.warn(`A new user type has been added that the Apps don't know about? "${ type }"`);
+				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
 				return type.toUpperCase();
 		}
 	}
@@ -99,7 +100,9 @@ export class AppUsersConverter {
 				// This is needed for Livechat guests and Rocket.Cat user.
 				return UserStatusConnection.UNDEFINED;
 			default:
-				console.warn(`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);
+				console.warn(
+					`The user ${username} (${userId}) does not have a valid status (offline, online, away, or busy). It is currently: "${status}"`,
+				);
 				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	}

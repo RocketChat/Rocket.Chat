@@ -4,27 +4,19 @@ import React from 'react';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const OTR = ({
-	isEstablishing,
-	isEstablished,
-	isOnline,
-	onClickClose,
-	onClickStart,
-	onClickEnd,
-	onClickRefresh,
-}) => {
+const OTR = ({ isEstablishing, isEstablished, isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh }) => {
 	const t = useTranslation();
 
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='key' />
+				<VerticalBar.Icon name='shredder' />
 				<VerticalBar.Text>{t('OTR')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<Box fontScale='s2'>{t('Off_the_record_conversation')}</Box>
+				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 
 				{!isEstablishing && !isEstablished && isOnline && (
 					<Button onClick={onClickStart} primary>
@@ -34,8 +26,7 @@ const OTR = ({
 				{isEstablishing && !isEstablished && isOnline && (
 					<>
 						{' '}
-						<Box fontScale='p1'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
-						<Throbber inheritColor />{' '}
+						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box> <Throbber inheritColor />{' '}
 					</>
 				)}
 				{isEstablished && isOnline && (
@@ -53,9 +44,7 @@ const OTR = ({
 					</ButtonGroup>
 				)}
 
-				{!isOnline && (
-					<Box fontScale='p2'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
-				)}
+				{!isOnline && <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
 			</VerticalBar.ScrollableContent>
 		</>
 	);

@@ -8,11 +8,7 @@ type ReturnChatQueueModalProps = {
 	onCancel: () => void;
 };
 
-const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
-	onCancel,
-	onMoveChat,
-	...props
-}) => {
+const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({ onCancel, onMoveChat, ...props }) => {
 	const t = useTranslation();
 
 	return (
@@ -22,13 +18,13 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 				<Modal.Title>{t('Return_to_the_queue')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{t('Would_you_like_to_return_the_queue')}</Modal.Content>
+			<Modal.Content fontScale='p2'>{t('Would_you_like_to_return_the_queue')}</Modal.Content>
 			<Modal.Footer>
 				<Box>
 					<ButtonGroup align='end'>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
 						<Button primary onClick={onMoveChat}>
-							{t('Move_queue')}
+							{t('Confirm')}
 						</Button>
 					</ButtonGroup>
 				</Box>

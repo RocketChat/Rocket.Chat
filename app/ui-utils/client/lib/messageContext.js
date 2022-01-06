@@ -6,14 +6,24 @@ import { Tracker } from 'meteor/tracker';
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
+import { getUserPreference, roomTypes } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
-import { Layout } from './Layout';
-import { fireGlobalEvent } from './fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
-import { goToRoomById } from '../../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
+import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
-const fields = { name: 1, username: 1, 'settings.preferences.enableMessageParserEarlyAdoption': 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
+const fields = {
+	'name': 1,
+	'username': 1,
+	'settings.preferences.enableMessageParserEarlyAdoption': 1,
+	'settings.preferences.showMessageInMainThread': 1,
+	'settings.preferences.autoImageLoad': 1,
+	'settings.preferences.saveMobileBandwidth': 1,
+	'settings.preferences.collapseMediaByDefault': 1,
+	'settings.preferences.hideRoles': 1,
+};
 
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
@@ -22,33 +32,39 @@ export function messageContext({ rid } = Template.instance()) {
 	const openThread = (e) => {
 		const { rid, mid, tmid } = e.currentTarget.dataset;
 		const room = Rooms.findOne({ _id: rid });
-		FlowRouter.go(FlowRouter.getRouteName(), {
-			rid,
-			name: room.name,
-			tab: 'thread',
-			context: tmid || mid,
-		}, {
-			jump: tmid && tmid !== mid && mid && mid,
-		});
+		FlowRouter.go(
+			FlowRouter.getRouteName(),
+			{
+				rid,
+				name: room.name,
+				tab: 'thread',
+				context: tmid || mid,
+			},
+			{
+				jump: tmid && tmid !== mid && mid && mid,
+			},
+		);
 		e.preventDefault();
 		e.stopPropagation();
 	};
 
-	const runAction = Layout.isEmbedded() ? (msg, e) => {
-		const { actionlink } = e.currentTarget.dataset;
-		return fireGlobalEvent('click-action-link', {
-			actionlink,
-			value: msg._id,
-			message: msg,
-		});
-	} : (msg, e) => {
-		const { actionlink } = e.currentTarget.dataset;
-		actionLinks.run(actionlink, msg._id, instance, (err) => {
-			if (err) {
-				handleError(err);
-			}
-		});
-	};
+	const runAction = isLayoutEmbedded()
+		? (msg, e) => {
+				const { actionlink } = e.currentTarget.dataset;
+				return fireGlobalEvent('click-action-link', {
+					actionlink,
+					value: msg._id,
+					message: msg,
+				});
+		  }
+		: (msg, e) => {
+				const { actionlink } = e.currentTarget.dataset;
+				actionLinks.run(actionlink, msg._id, instance, (err) => {
+					if (err) {
+						handleError(err);
+					}
+				});
+		  };
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
@@ -64,22 +80,30 @@ export function messageContext({ rid } = Template.instance()) {
 
 	return {
 		u: user,
-		room: Tracker.nonreactive(() => Rooms.findOne({ _id: rid }, {
-			fields: {
-				_updatedAt: 0,
-				lastMessage: 0,
+		room: Tracker.nonreactive(() =>
+			Rooms.findOne(
+				{ _id: rid },
+				{
+					fields: {
+						_updatedAt: 0,
+						lastMessage: 0,
+					},
+				},
+			),
+		),
+		subscription: Subscriptions.findOne(
+			{ rid },
+			{
+				fields: {
+					name: 1,
+					autoTranslate: 1,
+					rid: 1,
+					tunread: 1,
+					tunreadUser: 1,
+					tunreadGroup: 1,
+				},
 			},
-		})),
-		subscription: Subscriptions.findOne({ rid }, {
-			fields: {
-				name: 1,
-				autoTranslate: 1,
-				rid: 1,
-				tunread: 1,
-				tunreadUser: 1,
-				tunreadGroup: 1,
-			},
-		}),
+		),
 		actions: {
 			openThread() {
 				return openThread;

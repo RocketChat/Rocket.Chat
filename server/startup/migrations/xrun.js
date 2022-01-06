@@ -1,11 +1,9 @@
-import _ from 'underscore';
+import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { migrateDatabase, onFreshInstall } from '../../lib/migrations';
 
-import { Migrations } from '../../../app/migrations';
+const { MIGRATION_VERSION = 'latest' } = process.env;
 
-if (Migrations.getVersion() !== 0) {
-	Migrations.migrateTo(process.env.MIGRATION_VERSION || 'latest');
-} else {
-	const control = Migrations._getControl();
-	control.version = _.last(Migrations._list).version;
-	Migrations._setControl(control);
-}
+const [version, ...subcommands] = MIGRATION_VERSION.split(',');
+
+migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
+onFreshInstall(upsertPermissions);

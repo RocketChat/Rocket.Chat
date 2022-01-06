@@ -1,6 +1,6 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import { renderMessageBody } from '../../../../lib/utils/renderMessageBody';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -8,9 +8,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find(
-			(attachment) => attachment.title || attachment.description,
-		);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
 			return escapeHTML(attachment.description);

@@ -21,7 +21,7 @@ function Create(command, params, item) {
 		return result;
 	}
 
-	const regexp = new RegExp(settings.get('UTF8_Names_Validation'));
+	const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation'));
 
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
@@ -36,10 +36,14 @@ function Create(command, params, item) {
 	const room = Rooms.findOneByName(channel);
 	if (room != null) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Channel_already_exist', {
-				postProcess: 'sprintf',
-				sprintf: [channel],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Channel_already_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel],
+				},
+				user.language,
+			),
 		});
 		return;
 	}

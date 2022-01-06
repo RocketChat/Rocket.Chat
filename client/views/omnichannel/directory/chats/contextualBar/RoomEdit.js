@@ -41,13 +41,8 @@ const getInitialValuesRoom = (room) => {
 function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const t = useTranslation();
 
-	const {
-		values: valuesRoom,
-		handlers: handlersRoom,
-		hasUnsavedChanges: hasUnsavedChangesRoom,
-	} = useForm(getInitialValuesRoom(room));
-	const canViewCustomFields = () =>
-		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const { values: valuesRoom, handlers: handlersRoom, hasUnsavedChanges: hasUnsavedChangesRoom } = useForm(getInitialValuesRoom(room));
+	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
 	const { topic, tags, priorityId } = valuesRoom;
@@ -71,12 +66,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
-	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData(
-		'livechat/priorities.list',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('livechat/priorities.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -94,10 +85,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	};
 
 	const jsonCustomField = useMemo(
-		() =>
-			allCustomFields && allCustomFields.customFields
-				? jsonConverterToValidFormat(allCustomFields.customFields)
-				: {},
+		() => (allCustomFields && allCustomFields.customFields ? jsonConverterToValidFormat(allCustomFields.customFields) : {}),
 		[allCustomFields],
 	);
 
@@ -130,8 +118,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 		}
 	});
 
-	const formIsValid =
-		(hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
+	const formIsValid = (hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -162,12 +149,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
-					<PrioritiesSelect
-						value={priorityId}
-						label={t('Priority')}
-						options={priorities}
-						handler={handlePriorityId}
-					/>
+					<PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />
 				)}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

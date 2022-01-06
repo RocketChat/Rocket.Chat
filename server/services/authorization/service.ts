@@ -13,6 +13,8 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { IRole } from '../../../definition/IRole';
+import { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -33,9 +35,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private Roles: RolesRaw;
 
-	private getRolesCached = mem(this.getRoles.bind(this), { maxAge: 1000, cacheKey: JSON.stringify })
+	private getRolesCached = mem(this.getRoles.bind(this), {
+		maxAge: 1000,
+		cacheKey: JSON.stringify,
+	});
 
-	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), { cacheKey: JSON.stringify, ...process.env.TEST_MODE === 'true' && { maxAge: 1 } })
+	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
+		cacheKey: JSON.stringify,
+		...(process.env.TEST_MODE === 'true' && { maxAge: 1 }),
+	});
 
 	constructor(db: Db) {
 		super();
@@ -43,9 +51,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		this.Permissions = db.collection('rocketchat_permissions');
 
 		this.Users = new UsersRaw(db.collection('users'));
-		this.Roles = new RolesRaw(db.collection('rocketchat_roles'));
 
-		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
+		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), {
+			Users: this.Users,
+		});
+
+		this.Roles = new RolesRaw(db.collection('rocketchat_roles'), {
+			Users: this.Users,
+			Subscriptions,
+		});
+
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 		TeamMembers = new TeamMemberRaw(db.collection('rocketchat_team_member'));
@@ -95,31 +110,39 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.getUserFromRoles(roleIds);
 	}
 
-	private getPublicRoles = mem(async (): Promise<string[]> => {
-		const roles = await this.Roles.find({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
+	private getPublicRoles = mem(
+		async (): Promise<string[]> => {
+			const roles = await this.Roles.find<Pick<IRole, '_id'>>(
+				{ scope: 'Users', description: { $exists: true, $ne: '' } },
+				{ projection: { _id: 1 } },
+			).toArray();
 
-		return roles.map(({ _id }) => _id);
-	}, { maxAge: 10000 });
+			return roles.map(({ _id }) => _id);
+		},
+		{ maxAge: 10000 },
+	);
 
-	private getUserFromRoles = mem(async (roleIds: string[]) => {
-		const options = {
-			sort: {
-				username: 1,
-			},
-			fields: {
-				username: 1,
-				roles: 1,
-			},
-		};
+	private getUserFromRoles = mem(
+		async (roleIds: string[]) => {
+			const options = {
+				sort: {
+					username: 1,
+				},
+				projection: {
+					username: 1,
+					roles: 1,
+				},
+			};
 
-		const users = await this.Users.findUsersInRoles(roleIds, null, options).toArray();
+			const users = await this.Users.findUsersInRoles(roleIds, null, options).toArray();
 
-		return users
-			.map((user) => ({
+			return users.map((user) => ({
 				...user,
 				roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
 			}));
-	}, { maxAge: 10000 });
+		},
+		{ maxAge: 10000 },
+	);
 
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
@@ -131,8 +154,11 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
-		const { roles: userRoles = [] } = await this.Users.findOneById(uid, { projection: { roles: 1 } }) || {};
-		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+		const { roles: userRoles = [] } = (await this.Users.findOneById(uid, { projection: { roles: 1 } })) || {};
+		const { roles: subscriptionsRoles = [] } =
+			(scope &&
+				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ 'rid': scope, 'u._id': uid }, { projection: { roles: 1 } }))) ||
+			{};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 

@@ -1,7 +1,7 @@
 import { Link as ASTLink } from '@rocket.chat/message-parser';
 import React, { FC } from 'react';
 
-import { baseURI } from '../../../lib/baseuri';
+import { baseURI } from '../../../lib/baseURI';
 import Bold from './Bold';
 import Italic from './Italic';
 import Strike from './Strike';
@@ -14,7 +14,7 @@ const Link: FC<LinkProps> = ({ value }) => {
 	const { src, label } = value;
 	const target = src.value.indexOf(baseURI) === 0 ? '' : '_blank';
 	return (
-		<a href={src.value} target={target} rel='noopener noreferrer'>
+		<a href={src.value} data-title={src.value} target={target} rel='noopener noreferrer'>
 			{((block: ASTLink['value']['label']): JSX.Element | string | null => {
 				switch (block.type) {
 					case 'PLAIN_TEXT':

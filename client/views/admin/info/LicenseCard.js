@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -11,9 +11,8 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import Feature from './Feature';
 import OfflineLicenseModal from './OfflineLicenseModal';
-import UsagePieGraph from './UsagePieGraph';
 
-const LicenseCard = ({ statistics, isLoading }) => {
+const LicenseCard = () => {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
@@ -26,8 +25,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 	const { value, phase, error } = useEndpointData('licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
-	const { maxActiveUsers = 0, modules = [] } =
-		endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
+	const { modules = [] } = endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');
@@ -68,27 +66,11 @@ const LicenseCard = ({ statistics, isLoading }) => {
 								<>
 									<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
 									<Feature label={t('Auditing')} enabled={hasAuditing} />
-									<Feature label={t('Canned_responses')} enabled={hasCannedResponses} />
+									<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
 									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
 								</>
 							)}
 						</Margins>
-					</Card.Col.Section>
-					<Card.Col.Section>
-						<Card.Col.Title>{t('Usage')}</Card.Col.Title>
-						<Box display='flex' flexDirection='row'>
-							{isLoading ? (
-								<Skeleton variant='rect' width='x112' height='x112' />
-							) : (
-								<UsagePieGraph
-									label={t('Users')}
-									used={statistics?.activeUsers}
-									total={maxActiveUsers}
-									size={112}
-									isLoading={isLoading}
-								/>
-							)}
-						</Box>
 					</Card.Col.Section>
 				</Card.Col>
 			</Card.Body>

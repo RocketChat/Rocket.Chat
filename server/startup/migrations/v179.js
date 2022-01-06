@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Rooms } from '../../../app/models/server';
 
 const batchSize = 5000;
@@ -14,10 +14,7 @@ const getIds = (_id) => {
 
 	// DM with rocket.cat
 	if (_id.match(/rocket\.cat/)) {
-		return [
-			'rocket.cat',
-			_id.replace('rocket.cat', ''),
-		];
+		return ['rocket.cat', _id.replace('rocket.cat', '')];
 	}
 
 	const total = _id.length;
@@ -37,9 +34,12 @@ const getIds = (_id) => {
 async function migrateDMs(models, total, current) {
 	const { roomCollection } = models;
 
-	console.log(`DM rooms schema migration ${ current }/${ total }`);
+	console.log(`DM rooms schema migration ${current}/${total}`);
 
-	const items = await roomCollection.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } }).limit(batchSize).toArray();
+	const items = await roomCollection
+		.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } })
+		.limit(batchSize)
+		.toArray();
 
 	const actions = items.map((room) => ({
 		updateOne: {
@@ -65,7 +65,7 @@ async function migrateDMs(models, total, current) {
 	return batch;
 }
 
-Migrations.add({
+addMigration({
 	version: 179,
 	up() {
 		const fut = new Future();

@@ -1,19 +1,27 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Settings } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
 
-Migrations.add({
+addMigration({
 	version: 216,
-	up() {
-		Settings.find({ _id: /Accounts_OAuth_Custom/, i18nLabel: 'Accounts_OAuth_Custom_Enable' }).forEach(function(customOauth) {
-			const parts = customOauth._id.split('-');
-			const name = parts[1];
-			const id = `Accounts_OAuth_Custom-${ name }-key_field`;
-			if (!Settings.findOne({ _id: id })) {
-				Settings.insert({
+	async up() {
+		return Promise.all(
+			(
+				await Settings.find({
+					_id: /Accounts_OAuth_Custom/,
+					i18nLabel: 'Accounts_OAuth_Custom_Enable',
+				}).toArray()
+			).map(async function (customOauth) {
+				const parts = customOauth._id.split('-');
+				const name = parts[1];
+				const id = `Accounts_OAuth_Custom-${name}-key_field`;
+				if (await Settings.findOne({ _id: id })) {
+					return;
+				}
+				return Settings.insert({
 					_id: id,
 					type: 'select',
 					group: 'OAuth',
-					section: `Custom OAuth: ${ name }`,
+					section: `Custom OAuth: ${name}`,
 					i18nLabel: 'Accounts_OAuth_Custom_Key_Field',
 					persistent: true,
 					values: [
@@ -32,11 +40,11 @@ Migrations.add({
 					hidden: false,
 					blocked: false,
 					sorter: 103,
-					i18nDescription: `Accounts_OAuth_Custom-${ name }-key_field_Description`,
+					i18nDescription: `Accounts_OAuth_Custom-${name}-key_field_Description`,
 					createdAt: new Date(),
 					value: 'username',
 				});
-			}
-		});
+			}),
+		);
 	},
 });

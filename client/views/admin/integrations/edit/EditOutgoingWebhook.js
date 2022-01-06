@@ -1,8 +1,7 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
@@ -33,7 +32,7 @@ const getInitialValue = (data) => {
 		retryFailedCalls: data.retryFailedCalls ?? true,
 		retryCount: data.retryCount ?? 5,
 		retryDelay: data.retryDelay ?? 'power-of-ten',
-		triggerrWordAnywhere: data.triggerrWordAnywhere ?? false,
+		triggerWordAnywhere: data.triggerWordAnywhere ?? false,
 		runOnEdits: data.runOnEdits ?? true,
 	};
 	return initialValue;
@@ -50,34 +49,32 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 
 	const router = useRoute('admin-integrations');
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [
-		data._id,
-	]);
+	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 
 	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
+
+		const handleClose = () => {
+			closeModal();
+			router.push({});
+		};
+
 		const onDelete = async () => {
 			const result = await deleteIntegration();
 			if (result.success) {
 				setModal(
-					<DeleteSuccessModal
-						children={t('Your_entry_has_been_deleted')}
-						onClose={() => {
-							closeModal();
-							router.push({});
-						}}
-					/>,
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Your_entry_has_been_deleted')}
+					</GenericModal>,
 				);
 			}
 		};
 
 		setModal(
-			<DeleteWarningModal
-				children={t('Integration_Delete_Warning')}
-				onDelete={onDelete}
-				onCancel={closeModal}
-			/>,
+			<GenericModal variant='danger' onConfirm={onDelete} onCancel={closeModal} confirmText={t('Delete')}>
+				{t('Integration_Delete_Warning')}
+			</GenericModal>,
 		);
 	}, [deleteIntegration, router, setModal, t]);
 
@@ -96,16 +93,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	}, [
-		data._id,
-		dispatchToastMessage,
-		formValues,
-		onChange,
-		saveIntegration,
-		t,
-		triggerWords,
-		urls,
-	]);
+	}, [data._id, dispatchToastMessage, formValues, onChange, saveIntegration, t, triggerWords, urls]);
 
 	const actionButtons = useMemo(
 		() => (
@@ -130,14 +118,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		[handleDeleteIntegration, handleSave, reset, t],
 	);
 
-	return (
-		<OutgoingWebhookForm
-			formValues={formValues}
-			formHandlers={formHandlers}
-			append={actionButtons}
-			{...props}
-		/>
-	);
+	return <OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={actionButtons} {...props} />;
 }
 
 export default EditOutgoingWebhook;

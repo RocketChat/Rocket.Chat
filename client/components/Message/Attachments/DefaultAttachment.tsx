@@ -1,56 +1,20 @@
-import React, { ComponentProps, FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 
-import { AttachmentProps } from '.';
+import { isActionAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentAction';
+import { MarkdownFields, MessageAttachmentDefault } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 import MarkdownText from '../../MarkdownText';
-import { ActionAttachment, ActionAttachmentProps } from './ActionAttachtment';
+import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';
 import FieldsAttachment from './FieldsAttachment';
-import { Dimensions } from './components/Dimensions';
 import { useCollapse } from './hooks/useCollapse';
 
-type MarkdownFields = 'text' | 'pretext' | 'fields';
-
-type DefaultAttachmentProps = {
-	collapsed?: true;
-
-	author_icon?: string;
-	author_link?: string;
-	author_name?: string;
-
-	// TODO: replace this component props type with a payload-based type because
-	// `value` comes as `string` and is passed as `ReactNode`
-	fields: ComponentProps<typeof FieldsAttachment>['fields'];
-
-	// footer
-	// footer_icon
-
-	image_url?: string;
-	image_dimensions?: Dimensions;
-
-	mrkdwn_in?: Array<MarkdownFields>;
-	pretext?: string;
-	text?: string;
-
-	thumb_url?: string;
-
-	title?: string;
-	title_link?: string;
-
-	ts?: Date;
-
-	color?: string;
-};
-
-const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAttachmentProps =>
-	'actions' in attachment;
-
 const applyMarkdownIfRequires = (
-	list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext'],
+	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
+): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant='inline' content={text} /> : text);
 
-const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
+const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 
 	return (
@@ -58,9 +22,7 @@ const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 			color={attachment.color}
 			pre={
 				attachment.pretext && (
-					<Attachment.Text>
-						{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}
-					</Attachment.Text>
+					<Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}</Attachment.Text>
 				)
 			}
 		>
@@ -97,11 +59,7 @@ const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 				)}
 				{!collapsed && (
 					<>
-						{attachment.text && (
-							<Attachment.Text>
-								{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}
-							</Attachment.Text>
-						)}
+						{attachment.text && <Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}</Attachment.Text>}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
 							<FieldsAttachment
@@ -110,24 +68,17 @@ const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 										return field;
 									}
 
-									const { value, ...rest } = field;
+									const { value, title, ...rest } = field;
 
-									const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
-										if (line.trim() === '') {
-											return `${line}  <br/>`;
-										}
-										return `${line}  `;
-									});
-									return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+									return {
+										...rest,
+										title: <MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />,
+										value: <MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />,
+									};
 								})}
 							/>
 						)}
-						{attachment.image_url && (
-							<Attachment.Image
-								{...(attachment.image_dimensions as any)}
-								src={attachment.image_url}
-							/>
-						)}
+						{attachment.image_url && <Attachment.Image {...(attachment.image_dimensions as any)} src={attachment.image_url} />}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

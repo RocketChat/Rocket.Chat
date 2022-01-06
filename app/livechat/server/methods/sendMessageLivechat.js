@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
+import { settings } from '../../../settings/server';
 
 Meteor.methods({
 	sendMessageLivechat({ token, _id, rid, msg, file, attachments }, agent) {
@@ -11,10 +13,13 @@ Meteor.methods({
 		check(rid, String);
 		check(msg, String);
 
-		check(agent, Match.Maybe({
-			agentId: String,
-			username: String,
-		}));
+		check(
+			agent,
+			Match.Maybe({
+				agentId: String,
+				username: String,
+			}),
+		);
 
 		const guest = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
@@ -29,6 +34,13 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-token');
 		}
 
+		if (
+			settings.get('Livechat_enable_message_character_limit') &&
+			msg.length > parseInt(settings.get('Livechat_message_character_limit'))
+		) {
+			throw new Meteor.Error('message-length-exceeds-character-limit');
+		}
+
 		return Livechat.sendMessage({
 			guest,
 			message: {
@@ -40,6 +52,11 @@ Meteor.methods({
 				attachments,
 			},
 			agent,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.API,
+				},
+			},
 		});
 	},
 });

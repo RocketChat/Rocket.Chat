@@ -26,15 +26,11 @@ const TeamsInfo = ({
 	onClickEdit,
 	onClickDelete,
 	onClickViewChannels,
+	onClickConvertToChannel,
 }) => {
 	const t = useTranslation();
 
-	const {
-		retentionPolicyEnabled,
-		filesOnlyDefault,
-		excludePinnedDefault,
-		maxAgeDefault,
-	} = retentionPolicy;
+	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } = retentionPolicy;
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -52,6 +48,13 @@ const TeamsInfo = ({
 					action: onClickDelete,
 				},
 			}),
+			...(onClickConvertToChannel && {
+				convertToChannel: {
+					label: t('Convert_to_channel'),
+					action: onClickConvertToChannel,
+					icon: 'hash',
+				},
+			}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
@@ -67,7 +70,7 @@ const TeamsInfo = ({
 				},
 			}),
 		}),
-		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete],
+		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete, onClickConvertToChannel],
 	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
@@ -84,18 +87,14 @@ const TeamsInfo = ({
 				mi='x2'
 				key='menu'
 				ghost={false}
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option {...props} label={label} icon={icon} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
-			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
-		);
+		const mapAction = ([key, { label, icon, action }]) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);

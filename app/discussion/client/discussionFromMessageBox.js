@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { messageBox, modal } from '../../ui-utils/client';
-import { t } from '../../utils/client';
+import { messageBox } from '../../ui-utils/client';
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return messageBox.actions.remove('Create_new', /start-discussion/);
@@ -16,19 +17,12 @@ Meteor.startup(function() {
 			icon: 'discussion',
 			condition: () => hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
 			action(data) {
-				modal.open({
-					title: t('Discussion_title'),
-					modifier: 'modal',
-					content: 'CreateDiscussion',
-					data: {
-						...data,
-						onCreate() {
-							modal.close();
-						},
+				imperativeModal.open({
+					component: CreateDiscussion,
+					props: {
+						defaultParentRoom: data.prid || data.rid,
+						onClose: imperativeModal.close,
 					},
-					showConfirmButton: false,
-					showCancelButton: false,
-					confirmOnEnter: false,
 				});
 			},
 		});

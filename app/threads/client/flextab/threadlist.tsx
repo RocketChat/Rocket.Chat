@@ -21,20 +21,31 @@ const template = lazy(() => import('../../../../client/views/room/contextualBar/
 addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription;
 	const threadsEnabled = useSetting('Threads_enabled');
-	return useMemo(() => (threadsEnabled ? {
-		groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-		id: 'thread',
-		full: true,
-		title: 'Threads',
-		icon: 'thread',
-		template,
-		renderAction: (props): ReactNode => {
-			const unread = room.tunread?.length > 99 ? '99+' : room.tunread?.length;
-			const variant = getVariant(room.tunreadUser?.length, room.tunreadGroup?.length);
-			return <Header.ToolBoxAction {...props} >
-				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
-			</Header.ToolBoxAction>;
-		},
-		order: 2,
-	} : null), [threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length]);
+	return useMemo(
+		() =>
+			threadsEnabled
+				? {
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'thread',
+						full: true,
+						title: 'Threads',
+						icon: 'thread',
+						template,
+						renderAction: (props): ReactNode => {
+							const tunread = room.tunread?.length || 0;
+							const tunreadUser = room.tunreadUser?.length || 0;
+							const tunreadGroup = room.tunreadGroup?.length || 0;
+							const unread = tunread > 99 ? '99+' : tunread;
+							const variant = getVariant(tunreadUser, tunreadGroup);
+							return (
+								<Header.ToolBoxAction {...props}>
+									{unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge>}
+								</Header.ToolBoxAction>
+							);
+						},
+						order: 2,
+				  }
+				: null,
+		[threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length],
+	);
 });

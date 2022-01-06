@@ -5,21 +5,31 @@ import _ from 'underscore';
 
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import * as servers from '../servers';
 import { Settings } from '../../../models/server';
+import { Logger } from '../../../logger/server';
+
+const logger = new Logger('IRC Bridge');
+const queueLogger = logger.section('Queue');
 
 let removed = false;
-const updateLastPing = _.throttle(Meteor.bindEnvironment(() => {
-	if (removed) {
-		return;
-	}
-	Settings.upsert({ _id: 'IRC_Bridge_Last_Ping' }, {
-		$set: {
-			value: new Date(),
-		},
-	});
-}), 1000 * 10);
+const updateLastPing = _.throttle(
+	Meteor.bindEnvironment(() => {
+		if (removed) {
+			return;
+		}
+		Settings.upsert(
+			{ _id: 'IRC_Bridge_Last_Ping' },
+			{
+				$set: {
+					value: new Date(),
+				},
+			},
+		);
+	}),
+	1000 * 10,
+);
 
 class Bridge {
 	constructor(config) {
@@ -82,11 +92,13 @@ class Bridge {
 	 * Log helper
 	 */
 	log(message) {
-		console.log(`[irc][bridge] ${ message }`);
+		// TODO logger: debug?
+		logger.info(message);
 	}
 
 	logQueue(message) {
-		console.log(`[irc][bridge][queue] ${ message }`);
+		// TODO logger: debug?
+		queueLogger.info(message);
 	}
 
 	/**
@@ -122,7 +134,7 @@ class Bridge {
 		// Get the command
 		const item = this.queue.dequeue();
 
-		this.logQueue(`Processing "${ item.command }" command from "${ item.from }"`);
+		this.logQueue(`Processing "${item.command}" command from "${item.from}"`);
 
 		// Handle the command accordingly
 		try {
@@ -130,14 +142,14 @@ class Bridge {
 			switch (item.from) {
 				case 'local':
 					if (!localCommandHandlers[item.command]) {
-						throw new Error(`Could not find handler for local:${ item.command }`);
+						throw new Error(`Could not find handler for local:${item.command}`);
 					}
 
 					await localCommandHandlers[item.command].apply(this, item.parameters);
 					break;
 				case 'peer':
 					if (!peerCommandHandlers[item.command]) {
-						throw new Error(`Could not find handler for peer:${ item.command }`);
+						throw new Error(`Could not find handler for peer:${item.command}`);
 					}
 
 					await peerCommandHandlers[item.command].apply(this, item.parameters);
@@ -174,15 +186,35 @@ class Bridge {
 	setupLocalHandlers() {
 		// Auth
 		callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), callbacks.priority.LOW, 'irc-on-login');
-		callbacks.add('afterCreateUser', this.onMessageReceived.bind(this, 'local', 'onCreateUser'), callbacks.priority.LOW, 'irc-on-create-user');
+		callbacks.add(
+			'afterCreateUser',
+			this.onMessageReceived.bind(this, 'local', 'onCreateUser'),
+			callbacks.priority.LOW,
+			'irc-on-create-user',
+		);
 		// Joining rooms or channels
-		callbacks.add('afterCreateChannel', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), callbacks.priority.LOW, 'irc-on-create-channel');
-		callbacks.add('afterCreateRoom', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), callbacks.priority.LOW, 'irc-on-create-room');
+		callbacks.add(
+			'afterCreateChannel',
+			this.onMessageReceived.bind(this, 'local', 'onCreateRoom'),
+			callbacks.priority.LOW,
+			'irc-on-create-channel',
+		);
+		callbacks.add(
+			'afterCreateRoom',
+			this.onMessageReceived.bind(this, 'local', 'onCreateRoom'),
+			callbacks.priority.LOW,
+			'irc-on-create-room',
+		);
 		callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), callbacks.priority.LOW, 'irc-on-join-room');
 		// Leaving rooms or channels
 		callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
 		// Chatting
-		callbacks.add('afterSaveMessage', this.onMessageReceived.bind(this, 'local', 'onSaveMessage'), callbacks.priority.LOW, 'irc-on-save-message');
+		callbacks.add(
+			'afterSaveMessage',
+			this.onMessageReceived.bind(this, 'local', 'onSaveMessage'),
+			callbacks.priority.LOW,
+			'irc-on-save-message',
+		);
 		// Leaving
 		callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}

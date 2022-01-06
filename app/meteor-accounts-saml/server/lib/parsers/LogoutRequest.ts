@@ -12,7 +12,7 @@ export class LogoutRequestParser {
 	}
 
 	public validate(xmlString: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.log(`LogoutRequest: ${ xmlString }`);
+		SAMLUtils.log(`LogoutRequest: ${xmlString}`);
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
@@ -38,11 +38,11 @@ export class LogoutRequestParser {
 
 			return callback(null, { idpSession, nameID, id });
 		} catch (e) {
-			console.error(e);
-			SAMLUtils.log(`Caught error: ${ e }`);
+			SAMLUtils.error(e);
+			SAMLUtils.log(`Caught error: ${e}`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 
 			return callback(e, null);
 		}

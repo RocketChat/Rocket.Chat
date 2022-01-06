@@ -16,9 +16,7 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 		},
 	} = room;
 
-	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(
-		`livechat/visitors.info?visitorId=${_id}`,
-	);
+	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(`livechat/visitors.info?visitorId=${_id}`);
 
 	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -31,15 +29,7 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 	const { visitor: visitorData } = visitor;
 	const { room: roomData } = room;
 
-	return (
-		<RoomEdit
-			room={roomData}
-			visitor={visitorData}
-			reload={reload}
-			reloadInfo={reloadInfo}
-			close={close}
-		/>
-	);
+	return <RoomEdit room={roomData} visitor={visitorData} reload={reload} reloadInfo={reloadInfo} close={close} />;
 }
 
 export default VisitorData;

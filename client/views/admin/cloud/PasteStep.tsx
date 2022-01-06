@@ -27,13 +27,13 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 		setLoading(true);
 
 		try {
-			await registerManually({}, { cloudBlob: cloudKey });
+			await registerManually({ cloudBlob: cloudKey });
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 		} finally {
 			setLoading(false);
-			onFinish && onFinish();
+			onFinish?.();
 		}
 	};
 
@@ -43,20 +43,13 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_finish_helper')}</p>
 				</Box>
-				<Box
-					display='flex'
-					flexDirection='column'
-					alignItems='stretch'
-					padding='x16'
-					flexGrow={1}
-					backgroundColor='neutral-800'
-				>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='neutral-800'>
 					<Scrollable vertical>
 						<Box
 							is='textarea'
 							height='x108'
 							fontFamily='mono'
-							fontScale='p1'
+							fontScale='p2'
 							color='alternative'
 							style={{ wordBreak: 'break-all', resize: 'none' }}
 							placeholder={t('Paste_here')}
@@ -76,12 +69,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 					<Button disabled={isLoading} onClick={onBackButtonClick}>
 						{t('Back')}
 					</Button>
-					<Button
-						primary
-						disabled={isLoading || !cloudKey.trim()}
-						marginInlineStart='auto'
-						onClick={handleFinishButtonClick}
-					>
+					<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
 						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
 					</Button>
 				</ButtonGroup>

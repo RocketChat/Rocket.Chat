@@ -1,15 +1,13 @@
 import moment from 'moment';
 
-import {
-	AbstractBusinessHourBehavior,
-	IBusinessHourBehavior,
-} from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import { AbstractBusinessHourBehavior, IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour } from '../../../../../definition/ILivechatBusinessHour';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
 import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
+import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -89,7 +87,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onAddAgentToDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
-		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		const department = await this.DepartmentsRepository.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
+			projection: { businessHourId: 1 },
+		});
 		if (!department || !agentsId.length) {
 			return options;
 		}
@@ -115,7 +115,9 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
-		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		const department = await this.DepartmentsRepository.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
+			fields: { businessHourId: 1 },
+		});
 		if (!department || !agentsId.length) {
 			return options;
 		}
@@ -134,11 +136,12 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	private async handleRemoveAgentsFromDepartments(department: Record<string, any>, agentsIds: string[], options: any): Promise<any> {
 		const agentIdsWithoutDepartment = [];
 		const agentIdsToRemoveCurrentBusinessHour = [];
-		for (const agentId of agentsIds) {
-			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
+		for await (const agentId of agentsIds) {
+			if ((await this.DepartmentsAgentsRepository.findByAgentId(agentId).count()) === 0) {
 				agentIdsWithoutDepartment.push(agentId);
 			}
-			if (!(await this.DepartmentsAgentsRepository.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) { // eslint-disable-line no-await-in-loop
+			if (!(await this.DepartmentsAgentsRepository.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
+				// eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
 		}
@@ -164,11 +167,16 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return openBusinessHour(businessHour);
 	}
 
-	private async removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {
+	private async removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(
+		businessHourId: string,
+		departmentsToRemove: string[],
+	): Promise<void> {
 		if (!departmentsToRemove.length) {
 			return;
 		}
-		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentsToRemove).toArray()).map((dept: any) => dept.agentId);
+		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentsToRemove).toArray()).map(
+			(dept: any) => dept.agentId,
+		);
 		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 

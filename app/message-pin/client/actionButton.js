@@ -2,17 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { Rooms } from '../../models/client';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'pin-message',
 		icon: 'pin',
@@ -21,7 +21,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = true;
-			Meteor.call('pinMessage', message, function(error) {
+			Meteor.call('pinMessage', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.pinned = false;
-			Meteor.call('unpinMessage', message, function(error) {
+			Meteor.call('unpinMessage', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -77,15 +77,19 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
@@ -106,7 +110,7 @@ Meteor.startup(function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;

@@ -1,5 +1,18 @@
+export type BundleFeature =
+	| 'auditing'
+	| 'canned-responses'
+	| 'ldap-enterprise'
+	| 'livechat-enterprise'
+	| 'omnichannel-mobile-enterprise'
+	| 'engagement-dashboard'
+	| 'push-privacy'
+	| 'scalability'
+	| 'teams-mention'
+	| 'saml-enterprise'
+	| 'oauth-enterprise';
+
 interface IBundle {
-	[key: string]: string[];
+	[key: string]: BundleFeature[];
 }
 
 const bundles: IBundle = {
@@ -13,12 +26,13 @@ const bundles: IBundle = {
 		'push-privacy',
 		'scalability',
 		'teams-mention',
+		'saml-enterprise',
+		'oauth-enterprise',
 	],
-	pro: [
-	],
+	pro: [],
 };
 
-export const getBundleFromModule = (moduleName: string): string|undefined => {
+export const getBundleFromModule = (moduleName: string): string | undefined => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
 		return;
@@ -42,8 +56,7 @@ export function isBundle(moduleName: string): boolean {
 
 export function getBundleModules(moduleName: string): string[] {
 	if (moduleName === '*') {
-		return Object.keys(bundles)
-			.reduce<string[]>((modules, bundle) => modules.concat(bundles[bundle]), []);
+		return Object.keys(bundles).reduce<string[]>((modules, bundle) => modules.concat(bundles[bundle]), []);
 	}
 
 	const bundle = getBundleFromModule(moduleName);

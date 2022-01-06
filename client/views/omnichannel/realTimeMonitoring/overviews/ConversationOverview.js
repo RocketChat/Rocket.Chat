@@ -8,18 +8,10 @@ const overviewInitalValue = {
 	value: 0,
 };
 
-const initialData = [
-	overviewInitalValue,
-	overviewInitalValue,
-	overviewInitalValue,
-	overviewInitalValue,
-];
+const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
 const ConversationOverview = ({ params, reloadRef, ...props }) => {
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/conversation-totalizers',
-		params,
-	);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/conversation-totalizers', params);
 
 	reloadRef.current.conversationOverview = reload;
 

@@ -3,8 +3,9 @@ import { HTTP } from 'meteor/http';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LICENSE_VERSION } from '../license';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();
@@ -15,16 +16,16 @@ export function getWorkspaceLicense() {
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license?version=${ LICENSE_VERSION }`, {
+		licenseResult = HTTP.get(`${settings.get('Cloud_Workspace_Registration_Client_Uri')}/license?version=${LICENSE_VERSION}`, {
 			headers: {
-				Authorization: `Bearer ${ token }`,
+				Authorization: `Bearer ${token}`,
 			},
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to update license from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return { updated: false, license: '' };

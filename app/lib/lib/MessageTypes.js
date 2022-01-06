@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -136,11 +136,6 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'message_pinned',
-		system: true,
-		message: 'Pinned_a_message',
-	});
-	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		message: '__username__was_set__role__by__user_by_',
@@ -185,6 +180,46 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'room-removed-read-only',
+		system: true,
+		message: 'room_removed_read_only',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-set-read-only',
+		system: true,
+		message: 'room_set_read_only',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-allowed-reacting',
+		system: true,
+		message: 'room_allowed_reacting',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-disallowed-reacting',
+		system: true,
+		message: 'room_disallowed_reacting',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'room_e2e_enabled',
 		system: true,
 		message: 'This_room_encryption_has_been_enabled_by__username_',
@@ -210,43 +245,52 @@ export const MessageTypesValues = [
 	{
 		key: 'uj',
 		i18nLabel: 'Message_HideType_uj',
-	}, {
+	},
+	{
 		key: 'ul',
 		i18nLabel: 'Message_HideType_ul',
-	}, {
+	},
+	{
 		key: 'ru',
 		i18nLabel: 'Message_HideType_ru',
-	}, {
+	},
+	{
 		key: 'au',
 		i18nLabel: 'Message_HideType_au',
-	}, {
+	},
+	{
 		key: 'mute_unmute',
 		i18nLabel: 'Message_HideType_mute_unmute',
-	}, {
-		key: 'message_pinned',
-		i18nLabel: 'Message_HideType_message_pinned',
-	}, {
+	},
+	{
 		key: 'r',
 		i18nLabel: 'Message_HideType_r',
-	}, {
+	},
+	{
 		key: 'ut',
 		i18nLabel: 'Message_HideType_ut',
-	}, {
+	},
+	{
 		key: 'wm',
 		i18nLabel: 'Message_HideType_wm',
-	}, {
+	},
+	{
 		key: 'rm',
 		i18nLabel: 'Message_HideType_rm',
-	}, {
+	},
+	{
 		key: 'subscription-role-added',
 		i18nLabel: 'Message_HideType_subscription_role_added',
-	}, {
+	},
+	{
 		key: 'subscription-role-removed',
 		i18nLabel: 'Message_HideType_subscription_role_removed',
-	}, {
+	},
+	{
 		key: 'room_archived',
 		i18nLabel: 'Message_HideType_room_archived',
-	}, {
+	},
+	{
 		key: 'room_unarchived',
 		i18nLabel: 'Message_HideType_room_unarchived',
 	},
@@ -269,5 +313,21 @@ export const MessageTypesValues = [
 	{
 		key: 'room_e2e_disabled',
 		i18nLabel: 'Message_HideType_room_disabled_encryption',
+	},
+	{
+		key: 'room-removed-read-only',
+		i18nLabel: 'Message_HideType_room_removed_read_only',
+	},
+	{
+		key: 'room-set-read-only',
+		i18nLabel: 'Message_HideType_room_set_read_only',
+	},
+	{
+		key: 'room-disallowed-reacting',
+		i18nLabel: 'Message_HideType_room_disallowed_reacting',
+	},
+	{
+		key: 'room-allowed-reacting',
+		i18nLabel: 'Message_HideType_room_allowed_reacting',
 	},
 ];

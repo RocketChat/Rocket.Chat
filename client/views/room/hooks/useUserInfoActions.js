@@ -5,52 +5,26 @@ import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../../app/utils/client';
-import { WebRTC } from '../../../../app/webrtc/client';
 import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import {
-	useUserId,
-	useUserSubscription,
-	useUserSubscriptionByName,
-} from '../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../../contexts/UserContext';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 import { useUserRoom } from './useUserRoom';
+import { useWebRTC } from './useWebRTC';
 
 const useUserHasRoomRole = (uid, rid, role) =>
-	useReactiveValue(
-		useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, 'roles': role }), [uid, rid, role]),
-	);
+	useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, 'roles': role }), [uid, rid, role]));
 
-const getShouldOpenDirectMessage = (
-	currentSubscription,
-	usernameSubscription,
-	canOpenDirectMessage,
-	username,
-) => {
+const getShouldOpenDirectMessage = (currentSubscription, usernameSubscription, canOpenDirectMessage, username) => {
 	const canOpenDm = canOpenDirectMessage || usernameSubscription;
-	const directMessageIsNotAlreadyOpen =
-		currentSubscription && currentSubscription.name !== username;
+	const directMessageIsNotAlreadyOpen = currentSubscription && currentSubscription.name !== username;
 	return canOpenDm && directMessageIsNotAlreadyOpen;
-};
-
-const getShouldAllowCalls = (webRTCInstance) => {
-	if (!webRTCInstance) {
-		return false;
-	}
-
-	const { localUrl, remoteItems } = webRTCInstance;
-	const r = remoteItems.get() || [];
-	if (localUrl.get() === null && r.length === 0) {
-		return false;
-	}
-
-	return true;
 };
 
 const getUserIsMuted = (room, user, userCanPostReadonly) => {
@@ -79,7 +53,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
 				<Modal.Close onClick={close} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{text}</Modal.Content>
+			<Modal.Content fontScale='p2'>{text}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button ghost onClick={close}>
@@ -114,30 +88,16 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
 
-	const getWebRTCInstance = useCallback(() => WebRTC.getInstanceByRoomId(rid), [rid]);
-	const webRTCInstance = useReactiveValue(getWebRTCInstance);
-
 	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid);
 
-	const isIgnored =
-		currentSubscription &&
-		currentSubscription.ignored &&
-		currentSubscription.ignored.indexOf(uid) > -1;
+	const isIgnored = currentSubscription && currentSubscription.ignored && currentSubscription.ignored.indexOf(uid) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
 
 	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
 
 	const roomConfig = room && room.t && roomTypes.getConfig(room.t);
 
-	const [
-		roomCanSetOwner,
-		roomCanSetLeader,
-		roomCanSetModerator,
-		roomCanIgnore,
-		roomCanBlock,
-		roomCanMute,
-		roomCanRemove,
-	] = [
+	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove] = [
 		...(roomConfig && [
 			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
 			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
@@ -157,11 +117,8 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const userCanMute = usePermission('mute-user', rid);
 	const userCanRemove = usePermission('remove-user', rid);
 	const userCanDirectMessage = usePermission('create-d');
+	const { shouldAllowCalls, callInProgress, joinCall, startCall } = useWebRTC(rid);
 
-	const shouldAllowCalls = getShouldAllowCalls(webRTCInstance);
-	const callInProgress = useReactiveValue(
-		useCallback(() => webRTCInstance?.callInProgress.get(), [webRTCInstance]),
-	);
 	const shouldOpenDirectMessage = getShouldOpenDirectMessage(
 		currentSubscription,
 		usernameSubscription,
@@ -186,13 +143,13 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	);
 
 	const videoCallOption = useMemo(() => {
-		const joinCall = () => {
-			webRTCInstance.joinCall({ audio: true, video: true });
+		const handleJoinCall = () => {
+			joinCall({ audio: true, video: true });
 		};
-		const startCall = () => {
-			webRTCInstance.startCall({ audio: true, video: true });
+		const handleStartCall = () => {
+			startCall({ audio: true, video: true });
 		};
-		const action = callInProgress ? joinCall : startCall;
+		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
 			shouldAllowCalls && {
@@ -201,16 +158,16 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	const audioCallOption = useMemo(() => {
-		const joinCall = () => {
-			webRTCInstance.joinCall({ audio: true, video: false });
+		const handleJoinCall = () => {
+			joinCall({ audio: true, video: false });
 		};
-		const startCall = () => {
-			webRTCInstance.startCall({ audio: true, video: false });
+		const handleStartCall = () => {
+			startCall({ audio: true, video: false });
 		};
-		const action = callInProgress ? joinCall : startCall;
+		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
 			shouldAllowCalls && {
@@ -219,20 +176,16 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
-	const changeOwnerMessage = isOwner
-		? 'User__username__removed_from__room_name__owners'
-		: 'User__username__is_now_a_owner_of__room_name_';
+	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_a_owner_of__room_name_';
 	const changeOwner = useEndpointActionExperimental(
 		'POST',
 		`${endpointPrefix}.${changeOwnerEndpoint}`,
 		t(changeOwnerMessage, { username: user.username, room_name: roomName }),
 	);
-	const changeOwnerAction = useMutableCallback(async () =>
-		changeOwner({ roomId: rid, userId: uid }),
-	);
+	const changeOwnerAction = useMutableCallback(async () => changeOwner({ roomId: rid, userId: uid }));
 	const changeOwnerOption = useMemo(
 		() =>
 			roomCanSetOwner &&
@@ -274,9 +227,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		`${endpointPrefix}.${changeModeratorEndpoint}`,
 		t(changeModeratorMessage, { username: user.username, room_name: roomName }),
 	);
-	const changeModeratorAction = useMutableCallback(() =>
-		changeModerator({ roomId: rid, userId: uid }),
-	);
+	const changeModeratorAction = useMutableCallback(() => changeModerator({ roomId: rid, userId: uid }));
 	const changeModeratorOption = useMemo(
 		() =>
 			roomCanSetModerator &&
@@ -345,12 +296,10 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 					closeModal();
 					dispatchToastMessage({
 						type: 'success',
-						message: t(
-							isMuted
-								? 'User__username__unmuted_in_room__roomName__'
-								: 'User__username__muted_in_room__roomName__',
-							{ username: user.username, roomName },
-						),
+						message: t(isMuted ? 'User__username__unmuted_in_room__roomName__' : 'User__username__muted_in_room__roomName__', {
+							username: user.username,
+							roomName,
+						}),
 					});
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -379,31 +328,11 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				action,
 			}
 		);
-	}, [
-		closeModal,
-		dispatchToastMessage,
-		isMuted,
-		muteFn,
-		rid,
-		roomCanMute,
-		roomName,
-		setModal,
-		t,
-		user.username,
-		userCanMute,
-	]);
+	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
 
-	const removeFromTeam = useEndpointActionExperimental(
-		'POST',
-		'teams.removeMember',
-		t('User_has_been_removed_from_team'),
-	);
+	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMember', t('User_has_been_removed_from_team'));
 
-	const removeUserAction = useEndpointActionExperimental(
-		'POST',
-		`${endpointPrefix}.kick`,
-		t('User_has_been_removed_from_s', roomName),
-	);
+	const removeUserAction = useEndpointActionExperimental('POST', `${endpointPrefix}.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
 		if (room.teamMain && room.teamId) {
 			return setModal(
@@ -413,7 +342,12 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 					onClose={closeModal}
 					onCancel={closeModal}
 					onConfirm={async (rooms) => {
-						await removeFromTeam({ teamId: room.teamId, userId: uid, rooms: Object.keys(rooms) });
+						const roomKeys = Object.keys(rooms);
+						await removeFromTeam({
+							teamId: room.teamId,
+							userId: uid,
+							...(roomKeys.length && { rooms: roomKeys }),
+						});
 						closeModal();
 						reload && reload();
 					}}
@@ -439,9 +373,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		() =>
 			roomCanRemove &&
 			userCanRemove && {
-				label: (
-					<Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>
-				),
+				label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
 				icon: 'sign-out',
 				action: removeUserOptionAction,
 			},

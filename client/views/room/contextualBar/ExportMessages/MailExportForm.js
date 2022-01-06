@@ -1,18 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
-import {
-	Field,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Box,
-	Icon,
-	Callout,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
-import { roomTypes, isEmail } from '../../../../../app/utils/client';
+import { roomTypes } from '../../../../../app/utils/client';
+import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -70,10 +62,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 		return () => {
 			$('.messages-box', $root).removeClass('selectable');
-			$('.messages-box .message', $root)
-				.off('click', handler)
-				.filter('.selected')
-				.removeClass('selected');
+			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
 		};
 	}, [rid]);
 
@@ -96,7 +85,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
-		if (additionalEmails !== '' && !isEmail(additionalEmails)) {
+		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;
 		}
@@ -110,7 +99,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			await roomsExport({
 				rid,
 				type: 'email',
-				toUsers: [toUsers],
+				toUsers,
 				toEmails: additionalEmails.split(','),
 				subject,
 				messages: selectedMessages,
@@ -131,20 +120,14 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout
-					onClick={reset}
-					title={t('Messages selected')}
-					type={selectedMessages.length > 0 ? 'success' : 'info'}
-				>
+				<Callout onClick={reset} title={t('Messages selected')} type={selectedMessages.length > 0 ? 'success' : 'info'}>
 					<p>{`${selectedMessages.length} Messages selected`}</p>
 					{selectedMessages.length > 0 && (
 						<Box is='p' className={clickable}>
 							{t('Click here to clear the selection')}
 						</Box>
 					)}
-					{selectedMessages.length === 0 && (
-						<Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>
-					)}
+					{selectedMessages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>}
 				</Callout>
 			</Field>
 			<Field>
@@ -167,11 +150,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('Subject')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={subject}
-						onChange={handleSubject}
-						addon={<Icon name='edit' size='x20' />}
-					/>
+					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20' />} />
 				</Field.Row>
 			</Field>
 

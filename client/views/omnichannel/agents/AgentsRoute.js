@@ -59,11 +59,12 @@ function AgentsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		agentsRoute.push({
-			context: 'info',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			agentsRoute.push({
+				context: 'info',
+				id,
+			}),
 	);
 
 	const { value: data, reload } = useEndpointData('livechat/users/agent', query);
@@ -71,13 +72,7 @@ function AgentsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && (
@@ -118,29 +113,17 @@ function AgentsRoute() {
 
 	const renderRow = useCallback(
 		({ emails, _id, username, name, avatarETag, statusLivechat }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' alignItems='center'>
-						<UserAvatar
-							size={mediaQuery ? 'x28' : 'x40'}
-							title={username}
-							username={username}
-							etag={avatarETag}
-						/>
+						<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
 						<Box display='flex' withTruncatedText mi='x8'>
 							<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-								<Box fontScale='p2' withTruncatedText color='default'>
+								<Box fontScale='p2m' withTruncatedText color='default'>
 									{name || username}
 								</Box>
 								{!mediaQuery && name && (
-									<Box fontScale='p1' color='hint' withTruncatedText>
+									<Box fontScale='p2' color='hint' withTruncatedText>
 										{' '}
 										{`@${username}`}{' '}
 									</Box>
@@ -151,16 +134,14 @@ function AgentsRoute() {
 				</Table.Cell>
 				{mediaQuery && (
 					<Table.Cell>
-						<Box fontScale='p2' withTruncatedText color='hint'>
+						<Box fontScale='p2m' withTruncatedText color='hint'>
 							{username}
 						</Box>{' '}
 						<Box mi='x4' />
 					</Table.Cell>
 				)}
 				<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
-				<Table.Cell withTruncatedText>
-					{statusLivechat === 'available' ? t('Available') : t('Not_Available')}
-				</Table.Cell>
+				<Table.Cell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</Table.Cell>
 				<RemoveAgentButton _id={_id} reload={reload} />
 			</Table.Row>
 		),

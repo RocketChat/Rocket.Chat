@@ -1,4 +1,4 @@
-export const isEmpty = function(obj: object | any[] | string): boolean {
+export const isEmpty = function (obj: object | any[] | string): boolean {
 	if (obj == null) {
 		return true;
 	}

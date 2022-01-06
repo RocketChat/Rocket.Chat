@@ -1,17 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
-	HTTP.post(url, options, function(err, res) {
-		if (err) {
-			resolve(null, err.response);
-		} else {
-			resolve(null, res);
-		}
-	});
-});
+const postCatchError = function (url, options) {
+	try {
+		return HTTP.post(url, options);
+	} catch (e) {
+		return e;
+	}
+};
 
 Meteor.methods({
 	'livechat:webhookTest'() {
@@ -24,11 +23,7 @@ Meteor.methods({
 			topic: 'asiodojf',
 			createdAt: new Date(),
 			lastMessageAt: new Date(),
-			tags: [
-				'tag1',
-				'tag2',
-				'tag3',
-			],
+			tags: ['tag1', 'tag2', 'tag3'],
 			customFields: {
 				productId: '123456',
 			},
@@ -52,16 +47,19 @@ Meteor.methods({
 				name: 'Agent Name',
 				email: 'agent@email.com',
 			},
-			messages: [{
-				username: 'visitor-username',
-				msg: 'message content',
-				ts: new Date(),
-			}, {
-				username: 'agent.username',
-				agentId: 'asdf89as6df8',
-				msg: 'message content from agent',
-				ts: new Date(),
-			}],
+			messages: [
+				{
+					username: 'visitor-username',
+					msg: 'message content',
+					ts: new Date(),
+				},
+				{
+					username: 'agent.username',
+					agentId: 'asdf89as6df8',
+					msg: 'message content from agent',
+					ts: new Date(),
+				},
+			],
 		};
 
 		const options = {
@@ -73,7 +71,7 @@ Meteor.methods({
 
 		const response = postCatchError(settings.get('Livechat_webhookUrl'), options);
 
-		console.log('response ->', response);
+		SystemLogger.debug({ response });
 
 		if (response && response.statusCode && response.statusCode === 200) {
 			return true;

@@ -1,5 +1,5 @@
 import { theme } from './server';
-import { settings } from '../../settings';
+import { settingsRegistry } from '../../settings/server';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
@@ -12,11 +12,11 @@ import { settings } from '../../settings';
 
 const variablesContent = Assets.getText('client/imports/general/variables.css');
 
-const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//igm;
+const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//gim;
 
 for (let matches = regionRegex.exec(variablesContent); matches; matches = regionRegex.exec(variablesContent)) {
 	const [, type, section, content] = matches;
-	[...content.match(/--(.*?):\s*(.*?);/igm)].forEach((entry) => {
+	[...content.match(/--(.*?):\s*(.*?);/gim)].forEach((entry) => {
 		const matches = /--(.*?):\s*(.*?);/im.exec(entry);
 		const [, name, value] = matches;
 
@@ -39,7 +39,7 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 		if (type === 'less-colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, `@${ variableName }`, section, true, 'expression', ['color', 'expression']);
+				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression', ['color', 'expression']);
 				return;
 			}
 
@@ -48,7 +48,7 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 	});
 }
 
-settings.add('theme-custom-css', '', {
+settingsRegistry.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
 	code: 'text/css',

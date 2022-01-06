@@ -13,7 +13,7 @@ import { isFederationEnabled } from '../../app/federation/server/lib/isFederatio
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { Team } from '../sdk';
 
-const sortChannels = function(field, direction) {
+const sortChannels = function (field, direction) {
 	switch (field) {
 		case 'createdAt':
 			return {
@@ -30,12 +30,12 @@ const sortChannels = function(field, direction) {
 	}
 };
 
-const sortUsers = function(field, direction) {
+const sortUsers = function (field, direction) {
 	switch (field) {
 		case 'email':
 			return {
 				'emails.address': direction === 'asc' ? 1 : -1,
-				username: direction === 'asc' ? 1 : -1,
+				'username': direction === 'asc' ? 1 : -1,
 			};
 		default:
 			return {
@@ -52,7 +52,8 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	const teams = Promise.await(Team.getAllPublicTeams());
 	const publicTeamIds = teams.map(({ _id }) => _id);
 
-	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userTeamsIds =
+		Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
 	const cursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
@@ -145,7 +146,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	};
 };
 
-const getUsers = (user, text, workspace, sort, pagination) => {
+const getUsers = async (user, text, workspace, sort, pagination) => {
 	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 		return;
 	}
@@ -163,7 +164,7 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 			nickname: 1,
 			bio: 1,
 			createdAt: 1,
-			...viewFullOtherUserInfo && { emails: 1 },
+			...(viewFullOtherUserInfo && { emails: 1 }),
 			federation: 1,
 			avatarETag: 1,
 		},
@@ -183,10 +184,12 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 
 	// Try to find federated users, when applicable
 	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {
-		const users = federationSearchUsers(text);
+		const users = await federationSearchUsers(text);
 
 		for (const user of users) {
-			if (results.find((e) => e._id === user._id)) { continue; }
+			if (results.find((e) => e._id === user._id)) {
+				continue;
+			}
 
 			// Add the federated user to the results
 			results.unshift({
@@ -208,10 +211,14 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+	async browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const searchTerm = s.trim(escapeRegExp(text));
 
-		if (!['channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {
+		if (
+			!['channels', 'users', 'teams'].includes(type) ||
+			!['asc', 'desc'].includes(sortDirection) ||
+			(!page && page !== 0 && !offset && offset !== 0)
+		) {
 			return;
 		}
 
@@ -247,10 +254,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'browseChannels',
-	userId(/* userId*/) {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'browseChannels',
+		userId(/* userId*/) {
+			return true;
+		},
 	},
-}, 100, 100000);
+	100,
+	100000,
+);

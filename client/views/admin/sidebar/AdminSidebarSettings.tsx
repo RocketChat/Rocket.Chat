@@ -18,19 +18,13 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 		}
 
 		const getMatchableStrings = (setting: ISetting): string[] =>
-			[
-				setting.i18nLabel && t(setting.i18nLabel as TranslationKey),
-				t(setting._id as TranslationKey),
-				setting._id,
-			].filter(Boolean);
+			[setting.i18nLabel && t(setting.i18nLabel as TranslationKey), t(setting._id as TranslationKey), setting._id].filter(Boolean);
 
 		try {
 			const filterRegex = new RegExp(filter, 'i');
-			return (setting: ISetting): boolean =>
-				getMatchableStrings(setting).some((text) => filterRegex.test(text));
+			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => filterRegex.test(text));
 		} catch (e) {
-			return (setting: ISetting): boolean =>
-				getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
+			return (setting: ISetting): boolean => getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
 		}
 	}, [filter, t]);
 
@@ -49,11 +43,7 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 
 		return settings
 			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
-			.sort((a, b) =>
-				t((a.i18nLabel || a._id) as TranslationKey).localeCompare(
-					t((b.i18nLabel || b._id) as TranslationKey),
-				),
-			);
+			.sort((a, b) => t((a.i18nLabel || a._id) as TranslationKey).localeCompare(t((b.i18nLabel || b._id) as TranslationKey)));
 	}, [settings, filterPredicate, t]);
 };
 
@@ -71,16 +61,11 @@ const AdminSidebarSettings: FC<AdminSidebarSettingsProps> = ({ currentPath }) =>
 
 	return (
 		<Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>
-			<Box pi='x24' pb='x8' fontScale='p2' color='info'>
+			<Box pi='x24' pb='x8' fontScale='p2m' color='info'>
 				{t('Settings')}
 			</Box>
 			<Box pi='x24' pb='x8' display='flex'>
-				<SearchInput
-					value={filter}
-					placeholder={t('Search')}
-					onChange={handleChange}
-					addon={<Icon name='magnifier' size='x20' />}
-				/>
+				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</Box>
 			<Box pb='x16' display='flex' flexDirection='column'>
 				{isLoadingGroups && <Skeleton />}

@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Avatars, Messages } from '../../../models/server';
+import { Rooms, Messages } from '../../../models/server';
+import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 
-export const setRoomAvatar = function(rid, dataURI, user) {
+export const setRoomAvatar = async function (rid, dataURI, user) {
 	const fileStore = FileUpload.getStore('Avatars');
 
-	const current = Avatars.findOneByRoomId(rid);
+	const current = await Avatars.findOneByRoomId(rid);
 
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
@@ -34,7 +35,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 			throw err;
 		}
 
-		Meteor.setTimeout(function() {
+		Meteor.setTimeout(function () {
 			if (current) {
 				fileStore.deleteById(current._id);
 			}

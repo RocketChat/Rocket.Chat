@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { MessageTypes } from '../../ui-utils';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'jitsi_call_started',
 		system: true,

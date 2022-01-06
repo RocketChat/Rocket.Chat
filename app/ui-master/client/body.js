@@ -7,51 +7,66 @@ import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
 import { chatMessages } from '../../ui';
-import { Layout, modal, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
+import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models';
-
 import './body.html';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 
-Template.body.onRendered(function() {
+Template.body.onRendered(function () {
 	new Clipboard('.clipboard');
 
-	$(document.body).on('keydown', function(e) {
+	$(document.body).on('keydown', function (e) {
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && unread != null && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			modal.open({
-				title: t('Clear_all_unreads_question'),
-				type: 'warning',
-				confirmButtonText: t('Yes_clear_all'),
-				showCancelButton: true,
-				cancelButtonText: t('Cancel'),
-				confirmButtonColor: '#DD6B55',
-			}, function() {
-				const subscriptions = ChatSubscription.find({
-					open: true,
-				}, {
-					fields: {
-						unread: 1,
-						alert: 1,
-						rid: 1,
-						t: 1,
-						name: 1,
-						ls: 1,
+
+			const handleClearUnreadAllMessages = () => {
+				const subscriptions = ChatSubscription.find(
+					{
+						open: true,
 					},
-				});
+					{
+						fields: {
+							unread: 1,
+							alert: 1,
+							rid: 1,
+							t: 1,
+							name: 1,
+							ls: 1,
+						},
+					},
+				);
 
 				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
 						Meteor.call('readMessages', subscription.rid);
 					}
 				});
+
+				imperativeModal.close();
+			};
+
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					children: t('Are_you_sure_you_want_to_clear_all_unread_messages'),
+					variant: 'warning',
+					title: t('Clear_all_unreads_question'),
+					confirmText: t('Yes_clear_all'),
+					onClose: imperativeModal.close,
+					onCancel: imperativeModal.close,
+					onConfirm: handleClearUnreadAllMessages,
+				},
 			});
 		}
 	});
 
-	$(document.body).on('keydown', function(e) {
+	$(document.body).on('keydown', function (e) {
 		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
 			popover.close();
@@ -89,14 +104,14 @@ Template.body.onRendered(function() {
 	};
 
 	this.autorun(() => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			$(document.body).on('click', 'a', handleMessageLinkClick);
 		} else {
 			$(document.body).off('click', 'a', handleMessageLinkClick);
 		}
 	});
 
-	this.autorun(function(c) {
+	this.autorun(function (c) {
 		const w = window;
 		const d = document;
 		const script = 'script';
@@ -104,19 +119,19 @@ Template.body.onRendered(function() {
 		const i = settings.get('GoogleTagManager_id');
 		if (Match.test(i, String) && i.trim() !== '') {
 			c.stop();
-			return (function(w, d, s, l, i) {
+			return (function (w, d, s, l, i) {
 				w[l] = w[l] || [];
 				w[l].push({
 					'gtm.start': new Date().getTime(),
-					event: 'gtm.js',
+					'event': 'gtm.js',
 				});
 				const f = d.getElementsByTagName(s)[0];
 				const j = d.createElement(s);
-				const dl = l !== 'dataLayer' ? `&l=${ l }` : '';
+				const dl = l !== 'dataLayer' ? `&l=${l}` : '';
 				j.async = true;
-				j.src = `//www.googletagmanager.com/gtm.js?id=${ i }${ dl }`;
+				j.src = `//www.googletagmanager.com/gtm.js?id=${i}${dl}`;
 				return f.parentNode.insertBefore(j, f);
-			}(w, d, script, l, i));
+			})(w, d, script, l, i);
 		}
 	});
 });

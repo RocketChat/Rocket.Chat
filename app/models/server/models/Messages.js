@@ -3,7 +3,6 @@ import _ from 'underscore';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 export class Messages extends Base {
@@ -15,7 +14,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: true });
-		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
+		this.tryEnsureIndex({ 'rid': 1, 't': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ msg: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
@@ -31,6 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
+		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
@@ -40,31 +41,39 @@ export class Messages extends Base {
 	}
 
 	keepHistoryForToken(token) {
-		return this.update({
-			'navigation.token': token,
-			expireAt: {
-				$exists: true,
+		return this.update(
+			{
+				'navigation.token': token,
+				'expireAt': {
+					$exists: true,
+				},
 			},
-		}, {
-			$unset: {
-				expireAt: 1,
+			{
+				$unset: {
+					expireAt: 1,
+				},
 			},
-		}, {
-			multi: true,
-		});
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setRoomIdByToken(token, rid) {
-		return this.update({
-			'navigation.token': token,
-			rid: null,
-		}, {
-			$set: {
-				rid,
+		return this.update(
+			{
+				'navigation.token': token,
+				'rid': null,
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$set: {
+					rid,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
@@ -73,6 +82,22 @@ export class Messages extends Base {
 
 	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+	}
+
+	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
+	}
+
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
+	}
+
+	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
+	}
+
+	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
 	}
 
 	unsetReactions(messageId) {
@@ -90,17 +115,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	setGoogleVisionData(messageId, visionData) {
-		const updateObj = {};
-		for (const index in visionData) {
-			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${ index }`] = visionData[index];
-			}
-		}
-
-		return this.update({ _id: messageId }, { $set: updateObj });
-	}
-
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
@@ -113,34 +127,38 @@ export class Messages extends Base {
 		const updateObj = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`translations.${ key }`] = translation;
+			updateObj[`translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
-	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {
 			const translation = translations[key];
-			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
 		});
 		return this.update({ _id: messageId }, { $set: updateObj });
-	}
+	};
 
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
 			'_importFile.id': importFileId,
 		};
 
-		return this.update(query, {
-			$set: {
-				'_importFile.rocketChatUrl': rocketChatUrl,
-				'_importFile.downloaded': true,
+		return this.update(
+			query,
+			{
+				$set: {
+					'_importFile.rocketChatUrl': rocketChatUrl,
+					'_importFile.downloaded': true,
+				},
+				$addToSet: {
+					attachments: attachment,
+				},
 			},
-			$addToSet: {
-				attachments: attachment,
-			},
-		}, { multi: true });
+			{ multi: true },
+		);
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -173,7 +191,15 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], ignoreThreads = true, options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion = true,
+		ts,
+		users = [],
+		ignoreThreads = true,
+		options = {},
+	) {
 		const query = {
 			rid,
 			ts,
@@ -220,7 +246,7 @@ export class Messages extends Base {
 
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
@@ -235,6 +261,17 @@ export class Messages extends Base {
 			},
 
 			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleByIds(ids, options) {
+		const query = {
+			_id: { $in: ids },
+			_hidden: {
+				$ne: true,
+			},
 		};
 
 		return this.find(query, options);
@@ -258,16 +295,19 @@ export class Messages extends Base {
 				$ne: true,
 			},
 			rid: roomId,
-			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
-			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -333,23 +373,34 @@ export class Messages extends Base {
 			ts: {
 				[inclusive ? '$lte' : '$lt']: timestamp,
 			},
-			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
-			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true, inclusive = false) {
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId,
+		afterTimestamp,
+		beforeTimestamp,
+		types,
+		options,
+		showThreadMessages = true,
+		inclusive = false,
+	) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -359,16 +410,19 @@ export class Messages extends Base {
 				[inclusive ? '$gte' : '$gt']: afterTimestamp,
 				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
 			},
-			...!showThreadMessages && {
-				$or: [{
-					tmid: { $exists: false },
-				}, {
-					tshow: true,
-				}],
-			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
 		};
 
-		if (Match.test(types, [String]) && (types.length > 0)) {
+		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
 
@@ -378,16 +432,17 @@ export class Messages extends Base {
 	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
 		const query = {
 			_hidden: { $ne: true },
-			$or: [{
-				ts: {
-					$gt: timestamp,
+			$or: [
+				{
+					ts: {
+						$gt: timestamp,
+					},
 				},
-			},
-			{
-				editedAt: {
-					$gt: timestamp,
+				{
+					editedAt: {
+						$gt: timestamp,
+					},
 				},
-			},
 			],
 		};
 
@@ -396,9 +451,9 @@ export class Messages extends Base {
 
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'starred._id': userId,
-			rid: roomId,
+			'rid': roomId,
 		};
 
 		return this.find(query, options);
@@ -458,13 +513,24 @@ export class Messages extends Base {
 		return this.findOne(query);
 	}
 
+	findOneByRoomIdAndMessageId(rid, messageId, options) {
+		const query = {
+			rid,
+			_id: messageId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByRoomIdAndType(roomId, type, options) {
 		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -477,17 +543,12 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentByRoomId(rid, messageId) {
-		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
-		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: hiddenSysMes ? { $nin: hiddenSysMes } : undefined,
-			$or: [
-				{ tmid: { $exists: false } },
-				{ tshow: true },
-			],
+			t: { $exists: false },
+			$or: [{ tmid: { $exists: false } }, { tshow: true }],
 		};
 
 		if (messageId) {
@@ -518,7 +579,9 @@ export class Messages extends Base {
 
 	// UPDATE
 	setHiddenById(_id, hidden) {
-		if (hidden == null) { hidden = true; }
+		if (hidden == null) {
+			hidden = true;
+		}
 		const query = { _id };
 
 		const update = {
@@ -558,8 +621,12 @@ export class Messages extends Base {
 	}
 
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
-		if (pinned == null) { pinned = true; }
-		if (pinnedAt == null) { pinnedAt = 0; }
+		if (pinned == null) {
+			pinned = true;
+		}
+		if (pinnedAt == null) {
+			pinnedAt = 0;
+		}
 		const query = { _id };
 
 		const update = {
@@ -574,11 +641,15 @@ export class Messages extends Base {
 	}
 
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		if (snippeted == null) { snippeted = true; }
-		if (snippetedAt == null) { snippetedAt = 0; }
+		if (snippeted == null) {
+			snippeted = true;
+		}
+		if (snippetedAt == null) {
+			snippetedAt = 0;
+		}
 		const query = { _id: message._id };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
@@ -638,7 +709,7 @@ export class Messages extends Base {
 		const update = {
 			$set: {
 				'mentions.$.username': newUsername,
-				msg: newMessage,
+				'msg': newMessage,
 			},
 		};
 
@@ -710,7 +781,7 @@ export class Messages extends Base {
 
 		const update = {
 			$set: {
-				alias: newNameAlias,
+				'alias': newNameAlias,
 				'u._id': newUserId,
 				'u.username': newUsername,
 				'u.name': undefined,
@@ -741,17 +812,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-
-		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
-		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
-		if (hiddenSysMes.length && hiddenSysMes.includes(type)) {
-			Rooms.incMsgCountById(roomId, 1);
-		} else {
-			const byUser = extraData && extraData.u ? extraData.u._id : user._id;
-			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
-			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
-		}
-
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 
@@ -1034,27 +1095,34 @@ export class Messages extends Base {
 	}
 
 	setAsRead(rid, until) {
-		return this.update({
-			rid,
-			unread: true,
-			ts: { $lt: until },
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				rid,
+				unread: true,
+				ts: { $lt: until },
 			},
-		}, {
-			multi: true,
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
 	}
 
 	setAsReadById(_id) {
-		return this.update({
-			_id,
-		}, {
-			$unset: {
-				unread: 1,
+		return this.update(
+			{
+				_id,
 			},
-		});
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+		);
 	}
 
 	findUnreadMessagesByRoomAndDate(rid, after) {
@@ -1096,12 +1164,16 @@ export class Messages extends Base {
 			drid: rid,
 		};
 
-		return this.update(query, {
-			$set: {
-				dcount,
-				dlm,
+		return this.update(
+			query,
+			{
+				$set: {
+					dcount,
+					dlm,
+				},
 			},
-		}, { multi: 1 });
+			{ multi: 1 },
+		);
 	}
 
 	// //////////////////////////////////////////////////////////////////

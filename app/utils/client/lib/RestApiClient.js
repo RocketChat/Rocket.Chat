@@ -1,13 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import jQuery from 'jquery';
 
-import { baseURI } from './baseuri';
-import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
-
-export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
-	acc += `${ label }[]=${ item }&`;
-	return acc;
-}, '');
+import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
+import { baseURI } from '../../../../client/lib/baseURI';
 
 export const APIClient = {
 	delete(endpoint, params) {
@@ -25,6 +21,15 @@ export const APIClient = {
 		}
 
 		return APIClient._jqueryCall('POST', endpoint, params, body);
+	},
+
+	put(endpoint, params, body) {
+		if (!body) {
+			body = params;
+			params = {};
+		}
+
+		return APIClient._jqueryCall('PUT', endpoint, params, body);
 	},
 
 	upload(endpoint, params, formData, xhrOptions) {
@@ -50,10 +55,11 @@ export const APIClient = {
 				query += query === '' ? '?' : '&';
 
 				if (Array.isArray(params[key])) {
-					const joinedArray = params[key].join(`&${ key }[]=`);
-					query += `${ key }[]=${ joinedArray }`;
+					const encodedParams = params[key].map((value) => encodeURIComponent(value));
+					const joinedArray = encodedParams.join(`&${key}[]=`);
+					query += `${key}[]=${joinedArray}`;
 				} else {
-					query += `${ key }=${ params[key] }`;
+					query += `${key}=${encodeURIComponent(params[key])}`;
 				}
 			});
 		}
@@ -67,11 +73,14 @@ export const APIClient = {
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
-				url: `${ baseURI }api/${ endpoint }${ query }`,
-				headers: Object.assign({
-					'Content-Type': 'application/json',
-					...APIClient.getCredentials(),
-				}, headers),
+				url: `${baseURI}api/${endpoint}${query}`,
+				headers: Object.assign(
+					{
+						'Content-Type': 'application/json',
+						...APIClient.getCredentials(),
+					},
+					headers,
+				),
 				data: JSON.stringify(body),
 				dataType,
 				success: function _rlGetSuccess(result) {
@@ -95,7 +104,7 @@ export const APIClient = {
 	},
 
 	_jqueryFormDataCall(endpoint, params, formData, { progress = () => {}, error = () => {} } = {}) {
-		const ret = { };
+		const ret = {};
 
 		const query = APIClient._generateQueryFromParams(params);
 
@@ -108,18 +117,22 @@ export const APIClient = {
 				xhr() {
 					const xhr = new window.XMLHttpRequest();
 
-					xhr.upload.addEventListener('progress', function(evt) {
-						if (evt.lengthComputable) {
-							const percentComplete = evt.loaded / evt.total;
-							progress(percentComplete * 100);
-						}
-					}, false);
+					xhr.upload.addEventListener(
+						'progress',
+						function (evt) {
+							if (evt.lengthComputable) {
+								const percentComplete = evt.loaded / evt.total;
+								progress(percentComplete * 100);
+							}
+						},
+						false,
+					);
 
 					xhr.upload.addEventListener('error', error, false);
 
 					return xhr;
 				},
-				url: `${ baseURI }api/${ endpoint }${ query }`,
+				url: `${baseURI}api/${endpoint}${query}`,
 				headers: APIClient.getCredentials(),
 				data: formData,
 				processData: false,
@@ -151,26 +164,32 @@ export const APIClient = {
 				const headers = params[params.length - 1];
 				headers['x-2fa-code'] = code;
 				headers['x-2fa-method'] = method;
-				APIClient._jqueryCall(...params).then(resolve).catch(reject);
+				APIClient._jqueryCall(...params)
+					.then(resolve)
+					.catch(reject);
 			},
 		});
 	},
 
 	v1: {
 		delete(endpoint, params) {
-			return APIClient.delete(`v1/${ endpoint }`, params);
+			return APIClient.delete(`v1/${endpoint}`, params);
 		},
 
 		get(endpoint, params) {
-			return APIClient.get(`v1/${ endpoint }`, params);
+			return APIClient.get(`v1/${endpoint}`, params);
 		},
 
 		post(endpoint, params, body) {
-			return APIClient.post(`v1/${ endpoint }`, params, body);
+			return APIClient.post(`v1/${endpoint}`, params, body);
 		},
 
 		upload(endpoint, params, formData) {
-			return APIClient.upload(`v1/${ endpoint }`, params, formData);
+			return APIClient.upload(`v1/${endpoint}`, params, formData);
+		},
+
+		put(endpoint, params, body) {
+			return APIClient.put(`v1/${endpoint}`, params, body);
 		},
 	},
 };

@@ -6,9 +6,7 @@ export type Events<T> = {
 	change: Store<T>;
 };
 
-export const generator = function generator<T>(
-	name?: string,
-): {
+export const generator = function generator<T>(name?: string): {
 	store: Store<T>;
 	add: (id: string, action: T) => Store<T>;
 	remove: (id: string) => boolean;
@@ -30,8 +28,7 @@ export const generator = function generator<T>(
 		return result;
 	};
 
-	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): Function =>
-		emitter.on('change', handler);
+	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): Function => emitter.on('change', handler);
 
 	return Object.freeze({
 		store,

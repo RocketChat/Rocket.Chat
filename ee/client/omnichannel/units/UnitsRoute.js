@@ -4,14 +4,12 @@ import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
-import VerticalBar from '../../../../client/components/VerticalBar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import RemoveUnitButton from './RemoveUnitButton';
 import UnitEditWithData from './UnitEditWithData';
-import UnitNew from './UnitNew';
 import UnitsPage from './UnitsPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -55,11 +53,12 @@ function UnitsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		unitsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			unitsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/units.list', query);
@@ -67,13 +66,7 @@ function UnitsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -94,14 +87,7 @@ function UnitsRoute() {
 
 	const renderRow = useCallback(
 		({ _id, name, visibility }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{visibility}</Table.Cell>
 				<RemoveUnitButton _id={_id} reload={reload} />
@@ -110,27 +96,9 @@ function UnitsRoute() {
 		[reload, onRowClick],
 	);
 
-	const EditUnitsTab = useCallback(() => {
-		if (!context) {
-			return '';
-		}
-		const handleVerticalBarCloseButtonClick = () => {
-			unitsRoute.push({});
-		};
-
-		return (
-			<VerticalBar>
-				<VerticalBar.Header>
-					{context === 'edit' && t('Edit_Unit')}
-					{context === 'new' && t('New_Unit')}
-					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-				</VerticalBar.Header>
-
-				{context === 'edit' && <UnitEditWithData unitId={id} reload={reload} allUnits={data} />}
-				{context === 'new' && <UnitNew reload={reload} allUnits={data} />}
-			</VerticalBar>
-		);
-	}, [t, context, id, unitsRoute, reload, data]);
+	if (context === 'edit' || context === 'new') {
+		return <UnitEditWithData title={context === 'edit' ? t('Edit_Unit') : t('New_Unit')} unitId={id} reload={reload} allUnits={data} />;
+	}
 
 	if (!canViewUnits) {
 		return <NotAuthorizedPage />;
@@ -147,9 +115,7 @@ function UnitsRoute() {
 			header={header}
 			renderRow={renderRow}
 			title={t('Units')}
-		>
-			<EditUnitsTab />
-		</UnitsPage>
+		></UnitsPage>
 	);
 }
 

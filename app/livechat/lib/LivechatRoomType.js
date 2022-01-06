@@ -68,7 +68,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(rid) {
-		const room = Session.get(`roomData${ rid }`);
+		const room = Session.get(`roomData${rid}`);
 		if (room) {
 			return room.v && room.v.status;
 		}
@@ -100,7 +100,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid, user) {
+	readOnly(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
@@ -111,11 +111,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
+		return !room.servedBy;
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
 	openCustomProfileTab(instance, room, username) {

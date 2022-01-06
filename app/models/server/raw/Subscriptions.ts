@@ -1,11 +1,35 @@
-import { FindOneOptions, Cursor, UpdateQuery, FilterQuery } from 'mongodb';
+import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
+import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
 import { ISubscription } from '../../../../definition/ISubscription';
+import { IRole, IUser } from '../../../../definition/IUser';
+import { IRoom } from '../../../../definition/IRoom';
+import { UsersRaw } from './Users';
 
 type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
-	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
+	constructor(public readonly col: Collection<T>, private readonly models: { Users: UsersRaw }, trash?: Collection<T>) {
+		super(col, trash);
+	}
+
+	async getBadgeCount(uid: string): Promise<number> {
+		const [result] = await this.col
+			.aggregate<{ total: number } | undefined>([
+				{ $match: { 'u._id': uid, 'archived': { $ne: true } } },
+				{
+					$group: {
+						_id: 'total',
+						total: { $sum: '$unread' },
+					},
+				},
+			])
+			.toArray();
+
+		return result?.total || 0;
+	}
+
+	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | null> {
 		const query = {
 			rid,
 			'u._id': uid,
@@ -17,7 +41,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
 			'u._id': userId,
-			rid: {
+			'rid': {
 				$in: roomIds,
 			},
 		};
@@ -27,7 +51,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
-			rid: roomId,
+			'rid': roomId,
 			'u._id': {
 				$ne: userId,
 			},
@@ -36,7 +60,18 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string): Promise<number> {
+	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
+		const query = {
+			'rid': roomId,
+			'servedBy._id': {
+				$ne: userId,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
@@ -47,15 +82,15 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return cursor.count();
 	}
 
-	async isUserInRole(uid: string, roleName: string, rid: string): Promise<T | undefined> {
+	async isUserInRole(uid: IUser['_id'], roleName: IRole['name'], rid?: IRoom['_id']): Promise<T | null> {
 		if (rid == null) {
-			return;
+			return null;
 		}
 
 		const query = {
 			'u._id': uid,
 			rid,
-			roles: roleName,
+			'roles': roleName,
 		};
 
 		return this.findOne(query, { projection: { roles: 1 } });
@@ -79,5 +114,90 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		};
 
 		return this.update(query, update, options);
+	}
+
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['name'][], rid: IRoom['_id']): Promise<UpdateWriteOpResult> {
+		const query = {
+			'u._id': uid,
+			rid,
+		};
+
+		const update = {
+			$pullAll: {
+				roles,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findUsersInRoles(name: IRole['name'][], rid: string | undefined): Promise<Cursor<IUser>>;
+
+	findUsersInRoles(
+		name: IRole['name'][],
+		rid: string | undefined,
+		options: WithoutProjection<FindOneOptions<IUser>>,
+	): Promise<Cursor<IUser>>;
+
+	findUsersInRoles<P = IUser>(
+		name: IRole['name'][],
+		rid: string | undefined,
+		options: FindOneOptions<P extends IUser ? IUser : P>,
+	): Promise<Cursor<P>>;
+
+	async findUsersInRoles<P = IUser>(
+		roles: IRole['name'][],
+		rid: IRoom['_id'] | undefined,
+		options?: FindOneOptions<P extends IUser ? IUser : P>,
+	): Promise<Cursor<P>> {
+		const query = {
+			roles: { $in: roles },
+			...(rid && { rid }),
+		};
+
+		const subscriptions = await this.find(query).toArray();
+
+		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
+
+		return !options
+			? this.models.Users.find({ _id: { $in: users } })
+			: this.models.Users.find({ _id: { $in: users } } as FilterQuery<IUser>, options);
+	}
+
+	addRolesByUserId(uid: IUser['_id'], roles: IRole['name'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {
+		if (!Array.isArray(roles)) {
+			roles = [roles];
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
+		}
+
+		const query = {
+			'u._id': uid,
+			rid,
+		};
+
+		const update = {
+			$addToSet: {
+				roles: { $each: roles },
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean> {
+		const query = {
+			'u._id': uid,
+			rid,
+		};
+
+		if (!rid) {
+			return false;
+		}
+		const options = {
+			fields: { _id: 1 },
+		};
+
+		const found = await this.findOne(query, options);
+		return !!found;
 	}
 }

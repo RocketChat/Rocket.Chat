@@ -10,7 +10,6 @@ describe('[Emoji]', () => {
 		sideNav.searchChannel('general');
 	});
 
-
 	describe('Render:', () => {
 		before(() => {
 			mainContent.emojiBtn.click();
@@ -133,7 +132,7 @@ describe('[Emoji]', () => {
 			});
 		});
 
-		describe('send texts and make sure they\'re not converted to emojis:', () => {
+		describe("send texts and make sure they're not converted to emojis:", () => {
 			it('should render numbers', () => {
 				mainContent.sendMessage('0 1 2 3 4 5 6 7 8 9');
 				mainContent.waitForLastMessageEqualsHtml('0 1 2 3 4 5 6 7 8 9');

@@ -22,10 +22,7 @@ const useQuery = ({ text, type, itemsPerPage, current }, [column, direction]) =>
 const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
 	const { ref, borderBoxSize } = useResizeObserver({ debounceDelay });
 	const inlineSize = borderBoxSize ? borderBoxSize.inlineSize : 0;
-	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [
-		inlineSize,
-		sizes,
-	]);
+	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [inlineSize, sizes]);
 	return [ref, ...sizes];
 };
 
@@ -80,13 +77,7 @@ function IntegrationsTable({ type }) {
 				>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'channel'}
-					direction={sort[1]}
-					active={sort[0] === 'channel'}
-					onClick={onHeaderClick}
-					sort='channel'
-				>
+				<GenericTable.HeaderCell key={'channel'} direction={sort[1]} active={sort[0] === 'channel'} onClick={onHeaderClick} sort='channel'>
 					{t('Post_to')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -122,10 +113,7 @@ function IntegrationsTable({ type }) {
 		[sort, onHeaderClick, isBig, t],
 	);
 
-	const renderRow = useCallback(
-		(props) => <IntegrationRow {...props} isBig={isBig} onClick={onClick} />,
-		[isBig, onClick],
-	);
+	const renderRow = useCallback((props) => <IntegrationRow {...props} isBig={isBig} onClick={onClick} />, [isBig, onClick]);
 
 	return (
 		<GenericTable
@@ -136,9 +124,7 @@ function IntegrationsTable({ type }) {
 			total={data && data.total}
 			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => (
-				<FilterByTypeAndText setFilter={onChange} {...props} />
-			)}
+			renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
 		/>
 	);
 }

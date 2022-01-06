@@ -10,7 +10,8 @@ import { Session } from 'meteor/session';
 import { AutoComplete } from '../../../meteor-autocomplete/client';
 import { roomTypes } from '../../../utils/client';
 import { ChatRoom } from '../../../models/client';
-import { call, modal } from '../../../ui-utils/client';
+import { modal } from '../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 import './invitePlayers.html';
 
@@ -21,7 +22,9 @@ Template.InvitePlayers.helpers({
 	selectedUsers() {
 		const myUsername = Meteor.user().username;
 		const { message } = this;
-		const users = Template.instance().selectedUsers.get().map((e) => e);
+		const users = Template.instance()
+			.selectedUsers.get()
+			.map((e) => e);
 		if (message) {
 			users.unshift(message.u);
 		}
@@ -49,18 +52,18 @@ Template.InvitePlayers.helpers({
 		return ChatRoom;
 	},
 	roomSelector() {
-		return (expression) => ({ name: { $regex: `.*${ expression }.*` } });
+		return (expression) => ({ name: { $regex: `.*${expression}.*` } });
 	},
 	roomModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `#${f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	userModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	nameSuggestion() {
@@ -72,12 +75,14 @@ Template.InvitePlayers.events({
 	async 'submit #invite-players, click .js-invite-players'(e, instance) {
 		e.preventDefault();
 
-		const { data: { name } } = instance;
+		const {
+			data: { name },
+		} = instance;
 		const users = instance.selectedUsers.get().map(({ username }) => username);
-		const privateGroupName = `${ name.replace(/\s/g, '-') }-${ Random.id(10) }`;
+		const privateGroupName = `${name.replace(/\s/g, '-')}-${Random.id(10)}`;
 
 		try {
-			const result = await call('createPrivateGroup', privateGroupName, users);
+			const result = await callWithErrorHandling('createPrivateGroup', privateGroupName, users);
 
 			roomTypes.openRouteLink(result.t, result);
 
@@ -90,7 +95,7 @@ Template.InvitePlayers.events({
 					return;
 				}
 
-				call('sendMessage', {
+				callWithErrorHandling('sendMessage', {
 					_id: Random.id(),
 					rid: result.rid,
 					msg: TAPi18n.__('Apps_Game_Center_Play_Game_Together', { name }),
@@ -106,7 +111,7 @@ Template.InvitePlayers.events({
 	},
 });
 
-Template.InvitePlayers.onCreated(function() {
+Template.InvitePlayers.onCreated(function () {
 	this.selectedUsers = new ReactiveVar([]);
 	this.onSelectUser = ({ item: user }) => {
 		if (user.username === Meteor.user().username) {
@@ -188,42 +193,41 @@ Template.SearchInvitePlayers.events({
 		return onClickTag & onClickTag(Blaze.getData(target));
 	},
 });
-Template.SearchInvitePlayers.onRendered(function() {
+Template.SearchInvitePlayers.onRendered(function () {
 	const { name } = this.data;
 
-	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);
+	this.ac.element = this.firstNode.querySelector(`[name=${name}]`);
 	this.ac.$element = $(this.ac.element);
 });
 
-Template.SearchInvitePlayers.onCreated(function() {
+Template.SearchInvitePlayers.onCreated(function () {
 	this.filter = new ReactiveVar('');
 	this.selected = new ReactiveVar([]);
 	this.onClickTag = this.data.onClickTag;
 	this.deleteLastItem = this.data.deleteLastItem;
 
 	const { collection, endpoint, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
-	this.ac = new AutoComplete(
-		{
-			selector: {
-				anchor: '.rc-input__label',
-				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list',
+	this.ac = new AutoComplete({
+		selector: {
+			anchor: '.rc-input__label',
+			item: '.rc-popup-list__item',
+			container: '.rc-popup-list__list',
+		},
+		onSelect,
+		position: 'fixed',
+		limit: 10,
+		inputDelay: 300,
+		rules: [
+			{
+				collection,
+				endpoint,
+				field,
+				matchAll: true,
+				doNotChangeWidth: false,
+				selector,
+				sort,
 			},
-			onSelect,
-			position: 'fixed',
-			limit: 10,
-			inputDelay: 300,
-			rules: [
-				{
-					collection,
-					endpoint,
-					field,
-					matchAll: true,
-					doNotChangeWidth: false,
-					selector,
-					sort,
-				},
-			],
-		});
+		],
+	});
 	this.ac.tmplInst = this;
 });

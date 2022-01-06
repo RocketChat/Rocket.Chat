@@ -9,8 +9,10 @@ import { AppsContext } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
-const filterFunction = (text) => ({ name, marketplace }) =>
-	marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+const filterFunction =
+	(text) =>
+	({ name, marketplace }) =>
+		marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
 
 function MarketplaceTable() {
 	const t = useTranslation();
@@ -34,9 +36,7 @@ function MarketplaceTable() {
 
 	const [sortBy, sortDirection] = sort;
 	const onHeaderCellClick = (id) => {
-		setSort(([sortBy, sortDirection]) =>
-			sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc'],
-		);
+		setSort(([sortBy, sortDirection]) => (sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc']));
 	};
 
 	return (
@@ -62,18 +62,9 @@ function MarketplaceTable() {
 			total={filteredAppsCount}
 			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => (
-				<FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />
-			)}
+			renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />}
 		>
-			{(props) => (
-				<MarketplaceRow
-					key={props.id}
-					medium={onMediumBreakpoint}
-					large={onLargeBreakpoint}
-					{...props}
-				/>
-			)}
+			{(props) => <MarketplaceRow key={props.id} medium={onMediumBreakpoint} large={onLargeBreakpoint} {...props} />}
 		</GenericTable>
 	);
 }

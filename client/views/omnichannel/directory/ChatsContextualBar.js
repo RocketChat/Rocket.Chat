@@ -31,9 +31,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 		directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(
-		`rooms.info?roomId=${id}`,
-	);
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info?roomId=${id}`);
 
 	if (bar === 'view') {
 		return <Chat rid={id} />;
@@ -58,11 +56,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 					<>
 						<VerticalBar.Icon name='info-circled' />
 						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-						<VerticalBar.Action
-							title={t('View_full_conversation')}
-							name={'new-window'}
-							onClick={openInRoom}
-						/>
+						<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
 					</>
 				)}
 				{bar === 'edit' && (
@@ -75,12 +69,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 			</VerticalBar.Header>
 			{bar === 'info' && <ChatInfoDirectory id={id} room={data.room} />}
 			{bar === 'edit' && (
-				<RoomEditWithData
-					id={id}
-					close={handleChatsVerticalBarBackButtonClick}
-					reload={chatReload}
-					reloadInfo={reloadInfo}
-				/>
+				<RoomEditWithData id={id} close={handleChatsVerticalBarBackButtonClick} reload={chatReload} reloadInfo={reloadInfo} />
 			)}
 		</VerticalBar>
 	);

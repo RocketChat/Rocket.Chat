@@ -1,189 +1,161 @@
 import { Meteor } from 'meteor/meteor';
-import Busboy from 'busboy';
 
-import { EmojiCustom } from '../../../models';
+import { EmojiCustom } from '../../../models/server/raw';
 import { API } from '../api';
+import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
 import { Media } from '../../../../server/sdk';
 
-// DEPRECATED
-// Will be removed after v3.0.0
-API.v1.addRoute('emoji-custom', { authRequired: true }, {
-	get() {
-		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v3.0.0';
-		console.warn(warningMessage);
-		const { query } = this.parseJsonQuery();
-		const emojis = Meteor.call('listEmojiCustom', query);
-
-		return API.v1.success(this.deprecationWarning({
-			endpoint: 'emoji-custom',
-			versionWillBeRemoved: '3.0.0',
-			response: {
-				emojis,
-			},
-		}));
-	},
-});
-
-API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
-	get() {
-		const { query } = this.parseJsonQuery();
-		const { updatedSince } = this.queryParams;
-		let updatedSinceDate;
-		if (updatedSince) {
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
+API.v1.addRoute(
+	'emoji-custom.list',
+	{ authRequired: true },
+	{
+		get() {
+			const { query } = this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (updatedSince) {
+				if (isNaN(Date.parse(updatedSince))) {
+					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+				} else {
+					updatedSinceDate = new Date(updatedSince);
+				}
+				return API.v1.success({
+					emojis: {
+						update: Promise.await(EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).toArray()),
+						remove: Promise.await(EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray()),
+					},
+				});
 			}
+
 			return API.v1.success({
 				emojis: {
-					update: EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).fetch(),
-					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
+					update: Promise.await(EmojiCustom.find(query).toArray()),
+					remove: [],
 				},
 			});
-		}
-
-		return API.v1.success({
-			emojis: {
-				update: EmojiCustom.find(query).fetch(),
-				remove: [],
-			},
-		});
+		},
 	},
-});
+);
 
-API.v1.addRoute('emoji-custom.all', { authRequired: true }, {
-	get() {
-		const { offset, count } = this.getPaginationItems();
-		const { sort, query } = this.parseJsonQuery();
+API.v1.addRoute(
+	'emoji-custom.all',
+	{ authRequired: true },
+	{
+		get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort, query } = this.parseJsonQuery();
 
-		return API.v1.success(Promise.await(findEmojisCustom({
-			query,
-			pagination: {
-				offset,
-				count,
-				sort,
-			},
-		})));
+			return API.v1.success(
+				Promise.await(
+					findEmojisCustom({
+						query,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
+				),
+			);
+		},
 	},
-});
+);
 
-API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
-	post() {
-		Meteor.runAsUser(this.userId, () => {
-			const fields = {};
-			const busboy = new Busboy({ headers: this.request.headers });
-			const emojiData = [];
-			let emojiMimetype = '';
+API.v1.addRoute(
+	'emoji-custom.create',
+	{ authRequired: true },
+	{
+		post() {
+			const { emoji, ...fields } = Promise.await(
+				getUploadFormData({
+					request: this.request,
+				}),
+			);
 
-			Meteor.wrapAsync((callback) => {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-					if (fieldname !== 'emoji') {
-						return callback(new Meteor.Error('invalid-field'));
-					}
+			if (!emoji) {
+				throw new Meteor.Error('invalid-field');
+			}
 
-					file.on('data', Meteor.bindEnvironment((data) => emojiData.push(data)));
+			const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
+			if (!isUploadable) {
+				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+			}
 
-					file.on('end', Meteor.bindEnvironment(() => {
-						const extension = mimetype.split('/')[1];
-						emojiMimetype = mimetype;
-						fields.extension = extension;
-					}));
-				}));
-				busboy.on('field', (fieldname, val) => {
-					fields[fieldname] = val;
-				});
-				busboy.on('finish', Meteor.bindEnvironment(() => {
-					fields.newFile = true;
-					fields.aliases = fields.aliases || '';
-					try {
-						const emojiBuffer = Buffer.concat(emojiData);
-						const isUploadable = Promise.await(Media.isImage(emojiBuffer));
-						if (!isUploadable) {
-							throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
-						}
+			const [, extension] = emoji.mimetype.split('/');
+			fields.extension = extension;
 
-						Meteor.call('insertOrUpdateEmoji', fields);
-						Meteor.call('uploadEmojiCustom', emojiBuffer, emojiMimetype, fields);
-						callback();
-					} catch (error) {
-						return callback(error);
-					}
-				}));
-				this.request.pipe(busboy);
-			})();
-		});
+			fields.newFile = true;
+			fields.aliases = fields.aliases || '';
+
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('insertOrUpdateEmoji', fields);
+				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, fields);
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
-	post() {
-		Meteor.runAsUser(this.userId, () => {
-			const fields = {};
-			const busboy = new Busboy({ headers: this.request.headers });
-			const emojiData = [];
-			let emojiMimetype = '';
+API.v1.addRoute(
+	'emoji-custom.update',
+	{ authRequired: true },
+	{
+		post() {
+			const { emoji, ...fields } = Promise.await(
+				getUploadFormData({
+					request: this.request,
+				}),
+			);
 
-			Meteor.wrapAsync((callback) => {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-					if (fieldname !== 'emoji') {
-						return callback(new Meteor.Error('invalid-field'));
-					}
-					file.on('data', Meteor.bindEnvironment((data) => emojiData.push(data)));
+			if (!fields._id) {
+				throw new Meteor.Error('The required "_id" query param is missing.');
+			}
 
-					file.on('end', Meteor.bindEnvironment(() => {
-						const extension = mimetype.split('/')[1];
-						emojiMimetype = mimetype;
-						fields.extension = extension;
-					}));
-				}));
-				busboy.on('field', (fieldname, val) => {
-					fields[fieldname] = val;
-				});
-				busboy.on('finish', Meteor.bindEnvironment(() => {
-					try {
-						if (!fields._id) {
-							return callback(new Meteor.Error('The required "_id" query param is missing.'));
-						}
-						const emojiToUpdate = EmojiCustom.findOneById(fields._id);
-						if (!emojiToUpdate) {
-							return callback(new Meteor.Error('Emoji not found.'));
-						}
-						fields.previousName = emojiToUpdate.name;
-						fields.previousExtension = emojiToUpdate.extension;
-						fields.aliases = fields.aliases || '';
-						fields.newFile = Boolean(emojiData.length);
-						const emojiBuffer = Buffer.concat(emojiData);
-						const isUploadable = Promise.await(Media.isImage(emojiBuffer));
-						if (!isUploadable) {
-							throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
-						}
+			const emojiToUpdate = Promise.await(EmojiCustom.findOneById(fields._id));
+			if (!emojiToUpdate) {
+				throw new Meteor.Error('Emoji not found.');
+			}
 
-						Meteor.call('insertOrUpdateEmoji', fields);
-						if (emojiData.length) {
-							Meteor.call('uploadEmojiCustom', emojiBuffer, emojiMimetype, fields);
-						}
-						callback();
-					} catch (error) {
-						return callback(error);
-					}
-				}));
-				this.request.pipe(busboy);
-			})();
-		});
+			fields.previousName = emojiToUpdate.name;
+			fields.previousExtension = emojiToUpdate.extension;
+			fields.aliases = fields.aliases || '';
+			fields.newFile = Boolean(emoji?.fileBuffer.length);
+
+			if (fields.newFile) {
+				const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
+				if (!isUploadable) {
+					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+				}
+
+				const [, extension] = emoji.mimetype.split('/');
+				fields.extension = extension;
+			} else {
+				fields.extension = emojiToUpdate.extension;
+			}
+
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('insertOrUpdateEmoji', fields);
+				if (fields.newFile) {
+					Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, fields);
+				}
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('emoji-custom.delete', { authRequired: true }, {
-	post() {
-		const { emojiId } = this.bodyParams;
-		if (!emojiId) {
-			return API.v1.failure('The "emojiId" params is required!');
-		}
+API.v1.addRoute(
+	'emoji-custom.delete',
+	{ authRequired: true },
+	{
+		post() {
+			const { emojiId } = this.bodyParams;
+			if (!emojiId) {
+				return API.v1.failure('The "emojiId" params is required!');
+			}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('deleteEmojiCustom', emojiId));
+			Meteor.runAsUser(this.userId, () => Meteor.call('deleteEmojiCustom', emojiId));
 
-		return API.v1.success();
+			return API.v1.success();
+		},
 	},
-});
+);

@@ -24,15 +24,9 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 	const { handleName, handleDescription, handleDueTimeInMinutes } = handlers;
 	const { name, description, dueTimeInMinutes } = values;
 
-	const nameError = useMemo(
-		() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined),
-		[name, t],
-	);
+	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
 	const dueTimeInMinutesError = useMemo(
-		() =>
-			!dueTimeInMinutes || dueTimeInMinutes <= 0
-				? t('The_field_is_required', 'Estimated_due_time_in_minutes')
-				: undefined,
+		() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_due_time_in_minutes') : undefined),
 		[dueTimeInMinutes, t],
 	);
 
@@ -44,10 +38,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [
-		nameError,
-		dueTimeInMinutesError,
-	]);
+	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [nameError, dueTimeInMinutesError]);
 
 	const handleSave = useMutableCallback(async () => {
 		const payload = { name, description, dueTimeInMinutes: `${dueTimeInMinutes}` };
@@ -71,24 +62,13 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
-					<TextInput
-						placeholder={t('Name')}
-						flexGrow={1}
-						value={name}
-						onChange={handleName}
-						error={hasUnsavedChanges && nameError}
-					/>
+					<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						placeholder={t('Description')}
-						flexGrow={1}
-						value={description}
-						onChange={handleDescription}
-					/>
+					<TextInput placeholder={t('Description')} flexGrow={1} value={description} onChange={handleDescription} />
 				</Field.Row>
 			</Field>
 			<Field>
@@ -112,13 +92,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 								{t('Reset')}
 							</Button>
 						)}
-						<Button
-							primary
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges || !canSave}
-							onClick={handleSave}
-						>
+						<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</Margins>

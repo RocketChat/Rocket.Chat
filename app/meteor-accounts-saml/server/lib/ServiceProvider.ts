@@ -15,14 +15,12 @@ import { ResponseParser } from './parsers/Response';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLRequest } from '../definition/ISAMLRequest';
 import { ILogoutResponse } from '../definition/ILogoutResponse';
-import {
-	ILogoutRequestValidateCallback,
-	ILogoutResponseValidateCallback,
-	IResponseValidateCallback,
-} from '../definition/callbacks';
+import { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
 
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
+
+	syncRequestToUrl: (request: string, operation: string) => void;
 
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
@@ -30,6 +28,8 @@ export class SAMLServiceProvider {
 		}
 
 		this.serviceProviderOptions = serviceProviderOptions;
+
+		this.syncRequestToUrl = Meteor.wrapAsync(this.requestToUrl, this);
 	}
 
 	private signRequest(xml: string): string {
@@ -43,7 +43,15 @@ export class SAMLServiceProvider {
 		return identifiedRequest.request;
 	}
 
-	public generateLogoutResponse({ nameID, sessionIndex, inResponseToId }: { nameID: string; sessionIndex: string; inResponseToId: string }): ILogoutResponse {
+	public generateLogoutResponse({
+		nameID,
+		sessionIndex,
+		inResponseToId,
+	}: {
+		nameID: string;
+		sessionIndex: string;
+		inResponseToId: string;
+	}): ILogoutResponse {
 		return LogoutResponse.generate(this.serviceProviderOptions, nameID, sessionIndex, inResponseToId);
 	}
 
@@ -138,7 +146,7 @@ export class SAMLServiceProvider {
 
 				target += querystring.stringify(samlRequest);
 
-				SAMLUtils.log(`requestToUrl: ${ target }`);
+				SAMLUtils.log(`requestToUrl: ${target}`);
 
 				if (operation === 'logout') {
 					// in case of logout we want to be redirected back to the Meteor app.
@@ -151,10 +159,6 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	public syncRequestToUrl(request: string, operation: string): void {
-		return Meteor.wrapAsync(this.requestToUrl, this)(request, operation);
-	}
-
 	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
@@ -164,21 +168,29 @@ export class SAMLServiceProvider {
 	}
 
 	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.inflateXml(samlRequest, (xml: string) => {
-			const parser = new LogoutRequestParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+		SAMLUtils.inflateXml(
+			samlRequest,
+			(xml: string) => {
+				const parser = new LogoutRequestParser(this.serviceProviderOptions);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
 	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
-		SAMLUtils.inflateXml(samlResponse, (xml: string) => {
-			const parser = new LogoutResponseParser(this.serviceProviderOptions);
-			return parser.validate(xml, callback);
-		}, (err: string | object | null) => {
-			callback(err, null);
-		});
+		SAMLUtils.inflateXml(
+			samlResponse,
+			(xml: string) => {
+				const parser = new LogoutResponseParser(this.serviceProviderOptions);
+				return parser.validate(xml, callback);
+			},
+			(err: string | object | null) => {
+				callback(err, null);
+			},
+		);
 	}
 
 	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {

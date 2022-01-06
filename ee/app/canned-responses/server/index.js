@@ -7,10 +7,11 @@ onLicense('canned-responses', () => {
 	require('./permissions');
 	require('./hooks/onRemoveAgentDepartment');
 	require('./hooks/onSaveAgentDepartment');
+	require('./hooks/onMessageSentParsePlaceholder');
 	require('./methods/saveCannedResponse');
 	require('./methods/removeCannedResponse');
 
-	Meteor.startup(function() {
+	Meteor.startup(function () {
 		createSettings();
 	});
 });

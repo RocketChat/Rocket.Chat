@@ -2,11 +2,11 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { getConfig } from '../../app/ui-utils/client/config';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -27,15 +27,7 @@ export class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({
-		scroll,
-		lastTime,
-		atBottom,
-	}: {
-		scroll?: number;
-		lastTime?: Date;
-		atBottom?: boolean;
-	}): void {
+	update({ scroll, lastTime, atBottom }: { scroll?: number; lastTime?: Date; atBottom?: boolean }): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
@@ -132,7 +124,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 	}
 })();
 
-const subscribeVistedRooms: Subscription<IRoom['_id'][]> = {
+const subscribeVisitedRooms: Subscription<IRoom['_id'][]> = {
 	getCurrentValue: () => RoomManager.visitedRooms(),
 	subscribe(callback) {
 		return RoomManager.on('changed', callback);
@@ -151,8 +143,8 @@ const fields = {};
 export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T> => {
 	const { resolve, update, ...state } = useAsyncState<T>();
 	const uid = useUserId();
-	const subscription = (useUserSubscription(rid, fields) as unknown) as T;
-	const _room = (useUserRoom(rid, fields) as unknown) as T;
+	const subscription = useUserSubscription(rid, fields) as unknown as T;
+	const _room = useUserRoom(rid, fields) as unknown as T;
 
 	const room = uid ? subscription || _room : _room;
 
@@ -166,7 +158,7 @@ export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T>
 	return state;
 };
 
-export const useVisitedRooms = (): IRoom['_id'][] => useSubscription(subscribeVistedRooms);
+export const useVisitedRooms = (): IRoom['_id'][] => useSubscription(subscribeVisitedRooms);
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSubscription(subscribeOpenedRoom);
 

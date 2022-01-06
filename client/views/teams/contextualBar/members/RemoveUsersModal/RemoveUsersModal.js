@@ -26,28 +26,13 @@ const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
-			<GenericModal
-				variant='warning'
-				onClose={onClose}
-				title={<Skeleton width='50%' />}
-				confirmText={<Skeleton width='full' />}
-				confirmText={t('Cancel')}
-				onConfirm={onClose}
-			>
+			<GenericModal variant='warning' onClose={onClose} title={<Skeleton width='50%' />} confirmText={t('Cancel')} onConfirm={onClose}>
 				<Skeleton width='full' />
 			</GenericModal>
 		);
 	}
 
-	return (
-		<BaseRemoveUsersModal
-			onClose={onClose}
-			username={username}
-			onCancel={onCancel}
-			onConfirm={onConfirm}
-			rooms={value?.rooms}
-		/>
-	);
+	return <BaseRemoveUsersModal onClose={onClose} username={username} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
 };
 
 export default RemoveUsersModal;

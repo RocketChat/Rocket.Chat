@@ -16,8 +16,7 @@ type BodyProps = {
 	mentions: UserMention[];
 };
 
-const isBigEmoji = (tokens: GazzodownAST): tokens is [ASTBigEmoji] =>
-	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
+const isBigEmoji = (tokens: GazzodownAST): tokens is [ASTBigEmoji] => tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
 const Body: FC<BodyProps> = ({ tokens, mentions }) => {
 	if (isBigEmoji(tokens)) {
@@ -47,7 +46,7 @@ const Body: FC<BodyProps> = ({ tokens, mentions }) => {
 				}
 
 				if (block.type === 'CODE') {
-					return <Code value={block.value} key={index} />;
+					return <Code {...block} key={index} />;
 				}
 
 				if (block.type === 'HEADING') {

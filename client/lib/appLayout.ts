@@ -14,9 +14,7 @@ type ComponentLayoutDescriptor<Props extends {} = {}> = {
 
 type AppLayoutDescriptor = BlazeLayoutDescriptor | ComponentLayoutDescriptor | null;
 
-class AppLayoutSubscription
-	extends Emitter<{ update: void }>
-	implements Subscription<AppLayoutDescriptor> {
+class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscription<AppLayoutDescriptor> {
 	private descriptor: AppLayoutDescriptor = null;
 
 	getCurrentValue = (): AppLayoutDescriptor => this.descriptor;

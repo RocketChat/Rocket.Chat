@@ -20,13 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<GenericSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <GenericSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<GenericSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />
-);
+export const withValue = () => <GenericSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<GenericSettingInput

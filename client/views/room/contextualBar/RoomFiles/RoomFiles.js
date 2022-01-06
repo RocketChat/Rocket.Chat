@@ -66,13 +66,7 @@ function RoomFiles({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -82,7 +76,12 @@ function RoomFiles({
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{!loading && filesItems.length <= 0 && <Box p='x12'>{t('No_results_found')}</Box>}
+
+				{!loading && filesItems.length <= 0 && (
+					<Box textAlign='center' p='x12' color='neutral-600'>
+						{t('No_files_found')}
+					</Box>
+				)}
 
 				<Box w='full' h='full' flexShrink={1} overflow='hidden'>
 					<Virtuoso
@@ -91,9 +90,7 @@ function RoomFiles({
 							width: '100%',
 						}}
 						totalCount={total}
-						endReached={
-							loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
-						}
+						endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={50}
 						data={filesItems}
 						components={{ Scroller: ScrollableContentWrapper }}

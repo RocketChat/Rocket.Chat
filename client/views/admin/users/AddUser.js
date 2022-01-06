@@ -9,7 +9,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
-export function AddUser({ roles, ...props }) {
+export function AddUser({ roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-users');
@@ -73,12 +73,7 @@ export function AddUser({ roles, ...props }) {
 		[router],
 	);
 
-	const saveAction = useEndpointAction(
-		'POST',
-		'users.create',
-		values,
-		t('User_created_successfully!'),
-	);
+	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -93,13 +88,11 @@ export function AddUser({ roles, ...props }) {
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
+			onReload();
 		}
 	});
 
-	const availableRoles = useMemo(
-		() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [],
-		[roleData],
-	);
+	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 
 	const append = useMemo(
 		() => (
@@ -120,13 +113,6 @@ export function AddUser({ roles, ...props }) {
 	);
 
 	return (
-		<UserForm
-			errors={errors}
-			formValues={values}
-			formHandlers={handlers}
-			availableRoles={availableRoles}
-			append={append}
-			{...props}
-		/>
+		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
 	);
 }

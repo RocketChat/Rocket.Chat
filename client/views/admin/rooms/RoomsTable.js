@@ -42,8 +42,7 @@ const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) =
 		[text, types, itemsPerPage, current, column, direction],
 	);
 
-const getRoomDisplayName = (room) =>
-	room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room);
+const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room));
 
 const useDisplayData = (asyncState, sort) =>
 	useMemo(() => {
@@ -120,24 +119,10 @@ function RoomsTable() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-					w='x200'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'type'}
-					direction={sort[1]}
-					active={sort[0] === 't'}
-					onClick={onHeaderClick}
-					sort='t'
-					w='x100'
-				>
+				<GenericTable.HeaderCell key={'type'} direction={sort[1]} active={sort[0] === 't'} onClick={onHeaderClick} sort='t' w='x100'>
 					{t('Type')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -192,51 +177,19 @@ function RoomsTable() {
 
 	const renderRow = useCallback(
 		(room) => {
-			const {
-				_id,
-				name,
-				t: type,
-				usersCount,
-				msgs,
-				default: isDefault,
-				featured,
-				usernames,
-				...args
-			} = room;
+			const { _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args } = room;
 			const icon = roomTypes.getIcon(room);
 			const roomName = getRoomDisplayName(room);
 
 			return (
-				<Table.Row
-					action
-					key={_id}
-					onKeyDown={onClick(_id)}
-					onClick={onClick(_id)}
-					tabIndex={0}
-					role='link'
-					qa-room-id={_id}
-				>
+				<Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
 					<Table.Cell style={style}>
 						<Box display='flex' alignContent='center'>
-							<RoomAvatar
-								size={mediaQuery ? 'x28' : 'x40'}
-								room={{ type, name: roomName, _id, ...args }}
-							/>
+							<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 							<Box display='flex' style={style} mi='x8'>
-								<Box
-									display='flex'
-									flexDirection='row'
-									alignSelf='center'
-									alignItems='center'
-									style={style}
-								>
-									<Icon
-										mi='x2'
-										name={icon === 'omnichannel' ? 'livechat' : icon}
-										fontScale='p2'
-										color='hint'
-									/>
-									<Box fontScale='p2' style={style} color='default'>
+								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
+									<Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />
+									<Box fontScale='p2m' style={style} color='default'>
 										{roomName}
 									</Box>
 								</Box>
@@ -244,16 +197,14 @@ function RoomsTable() {
 						</Box>
 					</Table.Cell>
 					<Table.Cell>
-						<Box color='hint' fontScale='p2' style={style}>
+						<Box color='hint' fontScale='p2m' style={style}>
 							{t(getRoomType(room))}
 						</Box>
 						<Box mi='x4' />
 					</Table.Cell>
 					<Table.Cell style={style}>{usersCount}</Table.Cell>
 					{mediaQuery && <Table.Cell style={style}>{msgs}</Table.Cell>}
-					{mediaQuery && (
-						<Table.Cell style={style}>{isDefault ? t('True') : t('False')}</Table.Cell>
-					)}
+					{mediaQuery && <Table.Cell style={style}>{isDefault ? t('True') : t('False')}</Table.Cell>}
 					{mediaQuery && <Table.Cell style={style}>{featured ? t('True') : t('False')}</Table.Cell>}
 				</Table.Row>
 			);
@@ -269,9 +220,7 @@ function RoomsTable() {
 			total={data.total}
 			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => (
-				<FilterByTypeAndText setFilter={onChange} {...props} />
-			)}
+			renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
 		/>
 	);
 }

@@ -52,19 +52,19 @@
 		}
 	}
 
-	&__typing {
+	&__activity {
 		position: absolute;
 		top: 4px;
 		left: 0;
 
 		margin-left: 24px;
 
-		color: var(--message-box-user-typing-color);
+		color: var(--message-box-user-activity-color);
 
-		font-size: var(--message-box-user-typing-text-size);
+		font-size: var(--message-box-user-activity-text-size);
 
 		&-user {
-			color: var(--message-box-user-typing-user-color);
+			color: var(--message-box-user-activity-user-color);
 
 			font-weight: bold;
 		}
@@ -285,7 +285,7 @@
 		margin-top: 1rem;
 		padding: 0;
 
-		&__typing {
+		&__activity {
 			top: -1rem;
 
 			margin-left: 1rem;
@@ -377,7 +377,7 @@
 	}
 }
 
-.rtl .rc-message-box__typing {
+.rtl .rc-message-box__activity {
 	right: 0;
 
 	margin-right: 24px;

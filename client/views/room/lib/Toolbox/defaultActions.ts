@@ -26,9 +26,7 @@ addAction('contact-profile', {
 	id: 'contact-profile',
 	title: 'Contact_Info',
 	icon: 'user',
-	template: lazy(
-		() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar'),
-	),
+	template: lazy(() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar')),
 	order: 1,
 });
 
@@ -47,15 +45,15 @@ addAction('members-list', ({ room }) => {
 		() =>
 			!room.broadcast || hasPermission
 				? {
-						groups: ['channel', 'group'],
+						groups: ['channel', 'group', 'team'],
 						id: 'members-list',
-						title: 'Members',
+						title: room.teamMain ? 'Teams_members' : 'Members',
 						icon: 'members',
 						template: lazy(() => import('../../MemberListRouter')),
 						order: 5,
 				  }
 				: null,
-		[hasPermission, room.broadcast],
+		[hasPermission, room.broadcast, room.teamMain],
 	);
 });
 

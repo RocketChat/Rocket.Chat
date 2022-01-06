@@ -1,19 +1,10 @@
-import {
-	Modal,
-	Box,
-	ButtonGroup,
-	Button,
-	Scrollable,
-	Callout,
-	Margins,
-	Icon,
-} from '@rocket.chat/fuselage';
+import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
 const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 	const t = useTranslation();
@@ -31,11 +22,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 
 	const hasChanges = lastSetLicense !== newLicense;
 
-	const addLicense = useEndpointActionExperimental(
-		'POST',
-		'licenses.add',
-		t('Cloud_License_applied_successfully'),
-	);
+	const addLicense = useEndpointActionExperimental('POST', 'licenses.add', t('Cloud_License_applied_successfully'));
 
 	const handlePaste = useMutableCallback(async () => {
 		try {
@@ -84,7 +71,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 								is='textarea'
 								height='x108'
 								fontFamily='mono'
-								fontScale='p1'
+								fontScale='p2'
 								color='alternative'
 								style={{ wordBreak: 'break-all', resize: 'none' }}
 								placeholder={t('Paste_here')}

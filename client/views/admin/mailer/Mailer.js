@@ -1,17 +1,8 @@
-import {
-	TextInput,
-	TextAreaInput,
-	Field,
-	FieldGroup,
-	CheckBox,
-	Button,
-	Icon,
-	ButtonGroup,
-} from '@rocket.chat/fuselage';
+import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
-import { isEmail } from '../../../../app/utils/lib/isEmail.js';
-import { isJSON } from '../../../../app/utils/lib/isJSON.js';
+import { validateEmail } from '../../../../lib/emailValidator';
+import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
@@ -39,19 +30,8 @@ export function Mailer({ sendMail = () => {} }) {
 					</Button>
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow
-				alignSelf='center'
-				w='100%'
-				display='flex'
-				flexDirection='column'
-				alignItems='center'
-			>
-				<FieldGroup
-					maxWidth='x600'
-					is='form'
-					onSubmit={useCallback((e) => e.preventDefault(), [])}
-					method='post'
-				>
+			<Page.ScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
+				<FieldGroup maxWidth='x600' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} method='post'>
 					<Field>
 						<Field.Label>{t('From')}</Field.Label>
 						<Field.Row>
@@ -63,7 +43,7 @@ export function Mailer({ sendMail = () => {} }) {
 								onChange={(e) => {
 									setFromEmail({
 										value: e.currentTarget.value,
-										error: !isEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
+										error: !validateEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
 									});
 								}}
 							/>
@@ -86,10 +66,7 @@ export function Mailer({ sendMail = () => {} }) {
 								onChange={(e) => {
 									setQuery({
 										value: e.currentTarget.value,
-										error:
-											e.currentTarget.value && !isJSON(e.currentTarget.value)
-												? t('Invalid_JSON')
-												: undefined,
+										error: e.currentTarget.value && !isJSON(e.currentTarget.value) ? t('Invalid_JSON') : undefined,
 									});
 								}}
 							/>
@@ -112,12 +89,7 @@ export function Mailer({ sendMail = () => {} }) {
 					<Field>
 						<Field.Label>{t('Email_body')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput
-								id='emailBody'
-								rows={10}
-								value={emailBody}
-								onChange={(e) => setEmailBody(e.currentTarget.value)}
-							/>
+							<TextAreaInput id='emailBody' rows={10} value={emailBody} onChange={(e) => setEmailBody(e.currentTarget.value)} />
 						</Field.Row>
 						<Field.Hint dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
 					</Field>

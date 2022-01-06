@@ -26,7 +26,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -54,10 +54,7 @@ function EditUser({ data, roles, ...props }) {
 		validationKeys[key] && validationKeys[key](value);
 	};
 
-	const { values, handlers, reset, hasUnsavedChanges } = useForm(
-		getInitialValue(data),
-		validateForm,
-	);
+	const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data), validateForm);
 
 	const router = useRoute('admin-users');
 
@@ -93,29 +90,10 @@ function EditUser({ data, roles, ...props }) {
 		[data._id],
 	);
 
-	const saveAction = useEndpointAction(
-		'POST',
-		'users.update',
-		saveQuery,
-		t('User_updated_successfully'),
-	);
-	const saveAvatarAction = useEndpointUpload(
-		'users.setAvatar',
-		saveAvatarQuery,
-		t('Avatar_changed_successfully'),
-	);
-	const saveAvatarUrlAction = useEndpointAction(
-		'POST',
-		'users.setAvatar',
-		saveAvatarQuery,
-		t('Avatar_changed_successfully'),
-	);
-	const resetAvatarAction = useEndpointAction(
-		'POST',
-		'users.resetAvatar',
-		resetAvatarQuery,
-		t('Avatar_changed_successfully'),
-	);
+	const saveAction = useEndpointAction('POST', 'users.update', saveQuery, t('User_updated_successfully'));
+	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
+	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
 
 	const updateAvatar = useCallback(async () => {
 		if (avatarObj === 'reset') {
@@ -138,27 +116,25 @@ function EditUser({ data, roles, ...props }) {
 			return false;
 		}
 
-		const result = await saveAction();
-		if (result.success) {
-			if (avatarObj) {
+		if (hasUnsavedChanges) {
+			const result = await saveAction();
+			if (result.success && avatarObj) {
 				await updateAvatar();
 			}
-			goToUser(data._id);
+		} else {
+			await updateAvatar();
 		}
-	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
+		onReload();
+		goToUser(data._id);
+	}, [hasUnsavedChanges, avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
-	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+	const availableRoles = roles.map(({ _id, name, description }) => [_id, description || name]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
 	const prepend = useMemo(
 		() => (
-			<UserAvatarEditor
-				currentUsername={data.username}
-				username={values.username}
-				etag={data.avatarETag}
-				setAvatarObj={setAvatarObj}
-			/>
+			<UserAvatarEditor currentUsername={data.username} username={values.username} etag={data.avatarETag} setAvatarObj={setAvatarObj} />
 		),
 		[data.username, data.avatarETag, values.username],
 	);

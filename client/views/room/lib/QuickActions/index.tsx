@@ -1,7 +1,8 @@
 import { Box, Option } from '@rocket.chat/fuselage';
-import { ComponentProps, ReactNode, MouseEvent } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
+import { ToolboxActionConfig } from '../Toolbox';
 import { generator, Events as GeneratorEvents } from '../Toolbox/generator';
 
 type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null;
@@ -18,26 +19,14 @@ type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 
-export type QuickActionsActionConfig = {
-	id: string;
-	icon: string;
-	color?: string;
-	title: string;
-	full?: true;
-	order?: number;
-	renderAction?: ActionRenderer;
+export type QuickActionsActionConfig = ToolboxActionConfig & {
 	groups: Array<'live'>;
-	action?: (e: MouseEvent<HTMLElement>) => void;
+	color?: string;
 };
 
 export type QuickActionsAction = QuickActionsHook | QuickActionsActionConfig;
 
-const {
-	listen,
-	add: addAction,
-	remove: deleteAction,
-	store: actions,
-} = generator<QuickActionsAction>();
+const { listen, add: addAction, remove: deleteAction, store: actions } = generator<QuickActionsAction>();
 
 export type Events = GeneratorEvents<QuickActionsAction>;
 

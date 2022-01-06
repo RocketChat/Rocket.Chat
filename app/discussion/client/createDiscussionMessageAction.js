@@ -3,11 +3,13 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
-import { MessageAction, modal } from '../../ui-utils/client';
+import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { t, roomTypes } from '../../utils/client';
+import { roomTypes } from '../../utils/client';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return MessageAction.removeButton('start-discussion');
@@ -19,23 +21,28 @@ Meteor.startup(function() {
 			label: 'Discussion_start',
 			context: ['message', 'message-mobile'],
 			async action() {
-				const { msg: message } = messageArgs(this);
+				const { msg: message, room } = messageArgs(this);
 
-				modal.open({
-					title: t('Discussion_title'),
-					modifier: 'modal',
-					content: 'CreateDiscussion',
-					data: { rid: message.rid,
-						message,
-						onCreate() {
-							modal.close();
-						} },
-					confirmOnEnter: false,
-					showConfirmButton: false,
-					showCancelButton: false,
+				imperativeModal.open({
+					component: CreateDiscussion,
+					props: {
+						defaultParentRoom: room.prid || room._id,
+						onClose: imperativeModal.close,
+						parentMessageId: message._id,
+						nameSuggestion: message?.msg?.substr(0, 140),
+					},
 				});
 			},
-			condition({ msg: { u: { _id: uid }, drid, dcount }, room, subscription, u }) {
+			condition({
+				msg: {
+					u: { _id: uid },
+					drid,
+					dcount,
+				},
+				room,
+				subscription,
+				u,
+			}) {
 				if (drid || !isNaN(dcount)) {
 					return false;
 				}

@@ -5,15 +5,7 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
 
 const defaultWrapperRenderer = (text) => (
-	<Box
-		fontFamily='mono'
-		alignSelf='center'
-		fontScale='p1'
-		style={{ wordBreak: 'break-all' }}
-		mie='x4'
-		flexGrow={1}
-		maxHeight='x108'
-	>
+	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie='x4' flexGrow={1} maxHeight='x108'>
 		{text}
 	</Box>
 );

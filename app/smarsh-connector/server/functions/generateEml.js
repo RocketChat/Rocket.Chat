@@ -4,12 +4,14 @@ import _ from 'underscore';
 import moment from 'moment';
 
 import { settings } from '../../../settings';
-import { Rooms, Messages, Users, SmarshHistory } from '../../../models';
+import { Rooms, Messages, Users } from '../../../models/server';
+import { SmarshHistory } from '../../../models/server/raw';
 import { MessageTypes } from '../../../ui-utils';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
 
-const start = '<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
+const start =
+	'<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
 const end = '</tbody></table>';
 const opentr = '<tr style="border: 1px solid;">';
 const closetr = '</tr>';
@@ -31,8 +33,8 @@ smarsh.generateEml = () => {
 		const smarshMissingEmail = settings.get('Smarsh_MissingEmail_Email');
 		const timeZone = settings.get('Smarsh_Timezone');
 
-		Rooms.find().forEach((room) => {
-			const smarshHistory = SmarshHistory.findOne({ _id: room._id });
+		Rooms.find().forEach(async (room) => {
+			const smarshHistory = await SmarshHistory.findOne({ _id: room._id });
 			const query = { rid: room._id };
 
 			if (smarshHistory) {
@@ -46,7 +48,7 @@ smarsh.generateEml = () => {
 				msgs: 0,
 				files: [],
 				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
-				room: room.name ? `#${ room.name }` : `Direct Message Between: ${ room.usernames.join(' & ') }`,
+				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`,
 			};
 
 			Messages.find(query).forEach((message) => {
@@ -66,9 +68,9 @@ smarsh.generateEml = () => {
 
 				// Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
 				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
-					rows.push(`${ sender.name } &lt;${ sender.emails[0].address }&gt;`);
+					rows.push(`${sender.name} &lt;${sender.emails[0].address}&gt;`);
 				} else {
-					rows.push(`${ sender.name } &lt;${ smarshMissingEmail }&gt;`);
+					rows.push(`${sender.name} &lt;${smarshMissingEmail}&gt;`);
 				}
 				rows.push(closetd);
 
@@ -80,11 +82,11 @@ smarsh.generateEml = () => {
 					if (messageType) {
 						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
-						rows.push(`${ message.msg } (${ message.t })`);
+						rows.push(`${message.msg} (${message.t})`);
 					}
 				} else if (message.file) {
 					data.files.push(message.file._id);
-					rows.push(`${ message.attachments[0].title } (${ _getLink(message.attachments[0]) })`);
+					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
 				} else if (message.attachments) {
 					const attaches = [];
 					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
@@ -97,7 +99,7 @@ smarsh.generateEml = () => {
 						// }
 					});
 
-					rows.push(`${ message.msg } (${ attaches.join(', ') })`);
+					rows.push(`${message.msg} (${attaches.join(', ')})`);
 				} else {
 					rows.push(message.msg);
 				}
@@ -109,15 +111,18 @@ smarsh.generateEml = () => {
 			if (rows.length !== 0) {
 				const result = start + rows.join('') + end;
 
-				SmarshHistory.upsert({ _id: room._id }, {
-					_id: room._id,
-					lastRan: date,
-					lastResult: result,
-				});
+				SmarshHistory.upsert(
+					{ _id: room._id },
+					{
+						_id: room._id,
+						lastRan: date,
+						lastResult: result,
+					},
+				);
 
 				smarsh.sendEmail({
 					body: result,
-					subject: `Rocket.Chat, ${ data.users.length } Users, ${ data.msgs } Messages, ${ data.files.length } Files, ${ data.time } Minutes, in ${ data.room }`,
+					subject: `Rocket.Chat, ${data.users.length} Users, ${data.msgs} Messages, ${data.files.length} Files, ${data.time} Minutes, in ${data.room}`,
 					files: data.files,
 				});
 			}

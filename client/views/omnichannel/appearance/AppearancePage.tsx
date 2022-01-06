@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
 import { ISetting } from '../../../../definition/ISetting';
+import { Serialized } from '../../../../definition/Serialized';
 import Page from '../../../components/Page';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -34,27 +35,23 @@ type LivechatAppearanceSettings = {
 
 type AppearanceSettings = Partial<LivechatAppearanceSettings>;
 
-const reduceAppearance = (settings: ISetting[]): AppearanceSettings =>
+const reduceAppearance = (settings: Serialized<ISetting>[]): AppearanceSettings =>
 	settings.reduce<Partial<LivechatAppearanceSettings>>((acc, { _id, value }) => {
 		acc = { ...acc, [_id]: value };
 		return acc;
 	}, {});
 
 type AppearancePageProps = {
-	settings: ISetting[];
+	settings: Serialized<ISetting>[];
 };
 
 const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (
-		settings: Pick<ISetting, '_id'>[] & { value: unknown }[],
-	) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save: (settings: Pick<ISetting, '_id'>[] & { value: unknown }[]) => Promise<void> = useMethod('livechat:saveAppearance');
 
-	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(
-		reduceAppearance(settings),
-	);
+	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 
 	const handleSave = useMutableCallback(async () => {
 		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value }));

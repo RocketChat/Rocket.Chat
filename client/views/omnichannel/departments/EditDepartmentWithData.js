@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
@@ -7,6 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
+import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
 
 const param = { onlyMyDepartments: true };
 function EditDepartmentWithData({ id, reload, title }) {
@@ -20,7 +20,15 @@ function EditDepartmentWithData({ id, reload, title }) {
 	if (error || (id && !data?.department)) {
 		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
 	}
-	return <EditDepartment id={id} data={data} reload={reload} title={title} />;
+	return (
+		<>
+			{data && data.department && data.department.departmentsAllowedToForward && data.department.departmentsAllowedToForward.length > 0 ? (
+				<EditDepartmentWithAllowedForwardData id={id} data={data} reload={reload} title={title} />
+			) : (
+				<EditDepartment id={id} data={data} reload={reload} title={title} />
+			)}
+		</>
+	);
 }
 
 export default EditDepartmentWithData;

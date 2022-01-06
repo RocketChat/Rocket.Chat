@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
+import { TEAM_TYPE } from '../../../../definition/ITeam';
 import Header from '../../../components/Header';
-import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
+import { useUserId } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 const ParentTeam = ({ room }) => {
 	const userId = useUserId();
@@ -13,17 +14,15 @@ const ParentTeam = ({ room }) => {
 		'teams.info',
 		useMemo(() => ({ teamId: room.teamId }), [room.teamId]),
 	);
+
 	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
 		'users.listTeams',
 		useMemo(() => ({ userId }), [userId]),
 	);
 
-	const belongsToTeam = userTeams?.teams?.find((team) => team._id === room.teamId);
-
-	const teamMainRoom = useUserSubscription(value?.teamInfo?.roomId);
-	const teamMainRoomHref = teamMainRoom
-		? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom)
-		: null;
+	const belongsToTeam = userTeams?.teams?.find((team) => team._id === room.teamId) || false;
+	const isTeamPublic = value?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const teamMainRoomHref = () => goToRoomById(value?.teamInfo.roomId);
 
 	if (phase === AsyncStatePhase.LOADING || userTeamsPhase === AsyncStatePhase.LOADING) {
 		return <Header.Tag.Skeleton />;
@@ -35,12 +34,8 @@ const ParentTeam = ({ room }) => {
 
 	return (
 		<Header.Tag>
-			<Header.Tag.Icon icon={{ name: 'team' }} />
-			{belongsToTeam && teamMainRoom ? (
-				<Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
-			) : (
-				value.teamInfo.name
-			)}
+			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+			{isTeamPublic || belongsToTeam ? <Header.Link onClick={teamMainRoomHref}>{value.teamInfo.name}</Header.Link> : value.teamInfo.name}
 		</Header.Tag>
 	);
 };

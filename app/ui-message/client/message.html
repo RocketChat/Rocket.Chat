@@ -26,7 +26,7 @@
 				{{#if msg.emoji}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
-							{{> renderEmoji msg.emoji}}
+							{{{renderEmoji msg.emoji}}}
 						</div>
 					</button>
 				{{else}}
@@ -40,9 +40,6 @@
 					<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">
 						{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}
 					</button>
-					{{#if getStatus}}
-						<button class="message-custom-status" title="{{getStatus}}">💬</button>
-					{{/if}}
 					<span class="info border-component-color color-info-font-color"></span>
 					{{# if showRoles }}
 						{{#each role in roleTags}}
@@ -156,7 +153,7 @@
 			<ul class="reactions">
 				{{#each reaction in reactions}}
 					<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
-						<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
+						<span class="reaction-emoji">{{{renderEmoji reaction.emoji}}}</span>
 						<span class="reaction-count">{{reaction.count}}</span>
 						<span class="people" style="font-weight: bold">
 							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>

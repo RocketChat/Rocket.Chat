@@ -1,31 +1,43 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Invites, Users, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
+import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
-export const useInviteToken = (userId, token) => {
+export const useInviteToken = async (userId, token) => {
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'The user is invalid', { method: 'useInviteToken', field: 'userId' });
+		throw new Meteor.Error('error-invalid-user', 'The user is invalid', {
+			method: 'useInviteToken',
+			field: 'userId',
+		});
 	}
 
 	if (!token) {
-		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'useInviteToken', field: 'token' });
+		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
+			method: 'useInviteToken',
+			field: 'token',
+		});
 	}
 
-	const { inviteData, room } = validateInviteToken(token);
+	const { inviteData, room } = await validateInviteToken(token);
 
 	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
-		throw new Meteor.Error('error-room-type-not-allowed', 'Can\'t join room of this type via invite', { method: 'useInviteToken', field: 'token' });
+		throw new Meteor.Error('error-room-type-not-allowed', "Can't join room of this type via invite", {
+			method: 'useInviteToken',
+			field: 'token',
+		});
 	}
 
 	const user = Users.findOneById(userId);
 	Users.updateInviteToken(user._id, token);
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		fields: { _id: 1 },
+	});
 	if (!subscription) {
-		Invites.increaseUsageById(inviteData._id);
+		await Invites.increaseUsageById(inviteData._id);
 	}
 
 	// If the user already has an username, then join the invite room,

@@ -4,14 +4,7 @@ import React, { useState } from 'react';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import EditInvite from './EditInvite';
 
-const EditInviteWithData = ({
-	onClickBack,
-	setParams,
-	linkText,
-	captionText,
-	days: _days,
-	maxUses: _maxUses,
-}) => {
+const EditInviteWithData = ({ onClickBack, setParams, linkText, captionText, days: _days, maxUses: _maxUses }) => {
 	const onClickClose = useTabBarClose();
 
 	const [days, setDays] = useState(_days);

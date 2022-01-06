@@ -24,9 +24,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -63,9 +61,7 @@ const ContactInfo = ({ id, rid, route }) => {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(
-		`omnichannel/contact?contactId=${id}`,
-	);
+	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${id}`);
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
@@ -112,11 +108,7 @@ const ContactInfo = ({ id, rid, route }) => {
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<UserCard.Username
-									mis='x10'
-									name={displayName}
-									status={<UserStatus status={status} />}
-								/>
+								<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
 								{username && name && (
 									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 										({username})
@@ -154,8 +146,7 @@ const ContactInfo = ({ id, rid, route }) => {
 						livechatData &&
 						Object.keys(livechatData).map(
 							(key) =>
-								checkIsVisibleAndScopeVisitor(key) &&
-								livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
+								checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
 					{contactManager && (
 						<Field>

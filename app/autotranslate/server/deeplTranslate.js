@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings';
 
 /**
@@ -28,7 +28,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.name = 'deepl-translate';
 		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -188,7 +188,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations = {};
 		let msgs = message.msg.split('\n');
 		msgs = msgs.map((msg) => encodeURIComponent(msg));
-		const query = `text=${ msgs.join('&text=') }`;
+		const query = `text=${msgs.join('&text=')}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -203,7 +203,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 					query,
 				});
 
-				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+				if (
+					result.statusCode === 200 &&
+					result.data &&
+					result.data.translations &&
+					Array.isArray(result.data.translations) &&
+					result.data.translations.length > 0
+				) {
 					// store translation only when the source and target language are different.
 					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
 					const translatedText = result.data.translations
@@ -227,7 +233,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		const translations = {};
-		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
+		const query = `text=${encodeURIComponent(attachment.description || attachment.text)}`;
 		const supportedLanguages = this.getSupportedLanguages('en');
 		targetLanguages.forEach((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
@@ -241,7 +247,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 					},
 					query,
 				});
-				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
+				if (
+					result.statusCode === 200 &&
+					result.data &&
+					result.data.translations &&
+					Array.isArray(result.data.translations) &&
+					result.data.translations.length > 0
+				) {
 					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
 						translations[language] = result.data.translations.map((translation) => translation.text);
 					}

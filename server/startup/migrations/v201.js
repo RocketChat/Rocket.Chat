@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Settings } from '../../../app/models/server';
-import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
-Migrations.add({
+addMigration({
 	version: 201,
-	up: () => {
-		const pushEnabled = Settings.findOneById('Push_enable');
-		const pushGatewayEnabled = Settings.findOneById('Push_enable_gateway');
-		const registerServer = Settings.findOneById('Register_Server');
-		const cloudAgreement = Settings.findOneById('Cloud_Service_Agree_PrivacyTerms');
+	up: async () => {
+		const pushEnabled = await Settings.findOneById('Push_enable');
+		const pushGatewayEnabled = await Settings.findOneById('Push_enable_gateway');
+		const registerServer = await Settings.findOneById('Register_Server');
+		const cloudAgreement = await Settings.findOneById('Cloud_Service_Agree_PrivacyTerms');
 
 		if (!pushEnabled?.value) {
 			return;
@@ -24,13 +24,19 @@ Migrations.add({
 		}
 
 		// if push gateway is enabled but server is not registered or cloud terms not agreed, disable gateway and alert admin
-		Settings.upsert({
-			_id: 'Push_enable_gateway',
-		}, {
-			$set: {
-				value: false,
+		Settings.update(
+			{
+				_id: 'Push_enable_gateway',
 			},
-		});
+			{
+				$set: {
+					value: false,
+				},
+			},
+			{
+				update: true,
+			},
+		);
 
 		const id = 'push-gateway-disabled';
 		const title = 'Action_required';
@@ -39,15 +45,21 @@ Migrations.add({
 
 		Meteor.startup(() => {
 			sendMessagesToAdmins({
-				msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(text, adminUser.language) }` }],
-				banners: [{
-					id,
-					priority: 100,
-					title,
-					text,
-					modifiers: ['danger'],
-					link,
-				}],
+				msgs: ({ adminUser }) => [
+					{
+						msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, adminUser.language)}`,
+					},
+				],
+				banners: [
+					{
+						id,
+						priority: 100,
+						title,
+						text,
+						modifiers: ['danger'],
+						link,
+					},
+				],
 			});
 		});
 	},

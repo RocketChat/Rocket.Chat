@@ -1,5 +1,5 @@
 import { FederationRoomEvents, Rooms } from '../../../models/server';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -8,9 +8,11 @@ async function afterDeleteMessage(message) {
 	const room = Rooms.findOneById(message.rid, { fields: { federation: 1 } });
 
 	// If there are not federated users on this room, ignore it
-	if (!hasExternalDomain(room)) { return message; }
+	if (!hasExternalDomain(room)) {
+		return message;
+	}
 
-	logger.client.debug(() => `afterDeleteMessage => message=${ JSON.stringify(message, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterDeleteMessage', message, room });
 
 	// Create the delete message event
 	const event = await FederationRoomEvents.createDeleteMessageEvent(getFederationDomain(), room._id, message._id);

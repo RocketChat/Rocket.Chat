@@ -3,17 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import {
-	fireGlobalEvent,
-	popover,
-	Layout,
-	MessageAction,
-} from '../../../../../ui-utils/client';
-import {
-	addMessageToList,
-} from '../../../../../ui-utils/client/lib/MessageAction';
-import { call } from '../../../../../ui-utils/client/lib/callMethod';
-import { promises } from '../../../../../promises/client';
+import { popover, MessageAction } from '../../../../../ui-utils/client';
+import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
+import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
@@ -21,7 +13,10 @@ import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
-import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
+import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
+import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -51,7 +46,13 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
+	const [items, deleteItem] = menuItems.reduce(
+		(result, value) => {
+			result[value.id === 'delete-message' ? 1 : 0].push(value);
+			return result;
+		},
+		[[], []],
+	);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -106,11 +107,11 @@ export const getCommonRoomEvents = () => ({
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'AUDIO')) {
+				if (e.target && e.target.nodeName === 'AUDIO') {
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					e.preventDefault();
 					e.stopPropagation();
 				}
@@ -125,7 +126,7 @@ export const getCommonRoomEvents = () => ({
 
 			'touchend .message'(e) {
 				clearTimeout(touchtime);
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					if (touchMoved === true) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -163,35 +164,44 @@ export const getCommonRoomEvents = () => ({
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('followMessage', { mid: msg._id });
+		callWithErrorHandling('followMessage', { mid: msg._id });
 	},
 	'click .js-unfollow-thread'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('unfollowMessage', { mid: msg._id });
+		callWithErrorHandling('unfollowMessage', { mid: msg._id });
 	},
 	'click .js-open-thread'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { msg: { rid, _id, tmid } } = messageArgs(this);
+		const {
+			msg: { rid, _id, tmid },
+		} = messageArgs(this);
 		const room = Rooms.findOne({ _id: rid });
 
-		FlowRouter.go(FlowRouter.getRouteName(), {
-			rid,
-			name: room.name,
-			tab: 'thread',
-			context: tmid || _id,
-		}, {
-			jump: tmid && tmid !== _id && _id && _id,
-		});
+		FlowRouter.go(
+			FlowRouter.getRouteName(),
+			{
+				rid,
+				name: room.name,
+				tab: 'thread',
+				context: tmid || _id,
+			},
+			{
+				jump: tmid && tmid !== _id && _id && _id,
+			},
+		);
 	},
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
-		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
+		ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
+		ChatMessage.update(
+			{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
+			{ $set: { 'attachments.$.downloadImages': true } },
+		);
 	},
 	'click .user-card-message'(e, instance) {
 		const { msg } = messageArgs(this);
@@ -238,11 +248,7 @@ export const getCommonRoomEvents = () => ({
 		let messages = $input.data('reply') || [];
 		messages = addMessageToList(messages, message);
 
-		$input
-			.focus()
-			.data('mention-user', false)
-			.data('reply', messages)
-			.trigger('dataChange');
+		$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
 	},
 	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const { rid } = instance.data;
@@ -252,14 +258,14 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+		msgObject = await onClientBeforeSendMessage(msgObject);
 
 		const _chatMessages = chatMessages[rid];
-		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+		if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
 			return;
 		}
 
-		await call('sendMessage', msgObject);
+		await callWithErrorHandling('sendMessage', msgObject);
 	},
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
@@ -274,11 +280,14 @@ export const getCommonRoomEvents = () => ({
 			modifier: item.color,
 		}));
 
-		const itemsBelowDivider = [
-			'delete-message',
-			'report-message',
-		];
-		const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
+		const itemsBelowDivider = ['delete-message', 'report-message'];
+		const [items, alertsItem] = allItems.reduce(
+			(result, value) => {
+				result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value);
+				return result;
+			},
+			[[], []],
+		);
 		const groups = [{ items }];
 
 		if (alertsItem.length) {
@@ -308,11 +317,18 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		const { currentTarget: { dataset: { channel, group, username } } } = e;
+		const {
+			currentTarget: {
+				dataset: { channel, group, username },
+			},
+		} = e;
 
 		if (channel) {
-			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+			if (isLayoutEmbedded()) {
+				fireGlobalEvent('click-mention-link', {
+					path: FlowRouter.path('channel', { name: channel }),
+					channel,
+				});
 			}
 			goToRoomById(channel);
 			return;

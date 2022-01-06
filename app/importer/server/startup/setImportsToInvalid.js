@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Imports } from '../../../models';
+import { Imports } from '../../../models/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RawImports } from '../models/RawImports';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
@@ -8,12 +9,12 @@ function runDrop(fn) {
 	try {
 		fn();
 	} catch (e) {
-		console.log('error', e); // TODO: Remove
+		SystemLogger.error('error', e); // TODO: Remove
 		// ignored
 	}
 }
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	const lastOperation = Imports.findLastImport();
 	let idToKeep = false;
 
@@ -33,6 +34,6 @@ Meteor.startup(function() {
 		Imports.invalidateAllOperations();
 
 		// Clean up all the raw import data
-		runDrop(() => RawImports.model.rawCollection().drop());
+		runDrop(() => RawImports.model.rawCollection().remove({}));
 	}
 });

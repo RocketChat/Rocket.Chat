@@ -29,9 +29,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 
 	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [
-		types,
-	]);
+	const handleCheckBox = useCallback((type) => setTypes({ ...types, [type]: !types[type] }), [types]);
 
 	useEffect(() => {
 		if (Object.values(types).filter(Boolean).length === 0) {
@@ -51,14 +49,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const idTeam = useUniqueId();
 
 	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			display='flex'
-			flexDirection='column'
-			{...props}
-		>
+		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 			<TextInput
 				flexShrink={0}
 				placeholder={t('Search_Rooms')}
@@ -67,14 +58,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 				value={text}
 			/>
 			<Field>
-				<Box
-					display='flex'
-					flexDirection='row'
-					flexWrap='wrap'
-					justifyContent='flex-start'
-					mbs='x8'
-					mi='neg-x8'
-				>
+				<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='flex-start' mbs='x8' mi='neg-x8'>
 					<Margins inline='x8'>
 						<Field.Row>
 							<CheckBox checked={types.d} id={idDirect} onChange={() => handleCheckBox('d')} />
@@ -93,19 +77,11 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 							<Field.Label htmlFor={idOmnichannel}>{t('Omnichannel')}</Field.Label>
 						</Field.Row>
 						<Field.Row>
-							<CheckBox
-								checked={types.discussions}
-								id={idDiscussions}
-								onChange={() => handleCheckBox('discussions')}
-							/>
+							<CheckBox checked={types.discussions} id={idDiscussions} onChange={() => handleCheckBox('discussions')} />
 							<Field.Label htmlFor={idDiscussions}>{t('Discussions')}</Field.Label>
 						</Field.Row>
 						<Field.Row>
-							<CheckBox
-								checked={types.teams}
-								id={idTeam}
-								onChange={() => handleCheckBox('teams')}
-							/>
+							<CheckBox checked={types.teams} id={idTeam} onChange={() => handleCheckBox('teams')} />
 							<Field.Label htmlFor={idTeam}>{t('Teams')}</Field.Label>
 						</Field.Row>
 					</Margins>

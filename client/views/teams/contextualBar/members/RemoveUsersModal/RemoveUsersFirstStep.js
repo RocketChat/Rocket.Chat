@@ -3,7 +3,7 @@ import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import ChannelDesertionTable from '../../ChannelDesertionTable';
+import ChannelDesertionTable from '../../../ChannelDesertionTable';
 
 const RemoveUsersFirstStep = ({
 	onClose,
@@ -35,7 +35,7 @@ const RemoveUsersFirstStep = ({
 			onConfirm={onConfirm}
 			{...props}
 		>
-			<Box mbe='x24' fontScale='p1'>
+			<Box mbe='x24' fontScale='p2'>
 				{t('Select_the_channels_you_want_the_user_to_be_removed_from')}
 			</Box>
 			<ChannelDesertionTable

@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {
 		if (Template.instance().loading.get()) {
-			return `${ t('Please_wait') }...`;
+			return `${t('Please_wait')}...`;
 		}
 		return t('Webdav_add_new_account');
 	},
@@ -24,21 +24,21 @@ Template.addWebdavAccount.events({
 			return;
 		}
 		instance.loading.set(true);
-		Meteor.call('addWebdavAccount', formData, function(error, success) {
+		Meteor.call('addWebdavAccount', formData, function (error, success) {
 			modal.close();
 			instance.loading.set(false);
 			if (error) {
-				return toastr.error(t(error.error));
+				return dispatchToastMessage({ type: 'error', message: t(error.error) });
 			}
 			if (!success) {
-				return toastr.error(t('Error'));
+				return dispatchToastMessage({ type: 'error', message: t('Error') });
 			}
-			toastr.success(t('webdav-account-saved'));
+			dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
 		});
 	},
 });
 
-const validate = function() {
+const validate = function () {
 	const form = $(this.firstNode);
 	const formData = form.serializeArray();
 	const validationObj = {};
@@ -54,8 +54,8 @@ const validate = function() {
 	if (!formObj.username) {
 		validationObj.username = t('Field_required');
 	}
-	if (!formObj.pass) {
-		validationObj.pass = t('Field_required');
+	if (!formObj.password) {
+		validationObj.password = t('Field_required');
 	}
 
 	form.find('input.error, select.error').removeClass('error');
@@ -64,14 +64,14 @@ const validate = function() {
 		return formObj;
 	}
 	Object.entries(validationObj).forEach(([key, value]) => {
-		form.find(`input[name=${ key }], select[name=${ key }]`).addClass('error');
-		form.find(`input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
+		form.find(`input[name=${key}], select[name=${key}]`).addClass('error');
+		form.find(`input[name=${key}]~.input-error, select[name=${key}]~.input-error`).text(value);
 	});
 	this.loading.set(false);
 	return false;
 };
 
-Template.addWebdavAccount.onCreated(function() {
+Template.addWebdavAccount.onCreated(function () {
 	this.loading = new ReactiveVar(false);
 	this.validate = validate.bind(this);
 });

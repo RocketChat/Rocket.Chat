@@ -1,13 +1,4 @@
-import {
-	Field,
-	TextInput,
-	Box,
-	ToggleSwitch,
-	Icon,
-	TextAreaInput,
-	FieldGroup,
-	Margins,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import Page from '../../../components/Page';
@@ -16,28 +7,12 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
 
-export default function IncomingWebhookForm({
-	formValues,
-	formHandlers,
-	extraData = {},
-	append,
-	...props
-}) {
+export default function IncomingWebhookForm({ formValues, formHandlers, extraData = {}, append, ...props }) {
 	const t = useTranslation();
 
 	const absoluteUrl = useAbsoluteUrl();
 
-	const {
-		enabled,
-		channel,
-		username,
-		name,
-		alias,
-		avatarUrl,
-		emoji,
-		scriptEnabled,
-		script,
-	} = formValues;
+	const { enabled, channel, username, name, alias, avatarUrl, emoji, scriptEnabled, script } = formValues;
 
 	const {
 		handleEnabled,
@@ -98,9 +73,7 @@ export default function IncomingWebhookForm({
 								<Field.Row>
 									<TextInput flexGrow={1} value={name} onChange={handleName} />
 								</Field.Row>
-								<Field.Hint>
-									{t('You_should_name_it_to_easily_manage_your_integrations')}
-								</Field.Hint>
+								<Field.Hint>{t('You_should_name_it_to_easily_manage_your_integrations')}</Field.Hint>
 							</Field>
 						),
 						[t, name, handleName],
@@ -110,25 +83,12 @@ export default function IncomingWebhookForm({
 							<Field>
 								<Field.Label>{t('Post_to_Channel')}</Field.Label>
 								<Field.Row>
-									<TextInput
-										flexGrow={1}
-										value={channel}
-										onChange={handleChannel}
-										addon={<Icon name='at' size='x20' />}
-									/>
+									<TextInput flexGrow={1} value={channel} onChange={handleChannel} addon={<Icon name='at' size='x20' />} />
 								</Field.Row>
-								<Field.Hint>
-									{t('Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here')}
-								</Field.Hint>
+								<Field.Hint>{t('Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here')}</Field.Hint>
 								<Field.Hint
 									dangerouslySetInnerHTML={{
-										__html: t(
-											'Start_with_s_for_user_or_s_for_channel_Eg_s_or_s',
-											'@',
-											'#',
-											'@john',
-											'#general',
-										),
+										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
 									}}
 								/>
 							</Field>
@@ -140,16 +100,9 @@ export default function IncomingWebhookForm({
 							<Field>
 								<Field.Label>{t('Post_as')}</Field.Label>
 								<Field.Row>
-									<TextInput
-										flexGrow={1}
-										value={username}
-										onChange={handleUsername}
-										addon={<Icon name='user' size='x20' />}
-									/>
+									<TextInput flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='user' size='x20' />} />
 								</Field.Row>
-								<Field.Hint>
-									{t('Choose_the_username_that_this_integration_will_post_as')}
-								</Field.Hint>
+								<Field.Hint>{t('Choose_the_username_that_this_integration_will_post_as')}</Field.Hint>
 								<Field.Hint>{t('Should_exists_a_user_with_this_username')}</Field.Hint>
 							</Field>
 						),
@@ -160,16 +113,9 @@ export default function IncomingWebhookForm({
 							<Field>
 								<Field.Label>{`${t('Alias')} (${t('optional')})`}</Field.Label>
 								<Field.Row>
-									<TextInput
-										flexGrow={1}
-										value={alias}
-										onChange={handleAlias}
-										addon={<Icon name='edit' size='x20' />}
-									/>
+									<TextInput flexGrow={1} value={alias} onChange={handleAlias} addon={<Icon name='edit' size='x20' />} />
 								</Field.Row>
-								<Field.Hint>
-									{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}
-								</Field.Hint>
+								<Field.Hint>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</Field.Hint>
 							</Field>
 						),
 						[alias, handleAlias, t],
@@ -276,22 +222,14 @@ export default function IncomingWebhookForm({
 									<Field>
 										<Field.Label>{t('Webhook_URL')}</Field.Label>
 										<Field.Row>
-											<TextInput
-												flexGrow={1}
-												value={url}
-												addon={<Icon name='permalink' size='x20' />}
-											/>
+											<TextInput flexGrow={1} value={url} addon={<Icon name='permalink' size='x20' />} />
 										</Field.Row>
 										<Field.Hint>{t('Send_your_JSON_payloads_to_this_URL')}</Field.Hint>
 									</Field>
 									<Field>
 										<Field.Label>{t('Token')}</Field.Label>
 										<Field.Row>
-											<TextInput
-												flexGrow={1}
-												value={`${extraData._id}/${extraData.token}`}
-												addon={<Icon name='key' size='x20' />}
-											/>
+											<TextInput flexGrow={1} value={`${extraData._id}/${extraData.token}`} addon={<Icon name='key' size='x20' />} />
 										</Field.Row>
 									</Field>
 								</>
@@ -303,7 +241,7 @@ export default function IncomingWebhookForm({
 							<Field>
 								<Field.Label>{t('Example_payload')}</Field.Label>
 								<Field.Row>
-									<Box fontScale='p1' withRichContent flexGrow={1}>
+									<Box fontScale='p2' withRichContent flexGrow={1}>
 										<pre>
 											<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
 										</pre>
@@ -319,11 +257,7 @@ export default function IncomingWebhookForm({
 								<Field>
 									<Field.Label>{t('Curl')}</Field.Label>
 									<Field.Row>
-										<TextInput
-											flexGrow={1}
-											value={curlData}
-											addon={<Icon name='code' size='x20' />}
-										/>
+										<TextInput flexGrow={1} value={curlData} addon={<Icon name='code' size='x20' />} />
 									</Field.Row>
 								</Field>
 							),

@@ -1,80 +1,28 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { ComponentType } from 'react';
-import { Subscription, Unsubscribe } from 'use-subscription';
 
-type BlazeModalOptions = {
-	confirmButtonText?: string;
-	cancelButtonText?: string;
-	showCancelButton?: boolean;
-	confirmButtonColor?: string;
-	cancelButtonColor?: string;
-
-	allowOutsideClick?: boolean;
-	confirmOnEnter?: boolean;
-
-	closeOnConfirm?: boolean;
-	closeOnEscape?: boolean;
-
-	type?: 'input';
-	inputType?: 'text' | 'password';
-	inputActionText?: string;
-	inputAction?: () => any;
-	inputPlaceholder?: string;
-
-	modalIcon?: string;
-
-	timer?: number;
-	dontAskAgain?: {
-		action: string;
-		label: string;
-	};
-
-	data?: Record<string, any>;
-	content?: string;
-	template?: string;
-
-	title?: string;
-	text?: string;
-	html?: boolean;
+type ReactModalDescriptor<TProps extends {}> = {
+	component: ComponentType<TProps>;
+	props?: TProps;
 };
 
-type BlazeModalDescriptor = {
-	options: BlazeModalOptions;
-	confirmFn?: () => any;
-	cancelFn?: () => any;
-};
+type ModalDescriptor = ReactModalDescriptor<{}> | null;
 
-type ReactModalDescriptor<Props extends {} = {}> = {
-	component: ComponentType<Props>;
-	props?: Props;
-};
-
-type ModalDescriptor = BlazeModalDescriptor | ReactModalDescriptor | null;
-
-class ImperativeModalSubscription
-	extends Emitter<{ update: void }>
-	implements Subscription<ModalDescriptor> {
-	private descriptor: ModalDescriptor = null;
-
-	getCurrentValue = (): ModalDescriptor => this.descriptor;
-
-	subscribe = (callback: () => void): Unsubscribe => this.on('update', callback);
-
-	setCurrentValue(descriptor: ModalDescriptor): void {
-		this.descriptor = descriptor;
-		this.emit('update');
+class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {
+	update(descriptor: ModalDescriptor): void {
+		this.emit('update', descriptor);
 	}
 
-	open: {
-		(descriptor: BlazeModalDescriptor): void;
-		<Props = {}>(descriptor: ReactModalDescriptor<Props>): void;
-	} = (templateOrDescriptor: ModalDescriptor): void => {
-		this.setCurrentValue(templateOrDescriptor);
+	open = <TProps extends {}>(descriptor: ReactModalDescriptor<TProps> | null): void => {
+		// There are some TS shenanigans causing errors if this is not asserted
+		// Since this method is for internal use only, it's ok to use this here
+		// This will not affect prop types inference when using the method.
+		this.update(descriptor as ModalDescriptor);
 	};
 
 	close = (): void => {
-		this.setCurrentValue(null);
+		this.update(null);
 	};
 }
 
-export const imperativeModal = new ImperativeModalSubscription();
+export const imperativeModal = new ImperativeModalEmmiter();

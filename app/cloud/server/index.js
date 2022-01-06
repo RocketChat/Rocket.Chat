@@ -6,22 +6,22 @@ import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
+import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { Permissions } from '../../models';
+import { connectWorkspace } from './functions/connectWorkspace';
 import { settings } from '../../settings/server';
-
-if (Permissions) {
-	Permissions.create('manage-cloud', ['admin']);
-}
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
-	settings.get('Troubleshoot_Disable_Workspace_Sync', (key, value) => {
-		if (TroubleshootDisableWorkspaceSync === value) { return; }
+	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
+		if (TroubleshootDisableWorkspaceSync === value) {
+			return;
+		}
 		TroubleshootDisableWorkspaceSync = value;
 
 		if (value) {
@@ -39,6 +39,22 @@ Meteor.startup(function() {
 			job: syncWorkspace,
 		});
 	});
+
+	const { workspaceRegistered } = retrieveRegistrationStatus();
+
+	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
+		try {
+			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
+
+			if (!connectWorkspace(process.env.REG_TOKEN)) {
+				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
+			}
+
+			console.log('Successfully registered with token provided by REG_TOKEN!');
+		} catch (e) {
+			SystemLogger.error('An error occured registering with token.', e.message);
+		}
+	}
 });
 
 export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };
