@@ -218,7 +218,7 @@ export const FileUpload = {
 			if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 			}
-		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -411,7 +411,7 @@ export const FileUpload = {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
 
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
