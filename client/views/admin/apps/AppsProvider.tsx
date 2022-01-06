@@ -1,5 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import React, { useEffect, useRef, FC, useReducer, Reducer, useCallback } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useEffect, FC, useReducer, Reducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -11,6 +12,7 @@ import { App } from './types';
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
 };
+
 const registerListeners = (listeners: ListenersMapping): (() => void) => {
 	const entries = Object.entries(listeners) as Exclude<
 		{
@@ -27,6 +29,7 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 		}
 	};
 };
+
 type Action =
 	| { type: 'request'; reload: () => Promise<void> }
 	| { type: 'update'; app: App; reload: () => Promise<void> }
@@ -98,6 +101,16 @@ const reducer = (
 				value: { apps: sortByName(action.apps) },
 				error: undefined,
 			};
+		case 'delete':
+			if (state.phase !== AsyncStatePhase.RESOLVED) {
+				return state;
+			}
+			return {
+				reload: action.reload,
+				phase: AsyncStatePhase.RESOLVED,
+				value: { apps: state.value.apps.filter(({ id }) => id !== action.appId) },
+				error: undefined,
+			};
 		case 'failure':
 			return {
 				reload: action.reload,
@@ -109,8 +122,23 @@ const reducer = (
 			return state;
 	}
 };
+
 const AppsProvider: FC = ({ children }) => {
-	const [state, dispatch] = useReducer<
+	const [marketplaceAppsState, dispatchMarketplaceApps] = useReducer<
+		Reducer<
+			AsyncState<{ apps: App[] }> & {
+				reload: () => Promise<void>;
+			},
+			Action
+		>
+	>(reducer, {
+		phase: AsyncStatePhase.LOADING,
+		value: undefined,
+		error: undefined,
+		reload: async () => undefined,
+	});
+
+	const [installedAppsState, dispatchInstalledApps] = useReducer<
 		Reducer<
 			AsyncState<{ apps: App[] }> & {
 				reload: () => Promise<void>;
@@ -125,28 +153,60 @@ const AppsProvider: FC = ({ children }) => {
 	});
 
 	const fetch = useCallback(async (): Promise<void> => {
-		dispatch({ type: 'request', reload: async () => undefined });
+		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
+		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
+
+		let installedApps: App[] = [];
+		let marketplaceApps: App[] = [];
+		let marketplaceError = false;
+		let installedAppsError = false;
+
 		try {
-			const installedApps = await Apps.getApps().then((result: App[]) =>
+			marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+		} catch (e) {
+			dispatchMarketplaceApps({
+				type: 'failure',
+				error: e,
+				reload: fetch,
+			});
+			marketplaceError = true;
+		}
+
+		try {
+			installedApps = await Apps.getApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
 					marketplace: false,
 				})),
 			);
-			const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
-			const appsData = marketplaceApps.map<App>((app) => {
+		} catch (e) {
+			dispatchInstalledApps({
+				type: 'failure',
+				error: e,
+				reload: fetch,
+			});
+			installedAppsError = true;
+		}
+
+		const installedAppsData: App[] = [];
+		const marketplaceAppsData: App[] = [];
+
+		if (!marketplaceError) {
+			marketplaceApps.forEach((app) => {
 				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
 				if (!installedApps[appIndex]) {
-					return {
+					marketplaceAppsData.push({
 						...app,
 						status: undefined,
 						marketplaceVersion: app.version,
 						bundledIn: app.bundledIn,
-					};
+					});
+
+					return;
 				}
 				const [installedApp] = installedApps.splice(appIndex, 1);
-				return {
+				const appData = {
 					...app,
 					installed: true,
 					...(installedApp && {
@@ -157,76 +217,138 @@ const AppsProvider: FC = ({ children }) => {
 					bundledIn: app.bundledIn,
 					marketplaceVersion: app.version,
 				};
+
+				installedAppsData.push(appData);
+				marketplaceAppsData.push(appData);
 			});
-			if (installedApps.length) {
-				appsData.push(...installedApps);
-			}
-			dispatch({
+			dispatchMarketplaceApps({
 				type: 'success',
-				apps: appsData,
 				reload: fetch,
+				apps: marketplaceAppsData,
 			});
-		} catch (e) {
-			dispatch({
-				type: 'failure',
-				error: e,
+		}
+
+		if (!installedAppsError) {
+			if (installedApps.length) {
+				installedAppsData.push(...installedApps);
+			}
+
+			dispatchInstalledApps({
+				type: 'success',
 				reload: fetch,
+				apps: installedAppsData,
 			});
-			throw e;
 		}
 	}, []);
-	const ref = useRef<App[]>([]);
-	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
+
+	const getCurrentData = useMutableCallback(function getCurrentData() {
+		return [marketplaceAppsState, installedAppsState];
+	});
+
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
+			let marketplaceApp: App | undefined;
+			let installedApp: App;
+
 			try {
-				const { status, version, licenseValidation } = await Apps.getApp(appId);
-				const app = await Apps.getAppFromMarketplace(appId, version);
+				installedApp = await Apps.getApp(appId);
+			} catch (error) {
+				handleAPIError(error);
+				throw error;
+			}
+
+			try {
+				marketplaceApp = await Apps.getAppFromMarketplace(appId, installedApp.version);
+			} catch (error) {
+				handleAPIError(error);
+			}
+
+			if (marketplaceApp !== undefined) {
+				const { status, version, licenseValidation } = installedApp;
 				const record = {
-					...app,
+					...marketplaceApp,
 					installed: true,
 					status,
 					version,
 					licenseValidation,
-					marketplaceVersion: app.version,
+					marketplaceVersion: marketplaceApp.version,
 				};
-				dispatch({ type: 'update', app: record, reload: fetch });
-			} catch (error) {
-				handleAPIError(error);
+
+				const [, installedApps] = getCurrentData();
+
+				dispatchMarketplaceApps({
+					type: 'update',
+					app: record,
+					reload: fetch,
+				});
+
+				if (installedApps.value) {
+					dispatchInstalledApps({
+						type: 'success',
+						apps: [...installedApps.value.apps, record],
+						reload: fetch,
+					});
+					return;
+				}
+
+				dispatchInstalledApps({
+					type: 'success',
+					apps: [record],
+					reload: fetch,
+				});
+
+				return;
 			}
+
+			dispatchInstalledApps({ type: 'update', app: installedApp, reload: fetch });
 		};
 		const listeners = {
 			APP_ADDED: handleAppAddedOrUpdated,
 			APP_UPDATED: handleAppAddedOrUpdated,
 			APP_REMOVED: (appId: string): void => {
-				const updatedData = getDataCopy();
-				const index = updatedData.findIndex(({ id }: { id: string }) => id === appId);
-				if (index < 0) {
+				const [updatedData] = getCurrentData();
+				const app = updatedData.value?.apps.find(({ id }: { id: string }) => id === appId);
+
+				dispatchInstalledApps({
+					type: 'delete',
+					appId,
+					reload: fetch,
+				});
+
+				if (!app) {
 					return;
 				}
-				if (updatedData[index].marketplace !== false) {
-					return dispatch({ type: 'delete', appId, reload: fetch });
-				}
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const { installed, status, marketplaceVersion, ...record } = updatedData[index];
-				return dispatch({
+
+				dispatchMarketplaceApps({
 					type: 'update',
 					reload: fetch,
 					app: {
-						...record,
-						version: marketplaceVersion,
-						marketplaceVersion,
+						...app,
+						version: app?.marketplaceVersion,
+						installed: false,
+						marketplaceVersion: app?.marketplaceVersion,
 					},
 				});
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
-				const updatedData = getDataCopy();
-				const app = updatedData.find(({ id }: { id: string }) => id === appId);
+				const [updatedData] = getCurrentData();
+				const app = updatedData.value?.apps.find(({ id }: { id: string }) => id === appId);
 				if (!app) {
 					return;
 				}
+
 				app.status = status;
-				return dispatch({
+
+				dispatchInstalledApps({
+					type: 'update',
+					app: {
+						...app,
+						status,
+					},
+					reload: fetch,
+				});
+
+				dispatchMarketplaceApps({
 					type: 'update',
 					app: {
 						...app,
@@ -236,7 +358,8 @@ const AppsProvider: FC = ({ children }) => {
 				});
 			},
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
-				dispatch({ type: 'invalidate', appId, reload: fetch });
+				dispatchInstalledApps({ type: 'invalidate', appId, reload: fetch });
+				dispatchMarketplaceApps({ type: 'invalidate', appId, reload: fetch });
 			},
 		};
 		const unregisterListeners = registerListeners(listeners);
@@ -246,7 +369,12 @@ const AppsProvider: FC = ({ children }) => {
 			// eslint-disable-next-line no-unsafe-finally
 			return unregisterListeners;
 		}
-	}, [fetch]);
-	return <AppsContext.Provider children={children} value={state} />;
+	}, [fetch, getCurrentData]);
+	return (
+		<AppsContext.Provider
+			children={children}
+			value={{ installedApps: installedAppsState, marketplaceApps: marketplaceAppsState, reload: fetch }}
+		/>
+	);
 };
 export default AppsProvider;

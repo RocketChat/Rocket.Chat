@@ -3,12 +3,23 @@ import { createContext, useContext } from 'react';
 import { AsyncState, AsyncStatePhase } from '../../../lib/asyncState';
 import { App } from './types';
 
-type AppsContextValue = AsyncState<{ apps: App[] }> & { reload: () => Promise<void> };
+type AppsContextValue = {
+	installedApps: AsyncState<{ apps: App[] }>;
+	marketplaceApps: AsyncState<{ apps: App[] }>;
+	reload: () => Promise<void>;
+};
 
 export const AppsContext = createContext<AppsContextValue>({
-	phase: AsyncStatePhase.LOADING,
-	value: undefined,
-	error: undefined,
+	installedApps: {
+		phase: AsyncStatePhase.LOADING,
+		value: undefined,
+		error: undefined,
+	},
+	marketplaceApps: {
+		phase: AsyncStatePhase.LOADING,
+		value: undefined,
+		error: undefined,
+	},
 	reload: () => Promise.resolve(),
 });
 

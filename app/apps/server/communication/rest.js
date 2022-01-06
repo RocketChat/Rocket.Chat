@@ -432,9 +432,7 @@ export class AppsRestApi {
 
 						return API.v1.success({ app: result.data });
 					}
-
 					const app = manager.getOneById(this.urlParams.id);
-
 					if (!app) {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}

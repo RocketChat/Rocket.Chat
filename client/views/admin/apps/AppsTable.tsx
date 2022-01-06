@@ -31,12 +31,10 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
-import { useAppsReload } from './AppsContext';
+import { useAppsReload, useAppsResult } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import CategoryDropDown from './components/CategoryDropDown';
 import TagList from './components/TagList';
-import { filterAppsInstalled } from './helpers/filterAppsInstalled';
-import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
@@ -51,9 +49,9 @@ const AppsTable: FC<{
 		boolean,
 	];
 
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const { marketplaceApps, installedApps } = useAppsResult();
 
-	const filterFunction = isMarketplace ? filterAppsMarketplace : filterAppsInstalled;
+	const marketplaceRoute = useRoute('admin-marketplace');
 
 	const Row = isMarketplace ? MarketplaceRow : AppRow;
 
@@ -68,7 +66,7 @@ const AppsTable: FC<{
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 
 	const appsResult = useFilteredApps({
-		filterFunction,
+		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
 		current,
 		itemsPerPage,

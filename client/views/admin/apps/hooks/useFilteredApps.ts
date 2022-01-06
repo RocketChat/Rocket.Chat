@@ -1,35 +1,35 @@
-import { useMemo } from 'react';
+import { useMemo, ContextType } from 'react';
 
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
-import { useAppsResult } from '../AppsContext';
+import type { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { filterAppByText } from '../helpers/filterAppByText';
 import { App } from '../types';
 
+type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
+
 export const useFilteredApps = ({
-	filterFunction = (): boolean => true,
+	appsData,
 	text,
 	sortDirection,
 	current,
 	categories = [],
 	itemsPerPage,
 }: {
-	filterFunction: (app: App) => boolean;
+	appsData: appsDataType;
 	text: string;
 	sortDirection: 'asc' | 'desc';
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
-	const result = useAppsResult();
-
 	const value = useMemo(() => {
-		if (result.value === undefined) {
+		if (appsData.value === undefined) {
 			return undefined;
 		}
 
-		const apps = result.value.apps.filter(filterFunction);
+		const { apps } = appsData.value;
 
 		let filtered: App[] = apps;
 		let shouldShowSearchText = true;
@@ -59,24 +59,24 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [categories, current, filterFunction, itemsPerPage, result.value, sortDirection, text]);
+	}, [categories, current, appsData, itemsPerPage, sortDirection, text]);
 
-	if (result.phase === AsyncStatePhase.RESOLVED) {
+	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
 			throw new Error('useFilteredApps - Unexpected state');
 		}
 		return {
-			...result,
+			...appsData,
 			value,
 		};
 	}
 
-	if (result.phase === AsyncStatePhase.UPDATING) {
+	if (appsData.phase === AsyncStatePhase.UPDATING) {
 		throw new Error('useFilteredApps - Unexpected state');
 	}
 
 	return {
-		...result,
+		...appsData,
 		value: undefined,
 	};
 };
