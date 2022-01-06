@@ -6,17 +6,12 @@ const bulkRoomCleanUp = (rids) => {
 	// no bulk deletion for files
 	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
 
-	return Promise.await(Promise.all([
-		Subscriptions.removeByRoomIds(rids),
-		Messages.removeByRoomIds(rids),
-		Rooms.removeByIds(rids),
-	]));
+	return Promise.await(Promise.all([Subscriptions.removeByRoomIds(rids), Messages.removeByRoomIds(rids), Rooms.removeByIds(rids)]));
 };
 
-export const relinquishRoomOwnerships = async function(userId, subscribedRooms, removeDirectMessages = true) {
+export const relinquishRoomOwnerships = async function (userId, subscribedRooms, removeDirectMessages = true) {
 	// change owners
-	const changeOwner = subscribedRooms
-		.filter(({ shouldChangeOwner }) => shouldChangeOwner);
+	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
 
 	for await (const { newOwner, rid } of changeOwner) {
 		await Roles.addUserRoles(newOwner, ['owner'], rid);

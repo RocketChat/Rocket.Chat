@@ -15,11 +15,7 @@ Meteor.methods({
 		if (updatedAt instanceof Date) {
 			return {
 				update: records,
-				remove: await Permissions.trashFindDeletedAfter(
-					updatedAt,
-					{},
-					{ fields: { _id: 1, _deletedAt: 1 } },
-				).toArray(),
+				remove: await Permissions.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 

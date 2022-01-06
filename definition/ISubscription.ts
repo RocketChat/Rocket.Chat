@@ -7,6 +7,7 @@ type RoomID = string;
 
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	v?: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: RoomID;
 	open: boolean;
 	ts: Date;
@@ -39,7 +40,6 @@ export interface ISubscription extends IRocketChatRecord {
 	E2EKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
-
 	fname?: unknown;
 
 	code?: unknown;
@@ -57,7 +57,6 @@ export interface ISubscription extends IRocketChatRecord {
 	ignored?: unknown;
 
 	department?: unknown;
-	v?: unknown;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

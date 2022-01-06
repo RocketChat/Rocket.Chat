@@ -45,24 +45,12 @@ const PruneMessages = ({
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<DateTimeRow
-					label={t('Newer_than')}
-					dateTime={newerDateTime}
-					handleDateTime={handleNewerDateTime}
-				/>
-				<DateTimeRow
-					label={t('Older_than')}
-					dateTime={olderDateTime}
-					handleDateTime={handleOlderDateTime}
-				/>
+				<DateTimeRow label={t('Newer_than')} dateTime={newerDateTime} handleDateTime={handleNewerDateTime} />
+				<DateTimeRow label={t('Older_than')} dateTime={olderDateTime} handleDateTime={handleOlderDateTime} />
 
 				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
-					<UserAutoCompleteMultiple
-						value={users}
-						onChange={onChangeUsers}
-						placeholder={t('Please_enter_usernames')}
-					/>
+					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} placeholder={t('Please_enter_usernames')} />
 				</Field>
 
 				<Field>
@@ -75,27 +63,21 @@ const PruneMessages = ({
 				<Field>
 					<Field.Row>
 						<CheckBox id={pinnedCheckboxId} checked={pinned} onChange={handlePinned} />
-						<Field.Label htmlFor={pinnedCheckboxId}>
-							{t('RetentionPolicy_DoNotPrunePinned')}
-						</Field.Label>
+						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
 					</Field.Row>
 				</Field>
 
 				<Field>
 					<Field.Row>
 						<CheckBox id={discussionCheckboxId} checked={discussion} onChange={handleDiscussion} />
-						<Field.Label htmlFor={discussionCheckboxId}>
-							{t('RetentionPolicy_DoNotPruneDiscussion')}
-						</Field.Label>
+						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
 					</Field.Row>
 				</Field>
 
 				<Field>
 					<Field.Row>
 						<CheckBox id={threadsCheckboxId} checked={threads} onChange={handleThreads} />
-						<Field.Label htmlFor={threadsCheckboxId}>
-							{t('RetentionPolicy_DoNotPruneThreads')}
-						</Field.Label>
+						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
 					</Field.Row>
 				</Field>
 

@@ -8,7 +8,7 @@ import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const get = function(file, req, res) {
+const get = function (file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
 
 	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
@@ -21,7 +21,7 @@ const get = function(file, req, res) {
 		}
 
 		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
+		if (settings.get(`FileUpload_GoogleStorage_Proxy_${storeType}`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 
 			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
@@ -31,7 +31,7 @@ const get = function(file, req, res) {
 	});
 };
 
-const copy = function(file, out) {
+const copy = function (file, out) {
 	this.store.getRedirectURL(file, false, (err, fileUrl) => {
 		if (err) {
 			SystemLogger.error(err);
@@ -67,7 +67,7 @@ const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function() {
+const configure = _.debounce(function () {
 	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
 	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = settings.get('FileUpload_GoogleStorage_Secret');

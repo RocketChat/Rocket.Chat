@@ -1,10 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	defaultIdentifierFormat,
-	defaultMetadataCertificateTemplate,
-	defaultMetadataTemplate,
-} from '../constants';
+import { defaultIdentifierFormat, defaultMetadataCertificateTemplate, defaultMetadataTemplate } from '../constants';
 import { SAMLUtils } from '../Utils';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { IMetadataVariables } from '../../definition/IMetadataVariables';
@@ -51,7 +47,7 @@ export class ServiceProviderMetadata {
 			certificate: SAMLUtils.normalizeCert(serviceProviderOptions.privateCert),
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
 			callbackUrl: serviceProviderOptions.callbackUrl,
-			sloLocation: `${ Meteor.absoluteUrl() }_saml/logout/${ serviceProviderOptions.provider }/`,
+			sloLocation: `${Meteor.absoluteUrl()}_saml/logout/${serviceProviderOptions.provider}/`,
 		};
 	}
 }

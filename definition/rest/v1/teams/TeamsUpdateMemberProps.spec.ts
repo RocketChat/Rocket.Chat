@@ -52,7 +52,13 @@ describe('TeamsUpdateMemberProps (definition/rest/v1)', () => {
 		});
 
 		it('should return false if contains an invalid property', () => {
-			assert.isFalse(isTeamsUpdateMemberProps({ member: { userId: '123', roles: ['123'] }, teamName: '123', invalid: true }));
+			assert.isFalse(
+				isTeamsUpdateMemberProps({
+					member: { userId: '123', roles: ['123'] },
+					teamName: '123',
+					invalid: true,
+				}),
+			);
 		});
 	});
 });

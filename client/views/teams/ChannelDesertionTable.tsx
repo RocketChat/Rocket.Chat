@@ -34,10 +34,7 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
 
 	const checked = eligibleRoomsLength === selectedRoomsLength;
-	const indeterminate =
-		eligibleRoomsLength && eligibleRoomsLength > selectedRoomsLength
-			? selectedRoomsLength > 0
-			: false;
+	const indeterminate = eligibleRoomsLength && eligibleRoomsLength > selectedRoomsLength ? selectedRoomsLength > 0 : false;
 
 	const formatDate = useFormatDateAndTime();
 
@@ -47,11 +44,7 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 				header={
 					<>
 						<GenericTable.HeaderCell key='name' sort='name'>
-							<CheckBox
-								indeterminate={indeterminate}
-								checked={checked}
-								onChange={onToggleAllRooms}
-							/>
+							<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
 							<Box mi='x8'>{t('Channel_name')}</Box>
 						</GenericTable.HeaderCell>
 						<GenericTable.HeaderCell key='joinedAt' sort='joinedAt'>

@@ -10,16 +10,11 @@ function PlanTag() {
 	const getTags = useMethod('license:getTags');
 
 	useEffect(() => {
-		const developmentTag =
-			process.env.NODE_ENV === 'development' ? { name: 'development', color: '#095ad2' } : null;
+		const developmentTag = process.env.NODE_ENV === 'development' ? { name: 'development', color: '#095ad2' } : null;
 
 		const fetchTags = async () => {
 			const tags = await getTags();
-			setPlans(
-				[developmentTag, ...tags]
-					.filter(Boolean)
-					.map((plan) => ({ plan: plan.name, background: plan.color })),
-			);
+			setPlans([developmentTag, ...tags].filter(Boolean).map((plan) => ({ plan: plan.name, background: plan.color })));
 		};
 
 		fetchTags();

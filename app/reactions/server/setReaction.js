@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Messages, Rooms } from '../../models/server';
 import { EmojiCustom } from '../../models/server/raw';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
@@ -19,16 +19,18 @@ const removeUserReaction = (message, reaction, username) => {
 };
 
 async function setReaction(room, user, message, reaction, shouldReact) {
-	reaction = `:${ reaction.replace(/:/g, '') }:`;
+	reaction = `:${reaction.replace(/:/g, '')}:`;
 
-	if (!emoji.list[reaction] && await EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
-		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
+	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
+		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
+			method: 'setReaction',
+		});
 	}
 
-	if (room.ro === true && (!room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id))) {
+	if (room.ro === true && !room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id)) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username)) {
-			throw new Error('You can\'t send messages because the room is readonly.');
+			throw new Error("You can't send messages because the room is readonly.");
 		}
 	}
 
@@ -38,7 +40,10 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+	const userAlreadyReacted =
+		Boolean(message.reactions) &&
+		Boolean(message.reactions[reaction]) &&
+		message.reactions[reaction].usernames.indexOf(user.username) !== -1;
 	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
@@ -84,7 +89,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	msgStream.emit(message.rid, message);
 }
 
-export const executeSetReaction = async function(reaction, messageId, shouldReact) {
+export const executeSetReaction = async function (reaction, messageId, shouldReact) {
 	const user = Meteor.user();
 
 	if (!user) {

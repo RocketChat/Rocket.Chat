@@ -5,7 +5,7 @@ import '../../../client/startup/ldap';
 import { reportError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
-Meteor.loginWithLDAPAndTOTP = function(...args) {
+Meteor.loginWithLDAPAndTOTP = function (...args) {
 	// Pull username and password
 	const username = args.shift();
 	const ldapPass = args.shift();
@@ -27,12 +27,14 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 	};
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: loginRequest,
-				code,
+		methodArguments: [
+			{
+				totp: {
+					login: loginRequest,
+					code,
+				},
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -45,7 +47,7 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 
 const { loginWithLDAP } = Meteor;
 
-Meteor.loginWithLDAP = function(...args) {
+Meteor.loginWithLDAP = function (...args) {
 	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
 
 	overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP, args[0]);

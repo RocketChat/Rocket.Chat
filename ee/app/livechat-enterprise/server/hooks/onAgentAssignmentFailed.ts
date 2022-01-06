@@ -1,11 +1,22 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 
-const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean} }): Promise<any> => {
+const handleOnAgentAssignmentFailed = async ({
+	inquiry,
+	room,
+	options,
+}: {
+	inquiry: any;
+	room: any;
+	options: {
+		forwardingToDepartment?: { oldDepartmentId: string; transferData: any };
+		clientAction?: boolean;
+	};
+}): Promise<any> => {
 	if (!inquiry || !room) {
 		cbLogger.debug('Skipping callback. No inquiry or room provided');
 		return;
@@ -51,4 +62,9 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 	return room;
 };
 
-callbacks.add('livechat.onAgentAssignmentFailed', handleOnAgentAssignmentFailed, callbacks.priority.HIGH, 'livechat-agent-assignment-failed');
+callbacks.add(
+	'livechat.onAgentAssignmentFailed',
+	handleOnAgentAssignmentFailed,
+	callbacks.priority.HIGH,
+	'livechat-agent-assignment-failed',
+);

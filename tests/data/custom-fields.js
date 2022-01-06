@@ -15,11 +15,7 @@ export function setCustomFields(customFields, done) {
 
 		const stringified = customFields ? JSON.stringify(customFields) : '';
 
-		request.post(api('settings/Accounts_CustomFields'))
-			.set(credentials)
-			.send({ value: stringified })
-			.expect(200)
-			.end(done);
+		request.post(api('settings/Accounts_CustomFields')).set(credentials).send({ value: stringified }).expect(200).end(done);
 	});
 }
 

@@ -1,9 +1,11 @@
 import { Rooms, Subscriptions, Messages } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
-export const addUserToDefaultChannels = function(user, silenced) {
+export const addUserToDefaultChannels = function (user, silenced) {
 	callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
+	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
+		fields: { usernames: 0 },
+	}).fetch();
 	defaultRooms.forEach((room) => {
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
 			// Add a subscription to this user
@@ -14,7 +16,7 @@ export const addUserToDefaultChannels = function(user, silenced) {
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
-				...room.favorite && { f: true },
+				...(room.favorite && { f: true }),
 			});
 
 			// Insert user joined message

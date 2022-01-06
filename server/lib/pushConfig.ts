@@ -6,9 +6,9 @@ import { hasRole } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
-
 Meteor.methods({
-	'push_test'() {
+	// eslint-disable-next-line @typescript-eslint/camelcase
+	push_test() {
 		const user = Meteor.user();
 
 		if (!user) {
@@ -30,19 +30,25 @@ Meteor.methods({
 		}
 
 		const query = {
-			$and: [{
-				userId: user._id,
-			}, {
-				$or: [{
-					'token.apn': {
-						$exists: true,
-					},
-				}, {
-					'token.gcm': {
-						$exists: true,
-					},
-				}],
-			}],
+			$and: [
+				{
+					userId: user._id,
+				},
+				{
+					$or: [
+						{
+							'token.apn': {
+								$exists: true,
+							},
+						},
+						{
+							'token.gcm': {
+								$exists: true,
+							},
+						},
+					],
+				},
+			],
 		};
 
 		const tokens = appTokensCollection.find(query).count();
@@ -55,10 +61,10 @@ Meteor.methods({
 
 		Push.send({
 			from: 'push',
-			title: `@${ user.username }`,
+			title: `@${user.username}`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
+				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`,
 			},
 			sound: 'default',
 			userId: user._id,
@@ -71,25 +77,30 @@ Meteor.methods({
 	},
 });
 
-settings.watch<boolean>('Push_enable', async function(enabled) {
+settings.watch<boolean>('Push_enable', async function (enabled) {
 	if (!enabled) {
 		return;
 	}
-	const gateways = settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms')
-		? settings.get<string>('Push_gateway').split('\n')
-		: undefined;
+	const gateways =
+		settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms')
+			? settings.get<string>('Push_gateway').split('\n')
+			: undefined;
 
-	let apn: {
-		apiKey?: string;
-		passphrase: string;
-		key: string;
-		cert: string;
-		gateway?: string;
-	} | undefined;
-	let gcm: {
-		apiKey: string;
-		projectNumber: string;
-	} | undefined;
+	let apn:
+		| {
+				apiKey?: string;
+				passphrase: string;
+				key: string;
+				cert: string;
+				gateway?: string;
+		  }
+		| undefined;
+	let gcm:
+		| {
+				apiKey: string;
+				projectNumber: string;
+		  }
+		| undefined;
 
 	if (!gateways) {
 		gcm = {
@@ -128,7 +139,7 @@ settings.watch<boolean>('Push_enable', async function(enabled) {
 		gateways,
 		uniqueId: settings.get('uniqueID'),
 		getAuthorization() {
-			return `Bearer ${ Promise.await(getWorkspaceAccessToken()) }`;
+			return `Bearer ${Promise.await(getWorkspaceAccessToken())}`;
 		},
 	});
 });

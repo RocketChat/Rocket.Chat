@@ -30,7 +30,7 @@ export async function startRegisterWorkspace(resend = false) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.response.data.error}`);
 		} else {
 			SystemLogger.error(e);
 		}

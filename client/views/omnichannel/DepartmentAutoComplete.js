@@ -21,10 +21,7 @@ const DepartmentAutoComplete = (props) => {
 	);
 
 	const options = useMemo(
-		() =>
-			(data &&
-				data.items.map((department) => ({ value: department._id, label: department.name }))) ||
-			[],
+		() => (data && data.items.map((department) => ({ value: department._id, label: department.name }))) || [],
 		[data],
 	);
 	const onClickRemove = useMutableCallback(() => props.onChange(''));
