@@ -983,7 +983,16 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				return API.v1.success(true);
+				const me = await UsersRaw.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+
+				const token = me.services.resume.loginTokens.find((token) => token.hashedToken === hashedToken);
+
+				const tokenExpires = new Date(token.when.getTime() + settings.get('Accounts_LoginExpiration') * 1000);
+
+				return API.v1.success({
+					token: this.request.headers['x-auth-token'],
+					tokenExpires,
+				});
 			} catch (error) {
 				return API.v1.failure(error);
 			}
