@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { ChatRoom } from '../../models';
 
 function trackEvent(category, action, label) {

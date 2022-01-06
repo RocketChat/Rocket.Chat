@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
 

@@ -6,7 +6,7 @@ import { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { IUser } from '../../../definition/IUser';
@@ -76,7 +76,11 @@ Meteor.startup(() =>
 
 		callbacks.add(
 			'mapLDAPUserData',
-			(userData: IImportUser, ldapUser: ILDAPEntry) => {
+			(userData: IImportUser, ldapUser?: ILDAPEntry) => {
+				if (!ldapUser) {
+					return;
+				}
+
 				LDAPEEManager.copyCustomFields(ldapUser, userData);
 				LDAPEEManager.copyActiveState(ldapUser, userData);
 			},
@@ -86,7 +90,11 @@ Meteor.startup(() =>
 
 		callbacks.add(
 			'onLDAPLogin',
-			({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap: LDAPConnection) => {
+			({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
+				if (!ldap) {
+					return;
+				}
+
 				Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
 			},
 			callbacks.priority.MEDIUM,
