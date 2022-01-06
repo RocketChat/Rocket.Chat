@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import UsersInRoleTable from './UsersInRoleTable';
 
-const UsersInRoleTableContainer = ({ rid, roleId, roleName, description, reloadRef }) => {
+const UsersInRoleTableContainer = ({ rid, roleName, description, reloadRef }) => {
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const debouncedParams = useDebouncedValue(params, 500);
@@ -12,11 +12,11 @@ const UsersInRoleTableContainer = ({ rid, roleId, roleName, description, reloadR
 	const query = useMemo(
 		() => ({
 			roomId: rid,
-			role: roleId,
+			role: roleName,
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[debouncedParams, rid, roleId],
+		[debouncedParams, rid, roleName],
 	);
 
 	const { value: data = {}, reload } = useEndpointData('roles.getUsersInRole', query);

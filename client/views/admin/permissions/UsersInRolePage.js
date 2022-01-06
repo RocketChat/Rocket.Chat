@@ -40,7 +40,7 @@ const UsersInRolePage = ({ data }) => {
 		}
 
 		try {
-			await addUser({ roleName: _id, username: user, roomId: rid });
+			await addUser({ roleName: name, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
 			setUser();
 			reload.current();
@@ -92,14 +92,7 @@ const UsersInRolePage = ({ data }) => {
 				</Box>
 				<Margins blockStart='x8'>
 					{(data.scope === 'Users' || rid) && (
-						<UsersInRoleTableContainer
-							reloadRef={reload}
-							scope={data.scope}
-							rid={rid}
-							roleId={_id}
-							roleName={name}
-							description={description}
-						/>
+						<UsersInRoleTableContainer reloadRef={reload} scope={data.scope} rid={rid} roleName={name} description={description} />
 					)}
 					{data.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
