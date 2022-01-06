@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks';
+import { callbacks } from '../../lib/callbacks';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
 
 Meteor.methods({
