@@ -1,7 +1,7 @@
 import { TextInput, TextAreaInput, Field, FieldGroup, CheckBox, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -43,7 +43,7 @@ export function Mailer({ sendMail = () => {} }) {
 								onChange={(e) => {
 									setFromEmail({
 										value: e.currentTarget.value,
-										error: !isEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
+										error: !validateEmail(e.currentTarget.value) ? t('Invalid_Email') : undefined,
 									});
 								}}
 							/>

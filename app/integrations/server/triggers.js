@@ -1,4 +1,4 @@
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { triggerHandler } from './lib/triggerHandler';
 
 const callbackHandler = function _callbackHandler(eventType) {

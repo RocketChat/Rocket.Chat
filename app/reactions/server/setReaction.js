@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Messages, Rooms } from '../../models/server';
 import { EmojiCustom } from '../../models/server/raw';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
