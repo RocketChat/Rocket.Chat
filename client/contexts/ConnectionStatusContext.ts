@@ -14,5 +14,4 @@ export const ConnectionStatusContext = createContext<ConnectionStatusContextValu
 	reconnect: () => undefined,
 });
 
-export const useConnectionStatus = (): ConnectionStatusContextValue =>
-	useContext(ConnectionStatusContext);
+export const useConnectionStatus = (): ConnectionStatusContextValue => useContext(ConnectionStatusContext);

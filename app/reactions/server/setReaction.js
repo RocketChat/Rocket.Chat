@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms } from '../../models';
-import { callbacks } from '../../callbacks';
-import { emoji } from '../../emoji';
-import { isTheLastMessage, msgStream } from '../../lib';
-import { hasPermission } from '../../authorization/server/functions/hasPermission';
+import { Messages, Rooms } from '../../models/server';
+import { EmojiCustom } from '../../models/server/raw';
+import { callbacks } from '../../../lib/callbacks';
+import { emoji } from '../../emoji/server';
+import { isTheLastMessage, msgStream } from '../../lib/server';
+import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
@@ -18,16 +19,18 @@ const removeUserReaction = (message, reaction, username) => {
 };
 
 async function setReaction(room, user, message, reaction, shouldReact) {
-	reaction = `:${ reaction.replace(/:/g, '') }:`;
+	reaction = `:${reaction.replace(/:/g, '')}:`;
 
-	if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
-		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
+	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
+		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
+			method: 'setReaction',
+		});
 	}
 
-	if (room.ro === true && (!room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id))) {
+	if (room.ro === true && !room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id)) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username)) {
-			throw new Error('You can\'t send messages because the room is readonly.');
+			throw new Error("You can't send messages because the room is readonly.");
 		}
 	}
 
@@ -37,7 +40,10 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+	const userAlreadyReacted =
+		Boolean(message.reactions) &&
+		Boolean(message.reactions[reaction]) &&
+		message.reactions[reaction].usernames.indexOf(user.username) !== -1;
 	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
@@ -83,7 +89,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	msgStream.emit(message.rid, message);
 }
 
-export const executeSetReaction = async function(reaction, messageId, shouldReact) {
+export const executeSetReaction = async function (reaction, messageId, shouldReact) {
 	const user = Meteor.user();
 
 	if (!user) {
@@ -91,15 +97,17 @@ export const executeSetReaction = async function(reaction, messageId, shouldReac
 	}
 
 	const message = Messages.findOneById(messageId);
-
 	if (!message) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-
+	const room = Rooms.findOneById(message.rid);
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+	}
+
+	if (!canAccessRoom(room, user)) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
 	return setReaction(room, user, message, reaction, shouldReact);

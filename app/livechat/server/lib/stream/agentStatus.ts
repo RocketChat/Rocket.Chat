@@ -2,25 +2,28 @@ import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../Livechat';
 import { settings } from '../../../../settings/server';
+import { Logger } from '../../../../logger/server';
+
+const logger = new Logger('AgentStatusWatcher');
 
 export let monitorAgents = false;
 let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-settings.get('Livechat_agent_leave_action_timeout', (_key, value) => {
+settings.watch('Livechat_agent_leave_action_timeout', (value) => {
 	if (typeof value !== 'number') {
 		return;
 	}
 	actionTimeout = value * 1000;
 });
 
-settings.get('Livechat_agent_leave_action', (_key, value) => {
+settings.watch('Livechat_agent_leave_action', (value) => {
 	monitorAgents = value !== 'none';
 	action = value as string;
 });
 
-settings.get('Livechat_agent_leave_comment', (_key, value) => {
+settings.watch('Livechat_agent_leave_comment', (value) => {
 	if (typeof value !== 'string') {
 		return;
 	}
@@ -64,12 +67,19 @@ export const onlineAgents = {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
-		if (action === 'close') {
-			return Livechat.closeOpenChats(userId, comment);
-		}
+		try {
+			if (action === 'close') {
+				return Livechat.closeOpenChats(userId, comment);
+			}
 
-		if (action === 'forward') {
-			return Livechat.forwardOpenChats(userId);
+			if (action === 'forward') {
+				return Livechat.forwardOpenChats(userId);
+			}
+		} catch (e) {
+			logger.error({
+				msg: `Cannot perform action ${action}`,
+				err: e,
+			});
 		}
 	}),
 };

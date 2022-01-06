@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-import { isTheLastMessage } from '../../lib';
+import { settings } from '../../settings/server';
+import { callbacks } from '../../../lib/callbacks';
+import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { hasPermission } from '../../authorization';
+import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { Subscriptions, Messages, Users, Rooms } from '../../models';
 
 const recursiveRemove = (msg, deep = 1) => {
@@ -18,14 +18,13 @@ const recursiveRemove = (msg, deep = 1) => {
 		return msg;
 	}
 
-	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map(
-		(nestedMsg) => recursiveRemove(nestedMsg, deep + 1),
-	) : null;
+	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1)) : null;
 
 	return msg;
 };
 
-const shouldAdd = (attachments, attachment) => !attachments.some(({ message_link }) => message_link && message_link === attachment.message_link);
+const shouldAdd = (attachments, attachment) =>
+	!attachments.some(({ message_link }) => message_link && message_link === attachment.message_link);
 
 Meteor.methods({
 	pinMessage(message, pinnedAt) {
@@ -72,7 +71,11 @@ Meteor.methods({
 		if (settings.get('Message_KeepHistory')) {
 			Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
-		const room = Meteor.call('canAccessRoom', originalMessage.rid, Meteor.userId());
+
+		const room = Rooms.findOneById(originalMessage.rid);
+		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
 
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
@@ -98,23 +101,17 @@ Meteor.methods({
 			});
 		}
 
-		return Messages.createWithTypeRoomIdMessageAndUser(
-			'message_pinned',
-			originalMessage.rid,
-			'',
-			me,
-			{
-				attachments: [
-					{
-						text: originalMessage.msg,
-						author_name: originalMessage.u.username,
-						author_icon: getUserAvatarURL(originalMessage.u.username),
-						ts: originalMessage.ts,
-						attachments: recursiveRemove(attachments),
-					},
-				],
-			},
-		);
+		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
+			attachments: [
+				{
+					text: originalMessage.msg,
+					author_name: originalMessage.u.username,
+					author_icon: getUserAvatarURL(originalMessage.u.username),
+					ts: originalMessage.ts,
+					attachments: recursiveRemove(attachments),
+				},
+			],
+		});
 	},
 	unpinMessage(message) {
 		check(message._id, String);
@@ -166,7 +163,12 @@ Meteor.methods({
 			username: me.username,
 		};
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
-		const room = Meteor.call('canAccessRoom', originalMessage.rid, Meteor.userId());
+
+		const room = Rooms.findOneById(originalMessage.rid, { fields: { lastMessage: 1 } });
+		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+		}
+
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}

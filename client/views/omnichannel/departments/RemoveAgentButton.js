@@ -7,7 +7,7 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function RemoveAgentButton({ agentId, setAgentList, agentList }) {
+function RemoveAgentButton({ agentId, setAgentList, agentList, setAgentsRemoved }) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -19,16 +19,10 @@ function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 			setAgentList(newList);
 			dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			setModal();
+			setAgentsRemoved((agents) => [...agents, { agentId }]);
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteAgent}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (

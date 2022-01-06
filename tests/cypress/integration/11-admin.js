@@ -83,7 +83,7 @@ describe('[Administration]', () => {
 					admin.roomsChannelsCheckbox.should('be.visible');
 				});
 
-				it('it should show the direct messsage checkbox', () => {
+				it('it should show the direct message checkbox', () => {
 					admin.roomsDirectCheckbox.should('be.visible');
 				});
 
@@ -154,11 +154,11 @@ describe('[Administration]', () => {
 					switch (checkbox) {
 						case 1:
 							admin.roomsChannelsCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 2:
 							admin.roomsDirectCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 3:
 							admin.roomsPrivateCheckbox.click();
@@ -195,9 +195,8 @@ describe('[Administration]', () => {
 				admin.usersFilter.should('be.visible');
 			});
 
-
 			it('it should show rocket.cat', () => {
-			// it cant find the user if there is too many users
+				// it cant find the user if there is too many users
 				admin.usersRocketCat.should('be.visible');
 			});
 

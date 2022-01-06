@@ -1,9 +1,8 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings } from '../../settings';
+import { settings, settingsRegistry } from '../../settings/server';
 
 const defaults = {
 	enable: false,
@@ -18,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	settings.addGroup('Blockstack', function() {
+	settingsRegistry.addGroup('Blockstack', function () {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
@@ -36,35 +35,36 @@ Meteor.startup(() => {
 });
 
 // Helper to return all Blockstack settings
-const getSettings = () => Object.assign({}, defaults, {
-	enable: settings.get('Blockstack_Enable'),
-	authDescription: settings.get('Blockstack_Auth_Description'),
-	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
-	generateUsername: settings.get('Blockstack_Generate_Username'),
-});
-
-const configureService = _.debounce(Meteor.bindEnvironment(() => {
-	const serviceConfig = getSettings();
-
-	if (!serviceConfig.enable) {
-		logger.debug('Blockstack not enabled', serviceConfig);
-		return ServiceConfiguration.configurations.remove({
-			service: 'blockstack',
-		});
-	}
-
-	ServiceConfiguration.configurations.upsert({
-		service: 'blockstack',
-	}, {
-		$set: serviceConfig,
+const getSettings = () =>
+	Object.assign({}, defaults, {
+		enable: settings.get('Blockstack_Enable'),
+		authDescription: settings.get('Blockstack_Auth_Description'),
+		buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
+		generateUsername: settings.get('Blockstack_Generate_Username'),
 	});
-
-	logger.debug('Init Blockstack auth', serviceConfig);
-}), 1000);
 
 // Add settings to auth provider configs on startup
-Meteor.startup(() => {
-	settings.get(/^Blockstack_.+/, () => {
-		configureService();
-	});
-});
+settings.watchMultiple(
+	['Blockstack_Enable', 'Blockstack_Auth_Description', 'Blockstack_ButtonLabelText', 'Blockstack_Generate_Username'],
+	() => {
+		const serviceConfig = getSettings();
+
+		if (!serviceConfig.enable) {
+			logger.debug('Blockstack not enabled', serviceConfig);
+			return ServiceConfiguration.configurations.remove({
+				service: 'blockstack',
+			});
+		}
+
+		ServiceConfiguration.configurations.upsert(
+			{
+				service: 'blockstack',
+			},
+			{
+				$set: serviceConfig,
+			},
+		);
+
+		logger.debug('Init Blockstack auth', serviceConfig);
+	},
+);

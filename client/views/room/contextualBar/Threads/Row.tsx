@@ -17,12 +17,9 @@ const handleFollowButton = (e: MouseEvent<HTMLElement>, threadId: string): void 
 	const { following } = e.currentTarget.dataset;
 
 	following &&
-		callWithErrorHandling(
-			![true, 'true'].includes(following) ? 'followMessage' : 'unfollowMessage',
-			{
-				mid: threadId,
-			},
-		);
+		callWithErrorHandling(![true, 'true'].includes(following) ? 'followMessage' : 'unfollowMessage', {
+			mid: threadId,
+		});
 };
 
 type ThreadRowProps = {
@@ -35,15 +32,7 @@ type ThreadRowProps = {
 	onClick: (threadId: string) => void;
 };
 
-const Row: FC<ThreadRowProps> = memo(function Row({
-	thread,
-	showRealNames,
-	unread,
-	unreadUser,
-	unreadGroup,
-	userId,
-	onClick,
-}) {
+const Row: FC<ThreadRowProps> = memo(function Row({ thread, showRealNames, unread, unreadUser, unreadGroup, userId, onClick }) {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
@@ -68,9 +57,7 @@ const Row: FC<ThreadRowProps> = memo(function Row({
 			msg={msg}
 			t={t}
 			formatDate={formatDate}
-			handleFollowButton={(e: MouseEvent<HTMLElement>): unknown =>
-				handleFollowButton(e, thread._id)
-			}
+			handleFollowButton={(e: MouseEvent<HTMLElement>): unknown => handleFollowButton(e, thread._id)}
 			onClick={onClick}
 		/>
 	);

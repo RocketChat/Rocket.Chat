@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasRole } from '../../app/authorization';
-import { Users, Rooms, Subscriptions, Messages } from '../../app/models';
-import { settings } from '../../app/settings';
-import { callbacks } from '../../app/callbacks';
+import { hasRole } from '../../app/authorization/server';
+import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
+import { callbacks } from '../../lib/callbacks';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {
@@ -39,7 +39,7 @@ Meteor.methods({
 
 		const users = userCursor.fetch();
 		const now = new Date();
-		users.forEach(function(user) {
+		users.forEach(function (user) {
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 			if (subscription != null) {
 				return;
@@ -56,7 +56,7 @@ Meteor.methods({
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 				ts: now,
 			});
-			Meteor.defer(function() {});
+			Meteor.defer(function () {});
 			return callbacks.run('afterJoinRoom', user, room);
 		});
 		return true;

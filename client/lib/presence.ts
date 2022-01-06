@@ -1,8 +1,11 @@
 import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
+
+export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -20,10 +23,7 @@ const emitter = new Emitter<Events>();
 
 const store = new Map<string, UserPresence>();
 
-export type UserPresence = Pick<
-	IUser,
-	'_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'
->;
+export type UserPresence = Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'>;
 
 type UsersPresencePayload = {
 	users: UserPresence[];
@@ -31,9 +31,7 @@ type UsersPresencePayload = {
 };
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) &&
-	typeof eventType === 'string' &&
-	!['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 
@@ -54,20 +52,34 @@ const notify = (presence: UserPresence): void => {
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
 
-	const fetch = (delay = 250): void => {
+	const deletedUids = new Set<UserPresence['_id']>();
+
+	const fetch = (delay = 500): void => {
 		timer && clearTimeout(timer);
 		timer = setTimeout(async () => {
 			const currentUids = new Set(uids);
 			uids.clear();
+
+			const ids = Array.from(currentUids);
+			const removed = Array.from(deletedUids);
+
+			Meteor.subscribe('stream-user-presence', '', {
+				...(ids.length > 0 && { added: Array.from(currentUids) }),
+				...(removed.length && { removed: Array.from(deletedUids) }),
+			});
+
+			deletedUids.clear();
+
+			if (ids.length === 0) {
+				return;
+			}
+
 			try {
 				const params = {
 					ids: [...currentUids],
 				};
 
-				const { users } = (await APIClient.v1.get(
-					'users.presence',
-					params,
-				)) as UsersPresencePayload;
+				const { users } = (await APIClient.v1.get('users.presence', params)) as UsersPresencePayload;
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
@@ -93,13 +105,17 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 		uids.add(uid);
 		fetch();
 	};
-
+	const stop = (uid: UserPresence['_id']): void => {
+		deletedUids.add(uid);
+		fetch();
+	};
 	emitter.on('remove', (uid) => {
 		if (emitter.has(uid)) {
 			return;
 		}
 
 		store.delete(uid);
+		stop(uid);
 	});
 
 	emitter.on('reset', () => {
@@ -117,11 +133,10 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	return get;
 })();
 
-const listen = (
-	uid: UserPresence['_id'],
-	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
-): void => {
-	// emitter.on(uid, update);
+const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
+	if (!uid) {
+		return;
+	}
 	emitter.on(uid, handler);
 
 	const user = store.has(uid) && store.get(uid);
@@ -132,10 +147,7 @@ const listen = (
 	getPresence(uid);
 };
 
-const stop = (
-	uid: UserPresence['_id'],
-	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
-): void => {
+const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
 	setTimeout(() => {
 		emitter.off(uid, handler);
 		emitter.emit('remove', uid);
@@ -154,7 +166,6 @@ const restart = (): void => {
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
 	new Promise((resolve) => {
 		const user = store.has(uid) && store.get(uid);
-
 		if (user) {
 			return resolve(user);
 		}

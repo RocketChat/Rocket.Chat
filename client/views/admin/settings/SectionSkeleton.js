@@ -6,7 +6,7 @@ import Setting from './Setting';
 function SectionSkeleton() {
 	return (
 		<Accordion.Item noncollapsible title={<Skeleton />}>
-			<Box is='p' color='hint' fontScale='p1'>
+			<Box is='p' color='hint' fontScale='p2'>
 				<Skeleton />
 			</Box>
 

@@ -8,7 +8,7 @@ import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { roomTypes } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -38,12 +38,14 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 };
 
 const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
-	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
+	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message = false;
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'DiscussionCreation' });
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+				method: 'DiscussionCreation',
+			});
 		}
 		if (prid) {
 			if (prid !== getParentRoom(message.rid)._id) {
@@ -66,7 +68,9 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	}
 
 	if (p_room.prid) {
-		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
+		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', {
+			method: 'DiscussionCreation',
+		});
 	}
 
 	if (!Match.Maybe(encrypted, Boolean)) {
@@ -86,13 +90,17 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	}
 
 	if (pmid) {
-		const discussionAlreadyExists = Rooms.findOne({
-			prid,
-			pmid,
-		}, {
-			fields: { _id: 1 },
-		});
-		if (discussionAlreadyExists) { // do not allow multiple discussions to the same message'\
+		const discussionAlreadyExists = Rooms.findOne(
+			{
+				prid,
+				pmid,
+			},
+			{
+				fields: { _id: 1 },
+			},
+		);
+		if (discussionAlreadyExists) {
+			// do not allow multiple discussions to the same message'\
 			addUserToRoom(discussionAlreadyExists._id, user);
 			return discussionAlreadyExists;
 		}
@@ -107,16 +115,24 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	const description = p_room.encrypted ? '' : message.msg;
 	const topic = p_room.name;
 
-	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
-		fname: t_name,
-		description, // TODO discussions remove
-		topic, // TODO discussions remove
-		prid,
-		encrypted,
-	}, {
-		// overrides name validation to allow anything, because discussion's name is randomly generated
-		nameValidationRegex: /.*/,
-	});
+	const discussion = createRoom(
+		type,
+		name,
+		user.username,
+		[...new Set(invitedUsers)],
+		false,
+		{
+			fname: t_name,
+			description, // TODO discussions remove
+			topic, // TODO discussions remove
+			prid,
+			encrypted,
+		},
+		{
+			// overrides name validation to allow anything, because discussion's name is randomly generated
+			nameValidationRegex: /.*/,
+		},
+	);
 
 	let discussionMsg;
 	if (pmid) {
@@ -130,7 +146,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
 	}
 
-	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
+	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room);
 
 	if (reply) {
 		sendMessage(user, { msg: reply }, discussion);
@@ -140,15 +156,15 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 
 Meteor.methods({
 	/**
-	* Create discussion by room or message
-	* @constructor
-	* @param {string} prid - Parent Room Id - The room id, optional if you send pmid.
-	* @param {string} pmid - Parent Message Id - Create the discussion by a message, optional.
-	* @param {string} reply - The reply, optional
-	* @param {string} t_name - discussion name
-	* @param {string[]} users - users to be added
-	* @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
-	*/
+	 * Create discussion by room or message
+	 * @constructor
+	 * @param {string} prid - Parent Room Id - The room id, optional if you send pmid.
+	 * @param {string} pmid - Parent Message Id - Create the discussion by a message, optional.
+	 * @param {string} reply - The reply, optional
+	 * @param {string} t_name - discussion name
+	 * @param {string[]} users - users to be added
+	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
+	 */
 	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
@@ -156,7 +172,9 @@ Meteor.methods({
 
 		const uid = Meteor.userId();
 		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'DiscussionCreation' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'DiscussionCreation',
+			});
 		}
 
 		if (!hasAtLeastOnePermission(uid, ['start-discussion', 'start-discussion-other-user'])) {

@@ -30,13 +30,19 @@ function inviteAll(type) {
 
 		if (!baseChannel) {
 			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [channel],
-				}, currentUser.language),
+				msg: TAPi18n.__(
+					'Channel_doesnt_exist',
+					{
+						postProcess: 'sprintf',
+						sprintf: [channel],
+					},
+					currentUser.language,
+				),
 			});
 		}
-		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, { fields: { 'u.username': 1 } });
+		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
+			fields: { 'u.username': 1 },
+		});
 
 		try {
 			if (cursor.count() > settings.get('API_User_Limit')) {
@@ -49,10 +55,14 @@ function inviteAll(type) {
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-					msg: TAPi18n.__('Channel_created', {
-						postProcess: 'sprintf',
-						sprintf: [channel],
-					}, currentUser.language),
+					msg: TAPi18n.__(
+						'Channel_created',
+						{
+							postProcess: 'sprintf',
+							sprintf: [channel],
+						},
+						currentUser.language,
+					),
 				});
 			} else {
 				Meteor.call('addUsersToRoom', {

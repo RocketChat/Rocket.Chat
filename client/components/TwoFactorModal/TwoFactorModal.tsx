@@ -13,29 +13,30 @@ export enum Method {
 export type OnConfirm = (code: string, method: Method) => void;
 
 type TwoFactorModalProps = {
-	method: Method;
 	onConfirm: OnConfirm;
 	onClose: () => void;
-	emailOrUsername: string;
-};
+} & (
+	| {
+			method: 'totp' | 'password';
+	  }
+	| {
+			method: 'email';
+			emailOrUsername: string;
+	  }
+);
 
-const TwoFactorModal = ({
-	method,
-	onConfirm,
-	onClose,
-	emailOrUsername,
-}: TwoFactorModalProps): ReactElement => {
-	if (method === Method.TOTP) {
+const TwoFactorModal = ({ onConfirm, onClose, ...props }: TwoFactorModalProps): ReactElement => {
+	if (props.method === Method.TOTP) {
 		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} />;
 	}
 
-	if (method === Method.EMAIL) {
-		return (
-			<TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} />
-		);
+	if (props.method === Method.EMAIL) {
+		const { emailOrUsername } = props;
+
+		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} />;
 	}
 
-	if (method === Method.PASSWORD) {
+	if (props.method === Method.PASSWORD) {
 		return <TwoFactorPassword onConfirm={onConfirm} onClose={onClose} />;
 	}
 

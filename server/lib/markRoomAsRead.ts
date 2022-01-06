@@ -1,4 +1,4 @@
-import { callbacks } from '../../app/callbacks/server';
+import { callbacks } from '../../lib/callbacks';
 import { NotificationQueue, Subscriptions } from '../../app/models/server/raw';
 
 export async function markRoomAsRead(rid: string, uid: string): Promise<void> {

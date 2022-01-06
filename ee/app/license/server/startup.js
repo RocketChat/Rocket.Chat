@@ -1,8 +1,8 @@
 import { settings } from '../../../../app/settings/server';
-import { callbacks } from '../../../../app/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { addLicense, setURL } from './license';
 
-settings.get('Site_Url', (key, value) => {
+settings.watch('Site_Url', (value) => {
 	if (value) {
 		setURL(value);
 	}

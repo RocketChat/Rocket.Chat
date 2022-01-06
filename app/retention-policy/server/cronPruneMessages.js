@@ -1,6 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { debounce } from 'underscore';
 
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
@@ -30,15 +28,23 @@ function job() {
 		const maxAge = maxTimes[type] || 0;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 
-		Rooms.find({
-			t: type,
-			$or: [
-				{ 'retention.enabled': { $eq: true } },
-				{ 'retention.enabled': { $exists: false } },
-			],
-			'retention.overrideGlobal': { $ne: true },
-		}, { fields: { _id: 1 } }).forEach(({ _id: rid }) => {
-			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned, ignoreDiscussion, ignoreThreads });
+		Rooms.find(
+			{
+				't': type,
+				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
+				'retention.overrideGlobal': { $ne: true },
+			},
+			{ fields: { _id: 1 } },
+		).forEach(({ _id: rid }) => {
+			cleanRoomHistory({
+				rid,
+				latest,
+				oldest,
+				filesOnly,
+				excludePinned,
+				ignoreDiscussion,
+				ignoreThreads,
+			});
 		});
 	});
 
@@ -49,7 +55,15 @@ function job() {
 	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = room.retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
-		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, ignoreDiscussion, ignoreThreads });
+		cleanRoomHistory({
+			rid: room._id,
+			latest,
+			oldest,
+			filesOnly,
+			excludePinned,
+			ignoreDiscussion,
+			ignoreThreads,
+		});
 	});
 }
 
@@ -79,37 +93,45 @@ function deployCron(precision) {
 	});
 }
 
-const reloadPolicy = debounce(Meteor.bindEnvironment(function reloadPolicy() {
-	types = [];
+settings.watchMultiple(
+	[
+		'RetentionPolicy_Enabled',
+		'RetentionPolicy_AppliesToChannels',
+		'RetentionPolicy_AppliesToGroups',
+		'RetentionPolicy_AppliesToDMs',
+		'RetentionPolicy_MaxAge_Channels',
+		'RetentionPolicy_MaxAge_Groups',
+		'RetentionPolicy_MaxAge_DMs',
+		'RetentionPolicy_Advanced_Precision',
+		'RetentionPolicy_Advanced_Precision_Cron',
+		'RetentionPolicy_Precision',
+	],
+	function reloadPolicy() {
+		types = [];
 
-	if (!settings.get('RetentionPolicy_Enabled')) {
-		return SyncedCron.remove(pruneCronName);
-	}
-	if (settings.get('RetentionPolicy_AppliesToChannels')) {
-		types.push('c');
-	}
+		if (!settings.get('RetentionPolicy_Enabled')) {
+			return SyncedCron.remove(pruneCronName);
+		}
+		if (settings.get('RetentionPolicy_AppliesToChannels')) {
+			types.push('c');
+		}
 
-	if (settings.get('RetentionPolicy_AppliesToGroups')) {
-		types.push('p');
-	}
+		if (settings.get('RetentionPolicy_AppliesToGroups')) {
+			types.push('p');
+		}
 
-	if (settings.get('RetentionPolicy_AppliesToDMs')) {
-		types.push('d');
-	}
+		if (settings.get('RetentionPolicy_AppliesToDMs')) {
+			types.push('d');
+		}
 
-	maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
-	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
-	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
+		maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
+		maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
+		maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
 
+		const precision =
+			(settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) ||
+			getSchedule(settings.get('RetentionPolicy_Precision'));
 
-	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
-
-	return deployCron(precision);
-}), 500);
-
-Meteor.startup(function() {
-	Meteor.defer(function() {
-		settings.get(/^RetentionPolicy_/, reloadPolicy);
-		reloadPolicy();
-	});
-});
+		return deployCron(precision);
+	},
+);

@@ -19,39 +19,20 @@ const CannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({
-	canEdit,
-	data: { departmentName, shortcut, text, scope: dataScope, tags },
-	onClickBack,
-	onClickEdit,
-	onClickUse,
-}) => {
+}> = ({ canEdit, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
 	const t = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<VerticalBar
-			display='flex'
-			flexDirection='column'
-			width={'full'}
-			overflow='hidden'
-			zIndex={100}
-			insetBlock={0}
-		>
+		<VerticalBar display='flex' flexDirection='column' width={'full'} overflow='hidden' zIndex={100} insetBlock={0}>
 			<VerticalBar.Header>
-				{onClickBack && (
-					<VerticalBar.Action
-						onClick={onClickBack}
-						title={t('Back_to_threads')}
-						name='arrow-back'
-					/>
-				)}
+				{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
 				<VerticalBar.Text>!{shortcut}</VerticalBar.Text>
 			</VerticalBar.Header>
 			<VerticalBar.Content>
 				<Box pb='24px'>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p2m' mbe='8px'>
 							{t('Shortcut')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -59,7 +40,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p2m' mbe='8px'>
 							{t('Content')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -67,7 +48,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p2m' mbe='8px'>
 							{t('Sharing')}:
 						</Box>
 						<Box fontScale='c1' color='info'>
@@ -75,7 +56,7 @@ const CannedResponse: FC<{
 						</Box>
 					</Box>
 					<Box mbe='16px'>
-						<Box fontScale='p2' mbe='8px'>
+						<Box fontScale='p2m' mbe='8px'>
 							{t('Tags')}:
 						</Box>
 						<Box display='flex' flexDirection='row'>

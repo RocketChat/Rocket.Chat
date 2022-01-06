@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { roomTypes } from '../../../app/utils';
-import { hasPermission } from '../../../app/authorization';
-import { Rooms } from '../../../app/models';
-import { settings } from '../../../app/settings';
+import { roomTypes } from '../../../app/utils/server';
+import { canAccessRoom, hasPermission } from '../../../app/authorization/server';
+import { Rooms } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
 
 const roomMap = (record) => {
@@ -36,11 +36,13 @@ Meteor.methods({
 		return Rooms.findBySubscriptionUserId(user, options).fetch();
 	},
 
-	getRoomByTypeAndName(type, name) {
+	'getRoomByTypeAndName'(type, name) {
 		const userId = Meteor.userId();
 
 		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
 		const roomFind = roomTypes.getRoomFind(type);
@@ -48,11 +50,15 @@ Meteor.methods({
 		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
-		if (!Meteor.call('canAccessRoom', room._id, userId)) {
-			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
+		if (!canAccessRoom(room, { _id: userId })) {
+			throw new Meteor.Error('error-no-permission', 'No permission', {
+				method: 'getRoomByTypeAndName',
+			});
 		}
 
 		if (settings.get('Store_Last_Message') && !hasPermission(userId, 'preview-c-room')) {

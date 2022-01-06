@@ -6,11 +6,7 @@ module.exports = {
 	stories: [
 		'../app/**/*.stories.{js,tsx}',
 		'../client/**/*.stories.{js,tsx}',
-		'../ee/**/*.stories.{js,tsx}',
-	],
-	addons: [
-		'@storybook/addon-essentials',
-		'@storybook/addon-postcss',
+		...(process.env.EE === 'true' ? ['../ee/**/*.stories.{js,tsx}'] : []),
 	],
 	webpackFinal: (config) => {
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
@@ -46,14 +42,8 @@ module.exports = {
 		});
 
 		config.plugins.push(
-			new NormalModuleReplacementPlugin(
-				/^meteor/,
-				require.resolve('./mocks/meteor.js'),
-			),
-			new NormalModuleReplacementPlugin(
-				/server\/*/,
-				require.resolve('./mocks/empty.ts'),
-			),
+			new NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
+			new NormalModuleReplacementPlugin(/server\/*/, require.resolve('./mocks/empty.ts')),
 		);
 
 		return config;

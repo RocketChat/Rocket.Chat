@@ -12,9 +12,7 @@ export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
 		message.tmid = tmid;
 	}
 
-	return request.post(api('chat.sendMessage'))
-		.set(credentials)
-		.send({ message });
+	return request.post(api('chat.sendMessage')).set(credentials).send({ message });
 };
 
 export const pinMessage = ({ msgId }) => {
@@ -22,11 +20,9 @@ export const pinMessage = ({ msgId }) => {
 		throw new Error('"msgId" is required in "pinMessage" test helper');
 	}
 
-	return request.post(api('chat.pinMessage'))
-		.set(credentials)
-		.send({
-			messageId: msgId,
-		});
+	return request.post(api('chat.pinMessage')).set(credentials).send({
+		messageId: msgId,
+	});
 };
 
 export const deleteMessage = ({ roomId, msgId }) => {
@@ -37,12 +33,10 @@ export const deleteMessage = ({ roomId, msgId }) => {
 		throw new Error('"msgId" is required in "deleteMessage" test helper');
 	}
 
-	return request.post(api('chat.delete'))
-		.set(credentials)
-		.send({
-			roomId,
-			msgId,
-		});
+	return request.post(api('chat.delete')).set(credentials).send({
+		roomId,
+		msgId,
+	});
 };
 
 export const getMessageById = ({ msgId }) => {
@@ -51,7 +45,8 @@ export const getMessageById = ({ msgId }) => {
 	}
 
 	return new Promise((resolve) => {
-		request.get(api(`chat.getMessage?msgId=${ msgId }`))
+		request
+			.get(api(`chat.getMessage?msgId=${msgId}`))
 			.set(credentials)
 			.end((err, res) => {
 				resolve(res.body.message);

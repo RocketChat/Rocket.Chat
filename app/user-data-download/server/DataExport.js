@@ -11,7 +11,7 @@ export const DataExport = {
 	handlers: {},
 
 	getPath(path = '') {
-		return `/data-export/${ path }`;
+		return `/data-export/${path}`;
 	},
 
 	requestCanAccessFiles({ headers = {}, query = {} }, userId) {
@@ -50,5 +50,4 @@ export const DataExport = {
 		errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
 		return errorHtml;
 	},
-
 };

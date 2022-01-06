@@ -1,19 +1,23 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
+import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
+import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 
 FlowRouter.wait();
 
@@ -50,6 +54,25 @@ FlowRouter.route('/login', {
 	},
 });
 
+FlowRouter.route('/meet/:rid', {
+	name: 'meet',
+
+	async action(_params, queryParams) {
+		if (queryParams?.token !== undefined) {
+			// visitor login
+			const visitor = await APIClient.v1.get(`livechat/visitor/${queryParams?.token}`);
+			if (visitor?.visitor) {
+				return appLayout.render({ component: MeetPage });
+			}
+			return toastr.error(TAPi18n.__('Visitor_does_not_exist'));
+		}
+		if (!Meteor.userId()) {
+			FlowRouter.go('home');
+		}
+		appLayout.render({ component: MeetPage });
+	},
+});
+
 FlowRouter.route('/home', {
 	name: 'home',
 
@@ -64,7 +87,7 @@ FlowRouter.route('/home', {
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
 					if (error.reason) {
-						toastr.error(error.reason);
+						dispatchToastMessage({ type: 'error', message: error.reason });
 					} else {
 						handleError(error);
 					}
@@ -83,11 +106,9 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		const DirectoryPage = createTemplateForComponent(
-			'DirectoryPage',
-			() => import('../views/directory/DirectoryPage'),
-			{ attachment: 'at-parent' },
-		);
+		const DirectoryPage = createTemplateForComponent('DirectoryPage', () => import('../views/directory/DirectoryPage'), {
+			attachment: 'at-parent',
+		});
 		appLayout.render('main', { center: DirectoryPage });
 	},
 });
@@ -107,11 +128,9 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		const AccountRoute = createTemplateForComponent(
-			'AccountRoute',
-			() => import('../views/account/AccountRoute'),
-			{ attachment: 'at-parent' },
-		);
+		const AccountRoute = createTemplateForComponent('AccountRoute', () => import('../views/account/AccountRoute'), {
+			attachment: 'at-parent',
+		});
 		appLayout.render('main', { center: AccountRoute });
 	},
 });

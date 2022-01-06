@@ -26,9 +26,7 @@ function TriggersTable({ triggers, totalTriggers, params, onChangeParams, onDele
 			params={params}
 			setParams={onChangeParams}
 		>
-			{(props) => (
-				<TriggersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />
-			)}
+			{(props) => <TriggersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />}
 		</GenericTable>
 	);
 }

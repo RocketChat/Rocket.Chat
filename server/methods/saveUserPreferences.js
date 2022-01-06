@@ -19,7 +19,7 @@ Meteor.methods({
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
-			mobileNotifications: Match.Optional(String),
+			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
 			messageViewMode: Match.Optional(Number),
@@ -46,7 +46,7 @@ Meteor.methods({
 
 		const {
 			desktopNotifications: oldDesktopNotifications,
-			mobileNotifications: oldMobileNotifications,
+			pushNotifications: oldMobileNotifications,
 			emailNotificationMode: oldEmailNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
@@ -77,15 +77,25 @@ Meteor.methods({
 				if (settings.desktopNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.desktopNotifications, 'desktopNotifications', 'desktopPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.desktopNotifications,
+						'desktopNotifications',
+						'desktopPrefOrigin',
+					);
 				}
 			}
 
-			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
-				if (settings.mobileNotifications === 'default') {
+			if (settings.pushNotifications && oldMobileNotifications !== settings.pushNotifications) {
+				if (settings.pushNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.mobileNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.pushNotifications,
+						'mobilePushNotifications',
+						'mobilePrefOrigin',
+					);
 				}
 			}
 
@@ -93,7 +103,12 @@ Meteor.methods({
 				if (settings.emailNotificationMode === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.emailNotificationMode,
+						'emailNotifications',
+						'emailPrefOrigin',
+					);
 				}
 			}
 

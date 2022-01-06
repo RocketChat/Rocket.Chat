@@ -4,14 +4,14 @@ import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
-import { isEmail } from '../../../../../../app/utils/client';
+import { isEmail } from '../../../../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -48,14 +48,9 @@ const getInitialValues = (data) => {
 function ContactNewEdit({ id, data, close }) {
 	const t = useTranslation();
 
-	const canViewCustomFields = () =>
-		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const {
-		values,
-		handlers,
-		hasUnsavedChanges: hasUnsavedChangesContact,
-	} = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValues(data));
 
 	const eeForms = useSubscription(formsSubscription);
 
@@ -100,22 +95,13 @@ function ContactNewEdit({ id, data, close }) {
 	};
 
 	const jsonCustomField = useMemo(
-		() =>
-			allCustomFields && allCustomFields.customFields
-				? jsonConverterToValidFormat(allCustomFields.customFields)
-				: {},
+		() => (allCustomFields && allCustomFields.customFields ? jsonConverterToValidFormat(allCustomFields.customFields) : {}),
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpointAction(
-		'GET',
-		`omnichannel/contact.search?email=${email}`,
-	);
-	const phoneAlreadyExistsAction = useEndpointAction(
-		'GET',
-		`omnichannel/contact.search?phone=${phone}`,
-	);
+	const saveContact = useEndpoint('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?email=${email}`);
+	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!isEmail(email)) {
@@ -192,11 +178,7 @@ function ContactNewEdit({ id, data, close }) {
 	});
 
 	const formIsValid =
-		(hasUnsavedChangesContact || hasUnsavedChangesCustomFields) &&
-		name &&
-		!emailError &&
-		!phoneError &&
-		customFieldsError.length === 0;
+		(hasUnsavedChangesContact || hasUnsavedChangesCustomFields) && name && !emailError && !phoneError && customFieldsError.length === 0;
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -215,26 +197,14 @@ function ContactNewEdit({ id, data, close }) {
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							onBlur={checkEmailExists}
-							error={emailError}
-							flexGrow={1}
-							value={email}
-							onChange={handleEmail}
-						/>
+						<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 					</Field.Row>
 					<Field.Error>{t(emailError)}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							onBlur={checkPhoneExists}
-							error={phoneError}
-							flexGrow={1}
-							value={phone}
-							onChange={handlePhone}
-						/>
+						<TextInput onBlur={checkPhoneExists} error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
 					</Field.Row>
 					<Field.Error>{t(phoneError)}</Field.Error>
 				</Field>

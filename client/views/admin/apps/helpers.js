@@ -1,9 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import semver from 'semver';
-import toastr from 'toastr';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../../app/utils/client';
+import { dispatchToastMessage } from '../../../lib/toast';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
@@ -53,7 +53,7 @@ export function handleInstallError(apiError) {
 			}
 	}
 
-	toastr.error(message);
+	dispatchToastMessage({ type: 'error', message });
 }
 
 const shouldHandleErrorAsWarning = (message) => {
@@ -63,18 +63,23 @@ const shouldHandleErrorAsWarning = (message) => {
 };
 
 export const handleAPIError = (error) => {
-	const message =
-		(error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-	shouldHandleErrorAsWarning(message) ? toastr.warning(message) : toastr.error(message);
+	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+
+	if (shouldHandleErrorAsWarning(message)) {
+		dispatchToastMessage({ type: 'warning', message });
+		return;
+	}
+
+	dispatchToastMessage({ type: 'error', message });
 };
 
 export const warnStatusChange = (appName, status) => {
 	if (appErroredStatuses.includes(status)) {
-		toastr.error(t(`App_status_${status}`), appName);
+		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
 		return;
 	}
 
-	toastr.info(t(`App_status_${status}`), appName);
+	dispatchToastMessage({ type: 'info', message: (t(`App_status_${status}`), appName) });
 };
 
 export const appButtonProps = ({
@@ -85,9 +90,10 @@ export const appButtonProps = ({
 	price,
 	purchaseType,
 	subscriptionInfo,
+	pricingPlans,
+	isEnterpriseOnly,
 }) => {
-	const canUpdate =
-		installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
+	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
 			action: 'update',
@@ -108,8 +114,17 @@ export const appButtonProps = ({
 		};
 	}
 
-	const canTrial = purchaseType === 'subscription' && !subscriptionInfo.status;
-	if (canTrial) {
+	const canSubscribe = purchaseType === 'subscription' && !subscriptionInfo.status;
+	if (canSubscribe) {
+		const cannotTry = pricingPlans.every((currentPricingPlan) => currentPricingPlan.trialDays === 0);
+
+		if (cannotTry || isEnterpriseOnly) {
+			return {
+				action: 'purchase',
+				label: 'Subscribe',
+			};
+		}
+
 		return {
 			action: 'purchase',
 			label: 'Trial',
@@ -170,8 +185,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 export const formatPrice = (price) => `\$${Number.parseFloat(price).toFixed(2)}`;
 
 export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
-	const { perUnit = false } =
-		(Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
+	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',

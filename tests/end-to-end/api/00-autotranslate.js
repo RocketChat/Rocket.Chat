@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
 
-describe('AutoTranslate', function() {
+describe('AutoTranslate', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -13,7 +13,8 @@ describe('AutoTranslate', function() {
 		describe('[/autotranslate.getSupportedLanguages', () => {
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
 				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request.get(api('autotranslate.getSupportedLanguages'))
+					request
+						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -27,7 +28,8 @@ describe('AutoTranslate', function() {
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
 					updatePermission('auto-translate', []).then(() => {
-						request.get(api('autotranslate.getSupportedLanguages'))
+						request
+							.get(api('autotranslate.getSupportedLanguages'))
 							.set(credentials)
 							.expect('Content-Type', 'application/json')
 							.expect(400)
@@ -42,7 +44,8 @@ describe('AutoTranslate', function() {
 			});
 			it('should return a list of languages', (done) => {
 				updatePermission('auto-translate', ['admin']).then(() => {
-					request.get(api('autotranslate.getSupportedLanguages'))
+					request
+						.get(api('autotranslate.getSupportedLanguages'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -57,7 +60,8 @@ describe('AutoTranslate', function() {
 		describe('[/autotranslate.saveSettings', () => {
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
 				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request.post(api('autotranslate.saveSettings'))
+					request
+						.post(api('autotranslate.saveSettings'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -71,7 +75,8 @@ describe('AutoTranslate', function() {
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
 					updatePermission('auto-translate', []).then(() => {
-						request.post(api('autotranslate.saveSettings'))
+						request
+							.post(api('autotranslate.saveSettings'))
 							.set(credentials)
 							.send({
 								roomId: 'GENERAL',
@@ -91,11 +96,10 @@ describe('AutoTranslate', function() {
 			});
 			it('should throw an error when the bodyParam "roomId" is not provided', (done) => {
 				updatePermission('auto-translate', ['admin']).then(() => {
-					request.post(api('autotranslate.saveSettings'))
+					request
+						.post(api('autotranslate.saveSettings'))
 						.set(credentials)
-						.send({
-
-						})
+						.send({})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
 						.expect((res) => {
@@ -106,7 +110,8 @@ describe('AutoTranslate', function() {
 				});
 			});
 			it('should throw an error when the bodyParam "field" is not provided', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -120,7 +125,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "value" is not provided', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -135,7 +141,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "autoTranslate" is not a boolean', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -151,7 +158,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "autoTranslateLanguage" is not a string', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -167,7 +175,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "field" is invalid', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -184,7 +193,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "roomId" is invalid or the user is not subscribed', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'invalid',
@@ -201,7 +211,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should return success when the setting is saved correctly', (done) => {
-				request.post(api('autotranslate.saveSettings'))
+				request
+					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -231,7 +242,8 @@ describe('AutoTranslate', function() {
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
 				updateSetting('AutoTranslate_Enabled', false).then(() => {
-					request.post(api('autotranslate.translateMessage'))
+					request
+						.post(api('autotranslate.translateMessage'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -245,11 +257,10 @@ describe('AutoTranslate', function() {
 			it('should throw an error when the bodyParam "messageId" is not provided', (done) => {
 				updateSetting('AutoTranslate_Enabled', true).then(() => {
 					updatePermission('auto-translate', ['admin']).then(() => {
-						request.post(api('autotranslate.translateMessage'))
+						request
+							.post(api('autotranslate.translateMessage'))
 							.set(credentials)
-							.send({
-
-							})
+							.send({})
 							.expect('Content-Type', 'application/json')
 							.expect(400)
 							.expect((res) => {
@@ -261,7 +272,8 @@ describe('AutoTranslate', function() {
 				});
 			});
 			it('should throw an error when the bodyParam "messageId" is invalid', (done) => {
-				request.post(api('autotranslate.translateMessage'))
+				request
+					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
 						messageId: 'invalid',
@@ -275,7 +287,8 @@ describe('AutoTranslate', function() {
 					.end(done);
 			});
 			it('should return success when the translate is sucessfull', (done) => {
-				request.post(api('autotranslate.translateMessage'))
+				request
+					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
 						messageId: messageSent._id,

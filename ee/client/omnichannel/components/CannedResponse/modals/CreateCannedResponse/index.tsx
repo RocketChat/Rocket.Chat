@@ -8,10 +8,7 @@ import { useTranslation } from '../../../../../../../client/contexts/Translation
 import { useForm } from '../../../../../../../client/hooks/useForm';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 
-const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> = ({
-	data,
-	reloadCannedList,
-}) => {
+const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> = ({ data, reloadCannedList }) => {
 	const t = useTranslation();
 	const closeModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -25,20 +22,15 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 		_id: data ? data._id : '',
 		shortcut: data ? data.shortcut : '',
 		text: data ? data.text : '',
-		tags:
-			data?.tags && Array.isArray(data.tags)
-				? data.tags.map((tag: string) => ({ label: tag, value: tag }))
-				: [],
+		tags: data?.tags && Array.isArray(data.tags) ? data.tags.map((tag: string) => ({ label: tag, value: tag })) : [],
 		scope: data ? data.scope : 'user',
-		departmentId: data && data.departmentId ? data.departmentId : '',
+		departmentId: data?.departmentId ? data.departmentId : '',
 	});
 
 	const { values, handlers, hasUnsavedChanges } = form;
 
 	const [errors, setErrors] = useState<any>({});
-	const [radioDescription, setRadioDescription] = useState<string>(
-		t('Canned_Response_Sharing_Private_Description'),
-	);
+	const [radioDescription, setRadioDescription] = useState<string>(t('Canned_Response_Sharing_Private_Description'));
 	const [preview, setPreview] = useState(false);
 
 	const listErrors = useMemo(() => {
@@ -88,9 +80,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
-			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
-				typeof tag === 'object' ? tag?.value : tag,
-			);
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
@@ -104,7 +94,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				message: t(_id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
 			});
 			closeModal(null);
-			reloadCannedList && reloadCannedList();
+			reloadCannedList?.();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

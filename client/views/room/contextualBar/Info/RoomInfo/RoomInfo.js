@@ -1,6 +1,7 @@
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
+import MarkdownText from '../../../../../components/MarkdownText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -8,16 +9,8 @@ import InfoPanel from '../../../../InfoPanel';
 import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 
-function RoomInfo({
-	name,
-	fname,
-	description,
-	archived,
-	broadcast,
-	announcement,
-	topic,
-	type,
-	rid,
+const RoomInfo = ({
+	room,
 	icon,
 	retentionPolicy = {},
 	onClickBack,
@@ -29,16 +22,11 @@ function RoomInfo({
 	onClickMoveToTeam,
 	onClickConvertToTeam,
 	onClickEnterRoom,
-}) {
+}) => {
 	const t = useTranslation();
+	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 
-	const {
-		retentionPolicyEnabled,
-		filesOnlyDefault,
-		excludePinnedDefault,
-		maxAgeDefault,
-		retentionEnabledDefault,
-	} = retentionPolicy;
+	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault, retentionEnabledDefault } = retentionPolicy;
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -92,16 +80,7 @@ function RoomInfo({
 				},
 			}),
 		}),
-		[
-			onClickEdit,
-			t,
-			onClickDelete,
-			onClickMoveToTeam,
-			onClickConvertToTeam,
-			onClickHide,
-			onClickLeave,
-			onClickEnterRoom,
-		],
+		[onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom],
 	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
@@ -118,18 +97,14 @@ function RoomInfo({
 				mi='x2'
 				key='menu'
 				ghost={false}
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option {...props} label={label} icon={icon} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
-			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
-		);
+		const mapAction = ([key, { label, icon, action }]) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
@@ -137,11 +112,7 @@ function RoomInfo({
 	return (
 		<>
 			<VerticalBar.Header>
-				{onClickBack ? (
-					<VerticalBar.Back onClick={onClickBack} />
-				) : (
-					<VerticalBar.Icon name='info-circled' />
-				)}
+				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled' />}
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
@@ -149,7 +120,7 @@ function RoomInfo({
 			<VerticalBar.ScrollableContent p='x24'>
 				<InfoPanel flexGrow={1}>
 					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type }} />
+						<RoomAvatar size={'x332'} room={room} />
 					</InfoPanel.Avatar>
 
 					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
@@ -178,21 +149,27 @@ function RoomInfo({
 						{description && description !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={description} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{announcement && announcement !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={announcement} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{topic && topic !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={topic} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
@@ -208,6 +185,6 @@ function RoomInfo({
 			</VerticalBar.ScrollableContent>
 		</>
 	);
-}
+};
 
 export default RoomInfo;

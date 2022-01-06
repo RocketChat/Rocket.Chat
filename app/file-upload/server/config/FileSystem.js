@@ -2,9 +2,8 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -28,7 +27,7 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			file = FileUpload.addExtensionTo(file);
-			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 
@@ -106,7 +105,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
@@ -120,7 +119,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-const createFileSystemStore = _.debounce(function() {
+settings.watch('FileUpload_FileSystemPath', function () {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
@@ -131,6 +130,4 @@ const createFileSystemStore = _.debounce(function() {
 
 	// DEPRECATED backwards compatibililty (remove)
 	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
-}, 500);
-
-settings.get('FileUpload_FileSystemPath', createFileSystemStore);
+});

@@ -5,12 +5,11 @@ import './codeMirrorComponent.html';
 
 const CodeMirrors = {};
 
-Template.CodeMirror.onRendered(async function() {
+Template.CodeMirror.onRendered(async function () {
 	const CodeMirror = await import('codemirror/lib/codemirror.js');
 
 	await import('./codeMirror');
 	await import('codemirror/lib/codemirror.css');
-
 
 	const options = this.data.options || { lineNumbers: true };
 	const textarea = this.find('textarea');
@@ -31,7 +30,7 @@ Template.CodeMirror.onRendered(async function() {
 	}
 
 	const self = this;
-	editor.on('change', function(doc) {
+	editor.on('change', function (doc) {
 		const val = doc.getValue();
 		textarea.value = val;
 		if (self.data.reactiveVar) {
@@ -40,7 +39,7 @@ Template.CodeMirror.onRendered(async function() {
 	});
 
 	if (this.data.reactiveVar) {
-		this.autorun(function() {
+		this.autorun(function () {
 			const val = Session.get(self.data.reactiveVar) || '';
 			if (val !== editor.getValue()) {
 				editor.setValue(val);
@@ -48,15 +47,16 @@ Template.CodeMirror.onRendered(async function() {
 		});
 	}
 
-	Meteor.defer(function() {
+	Meteor.defer(function () {
 		editor.refresh();
 	});
 });
 
-
-Template.CodeMirror.destroyed = function() {
+Template.CodeMirror.destroyed = function () {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];
-	this.$(`#${ this.data.id || 'code-mirror-textarea' }`).next('.CodeMirror').remove();
+	this.$(`#${this.data.id || 'code-mirror-textarea'}`)
+		.next('.CodeMirror')
+		.remove();
 };
 
 Template.CodeMirror.helpers({

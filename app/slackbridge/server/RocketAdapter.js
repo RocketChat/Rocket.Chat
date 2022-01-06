@@ -6,7 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 
 import { rocketLogger } from './logger';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
@@ -78,7 +78,7 @@ export default class RocketAdapter {
 			rocketLogger.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`set${ rocketMsgID }${ reaction }`)) {
+				if (this.slackBridge.reactionsMap.delete(`set${rocketMsgID}${reaction}`)) {
 					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -107,7 +107,7 @@ export default class RocketAdapter {
 			rocketLogger.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`unset${ rocketMsgID }${ reaction }`)) {
+				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsgID}${reaction}`)) {
 					// This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -185,7 +185,7 @@ export default class RocketAdapter {
 		}
 
 		const fileId = rocketMessage.file._id;
-		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${fileId}/`) >= 0);
 	}
 
 	processFileShare(rocketMessage, slack) {
@@ -205,7 +205,7 @@ export default class RocketAdapter {
 				}
 			}
 
-			const message = `${ text } ${ fileName }`;
+			const message = `${text} ${fileName}`;
 
 			rocketMessage.msg = message;
 			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
@@ -235,7 +235,7 @@ export default class RocketAdapter {
 	}
 
 	createRocketID(slackChannel, ts) {
-		return `slack-${ slackChannel }-${ ts.replace(/\./g, '-') }`;
+		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
 	}
 
 	findChannel(slackChannelId) {
@@ -335,7 +335,10 @@ export default class RocketAdapter {
 	findUser(slackUserID) {
 		const rocketUser = Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
-			this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUser.username }` };
+			this.userTags[slackUserID] = {
+				slack: `<@${slackUserID}>`,
+				rocket: `@${rocketUser.username}`,
+			};
 		}
 		return rocketUser;
 	}
@@ -419,7 +422,10 @@ export default class RocketAdapter {
 				}
 				Users.addImportIds(rocketUserData.rocketId, importIds);
 				if (!this.userTags[slackUserID]) {
-					this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUserData.name }` };
+					this.userTags[slackUserID] = {
+						slack: `<@${slackUserID}>`,
+						rocket: `@${rocketUserData.name}`,
+					};
 				}
 				addedUser = Users.findOneById(rocketUserData.rocketId);
 			}

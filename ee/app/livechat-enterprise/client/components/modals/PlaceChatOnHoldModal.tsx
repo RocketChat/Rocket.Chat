@@ -9,32 +9,29 @@ type PlaceChatOnHoldModalProps = {
 	onCancel: () => void;
 };
 
-const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
-	onCancel,
-	onOnHoldChat,
-	confirm = onOnHoldChat,
-	...props
-}) => {
+const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }) => {
 	const t = useTranslation();
 
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon name='pause-unfilled' size={20}/>
-			<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Would_you_like_to_place_chat_on_hold')}
-		</Modal.Content>
-		<Modal.Footer>
-			<Box>
-				<ButtonGroup align='end'>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={confirm}>{t('Omnichannel_onHold_Chat')}</Button>
-				</ButtonGroup>
-			</Box>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal {...props}>
+			<Modal.Header>
+				<Icon name='pause-unfilled' size={20} />
+				<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>
+				<Modal.Close onClick={onCancel} />
+			</Modal.Header>
+			<Modal.Content fontScale='p2'>{t('Would_you_like_to_place_chat_on_hold')}</Modal.Content>
+			<Modal.Footer>
+				<Box>
+					<ButtonGroup align='end'>
+						<Button onClick={onCancel}>{t('Cancel')}</Button>
+						<Button primary onClick={confirm}>
+							{t('Omnichannel_onHold_Chat')}
+						</Button>
+					</ButtonGroup>
+				</Box>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export default PlaceChatOnHoldModal;

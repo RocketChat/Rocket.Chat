@@ -1,7 +1,4 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-
-import chai from 'chai';
+import { expect } from 'chai';
 
 import '../../lib/tests/server.mocks.js';
 import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
@@ -38,16 +35,15 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import '../../../definition/xml-encryption';
-
-const { expect } = chai;
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
 				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions);
-				expect(authorizeRequest.request).to.be.equal('<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>');
+				expect(authorizeRequest.request).to.be.equal(
+					'<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>',
+				);
 			});
 
 			it('should include the unique ID on the request', () => {
@@ -173,8 +169,7 @@ describe('SAML', () => {
 
 		describe('LogoutResponse.validate', () => {
 			it('should extract the inResponseTo from the response', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -184,8 +179,7 @@ describe('SAML', () => {
 			});
 
 			it('should reject a response with a non-success StatusCode', () => {
-				const logoutResponse = simpleLogoutResponse
-					.replace('[STATUSCODE]', 'Anything');
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'Anything');
 				const parser = new LogoutResponseParser(serviceProviderOptions);
 
 				parser.validate(logoutResponse, (err, inResponseTo) => {
@@ -288,9 +282,7 @@ describe('SAML', () => {
 				const notBefore = new Date();
 				notBefore.setMinutes(notBefore.getMinutes() - 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', new Date().toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', new Date().toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
@@ -307,9 +299,7 @@ describe('SAML', () => {
 				const notOnOrAfter = new Date();
 				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(serviceProviderOptions);
 				parser.validate(response, (err, profile, loggedOut) => {
@@ -318,7 +308,6 @@ describe('SAML', () => {
 					expect(loggedOut).to.be.false;
 				});
 			});
-
 
 			it('should fail to parse an invalid xml', () => {
 				const parser = new ResponseParser(serviceProviderOptions);
@@ -515,9 +504,7 @@ describe('SAML', () => {
 				const notOnOrAfter = new Date();
 				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
 
-				const response = samlResponse
-					.replace('[NOTBEFORE]', notBefore.toISOString())
-					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+				const response = samlResponse.replace('[NOTBEFORE]', notBefore.toISOString()).replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
 
 				const parser = new ResponseParser(providerOptions);
 				parser.validate(response, (err, data, loggedOut) => {
@@ -649,7 +636,7 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
 				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
-				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user']);
+				expect(userObject).to.not.have.property('roles');
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
 			});
 
@@ -673,11 +660,7 @@ describe('SAML', () => {
 			it('should support `channels` attribute with multiple values', () => {
 				const channelsProfile = {
 					...profile,
-					channels: [
-						'pets',
-						'pics',
-						'funny',
-					],
+					channels: ['pets', 'pics', 'funny'],
 				};
 
 				const userObject = SAMLUtils.mapProfileToUserObject(channelsProfile);
@@ -759,10 +742,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						template: '__displayName__ (__anotherName__)',
 					},
 				};
@@ -789,10 +769,7 @@ describe('SAML', () => {
 					},
 					email: 'singleEmail',
 					name: {
-						fieldNames: [
-							'anotherName',
-							'displayName',
-						],
+						fieldNames: ['anotherName', 'displayName'],
 						regex: '\\[(.*)\\]',
 						template: '__displayName__ (__regex__)',
 					},
@@ -848,17 +825,7 @@ describe('SAML', () => {
 					email: 'singleEmail',
 					name: 'anotherName',
 					others: {
-						fieldNames: [
-							'issuer',
-							'sessionIndex',
-							'nameID',
-							'displayName',
-							'username',
-							'roles',
-							'otherRoles',
-							'language',
-							'channels',
-						],
+						fieldNames: ['issuer', 'sessionIndex', 'nameID', 'displayName', 'username', 'roles', 'otherRoles', 'language', 'channels'],
 					},
 				};
 
@@ -868,20 +835,23 @@ describe('SAML', () => {
 				const userObject = SAMLUtils.mapProfileToUserObject(profile);
 
 				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
-					'anotherUsername',
-					'singleEmail',
-					'anotherName',
-					'issuer',
-					'sessionIndex',
-					'nameID',
-					'displayName',
-					'username',
-					'roles',
-					'otherRoles',
-					'language',
-					'channels',
-				]);
+				expect(userObject)
+					.to.have.property('attributeList')
+					.that.is.a('Map')
+					.that.have.keys([
+						'anotherUsername',
+						'singleEmail',
+						'anotherName',
+						'issuer',
+						'sessionIndex',
+						'nameID',
+						'displayName',
+						'username',
+						'roles',
+						'otherRoles',
+						'language',
+						'channels',
+					]);
 
 				// Workaround because chai doesn't handle Maps very well
 				for (const [key, value] of userObject.attributeList) {
