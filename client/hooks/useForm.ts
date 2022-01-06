@@ -135,6 +135,9 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 	return target.value;
 };
 
+/**
+ * @deprecated prefer react-hook-form's `useForm`
+ */
 export const useForm = <
 	Reducer extends (
 		state: FormState<Record<string, unknown>>,
