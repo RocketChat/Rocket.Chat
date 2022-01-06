@@ -48,7 +48,7 @@ const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) =>
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
 			{context === 'edit' ? (
-				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />
+				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} reload={null} />
 			) : (
 				<ContactInfo id={_id} rid={rid} route={PATH} />
 			)}
