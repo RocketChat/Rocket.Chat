@@ -23,15 +23,16 @@ const AccountIntegrationsPage = (): ReactElement => {
 	const accounts = useReactiveValue(getWebdavAccounts);
 	const removeWebdavAccount = useMethod('removeWebdavAccount');
 
-	const { values, handlers } = useForm({ selected: [] });
-	const { selected } = values;
-	const { handleSelected } = handlers;
+	const {
+		values: { selected },
+		handlers: { handleSelected },
+	} = useForm({ selected: [] });
 
 	const options: SelectOptions = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
 
 	const handleClickRemove = useCallback(() => {
 		try {
-			removeWebdavAccount(selected);
+			removeWebdavAccount(selected as string);
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
