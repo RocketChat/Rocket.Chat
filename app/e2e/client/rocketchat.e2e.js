@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -18,6 +17,7 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
+	generateMnemonicPhrase,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
@@ -31,6 +31,7 @@ import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordMod
 import { call } from '../../../client/lib/utils/call';
 
 let failedToDecodeKey = false;
+
 
 class E2E extends Emitter {
 	constructor() {
@@ -256,7 +257,7 @@ class E2E extends Emitter {
 	}
 
 	createRandomPassword() {
-		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
+		const randomPassword = generateMnemonicPhrase(5);
 		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}

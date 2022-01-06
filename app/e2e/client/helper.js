@@ -2,6 +2,8 @@
 
 import ByteBuffer from 'bytebuffer';
 
+import { words } from './wordList';
+
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
 export function toString(thing) {
@@ -100,6 +102,19 @@ export async function readFileAsArrayBuffer(file) {
 		};
 		reader.readAsArrayBuffer(file);
 	});
+}
+
+export function generateMnemonicPhrase(n) {
+	const result = new Array(n);
+	let len = words.length;
+	const taken = new Array(len);
+
+	while (n--) {
+		const x = Math.floor(Math.random() * len);
+		result[n] = words[x in taken ? taken[x] : x];
+		taken[x] = --len in taken ? taken[len] : len;
+	}
+	return result.join(' ');
 }
 
 export class Deferred {
