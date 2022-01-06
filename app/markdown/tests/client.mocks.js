@@ -27,15 +27,15 @@ mock('../../settings', {
 				case 'Markdown_Parser':
 					return 'original';
 				case 'Markdown_Headers':
-				// case 'Markdown_Marked_GFM':
-				// case 'Markdown_Marked_Tables':
-				// case 'Markdown_Marked_Breaks':
-				// case 'Markdown_Marked_Pedantic':
-				// case 'Markdown_Marked_SmartLists':
-				// case 'Markdown_Marked_Smartypants':
+					// case 'Markdown_Marked_GFM':
+					// case 'Markdown_Marked_Tables':
+					// case 'Markdown_Marked_Breaks':
+					// case 'Markdown_Marked_Pedantic':
+					// case 'Markdown_Marked_SmartLists':
+					// case 'Markdown_Marked_Smartypants':
 					return true;
 				default:
-					throw new Error(`Missing setting mock ${ setting }`);
+					throw new Error(`Missing setting mock ${setting}`);
 			}
 		},
 	},
@@ -43,9 +43,7 @@ mock('../../settings', {
 
 mock('../../callbacks', {
 	callbacks: {
-		add() {
-
-		},
+		add() {},
 		priority: {
 			HIGH: 1,
 		},

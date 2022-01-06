@@ -1,17 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
-import { LivechatTrigger } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { LivechatTrigger } from '../../../models/server/raw';
 
 Meteor.methods({
-	'livechat:removeTrigger'(triggerId) {
+	async 'livechat:removeTrigger'(triggerId) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeTrigger' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:removeTrigger',
+			});
 		}
 
 		check(triggerId, String);
 
-		return LivechatTrigger.removeById(triggerId);
+		await LivechatTrigger.removeById(triggerId);
+
+		return true;
 	},
 });

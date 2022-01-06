@@ -59,7 +59,9 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 		(event) => {
 			if (event.keyCode === 13) {
 				// ENTER
-				return onSubmit(event);
+				if (event?.target?.nodeName !== 'TEXTAREA') {
+					return onSubmit(event);
+				}
 			}
 
 			if (event.keyCode === 27) {
@@ -156,3 +158,4 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 }
 
 export default ModalBlock;
+export { modalParser };

@@ -4,7 +4,7 @@ import React from 'react';
 import BusinessHoursTable from './BusinessHoursTable';
 
 export default {
-	title: 'omnichannel/businessHours/ee/BusinessHoursTable',
+	title: 'omnichannel/businessHours/BusinessHoursTable',
 	component: BusinessHoursTable,
 };
 
@@ -49,11 +49,6 @@ const businessHours = [
 
 export const Default = () => (
 	<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
-		<BusinessHoursTable
-			businessHours={businessHours}
-			businessHoursTotal={businessHours.length}
-			params={{}}
-			onChangeParams={() => {}}
-		/>
+		<BusinessHoursTable businessHours={businessHours} businessHoursTotal={businessHours.length} params={{}} onChangeParams={() => {}} />
 	</Box>
 );

@@ -33,9 +33,7 @@ const TeamAutocomplete = (props) => {
 					<Avatar size='x20' {...label} test='selected' /> {label.name}
 				</>
 			)}
-			renderItem={({ value, label, ...props }) => (
-				<Option key={value} {...props} label={label.name} avatar={<Avatar {...label} />} />
-			)}
+			renderItem={({ value, label, ...props }) => <Option key={value} {...props} label={label.name} avatar={<Avatar {...label} />} />}
 			options={options}
 		/>
 	);

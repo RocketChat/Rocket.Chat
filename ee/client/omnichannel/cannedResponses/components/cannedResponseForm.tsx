@@ -23,17 +23,7 @@ const CannedResponseForm: FC<{
 	radioDescription: string;
 	onPreview: () => void;
 	previewState: boolean;
-}> = ({
-	values,
-	handlers,
-	errors,
-	radioHandlers,
-	radioDescription,
-	onPreview,
-	previewState,
-	isManager,
-	isMonitor,
-}) => {
+}> = ({ values, handlers, errors, radioHandlers, radioDescription, onPreview, previewState, isManager, isMonitor }) => {
 	const { shortcut, text, scope, tags, departmentId } = values;
 	const { handleShortcut, handleText, handleTags, handleDepartmentId } = handlers;
 	const t = useTranslation();
@@ -64,11 +54,7 @@ const CannedResponseForm: FC<{
 						</Box>
 					</Box>
 				</Field.Label>
-				{previewState ? (
-					<PreviewText text={text} />
-				) : (
-					<MarkdownTextEditor value={text} onChange={handleText} />
-				)}
+				{previewState ? <PreviewText text={text} /> : <MarkdownTextEditor value={text} onChange={handleText} />}
 			</Field>
 			<Field mbe='x24'>
 				<Tags handler={handleTags} tags={tags} />
@@ -79,12 +65,7 @@ const CannedResponseForm: FC<{
 						<Field.Label>{t('Sharing')}</Field.Label>
 						<Field.Description>{radioDescription}</Field.Description>
 						<Field.Row mbs='12px' justifyContent='start'>
-							<SharingOptions
-								isMonitor={isMonitor}
-								isManager={isManager}
-								scope={scope}
-								radioHandlers={radioHandlers}
-							/>
+							<SharingOptions isMonitor={isMonitor} isManager={isManager} scope={scope} radioHandlers={radioHandlers} />
 						</Field.Row>
 					</Field>
 					{scope === 'department' && (

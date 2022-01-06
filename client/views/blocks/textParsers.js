@@ -18,6 +18,4 @@ messageParser.text = ({ text, type } = {}) => {
 modalParser.plainText = ({ text } = {}) => text;
 
 // TODO: move this to fuselage-ui-kit itself
-modalParser.mrkdwn = ({ text }) => (
-	<span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />
-);
+modalParser.mrkdwn = ({ text }) => <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;

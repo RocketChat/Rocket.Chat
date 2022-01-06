@@ -25,16 +25,7 @@ const Logo = ({ src = 'images/logo/logo.svg', ...props }: LogoProps): ReactEleme
 					<RocketChatLogo />
 				</Box>
 			)}
-			{src && (
-				<Box
-					{...props}
-					is='img'
-					src={src}
-					hidden={!isLoaded}
-					onLoad={handleLoad}
-					onError={handleError}
-				/>
-			)}
+			{src && <Box {...props} is='img' src={src} hidden={!isLoaded} onLoad={handleLoad} onError={handleError} />}
 		</>
 	);
 };

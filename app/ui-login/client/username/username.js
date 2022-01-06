@@ -7,10 +7,10 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { Button } from '../../../ui';
 import { t } from '../../../utils';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-Template.username.onCreated(function() {
+Template.username.onCreated(function () {
 	const self = this;
 	self.customFields = new ReactiveVar();
 	self.username = new ReactiveVar();
@@ -28,7 +28,7 @@ Template.username.onCreated(function() {
 		}
 	});
 
-	const validateCustomFields = function(formObj, validationObj) {
+	const validateCustomFields = function (formObj, validationObj) {
 		const customFields = self.customFields.get();
 		if (!customFields) {
 			return;
@@ -45,11 +45,11 @@ Template.username.onCreated(function() {
 					validationObj[field] = t('Field_required');
 					return validationObj[field];
 				}
-				if ((customField.maxLength != null) && value.length > customField.maxLength) {
+				if (customField.maxLength != null && value.length > customField.maxLength) {
 					validationObj[field] = t('Max_length_is', customField.maxLength);
 					return validationObj[field];
 				}
-				if ((customField.minLength != null) && value.length < customField.minLength) {
+				if (customField.minLength != null && value.length < customField.minLength) {
 					validationObj[field] = t('Min_length_is', customField.minLength);
 					return validationObj[field];
 				}
@@ -57,7 +57,7 @@ Template.username.onCreated(function() {
 		}
 	};
 
-	this.validate = function() {
+	this.validate = function () {
 		const formData = $('#login-card').serializeArray();
 		const formObj = {};
 		const validationObj = {};
@@ -74,8 +74,8 @@ Template.username.onCreated(function() {
 
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
-				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
-				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				$(`#login-card input[name=${key}], #login-card select[name=${key}]`).addClass('error');
+				$(`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`).text(value);
 			});
 
 			return false;
@@ -83,7 +83,7 @@ Template.username.onCreated(function() {
 		return formObj;
 	};
 
-	return Meteor.call('getUsernameSuggestion', function(error, username) {
+	return Meteor.call('getUsernameSuggestion', function (error, username) {
 		self.username.set({
 			ready: true,
 			username,
@@ -101,7 +101,7 @@ Template.username.helpers({
 		const asset = settings.get('Assets_background');
 		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 		if (asset && (asset.url || asset.defaultUrl)) {
-			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
+			return `${prefix}/${asset.url || asset.defaultUrl}`;
 		}
 	},
 });
@@ -146,13 +146,13 @@ Template.username.events({
 			return;
 		}
 
-		Meteor.call('saveCustomFields', formData, function(err) {
+		Meteor.call('saveCustomFields', formData, function (err) {
 			if (err != null) {
 				dispatchToastMessage({ type: 'error', message: err.error });
 			}
 		});
 
-		Meteor.call('setUsername', usernameValue, function(err) {
+		Meteor.call('setUsername', usernameValue, function (err) {
 			if (err != null) {
 				if (err.error === 'username-invalid') {
 					username.invalid = true;

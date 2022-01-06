@@ -1,5 +1,6 @@
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Random } from 'meteor/random';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -9,6 +10,8 @@ import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 import { UIKitInteractionTypes } from '../../../definition/UIKit';
 import * as banners from '../../../client/lib/banners';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { t } from '../../utils/client';
 
 const events = new Emitter();
 
@@ -21,6 +24,8 @@ export const off = (...args) => {
 };
 
 const TRIGGER_TIMEOUT = 5000;
+
+const TRIGGER_TIMEOUT_ERROR = 'TRIGGER_TIMEOUT_ERROR';
 
 const triggersId = new Map();
 
@@ -38,7 +43,6 @@ export const generateTriggerId = (appId) => {
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 	return triggerId;
 };
-
 
 const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
@@ -71,7 +75,9 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE].includes(type)) {
+	if (
+		[UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE, UIKitInteractionTypes.CONTEXTUAL_BAR_UPDATE].includes(type)
+	) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -94,13 +100,34 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 				...data,
 			},
 		});
+
 		instances.set(viewId, {
 			close() {
 				instance.close();
 				instances.delete(viewId);
 			},
 		});
+
 		return UIKitInteractionTypes.MODAL_OPEN;
+	}
+
+	if ([UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN].includes(type)) {
+		instances.set(viewId, {
+			payload: {
+				type,
+				triggerId,
+				appId,
+				viewId,
+				...data,
+			},
+			close() {
+				instances.delete(viewId);
+			},
+		});
+
+		FlowRouter.setParams({ tab: 'app', context: viewId });
+
+		return UIKitInteractionTypes.CONTEXTUAL_BAR_OPEN;
 	}
 
 	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
@@ -122,25 +149,51 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
 	}
 
+	if ([UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE].includes(type)) {
+		const instance = instances.get(viewId);
+
+		if (instance) {
+			instance.close();
+		}
+		return UIKitIncomingInteractionType.CONTEXTUAL_BAR_CLOSE;
+	}
+
 	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) => new Promise(async (resolve, reject) => {
-	const triggerId = generateTriggerId(appId);
+export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) =>
+	new Promise(async (resolve, reject) => {
+		const triggerId = generateTriggerId(appId);
 
-	const payload = rest.payload || rest;
+		const payload = rest.payload || rest;
 
-	setTimeout(reject, TRIGGER_TIMEOUT, triggerId);
+		setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
 
-	const { type: interactionType, ...data } = await APIClient.post(
-		`apps/ui.interaction/${ appId }`,
-		{ type, actionId, payload, container, mid, rid, triggerId, viewId },
-	);
+		const { type: interactionType, ...data } = await APIClient.post(`apps/ui.interaction/${appId}`, {
+			type,
+			actionId,
+			payload,
+			container,
+			mid,
+			rid,
+			triggerId,
+			viewId,
+		});
 
-	return resolve(handlePayloadUserInteraction(interactionType, data));
-});
+		return resolve(handlePayloadUserInteraction(interactionType, data));
+	});
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
+
+export const triggerActionButtonAction = (options) =>
+	triggerAction({ type: UIKitIncomingInteractionType.ACTION_BUTTON, ...options }).catch(async (reason) => {
+		if (Array.isArray(reason) && reason[0] === TRIGGER_TIMEOUT_ERROR) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('UIKit_Interaction_Timeout'),
+			});
+		}
+	});
 
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
@@ -152,7 +205,11 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 	};
 
 	try {
-		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
+		const result = await triggerAction({
+			type: UIKitIncomingInteractionType.VIEW_SUBMIT,
+			viewId,
+			...options,
+		});
 		if (!result || UIKitInteractionTypes.MODAL_CLOSE === result) {
 			close();
 		}
@@ -170,6 +227,20 @@ export const triggerCancel = async ({ view, ...options }) => {
 			instance.close();
 		}
 	}
+};
+
+export const getUserInteractionPayloadByViewId = (viewId) => {
+	if (!viewId) {
+		throw new Error('No viewId provided when checking for `user interaction payload`');
+	}
+
+	const instance = instances.get(viewId);
+
+	if (!instance) {
+		return {};
+	}
+
+	return instance.payload;
 };
 
 Meteor.startup(() =>

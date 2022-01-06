@@ -1,7 +1,9 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useCallback, useState } from 'react';
 
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import ContextualBar from './ContextualBar';
@@ -15,6 +17,8 @@ const OmnichannelDirectoryPage = () => {
 	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
 	const navRoute = useRoute(routeName);
+	const canViewDirectory = usePermission('view-omnichannel-contact-center');
+
 	useEffect(() => {
 		if (routeName !== 'omnichannel-directory') {
 			return navRoute.push();
@@ -31,6 +35,10 @@ const OmnichannelDirectoryPage = () => {
 	const [chatReload, setChatReload] = useState();
 
 	const t = useTranslation();
+
+	if (!canViewDirectory) {
+		return <NotAuthorizedPage />;
+	}
 
 	return (
 		<Page flexDirection='row'>

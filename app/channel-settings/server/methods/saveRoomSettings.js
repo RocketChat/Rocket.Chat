@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -21,7 +21,31 @@ import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = [
+	'roomAvatar',
+	'featured',
+	'roomName',
+	'roomTopic',
+	'roomAnnouncement',
+	'roomCustomFields',
+	'roomDescription',
+	'roomType',
+	'readOnly',
+	'reactWhenReadOnly',
+	'systemMessages',
+	'default',
+	'joinCode',
+	'tokenpass',
+	'streamingOptions',
+	'retentionEnabled',
+	'retentionMaxAge',
+	'retentionExcludePinned',
+	'retentionFilesOnly',
+	'retentionIgnoreThreads',
+	'retentionOverrideGlobal',
+	'encrypted',
+	'favorite',
+];
 
 const validators = {
 	default({ userId }) {
@@ -128,7 +152,7 @@ const validators = {
 
 const settingSavers = {
 	roomName({ value, rid, user, room }) {
-		if (!saveRoomName(rid, value, user)) {
+		if (!Promise.await(saveRoomName(rid, value, user))) {
 			return;
 		}
 
@@ -173,10 +197,12 @@ const settingSavers = {
 	tokenpass({ value, rid }) {
 		check(value, {
 			require: String,
-			tokens: [{
-				token: String,
-				balance: String,
-			}],
+			tokens: [
+				{
+					token: String,
+					balance: String,
+				},
+			],
 		});
 		saveRoomTokenpass(rid, value);
 	},
@@ -231,13 +257,13 @@ const settingSavers = {
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
-	roomAvatar({ value, rid, user }) {
-		setRoomAvatar(rid, value, user);
+	async roomAvatar({ value, rid, user }) {
+		await setRoomAvatar(rid, value, user);
 	},
 };
 
 Meteor.methods({
-	saveRoomSettings(rid, settings, value) {
+	async saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -313,10 +339,10 @@ Meteor.methods({
 		});
 
 		// saving data
-		Object.keys(settings).forEach((setting) => {
+		for await (const setting of Object.keys(settings)) {
 			const value = settings[setting];
 
-			const saver = settingSavers[setting];
+			const saver = await settingSavers[setting];
 			if (saver) {
 				saver({
 					value,
@@ -325,9 +351,9 @@ Meteor.methods({
 					user,
 				});
 			}
-		});
+		}
 
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			const room = Rooms.findOneById(rid);
 			callbacks.run('afterSaveRoomSettings', room);
 		});

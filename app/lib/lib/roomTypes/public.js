@@ -61,7 +61,9 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	condition() {
 		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true);
+		return (
+			groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
+		);
 	}
 
 	showJoinLink(roomId) {
@@ -91,9 +93,11 @@ export class PublicRoomType extends RoomTypeConfig {
 		}
 
 		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
+		return (
+			ChatSubscription.find({
+				rid: roomId,
+			}).count() > 0
+		);
 	}
 
 	enableMembersListProfile() {

@@ -1,13 +1,4 @@
-import {
-	Box,
-	Icon,
-	TextInput,
-	Margins,
-	Select,
-	Throbber,
-	ButtonGroup,
-	Button,
-} from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -64,13 +55,7 @@ const BaseTeamsChannels = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -92,9 +77,7 @@ const BaseTeamsChannels = ({
 							endReached={lm}
 							data={channels}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => (
-								<Row onClickView={onClickView} room={data} reload={reload} />
-							)}
+							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} />}
 						/>
 					</Box>
 				)}

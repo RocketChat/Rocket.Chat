@@ -3,13 +3,15 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Users, Subscriptions, Rooms } from '../../models';
 import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
-		const users = Meteor.users.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } }).fetch();
+		const users = Meteor.users
+			.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } })
+			.fetch();
 
 		return users.map((user) => ({
 			...user,

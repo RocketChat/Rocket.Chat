@@ -67,8 +67,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 	const canEdit = usePermission('edit-room', rid);
 	const canConvertRoomToTeam = usePermission('create-team');
-	const canLeave =
-		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
+	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
@@ -84,12 +83,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onConfirm}
-				onCancel={closeModal}
-				confirmText={t('Yes_delete_it')}
-			>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={closeModal} confirmText={t('Yes_delete_it')}>
 				{t('Delete_Room_Warning')}
 			</GenericModal>,
 		);
@@ -157,14 +151,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 		};
 
-		setModal(
-			<ChannelToTeamModal
-				rid={rid}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={onConfirm}
-			/>,
-		);
+		setModal(<ChannelToTeamModal rid={rid} onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm} />);
 	});
 
 	const onConvertToTeam = useMutableCallback(async () => {

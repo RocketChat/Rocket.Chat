@@ -7,7 +7,7 @@ const wordBreak = css`
 `;
 
 const Text: FC<ComponentProps<typeof Box>> = (props) => (
-	<Box mb='x8' fontScale='p1' color='hint' withTruncatedText className={wordBreak} {...props} />
+	<Box mb='x8' fontScale='p2' color='hint' withTruncatedText className={wordBreak} {...props} />
 );
 
 export default Text;

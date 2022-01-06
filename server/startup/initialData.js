@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
 import { RocketChatFile } from '../../app/file';
-import { FileUpload } from '../../app/file-upload';
-import { addUserRoles, getUsersInRole } from '../../app/authorization';
-import { Users, Settings, Rooms } from '../../app/models';
-import { settings } from '../../app/settings';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
+import { FileUpload } from '../../app/file-upload/server';
+import { addUserRoles, getUsersInRole } from '../../app/authorization/server';
+import { Users, Rooms } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
+import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
+import { Settings } from '../../app/models/server/raw';
+import { validateEmail } from '../../lib/emailValidator';
 
-Meteor.startup(function() {
+Meteor.startup(async function () {
 	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
 		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 			default: true,
@@ -48,7 +49,7 @@ Meteor.startup(function() {
 	}
 
 	if (process.env.ADMIN_PASS) {
-		if (_.isEmpty(getUsersInRole('admin').fetch())) {
+		if ((await (await getUsersInRole('admin')).count()) === 0) {
 			console.log('Inserting admin user:'.green);
 			const adminUser = {
 				name: 'Administrator',
@@ -63,19 +64,19 @@ Meteor.startup(function() {
 				adminUser.name = process.env.ADMIN_NAME;
 			}
 
-			console.log(`Name: ${ adminUser.name }`.green);
+			console.log(`Name: ${adminUser.name}`.green);
 
 			if (process.env.ADMIN_EMAIL) {
-				const re = /^[^@].*@[^@]+$/i;
-
-				if (re.test(process.env.ADMIN_EMAIL)) {
+				if (validateEmail(process.env.ADMIN_EMAIL)) {
 					if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
-						adminUser.emails = [{
-							address: process.env.ADMIN_EMAIL,
-							verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
-						}];
+						adminUser.emails = [
+							{
+								address: process.env.ADMIN_EMAIL,
+								verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
+							},
+						];
 
-						console.log(`Email: ${ process.env.ADMIN_EMAIL }`.green);
+						console.log(`Email: ${process.env.ADMIN_EMAIL}`.green);
 					} else {
 						console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
 					}
@@ -88,7 +89,7 @@ Meteor.startup(function() {
 				let nameValidation;
 
 				try {
-					nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+					nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
 				} catch (error) {
 					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 				}
@@ -104,7 +105,7 @@ Meteor.startup(function() {
 				}
 			}
 
-			console.log(`Username: ${ adminUser.username }`.green);
+			console.log(`Username: ${adminUser.username}`.green);
 
 			adminUser.type = 'user';
 
@@ -134,16 +135,16 @@ Meteor.startup(function() {
 		}
 	}
 
-	if (_.isEmpty(getUsersInRole('admin').fetch())) {
+	if ((await (await getUsersInRole('admin')).count()) === 0) {
 		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 		if (oldestUser) {
-			addUserRoles(oldestUser._id, 'admin');
-			console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
+			addUserRoles(oldestUser._id, ['admin']);
+			console.log(`No admins are found. Set ${oldestUser.username || oldestUser.name} as admin for being the oldest user`);
 		}
 	}
 
-	if (!_.isEmpty(getUsersInRole('admin').fetch())) {
+	if ((await (await getUsersInRole('admin')).count()) !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
@@ -172,24 +173,24 @@ Meteor.startup(function() {
 			type: 'user',
 		};
 
-		console.log(`Name: ${ adminUser.name }`.green);
-		console.log(`Email: ${ adminUser.emails[0].address }`.green);
-		console.log(`Username: ${ adminUser.username }`.green);
-		console.log(`Password: ${ adminUser._id }`.green);
+		console.log(`Name: ${adminUser.name}`.green);
+		console.log(`Email: ${adminUser.emails[0].address}`.green);
+		console.log(`Username: ${adminUser.username}`.green);
+		console.log(`Password: ${adminUser._id}`.green);
 
 		if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
-			throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');
+			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		if (!checkUsernameAvailability(adminUser.username)) {
-			throw new Meteor.Error(`Username ${ adminUser.username } already exists`, 'Rocket.Chat can\'t run in test mode');
+			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		Users.create(adminUser);
 
 		Accounts.setPassword(adminUser._id, adminUser._id);
 
-		addUserRoles(adminUser._id, 'admin');
+		addUserRoles(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');

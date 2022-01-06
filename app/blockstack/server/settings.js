@@ -17,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	settingsRegistry.addGroup('Blockstack', function() {
+	settingsRegistry.addGroup('Blockstack', function () {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
@@ -35,33 +35,36 @@ Meteor.startup(() => {
 });
 
 // Helper to return all Blockstack settings
-const getSettings = () => Object.assign({}, defaults, {
-	enable: settings.get('Blockstack_Enable'),
-	authDescription: settings.get('Blockstack_Auth_Description'),
-	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
-	generateUsername: settings.get('Blockstack_Generate_Username'),
-});
-
-
-// Add settings to auth provider configs on startup
-settings.watchMultiple(['Blockstack_Enable',
-	'Blockstack_Auth_Description',
-	'Blockstack_ButtonLabelText',
-	'Blockstack_Generate_Username'], () => {
-	const serviceConfig = getSettings();
-
-	if (!serviceConfig.enable) {
-		logger.debug('Blockstack not enabled', serviceConfig);
-		return ServiceConfiguration.configurations.remove({
-			service: 'blockstack',
-		});
-	}
-
-	ServiceConfiguration.configurations.upsert({
-		service: 'blockstack',
-	}, {
-		$set: serviceConfig,
+const getSettings = () =>
+	Object.assign({}, defaults, {
+		enable: settings.get('Blockstack_Enable'),
+		authDescription: settings.get('Blockstack_Auth_Description'),
+		buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
+		generateUsername: settings.get('Blockstack_Generate_Username'),
 	});
 
-	logger.debug('Init Blockstack auth', serviceConfig);
-});
+// Add settings to auth provider configs on startup
+settings.watchMultiple(
+	['Blockstack_Enable', 'Blockstack_Auth_Description', 'Blockstack_ButtonLabelText', 'Blockstack_Generate_Username'],
+	() => {
+		const serviceConfig = getSettings();
+
+		if (!serviceConfig.enable) {
+			logger.debug('Blockstack not enabled', serviceConfig);
+			return ServiceConfiguration.configurations.remove({
+				service: 'blockstack',
+			});
+		}
+
+		ServiceConfiguration.configurations.upsert(
+			{
+				service: 'blockstack',
+			},
+			{
+				$set: serviceConfig,
+			},
+		);
+
+		logger.debug('Init Blockstack auth', serviceConfig);
+	},
+);

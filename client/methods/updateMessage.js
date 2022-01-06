@@ -5,10 +5,10 @@ import moment from 'moment';
 import _ from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
-import { callbacks } from '../../app/callbacks/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
+import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods({

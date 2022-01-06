@@ -3,37 +3,49 @@ import { check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
 
-API.v1.addRoute('livechat/triggers', { authRequired: true }, {
-	get() {
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
+API.v1.addRoute(
+	'livechat/triggers',
+	{ authRequired: true },
+	{
+		get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort } = this.parseJsonQuery();
 
-		const triggers = Promise.await(findTriggers({
-			userId: this.userId,
-			pagination: {
-				offset,
-				count,
-				sort,
-			},
-		}));
+			const triggers = Promise.await(
+				findTriggers({
+					userId: this.userId,
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
+			);
 
-		return API.v1.success(triggers);
+			return API.v1.success(triggers);
+		},
 	},
-});
+);
 
-API.v1.addRoute('livechat/triggers/:_id', { authRequired: true }, {
-	get() {
-		check(this.urlParams, {
-			_id: String,
-		});
+API.v1.addRoute(
+	'livechat/triggers/:_id',
+	{ authRequired: true },
+	{
+		get() {
+			check(this.urlParams, {
+				_id: String,
+			});
 
-		const trigger = Promise.await(findTriggerById({
-			userId: this.userId,
-			triggerId: this.urlParams._id,
-		}));
+			const trigger = Promise.await(
+				findTriggerById({
+					userId: this.userId,
+					triggerId: this.urlParams._id,
+				}),
+			);
 
-		return API.v1.success({
-			trigger,
-		});
+			return API.v1.success({
+				trigger,
+			});
+		},
 	},
-});
+);

@@ -45,18 +45,10 @@ const AccountTokensTable = ({ data, reload }) => {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell key={'name'}>
-					{t('API_Personal_Access_Token_Name')}
-				</GenericTable.HeaderCell>,
-				isMedium && (
-					<GenericTable.HeaderCell key={'createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>
-				),
-				<GenericTable.HeaderCell key={'lastTokenPart'}>
-					{t('Last_token_part')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'2fa'}>
-					{t('Two Factor Authentication')}
-				</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell key={'name'}>{t('API_Personal_Access_Token_Name')}</GenericTable.HeaderCell>,
+				isMedium && <GenericTable.HeaderCell key={'createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell key={'lastTokenPart'}>{t('Last_token_part')}</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell key={'2fa'}>{t('Two Factor Authentication')}</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'actions'} />,
 			].filter(Boolean),
 		[isMedium, t],
@@ -138,22 +130,10 @@ const AccountTokensTable = ({ data, reload }) => {
 	);
 
 	return (
-		<GenericTable
-			ref={ref}
-			header={header}
-			results={tokens}
-			total={tokensTotal}
-			setParams={setParams}
-			params={params}
-		>
+		<GenericTable ref={ref} header={header} results={tokens} total={tokensTotal} setParams={setParams} params={params}>
 			{useCallback(
 				(props) => (
-					<AccountTokensRow
-						onRegenerate={onRegenerate}
-						onRemove={onRemove}
-						isMedium={isMedium}
-						{...props}
-					/>
+					<AccountTokensRow onRegenerate={onRegenerate} onRemove={onRemove} isMedium={isMedium} {...props} />
 				),
 				[isMedium, onRegenerate, onRemove],
 			)}
