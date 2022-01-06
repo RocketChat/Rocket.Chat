@@ -92,15 +92,14 @@ export const setUserAvatar = function (
 		size: buffer.length,
 	};
 
-	const result = fileStore.insertSync(file, buffer);
-
-	const avatarETag = etag || result?.etag || null;
-
-	Meteor.setTimeout(function () {
-		Users.setAvatarData(user._id, service, avatarETag);
-		api.broadcast('user.avatarUpdate', {
-			username: user.username,
-			avatarETag,
-		});
-	}, 500);
+	fileStore.insert(file, buffer, (_: Error, result: Record<string, string>) => {
+		const avatarETag = etag || result?.etag;
+		Meteor.setTimeout(function () {
+			Users.setAvatarData(user._id, service, avatarETag || null);
+			api.broadcast('user.avatarUpdate', {
+				username: user.username,
+				avatarETag,
+			});
+		}, 500);
+	});
 };
