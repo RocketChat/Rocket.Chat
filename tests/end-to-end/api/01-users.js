@@ -935,8 +935,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		// TODO there is an issue with how MAIL_URL is read from env vars to send emails in production that we need to fix
-		it.skip("should update a user's email by userId", (done) => {
+		it("should update a user's email by userId", (done) => {
 			request
 				.post(api('users.update'))
 				.set(credentials)
@@ -1422,8 +1421,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		// TODO there is an issue with how MAIL_URL is read from env vars to send emails in production that we need to fix
-		it.skip("should set new email as 'unverified'", (done) => {
+		it("should set new email as 'unverified'", (done) => {
 			request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
