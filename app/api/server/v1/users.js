@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
@@ -974,12 +975,15 @@ API.v1.addRoute(
 	'users.logoutOtherClients',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			try {
-				// TODO logoutOtherClients has been removed, need to create a new method
-				const result = Meteor.call('logoutOtherClients');
+				const hashedToken = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 
-				return API.v1.success(result);
+				if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				}
+
+				return API.v1.success(true);
 			} catch (error) {
 				return API.v1.failure(error);
 			}

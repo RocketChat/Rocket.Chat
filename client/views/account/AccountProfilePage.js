@@ -6,7 +6,7 @@ import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import Page from '../../components/Page';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -43,7 +43,7 @@ const AccountProfilePage = () => {
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
-	const logoutOtherClients = useMethod('logoutOtherClients');
+	const logoutOtherClients = useEndpoint('POST', 'users.logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
 	const saveFn = useMethod('saveUserProfile');
 

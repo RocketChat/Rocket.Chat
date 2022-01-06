@@ -3035,7 +3035,7 @@ describe('[Users]', function () {
 			user = undefined;
 		});
 
-		it.skip('should invalidate all active sesions', (done) => {
+		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
 			However, the removal of the tokens is done asynchronously.
 			Thus, we check that within the next seconds, at least one try to

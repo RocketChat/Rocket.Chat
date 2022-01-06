@@ -96,7 +96,6 @@ export type ServerMethods = {
 	'livechat:saveTrigger': (...args: any[]) => any;
 	'livechat:saveUnit': (...args: any[]) => any;
 	'livechat:webhookTest': (...args: any[]) => any;
-	'logoutOtherClients': (...args: any[]) => any;
 	'Mailer.sendMail': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
