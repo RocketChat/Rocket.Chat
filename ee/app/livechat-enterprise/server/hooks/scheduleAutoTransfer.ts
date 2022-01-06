@@ -1,5 +1,5 @@
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
@@ -20,11 +20,11 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 
 	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1, autoTransferOngoing: 1 });
 	if (!room || room.autoTransferredAt || room.autoTransferOngoing) {
-		cbLogger.debug(`Skipping callback. Room ${ room._id } already being transfered or not found`);
+		cbLogger.debug(`Skipping callback. Room ${room._id} already being transfered or not found`);
 		return inquiry;
 	}
 
-	cbLogger.debug(`Callback success. Room ${ room._id } will be scheduled to be auto transfered after ${ autoTransferTimeout } seconds`);
+	cbLogger.debug(`Callback success. Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
 	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
 
 	return inquiry;
@@ -54,7 +54,6 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 	return message;
 };
 
-
 const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
 	const { _id: rid, autoTransferredAt, autoTransferOngoing } = room;
 
@@ -74,7 +73,7 @@ const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
 	return room;
 };
 
-settings.watch('Livechat_auto_transfer_chat_timeout', function(value) {
+settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
 	autoTransferTimeout = value as number;
 	if (!autoTransferTimeout || autoTransferTimeout === 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');
@@ -83,7 +82,12 @@ settings.watch('Livechat_auto_transfer_chat_timeout', function(value) {
 		return;
 	}
 
-	callbacks.add('livechat.afterTakeInquiry', handleAfterTakeInquiryCallback, callbacks.priority.MEDIUM, 'livechat-auto-transfer-job-inquiry');
+	callbacks.add(
+		'livechat.afterTakeInquiry',
+		handleAfterTakeInquiryCallback,
+		callbacks.priority.MEDIUM,
+		'livechat-auto-transfer-job-inquiry',
+	);
 	callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-job-after-message');
 	callbacks.add('livechat.closeRoom', handleAfterCloseRoom, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-on-close-room');
 });

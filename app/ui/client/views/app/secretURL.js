@@ -14,11 +14,13 @@ Template.secretURL.helpers({
 	},
 	ready() {
 		const instance = Template.instance();
-		return typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get();
+		return (
+			typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get()
+		);
 	},
 });
 
-Template.secretURL.onCreated(function() {
+Template.secretURL.onCreated(function () {
 	this.hashIsValid = new ReactiveVar(false);
 	this.hashReady = new ReactiveVar(false);
 	Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), (err, success) => {

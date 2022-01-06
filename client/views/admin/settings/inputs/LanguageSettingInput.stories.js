@@ -20,13 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' value='en' />
-);
+export const withValue = () => <LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' value='en' />;
 
 export const withResetButton = () => (
 	<LanguageSettingInput

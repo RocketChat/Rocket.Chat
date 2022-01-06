@@ -1,12 +1,13 @@
 import moment from 'moment';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
 import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';
 
-const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
+const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) =>
+	moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
 const parseDays = (acc, day) => {
 	acc[day.day] = {
 		start: { day: day.start.utc.dayOfWeek, time: day.start.utc.time },
@@ -21,7 +22,7 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 	let officeDays;
-	const department = room.departmentId && await LivechatDepartment.findOneById(room.departmentId);
+	const department = room.departmentId && (await LivechatDepartment.findOneById(room.departmentId));
 	if (department && department.businessHourId) {
 		const businessHour = await LivechatBusinessHours.findOneById(department.businessHourId);
 		officeDays = (await businessHourManager.getBusinessHour(businessHour._id, businessHour.type)).workHours.reduce(parseDays, {});
@@ -36,8 +37,8 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 	for (let index = 0; index <= daysOfInactivity; index++) {
 		const today = inactivityDay.clone().format('dddd');
 		const officeDay = officeDays[today];
-		const startTodaysOfficeHour = moment(`${ officeDay.start.day }:${ officeDay.start.time }`, 'dddd:HH:mm').add(index, 'days');
-		const endTodaysOfficeHour = moment(`${ officeDay.finish.day }:${ officeDay.finish.time }`, 'dddd:HH:mm').add(index, 'days');
+		const startTodaysOfficeHour = moment(`${officeDay.start.day}:${officeDay.start.time}`, 'dddd:HH:mm').add(index, 'days');
+		const endTodaysOfficeHour = moment(`${officeDay.finish.day}:${officeDay.finish.time}`, 'dddd:HH:mm').add(index, 'days');
 		if (officeDays[today].open) {
 			const firstDayOfInactivity = startOfInactivity.clone().format('D') === inactivityDay.clone().format('D');
 			const lastDayOfInactivity = endOfConversation.clone().format('D') === inactivityDay.clone().format('D');
@@ -55,16 +56,21 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 	return totalSeconds;
 };
 
-callbacks.add('livechat.closeRoom', async (room) => {
-	const closedByAgent = room.closer !== 'visitor';
-	const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
-	if (!closedByAgent || !wasTheLastMessageSentByAgent) {
-		return;
-	}
-	const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
-	if (!agentLastMessage) {
-		return;
-	}
-	const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
-	LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
-}, callbacks.priority.HIGH, 'process-room-abandonment');
+callbacks.add(
+	'livechat.closeRoom',
+	async (room) => {
+		const closedByAgent = room.closer !== 'visitor';
+		const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
+		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
+			return;
+		}
+		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
+		if (!agentLastMessage) {
+			return;
+		}
+		const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+		LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
+	},
+	callbacks.priority.HIGH,
+	'process-room-abandonment',
+);

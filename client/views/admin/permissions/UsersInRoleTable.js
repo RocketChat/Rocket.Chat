@@ -31,12 +31,7 @@ function UsersInRoleTable({ data, reload, roleName, description, total, params, 
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={remove}
-				onCancel={closeModal}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={remove} onCancel={closeModal} confirmText={t('Delete')}>
 				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName)}
 			</GenericModal>,
 		);

@@ -1,6 +1,6 @@
 export class Utilities {
 	static getI18nKeyForApp(key, appId) {
-		return key && `apps-${ appId }-${ key }`;
+		return key && `apps-${appId}-${key}`;
 	}
 
 	static curl({ method, params, auth, headers = {}, url, query, content }, opts = {}) {
@@ -25,13 +25,15 @@ export class Utilities {
 
 		if (typeof params === 'object') {
 			Object.entries(params).forEach(([key, value]) => {
-				u = u.replace(`:${ key }`, value);
+				u = u.replace(`:${key}`, value);
 			});
 		}
 
 		if (typeof query === 'object') {
-			const queryString = Object.entries(query).map(([key, value]) => `${ key }=${ value }`).join('&');
-			u += `?${ queryString }`;
+			const queryString = Object.entries(query)
+				.map(([key, value]) => `${key}=${value}`)
+				.join('&');
+			u += `?${queryString}`;
 		}
 		cmd.push(u);
 
@@ -49,7 +51,7 @@ export class Utilities {
 			headerKeys.push(key);
 			cmd.push(newLine);
 			cmd.push('-H');
-			cmd.push(`"${ key }${ val ? ': ' : ';' }${ val || '' }"`);
+			cmd.push(`"${key}${val ? ': ' : ';'}${val || ''}"`);
 		});
 
 		if (content) {
@@ -64,7 +66,7 @@ export class Utilities {
 
 			cmd.push(newLine);
 			cmd.push('--data-binary');
-			cmd.push(`'${ content }'`);
+			cmd.push(`'${content}'`);
 		}
 
 		return cmd.join(' ');

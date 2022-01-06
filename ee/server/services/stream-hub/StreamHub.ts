@@ -31,7 +31,9 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
 		const Settings = new SettingsRaw(db.collection('rocketchat_settings'), Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
-		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, { preventSetUpdatedAt: true });
+		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, {
+			preventSetUpdatedAt: true,
+		});
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), { Users }, Trash);
 		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
 		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);

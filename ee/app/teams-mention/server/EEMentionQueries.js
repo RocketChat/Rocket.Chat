@@ -9,9 +9,11 @@ export const MentionQueriesEnterprise = {
 			return sup(usernames);
 		}
 
-		return teams.map((team) => ({
-			...team,
-			type: 'team',
-		})).concat(sup(usernames));
+		return teams
+			.map((team) => ({
+				...team,
+				type: 'team',
+			}))
+			.concat(sup(usernames));
 	},
 };

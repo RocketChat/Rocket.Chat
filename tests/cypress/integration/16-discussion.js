@@ -19,13 +19,13 @@ describe('[Discussion]', function () {
 		sideNav.createChannel(parentChannelName, true, false);
 	});
 
-	describe('via creation screen', function() {
+	describe('via creation screen', function () {
 		it('Create a discussion', function () {
 			discussion.createDiscussion(parentChannelName, discussionName, message);
 		});
 	});
 
-	describe('from context menu', function() {
+	describe('from context menu', function () {
 		before(() => {
 			mainContent.sendMessage(message);
 		});

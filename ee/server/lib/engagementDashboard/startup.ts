@@ -1,6 +1,6 @@
 import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Permissions } from '../../../../app/models/server/raw';
 
 export const attachCallbacks = (): void => {
@@ -17,10 +17,7 @@ export const detachCallbacks = (): void => {
 
 export const prepareAnalytics = async (): Promise<void> => {
 	const now = new Date();
-	await Promise.all([
-		fillFirstDaysOfUsersIfNeeded(now),
-		fillFirstDaysOfMessagesIfNeeded(now),
-	]);
+	await Promise.all([fillFirstDaysOfUsersIfNeeded(now), fillFirstDaysOfMessagesIfNeeded(now)]);
 };
 
 export const prepareAuthorization = async (): Promise<void> => {

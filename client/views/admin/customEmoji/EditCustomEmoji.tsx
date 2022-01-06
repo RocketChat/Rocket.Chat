@@ -1,13 +1,4 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Margins,
-	TextInput,
-	Field,
-	Icon,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -65,11 +56,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload(
-		'emoji-custom.update',
-		{},
-		t('Custom_Emoji_Updated_Successfully'),
-	);
+	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -121,13 +108,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		};
 
 		setModal(() => (
-			<GenericModal
-				variant='danger'
-				onConfirm={handleDelete}
-				onCancel={handleCancel}
-				onClose={handleCancel}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Emoji_Delete_Warning')}
 			</GenericModal>
 		));
@@ -162,26 +143,17 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 					<Field.Row>
 						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 					</Field.Row>
-					{errors.name && (
-						<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
-					)}
+					{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 				</Field>
 				<Field>
 					<Field.Label>{t('Aliases')}</Field.Label>
 					<Field.Row>
 						<TextInput value={aliases} onChange={handleChangeAliases} placeholder={t('Aliases')} />
 					</Field.Row>
-					{errors.aliases && (
-						<Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>
-					)}
+					{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
 				</Field>
 				<Field>
-					<Field.Label
-						alignSelf='stretch'
-						display='flex'
-						justifyContent='space-between'
-						alignItems='center'
-					>
+					<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 						{t('Custom_Emoji')}
 						<Button square onClick={clickUpload}>
 							<Icon name='upload' size='x20' />
@@ -190,13 +162,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
 							<Margins inline='x4'>
-								<Box
-									is='img'
-									style={{ objectFit: 'contain' }}
-									w='x120'
-									h='x120'
-									src={newEmojiPreview}
-								/>
+								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
 							</Margins>
 						</Box>
 					)}

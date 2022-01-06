@@ -4,11 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
-import {
-	useQueryStringParameter,
-	useRoute,
-	useRouteParameter,
-} from '../../../contexts/RouterContext';
+import { useQueryStringParameter, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -114,11 +110,7 @@ function CloudPage() {
 		<Page>
 			<Page.Header title={t('Connectivity_Services')}>
 				<ButtonGroup>
-					{!isWorkspaceRegistered && (
-						<Button onClick={handleManualWorkspaceRegistrationButtonClick}>
-							{t('Cloud_Register_manually')}
-						</Button>
-					)}
+					{!isWorkspaceRegistered && <Button onClick={handleManualWorkspaceRegistrationButtonClick}>{t('Cloud_Register_manually')}</Button>}
 					<Button is='a' primary href={cloudConsoleUrl} target='_blank' rel='noopener noreferrer'>
 						{t('Cloud_console')}
 					</Button>
@@ -148,9 +140,7 @@ function CloudPage() {
 							</>
 						)}
 
-						{!isConnectToCloudDesired && (
-							<ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />
-						)}
+						{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />}
 					</Margins>
 				</Box>
 			</Page.ScrollableContentWithShadow>
