@@ -4,7 +4,7 @@ import QueryString from 'querystring';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 class Providers {

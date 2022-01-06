@@ -169,13 +169,11 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	const eventResult = Promise.await(
-		Apps.triggerEvent('IPreEmailSent', {
-			email: { to, from, replyTo, subject, html, text, headers },
-		}),
-	);
+	const email = { to, from, replyTo, subject, html, text, headers };
 
-	Meteor.defer(() => Email.send(eventResult.email || eventResult));
+	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', { email }));
+
+	Meteor.defer(() => Email.send(eventResult || email));
 };
 
 export const send = ({

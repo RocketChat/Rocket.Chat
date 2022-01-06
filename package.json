@@ -63,7 +63,7 @@
 		"@babel/preset-react": "^7.14.5",
 		"@babel/register": "^7.14.5",
 		"@rocket.chat/eslint-config": "^0.4.0",
-		"@rocket.chat/livechat": "^1.11.0",
+		"@rocket.chat/livechat": "^1.11.1",
 		"@settlin/spacebars-loader": "^1.0.9",
 		"@storybook/addon-essentials": "^6.3.12",
 		"@storybook/addon-postcss": "^2.0.0",
@@ -174,11 +174,11 @@
 		"@nivo/heatmap": "0.73.0",
 		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
-		"@rocket.chat/apps-engine": "^1.29.0",
+		"@rocket.chat/apps-engine": "^1.29.1",
 		"@rocket.chat/css-in-js": "^0.31.0",
 		"@rocket.chat/emitter": "^0.31.0",
 		"@rocket.chat/fuselage": "^0.31.0",
-		"@rocket.chat/fuselage-hooks": "^0.31.0",
+		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.385",
 		"@rocket.chat/fuselage-polyfills": "^0.31.0",
 		"@rocket.chat/fuselage-tokens": "^0.31.0",
 		"@rocket.chat/fuselage-ui-kit": "^0.31.0",
@@ -308,6 +308,7 @@
 		"ua-parser-js": "^0.7.28",
 		"underscore": "^1.13.1",
 		"underscore.string": "^3.3.5",
+		"universal-perf-hooks": "^1.0.1",
 		"url-polyfill": "^1.1.12",
 		"use-subscription": "^1.5.1",
 		"uuid": "^3.4.0",
@@ -336,7 +337,8 @@
 		]
 	},
 	"browserslist": [
-		"last 2 versions"
+		"last 2 versions",
+		"Firefox ESR"
 	],
 	"volta": {
 		"node": "12.22.8",
