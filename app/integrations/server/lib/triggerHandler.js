@@ -850,7 +850,7 @@ export class RocketChatIntegrationHandler {
 							if (res.status === 410) {
 								this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
 								outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
-								Promise.await(Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } }));
+								await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
 								return;
 							}
 
