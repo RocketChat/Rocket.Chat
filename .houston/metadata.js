@@ -26,8 +26,8 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 		const requestResult = await request(`https://raw.githubusercontent.com/meteor/meteor/release/${ meteorVersion }/scripts/build-dev-bundle-common.sh`);
 
 		return {
-			node_version: requestResult.match(/NODE_VERSION=((?:\d+\.){2}\d)/m)[1],
-			npm_version: requestResult.match(/NPM_VERSION=((?:\d+\.){2}\d)/m)[1],
+			node_version: requestResult.match(/NODE_VERSION=((?:\d+\.){2}\d+)/m)[1],
+			npm_version: requestResult.match(/NPM_VERSION=((?:\d+\.){2}\d+)/m)[1],
 		};
 	} catch (e) {
 		console.error(e);

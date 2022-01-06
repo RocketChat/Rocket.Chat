@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { LivechatRooms } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
