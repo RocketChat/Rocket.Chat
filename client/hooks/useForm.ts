@@ -175,12 +175,13 @@ export const useForm = <
 							initialValue,
 							value: newValue,
 							key: name,
+							values: state.values,
 						});
 					},
 				}),
 				{},
 			),
-		[onChange, state.fields],
+		[onChange, state.fields, state.values],
 	);
 
 	return {
