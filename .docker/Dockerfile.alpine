@@ -1,6 +1,6 @@
-FROM node:12.16-alpine3.9
+FROM node:12.22.8-alpine3.14
 
-RUN apk add --no-cache python make g++ libc6-compat ttf-dejavu
+RUN apk add --no-cache python3 make g++ libc6-compat ttf-dejavu
 
 ADD . /app
 
@@ -11,7 +11,7 @@ RUN set -x \
  && npm install \
  # Start hack for sharp...
  && rm -rf npm/node_modules/sharp \
- && npm install sharp@0.22.1 \
+ && npm install sharp@0.29.3 \
  && mv node_modules/sharp npm/node_modules/sharp \
  # End hack for sharp
  && cd npm \
