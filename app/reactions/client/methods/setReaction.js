@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Messages, Rooms, Subscriptions } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji';
 import { roomTypes } from '../../../utils/client';
 

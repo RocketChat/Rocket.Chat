@@ -3,12 +3,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
-import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import { IUser } from '../../../definition/IUser';
 import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
 import { ValueOf } from '../../../definition/utils';
+import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
