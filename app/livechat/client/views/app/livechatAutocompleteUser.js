@@ -6,8 +6,8 @@ import { AutoComplete } from '../../../../meteor-autocomplete/client';
 import './livechatAutocompleteUser.html';
 
 Template.livechatAutocompleteUser.helpers({
-	list() {
-		return this.list;
+	value() {
+		return this.list.length > 0 && this.list[0] ? this.list[0].username : '';
 	},
 	items() {
 		return Template.instance().ac.filteredList();
@@ -42,6 +42,7 @@ Template.livechatAutocompleteUser.events({
 		const { length } = input.value;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.filter.set(input.value);
+		Template.currentData().onSelect(undefined);
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);

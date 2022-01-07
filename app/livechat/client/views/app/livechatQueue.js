@@ -95,8 +95,8 @@ Template.livechatQueue.onCreated(async function () {
 	this.offset = new ReactiveVar(0);
 	this.total = new ReactiveVar(0);
 
-	this.onSelectAgents = ({ item: agent }) => {
-		this.selectedAgents.set([agent]);
+	this.onSelectAgents = ({ item: agent } = {}) => {
+		this.selectedAgents.set(agent ? [agent] : []);
 	};
 
 	this.onClickTagAgent = ({ username }) => {
