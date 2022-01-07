@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
