@@ -1,6 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { getMessageForUser } from '../../../../server/lib/messages/getMessageForUser';
+
+function getMessage(messageId) {
+	try {
+		return Promise.await(getMessageForUser(messageId, Meteor.userId()));
+	} catch (e) {
+		throw new Meteor.Error(e.message, 'Invalid message', {
+			function: 'actionLinks.getMessage',
+		});
+	}
+}
 
 // Action Links namespace creation.
 export const actionLinks = {
@@ -9,14 +19,8 @@ export const actionLinks = {
 		actionLinks.actions[name] = funct;
 	},
 	getMessage(name, messageId) {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				function: 'actionLinks.getMessage',
-			});
-		}
+		const message = getMessage(messageId);
 
-		const message = Messages.findOne({ _id: messageId });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				function: 'actionLinks.getMessage',
