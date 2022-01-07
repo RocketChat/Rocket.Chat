@@ -50,6 +50,5 @@ actionLinks.register('joinJitsiCall', function (message, params, instance) {
 		}
 
 		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call Already Ended', '') });
-		console.log(result.jitsiTimeout);
 	});
 });
