@@ -5,8 +5,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../../api/server';
 import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
-import { Voip } from '../../lib/Voip';
-import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { LivechatVoip } from '../../../../../server/sdk';
+import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('voip/room', {
 	async get() {
@@ -30,7 +30,11 @@ API.v1.addRoute('voip/room', {
 				return API.v1.success({ room, newRoom: false });
 			}
 			let agent;
-			const agentObj = agentId && Voip.findAgent(agentId);
+
+			let agentObj = null;
+			if (agentId) {
+				agentObj = await LivechatVoip.findAgent(agentId);
+			}
 			if (agentObj) {
 				const { username } = agentObj;
 				agent = { agentId, username };
@@ -41,8 +45,8 @@ API.v1.addRoute('voip/room', {
 					type: OmnichannelSourceType.API,
 				},
 			};
-			room = await Voip.getNewRoom(guest, agent, rid, roomInfo);
-			return API.v1.success(room);
+			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo);
+			return API.v1.success({ room: room.result });
 		}
 		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
 		if (!room) {
@@ -64,18 +68,18 @@ API.v1.addRoute('voip/room.close', {
 			if (!visitor) {
 				throw new Meteor.Error('invalid-token');
 			}
-			const room = await Voip.findRoom(token, rid);
-			if (!room) {
+			const roomResult = await LivechatVoip.findRoom(token, rid);
+			if (!roomResult.result) {
 				throw new Meteor.Error('invalid-room');
 			}
-
+			const room: IVoipRoom = roomResult.result as IVoipRoom;
 			if (!room.open) {
 				throw new Meteor.Error('room-closed');
 			}
 			const language = 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-
-			if (!await Voip.closeRoom(visitor, room, /* comment*/ {})) {
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
+			if (!closeResult.result) {
 				return API.v1.failure();
 			}
 			return API.v1.success({ rid, comment });

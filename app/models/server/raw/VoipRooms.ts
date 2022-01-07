@@ -1,26 +1,34 @@
-import { Cursor, FilterQuery } from 'mongodb';
+import { Cursor, FilterQuery, WithoutProjection, FindOneOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
+import { IVoipRoom } from '../../../../definition/IRoom';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
-type T = IOmnichannelRoom;
+type T = IVoipRoom;
 export class VoipRoomsRaw extends BaseRaw<T> {
-	findOneOpenByVisitorToken(visitorToken: string, options: any): Promise<T|null> {
+	logger = new Logger('VoipRoomsRaw');
+
+	findOneOpenByVisitorToken(visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
 		const query: FilterQuery <T> = {
 			t: 'v',
 			open: true,
 			'v.token': visitorToken,
 		};
-
+		if (options === undefined) {
+			return this.findOne(query);
+		}
 		return this.findOne(query, options);
 	}
 
-	findOpenByVisitorToken(visitorToken: string, options: any): Cursor<T> {
+	findOpenByVisitorToken(visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const query: FilterQuery <T> = {
 			t: 'v',
 			open: true,
 			'v.token': visitorToken,
 		};
+		if (options === undefined) {
+			return this.find(query);
+		}
 		return this.find(query, options);
 	}
 
@@ -31,14 +39,18 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 	 * We have findOneByIdOrName. Do we still need findOneVoipRoomById?
 	 *
 	*/
-	findOneVoipRoomById(id: string, options = {}): Promise<T|null> {
-		return this.findOne({
+	async findOneVoipRoomById(id: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
+		const query: FilterQuery <T> = {
 			t: 'v',
 			_id: id,
-		}, options);
+		};
+		if (options === undefined) {
+			return this.findOne(query);
+		}
+		return this.findOne(query, options);
 	}
 
-	findOneByIdOrName(_idOrName: string, options: any): Promise<T|null> {
+	findOneByIdOrName(_idOrName: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
 		const query: FilterQuery <T> = {
 			t: 'v',
 			$or: [{
@@ -47,18 +59,22 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 				name: _idOrName,
 			}],
 		};
-
+		if (options === undefined) {
+			return this.findOne(query);
+		}
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: any): Promise<T|null> {
+	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
 		const query: FilterQuery <T> = {
 			t: 'v',
 			_id: roomId,
 			open: true,
 			'v.token': visitorToken,
 		};
-
+		if (options === undefined) {
+			return this.findOne(query);
+		}
 		return this.findOne(query, options);
 	}
 

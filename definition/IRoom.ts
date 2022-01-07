@@ -107,7 +107,8 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
 	v: {
 		_id?: string;
@@ -156,6 +157,13 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
+}
+export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
+	t: 'l';
+}
+
+export interface IVoipRoom extends IOmnichannelGenericRoom {
+	t: 'v';
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
