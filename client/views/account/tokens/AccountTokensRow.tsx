@@ -38,10 +38,10 @@ const AccountTokensRow: FC<AccountTokensRowProps> = ({
 			<Table.Cell withTruncatedText>{bypassTwoFactor ? t('Ignore') : t('Require')}</Table.Cell>
 			<Table.Cell withTruncatedText>
 				<ButtonGroup>
-					<Button onClick={handleRegenerate} small>
+					<Button onClick={handleRegenerate} title={t('API_Personal_Access_Tokens_Regenerate_It')} small>
 						<Icon name='refresh' size='x16' />
 					</Button>
-					<Button onClick={handleRemove} small>
+					<Button onClick={handleRemove} title={t('Delete')} small>
 						<Icon name='trash' size='x16' />
 					</Button>
 				</ButtonGroup>
