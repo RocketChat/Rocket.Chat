@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect } from 'react';
 import { useMutation } from 'react-query';
 
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
