@@ -4,11 +4,14 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
+import GenericModal from '../../../../../components/GenericModal';
 import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -20,19 +23,42 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
 
-const ContactInfo = ({ id, rid, route }) => {
+const ContactInfo = ({ id, rid, route, reload }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const deleteContact = useEndpoint('DELETE', `omnichannel/contact?contactId=${id}`);
 
 	const [customFields, setCustomFields] = useState([]);
 
 	const formatDate = useFormatDate();
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
+	const closeModal = useMutableCallback(() => setModal());
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+
+	const handleDelete = () => {
+		const onConfirm = async () => {
+			const r = await deleteContact();
+			if (r.success) {
+				dispatchToastMessage({ type: 'success', message: t('Contact_Delete') });
+				routePath.push({});
+				reload();
+			} else {
+				dispatchToastMessage({ type: 'error', message: t('Error') });
+			}
+			closeModal();
+		};
+
+		setModal(
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={closeModal} confirmText={t('Yes_delete_it')}>
+				{t('Delete_Contact_Warning')}
+			</GenericModal>,
+		);
+	};
 
 	const onEditButtonClick = useMutableCallback(() => {
 		if (!hasPermission('edit-omnichannel-contact')) {
@@ -165,6 +191,9 @@ const ContactInfo = ({ id, rid, route }) => {
 					)}
 					<Button onClick={onEditButtonClick}>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
+					</Button>
+					<Button onClick={handleDelete} primary danger>
+						<Icon name='trash' size='x20' /> {t('Delete')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>

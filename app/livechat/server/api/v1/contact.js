@@ -37,6 +37,19 @@ API.v1.addRoute(
 
 			return API.v1.success({ contact });
 		},
+		delete() {
+			check(this.queryParams, {
+				contactId: String,
+			});
+
+			try {
+				Promise.await(LivechatVisitors.removeById(this.queryParams.contactId));
+
+				return API.v1.success({ success: true });
+			} catch (err) {
+				return API.v1.failure(err);
+			}
+		},
 	},
 );
 
