@@ -8,7 +8,7 @@ import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { roomTypes } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -146,7 +146,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
 	}
 
-	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
+	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room);
 
 	if (reply) {
 		sendMessage(user, { msg: reply }, discussion);

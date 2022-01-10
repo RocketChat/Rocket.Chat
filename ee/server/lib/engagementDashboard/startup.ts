@@ -1,6 +1,6 @@
 import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Permissions } from '../../../../app/models/server/raw';
 
 export const attachCallbacks = (): void => {
