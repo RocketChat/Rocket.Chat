@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
-// import { asyncLocalStorage } from '..';
+import { asyncLocalStorage } from '..';
 import { EventSignatures } from './Events';
 import { StreamerCentral } from '../../modules/streamer/streamer.module';
 
@@ -12,16 +12,15 @@ export class LocalBroker implements IBroker {
 	private events = new EventEmitter();
 
 	async call(method: string, data: any): Promise<any> {
-		// const result = await asyncLocalStorage.run(
-		// 	{
-		// 		id: 'ctx.id',
-		// 		nodeID: 'ctx.nodeID',
-		// 		requestID: 'ctx.requestID',
-		// 		broker: this,
-		// 	},
-		// 	(): any => this.methods.get(method)?.(...data),
-		// );
-		const result = await this.methods.get(method)?.(...data);
+		const result = await asyncLocalStorage.run(
+			{
+				id: 'ctx.id',
+				nodeID: 'ctx.nodeID',
+				requestID: 'ctx.requestID',
+				broker: this,
+			},
+			(): any => this.methods.get(method)?.(...data),
+		);
 
 		return result;
 	}
