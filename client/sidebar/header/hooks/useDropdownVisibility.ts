@@ -1,7 +1,5 @@
-import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { RefObject, useCallback } from 'react';
-
-import { useOutsideClick } from '../../../hooks/useOutsideClick';
+import { useToggle, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { RefObject } from 'react';
 
 /**
  * useDropdownVisibility
@@ -27,17 +25,7 @@ export const useDropdownVisibility = <T extends HTMLElement>({
 } => {
 	const [isVisible, toggle] = useToggle(false);
 
-	useOutsideClick(
-		target,
-		useCallback(
-			(event: MouseEvent) => {
-				if (!reference || !reference.current || !reference.current.contains(event.target as Node)) {
-					toggle(false);
-				}
-			},
-			[reference, toggle],
-		),
-	);
+	useOutsideClick([target, reference], toggle);
 
 	return {
 		isVisible,
