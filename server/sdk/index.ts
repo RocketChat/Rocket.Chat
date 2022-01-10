@@ -1,8 +1,6 @@
-import { AsyncLocalStorage } from 'async_hooks';
-
+import { IServiceContext } from './types/ServiceClass';
 import { proxify, proxifyWithWait } from './lib/proxify';
 import { IAuthorization } from './types/IAuthorization';
-import { IServiceContext } from './types/ServiceClass';
 import { IPresence } from './types/IPresence';
 import { IAccount } from './types/IAccount';
 import { ILicense } from './types/ILicense';
@@ -16,6 +14,7 @@ import { IRoomService } from './types/IRoomService';
 import { IMediaService } from './types/IMediaService';
 import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
+import { ContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -36,4 +35,4 @@ export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
-export const asyncLocalStorage = new AsyncLocalStorage<IServiceContext>();
+export const asyncLocalStorage = new ContextStore<IServiceContext>();
