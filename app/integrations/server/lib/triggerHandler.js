@@ -166,8 +166,14 @@ export class RocketChatIntegrationHandler {
 			Promise.await(IntegrationHistory.updateOne({ _id: historyId }, { $set: history }));
 			return historyId;
 		}
+
 		history._createdAt = new Date();
-		return Promise.await(IntegrationHistory.insertOne({ _id: Random.id(), ...history }));
+
+		const _id = Random.id();
+
+		Promise.await(IntegrationHistory.insertOne({ _id, ...history }));
+
+		return _id;
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
