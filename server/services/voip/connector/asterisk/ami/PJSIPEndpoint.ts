@@ -28,6 +28,8 @@
  * 7. Important to note that the intermediate events containing a result part for an execution of a particular command
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
+import { _ } from 'meteor/underscore';
+
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
@@ -45,11 +47,29 @@ export class PJSIPEndpoint extends Command {
 	}
 
 	private getState(endpointState: string): EndpointState {
+		/**
+		 * When registered endpoint can be in following state
+		 * Not in use : When endpoint has registered but not serving any call.
+		 * Ringing : Registered and ringing
+		 * Busy : endpoing is handling call.
+		 *
+		 * If any other state is seen, this function returns EndpointState.UNKNOWN;
+		 */
+
 		let state: EndpointState = EndpointState.UNKNOWN;
-		if (endpointState.toLowerCase() === 'unavailable') {
-			state = EndpointState.UNREGISTERED;
-		} else if (endpointState.toLowerCase() === 'available') {
-			state = EndpointState.REGISTERED;
+		switch (endpointState.toLowerCase()) {
+			case 'unavailable':
+				state = EndpointState.UNREGISTERED;
+				break;
+			case 'not in use':
+				state = EndpointState.REGISTERED;
+				break;
+			case 'ringing':
+				state = EndpointState.RINGING;
+				break;
+			case 'busy':
+				state = EndpointState.BUSY;
+				break;
 		}
 		return state;
 	}
@@ -100,9 +120,12 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
-		const { result } = this;
-		this.logger.debug({ msg: `onEndpointListComplete() Complete. Data = ${JSON.stringify(result)}` });
-		this.returnResolve({ result: result.endpoints } as IVoipConnectorResult);
+		// const { result } = this;
+		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
+			return o.extension;
+		});
+		this.logger.debug({ msg: `onEndpointListComplete() Complete. Data = ${JSON.stringify(extensions)}` });
+		this.returnResolve({ result: extensions } as IVoipConnectorResult);
 	}
 
 	/**
