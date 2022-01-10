@@ -787,7 +787,18 @@ export class RocketChatIntegrationHandler {
 					outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${res.status}`);
 				}
 
-				const data = await res.json();
+				const data = (() => {
+					const contentType = (res.headers.get('content-type') || '').split(';')[0];
+					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						return null;
+					}
+
+					try {
+						return JSON.parse(content);
+					} catch (_error) {
+						return null;
+					}
+				})();
 
 				this.updateHistory({
 					historyId,
@@ -804,7 +815,7 @@ export class RocketChatIntegrationHandler {
 							status_code: res.status, // These values will be undefined to close issues #4175, #5762, and #5896
 							content,
 							content_raw: content,
-							headers: res.headers.raw(), // TODO convert to object
+							headers: Object.fromEntries(res.headers),
 						},
 					};
 
@@ -919,6 +930,7 @@ export class RocketChatIntegrationHandler {
 				}
 			})
 			.catch((error) => {
+				outgoingLogger.error(error);
 				this.updateHistory({
 					historyId,
 					step: 'after-http-call',
