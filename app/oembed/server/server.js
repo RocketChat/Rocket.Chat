@@ -134,7 +134,7 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	const buffer = Buffer.concat(chunks);
 	return {
-		headers: response.headers.raw(),
+		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type'), buffer),
 		parsedUrl,
 		statusCode: response.status,
@@ -197,7 +197,7 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
-			headers[camelCase(header)] = headerObj[header].join(';');
+			headers[camelCase(header)] = headerObj[header];
 		});
 	}
 	if (content && content.statusCode !== 200) {
