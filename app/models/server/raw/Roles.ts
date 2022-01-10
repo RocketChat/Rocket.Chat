@@ -221,7 +221,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 				return this.models.Subscriptions.findUsersInRoles([name], scope, options);
 			case 'Users':
 			default:
-				return this.models.Users.findUsersInRoles([role._id], options);
+				return this.models.Users.findUsersInRoles([name], options);
 		}
 	}
 
