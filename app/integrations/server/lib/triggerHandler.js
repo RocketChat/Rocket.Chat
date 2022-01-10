@@ -1,5 +1,3 @@
-import http from 'http';
-import https from 'https';
 import vm from 'vm';
 
 import { Meteor } from 'meteor/meteor';
@@ -18,6 +16,7 @@ import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
+import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
@@ -762,19 +761,6 @@ export class RocketChatIntegrationHandler {
 			httpCallData: opts.data,
 		});
 
-		const getUnsafeAgent = (protocol) => {
-			const options = {
-				rejectUnauthorized: false,
-			};
-			if (protocol === 'http') {
-				return new http.Agent(options);
-			}
-			if (protocol === 'https') {
-				return new https.Agent(options);
-			}
-			return null;
-		};
-
 		if (opts.data) {
 			opts.headers['Content-Type'] = 'application/json';
 		}
@@ -783,7 +769,7 @@ export class RocketChatIntegrationHandler {
 			method: opts.method,
 			headers: opts.headers,
 			...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
-				agent: getUnsafeAgent(opts.url.startsWith('https') ? 'https' : 'http'),
+				agent: getUnsafeAgent(opts.url.startsWith('https:') ? 'https:' : 'http:'),
 			}),
 			...(opts.data && { body: JSON.stringify(opts.data) }),
 		})

@@ -1,24 +1,10 @@
-import http from 'http';
-import https from 'https';
-
 import { fetch } from 'meteor/fetch';
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppServerOrchestrator } from '../orchestrator';
-
-const getUnsafeAgent = (protocol: string): http.Agent | https.Agent | null => {
-	if (protocol === 'http:') {
-		return new http.Agent();
-	}
-	if (protocol === 'https:') {
-		return new https.Agent({
-			rejectUnauthorized: false,
-		});
-	}
-	return null;
-};
+import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
 export class AppHttpBridge extends HttpBridge {
 	// eslint-disable-next-line no-empty-function
@@ -84,7 +70,7 @@ export class AppHttpBridge extends HttpBridge {
 				headers,
 				...(((request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized)) && {
-					agent: getUnsafeAgent(url.protocol),
+					agent: getUnsafeAgent(url.protocol === 'https:' ? 'https:' : 'http:'),
 				}),
 			});
 

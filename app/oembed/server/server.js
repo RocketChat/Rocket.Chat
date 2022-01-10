@@ -1,5 +1,3 @@
-import http from 'http';
-import https from 'https';
 import URL from 'url';
 import querystring from 'querystring';
 
@@ -14,10 +12,11 @@ import jschardet from 'jschardet';
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
+import { getUnsafeAgent } from '../../../server/lib/getUnsafeAgent';
 
 const OEmbed = {};
 
@@ -61,19 +60,6 @@ const getCharset = function (contentType, body) {
 
 const toUtf8 = function (contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
-};
-
-const getUnsafeAgent = (protocol) => {
-	const options = {
-		rejectUnauthorized: false,
-	};
-	if (protocol === 'http:') {
-		return new http.Agent(options);
-	}
-	if (protocol === 'https:') {
-		return new https.Agent(options);
-	}
-	return null;
 };
 
 const getUrlContent = async function (urlObj, redirectCount = 5) {
