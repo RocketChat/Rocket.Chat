@@ -546,11 +546,11 @@ API.v1.addRoute(
 			if (type === 'email') {
 				const { toUsers, toEmails, subject, messages } = this.bodyParams;
 
-				if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
+				if (!toUsers || !toUsers.length || !toEmails || !toEmails.length || !subject) {
 					throw new Meteor.Error('error-invalid-recipient');
 				}
 
-				if (messages.length === 0) {
+				if (!messages || !messages.length) {
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
