@@ -37,8 +37,8 @@ export const CallProvider: FC = ({ children }) => {
 			actions: {
 				mute: (): void => undefined, // voipClient.mute(),
 				unmute: (): void => undefined, // voipClient.unmute()
-				pause: (): void => undefined, // voipClient.pause()
-				resume: (): void => undefined, // voipClient.resume()
+				pause: (): Promise<unknown> => voipClient.holdCall(true), // voipClient.pause()
+				resume: (): Promise<unknown> => voipClient.holdCall(false), // voipClient.resume()
 				end: (): Promise<unknown> => voipClient.endCall(),
 				pickUp: async (): Promise<unknown> =>
 					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),

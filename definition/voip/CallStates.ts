@@ -11,6 +11,7 @@ export type CallStates =
 	| 'IDLE'
 	| 'ANSWER_SENT'
 	| 'IN_CALL'
+	| 'ON_HOLD'
 	| 'UNREGISTERED'
 	| 'SERVER_DISCONNECTED'
 	| 'ERROR';

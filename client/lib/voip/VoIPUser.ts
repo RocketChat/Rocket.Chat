@@ -17,9 +17,11 @@ import {
 	Session,
 	SessionState,
 	Registerer,
+	SessionInviteOptions,
+	RequestPendingError,
 } from 'sip.js';
 import { OutgoingRequestDelegate } from 'sip.js/lib/core';
-import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
+import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { CallStates } from '../../../definition/voip/CallStates';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
@@ -28,6 +30,7 @@ import { UserState } from '../../../definition/voip/UserState';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
 import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
 import { VoipEvents } from '../../../definition/voip/VoipEvents';
+import { toggleMediaStreamTracks } from './Helper';
 import Stream from './Stream';
 
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
@@ -54,12 +57,14 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 	private _userState: UserState = UserState.IDLE;
 
+	private _held = false;
+
 	get callState(): CallStates {
 		return this._callState;
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED') {
+		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED' || this.callState === 'ON_HOLD') {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}
@@ -102,7 +107,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
-
 		this.on('connected', () => {
 			this.state.isReady = true;
 		});
@@ -247,6 +251,80 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	/**
+	 * Handles call hold-unhold
+	 */
+	private async handleHoldUnhold(holdState: boolean): Promise<void> {
+		const { session } = this;
+		if (this._held === holdState) {
+			return Promise.resolve();
+		}
+		if (!session) {
+			throw new Error('Session not found');
+		}
+
+		const sessionDescriptionHandler = this.session?.sessionDescriptionHandler;
+		if (!(sessionDescriptionHandler instanceof SessionDescriptionHandler)) {
+			throw new Error("Session's session description handler not instance of SessionDescriptionHandler.");
+		}
+
+		const options: SessionInviteOptions = {
+			requestDelegate: {
+				onAccept: (): void => {
+					this._held = holdState;
+					this._callState = holdState ? 'ON_HOLD' : 'IN_CALL';
+					toggleMediaStreamTracks(!this._held, session, 'receiver');
+					toggleMediaStreamTracks(!this._held, session, 'sender');
+					this._callState === 'ON_HOLD' ? this.emit('hold') : this.emit('unhold');
+					this.emit('stateChanged');
+				},
+				onReject: (): void => {
+					toggleMediaStreamTracks(!this._held, session, 'receiver');
+					toggleMediaStreamTracks(!this._held, session, 'sender');
+					this.emit('holderror');
+				},
+			},
+		};
+
+		// Session properties used to pass options to the SessionDescriptionHandler:
+		//
+		// 1) Session.sessionDescriptionHandlerOptions
+		//    SDH options for the initial INVITE transaction.
+		//    - Used in all cases when handling the initial INVITE transaction as either UAC or UAS.
+		//    - May be set directly at anytime.
+		//    - May optionally be set via constructor option.
+		//    - May optionally be set via options passed to Inviter.invite() or Invitation.accept().
+		//
+		// 2) Session.sessionDescriptionHandlerOptionsReInvite
+		//    SDH options for re-INVITE transactions.
+		//    - Used in all cases when handling a re-INVITE transaction as either UAC or UAS.
+		//    - May be set directly at anytime.
+		//    - May optionally be set via constructor option.
+		//    - May optionally be set via options passed to Session.invite().
+
+		const sessionDescriptionHandlerOptions = session.sessionDescriptionHandlerOptionsReInvite as SessionDescriptionHandlerOptions;
+		sessionDescriptionHandlerOptions.hold = holdState;
+		session.sessionDescriptionHandlerOptionsReInvite = sessionDescriptionHandlerOptions;
+
+		const { peerConnection } = sessionDescriptionHandler;
+		if (!peerConnection) {
+			throw new Error('Peer connection closed.');
+		}
+		return this.session
+			?.invite(options)
+			.then(() => {
+				toggleMediaStreamTracks(!this._held, session, 'receiver');
+				toggleMediaStreamTracks(!this._held, session, 'sender');
+			})
+			.catch((error: Error) => {
+				if (error instanceof RequestPendingError) {
+					console.error(`[${this.session?.id}] A hold request is already in progress.`);
+				}
+				this.emit('holderror');
+				throw error;
+			});
+	}
+
+	/**
 	 * Configures and initializes sip.js UserAgent
 	 * call gets established.
 	 * @remarks
@@ -388,7 +466,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL') {
+		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		switch (this.session.state) {
@@ -411,6 +489,20 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			default:
 				throw new Error('Unknown state');
 		}
+	}
+
+	/**
+	 * Public method called from outside to hold the call.
+	 * @remarks
+	 */
+	async holdCall(holdState: boolean): Promise<void> {
+		if (!this.session) {
+			throw new Error('Session does not exist.');
+		}
+		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
+			throw new Error(`Incorrect call State = ${this.callState}`);
+		}
+		this.handleHoldUnhold(holdState);
 	}
 
 	/* CallEventDelegate implementation end */
