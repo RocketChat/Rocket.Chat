@@ -5,21 +5,17 @@ import { t } from '../../../utils';
 import { settings } from '../../../settings';
 import { messageBox, modal } from '../../../ui-utils';
 import { WebdavAccounts } from '../../../models/client';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import AddWebdavAccountModal from '../../../../client/views/room/webdav/AddWebdavAccountModal';
 
 messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
 	icon: 'plus',
 	condition: () => settings.get('Webdav_Integration_Enabled'),
 	action() {
-		modal.open({
-			title: t('Webdav_add_new_account'),
-			content: 'addWebdavAccount',
-			showCancelButton: false,
-			showConfirmButton: false,
-			showFooter: false,
-			closeOnCancel: true,
-			html: true,
-			confirmOnEnter: false,
+		imperativeModal.open({
+			component: AddWebdavAccountModal,
+			props: { onClose: imperativeModal.close, onConfirm: imperativeModal.close },
 		});
 	},
 });
