@@ -118,13 +118,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.call('authorization:addUserToRole', roleName, user.username, roomId);
-
 			const role = await Roles.findOneByIdOrName(roleName);
 
 			if (!role) {
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
+
+			await Meteor.call('authorization:addUserToRole', roleName, user.username, roomId);
 
 			return API.v1.success({
 				role,
