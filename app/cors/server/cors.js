@@ -43,7 +43,7 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 				'connect-src *',
 				`font-src 'self' ${cdn_prefixes} data:`,
 				'frame-src *',
-				'img-src * data:',
+				'img-src * data: blob:',
 				'media-src * data:',
 				`script-src 'self' 'unsafe-eval' ${inlineHashes} ${cdn_prefixes}`,
 				`style-src 'self' 'unsafe-inline' ${cdn_prefixes}`,
