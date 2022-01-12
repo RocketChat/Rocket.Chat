@@ -7,7 +7,7 @@ import { hasPermission } from '../../authorization/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	Tracker.autorun(() => {
 		if (!settings.get('Discussion_enabled')) {
 			return messageBox.actions.remove('Create_new', /start-discussion/);

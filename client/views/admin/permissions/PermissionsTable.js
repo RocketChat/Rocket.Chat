@@ -66,18 +66,10 @@ const PermissionsTable = () => {
 				</Page.Header>
 				<Margins blockEnd='x16'>
 					<Tabs>
-						<Tabs.Item
-							selected={type === 'permissions'}
-							onClick={handlePermissionsTab}
-							disabled={!canViewPermission}
-						>
+						<Tabs.Item selected={type === 'permissions'} onClick={handlePermissionsTab} disabled={!canViewPermission}>
 							{t('Permissions')}
 						</Tabs.Item>
-						<Tabs.Item
-							selected={type === 'settings'}
-							onClick={handleSettingsTab}
-							disabled={!canViewSettingPermission}
-						>
+						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 							{t('Settings')}
 						</Tabs.Item>
 					</Tabs>
@@ -90,13 +82,7 @@ const PermissionsTable = () => {
 								<>
 									<GenericTable.HeaderCell width='x120'>{t('Name')}</GenericTable.HeaderCell>
 									{roleList.map(({ _id, name, description }) => (
-										<RoleHeader
-											key={_id}
-											_id={_id}
-											name={name}
-											description={description}
-											router={router}
-										/>
+										<RoleHeader key={_id} _id={_id} name={name} description={description} router={router} />
 									))}
 								</>
 							}

@@ -40,9 +40,7 @@ const InviteUsers = ({ onClickBack, onClickClose, onClickEdit, captionText, link
 					</Callout>
 				)}
 
-				<Box pb='x16'>
-					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
-				</Box>
+				<Box pb='x16'>{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}</Box>
 			</VerticalBar.ScrollableContent>
 		</>
 	);

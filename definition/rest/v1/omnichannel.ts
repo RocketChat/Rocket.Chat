@@ -45,6 +45,7 @@ export type OmnichannelEndpoints = {
 				text: string;
 				onlyMyDepartments?: booleanString;
 				enabled?: boolean;
+				excludeDepartmentId?: string;
 			}>,
 		) => PaginatedResult<{
 			departments: ILivechatDepartment[];

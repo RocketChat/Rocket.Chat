@@ -7,9 +7,7 @@ export type CannedResponseOptions = {
 	type: string;
 };
 
-export class CannedResponseList extends RecordList<
-	IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }
-> {
+export class CannedResponseList extends RecordList<IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }> {
 	public constructor(private _options: CannedResponseOptions) {
 		super();
 	}

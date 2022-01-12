@@ -22,10 +22,10 @@ export const SMS = {
 	},
 };
 
-settings.watch('SMS_Enabled', function(value) {
+settings.watch('SMS_Enabled', function (value) {
 	SMS.enabled = value;
 });
 
-settings.watch('SMS_Default_Omnichannel_Department', function(value) {
+settings.watch('SMS_Default_Omnichannel_Department', function (value) {
 	SMS.department = value;
 });

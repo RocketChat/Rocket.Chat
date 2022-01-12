@@ -68,13 +68,7 @@ function PrioritiesRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -104,14 +98,7 @@ function PrioritiesRoute() {
 
 	const renderRow = useCallback(
 		({ _id, name, description, dueTimeInMinutes }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{description}</Table.Cell>
 				<Table.Cell withTruncatedText>

@@ -195,7 +195,7 @@ Template.cannedResponses.events({
 			const prefix = input.value.substring(0, startPos);
 			const suffix = input.value.substring(endPos, input.value.length);
 
-			input.value = `${ prefix }${ text }${ suffix }`;
+			input.value = `${prefix}${text}${suffix}`;
 			input.selectionStart = startPos + text.length;
 			input.selectionEnd = startPos + text.length;
 
@@ -233,7 +233,7 @@ Template.cannedResponses.events({
 			responseData.scope = 'user';
 		}
 
-		Meteor.call('saveCannedResponse', _id, responseData, function(error/* , result*/) {
+		Meteor.call('saveCannedResponse', _id, responseData, function (error /* , result*/) {
 			if (error) {
 				return handleError(error);
 			}
@@ -248,7 +248,7 @@ Template.cannedResponses.events({
 	},
 });
 
-Template.cannedResponses.onCreated(function() {
+Template.cannedResponses.onCreated(function () {
 	this.action = new ReactiveVar();
 	this.context = new ReactiveVar();
 	this.cannedResponse = new ReactiveVar();

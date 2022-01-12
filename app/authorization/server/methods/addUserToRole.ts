@@ -42,7 +42,7 @@ Meteor.methods({
 		}
 
 		// verify if user can be added to given scope
-		if (scope && !await Roles.canAddUserToRole(user._id, roleName, scope)) {
+		if (scope && !(await Roles.canAddUserToRole(user._id, roleName, scope))) {
 			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});

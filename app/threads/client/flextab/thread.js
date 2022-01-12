@@ -17,7 +17,7 @@ import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/ro
 import './thread.html';
 import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../callbacks/client';
+import { callbacks } from '../../../../lib/callbacks';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
@@ -38,7 +38,7 @@ Template.thread.events({
 	}, 150),
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
-		document.querySelector(`#thread-${ id }`).classList.toggle('message--ignored');
+		document.querySelector(`#thread-${id}`).classList.toggle('message--ignored');
 	},
 });
 
@@ -71,8 +71,10 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
-
+		const {
+			mainMessage: { rid, _id: tmid },
+			subscription,
+		} = Template.currentData();
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
@@ -94,7 +96,10 @@ Template.thread.helpers({
 				const { which: keyCode } = event;
 
 				if (keyCode === keyCodes.ESCAPE && !result && !event.target.value.trim()) {
-					const { route: { name }, params: { context, tab, ...params } } = FlowRouter.current();
+					const {
+						route: { name },
+						params: { context, tab, ...params },
+					} = FlowRouter.current();
 					FlowRouter.go(name, params);
 				}
 			},
@@ -114,8 +119,7 @@ Template.thread.helpers({
 	},
 });
 
-
-Template.thread.onRendered(function() {
+Template.thread.onRendered(function () {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
@@ -137,9 +141,11 @@ Template.thread.onRendered(function() {
 	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
 
 	this.onFile = (filesToUpload) => {
-		fileUpload(filesToUpload, this.chatMessages.input, { rid: this.state.get('rid'), tmid: this.state.get('tmid') });
+		fileUpload(filesToUpload, this.chatMessages.input, {
+			rid: this.state.get('rid'),
+			tmid: this.state.get('tmid'),
+		});
 	};
-
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
@@ -149,28 +155,35 @@ Template.thread.onRendered(function() {
 		}
 		this.callbackRemove && this.callbackRemove();
 
-		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
+		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${rid}`);
 
-		callbacks.add('streamNewMessage', _.debounce((msg) => {
-			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
-				return;
-			}
-			Meteor.call('readThreads', tmid);
-		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
+		callbacks.add(
+			'streamNewMessage',
+			_.debounce((msg) => {
+				if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
+					return;
+				}
+				Meteor.call('readThreads', tmid);
+			}, 1000),
+			callbacks.priority.MEDIUM,
+			`thread-${rid}`,
+		);
 	});
-
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
-			fields: {
-				collapsed: 0,
-				threadMsg: 0,
-				repliesCount: 0,
+		this.threadsObserve = Messages.find(
+			{ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } },
+			{
+				fields: {
+					collapsed: 0,
+					threadMsg: 0,
+					repliesCount: 0,
+				},
 			},
-		}).observe({
+		).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			},
@@ -188,10 +201,9 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 		if (rid && tmid) {
-			chatMessages[`${ rid }-${ tmid }`] = this.chatMessages;
+			chatMessages[`${rid}-${tmid}`] = this.chatMessages;
 		}
 	});
-
 
 	this.autorun(() => {
 		FlowRouter.watchPathChange();
@@ -204,7 +216,6 @@ Template.thread.onRendered(function() {
 		});
 	});
 
-
 	this.autorun(() => {
 		const jump = this.state.get('jump');
 		const loading = this.state.get('loading');
@@ -214,7 +225,7 @@ Template.thread.onRendered(function() {
 			this.find('.js-scroll-thread').style.scrollBehavior = 'smooth';
 			this.state.set('jump', null);
 			Tracker.afterFlush(() => {
-				const message = this.find(`#thread-${ jump }`);
+				const message = this.find(`#thread-${jump}`);
 				message.classList.add('highlight');
 				const removeClass = () => {
 					message.classList.remove('highlight');
@@ -229,7 +240,7 @@ Template.thread.onRendered(function() {
 	});
 });
 
-Template.thread.onCreated(async function() {
+Template.thread.onCreated(async function () {
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({
@@ -254,7 +265,7 @@ Template.thread.onCreated(async function() {
 	};
 });
 
-Template.thread.onDestroyed(function() {
+Template.thread.onDestroyed(function () {
 	const { Threads, threadsObserve, callbackRemove, state, chatMessages } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
@@ -265,6 +276,6 @@ Template.thread.onDestroyed(function() {
 	const rid = state.get('rid');
 	if (rid && tmid) {
 		chatMessages.onDestroyed && chatMessages.onDestroyed(rid, tmid);
-		delete chatMessages[`${ rid }-${ tmid }`];
+		delete chatMessages[`${rid}-${tmid}`];
 	}
 });

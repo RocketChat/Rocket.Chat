@@ -39,11 +39,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		}
 
 		const {
-			current: {
-				form,
-				multiple: { departments, ...multiple } = {},
-				timezone: { name: timezoneName } = {},
-			},
+			current: { form, multiple: { departments, ...multiple } = {}, timezone: { name: timezoneName } = {} },
 		} = saveData;
 
 		if (data.businessHour.type !== 'default' && multiple.name === '') {
@@ -125,11 +121,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<BusinessHoursFormContainer
-					data={data.businessHour}
-					saveRef={saveData}
-					onChange={setHasChanges}
-				/>
+				<BusinessHoursFormContainer data={data.businessHour} saveRef={saveData} onChange={setHasChanges} />
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

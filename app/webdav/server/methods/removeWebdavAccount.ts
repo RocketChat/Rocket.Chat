@@ -9,7 +9,9 @@ Meteor.methods({
 		const userId = Meteor.userId();
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'removeWebdavAccount' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', {
+				method: 'removeWebdavAccount',
+			});
 		}
 
 		check(accountId, String);

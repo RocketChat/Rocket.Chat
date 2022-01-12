@@ -8,7 +8,9 @@ Meteor.methods({
 		check(silenced, Match.Optional(Boolean));
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinDefaultChannels' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'joinDefaultChannels',
+			});
 		}
 		return addUserToDefaultChannels(Meteor.user(), silenced);
 	},

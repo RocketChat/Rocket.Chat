@@ -23,9 +23,10 @@ import { createRoom } from '../../data/rooms.helper';
 
 function createTestUser() {
 	return new Promise((resolve) => {
-		const username = `user.test.${ Date.now() }`;
-		const email = `${ username }@rocket.chat`;
-		request.post(api('users.create'))
+		const username = `user.test.${Date.now()}`;
+		const email = `${username}@rocket.chat`;
+		request
+			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password })
 			.end((err, res) => resolve(res.body.user));
@@ -34,7 +35,8 @@ function createTestUser() {
 
 function loginTestUser(user) {
 	return new Promise((resolve, reject) => {
-		request.post(api('login'))
+		request
+			.post(api('login'))
 			.send({
 				user: user.username,
 				password,
@@ -53,7 +55,8 @@ function loginTestUser(user) {
 
 function deleteTestUser(user) {
 	return new Promise((resolve) => {
-		request.post(api('users.delete'))
+		request
+			.post(api('users.delete'))
 			.set(credentials)
 			.send({
 				userId: user._id,
@@ -62,14 +65,15 @@ function deleteTestUser(user) {
 	});
 }
 
-describe('[Users]', function() {
+describe('[Users]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	it('enabling E2E in server and generating keys to user...', (done) => {
 		updateSetting('E2E_Enable', true).then(() => {
-			request.post(api('e2e.setUserPublicAndPrivateKeys'))
+			request
+				.post(api('e2e.setUserPublicAndPrivateKeys'))
 				.set(credentials)
 				.send({
 					private_key: 'test',
@@ -89,7 +93,8 @@ describe('[Users]', function() {
 		after((done) => clearCustomFields(done));
 
 		it('should create a new user', (done) => {
-			request.post(api('users.create'))
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({
 					email: apiEmail,
@@ -125,11 +130,12 @@ describe('[Users]', function() {
 					return done(error);
 				}
 
-				const username = `customField_${ apiUsername }`;
-				const email = `customField_${ apiEmail }`;
+				const username = `customField_${apiUsername}`;
+				const email = `customField_${apiEmail}`;
 				const customFields = { customFieldText: 'success' };
 
-				request.post(api('users.create'))
+				request
+					.post(api('users.create'))
 					.set(credentials)
 					.send({
 						email,
@@ -158,12 +164,13 @@ describe('[Users]', function() {
 		});
 
 		function failCreateUser(name) {
-			it(`should not create a new user if username is the reserved word ${ name }`, (done) => {
-				request.post(api('users.create'))
+			it(`should not create a new user if username is the reserved word ${name}`, (done) => {
+				request
+					.post(api('users.create'))
 					.set(credentials)
 					.send({
-						email: `create_user_fail_${ apiEmail }`,
-						name: `create_user_fail_${ apiUsername }`,
+						email: `create_user_fail_${apiEmail}`,
+						name: `create_user_fail_${apiUsername}`,
 						username: name,
 						password,
 						active: true,
@@ -175,14 +182,14 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is blocked and can't be used! [error-blocked-username]`);
+						expect(res.body).to.have.property('error', `${name} is blocked and can't be used! [error-blocked-username]`);
 					})
 					.end(done);
 			});
 		}
 
 		function failUserWithCustomField(field) {
-			it(`should not create a user if a custom field ${ field.reason }`, (done) => {
+			it(`should not create a user if a custom field ${field.reason}`, (done) => {
 				setCustomFields({ customFieldText }, (error) => {
 					if (error) {
 						return done(error);
@@ -191,12 +198,13 @@ describe('[Users]', function() {
 					const customFields = {};
 					customFields[field.name] = field.value;
 
-					request.post(api('users.create'))
+					request
+						.post(api('users.create'))
 						.set(credentials)
 						.send({
-							email: `customField_fail_${ apiEmail }`,
-							name: `customField_fail_${ apiUsername }`,
-							username: `customField_fail_${ apiUsername }`,
+							email: `customField_fail_${apiEmail}`,
+							name: `customField_fail_${apiUsername}`,
+							username: `customField_fail_${apiUsername}`,
 							password,
 							active: true,
 							roles: ['user'],
@@ -237,10 +245,11 @@ describe('[Users]', function() {
 			});
 
 			it('should create a new user with default roles', (done) => {
-				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
-				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
+				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
-				request.post(api('users.create'))
+				request
+					.post(api('users.create'))
 					.set(credentials)
 					.send({
 						email,
@@ -262,10 +271,11 @@ describe('[Users]', function() {
 			});
 
 			it('should create a new user with only the role provided', (done) => {
-				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
-				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
+				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
-				request.post(api('users.create'))
+				request
+					.post(api('users.create'))
 					.set(credentials)
 					.send({
 						email,
@@ -290,10 +300,11 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.register]', () => {
-		const email = `email@email${ Date.now() }.com`;
-		const username = `myusername${ Date.now() }`;
+		const email = `email@email${Date.now()}.com`;
+		const username = `myusername${Date.now()}`;
 		it('should register new user', (done) => {
-			request.post(api('users.register'))
+			request
+				.post(api('users.register'))
 				.send({
 					email,
 					name: 'name',
@@ -311,7 +322,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return an error when trying register new user with an existing username', (done) => {
-			request.post(api('users.register'))
+			request
+				.post(api('users.register'))
 				.send({
 					email,
 					name: 'name',
@@ -334,7 +346,8 @@ describe('[Users]', function() {
 		});
 
 		it('should return an error when the user does not exist', (done) => {
-			request.get(api('users.info'))
+			request
+				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					username: 'invalid-username',
@@ -348,7 +361,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should query information about a user by userId', (done) => {
-			request.get(api('users.info'))
+			request
+				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
@@ -365,7 +379,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
-			request.get(api('users.info'))
+			request
+				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
@@ -381,7 +396,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
-			request.get(api('users.info'))
+			request
+				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
@@ -396,7 +412,8 @@ describe('[Users]', function() {
 		});
 		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
 			updatePermission('view-other-user-channels', []).then(() => {
-				request.get(api('users.info'))
+				request
+					.get(api('users.info'))
 					.set(credentials)
 					.query({
 						userId: credentials['X-User-Id'],
@@ -412,9 +429,10 @@ describe('[Users]', function() {
 					.end(done);
 			});
 		});
-		it('should NOT return the rooms when the user request another user\'s rooms and he does NOT have the necessary permission', (done) => {
+		it("should NOT return the rooms when the user request another user's rooms and he does NOT have the necessary permission", (done) => {
 			updatePermission('view-other-user-channels', []).then(() => {
-				request.get(api('users.info'))
+				request
+					.get(api('users.info'))
 					.set(credentials)
 					.query({
 						userId: targetUser._id,
@@ -429,9 +447,10 @@ describe('[Users]', function() {
 					.end(done);
 			});
 		});
-		it('should NOT return some services fields when request to another user\'s info even if the user has the necessary permission', (done) => {
+		it("should NOT return some services fields when request to another user's info even if the user has the necessary permission", (done) => {
 			updatePermission('view-full-other-user-info', ['admin']).then(() => {
-				request.get(api('users.info'))
+				request
+					.get(api('users.info'))
 					.set(credentials)
 					.query({
 						userId: targetUser._id,
@@ -453,7 +472,8 @@ describe('[Users]', function() {
 		});
 		it('should return all services fields when request for myself data even without privileged permission', (done) => {
 			updatePermission('view-full-other-user-info', []).then(() => {
-				request.get(api('users.info'))
+				request
+					.get(api('users.info'))
 					.set(credentials)
 					.query({
 						userId: credentials['X-User-Id'],
@@ -470,7 +490,8 @@ describe('[Users]', function() {
 		});
 
 		it('should correctly route users that have `ufs` in their username', async () => {
-			await request.post(api('users.create'))
+			await request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({
 					email: 'me@email.com',
@@ -484,7 +505,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.get(api('users.info'))
+			await request
+				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					username: 'ufs',
@@ -501,8 +523,9 @@ describe('[Users]', function() {
 		});
 	});
 	describe('[/users.getPresence]', () => {
-		it('should query a user\'s presence by userId', (done) => {
-			request.get(api('users.getPresence'))
+		it("should query a user's presence by userId", (done) => {
+			request
+				.get(api('users.getPresence'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
@@ -520,7 +543,8 @@ describe('[Users]', function() {
 	describe('[/users.presence]', () => {
 		describe('Not logged in:', () => {
 			it('should return 401 unauthorized', (done) => {
-				request.get(api('users.presence'))
+				request
+					.get(api('users.presence'))
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res) => {
@@ -531,27 +555,25 @@ describe('[Users]', function() {
 		});
 		describe('Logged in:', () => {
 			it('should return online users full list', (done) => {
-				request.get(api('users.presence'))
+				request
+					.get(api('users.presence'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
-						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
-							'_id',
-							'avatarETag',
-							'username',
-							'name',
-							'status',
-							'utcOffset',
-						);
+						expect(res.body)
+							.to.have.property('users')
+							.to.have.property('0')
+							.to.deep.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
 					})
 					.end(done);
 			});
 
 			it('should return no online users updated after now', (done) => {
-				request.get(api(`users.presence?from=${ new Date().toISOString() }`))
+				request
+					.get(api(`users.presence?from=${new Date().toISOString()}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -567,21 +589,18 @@ describe('[Users]', function() {
 				const date = new Date();
 				date.setMinutes(date.getMinutes() - 11);
 
-				request.get(api(`users.presence?from=${ date.toISOString() }`))
+				request
+					.get(api(`users.presence?from=${date.toISOString()}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('full', true);
-						expect(res.body).to.have.property('users').to.have.property('0').to.deep.have.all.keys(
-							'_id',
-							'avatarETag',
-							'username',
-							'name',
-							'status',
-							'utcOffset',
-						);
+						expect(res.body)
+							.to.have.property('users')
+							.to.have.property('0')
+							.to.deep.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
 					})
 					.end(done);
 			});
@@ -590,7 +609,8 @@ describe('[Users]', function() {
 
 	describe('[/users.list]', () => {
 		it('should query all users in the system', (done) => {
-			request.get(api('users.list'))
+			request
+				.get(api('users.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -606,7 +626,8 @@ describe('[Users]', function() {
 
 		it.skip('should query all users in the system by name', (done) => {
 			// filtering user list
-			request.get(api('users.list'))
+			request
+				.get(api('users.list'))
 				.set(credentials)
 				.query({
 					name: { $regex: 'g' },
@@ -647,7 +668,8 @@ describe('[Users]', function() {
 			await updatePermission('edit-other-user-avatar', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
-			request.post(api('users.setAvatar'))
+			request
+				.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -658,7 +680,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request.post(api('users.setAvatar'))
+			request
+				.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.field({ userId: credentials['X-User-Id'] })
@@ -670,7 +693,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request.post(api('users.setAvatar'))
+			request
+				.post(api('users.setAvatar'))
 				.set(credentials)
 				.attach('image', imgURL)
 				.field({ username: adminUsername })
@@ -681,9 +705,10 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should prevent from updating someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
+		it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
 			updatePermission('edit-other-user-avatar', []).then(() => {
-				request.post(api('users.setAvatar'))
+				request
+					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
@@ -698,7 +723,8 @@ describe('[Users]', function() {
 		it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
 			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
 				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
-					request.post(api('users.setAvatar'))
+					request
+						.post(api('users.setAvatar'))
 						.set(credentials)
 						.attach('image', imgURL)
 						.field({ userId: userCredentials['X-User-Id'] })
@@ -735,7 +761,8 @@ describe('[Users]', function() {
 			await updatePermission('edit-other-user-avatar', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
-			request.post(api('users.setAvatar'))
+			request
+				.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -746,7 +773,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should reset the avatar of the logged user', (done) => {
-			request.post(api('users.resetAvatar'))
+			request
+				.post(api('users.resetAvatar'))
 				.set(userCredentials)
 				.expect('Content-Type', 'application/json')
 				.send({
@@ -759,7 +787,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request.post(api('users.resetAvatar'))
+			request
+				.post(api('users.resetAvatar'))
 				.set(userCredentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -772,7 +801,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-			request.post(api('users.resetAvatar'))
+			request
+				.post(api('users.resetAvatar'))
 				.set(credentials)
 				.send({
 					username: adminUsername,
@@ -784,9 +814,10 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should prevent from resetting someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
+		it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
 			updatePermission('edit-other-user-avatar', []).then(() => {
-				request.post(api('users.resetAvatar'))
+				request
+					.post(api('users.resetAvatar'))
 					.set(userCredentials)
 					.send({
 						userId: credentials['X-User-Id'],
@@ -802,7 +833,8 @@ describe('[Users]', function() {
 		it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
 			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
 				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
-					request.post(api('users.resetAvatar'))
+					request
+						.post(api('users.resetAvatar'))
 						.set(credentials)
 						.send({
 							userId: userCredentials['X-User-Id'],
@@ -834,7 +866,8 @@ describe('[Users]', function() {
 			await updatePermission('edit-other-user-info', ['admin']);
 		});
 		it('should get the url of the avatar of the logged user via userId', (done) => {
-			request.get(api('users.getAvatar'))
+			request
+				.get(api('users.getAvatar'))
 				.set(userCredentials)
 				.query({
 					userId: userCredentials['X-User-Id'],
@@ -843,7 +876,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should get the url of the avatar of the logged user via username', (done) => {
-			request.get(api('users.getAvatar'))
+			request
+				.get(api('users.getAvatar'))
 				.set(userCredentials)
 				.query({
 					username: user.username,
@@ -873,15 +907,16 @@ describe('[Users]', function() {
 				.then(done);
 		});
 
-		it('should update a user\'s info by userId', (done) => {
-			request.post(api('users.update'))
+		it("should update a user's info by userId", (done) => {
+			request
+				.post(api('users.update'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
 					data: {
 						email: apiEmail,
-						name: `edited${ apiUsername }`,
-						username: `edited${ apiUsername }`,
+						name: `edited${apiUsername}`,
+						username: `edited${apiUsername}`,
 						password,
 						active: true,
 						roles: ['user'],
@@ -891,37 +926,39 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.username', `edited${ apiUsername }`);
+					expect(res.body).to.have.nested.property('user.username', `edited${apiUsername}`);
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
-					expect(res.body).to.have.nested.property('user.name', `edited${ apiUsername }`);
+					expect(res.body).to.have.nested.property('user.name', `edited${apiUsername}`);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
 
-		it('should update a user\'s email by userId', (done) => {
-			request.post(api('users.update'))
+		it("should update a user's email by userId", (done) => {
+			request
+				.post(api('users.update'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
 					data: {
-						email: `edited${ apiEmail }`,
+						email: `edited${apiEmail}`,
 					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${ apiEmail }`);
+					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
 
-		it('should verify user\'s email by userId', (done) => {
-			request.post(api('users.update'))
+		it("should verify user's email by userId", (done) => {
+			request
+				.post(api('users.update'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -941,271 +978,272 @@ describe('[Users]', function() {
 
 		it('should return an error when trying update username and it is not allowed', (done) => {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
-				updateSetting('Accounts_AllowUsernameChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									username: 'fake.name',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUsernameChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								username: 'fake.name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update the user name when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				updateSetting('Accounts_AllowUsernameChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									username: 'fake.name',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUsernameChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								username: 'fake.name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', (done) => {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
-				updateSetting('Accounts_AllowRealNameChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									name: 'Fake name',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowRealNameChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								name: 'Fake name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update user real name when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				updateSetting('Accounts_AllowRealNameChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									name: 'Fake name',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowRealNameChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								name: 'Fake name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should return an error when trying update user status message and it is not allowed', (done) => {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
-				updateSetting('Accounts_AllowUserStatusMessageChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									statusMessage: 'a new status',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								statusMessage: 'a new status',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update user status message when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				updateSetting('Accounts_AllowUserStatusMessageChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									name: 'a new status',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								name: 'a new status',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should return an error when trying update user email and it is not allowed', (done) => {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
-				updateSetting('Accounts_AllowEmailChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									email: 'itsnotworking@email.com',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowEmailChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								email: 'itsnotworking@email.com',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update user email when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				updateSetting('Accounts_AllowEmailChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									email: apiEmail,
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowEmailChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								email: apiEmail,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should return an error when trying update user password and it is not allowed', (done) => {
 			updatePermission('edit-other-user-password', ['user']).then(() => {
-				updateSetting('Accounts_AllowPasswordChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									password: 'itsnotworking',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowPasswordChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								password: 'itsnotworking',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update user password when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-password', ['admin']).then(() => {
-				updateSetting('Accounts_AllowPasswordChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									password: 'itsnotworking',
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowPasswordChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								password: 'itsnotworking',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should return an error when trying update profile and it is not allowed', (done) => {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
-				updateSetting('Accounts_AllowUserProfileChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									verified: true,
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUserProfileChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								verified: true,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		it('should update profile when the required permission is applied', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				updateSetting('Accounts_AllowUserProfileChange', false)
-					.then(() => {
-						request.post(api('users.update'))
-							.set(credentials)
-							.send({
-								userId: targetUser._id,
-								data: {
-									verified: true,
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
+				updateSetting('Accounts_AllowUserProfileChange', false).then(() => {
+					request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								verified: true,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 
 		function failUpdateUser(name) {
-			it(`should not update an user if the new username is the reserved word ${ name }`, (done) => {
-				request.post(api('users.update'))
+			it(`should not update an user if the new username is the reserved word ${name}`, (done) => {
+				request
+					.post(api('users.update'))
 					.set(credentials)
 					.send({
 						userId: targetUser._id,
@@ -1231,9 +1269,10 @@ describe('[Users]', function() {
 	describe('[/users.updateOwnBasicInfo]', () => {
 		let user;
 		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
@@ -1244,7 +1283,8 @@ describe('[Users]', function() {
 
 		let userCredentials;
 		before((done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: user.username,
 					password,
@@ -1259,20 +1299,25 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(done);
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+				})
+				.end(done);
 			user = undefined;
 		});
 
-		const newPassword = `${ password }test`;
-		const editedUsername = `basicInfo.name${ +new Date() }`;
-		const editedName = `basic-info-test-name${ +new Date() }`;
-		const editedEmail = `test${ +new Date() }@mail.com`;
+		const newPassword = `${password}test`;
+		const editedUsername = `basicInfo.name${+new Date()}`;
+		const editedName = `basic-info-test-name${+new Date()}`;
+		const editedEmail = `test${+new Date()}@mail.com`;
 
 		it('enabling E2E in server and generating keys to user...', (done) => {
 			updateSetting('E2E_Enable', true).then(() => {
-				request.post(api('e2e.setUserPublicAndPrivateKeys'))
+				request
+					.post(api('e2e.setUserPublicAndPrivateKeys'))
 					.set(userCredentials)
 					.send({
 						private_key: 'test',
@@ -1288,7 +1333,8 @@ describe('[Users]', function() {
 		});
 
 		it('should update the user own basic information', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
 					data: {
@@ -1311,7 +1357,8 @@ describe('[Users]', function() {
 		});
 
 		it('should update the user name only', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
 					data: {
@@ -1330,7 +1377,8 @@ describe('[Users]', function() {
 		});
 
 		it('should throw an error when user try change email without the password', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
 					data: {
@@ -1343,7 +1391,8 @@ describe('[Users]', function() {
 		});
 
 		it('should throw an error when user try change password without the actual password', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1356,7 +1405,8 @@ describe('[Users]', function() {
 		});
 
 		it('should throw an error when the name is only whitespaces', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1371,8 +1421,9 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
-		it('should set new email as \'unverified\'', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
+		it("should set new email as 'unverified'", (done) => {
+			request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
 					data: {
@@ -1393,8 +1444,9 @@ describe('[Users]', function() {
 		});
 
 		function failUpdateUserOwnBasicInfo(name) {
-			it(`should not update an user's basic info if the new username is the reserved word ${ name }`, (done) => {
-				request.post(api('users.updateOwnBasicInfo'))
+			it(`should not update an user's basic info if the new username is the reserved word ${name}`, (done) => {
+				request
+					.post(api('users.updateOwnBasicInfo'))
 					.set(credentials)
 					.send({
 						data: {
@@ -1418,7 +1470,8 @@ describe('[Users]', function() {
 		it('should throw an error if not allowed to change real name', async () => {
 			await updateSetting('Accounts_AllowRealNameChange', false);
 
-			await request.post(api('users.updateOwnBasicInfo'))
+			await request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1437,7 +1490,8 @@ describe('[Users]', function() {
 		it('should throw an error if not allowed to change username', async () => {
 			await updateSetting('Accounts_AllowUsernameChange', false);
 
-			await request.post(api('users.updateOwnBasicInfo'))
+			await request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1456,7 +1510,8 @@ describe('[Users]', function() {
 		it('should throw an error if not allowed to change statusText', async () => {
 			await updateSetting('Accounts_AllowUserStatusMessageChange', false);
 
-			await request.post(api('users.updateOwnBasicInfo'))
+			await request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1475,7 +1530,8 @@ describe('[Users]', function() {
 		it('should throw an error if not allowed to change email', async () => {
 			await updateSetting('Accounts_AllowEmailChange', false);
 
-			await request.post(api('users.updateOwnBasicInfo'))
+			await request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1494,7 +1550,8 @@ describe('[Users]', function() {
 		it('should throw an error if not allowed to change password', async () => {
 			await updateSetting('Accounts_AllowPasswordChange', false);
 
-			await request.post(api('users.updateOwnBasicInfo'))
+			await request
+				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
 					data: {
@@ -1520,7 +1577,8 @@ describe('[Users]', function() {
 				},
 			};
 			updatePermission('edit-other-user-info', []).then(() => {
-				request.post(api('users.setPreferences'))
+				request
+					.post(api('users.setPreferences'))
 					.set(credentials)
 					.send(userPreferences)
 					.expect(400)
@@ -1541,14 +1599,18 @@ describe('[Users]', function() {
 				},
 			};
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
-				request.post(api('users.setPreferences'))
+				request
+					.post(api('users.setPreferences'))
 					.set(credentials)
 					.send(userPreferences)
 					.expect(400)
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'The optional \"userId\" param provided does not match any users [error-invalid-user]');
+						expect(res.body).to.have.property(
+							'error',
+							'The optional "userId" param provided does not match any users [error-invalid-user]',
+						);
 						expect(res.body).to.have.property('errorType', 'error-invalid-user');
 					})
 					.end(done);
@@ -1562,7 +1624,8 @@ describe('[Users]', function() {
 				},
 			};
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(() => {
-				request.post(api('users.setPreferences'))
+				request
+					.post(api('users.setPreferences'))
 					.set(credentials)
 					.send(userPreferences)
 					.expect(200)
@@ -1583,7 +1646,8 @@ describe('[Users]', function() {
 					...preferences.data,
 				},
 			};
-			request.post(api('users.setPreferences'))
+			request
+				.post(api('users.setPreferences'))
 				.set(credentials)
 				.send(userPreferences)
 				.expect(200)
@@ -1603,7 +1667,8 @@ describe('[Users]', function() {
 					language: 'en',
 				},
 			};
-			request.post(api('users.setPreferences'))
+			request
+				.post(api('users.setPreferences'))
 				.set(credentials)
 				.send(userPreferences)
 				.expect(200)
@@ -1622,7 +1687,8 @@ describe('[Users]', function() {
 				...preferences.data,
 				language: 'en',
 			};
-			request.get(api('users.getPreferences'))
+			request
+				.get(api('users.getPreferences'))
 				.set(credentials)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
@@ -1636,7 +1702,8 @@ describe('[Users]', function() {
 
 	describe('[/users.forgotPassword]', () => {
 		it('should send email to user (return success), when is a valid email', (done) => {
-			request.post(api('users.forgotPassword'))
+			request
+				.post(api('users.forgotPassword'))
 				.send({
 					email: adminEmail,
 				})
@@ -1649,7 +1716,8 @@ describe('[Users]', function() {
 		});
 
 		it('should not send email to user(return error), when is a invalid email', (done) => {
-			request.post(api('users.forgotPassword'))
+			request
+				.post(api('users.forgotPassword'))
 				.send({
 					email: 'invalidEmail',
 				})
@@ -1663,15 +1731,16 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.getUsernameSuggestion]', () => {
-		const testUsername = `test${ +new Date() }`;
+		const testUsername = `test${+new Date()}`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
-			request.post(api('users.register'))
+			request
+				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${ testUsername }.@teste.com`,
-					username: `${ testUsername }test`,
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1683,7 +1752,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('Login...', (done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: targetUser.username,
 					password,
@@ -1699,7 +1769,8 @@ describe('[Users]', function() {
 		});
 
 		it('should return an username suggestion', (done) => {
-			request.get(api('users.getUsernameSuggestion'))
+			request
+				.get(api('users.getUsernameSuggestion'))
 				.set(userCredentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1712,15 +1783,16 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.deleteOwnAccount]', () => {
-		const testUsername = `testuser${ +new Date() }`;
+		const testUsername = `testuser${+new Date()}`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
-			request.post(api('users.register'))
+			request
+				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${ testUsername }.@teste.com`,
-					username: `${ testUsername }test`,
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1732,7 +1804,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('Login...', (done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: targetUser.username,
 					password,
@@ -1748,7 +1821,8 @@ describe('[Users]', function() {
 		});
 
 		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
-			request.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
+			request
+				.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
 				.set(credentials)
 				.send({ value: true })
 				.expect('Content-Type', 'application/json')
@@ -1760,7 +1834,8 @@ describe('[Users]', function() {
 		});
 
 		it('should delete user own account', (done) => {
-			request.post(api('users.deleteOwnAccount'))
+			request
+				.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
@@ -1776,7 +1851,8 @@ describe('[Users]', function() {
 		it('should delete user own account when the SHA256 hash is in upper case', (done) => {
 			createUser().then((user) => {
 				login(user.username, password).then((createdUserCredentials) => {
-					request.post(api('users.deleteOwnAccount'))
+					request
+						.post(api('users.deleteOwnAccount'))
 						.set(createdUserCredentials)
 						.send({
 							password: crypto.createHash('sha256').update(password, 'utf8').digest('hex').toUpperCase(),
@@ -1794,14 +1870,17 @@ describe('[Users]', function() {
 		it('should return an error when trying to delete user own account if user is the last room owner', async () => {
 			const user = await createUser();
 			const createdUserCredentials = await login(user.username, password);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				username: user.username,
-				members: [user.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					username: user.username,
+					members: [user.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: user._id,
@@ -1813,7 +1892,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -1843,14 +1923,17 @@ describe('[Users]', function() {
 		it('should delete user own account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
 			const user = await createUser();
 			const createdUserCredentials = await login(user.username, password);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				username: user.username,
-				members: [user.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					username: user.username,
+					members: [user.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: user._id,
@@ -1862,7 +1945,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -1891,14 +1975,17 @@ describe('[Users]', function() {
 		it('should assign a new owner to the room if the last room owner is deleted', async () => {
 			const user = await createUser();
 			const createdUserCredentials = await login(user.username, password);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				username: user.username,
-				members: [user.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					username: user.username,
+					members: [user.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: user._id,
@@ -1910,7 +1997,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -1935,7 +2023,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.get(api('channels.roles'))
+			await request
+				.get(api('channels.roles'))
 				.set(credentials)
 				.query({
 					roomId: room._id,
@@ -1952,25 +2041,28 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) => new Promise((resolve) => {
-			request.post(api('permissions.update'))
-				.set(credentials)
-				.send({ permissions: [{ _id: permission, roles }] })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(resolve);
-		});
-		const testUsername = `testuserdelete${ +new Date() }`;
+		const updatePermission = (permission, roles) =>
+			new Promise((resolve) => {
+				request
+					.post(api('permissions.update'))
+					.set(credentials)
+					.send({ permissions: [{ _id: permission, roles }] })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(resolve);
+			});
+		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
-			request.post(api('users.register'))
+			request
+				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${ testUsername }.@teste.com`,
-					username: `${ testUsername }test`,
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1978,23 +2070,27 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					targetUser = res.body.user;
-				}).end(done);
+				})
+				.end(done);
 		});
 
 		afterEach((done) => {
 			updatePermission('delete-user', ['admin']).then(() => {
-				request.post(api('users.delete'))
+				request
+					.post(api('users.delete'))
 					.set(credentials)
 					.send({
 						userId: targetUser._id,
 						confirmRelinquish: true,
-					}).end(done);
+					})
+					.end(done);
 			});
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
 			await updatePermission('delete-user', ['user']);
-			await request.post(api('users.delete'))
+			await request
+				.post(api('users.delete'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2009,13 +2105,16 @@ describe('[Users]', function() {
 
 		it('should return an error when trying to delete user account if the user is the last room owner', async () => {
 			await updatePermission('delete-user', ['admin']);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2027,7 +2126,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2039,7 +2139,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.delete'))
+			await request
+				.post(api('users.delete'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2055,13 +2156,16 @@ describe('[Users]', function() {
 
 		it('should delete user account if the user is the last room owner and `confirmRelinquish` is set to `true`', async () => {
 			await updatePermission('delete-user', ['admin']);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2073,7 +2177,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2085,7 +2190,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.delete'))
+			await request
+				.post(api('users.delete'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2100,7 +2206,8 @@ describe('[Users]', function() {
 
 		it('should delete user account when logged user has "delete-user" permission', async () => {
 			await updatePermission('delete-user', ['admin']);
-			await request.post(api('users.delete'))
+			await request
+				.post(api('users.delete'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2114,13 +2221,16 @@ describe('[Users]', function() {
 
 		it('should assign a new owner to the room if the last room owner is deleted', async () => {
 			await updatePermission('delete-user', ['admin']);
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2132,7 +2242,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2144,7 +2255,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.delete'))
+			await request
+				.post(api('users.delete'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2156,7 +2268,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.get(api('channels.roles'))
+			await request
+				.get(api('channels.roles'))
 				.set(credentials)
 				.query({
 					roomId: room._id,
@@ -2173,11 +2286,12 @@ describe('[Users]', function() {
 	});
 
 	describe('Personal Access Tokens', () => {
-		const tokenName = `${ Date.now() }token`;
+		const tokenName = `${Date.now()}token`;
 		describe('successful cases', () => {
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
-					request.get(api('users.getPersonalAccessTokens'))
+					request
+						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -2188,10 +2302,12 @@ describe('[Users]', function() {
 						.end(done);
 				});
 			});
-			it('Grant necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', ['admin']));
+			it('Grant necessary permission "create-personal-accss-tokens" to user', () =>
+				updatePermission('create-personal-access-tokens', ['admin']));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
-					request.post(api('users.generatePersonalAccessToken'))
+					request
+						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2205,7 +2321,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('should throw an error when user tries generate a token with the same name', (done) => {
-					request.post(api('users.generatePersonalAccessToken'))
+					request
+						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2220,7 +2337,8 @@ describe('[Users]', function() {
 			});
 			describe('[/users.regeneratePersonalAccessToken]', () => {
 				it('should return a personal access token to user when user regenerates the token', (done) => {
-					request.post(api('users.regeneratePersonalAccessToken'))
+					request
+						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2234,7 +2352,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('should throw an error when user tries regenerate a token that does not exist', (done) => {
-					request.post(api('users.regeneratePersonalAccessToken'))
+					request
+						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
@@ -2249,7 +2368,8 @@ describe('[Users]', function() {
 			});
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return my personal access tokens', (done) => {
-					request.get(api('users.getPersonalAccessTokens'))
+					request
+						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -2262,7 +2382,8 @@ describe('[Users]', function() {
 			});
 			describe('[/users.removePersonalAccessToken]', () => {
 				it('should return success when user remove a personal access token', (done) => {
-					request.post(api('users.removePersonalAccessToken'))
+					request
+						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2275,7 +2396,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('should throw an error when user tries remove a token that does not exist', (done) => {
-					request.post(api('users.removePersonalAccessToken'))
+					request
+						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
@@ -2293,7 +2415,8 @@ describe('[Users]', function() {
 			it('Remove necessary permission "create-personal-accss-tokens" to user', () => updatePermission('create-personal-access-tokens', []));
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
-					request.post(api('users.generatePersonalAccessToken'))
+					request
+						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2307,7 +2430,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('/users.regeneratePersonalAccessToken', (done) => {
-					request.post(api('users.regeneratePersonalAccessToken'))
+					request
+						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2321,7 +2445,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('/users.getPersonalAccessTokens', (done) => {
-					request.get(api('users.getPersonalAccessTokens'))
+					request
+						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -2332,7 +2457,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('/users.removePersonalAccessToken', (done) => {
-					request.post(api('users.removePersonalAccessToken'))
+					request
+						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
@@ -2346,7 +2472,8 @@ describe('[Users]', function() {
 						.end(done);
 				});
 				it('should throw an error when user tries remove a token that does not exist', (done) => {
-					request.post(api('users.removePersonalAccessToken'))
+					request
+						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
@@ -2366,9 +2493,10 @@ describe('[Users]', function() {
 	describe('[/users.setActiveStatus]', () => {
 		let user;
 		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
@@ -2378,7 +2506,8 @@ describe('[Users]', function() {
 		});
 		let userCredentials;
 		before((done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: user.username,
 					password,
@@ -2396,13 +2525,18 @@ describe('[Users]', function() {
 			updatePermission('edit-other-user-active-status', ['admin', 'user']).then(done);
 		});
 		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+				})
+				.end(() => updatePermission('edit-other-user-active-status', ['admin']).then(done));
 			user = undefined;
 		});
 		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
+			request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: false,
@@ -2417,7 +2551,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should set other user active status to true when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
+			request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: true,
@@ -2433,14 +2568,17 @@ describe('[Users]', function() {
 		});
 
 		it('should return an error when trying to set other user status to inactive and the user is the last owner of a room', async () => {
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				username: targetUser.username,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					username: targetUser.username,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.invite'))
+			await request
+				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2452,7 +2590,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2464,7 +2603,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2476,7 +2616,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.setActiveStatus'))
+			await request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: false,
@@ -2492,14 +2633,17 @@ describe('[Users]', function() {
 		});
 
 		it('should set other user status to inactive if the user is the last owner of a room and `confirmRelinquish` is set to `true`', async () => {
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				username: targetUser.username,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					username: targetUser.username,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('channels.invite'))
+			await request
+				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2511,7 +2655,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2523,7 +2668,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2535,7 +2681,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.setActiveStatus'))
+			await request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: false,
@@ -2550,13 +2697,16 @@ describe('[Users]', function() {
 		});
 
 		it('should set other user as room owner if the last owner of a room is deactivated and `confirmRelinquish` is set to `true`', async () => {
-			const room = (await createRoom({
-				type: 'c',
-				name: `channel.test.${ Date.now() }-${ Math.random() }`,
-				members: [targetUser.username],
-			})).body.channel;
+			const room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+					members: [targetUser.username],
+				})
+			).body.channel;
 
-			await request.post(api('users.setActiveStatus'))
+			await request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: true,
@@ -2568,7 +2718,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.invite'))
+			await request
+				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2580,7 +2731,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.addOwner'))
+			await request
+				.post(api('channels.addOwner'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
@@ -2592,7 +2744,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('channels.removeOwner'))
+			await request
+				.post(api('channels.removeOwner'))
 				.set(credentials)
 				.send({
 					userId: credentials['X-User-Id'],
@@ -2604,7 +2757,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.post(api('users.setActiveStatus'))
+			await request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: false,
@@ -2617,7 +2771,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			await request.get(api('channels.roles'))
+			await request
+				.get(api('channels.roles'))
 				.set(credentials)
 				.query({
 					roomId: room._id,
@@ -2634,7 +2789,8 @@ describe('[Users]', function() {
 
 		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
 			updatePermission('edit-other-user-active-status', []).then(() => {
-				request.post(api('users.setActiveStatus'))
+				request
+					.post(api('users.setActiveStatus'))
 					.set(userCredentials)
 					.send({
 						activeStatus: false,
@@ -2649,7 +2805,8 @@ describe('[Users]', function() {
 			});
 		});
 		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
-			request.post(api('users.setActiveStatus'))
+			request
+				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
 					activeStatus: false,
@@ -2664,7 +2821,8 @@ describe('[Users]', function() {
 		});
 		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', (done) => {
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				request.post(api('users.setActiveStatus'))
+				request
+					.post(api('users.setActiveStatus'))
 					.set(userCredentials)
 					.send({
 						activeStatus: false,
@@ -2683,10 +2841,11 @@ describe('[Users]', function() {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${ Date.now() }`;
+		const testRoleName = `role.test.${Date.now()}`;
 
 		before('Create a new role with Users scope', (done) => {
-			request.post(api('roles.create'))
+			request
+				.post(api('roles.create'))
 				.set(credentials)
 				.send({
 					name: testRoleName,
@@ -2699,9 +2858,10 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		before('Create test user', (done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
@@ -2710,7 +2870,8 @@ describe('[Users]', function() {
 				});
 		});
 		before('Assign a role to test user', (done) => {
-			request.post(api('roles.addUserToRole'))
+			request
+				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
 					roleName: testRoleName,
@@ -2724,7 +2885,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		before('Login as test user', (done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: testUser.username,
 					password,
@@ -2741,7 +2903,8 @@ describe('[Users]', function() {
 
 		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
 			updatePermission('edit-other-user-active-status', []).then(() => {
-				request.post(api('users.deactivateIdle'))
+				request
+					.post(api('users.deactivateIdle'))
 					.set(credentials)
 					.send({
 						daysIdle: 0,
@@ -2757,7 +2920,8 @@ describe('[Users]', function() {
 		});
 		it('should deactivate no users when no users in time range', (done) => {
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				request.post(api('users.deactivateIdle'))
+				request
+					.post(api('users.deactivateIdle'))
 					.set(credentials)
 					.send({
 						daysIdle: 999999,
@@ -2773,7 +2937,8 @@ describe('[Users]', function() {
 		});
 		it('should deactivate the test user when given its role and daysIdle = 0', (done) => {
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				request.post(api('users.deactivateIdle'))
+				request
+					.post(api('users.deactivateIdle'))
 					.set(credentials)
 					.send({
 						daysIdle: 0,
@@ -2790,7 +2955,8 @@ describe('[Users]', function() {
 		});
 		it('should not deactivate the test user again when given its role and daysIdle = 0', (done) => {
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				request.post(api('users.deactivateIdle'))
+				request
+					.post(api('users.deactivateIdle'))
 					.set(credentials)
 					.send({
 						daysIdle: 0,
@@ -2809,7 +2975,8 @@ describe('[Users]', function() {
 
 	describe('[/users.requestDataDownload]', () => {
 		it('should return the request data with fullExport false when no query parameter was send', (done) => {
-			request.get(api('users.requestDataDownload'))
+			request
+				.get(api('users.requestDataDownload'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2822,7 +2989,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
-			request.get(api('users.requestDataDownload?fullExport=false'))
+			request
+				.get(api('users.requestDataDownload?fullExport=false'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2835,7 +3003,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
-			request.get(api('users.requestDataDownload?fullExport=true'))
+			request
+				.get(api('users.requestDataDownload?fullExport=true'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2849,7 +3018,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.logoutOtherClients]', function() {
+	describe('[/users.logoutOtherClients]', function () {
 		let user;
 		let userCredentials;
 		let newCredentials;
@@ -2874,8 +3043,7 @@ describe('[Users]', function() {
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
-				const result = await request.get(api('me'))
-					.set(userCredentials);
+				const result = await request.get(api('me')).set(userCredentials);
 				return result.statusCode === 401;
 			}
 
@@ -2889,7 +3057,8 @@ describe('[Users]', function() {
 				}
 			}
 
-			request.post(api('users.logoutOtherClients'))
+			request
+				.post(api('users.logoutOtherClients'))
 				.set(newCredentials)
 				.expect(200)
 				.expect((res) => {
@@ -2904,7 +3073,8 @@ describe('[Users]', function() {
 	describe('[/users.autocomplete]', () => {
 		it('should return an empty list when the user does not have the necessary permission', (done) => {
 			updatePermission('view-outside-room', []).then(() => {
-				request.get(api('users.autocomplete?selector={}'))
+				request
+					.get(api('users.autocomplete?selector={}'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -2917,20 +3087,22 @@ describe('[Users]', function() {
 		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
 			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
-				request.get(api('users.autocomplete'))
+				request
+					.get(api('users.autocomplete'))
 					.set(credentials)
 					.query({})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+						expect(res.body.error).to.be.equal("The 'selector' param is required");
 					})
 					.end(done);
 			});
 		});
 		it('should return the users to fill auto complete', (done) => {
-			request.get(api('users.autocomplete?selector={}'))
+			request
+				.get(api('users.autocomplete?selector={}'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2944,7 +3116,8 @@ describe('[Users]', function() {
 
 	describe('[/users.getStatus]', () => {
 		it('should return my own status', (done) => {
-			request.get(api('users.getStatus'))
+			request
+				.get(api('users.getStatus'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2956,7 +3129,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return other user status', (done) => {
-			request.get(api('users.getStatus?userId=rocket.cat'))
+			request
+				.get(api('users.getStatus?userId=rocket.cat'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2981,7 +3155,8 @@ describe('[Users]', function() {
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
-				request.post(api('users.setStatus'))
+				request
+					.post(api('users.setStatus'))
 					.set(credentials)
 					.send({
 						status: 'busy',
@@ -2999,7 +3174,8 @@ describe('[Users]', function() {
 		});
 		it('should update my own status', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', true).then(() => {
-				request.post(api('users.setStatus'))
+				request
+					.post(api('users.setStatus'))
 					.set(credentials)
 					.send({
 						status: 'busy',
@@ -3016,7 +3192,8 @@ describe('[Users]', function() {
 		});
 		it('should return an error when trying to update other user status without the required permission', (done) => {
 			updatePermission('edit-other-user-info', []).then(() => {
-				request.post(api('users.setStatus'))
+				request
+					.post(api('users.setStatus'))
 					.set(credentials)
 					.send({
 						status: 'busy',
@@ -3034,7 +3211,8 @@ describe('[Users]', function() {
 		});
 		it('should update another user status succesfully', (done) => {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
-				request.post(api('users.setStatus'))
+				request
+					.post(api('users.setStatus'))
 					.set(credentials)
 					.send({
 						status: 'busy',
@@ -3054,7 +3232,8 @@ describe('[Users]', function() {
 			});
 		});
 		it('should return an error when the user try to update user status with an invalid status', (done) => {
-			request.post(api('users.setStatus'))
+			request
+				.post(api('users.setStatus'))
 				.set(credentials)
 				.send({
 					status: 'invalid',
@@ -3071,7 +3250,8 @@ describe('[Users]', function() {
 		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
 			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
 
-			await request.post(api('users.setStatus'))
+			await request
+				.post(api('users.setStatus'))
 				.set(credentials)
 				.send({
 					status: 'offline',
@@ -3111,8 +3291,7 @@ describe('[Users]', function() {
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
-				const result = await request.get(api('me'))
-					.set(userCredentials);
+				const result = await request.get(api('me')).set(userCredentials);
 				return result.statusCode === 401;
 			}
 
@@ -3126,20 +3305,18 @@ describe('[Users]', function() {
 				}
 			}
 
-			request.post(api('users.removeOtherTokens'))
-				.set(newCredentials)
-				.expect(200)
-				.then(tryAuthentication);
+			request.post(api('users.removeOtherTokens')).set(newCredentials).expect(200).then(tryAuthentication);
 		});
 	});
 
 	describe('[/users.listTeams]', () => {
-		const teamName1 = `team-name-${ Date.now() }`;
-		const teamName2 = `team-name-2-${ Date.now() }`;
+		const teamName1 = `team-name-${Date.now()}`;
+		const teamName2 = `team-name-2-${Date.now()}`;
 		let testUser;
 
 		before('create team 1', (done) => {
-			request.post(api('teams.create'))
+			request
+				.post(api('teams.create'))
 				.set(credentials)
 				.send({
 					name: teamName1,
@@ -3156,7 +3333,8 @@ describe('[Users]', function() {
 		});
 
 		before('create team 2', (done) => {
-			request.post(api('teams.create'))
+			request
+				.post(api('teams.create'))
 				.set(credentials)
 				.send({
 					name: teamName2,
@@ -3181,7 +3359,8 @@ describe('[Users]', function() {
 		});
 
 		before('add test user to team 1', (done) => {
-			request.post(api('teams.addMembers'))
+			request
+				.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
 					teamName: teamName1,
@@ -3201,7 +3380,8 @@ describe('[Users]', function() {
 		});
 
 		before('add test user to team 2', (done) => {
-			request.post(api('teams.addMembers'))
+			request
+				.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
 					teamName: teamName2,
@@ -3221,7 +3401,8 @@ describe('[Users]', function() {
 		});
 
 		it('should list both channels', (done) => {
-			request.get(api('users.listTeams'))
+			request
+				.get(api('users.listTeams'))
 				.set(credentials)
 				.query({
 					userId: testUser._id,
@@ -3255,41 +3436,33 @@ describe('[Users]', function() {
 		});
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
-			updatePermission('logout-other-user', []).then(
-				() => {
-					request.post(api('users.logout'))
-						.set(credentials)
-						.send({ userId: otherUser._id })
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.end(done);
-				},
-			);
+			updatePermission('logout-other-user', []).then(() => {
+				request
+					.post(api('users.logout'))
+					.set(credentials)
+					.send({ userId: otherUser._id })
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.end(done);
+			});
 		});
 
 		it('should logout other user', (done) => {
-			updatePermission('logout-other-user', ['admin']).then(
-				() => {
-					request.post(api('users.logout'))
-						.set(credentials)
-						.send({ userId: otherUser._id })
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.end(done);
-				});
-		},
-		);
+			updatePermission('logout-other-user', ['admin']).then(() => {
+				request
+					.post(api('users.logout'))
+					.set(credentials)
+					.send({ userId: otherUser._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.end(done);
+			});
+		});
 
 		it('should logout the requester', (done) => {
-			updatePermission('logout-other-user', []).then(
-				() => {
-					request.post(api('users.logout'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.end(done);
-				},
-			);
+			updatePermission('logout-other-user', []).then(() => {
+				request.post(api('users.logout')).set(credentials).expect('Content-Type', 'application/json').expect(200).end(done);
+			});
 		});
 	});
 });

@@ -1,13 +1,4 @@
-import {
-	Field,
-	FieldGroup,
-	Flex,
-	InputBox,
-	Margins,
-	Select,
-	Skeleton,
-	TextInput,
-} from '@rocket.chat/fuselage';
+import { Field, FieldGroup, Flex, InputBox, Margins, Select, Skeleton, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useReducer, useState, useCallback, useMemo } from 'react';
 
@@ -37,10 +28,7 @@ const useFields = () => {
 	}, []);
 
 	const resetFields = useCallback((fields) => dispatch({ type: reset, payload: fields }), []);
-	const setFieldValue = useCallback(
-		(_id, value) => dispatch({ type: setValue, payload: { _id, value } }),
-		[],
-	);
+	const setFieldValue = useCallback((_id, value) => dispatch({ type: setValue, payload: { _id, value } }), []);
 
 	return { fields, resetFields, setFieldValue };
 };
@@ -183,11 +171,7 @@ function SettingsBasedStep({ step, title, active }) {
 				</FieldGroup>
 			</Margins>
 
-			<Pager
-				disabled={commiting}
-				isContinueEnabled={!hasEmptyRequiredFields}
-				onBackClick={currentStep > 2 && handleBackClick}
-			/>
+			<Pager disabled={commiting} isContinueEnabled={!hasEmptyRequiredFields} onBackClick={currentStep > 2 && handleBackClick} />
 		</Step>
 	);
 }

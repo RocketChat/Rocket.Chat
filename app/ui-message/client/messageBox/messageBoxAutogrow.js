@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-const replaceWhitespaces = (whitespaces) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
+const replaceWhitespaces = (whitespaces) => `${'&nbsp;'.repeat(whitespaces.length - 1)} `;
 
 export const setupAutogrow = (textarea, shadow, callback) => {
 	const width = textarea.clientWidth;
@@ -10,7 +10,7 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 	shadow.style.position = 'fixed';
 	shadow.style.top = '-10000px';
 	shadow.style.left = '-10000px';
-	shadow.style.width = `${ width }px`;
+	shadow.style.width = `${width}px`;
 	shadow.style.font = font;
 	shadow.style.lineHeight = lineHeight;
 	shadow.style.resize = 'none';
@@ -34,14 +34,15 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 			return true;
 		}
 
-		const shadowText = text.replace(/&/g, '&amp;')
+		const shadowText = text
+			.replace(/&/g, '&amp;')
 			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
 			.replace(/\n$/, '<br/>&nbsp;')
 			.replace(/\n/g, '<br/>')
 			.replace(/ {2,}/g, replaceWhitespaces);
 		if (wasWidthChanged) {
-			shadow.style.width = `${ width }px`;
+			shadow.style.width = `${width}px`;
 			lastWidth = width;
 		}
 
@@ -63,7 +64,7 @@ export const setupAutogrow = (textarea, shadow, callback) => {
 		}
 
 		textarea.style.overflow = overflow;
-		textarea.style.height = `${ height }px`;
+		textarea.style.height = `${height}px`;
 
 		callback && callback();
 	};

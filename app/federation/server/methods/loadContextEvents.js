@@ -10,7 +10,9 @@ Meteor.methods({
 		}
 
 		if (!hasRole(Meteor.userId(), 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'loadContextEvents' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'loadContextEvents',
+			});
 		}
 
 		return FederationRoomEvents.find({ timestamp: { $gt: new Date(latestEventTimestamp) } }, { sort: { timestamp: 1 } }).fetch();

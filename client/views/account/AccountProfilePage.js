@@ -37,7 +37,7 @@ const AccountProfilePage = () => {
 
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user ?? {}));
+	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
 	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -94,18 +94,7 @@ const AccountProfilePage = () => {
 		],
 	);
 
-	const {
-		realname,
-		email,
-		avatar,
-		username,
-		password,
-		statusText,
-		statusType,
-		customFields,
-		bio,
-		nickname,
-	} = values;
+	const { realname, email, avatar, username, password, statusText, statusType, customFields, bio, nickname } = values;
 
 	const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
 
@@ -225,28 +214,16 @@ const AccountProfilePage = () => {
 			}
 		};
 
-		return setModal(() => (
-			<ActionConfirmModal
-				onConfirm={handleConfirm}
-				onCancel={closeModal}
-				isPassword={localPassword}
-			/>
-		));
-	}, [
-		closeModal,
-		dispatchToastMessage,
-		localPassword,
-		setModal,
-		handleConfirmOwnerChange,
-		deleteOwnAccount,
-		logout,
-		t,
-	]);
+		return setModal(() => <ActionConfirmModal onConfirm={handleConfirm} onCancel={closeModal} isPassword={localPassword} />);
+	}, [closeModal, dispatchToastMessage, localPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, logout, t]);
 
 	return (
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
+					<Button primary danger disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
 					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
 						{t('Save_changes')}
 					</Button>

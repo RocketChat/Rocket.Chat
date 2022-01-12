@@ -24,19 +24,11 @@ const LayoutProvider: FC = ({ children }) => {
 					size: {
 						sidebar: '240px',
 						// eslint-disable-next-line no-nested-ternary
-						contextualBar: breakpoints.includes('sm')
-							? breakpoints.includes('xl')
-								? '38%'
-								: '380px'
-							: '100%',
+						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
 					contextualBarExpanded: !breakpoints.includes('xxxl') && breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
-					contextualBarPosition: breakpoints.includes('sm')
-						? breakpoints.includes('lg')
-							? 'relative'
-							: 'absolute'
-						: 'fixed',
+					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 				}),
 				[isEmbedded, showTopNavbarEmbeddedLayout, breakpoints],
 			)}
@@ -46,7 +38,6 @@ const LayoutProvider: FC = ({ children }) => {
 export default LayoutProvider;
 
 export const useLayoutSizes = (): SizeLayout => useContext(LayoutContext).size;
-export const useLayoutContextualBarExpanded = (): boolean =>
-	useContext(LayoutContext).contextualBarExpanded;
+export const useLayoutContextualBarExpanded = (): boolean => useContext(LayoutContext).contextualBarExpanded;
 export const useLayoutContextualBarPosition = (): LayoutContextValue['contextualBarPosition'] =>
 	useContext(LayoutContext).contextualBarPosition;

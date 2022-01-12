@@ -32,20 +32,10 @@ function UnitNew({ reload, allUnits }) {
 	const filteredDepartments = {
 		departments: availableDepartments.departments.filter(
 			(department) =>
-				!allUnits ||
-				!allUnits.units ||
-				!department.ancestors ||
-				!allUnits.units.find((unit) => unit._id === department.ancestors[0]),
+				!allUnits || !allUnits.units || !department.ancestors || !allUnits.units.find((unit) => unit._id === department.ancestors[0]),
 		),
 	};
-	return (
-		<UnitEdit
-			reload={reload}
-			isNew
-			availableDepartments={filteredDepartments}
-			availableMonitors={availableMonitors}
-		/>
-	);
+	return <UnitEdit reload={reload} isNew availableDepartments={filteredDepartments} availableMonitors={availableMonitors} />;
 }
 
 export default UnitNew;
