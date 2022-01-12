@@ -124,7 +124,7 @@ export async function readFileAsArrayBuffer(file) {
 	});
 }
 
-export function generateMnemonicPhrase(n) {
+export function generateMnemonicPhrase(n, sep = ' ') {
 	const result = new Array(n);
 	let len = words.length;
 	const taken = new Array(len);
@@ -134,7 +134,7 @@ export function generateMnemonicPhrase(n) {
 		result[n] = words[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
-	return result.join(' ');
+	return result.join(sep);
 }
 
 export class Deferred {
