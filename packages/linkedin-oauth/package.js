@@ -15,8 +15,6 @@ Package.onUse((api) => {
 	api.use('random', 'client');
 	api.use('service-configuration', ['client', 'server']);
 
-	api.addFiles('linkedin-client.js', 'client');
-	api.addFiles('linkedin-server.js', 'server');
-
-	api.export('Linkedin');
+	api.mainModule('linkedin-client.js', 'client');
+	api.mainModule('linkedin-server.js', 'server');
 });
