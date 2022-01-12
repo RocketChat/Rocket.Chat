@@ -92,12 +92,10 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const management = type === ServerType.MANAGEMENT;
 		return {
-			_id: '',
 			type,
 			host: settings.get(management ? 'VoIP_Management_Server_Host' : 'VoIP_Server_Host'),
 			name: settings.get(management ? 'VoIP_Management_Server_Name' : 'VoIP_Server_Name'),
 			active: true,
-			_updatedAt: new Date(),
 			...(management
 				? {
 						configData: {
@@ -112,7 +110,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 							websocketPath: settings.get('VoIP_Server_Websocket_Path'),
 						},
 				  }),
-		} as IVoipServerConfig;
+		};
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface
