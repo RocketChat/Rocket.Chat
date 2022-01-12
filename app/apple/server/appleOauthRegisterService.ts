@@ -1,7 +1,3 @@
-// import { Meteor } from 'meteor/meteor';
-// import { Tracker } from 'meteor/tracker';
-// import _ from 'underscore';
-
 import { KJUR } from 'jsrsasign';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 

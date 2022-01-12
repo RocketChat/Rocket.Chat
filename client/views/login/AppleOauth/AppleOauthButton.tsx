@@ -78,7 +78,7 @@ export const AppleOauthButton: FC = () => {
 		script.async = true;
 		ref.current = script;
 		document.body.appendChild(script);
-		return () => {
+		return (): void => {
 			document.body.removeChild(script);
 		};
 	}, []);
