@@ -16,6 +16,7 @@ import { handleError } from '../lib/utils/handleError';
 
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
+const CMSPage = lazy(() => import('../views/root/CMSPage'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
@@ -140,24 +141,21 @@ FlowRouter.route('/account/:group?', {
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
 	action: () => {
-		Session.set('cmsPage', 'Layout_Terms_of_Service');
-		appLayout.render('cmsPage');
+		appLayout.render({ component: CMSPage, props: { page: 'Layout_Terms_of_Service' } as const });
 	},
 });
 
 FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
 	action: () => {
-		Session.set('cmsPage', 'Layout_Privacy_Policy');
-		appLayout.render('cmsPage');
+		appLayout.render({ component: CMSPage, props: { page: 'Layout_Privacy_Policy' } as const });
 	},
 });
 
 FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
-		Session.set('cmsPage', 'Layout_Legal_Notice');
-		appLayout.render('cmsPage');
+		appLayout.render({ component: CMSPage, props: { page: 'Layout_Legal_Notice' } as const });
 	},
 });
 
