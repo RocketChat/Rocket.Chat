@@ -74,18 +74,24 @@ API.v1.addRoute(
 /**
  * @openapi
  *  /api/v1/dns.resolve.txt:
- * 	  get:
+ * 	  post:
  *      description: Resolves DNS text records (TXT records) for a hostname
  *      security:
  *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: url
- *          in: query
- *          description: The hostname
- *          required: true
- *          schema:
- *            type: string
- *          example: open.rocket.chat
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *             description: The hostname
+ *             required: true
+ *            schema:
+ *              type: object
+ *              properties:
+ *                url:
+ *                  type: string
+ *            example: |
+ *              {
+ *                 "url": "open.rocket.chat"
+ *              }
  *      responses:
  *        200:
  *          description: The resolved records
@@ -111,18 +117,18 @@ API.v1.addRoute(
 	{
 		async post() {
 			check(
-				this.queryParams,
+				this.bodyParams,
 				Match.ObjectIncluding({
 					url: String,
 				}),
 			);
 
-			const { url } = this.queryParams;
+			const { url } = this.bodyParams;
 			if (!url) {
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
 
-			const resolved = await resolveTXT(url);
+			const resolved = await resolveTXT(url.trim());
 
 			return API.v1.success({ resolved });
 		},
