@@ -2,7 +2,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 
 import { OAuthEEManager } from '../lib/oauth/Manager';
 import { onLicense } from '../../app/license/server';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
 

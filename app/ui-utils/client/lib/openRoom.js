@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { roomTypes } from '../../../utils';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
