@@ -139,10 +139,14 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.audio_url = fileUrl;
 					attachment.audio_type = file.type;
 					attachment.audio_size = file.size;
+					attachment.title_link_download = true;
 				} else if (/^video\/.+/.test(file.type)) {
 					attachment.video_url = fileUrl;
 					attachment.video_type = file.type;
 					attachment.video_size = file.size;
+					attachment.title_link_download = true;
+				} else {
+					attachment.title_link_download = true;
 				}
 			} catch (e) {
 				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
