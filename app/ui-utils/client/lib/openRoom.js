@@ -92,8 +92,8 @@ export const openRoom = async function (type, name, render = true) {
 			c.stop();
 			if (type === 'd') {
 				try {
-					const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
-					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+					const { rid } = await call('createDirectMessage', ...name.split(', '));
+					return FlowRouter.go('direct', { rid }, FlowRouter.current().queryParams);
 				} catch (error) {
 					console.error(error);
 				}
