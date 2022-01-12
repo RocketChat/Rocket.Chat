@@ -27,23 +27,17 @@ const InvitePage = (): ReactElement => {
 		['invite', token],
 		async () => {
 			if (!token) {
-				return;
+				return false;
 			}
 
 			try {
-				const result = await APIClient.v1.post<
+				const { valid } = await APIClient.v1.post<
 					OperationParams<'POST', '/v1/validateInviteToken'>,
 					never,
 					OperationResult<'POST', '/v1/validateInviteToken'>
 				>('validateInviteToken', { token });
 
-				if (registrationForm !== 'Disabled') {
-					setLoginDefaultState('register');
-				} else {
-					setLoginDefaultState('login');
-				}
-
-				return result.valid;
+				return valid;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
 				return false;
@@ -51,7 +45,17 @@ const InvitePage = (): ReactElement => {
 		},
 		{
 			onSuccess: async (valid) => {
-				if (!token || !valid || !userId) {
+				if (!token) {
+					return;
+				}
+
+				if (registrationForm !== 'Disabled') {
+					setLoginDefaultState('register');
+				} else {
+					setLoginDefaultState('login');
+				}
+
+				if (!valid || !userId) {
 					return;
 				}
 

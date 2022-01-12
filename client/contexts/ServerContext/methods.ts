@@ -140,6 +140,7 @@ export type ServerMethods = {
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
+	'checkRegistrationSecretURL': (hash: string) => boolean;
 };
 
 export type ServerMethodName = keyof ServerMethods;

@@ -15,6 +15,7 @@ import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
@@ -171,7 +172,7 @@ FlowRouter.route('/room-not-found/:type/:name', {
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 	action: () => {
-		appLayout.render('secretURL');
+		appLayout.render({ component: SecretURLPage });
 	},
 });
 
