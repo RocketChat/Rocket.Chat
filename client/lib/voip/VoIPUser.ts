@@ -20,7 +20,7 @@ import {
 	SessionInviteOptions,
 	RequestPendingError,
 } from 'sip.js';
-import { OutgoingRequestDelegate } from 'sip.js/lib/core';
+import { OutgoingByeRequest, OutgoingRequestDelegate } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { CallStates } from '../../../definition/voip/CallStates';
@@ -445,7 +445,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * Public method called from outside to reject a call.
 	 * @remarks
 	 */
-	rejectCall(): Promise<unknown> {
+	rejectCall(): Promise<void> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
@@ -462,7 +462,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	 * Public method called from outside to end a call.
 	 * @remarks
 	 */
-	async endCall(): Promise<any> {
+	async endCall(): Promise<OutgoingByeRequest | void> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
