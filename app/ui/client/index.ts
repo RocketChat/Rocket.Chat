@@ -8,7 +8,6 @@ import './lib/textarea-cursor';
 import './views/cmsPage.html';
 import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
-import './views/404/invalidInvite.html';
 import './views/app/burger.html';
 import './views/app/home.html';
 import './views/app/notAuthorized.html';
@@ -23,7 +22,6 @@ import './views/app/burger';
 import './views/app/home';
 import './views/app/roomSearch';
 import './views/app/secretURL';
-import './views/app/invite';
 import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
 import './components/table.html';

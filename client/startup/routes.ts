@@ -14,6 +14,7 @@ import { createTemplateForComponent } from '../lib/portals/createTemplateForComp
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 
+const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
@@ -177,7 +178,7 @@ FlowRouter.route('/register/:hash', {
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
-		appLayout.render('invite');
+		appLayout.render({ component: InvitePage });
 	},
 });
 
