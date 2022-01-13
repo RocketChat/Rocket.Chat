@@ -135,7 +135,12 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						</Margins>
 					</Box>
 					<Box color='hint'>
-						<MarkdownText withTruncatedText content={statusText || t(status || 'offline')} variant='inlineWithoutBreaks' />
+						<MarkdownText
+							withTruncatedText
+							parseEmoji={true}
+							content={statusText || t(status || 'offline')}
+							variant='inlineWithoutBreaks'
+						/>
 					</Box>
 				</Box>
 			</Box>
@@ -160,7 +165,9 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							<Option.Column>
 								<UserStatus status={modifier} />
 							</Option.Column>
-							<Option.Content>{name}</Option.Content>
+							<Option.Content>
+								<MarkdownText content={name} parseEmoji={true} variant='inline' />
+							</Option.Content>
 						</Option>
 					);
 				})}
