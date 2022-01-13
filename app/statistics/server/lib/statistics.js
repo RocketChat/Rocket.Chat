@@ -226,6 +226,16 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
+		const { value: e2e } = await Settings.findOneById('E2E_Enable');
+		const { value: e2eDefaultDirectRoom } = await Settings.findOneById('E2E_Enabled_Default_DirectRooms');
+		const { value: e2eDefaultPrivateRoom } = await Settings.findOneById('E2E_Enabled_Default_PrivateRooms');
+		statistics.settings = {
+			e2ee: {
+				e2e,
+				e2eDefaultDirectRoom,
+				e2eDefaultPrivateRoom,
+			},
+		};
 		const integrations = await Integrations.find(
 			{},
 			{
