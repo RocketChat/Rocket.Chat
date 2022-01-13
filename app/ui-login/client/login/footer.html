@@ -1,8 +1,8 @@
 <template name='loginFooter'>
 	<footer>
-		{{#if languageVersion}}
+		{{#if lng}}
 			<div class="switch-language">
-				<button class="js-switch-language">{{languageVersion}}</button>
+				<button class="js-switch-language">{{_ "Language_Version" (lngObj lng) }}</button>
 			</div>
 		{{/if}}
 	</footer>
