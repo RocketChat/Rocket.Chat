@@ -104,7 +104,11 @@
 						{{# if enableMessageParserEarlyAdoption }}
 							{{> MessageBody tokens=msg.md mentions=msg.mentions }}
 						{{else}}
-							{{{body}}}
+							{{# if isDecrypting}}
+								{{_ "E2E_message_encrypted_placeholder"}}
+							{{else}}
+								{{{body}}}
+							{{/if}}
 						{{/if}}
 					{{/if}}
 					{{#if msg.location}}
