@@ -48,7 +48,7 @@ const getUserLanguages = (totalUsers) => {
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const statistics = {
-	get: function _getStatistics() {
+	get: async () => {
 		const readPreference = readSecondaryPreferred(db);
 
 		const statistics = {};
@@ -98,7 +98,7 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// Teams statistics
-		statistics.teams = Promise.await(Team.getStatistics());
+		statistics.teams = await Team.getStatistics();
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -190,19 +190,17 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 
-		statistics.uploadsTotal = Promise.await(Uploads.find().count());
-		const [result] = Promise.await(
-			Uploads.col
-				.aggregate(
-					[
-						{
-							$group: { _id: 'total', total: { $sum: '$size' } },
-						},
-					],
-					{ readPreference },
-				)
-				.toArray(),
-		);
+		statistics.uploadsTotal = await Uploads.find().count();
+		const [result] = await Uploads.col
+			.aggregate(
+				[
+					{
+						$group: { _id: 'total', total: { $sum: '$size' } },
+					},
+				],
+				{ readPreference },
+			)
+			.toArray();
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = getControl();
@@ -215,33 +213,31 @@ export const statistics = {
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = Promise.await(Sessions.getUniqueUsersOfYesterday());
-		statistics.uniqueUsersOfLastWeek = Promise.await(Sessions.getUniqueUsersOfLastWeek());
-		statistics.uniqueUsersOfLastMonth = Promise.await(Sessions.getUniqueUsersOfLastMonth());
-		statistics.uniqueDevicesOfYesterday = Promise.await(Sessions.getUniqueDevicesOfYesterday());
-		statistics.uniqueDevicesOfLastWeek = Promise.await(Sessions.getUniqueDevicesOfLastWeek());
-		statistics.uniqueDevicesOfLastMonth = Promise.await(Sessions.getUniqueDevicesOfLastMonth());
-		statistics.uniqueOSOfYesterday = Promise.await(Sessions.getUniqueOSOfYesterday());
-		statistics.uniqueOSOfLastWeek = Promise.await(Sessions.getUniqueOSOfLastWeek());
-		statistics.uniqueOSOfLastMonth = Promise.await(Sessions.getUniqueOSOfLastMonth());
+		statistics.uniqueUsersOfYesterday = await Sessions.getUniqueUsersOfYesterday();
+		statistics.uniqueUsersOfLastWeek = await Sessions.getUniqueUsersOfLastWeek();
+		statistics.uniqueUsersOfLastMonth = await Sessions.getUniqueUsersOfLastMonth();
+		statistics.uniqueDevicesOfYesterday = await Sessions.getUniqueDevicesOfYesterday();
+		statistics.uniqueDevicesOfLastWeek = await Sessions.getUniqueDevicesOfLastWeek();
+		statistics.uniqueDevicesOfLastMonth = await Sessions.getUniqueDevicesOfLastMonth();
+		statistics.uniqueOSOfYesterday = await Sessions.getUniqueOSOfYesterday();
+		statistics.uniqueOSOfLastWeek = await Sessions.getUniqueOSOfLastWeek();
+		statistics.uniqueOSOfLastMonth = await Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const integrations = Promise.await(
-			Integrations.find(
-				{},
-				{
-					projection: {
-						_id: 0,
-						type: 1,
-						enabled: 1,
-						scriptEnabled: 1,
-					},
-					readPreference,
+		const integrations = await Integrations.find(
+			{},
+			{
+				projection: {
+					_id: 0,
+					type: 1,
+					enabled: 1,
+					scriptEnabled: 1,
 				},
-			).toArray(),
-		);
+				readPreference,
+			},
+		).toArray();
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
@@ -254,15 +250,15 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+		statistics.pushQueue = await NotificationQueue.col.estimatedDocumentCount();
 
 		statistics.enterprise = getEnterpriseStatistics();
-		Promise.await(Analytics.resetSeatRequestCount());
+		await Analytics.resetSeatRequestCount();
 
 		return statistics;
 	},
 	async save() {
-		const rcStatistics = statistics.get();
+		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
 		await Statistics.insertOne(rcStatistics);
 		return rcStatistics;
