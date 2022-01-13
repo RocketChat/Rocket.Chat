@@ -64,9 +64,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
 
-			const resolved = await resolveSRV(url);
+			try {
+				const resolved = await resolveSRV(url);
 
-			return API.v1.success({ resolved });
+				return API.v1.success({ resolved });
+			} catch (error: any) {
+				const { code, syscall, hostname } = error;
+
+				return API.v1.failure(`${syscall} ${code} ${hostname}`);
+			}
 		},
 	},
 );
@@ -128,9 +134,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
 
-			const resolved = await resolveTXT(url.trim());
+			try {
+				const resolved = await resolveTXT(url.trim());
 
-			return API.v1.success({ resolved });
+				return API.v1.success({ resolved });
+			} catch (error: any) {
+				const { code, syscall, hostname } = error;
+
+				return API.v1.failure(`${syscall} ${code} ${hostname}`);
+			}
 		},
 	},
 );
