@@ -467,7 +467,7 @@ jobs:
         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
         curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-            "{\"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\" }" \
+            "{\"nodeVersion\": \"14.18.2\", \"compatibleMongoVersions\": [\"3.6\", \"4.0\", \"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
             https://releases.rocket.chat/update
 
         # Makes build fail if the release isn't there
