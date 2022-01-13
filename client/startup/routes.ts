@@ -18,6 +18,7 @@ import { handleError } from '../lib/utils/handleError';
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('../views/root/CMSPage'));
+const ResetPasswordPage = lazy(() => import('../views/login/ResetPassword/ResetPassword'));
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
@@ -210,6 +211,13 @@ FlowRouter.route('/login-token/:token', {
 				FlowRouter.go('/');
 			},
 		});
+	},
+});
+
+FlowRouter.route('/reset-password/:token', {
+	name: 'resetPassword',
+	action() {
+		appLayout.render({ component: ResetPasswordPage });
 	},
 });
 

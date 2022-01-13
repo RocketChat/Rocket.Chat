@@ -139,7 +139,7 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
 
 createTemplateForComponent('resetPassword', () => import('./views/login/ResetPassword/ResetPassword'), {
-	renderContainerView: () => HTML.DIV({ style: 'display: flex;' }),
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {

@@ -14,7 +14,7 @@
 				{{> username}}
 			{{else}}
 				{{#if requirePasswordChange}}
-					{{> loginLayout center="resetPassword"}}
+					{{> resetPassword}}
 				{{else}}
 					{{#if require2faSetup}}
 						<main id="rocket-chat" class="{{embeddedVersion}}">
