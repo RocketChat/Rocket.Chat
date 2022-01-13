@@ -7,6 +7,9 @@ import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
+import { Logger } from '../../../../logger/server';
+
+const logger = new Logger('Livechat');
 
 export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
@@ -107,10 +110,24 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export async function settings() {
+export async function settings(businessUnitIds = '') {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
-	const departments = findDepartments();
+	let departments = [];
+	if (businessUnitIds) {
+		logger.debug('Attempting to get departments connected to business units', businessUnitIds);
+		departments = await callbacks.run('livechat.findDepartmentsWithBusinessUnits', { businessUnitIds: businessUnitIds.split('-') });
+		logger.debug('Found following departments connected to the respective business units', departments, businessUnitIds);
+		if (!Array.isArray(departments)) {
+			// callback failed... maybe enterprise isn't valid
+			logger.warn(
+				`Livechat's attempt to get departments connected to the business units failed. Possibly because the license isn't valid. Method will fallback to return all active departments instead`,
+			);
+			departments = findDepartments();
+		}
+	} else {
+		departments = findDepartments();
+	}
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {

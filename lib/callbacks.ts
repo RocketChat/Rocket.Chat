@@ -12,6 +12,7 @@ import type { OmnichannelAgentStatus } from '../definition/IOmnichannelAgent';
 import type { ILivechatInquiryRecord } from '../definition/IInquiry';
 import type { ILivechatVisitor } from '../definition/ILivechatVisitor';
 import { getRandomId } from './random';
+import { ILivechatDepartment } from '../definition/ILivechatDepartment';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -92,6 +93,7 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
+	'livechat.findDepartmentsWithBusinessUnits': (params: { businessUnitIds?: string[] }) => ILivechatDepartment[];
 };
 
 type Hook =

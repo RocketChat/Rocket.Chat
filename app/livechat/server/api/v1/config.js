@@ -10,6 +10,7 @@ API.v1.addRoute('livechat/config', {
 			check(this.queryParams, {
 				token: Match.Maybe(String),
 				department: Match.Maybe(String),
+				businessUnitIds: Match.Maybe(String),
 			});
 			const enabled = Livechat.enabled();
 
@@ -17,9 +18,10 @@ API.v1.addRoute('livechat/config', {
 				return API.v1.success({ config: { enabled: false } });
 			}
 
-			const config = Promise.await(settings());
+			const { token, department, businessUnitIds } = this.queryParams;
 
-			const { token, department } = this.queryParams;
+			const config = Promise.await(settings(businessUnitIds));
+
 			const status = Livechat.online(department);
 			const guest = token && Livechat.findGuest(token);
 

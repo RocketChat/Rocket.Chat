@@ -22,3 +22,4 @@ import './applyDepartmentRestrictions';
 import './afterForwardChatToAgent';
 import './applySimultaneousChatsRestrictions';
 import './afterInquiryQueued';
+import './findDepartmentsWithBusinessUnits';
