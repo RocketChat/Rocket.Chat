@@ -142,6 +142,10 @@ createTemplateForComponent('resetPassword', () => import('./views/login/ResetPas
 	attachment: 'at-parent',
 });
 
+createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
+
+createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
+
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });
