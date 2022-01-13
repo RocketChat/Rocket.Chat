@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -192,6 +193,23 @@ FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
 	action: () => {
 		appLayout.render({ component: MailerUnsubscriptionPage });
+	},
+});
+
+FlowRouter.route('/login-token/:token', {
+	name: 'tokenLogin',
+	action(params) {
+		Accounts.callLoginMethod({
+			methodArguments: [
+				{
+					loginToken: params?.token,
+				},
+			],
+			userCallback(error) {
+				console.error(error);
+				FlowRouter.go('/');
+			},
+		});
 	},
 });
 
