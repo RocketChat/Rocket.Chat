@@ -26,11 +26,20 @@ const VoiceController: FC = (): ReactElement | null => {
 
 	const actions = useCallActions();
 
-	if (call.state !== 'IN_CALL' && call.state !== 'OFFER_RECEIVED') {
+	if (!('callerInfo' in call)) {
 		return null;
 	}
 
-	const subtitle = call.state === 'IN_CALL' ? t('In_progress') : t('Calling');
+	const getSubtitle = (): string => {
+		switch (call.state) {
+			case 'IN_CALL':
+				return t('In_progress');
+			case 'OFFER_RECEIVED':
+				return t('Calling');
+			case 'ON_HOLD':
+				return t('On_Hold');
+		}
+	};
 
 	return (
 		<SidebarFooter elevated>
@@ -56,12 +65,12 @@ const VoiceController: FC = (): ReactElement | null => {
 				<SidebarItemContent>
 					<SidebarItemContent>
 						<SidebarItemWrapper>
-							<SidebarItemTitle>{call.callerInfo?.callerName}</SidebarItemTitle>
+							<SidebarItemTitle>{call.callerInfo.callerName}</SidebarItemTitle>
 						</SidebarItemWrapper>
 					</SidebarItemContent>
 					<SidebarItemContent>
 						<SidebarItemWrapper>
-							<SidebarItemSubtitle className=''>{subtitle}</SidebarItemSubtitle>
+							<SidebarItemSubtitle className=''>{getSubtitle()}</SidebarItemSubtitle>
 							{/* TODO: Check if the required classname should be required in fuselage */}
 						</SidebarItemWrapper>
 					</SidebarItemContent>
