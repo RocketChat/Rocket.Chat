@@ -15,6 +15,7 @@ import { createTemplateForComponent } from '../lib/portals/createTemplateForComp
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 
+const MainLayout = lazy(() => import('../views/root/MainLayout'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('../views/root/CMSPage'));
@@ -29,7 +30,7 @@ FlowRouter.wait();
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		appLayout.render('main', { center: 'loading' });
+		appLayout.render({ component: MainLayout, props: { center: 'loading' } });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -98,13 +99,13 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.render('main', { center: 'home' });
+				appLayout.render({ component: MainLayout, props: { center: 'home' } });
 			});
 
 			return;
 		}
 
-		appLayout.render('main', { center: 'home' });
+		appLayout.render({ component: MainLayout, props: { center: 'home' } });
 	},
 });
 
@@ -114,7 +115,7 @@ FlowRouter.route('/directory/:tab?', {
 		const DirectoryPage = createTemplateForComponent('DirectoryPage', () => import('../views/directory/DirectoryPage'), {
 			attachment: 'at-parent',
 		});
-		appLayout.render('main', { center: DirectoryPage });
+		appLayout.render({ component: MainLayout, props: { center: DirectoryPage } });
 	},
 });
 
@@ -126,7 +127,7 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
 			{ attachment: 'at-parent' },
 		);
-		appLayout.render('main', { center: OmnichannelDirectoryPage });
+		appLayout.render({ component: MainLayout, props: { center: OmnichannelDirectoryPage } });
 	},
 });
 
@@ -136,7 +137,7 @@ FlowRouter.route('/account/:group?', {
 		const AccountRoute = createTemplateForComponent('AccountRoute', () => import('../views/account/AccountRoute'), {
 			attachment: 'at-parent',
 		});
-		appLayout.render('main', { center: AccountRoute });
+		appLayout.render({ component: MainLayout, props: { center: AccountRoute } });
 	},
 });
 
@@ -165,7 +166,7 @@ FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
-		appLayout.render('main', { center: 'roomNotFound' });
+		appLayout.render({ component: MainLayout, props: { center: 'roomNotFound' } });
 	},
 });
 

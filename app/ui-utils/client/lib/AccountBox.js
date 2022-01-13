@@ -4,9 +4,12 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
+import { lazy } from 'react';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { SideNav } from './SideNav';
+
+const MainLayout = lazy(() => import('../../../../client/views/root/MainLayout'));
 
 export const AccountBox = (function () {
 	let status = 0;
@@ -78,13 +81,13 @@ export const AccountBox = (function () {
 			async action() {
 				await wait();
 				Session.set('openedRoom');
-				return appLayout.render('main', routeConfig);
+				appLayout.render({ component: MainLayout, props: routeConfig });
 			},
 			triggersEnter: [
 				function () {
 					if (newRoute.sideNav != null) {
 						SideNav.setFlex(newRoute.sideNav);
-						return SideNav.openFlex();
+						SideNav.openFlex();
 					}
 				},
 			],

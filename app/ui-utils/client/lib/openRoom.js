@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
+import { lazy } from 'react';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription } from '../../../models';
@@ -26,12 +27,14 @@ NewRoomManager.on('changed', (rid) => {
 	RoomManager.openedRoom = rid;
 });
 
+const MainLayout = lazy(() => import('../../../../client/views/root/MainLayout'));
+
 export const openRoom = async function (type, name, render = true) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			appLayout.render('main');
+			appLayout.render({ component: MainLayout });
 			return;
 		}
 
@@ -51,7 +54,9 @@ export const openRoom = async function (type, name, render = true) {
 
 			RoomManager.open(type + name);
 
-			render && appLayout.render('main', { center: 'room' });
+			if (render) {
+				appLayout.render({ component: MainLayout, props: { center: 'room' } });
+			}
 
 			c.stop();
 
@@ -97,7 +102,7 @@ export const openRoom = async function (type, name, render = true) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return appLayout.render('main', { center: 'roomNotFound' });
+			appLayout.render({ component: MainLayout, props: { center: 'roomNotFound' } });
 		}
 	});
 };

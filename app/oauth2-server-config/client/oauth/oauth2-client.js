@@ -3,29 +3,38 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { lazy } from 'react';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { APIClient } from '../../../utils/client';
 
+const MainLayout = lazy(() => import('../../../../client/views/root/MainLayout'));
+
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
-		appLayout.render('main', {
-			center: 'authorize',
-			modal: true,
-			client_id: queryParams.client_id,
-			redirect_uri: queryParams.redirect_uri,
-			response_type: queryParams.response_type,
-			state: queryParams.state,
+		appLayout.render({
+			component: MainLayout,
+			props: {
+				center: 'authorize',
+				modal: true,
+				client_id: queryParams.client_id,
+				redirect_uri: queryParams.redirect_uri,
+				response_type: queryParams.response_type,
+				state: queryParams.state,
+			},
 		});
 	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
 	action(params) {
-		appLayout.render('main', {
-			center: 'oauth404',
-			modal: true,
-			error: params.error,
+		appLayout.render({
+			component: MainLayout,
+			props: {
+				center: 'oauth404',
+				modal: true,
+				error: params.error,
+			},
 		});
 	},
 });
