@@ -67,6 +67,23 @@ Template.body.onRendered(function () {
 	});
 
 	$(document.body).on('keydown', function (e) {
+		console.log(e);
+		if (e.shiftKey === true) {
+			e.stopPropagation();
+			$('.message-actions-default').removeClass('message-actions');
+			$('.message-actions-extended').addClass('message-actions');
+		}
+	});
+
+	$(document.body).on('keyup', function (e) {
+		if (e.originalEvent.key === 'Shift') {
+			e.stopPropagation();
+			$('.message-actions-default').addClass('message-actions');
+			$('.message-actions-extended').removeClass('message-actions');
+		}
+	});
+
+	$(document.body).on('keydown', function (e) {
 		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
 			popover.close();

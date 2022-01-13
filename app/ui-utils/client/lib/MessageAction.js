@@ -188,7 +188,7 @@ Meteor.startup(async function () {
 			return true;
 		},
 		order: 0,
-		group: 'menu',
+		group: ['menu', 'extended'],
 	});
 
 	MessageAction.addButton({
@@ -219,7 +219,7 @@ Meteor.startup(async function () {
 			return true;
 		},
 		order: -3,
-		group: ['message', 'menu'],
+		group: ['message', 'menu', 'extended'],
 	});
 
 	MessageAction.addButton({
@@ -258,7 +258,7 @@ Meteor.startup(async function () {
 			return !!subscription;
 		},
 		order: 5,
-		group: 'menu',
+		group: ['menu', 'extended'],
 	});
 
 	MessageAction.addButton({
@@ -324,7 +324,7 @@ Meteor.startup(async function () {
 			});
 		},
 		order: 18,
-		group: 'menu',
+		group: ['menu', 'extended'],
 	});
 
 	MessageAction.addButton({

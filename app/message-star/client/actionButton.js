@@ -38,7 +38,7 @@ Meteor.startup(function () {
 			return !message.starred || !message.starred.find((star) => star._id === u._id);
 		},
 		order: 9,
-		group: 'menu',
+		group: ['menu', 'extended'],
 	});
 
 	MessageAction.addButton({

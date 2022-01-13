@@ -2,7 +2,9 @@
 	position: relative;
 }
 
-.message-actions {
+.message-actions,
+.message-actions-default,
+.message-actions-extended {
 	position: absolute;
 	z-index: 2;
 	top: -28px;
