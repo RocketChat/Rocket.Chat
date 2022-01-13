@@ -56,7 +56,7 @@ const VoiceController: FC = (): ReactElement | null => {
 				<SidebarItemContent>
 					<SidebarItemContent>
 						<SidebarItemWrapper>
-							<SidebarItemTitle>{call.callerInfo.callerName}</SidebarItemTitle>
+							<SidebarItemTitle>{call.callerInfo?.callerName}</SidebarItemTitle>
 						</SidebarItemWrapper>
 					</SidebarItemContent>
 					<SidebarItemContent>
