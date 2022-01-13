@@ -1,4 +1,5 @@
 import './absoluteUrl';
+import './afterLogoutCleanUp';
 import './appRoot';
 import './banners';
 import './callbacks';

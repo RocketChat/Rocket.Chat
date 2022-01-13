@@ -1,63 +1,65 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, iframeLogin } from '../../ui-utils';
+import { mainReady, iframeLogin } from '../../ui-utils/client';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../../lib/callbacks';
 import { isSyncReady } from '../../../client/lib/userData';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
-import './main.html';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
+import './main.html';
 
-callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
+const subsReady = () => {
+	const subscriptionsReady = CachedChatSubscription.ready.get();
+	const settingsReady = settings.cachedCollection.ready.get();
+	const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
+
+	CachedCollectionManager.syncEnabled = ready;
+	mainReady.set(ready);
+
+	return ready;
+};
+
+const logged = () => {
+	if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
+		document.documentElement.classList.add('noscroll');
+		document.documentElement.classList.remove('scroll');
+		return true;
+	}
+
+	document.documentElement.classList.add('scroll');
+	document.documentElement.classList.remove('noscroll');
+	return false;
+};
 
 Template.main.helpers({
 	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
-	logged: () => {
-		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
-			document.documentElement.classList.add('noscroll');
-			document.documentElement.classList.remove('scroll');
-			return true;
-		}
-
-		document.documentElement.classList.add('scroll');
-		document.documentElement.classList.remove('noscroll');
-		return false;
-	},
+	logged,
 	useIframe: () => {
-		const iframeEnabled = typeof iframeLogin !== 'undefined';
-		return iframeEnabled && iframeLogin.reactiveEnabled.get();
+		return iframeLogin.reactiveEnabled.get();
 	},
 	iframeUrl: () => {
-		const iframeEnabled = typeof iframeLogin !== 'undefined';
-		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
+		return iframeLogin.reactiveIframeUrl.get();
 	},
-	subsReady: () => {
-		const subscriptionsReady = CachedChatSubscription.ready.get();
-		const settingsReady = settings.cachedCollection.ready.get();
-		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
-
-		CachedCollectionManager.syncEnabled = ready;
-		mainReady.set(ready);
-
-		return ready;
-	},
+	subsReady,
 	hasUsername: () => {
 		const uid = Meteor.userId();
+
+		if (!uid) {
+			return settings.get('Accounts_AllowAnonymousRead');
+		}
+
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
+		return user?.username ?? false;
 	},
 	requirePasswordChange: () => {
-		const user = Meteor.user();
-		return user && user.requirePasswordChange === true;
+		return Meteor.user()?.requirePasswordChange === true;
 	},
 	require2faSetup: () => {
 		const user = Meteor.user();
@@ -75,12 +77,6 @@ Template.main.helpers({
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
 		return mandatoryRole !== undefined && is2faEnabled;
 	},
-	CustomScriptLoggedOut: () => {
-		fireGlobalEvent('Custom_Script_Logged_Out');
-	},
-	CustomScriptLoggedIn: () => {
-		fireGlobalEvent('Custom_Script_Logged_In');
-	},
 	embeddedVersion: () => {
 		if (isLayoutEmbedded()) {
 			return 'embedded-view';
@@ -95,12 +91,24 @@ Template.main.helpers({
 
 Template.main.onCreated(function () {
 	tooltip.init();
+
+	this.autorun(() => {
+		if (!subsReady()) {
+			return;
+		}
+
+		if (logged()) {
+			fireGlobalEvent('Custom_Script_Logged_In');
+			return;
+		}
+
+		fireGlobalEvent('Custom_Script_Logged_Out');
+	});
 });
 
 Template.main.onRendered(function () {
 	// iOS prevent click if elements matches hover
-	isIOsDevice &&
-		window.matchMedia('(hover: none)').matches &&
+	if (isIOsDevice && window.matchMedia('(hover: none)').matches) {
 		$(document.body).on('touchend', 'a', (e) => {
 			if (!e.target.matches(':hover')) {
 				return;
@@ -108,28 +116,31 @@ Template.main.onRendered(function () {
 
 			e.target.click();
 		});
+	}
 
-	Tracker.autorun(function () {
+	this.autorun(() => {
 		const userId = Meteor.userId();
 
+		const handleMouseEnter = (e) => {
+			const avatarElem = $(e.currentTarget);
+			const username = avatarElem.attr('data-username');
+			if (username) {
+				e.stopPropagation();
+				tooltip.showElement($('<span>').text(username), avatarElem);
+			}
+		};
+
+		const handleMouseLeave = () => {
+			tooltip.hide();
+		};
+
 		if (getUserPreference(userId, 'hideUsernames')) {
-			$(document.body).on('mouseenter', 'button.thumb', (e) => {
-				const avatarElem = $(e.currentTarget);
-				const username = avatarElem.attr('data-username');
-				if (username) {
-					e.stopPropagation();
-					tooltip.showElement($('<span>').text(username), avatarElem);
-				}
-			});
-
-			$(document.body).on('mouseleave', 'button.thumb', () => {
-				tooltip.hide();
-			});
-
+			$(document.body).on('mouseenter', 'button.thumb', handleMouseEnter);
+			$(document.body).on('mouseleave', 'button.thumb', handleMouseLeave);
 			return;
 		}
 
-		$(document.body).off('mouseenter', 'button.thumb');
-		$(document.body).off('mouseleave', 'button.thumb');
+		$(document.body).off('mouseenter', 'button.thumb', handleMouseEnter);
+		$(document.body).off('mouseleave', 'button.thumb', handleMouseLeave);
 	});
 });
