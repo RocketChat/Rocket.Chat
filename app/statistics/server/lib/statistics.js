@@ -237,6 +237,8 @@ export const statistics = {
 		const { value: frameworkDevMode } = await Settings.findOneById('Apps_Framework_Development_Mode');
 		const { value: frameworkEnable } = await Settings.findOneById('Apps_Framework_enabled');
 
+		const { value: surveyEnabled } = await Settings.findOneById('NPS_survey_enabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -257,6 +259,9 @@ export const statistics = {
 				apps: {
 					frameworkDevMode,
 					frameworkEnable,
+				},
+				nps: {
+					surveyEnabled,
 				},
 			},
 		};
