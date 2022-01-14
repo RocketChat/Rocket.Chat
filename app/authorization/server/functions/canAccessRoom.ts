@@ -12,4 +12,5 @@ export const roomAccessAttributes = {
 };
 
 export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean => Promise.await(canAccessRoomAsync(...args));
-export const canAccessRoomId = (...args: Parameters<IAuthorization['canAccessRoomId']>): boolean => Promise.await(canAccessRoomIdAsync(...args));
+export const canAccessRoomId = (...args: Parameters<IAuthorization['canAccessRoomId']>): boolean =>
+	Promise.await(canAccessRoomIdAsync(...args));

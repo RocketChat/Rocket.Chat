@@ -5,7 +5,13 @@ import { Match, check } from 'meteor/check';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
 import { Integrations, Uploads } from '../../../models/server/raw';
-import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
+import {
+	hasPermission,
+	hasAtLeastOnePermission,
+	canAccessRoom,
+	hasAllPermission,
+	roomAccessAttributes,
+} from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';

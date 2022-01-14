@@ -30,7 +30,14 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
+import {
+	addUserRoles,
+	hasPermission,
+	hasRole,
+	removeUserFromRoles,
+	canAccessRoom,
+	roomAccessAttributes,
+} from '../../../authorization/server';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';

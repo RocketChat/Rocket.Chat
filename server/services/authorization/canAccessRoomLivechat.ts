@@ -14,8 +14,7 @@ export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, ext
 	// if we received a partial room, load the full IOmnichannelRoom data for it
 	// Otherwise, try to load the data from the extraData (this is the case for file uploads)
 	const rid = room?._id || extraData?.rid;
-	const livechatRoom = rid && await LivechatRooms.findOneById(rid);
-
+	const livechatRoom = rid && (await LivechatRooms.findOneById(rid));
 
 	// Check the type again in case the room parameter was not received
 	if (livechatRoom?.t !== 'l') {

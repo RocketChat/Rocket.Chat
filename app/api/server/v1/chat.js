@@ -595,7 +595,8 @@ API.v1.addRoute(
 				updatedSinceDate = new Date(updatedSince);
 			}
 			const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-			const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+			const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
 			if (!canAccessRoom(room, user)) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
@@ -603,209 +604,228 @@ API.v1.addRoute(
 			return API.v1.success({
 				threads: {
 					update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
-					remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
-						fields,
-						sort,
-					}).fetch(),
+					remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, { fields, sort }).fetch(),
 				},
 			});
 		},
 	},
-});
+);
 
-API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
-	get() {
-		const { roomId } = this.queryParams;
-		const { offset, count } = this.getPaginationItems();
+API.v1.addRoute(
+	'chat.getPinnedMessages',
+	{ authRequired: true },
+	{
+		get() {
+			const { roomId } = this.queryParams;
+			const { offset, count } = this.getPaginationItems();
 
-		if (!roomId) {
-			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-		}
+			if (!roomId) {
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+			}
 
-		if (!canAccessRoomId(roomId, this.userId)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed');
-		}
+			if (!canAccessRoomId(roomId, this.userId)) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
 
-		const cursor = Messages.findPinnedByRoom(roomId, {
-			skip: offset,
-			limit: count,
-		});
+			const cursor = Messages.findPinnedByRoom(roomId, {
+				skip: offset,
+				limit: count,
+			});
 
-		const total = cursor.count();
+			const total = cursor.count();
 
-		const messages = cursor.fetch();
+			const messages = cursor.fetch();
 
-		return API.v1.success({
-			messages,
-			count: messages.length,
-			offset,
-			total,
-		});
+			return API.v1.success({
+				messages,
+				count: messages.length,
+				offset,
+				total,
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
-	get() {
-		const { rid, type, text } = this.queryParams;
-		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+API.v1.addRoute(
+	'chat.getThreadsList',
+	{ authRequired: true },
+	{
+		get() {
+			const { rid, type, text } = this.queryParams;
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields, query } = this.parseJsonQuery();
 
-		if (!rid) {
-			throw new Meteor.Error('The required "rid" query param is missing.');
-		}
-		if (!settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-		}
-		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
+			if (!rid) {
+				throw new Meteor.Error('The required "rid" query param is missing.');
+			}
+			if (!settings.get('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+			const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+			const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-		}
+			if (!canAccessRoom(room, user)) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
 
-		const typeThread = {
-			_hidden: { $ne: true },
-			...type === 'following' && { replies: { $in: [this.userId] } },
-			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
-			msg: new RegExp(escapeRegExp(text), 'i'),
-		};
+			const typeThread = {
+				_hidden: { $ne: true },
+				...(type === 'following' && { replies: { $in: [this.userId] } }),
+				...(type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } }),
+				msg: new RegExp(escapeRegExp(text), 'i'),
+			};
 
-		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
-		const cursor = Messages.find(threadQuery, {
-			sort: sort || { tlm: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		});
+			const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
+			const cursor = Messages.find(threadQuery, {
+				sort: sort || { tlm: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			});
 
-		const total = cursor.count();
+			const total = cursor.count();
 
-		const threads = cursor.fetch();
+			const threads = cursor.fetch();
 
-		return API.v1.success({
-			threads,
-			count: threads.length,
-			offset,
-			total,
-		});
+			return API.v1.success({
+				threads,
+				count: threads.length,
+				offset,
+				total,
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
-	get() {
-		const { rid } = this.queryParams;
-		const { query, fields, sort } = this.parseJsonQuery();
-		const { updatedSince } = this.queryParams;
-		let updatedSinceDate;
-		if (!settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-		}
-		if (!rid) {
-			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" query param is missing.');
-		}
-		if (!updatedSince) {
-			throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
-		}
-		if (isNaN(Date.parse(updatedSince))) {
-			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-		} else {
-			updatedSinceDate = new Date(updatedSince);
-		}
-		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
+API.v1.addRoute(
+	'chat.syncThreadsList',
+	{ authRequired: true },
+	{
+		get() {
+			const { rid } = this.queryParams;
+			const { query, fields, sort } = this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (!settings.get('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+			if (!rid) {
+				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" query param is missing.');
+			}
+			if (!updatedSince) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
+			}
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+			const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-		}
-		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
-		return API.v1.success({
-			threads: {
-				update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
-				remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, { fields, sort }).fetch(),
-			},
-		});
+			if (!canAccessRoom(room, user)) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			return API.v1.success({
+				threads: {
+					update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
+					remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, { fields, sort }).fetch(),
+				},
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
-	get() {
-		const { tmid } = this.queryParams;
-		const { query, fields, sort } = this.parseJsonQuery();
-		const { offset, count } = this.getPaginationItems();
+API.v1.addRoute(
+	'chat.getThreadMessages',
+	{ authRequired: true },
+	{
+		get() {
+			const { tmid } = this.queryParams;
+			const { query, fields, sort } = this.parseJsonQuery();
+			const { offset, count } = this.getPaginationItems();
 
-		if (!settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-		}
-		if (!tmid) {
-			throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
-		}
-		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
-		if (!thread || !thread.rid) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
-		}
-		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
+			if (!settings.get('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+			if (!tmid) {
+				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
+			}
+			const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
+			if (!thread || !thread.rid) {
+				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+			}
+			const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+			const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-		}
-		const cursor = Messages.find({ ...query, tmid }, {
-			sort: sort || { ts: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		});
+			if (!canAccessRoom(room, user)) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			const cursor = Messages.find(
+				{ ...query, tmid },
+				{
+					sort: sort || { ts: 1 },
+					skip: offset,
+					limit: count,
+					fields,
+				},
+			);
 
-		const total = cursor.count();
+			const total = cursor.count();
 
-		const messages = cursor.fetch();
+			const messages = cursor.fetch();
 
-		return API.v1.success({
-			messages,
-			count: messages.length,
-			offset,
-			total,
-		});
+			return API.v1.success({
+				messages,
+				count: messages.length,
+				offset,
+				total,
+			});
+		},
 	},
-});
+);
 
-API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
-	get() {
-		const { tmid } = this.queryParams;
-		const { query, fields, sort } = this.parseJsonQuery();
-		const { updatedSince } = this.queryParams;
-		let updatedSinceDate;
-		if (!settings.get('Threads_enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-		}
-		if (!tmid) {
-			throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
-		}
-		if (!updatedSince) {
-			throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
-		}
-		if (isNaN(Date.parse(updatedSince))) {
-			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-		} else {
-			updatedSinceDate = new Date(updatedSince);
-		}
-		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
-		if (!thread || !thread.rid) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
-		}
-		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
+API.v1.addRoute(
+	'chat.syncThreadMessages',
+	{ authRequired: true },
+	{
+		get() {
+			const { tmid } = this.queryParams;
+			const { query, fields, sort } = this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (!settings.get('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+			if (!tmid) {
+				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
+			}
+			if (!updatedSince) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
+			}
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
+			if (!thread || !thread.rid) {
+				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+			}
+			const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+			const room = Rooms.findOneById(thread.rid, { fields: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-		if (!canAccessRoom(room, user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-		}
-		return API.v1.success({
-			messages: {
-				update: Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
-				remove: Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { fields, sort }).fetch(),
-			},
-		});
-
+			if (!canAccessRoom(room, user)) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			return API.v1.success({
+				messages: {
+					update: Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
+					remove: Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { fields, sort }).fetch(),
+				},
+			});
+		},
 	},
 );
 

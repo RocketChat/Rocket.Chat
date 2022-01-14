@@ -201,9 +201,9 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-		if (!canAccessRoomId(body.roomId, user._id)) {
-			return API.v1.unauthorized();
-		}
+			if (!canAccessRoomId(body.roomId, user._id)) {
+				return API.v1.unauthorized();
+			}
 
 			const params = body.params ? body.params : '';
 			const message = {
@@ -255,9 +255,9 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-		if (!canAccessRoomId(query.roomId, user._id)) {
-			return API.v1.unauthorized();
-		}
+			if (!canAccessRoomId(query.roomId, user._id)) {
+				return API.v1.unauthorized();
+			}
 
 			const params = query.params ? query.params : '';
 
@@ -310,9 +310,9 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-		if (!canAccessRoomId(body.roomId, user._id)) {
-			return API.v1.unauthorized();
-		}
+			if (!canAccessRoomId(body.roomId, user._id)) {
+				return API.v1.unauthorized();
+			}
 
 			const params = body.params ? body.params : '';
 			const message = {

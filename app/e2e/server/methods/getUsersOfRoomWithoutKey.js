@@ -23,7 +23,6 @@ Meteor.methods({
 
 		if (!canAccessRoomId(rid, userId)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
-
 		}
 
 		const subscriptions = Subscriptions.findByRidWithoutE2EKey(rid, {
