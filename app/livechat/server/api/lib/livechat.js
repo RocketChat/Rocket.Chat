@@ -110,7 +110,7 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export async function settings(businessUnitIds = '') {
+export async function settings({ businessUnit = '' }) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
 	let departments = [];
