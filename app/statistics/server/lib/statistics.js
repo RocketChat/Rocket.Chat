@@ -233,6 +233,10 @@ export const statistics = {
 		const { value: smtpHost } = await Settings.findOneById('SMTP_Host');
 		const { value: smtpPort } = await Settings.findOneById('SMTP_Port');
 		const { value: fromEmail } = await Settings.findOneById('From_Email');
+
+		const { value: frameworkDevMode } = await Settings.findOneById('Apps_Framework_Development_Mode');
+		const { value: frameworkEnable } = await Settings.findOneById('Apps_Framework_enabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -247,6 +251,12 @@ export const statistics = {
 					smtpHost,
 					smtpPort,
 					fromEmail,
+				},
+			},
+			general: {
+				apps: {
+					frameworkDevMode,
+					frameworkEnable,
 				},
 			},
 		};
