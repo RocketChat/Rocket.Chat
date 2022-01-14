@@ -27,4 +27,5 @@ export const useAppsReload = (): (() => void) => {
 	const { reload } = useContext(AppsContext);
 	return reload;
 };
+
 export const useAppsResult = (): AppsContextValue => useContext(AppsContext);
