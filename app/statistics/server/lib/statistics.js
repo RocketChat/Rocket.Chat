@@ -253,6 +253,10 @@ export const statistics = {
 
 		const { value: globalSearchEnabled } = await Settings.findOneById('Search.defaultProvider.GlobalSearchEnabled');
 
+		const { value: otrEnable } = await Settings.findOneById('OTR_Enable');
+		const { value: pushEnable } = await Settings.findOneById('Push_enable');
+		const { value: threadsEnabled } = await Settings.findOneById('Threads_enabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -293,10 +297,19 @@ export const statistics = {
 				readReceiptEnabled,
 				readReceiptStoreUsers,
 			},
+			otr: {
+				otrEnable,
+			},
+			push: {
+				pushEnable,
+			},
 			search: {
 				defaultProvider: {
 					globalSearchEnabled,
 				},
+			},
+			threads: {
+				threadsEnabled,
 			},
 		};
 		const integrations = await Integrations.find(
