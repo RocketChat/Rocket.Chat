@@ -260,6 +260,10 @@ export const statistics = {
 		const { value: bigBlueButton } = await Settings.findOneById('bigbluebutton_Enabled');
 		const { value: jitsiEnabled } = await Settings.findOneById('Jitsi_Enabled');
 
+		const { value: webRTCEnableChannel } = await Settings.findOneById('WebRTC_Enable_Channel');
+		const { value: webRTCEnablePrivate } = await Settings.findOneById('WebRTC_Enable_Private');
+		const { value: webRTCEnableDirect } = await Settings.findOneById('WebRTC_Enable_Direct');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -317,6 +321,11 @@ export const statistics = {
 			videoConference: {
 				bigBlueButton,
 				jitsiEnabled,
+			},
+			webRTC: {
+				webRTCEnableChannel,
+				webRTCEnablePrivate,
+				webRTCEnableDirect,
 			},
 		};
 		const integrations = await Integrations.find(
