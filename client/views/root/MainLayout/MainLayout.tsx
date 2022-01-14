@@ -4,6 +4,7 @@ import React, { lazy, ReactElement, useCallback } from 'react';
 import { Roles, Users } from '../../../../app/models/client';
 import { IUser } from '../../../../definition/IUser';
 import { useLayout } from '../../../contexts/LayoutContext';
+import { useCurrentRoute, useRoutePath } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser, useUserId } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -31,9 +32,26 @@ const ResetPasswordPage = lazy(() => import('../../login/ResetPassword/ResetPass
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 
 const MainLayout5 = ({ center }: MainLayoutProps): ReactElement => {
-	0;
+	const { isEmbedded: embeddedLayout } = useLayout();
+	const [currentRouteName = '', currentParameters = {}] = useCurrentRoute();
+	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
+	const removeSidenav = useReactiveValue(
+		useCallback(() => embeddedLayout && !currentRoutePath?.startsWith('/admin'), [currentRoutePath, embeddedLayout]),
+	);
+	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
-	return <BlazeTemplate template='main' data={{ center }} />;
+	return (
+		<div id='rocket-chat' className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}>
+			{!removeSidenav ? <BlazeTemplate template='sideNav' /> : null}
+			<div
+				className={['rc-old', 'main-content', 'content-background-color', readReceiptsEnabled ? 'read-receipts-enabled' : undefined]
+					.filter(Boolean)
+					.join(' ')}
+			>
+				{center ? <BlazeTemplate template={center} /> : null}
+			</div>
+		</div>
+	);
 };
 
 const MainLayout4 = ({ center }: MainLayoutProps): ReactElement => {
