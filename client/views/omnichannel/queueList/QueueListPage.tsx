@@ -28,10 +28,9 @@ type QueueListPagePropsType = {
 	params: QueueListPagePropsParamsType;
 	setParams: Dispatch<SetStateAction<QueueListPagePropsParamsType>>;
 	renderRow: (props: { _id?: Key }) => ReactElement;
-	reload: () => void;
 };
 
-export const QueueListPage = ({ title, header, data, renderRow, params, setParams, reload }: QueueListPagePropsType): ReactElement => (
+export const QueueListPage = ({ title, header, data, renderRow, params, setParams }: QueueListPagePropsType): ReactElement => (
 	<Page>
 		<Page.Header title={title} />
 		<Page.Content>
@@ -41,7 +40,6 @@ export const QueueListPage = ({ title, header, data, renderRow, params, setParam
 				renderRow={renderRow}
 				results={data?.queue}
 				total={data?.total}
-				reload={reload}
 				params={params}
 				setParams={setParams}
 			/>

@@ -59,14 +59,17 @@ const QueueList = (): ReactElement => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, user, department, chats, open, onHold }) => {
-			const getStatusText = (open: boolean, onHold: boolean): string => {
-				if (!open) return t('Closed');
-				return onHold ? t('On_Hold_Chats') : t('Open');
+		({ user, department, chats }) => {
+			const getStatusText = (): string => {
+				if (user.status === 'online') {
+					return t('Online');
+				}
+
+				return t('Offline');
 			};
 
 			return (
-				<Table.Row key={_id} tabIndex={0}>
+				<Table.Row key={user._id} tabIndex={0}>
 					<Table.Cell withTruncatedText>
 						<Box display='flex' alignItems='center' mb='5px'>
 							<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
@@ -77,7 +80,7 @@ const QueueList = (): ReactElement => {
 					</Table.Cell>
 					<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 					<Table.Cell withTruncatedText>{chats}</Table.Cell>
-					<Table.Cell withTruncatedText>{getStatusText(open, onHold)}</Table.Cell>
+					<Table.Cell withTruncatedText>{getStatusText()}</Table.Cell>
 				</Table.Row>
 			);
 		},
@@ -94,18 +97,10 @@ const QueueList = (): ReactElement => {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const { value: data, reload } = useEndpointData('livechat/queue', query);
+	const { value: data } = useEndpointData('livechat/queue', query);
 
 	return (
-		<QueueListPage
-			title={t('Livechat_Queue')}
-			header={header}
-			data={data}
-			renderRow={renderRow}
-			params={params}
-			setParams={setParams}
-			reload={reload}
-		/>
+		<QueueListPage title={t('Livechat_Queue')} header={header} data={data} renderRow={renderRow} params={params} setParams={setParams} />
 	);
 };
 
