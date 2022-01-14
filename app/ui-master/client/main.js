@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { iframeLogin } from '../../ui-utils/client';
 import { settings } from '../../settings';
 import { Roles, Users } from '../../models';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
@@ -11,15 +9,6 @@ import './main.html';
 
 Template.main.helpers({
 	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
-	logged: () => {
-		return !!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true);
-	},
-	useIframe: () => {
-		return iframeLogin.reactiveEnabled.get();
-	},
-	iframeUrl: () => {
-		return iframeLogin.reactiveIframeUrl.get();
-	},
 	hasUsername: () => {
 		const uid = Meteor.userId();
 
