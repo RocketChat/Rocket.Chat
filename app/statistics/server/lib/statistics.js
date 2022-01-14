@@ -24,6 +24,7 @@ import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
+import { getSettingsStatistics } from '/server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -226,108 +227,9 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const { value: account2fa } = await Settings.findOneById('Accounts_TwoFactorAuthentication_Enabled');
-		const { value: e2e } = await Settings.findOneById('E2E_Enable');
-		const { value: e2eDefaultDirectRoom } = await Settings.findOneById('E2E_Enabled_Default_DirectRooms');
-		const { value: e2eDefaultPrivateRoom } = await Settings.findOneById('E2E_Enabled_Default_PrivateRooms');
-		const { value: smtpHost } = await Settings.findOneById('SMTP_Host');
-		const { value: smtpPort } = await Settings.findOneById('SMTP_Port');
-		const { value: fromEmail } = await Settings.findOneById('From_Email');
+		const settingsStatisticsObject = await getSettingsStatistics();
+		statistics.settings = settingsStatisticsObject;
 
-		const { value: frameworkDevMode } = await Settings.findOneById('Apps_Framework_Development_Mode');
-		const { value: frameworkEnable } = await Settings.findOneById('Apps_Framework_enabled');
-
-		const { value: surveyEnabled } = await Settings.findOneById('NPS_survey_enabled');
-
-		const { value: updateChecker } = await Settings.findOneById('Update_EnableChecker');
-
-		const { value: liveStream } = await Settings.findOneById('Livestream_enabled');
-		const { value: broadcasting } = await Settings.findOneById('Broadcasting_enabled');
-
-		const { value: allowEditing } = await Settings.findOneById('Message_AllowEditing');
-		const { value: allowDeleting } = await Settings.findOneById('Message_AllowDeleting');
-		const { value: allowUnrecognizedSlashCommand } = await Settings.findOneById('Message_AllowUnrecognizedSlashCommand');
-		const { value: allowBadWordsFilter } = await Settings.findOneById('Message_AllowBadWordsFilter');
-		const { value: readReceiptEnabled } = await Settings.findOneById('Message_Read_Receipt_Enabled');
-		const { value: readReceiptStoreUsers } = await Settings.findOneById('Message_Read_Receipt_Store_Users');
-
-		const { value: globalSearchEnabled } = await Settings.findOneById('Search.defaultProvider.GlobalSearchEnabled');
-
-		const { value: otrEnable } = await Settings.findOneById('OTR_Enable');
-		const { value: pushEnable } = await Settings.findOneById('Push_enable');
-		const { value: threadsEnabled } = await Settings.findOneById('Threads_enabled');
-
-		const { value: bigBlueButton } = await Settings.findOneById('bigbluebutton_Enabled');
-		const { value: jitsiEnabled } = await Settings.findOneById('Jitsi_Enabled');
-
-		const { value: webRTCEnableChannel } = await Settings.findOneById('WebRTC_Enable_Channel');
-		const { value: webRTCEnablePrivate } = await Settings.findOneById('WebRTC_Enable_Private');
-		const { value: webRTCEnableDirect } = await Settings.findOneById('WebRTC_Enable_Direct');
-
-		statistics.settings = {
-			accounts: {
-				account2fa,
-			},
-			e2ee: {
-				e2e,
-				e2eDefaultDirectRoom,
-				e2eDefaultPrivateRoom,
-			},
-			email: {
-				smtp: {
-					smtpHost,
-					smtpPort,
-					fromEmail,
-				},
-			},
-			general: {
-				apps: {
-					frameworkDevMode,
-					frameworkEnable,
-				},
-				nps: {
-					surveyEnabled,
-				},
-				update: {
-					updateChecker,
-				},
-			},
-			liveStreamAndBroadcasting: {
-				liveStream,
-				broadcasting,
-			},
-			message: {
-				allowEditing,
-				allowDeleting,
-				allowUnrecognizedSlashCommand,
-				allowBadWordsFilter,
-				readReceiptEnabled,
-				readReceiptStoreUsers,
-			},
-			otr: {
-				otrEnable,
-			},
-			push: {
-				pushEnable,
-			},
-			search: {
-				defaultProvider: {
-					globalSearchEnabled,
-				},
-			},
-			threads: {
-				threadsEnabled,
-			},
-			videoConference: {
-				bigBlueButton,
-				jitsiEnabled,
-			},
-			webRTC: {
-				webRTCEnableChannel,
-				webRTCEnablePrivate,
-				webRTCEnableDirect,
-			},
-		};
 		const integrations = await Integrations.find(
 			{},
 			{
