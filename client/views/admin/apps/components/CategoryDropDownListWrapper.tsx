@@ -1,8 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { usePosition } from '@rocket.chat/fuselage-hooks';
+import { usePosition, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import React, { forwardRef, ComponentProps, useRef } from 'react';
-
-import { useOutsideClick } from '../../../../hooks/useOutsideClick';
 
 const options = {
 	margin: 8,
@@ -17,8 +15,8 @@ const hidden = {
 
 const CategoryDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: unknown) => void }>(
 	function CategoryDropDownListWrapper({ children, onClose }, ref) {
-		const target = useRef<HTMLDivElement>(null);
-		useOutsideClick(target, onClose);
+		const target = useRef<HTMLElement>(null);
+		useOutsideClick([target], onClose);
 		const { style = hidden } = usePosition(ref as Parameters<typeof usePosition>[0], target, options);
 		return (
 			<Box ref={target} style={style} minWidth={224} zIndex='99999'>
