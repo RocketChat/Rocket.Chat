@@ -3,25 +3,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../settings';
-import { Roles, Users } from '../../models';
+import { Roles } from '../../models';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import './main.html';
 
 Template.main.helpers({
 	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
-	hasUsername: () => {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			return settings.get('Accounts_AllowAnonymousRead');
-		}
-
-		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
-		return user?.username ?? false;
-	},
-	requirePasswordChange: () => {
-		return Meteor.user()?.requirePasswordChange === true;
-	},
 	require2faSetup: () => {
 		const user = Meteor.user();
 

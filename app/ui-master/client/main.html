@@ -1,26 +1,18 @@
 <template name="main">
-	{{#unless hasUsername}}
-		{{> username}}
+	{{#if require2faSetup}}
+		<main id="rocket-chat" class="{{embeddedVersion}}">
+			<div class="rc-old main-content content-background-color">
+				{{> accountSecurity }}
+			</div>
+		</main>
 	{{else}}
-		{{#if requirePasswordChange}}
-			{{> resetPassword}}
-		{{else}}
-			{{#if require2faSetup}}
-				<main id="rocket-chat" class="{{embeddedVersion}}">
-					<div class="rc-old main-content content-background-color">
-						{{> accountSecurity }}
-					</div>
-				</main>
-			{{else}}
-				<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
-					{{#unless removeSidenav}}
-						{{> sideNav }}
-					{{/unless}}
-					<div class="rc-old main-content content-background-color {{readReceiptsEnabled}}">
-						{{> Template.dynamic template=center}}
-					</div>
-				</div>
-			{{/if}}
-		{{/if}}
-	{{/unless}}
+		<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
+			{{#unless removeSidenav}}
+				{{> sideNav }}
+			{{/unless}}
+			<div class="rc-old main-content content-background-color {{readReceiptsEnabled}}">
+				{{> Template.dynamic template=center}}
+			</div>
+		</div>
+	{{/if}}
 </template>

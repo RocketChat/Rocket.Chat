@@ -138,10 +138,6 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 
 createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
 
-createTemplateForComponent('resetPassword', () => import('./views/login/ResetPassword/ResetPassword'), {
-	attachment: 'at-parent',
-});
-
 createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
 
 createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
