@@ -239,6 +239,8 @@ export const statistics = {
 
 		const { value: surveyEnabled } = await Settings.findOneById('NPS_survey_enabled');
 
+		const { value: updateChecker } = await Settings.findOneById('Update_EnableChecker');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -262,6 +264,9 @@ export const statistics = {
 				},
 				nps: {
 					surveyEnabled,
+				},
+				update: {
+					updateChecker,
 				},
 			},
 		};
