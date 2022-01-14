@@ -257,6 +257,9 @@ export const statistics = {
 		const { value: pushEnable } = await Settings.findOneById('Push_enable');
 		const { value: threadsEnabled } = await Settings.findOneById('Threads_enabled');
 
+		const { value: bigBlueButton } = await Settings.findOneById('bigbluebutton_Enabled');
+		const { value: jitsiEnabled } = await Settings.findOneById('Jitsi_Enabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -310,6 +313,10 @@ export const statistics = {
 			},
 			threads: {
 				threadsEnabled,
+			},
+			videoConference: {
+				bigBlueButton,
+				jitsiEnabled,
 			},
 		};
 		const integrations = await Integrations.find(
