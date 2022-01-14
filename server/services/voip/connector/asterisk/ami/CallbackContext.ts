@@ -4,13 +4,17 @@
 
 import { Command } from '../Command';
 import { ICallbackContext } from '../ICallbackContext';
+import { Logger } from '../../../../../lib/logger/Logger';
 
 export class CallbackContext implements ICallbackContext {
 	private callback: (event: any) => void;
 
 	private ref: Command;
 
+	private logger: Logger;
+
 	constructor(callback: (event: any) => void, command: Command) {
+		this.logger = new Logger('CallbackContext');
 		this.callback = callback;
 		this.ref = command;
 	}
@@ -22,7 +26,29 @@ export class CallbackContext implements ICallbackContext {
 	 * else returns false
 	 */
 	call(event: any): boolean {
-		if (event.actionid === this.ref.actionid) {
+		const pattern = new RegExp(this.ref.actionid);
+		this.logger.error({ msg: 'AMOL_DEBUG Trying', data1: this.ref.actionid, data2: event.actionid });
+		/**
+		 *
+		 * Though actionid remains unique with every action and for some
+		 * actions it is not present, it makes sense to parse it as a regex
+		 * if there is no exact match.
+		 *
+		 * This approach is used when we have continuous monitoring. But it is observed that the event
+		 * we are interested in monitoring do not have actionid. (queuecallerjoin, agentcalled, agentconnect)
+		 *
+		 * Alternate way of handing it is that we check if event.actionid is absent,
+		 * go ahead and call the callback.
+		 *
+		 * But we do not know if for all such |continuous monitoring| events, the actionid
+		 * would be absent. Furthermore, it is futureproof if we want to
+		 * continuously monitor the PBX.
+		 * So the safest bet for |continuous monitoring events|
+		 * right now is to pass .* in this.ref.actionid
+		 * and if the exact match does not happen, try to match the regex.
+		 *
+		 */
+		if (event.actionid === this.ref.actionid || pattern.test(event.actionid)) {
 			this.callback(event);
 			return true;
 		}

@@ -95,6 +95,12 @@ export class AMIConnection implements IConnection {
 			this.eventHandlers.set(event, array);
 		}
 		this.eventHandlers.get(event)?.push(callbackContext);
+		/*
+		this.logger.error({ msg: 'AMOL_DEBUG 2 on()', events: JSON.stringify(this.eventHandlers) });
+		this.eventHandlers.forEach((value: any, key: string) => {
+			this.logger.error({ msg: 'AMOL_DEBUG 3 on()', key });
+		});
+		*/
 	}
 
 	off(event: string, command: Command): void {

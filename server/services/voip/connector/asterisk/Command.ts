@@ -1,3 +1,5 @@
+import { Db } from 'mongodb';
+
 import { IConnection } from './IConnection';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
@@ -80,11 +82,22 @@ export class Command {
 		this._returnReject = reject;
 	}
 
-	constructor(command: string, parametersNeeded: boolean) {
+	private _db: Db;
+
+	get db(): any {
+		return this._db;
+	}
+
+	set db(db: Db) {
+		this._db = db;
+	}
+
+	constructor(command: string, parametersNeeded: boolean, db?: Db) {
 		this._commandText = command;
 		this._actionid = -1;
 		this._parametersNeeded = parametersNeeded;
 		this.result = {};
+		if (db) this._db = db;
 	}
 
 	protected prepareCommandAndExecution(
@@ -101,9 +114,17 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any): Promise<IVoipConnectorResult> {
+	async executeCommand(_data: any): Promise<IVoipConnectorResult> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});
+	}
+
+	initMonitor(_data: any): boolean {
+		return true;
+	}
+
+	cleanMonitor(): boolean {
+		return true;
 	}
 }

@@ -33,3 +33,13 @@ export interface IQueueDetails {
 	logestholdtime: string;
 	members: IQueueMember[];
 }
+export interface ISourceQueueDetails extends Omit<IQueueDetails, 'members'> {
+	name: string;
+	strategy: string;
+	calls: string;
+	holdtime: string;
+	talktime: string;
+	completed: string;
+	abandoned: string;
+	logestholdtime: string;
+}

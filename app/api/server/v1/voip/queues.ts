@@ -34,3 +34,21 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'voip/queues.getSourceQueueDetails',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					extension: String,
+				}),
+			);
+			const queueDetails = await Voip.getSourceQueueDetails(this.requestParams());
+			logger.debug({ msg: 'API = voip/queues.getDetails ', result: queueDetails });
+			return API.v1.success({ details: queueDetails.result });
+		},
+	},
+);

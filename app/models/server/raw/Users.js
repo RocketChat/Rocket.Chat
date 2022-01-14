@@ -883,6 +883,14 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneByExtension(extension, options) {
+		const query = {
+			extension,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	getVoipExtensionByUserId(userId, options) {
 		const query = {
 			_id: userId,
