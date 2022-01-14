@@ -3,30 +3,56 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
-import { callbacks } from '../../../../callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { ILivechatDepartmentRecord } from '../../../../../definition/ILivechatDepartmentRecord';
 import { ILivechatDepartmentAgents } from '../../../../../definition/ILivechatDepartmentAgents';
 
 type Pagination<T> = { pagination: { offset: number; count: number; sort: SortOptionObject<T> } };
-type FindDepartmentParams = { userId: string; onlyMyDepartments?: boolean; text?: string; enabled?: boolean; excludeDepartmentId?: string } & Pagination<ILivechatDepartmentRecord>;
-type FindDepartmentByIdParams = { userId: string; departmentId: string; includeAgents?: boolean; onlyMyDepartments?: boolean };
-type FindDepartmentToAutocompleteParams = { uid: string; selector: { exceptions: string[]; conditions: FilterQuery<ILivechatDepartmentRecord>; term: string }; onlyMyDepartments?: boolean };
-type FindDepartmentAgentsParams = { userId: string; departmentId: string } & Pagination<ILivechatDepartmentAgents>;
+type FindDepartmentParams = {
+	userId: string;
+	onlyMyDepartments?: boolean;
+	text?: string;
+	enabled?: boolean;
+	excludeDepartmentId?: string;
+} & Pagination<ILivechatDepartmentRecord>;
+type FindDepartmentByIdParams = {
+	userId: string;
+	departmentId: string;
+	includeAgents?: boolean;
+	onlyMyDepartments?: boolean;
+};
+type FindDepartmentToAutocompleteParams = {
+	uid: string;
+	selector: {
+		exceptions: string[];
+		conditions: FilterQuery<ILivechatDepartmentRecord>;
+		term: string;
+	};
+	onlyMyDepartments?: boolean;
+};
+type FindDepartmentAgentsParams = {
+	userId: string;
+	departmentId: string;
+} & Pagination<ILivechatDepartmentAgents>;
 
-export async function findDepartments({ userId, onlyMyDepartments = false, text, enabled, excludeDepartmentId, pagination: { offset, count, sort } }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartmentRecord[] }>> {
-	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
+export async function findDepartments({
+	userId,
+	onlyMyDepartments = false,
+	text,
+	enabled,
+	excludeDepartmentId,
+	pagination: { offset, count, sort },
+}: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartmentRecord[] }>> {
+	if (!(await hasPermissionAsync(userId, 'view-livechat-departments')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
 	let query = {
-		$or: [
-			{ type: { $eq: 'd' } },
-			{ type: { $exists: false } },
-		],
-		...enabled && { enabled: Boolean(enabled) },
-		...text && { name: new RegExp(escapeRegExp(text), 'i') },
-		...excludeDepartmentId && { _id: { $ne: excludeDepartmentId } },
+		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
+		...(enabled && { enabled: Boolean(enabled) }),
+		...(text && { name: new RegExp(escapeRegExp(text), 'i') }),
+		...(excludeDepartmentId && { _id: { $ne: excludeDepartmentId } }),
 	};
 
 	if (onlyMyDepartments) {
@@ -51,9 +77,17 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	};
 }
 
-export async function findDepartmentById({ userId, departmentId, includeAgents = true, onlyMyDepartments = false }: FindDepartmentByIdParams): Promise<{ department: ILivechatDepartmentRecord | null; agents?: ILivechatDepartmentAgents[] }> {
+export async function findDepartmentById({
+	userId,
+	departmentId,
+	includeAgents = true,
+	onlyMyDepartments = false,
+}: FindDepartmentByIdParams): Promise<{
+	department: ILivechatDepartmentRecord | null;
+	agents?: ILivechatDepartmentAgents[];
+}> {
 	const canViewLivechatDepartments = await hasPermissionAsync(userId, 'view-livechat-departments');
-	if (!canViewLivechatDepartments && !await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!canViewLivechatDepartments && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -65,14 +99,21 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 
 	const result = {
 		department: await LivechatDepartment.findOne(query),
-		...includeAgents && canViewLivechatDepartments && { agents: await LivechatDepartmentAgents.find({ departmentId }).toArray() },
+		...(includeAgents &&
+			canViewLivechatDepartments && {
+				agents: await LivechatDepartmentAgents.find({ departmentId }).toArray(),
+			}),
 	};
 
 	return result;
 }
 
-export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepartments = false }: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartmentRecord[] }> {
-	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
+export async function findDepartmentsToAutocomplete({
+	uid,
+	selector,
+	onlyMyDepartments = false,
+}: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartmentRecord[] }> {
+	if (!(await hasPermissionAsync(uid, 'view-livechat-departments')) && !(await hasPermissionAsync(uid, 'view-l-room'))) {
 		return { items: [] };
 	}
 	const { exceptions = [] } = selector;
@@ -92,14 +133,23 @@ export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepar
 		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
 	}
 
-	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
+	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(
+		selector.term,
+		exceptions,
+		conditions,
+		options,
+	).toArray();
 	return {
 		items,
 	};
 }
 
-export async function findDepartmentAgents({ userId, departmentId, pagination: { offset, count, sort } }: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
-	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
+export async function findDepartmentAgents({
+	userId,
+	departmentId,
+	pagination: { offset, count, sort },
+}: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
+	if (!(await hasPermissionAsync(userId, 'view-livechat-departments')) && !(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -121,8 +171,16 @@ export async function findDepartmentAgents({ userId, departmentId, pagination: {
 	};
 }
 
-export async function findDepartmentsBetweenIds({ uid, ids, fields }: { uid: string; ids: string[]; fields: Record<string, unknown> }): Promise<{ departments: ILivechatDepartmentRecord[] }> {
-	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
+export async function findDepartmentsBetweenIds({
+	uid,
+	ids,
+	fields,
+}: {
+	uid: string;
+	ids: string[];
+	fields: Record<string, unknown>;
+}): Promise<{ departments: ILivechatDepartmentRecord[] }> {
+	if (!(await hasPermissionAsync(uid, 'view-livechat-departments')) && !(await hasPermissionAsync(uid, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

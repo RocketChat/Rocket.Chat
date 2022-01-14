@@ -20,7 +20,16 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function getPushData({ room, message, userId, senderUsername, senderName, notificationMessage, receiver, shouldOmitMessage = true }) {
+export async function getPushData({
+	room,
+	message,
+	userId,
+	senderUsername,
+	senderName,
+	notificationMessage,
+	receiver,
+	shouldOmitMessage = true,
+}) {
 	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
 
 	const lng = receiver.language || settings.get('Language') || 'en';
@@ -42,9 +51,12 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 			name: settings.get('Push_show_username_room') ? room.name : '',
 			messageType: message.t,
 			tmid: message.tmid,
-			...message.t === 'e2e' && { msg: message.msg },
+			...(message.t === 'e2e' && { msg: message.msg }),
 		},
-		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
+		roomName:
+			settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room)
+				? `#${roomTypes.getRoomName(room.t, room)}`
+				: '',
 		username,
 		message: messageText,
 		badge: await Subscriptions.getBadgeCount(userId),
@@ -83,5 +95,12 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return (roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+	return (
+		(roomType === 'd' ||
+			(!disableAllMessageNotifications && hasMentionToAll) ||
+			isHighlighted ||
+			mobilePushNotifications === 'all' ||
+			hasMentionToUser) &&
+		(!isThread || hasReplyToThread)
+	);
 }

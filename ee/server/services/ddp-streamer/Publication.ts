@@ -11,11 +11,7 @@ export class Publication extends EventEmitter implements IPublication {
 
 	connection: IPublication['connection'];
 
-	constructor(
-		public client: Client,
-		private packet: IPacket,
-		private server: Server,
-	) {
+	constructor(public client: Client, private packet: IPacket, private server: Server) {
 		super();
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);

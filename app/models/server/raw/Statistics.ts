@@ -4,9 +4,7 @@ import { IStatistic } from '../../../../definition/IStatistic';
 type T = IStatistic;
 
 export class StatisticsRaw extends BaseRaw<T> {
-	protected indexes: IndexSpecification[] = [
-		{ key: { createdAt: -1 } },
-	]
+	protected indexes: IndexSpecification[] = [{ key: { createdAt: -1 } }];
 
 	async findLast(): Promise<T> {
 		const options = {

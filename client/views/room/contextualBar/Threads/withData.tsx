@@ -20,10 +20,7 @@ export function withData(Component: FC<ThreadListProps>): FC<{ rid: string }> {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 
-		const [type, setType] = useLocalStorage<'all' | 'following' | 'unread'>(
-			'thread-list-type',
-			'all',
-		);
+		const [type, setType] = useLocalStorage<'all' | 'following' | 'unread'>('thread-list-type', 'all');
 
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
@@ -86,9 +83,7 @@ export function withData(Component: FC<ThreadListProps>): FC<{ rid: string }> {
 		);
 	};
 
-	WrappedComponent.displayName = `withData(${
-		Component.displayName ?? Component.name ?? 'Component'
-	})`;
+	WrappedComponent.displayName = `withData(${Component.displayName ?? Component.name ?? 'Component'})`;
 
 	return WrappedComponent;
 }

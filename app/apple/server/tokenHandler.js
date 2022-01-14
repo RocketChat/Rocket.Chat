@@ -12,10 +12,7 @@ const isValidAppleJWT = (identityToken, header) => {
 	const key = applePublicKeys.find((k) => k.kid === kid);
 
 	const pubKey = new NodeRSA();
-	pubKey.importKey(
-		{ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') },
-		'components-public',
-	);
+	pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
 	const userKey = pubKey.exportKey(['public']);
 
 	try {
@@ -46,7 +43,7 @@ export const handleIdentityToken = ({ identityToken, fullName, email }) => {
 
 	const { givenName, familyName } = fullName;
 	if (givenName && familyName) {
-		profile.name = `${ givenName } ${ familyName }`;
+		profile.name = `${givenName} ${familyName}`;
 	}
 
 	const { iss, iat, exp } = decodedToken.payloadObj;

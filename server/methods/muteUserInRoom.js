@@ -3,15 +3,18 @@ import { Match, check } from 'meteor/check';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks';
+import { callbacks } from '../../lib/callbacks';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
 
 Meteor.methods({
 	muteUserInRoom(data) {
-		check(data, Match.ObjectIncluding({
-			rid: String,
-			username: String,
-		}));
+		check(
+			data,
+			Match.ObjectIncluding({
+				rid: String,
+				username: String,
+			}),
+		);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -36,13 +39,15 @@ Meteor.methods({
 		}
 
 		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
-			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
+			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t,
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+			fields: { _id: 1 },
+		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'muteUserInRoom',

@@ -3,7 +3,7 @@ import { statistics } from '../lib/statistics';
 import { Statistics } from '../../../models/server/raw';
 
 export async function getLastStatistics({ userId, refresh }) {
-	if (!await hasPermissionAsync(userId, 'view-statistics')) {
+	if (!(await hasPermissionAsync(userId, 'view-statistics'))) {
 		throw new Error('error-not-allowed');
 	}
 

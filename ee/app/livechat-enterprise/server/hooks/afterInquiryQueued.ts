@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
@@ -20,7 +20,7 @@ const scheduleInquiry = (inquiry: any): void => {
 
 	// schedule individual jobs instead of property for close inactivty
 	const newQueueTime = moment(inquiry._updatedAt || inquiry._createdAt).add(timer, 'minutes');
-	cbLogger.debug(`Scheduling estimated close time at ${ newQueueTime } for queued inquiry ${ inquiry._id }`);
+	cbLogger.debug(`Scheduling estimated close time at ${newQueueTime} for queued inquiry ${inquiry._id}`);
 	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 

@@ -13,15 +13,7 @@ const ChannelToTeamModal = ({ onClose, onConfirm }) => {
 		return <StepTwo onClose={onClose} onCancel={onClose} onConfirm={() => onConfirm(teamId)} />;
 	}
 
-	return (
-		<StepOne
-			onClose={onClose}
-			onCancel={onClose}
-			onConfirm={nextStep}
-			onChange={setTeamId}
-			teamId={teamId}
-		/>
-	);
+	return <StepOne onClose={onClose} onCancel={onClose} onConfirm={nextStep} onChange={setTeamId} teamId={teamId} />;
 };
 
 export default ChannelToTeamModal;

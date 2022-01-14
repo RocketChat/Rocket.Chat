@@ -5,7 +5,7 @@ import { ICachedSettings } from '../CachedSettings';
 
 type Dictionary = {
 	[index: string]: any;
-}
+};
 
 class SettingsClass {
 	settings: ICachedSettings;
@@ -14,8 +14,7 @@ class SettingsClass {
 		return [];
 	}
 
-
-	public data = new Map<string, Dictionary>()
+	public data = new Map<string, Dictionary>();
 
 	public upsertCalls = 0;
 

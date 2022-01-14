@@ -10,9 +10,7 @@ export const createSettings = (): void => {
 		public: true,
 		enterprise: true,
 		invalidValue: false,
-		modules: [
-			'canned-responses',
-		],
+		modules: ['canned-responses'],
 		enableQuery: omnichannelEnabledQuery,
 	});
 };

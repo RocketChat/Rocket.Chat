@@ -39,23 +39,13 @@ const CustomFieldsAdditionalForm = ({ values = {}, handlers = {}, state, classNa
 			<Field className={className}>
 				<Field.Label>{t('Default_value')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={defaultValue}
-						onChange={handleDefaultValue}
-						placeholder={t('Default_value')}
-					/>
+					<TextInput value={defaultValue} onChange={handleDefaultValue} placeholder={t('Default_value')} />
 				</Field.Row>
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Options')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={options}
-						onChange={handleOptions}
-						error={optionsError}
-						disabled={type === 'input'}
-						placeholder={t('Options')}
-					/>
+					<TextInput value={options} onChange={handleOptions} error={optionsError} disabled={type === 'input'} placeholder={t('Options')} />
 				</Field.Row>
 				<Field.Hint>{t('Livechat_custom_fields_options_placeholder')}</Field.Hint>
 				{optionsError && <Field.Error>{optionsError}</Field.Error>}
@@ -64,12 +54,7 @@ const CustomFieldsAdditionalForm = ({ values = {}, handlers = {}, state, classNa
 				<Box display='flex' flexDirection='row'>
 					<Field.Label htmlFor='public'>{t('Public')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch
-							disabled={!state.visibility}
-							id='public'
-							checked={isPublic}
-							onChange={handlePublic}
-						/>
+						<ToggleSwitch disabled={!state.visibility} id='public' checked={isPublic} onChange={handlePublic} />
 					</Field.Row>
 				</Box>
 				<Field.Hint>{t('Livechat_custom_fields_public_description')}</Field.Hint>

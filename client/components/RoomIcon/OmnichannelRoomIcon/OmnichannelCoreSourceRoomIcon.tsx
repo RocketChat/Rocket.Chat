@@ -17,7 +17,7 @@ const iconMap = {
 	app: 'headset',
 	api: 'headset',
 	other: 'headset',
-};
+} as const;
 
 export const OmnichannelCoreSourceRoomIcon = ({
 	room,

@@ -12,14 +12,14 @@ import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const _setUsername = function(userId, u, fullUser) {
+export const _setUsername = function (userId, u, fullUser) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
 	}
 	let nameValidation;
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}

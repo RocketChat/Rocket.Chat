@@ -10,10 +10,7 @@ const PreferencesLocalizationSection = ({ onChange, commitRef, ...props }) => {
 	const userLanguage = useUserPreference('language') || '';
 	const languages = useLanguages();
 
-	const languageOptions = useMemo(
-		() => languages.map(({ key, name }) => [key, name]).sort(([a], [b]) => a - b),
-		[languages],
-	);
+	const languageOptions = useMemo(() => languages.map(({ key, name }) => [key, name]).sort(([a], [b]) => a - b), [languages]);
 
 	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
 

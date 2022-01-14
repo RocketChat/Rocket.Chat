@@ -14,13 +14,16 @@ async function migrateSessions() {
 
 	const userIds = users.map(({ _id }) => _id);
 
-	await Sessions.updateMany({
-		userId: { $in: userIds },
-	}, {
-		$set: {
-			roles: ['anonymous'],
+	await Sessions.updateMany(
+		{
+			userId: { $in: userIds },
 		},
-	});
+		{
+			$set: {
+				roles: ['anonymous'],
+			},
+		},
+	);
 }
 
 addMigration({

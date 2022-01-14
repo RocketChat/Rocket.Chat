@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
@@ -25,7 +25,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
 				'services.tokenpass': 1,
-				messageViewMode: 1,
+				'messageViewMode': 1,
 			},
 		});
 
@@ -38,16 +38,16 @@ Template.roomList.helpers({
 
 		if (sortBy === 'activity') {
 			sort.lm = -1;
-		} else { // alphabetical
-			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
+		} else {
+			// alphabetical
+			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy)
+				? -1
+				: 1;
 		}
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.$or = [
-				{ hideUnreadStatus: { $ne: true } },
-				{ unread: { $gt: 0 } },
-			];
+			query.$or = [{ hideUnreadStatus: { $ne: true } }, { unread: { $gt: 0 } }];
 
 			return ChatSubscription.find(query, { sort });
 		}
@@ -82,10 +82,7 @@ Template.roomList.helpers({
 				query.$or = [
 					{ alert: { $ne: true } },
 					{
-						$and: [
-							{ hideUnreadStatus: true },
-							{ unread: 0 },
-						],
+						$and: [{ hideUnreadStatus: true }, { unread: 0 }],
 					},
 				];
 			}
@@ -108,12 +105,12 @@ Template.roomList.helpers({
 		or is unread and has one room
 		*/
 
-		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
+		return !['unread', 'f'].includes(group.identifier) || rooms.length || (rooms.count && rooms.count());
 	},
 
 	roomType(room) {
 		if (room.header || room.identifier) {
-			return `type-${ room.header || room.identifier }`;
+			return `type-${room.header || room.identifier}`;
 		}
 	},
 
@@ -176,7 +173,7 @@ const mergeSubRoom = (subscription) => {
 		},
 	};
 
-	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || {};
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
@@ -297,54 +294,60 @@ const mergeRoomSub = (room) => {
 		queuedAt,
 	} = room;
 
-	Subscriptions.update({
-		rid: room._id,
-	}, {
-		$set: {
-			encrypted,
-			description,
-			cl,
-			topic,
-			announcement,
-			broadcast,
-			archived,
-			avatarETag,
-			retention,
-			uids,
-			usernames,
-			lastMessage,
-			streamingOptions,
-			teamId,
-			teamMain,
-			v,
-			transcriptRequest,
-			servedBy,
-			onHold,
-			tags,
-			closedAt,
-			metrics,
-			muted,
-			waitingResponse,
-			responseBy,
-			priorityId,
-			livechatData,
-			departmentId,
-			jitsiTimeout,
-			ts,
-			source,
-			queuedAt,
-			...getLowerCaseNames(room, sub.name, sub.fname),
+	Subscriptions.update(
+		{
+			rid: room._id,
 		},
-	});
+		{
+			$set: {
+				encrypted,
+				description,
+				cl,
+				topic,
+				announcement,
+				broadcast,
+				archived,
+				avatarETag,
+				retention,
+				uids,
+				usernames,
+				lastMessage,
+				streamingOptions,
+				teamId,
+				teamMain,
+				v,
+				transcriptRequest,
+				servedBy,
+				onHold,
+				tags,
+				closedAt,
+				metrics,
+				muted,
+				waitingResponse,
+				responseBy,
+				priorityId,
+				livechatData,
+				departmentId,
+				jitsiTimeout,
+				ts,
+				source,
+				queuedAt,
+				...getLowerCaseNames(room, sub.name, sub.fname),
+			},
+		},
+	);
 
-	Subscriptions.update({
-		rid: room._id,
-		lm: { $lt: room.lm },
-	}, {
-		$set: {
-			lm: room.lm,
+	Subscriptions.update(
+		{
+			rid: room._id,
+			lm: { $lt: room.lm },
 		},
-	});
+		{
+			$set: {
+				lm: room.lm,
+			},
+		},
+	);
 
 	return room;
 };

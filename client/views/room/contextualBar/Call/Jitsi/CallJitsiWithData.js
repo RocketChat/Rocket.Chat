@@ -87,9 +87,7 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 	}, [connected, handleClose]);
 
-	const rname = useHashName
-		? uniqueID + rid
-		: encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+	const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
 
 	const jitsi = useMemo(() => {
 		if (isEnabledTokenAuth && !accessToken) {
@@ -181,16 +179,7 @@ const CallJitsiWithData = ({ rid }) => {
 		return () => {
 			if (!jitsi.openNewWindow) clear();
 		};
-	}, [
-		accepted,
-		jitsi,
-		rid,
-		testAndHandleTimeout,
-		updateTimeout,
-		dispatchToastMessage,
-		handleClose,
-		t,
-	]);
+	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout, dispatchToastMessage, handleClose, t]);
 
 	const handleYes = useMutableCallback(() => {
 		if (jitsi) {

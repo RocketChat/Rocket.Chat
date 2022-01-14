@@ -49,10 +49,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 
 	const router = useRoute('admin-integrations');
 
-	const deleteQuery = useMemo(
-		() => ({ type: 'webhook-outgoing', integrationId: data._id }),
-		[data._id],
-	);
+	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 
 	const handleDeleteIntegration = useCallback(() => {
@@ -75,12 +72,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDelete}
-				onCancel={closeModal}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onDelete} onCancel={closeModal} confirmText={t('Delete')}>
 				{t('Integration_Delete_Warning')}
 			</GenericModal>,
 		);
@@ -101,16 +93,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	}, [
-		data._id,
-		dispatchToastMessage,
-		formValues,
-		onChange,
-		saveIntegration,
-		t,
-		triggerWords,
-		urls,
-	]);
+	}, [data._id, dispatchToastMessage, formValues, onChange, saveIntegration, t, triggerWords, urls]);
 
 	const actionButtons = useMemo(
 		() => (
@@ -135,14 +118,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		[handleDeleteIntegration, handleSave, reset, t],
 	);
 
-	return (
-		<OutgoingWebhookForm
-			formValues={formValues}
-			formHandlers={formHandlers}
-			append={actionButtons}
-			{...props}
-		/>
-	);
+	return <OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={actionButtons} {...props} />;
 }
 
 export default EditOutgoingWebhook;

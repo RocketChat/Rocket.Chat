@@ -9,7 +9,7 @@ type IMAPOptions = {
 	filter: any[];
 	rejectBeforeTS?: Date;
 	markSeen: boolean;
-}
+};
 
 export declare interface IMAPInterceptor {
 	on(event: 'email', listener: (email: ParsedMail) => void): this;
@@ -131,14 +131,16 @@ export class IMAPInterceptor extends EventEmitter {
 						// delete message from inbox
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(seqno, 'Deleted', (err) => {
-								if (err) { this.log(`Mark deleted error: ${ err }`); }
+								if (err) {
+									this.log(`Mark deleted error: ${err}`);
+								}
 							});
 						}
 					});
 				});
 
 				fetch.once('error', (err) => {
-					this.log(`Fetch error: ${ err }`);
+					this.log(`Fetch error: ${err}`);
 				});
 			}
 		});

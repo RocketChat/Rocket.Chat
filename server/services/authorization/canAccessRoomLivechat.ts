@@ -16,6 +16,7 @@ export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, ext
 	const rid = room?._id || extraData?.rid;
 	const livechatRoom = rid && await LivechatRooms.findOneById(rid);
 
+
 	// Check the type again in case the room parameter was not received
 	if (livechatRoom?.t !== 'l') {
 		return false;

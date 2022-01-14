@@ -31,11 +31,7 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('livechat/analytics/dashboards/charts/chats-per-agent', params);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/chats-per-agent', params);
 
 	reloadRef.current.chatsPerAgentChart = reload;
 

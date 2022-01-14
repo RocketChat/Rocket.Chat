@@ -25,11 +25,8 @@ Template.visitorNavigation.helpers({
 
 	onTableScroll() {
 		const instance = Template.instance();
-		return function(currentTarget) {
-			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop
-				>= currentTarget.scrollHeight - 100
-			) {
+		return function (currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
 		};
@@ -42,12 +39,11 @@ Template.visitorNavigation.helpers({
 	accessDateTime() {
 		return moment(this.ts).format('L LTS');
 	},
-
 });
 
 Template.visitorNavigation.events({
-	'scroll .visitor-scroll': _.throttle(function(e, instance) {
-		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
+	'scroll .visitor-scroll': _.throttle(function (e, instance) {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			const pages = instance.pages.get();
 			if (instance.total.get() <= pages.length) {
 				return;
@@ -57,7 +53,7 @@ Template.visitorNavigation.events({
 	}, 200),
 });
 
-Template.visitorNavigation.onCreated(async function() {
+Template.visitorNavigation.onCreated(async function () {
 	const currentData = Template.currentData();
 	this.isLoading = new ReactiveVar(true);
 	this.pages = new ReactiveVar([]);
@@ -69,7 +65,9 @@ Template.visitorNavigation.onCreated(async function() {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
 		if (currentData && currentData.rid) {
-			const { pages, total } = await APIClient.v1.get(`livechat/visitors.pagesVisited/${ currentData.rid }?count=${ ITEMS_COUNT }&offset=${ offset }`);
+			const { pages, total } = await APIClient.v1.get(
+				`livechat/visitors.pagesVisited/${currentData.rid}?count=${ITEMS_COUNT}&offset=${offset}`,
+			);
 			this.isLoading.set(false);
 			this.total.set(total);
 			this.pages.set(this.pages.get().concat(pages));

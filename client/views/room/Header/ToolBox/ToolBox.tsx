@@ -30,9 +30,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 
 	const { actions: mapActions } = useToolboxContext();
 
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
-		(a, b) => (a.order || 0) - (b.order || 0),
-	);
+	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
@@ -102,9 +100,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactNode =>
-						value && hiddenActionRenderers.current[value](props)
-					}
+					renderItem={({ value, ...props }): ReactNode => value && hiddenActionRenderers.current[value](props)}
 				/>
 			)}
 		</>

@@ -35,42 +35,20 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 	return (
 		<>
 			<Box display='flex' flexDirection='row' mbe='x20' w='full'>
-				<AppAvatar
-					size='x124'
-					mie='x20'
-					iconFileContent={iconFileContent}
-					iconFileData={iconFileData}
-				/>
+				<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 					<Box fontScale='h2'>{name}</Box>
 					<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
-						<Box fontScale='p4' mie='x4'>
+						<Box fontScale='p2m' mie='x4'>
 							{t('By_author', { author: authorName })}
 						</Box>
 						|<Box mis='x4'>{t('Version_version', { version })}</Box>
 					</Box>
-					<Box
-						display='flex'
-						flexDirection='row'
-						alignItems='center'
-						justifyContent='space-between'
-					>
-						<Box
-							flexGrow={1}
-							display='flex'
-							flexDirection='row'
-							alignItems='center'
-							marginInline='neg-x8'
-						>
+					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
 							<AppStatus app={data} marginInline='x8' />
 							{!installed && (
-								<PriceDisplay
-									purchaseType={purchaseType}
-									pricingPlans={pricingPlans}
-									price={price}
-									showType={false}
-									marginInline='x8'
-								/>
+								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 							)}
 						</Box>
 						{installed && <AppMenu app={data} />}
@@ -107,13 +85,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 					</Box>
 
 					<Box fontScale='h4'>{t('Contact')}</Box>
-					<Box
-						display='flex'
-						flexDirection='row'
-						flexGrow={1}
-						justifyContent='space-around'
-						flexWrap='wrap'
-					>
+					<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>
 						<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
 							<Box fontScale='h4' color='hint'>
 								{t('Author_Site')}
@@ -161,7 +133,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 										))}
 									</Box>
 									<Box display='flex' flexDirection='column' mis='x12'>
-										<Box fontScale='p4'>{bundle.bundleName}</Box>
+										<Box fontScale='p2m'>{bundle.bundleName}</Box>
 										{bundle.apps.map((app) => (
 											<Box key={app.latest.name}>{app.latest.name},</Box>
 										))}

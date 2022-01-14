@@ -7,7 +7,7 @@ let lastResponse;
 
 methods.forEach((method) => {
 	const original = request[method];
-	request[method] = function(url, fn) {
+	request[method] = function (url, fn) {
 		lastUrl = url;
 		return original(url, fn).expect((res) => {
 			lastResponse = res;
@@ -15,10 +15,11 @@ methods.forEach((method) => {
 	};
 });
 
-afterEach(async function() {
+afterEach(async function () {
 	if (this.currentTest.state === 'failed') {
 		console.log({
-			lastUrl, lastResponse: lastResponse.text,
+			lastUrl,
+			lastResponse: lastResponse.text,
 		});
 	}
 });

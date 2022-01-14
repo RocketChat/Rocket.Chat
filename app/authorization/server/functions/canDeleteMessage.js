@@ -4,7 +4,7 @@ import { Rooms } from '../../../models';
 
 const elapsedTime = (ts) => {
 	const dif = Date.now() - ts;
-	return Math.round((dif / 1000) / 60);
+	return Math.round(dif / 1000 / 60);
 };
 
 export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
@@ -25,7 +25,7 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 
 	const allowedToDeleteAny = await hasPermissionAsync(uid, 'delete-message', rid);
 
-	const allowed = allowedToDeleteAny || (uid === u._id && await hasPermissionAsync(uid, 'delete-own-message'));
+	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message')));
 	if (!allowed) {
 		return false;
 	}
@@ -37,10 +37,10 @@ export const canDeleteMessageAsync = async (uid, { u, rid, ts }) => {
 	}
 
 	const room = await Rooms.findOneById(rid, { fields: { ro: 1, unmuted: 1 } });
-	if (room.ro === true && !await hasPermissionAsync(uid, 'post-readonly', rid)) {
+	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', rid))) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(u.username)) {
-			throw new Error('You can\'t delete messages because the room is readonly.');
+			throw new Error("You can't delete messages because the room is readonly.");
 		}
 	}
 

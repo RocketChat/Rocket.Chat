@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { SettingValue } from '../../../definition/ISetting';
 
-export type SettingComposedValue<T extends SettingValue = SettingValue> = {key: string; value: T};
+export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
 
 interface ISettingRegexCallbacks {
@@ -25,7 +25,10 @@ export class SettingsBase {
 
 	public get<T extends SettingValue = SettingValue>(_id: string): T | undefined;
 
-	public get<T extends SettingValue = SettingValue>(_id: string | RegExp, callback?: SettingCallback): T | undefined | SettingComposedValue<T>[] | void {
+	public get<T extends SettingValue = SettingValue>(
+		_id: string | RegExp,
+		callback?: SettingCallback,
+	): T | undefined | SettingComposedValue<T>[] | void {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
@@ -80,7 +83,7 @@ export class SettingsBase {
 		Meteor.call('saveSetting', _id, value, callback);
 	}
 
-	batchSet(settings: Array<{_id: string; value: SettingValue}>, callback: () => void): void {
+	batchSet(settings: Array<{ _id: string; value: SettingValue }>, callback: () => void): void {
 		Meteor.call('saveSettings', settings, callback);
 	}
 

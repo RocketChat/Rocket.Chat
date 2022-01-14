@@ -6,7 +6,7 @@ import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 
-export const SideNav = new class {
+export const SideNav = new (class {
 	constructor() {
 		this.initiated = false;
 		this.sideNav = {};
@@ -46,7 +46,10 @@ export const SideNav = new class {
 	}
 
 	closeFlex(callback = null) {
-		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
+		const routesNamesForRooms = roomTypes
+			.getTypes()
+			.filter((i) => i.route)
+			.map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
 			const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
 			if (subscription) {
@@ -86,7 +89,7 @@ export const SideNav = new class {
 
 	validate() {
 		const invalid = [];
-		this.sideNav.find('input.required').each(function() {
+		this.sideNav.find('input.required').each(function () {
 			if (!this.value.length) {
 				return invalid.push($(this).prev('label').html());
 			}
@@ -123,4 +126,4 @@ export const SideNav = new class {
 			this.openQueue = [];
 		}
 	}
-}();
+})();

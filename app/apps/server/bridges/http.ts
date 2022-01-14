@@ -59,7 +59,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		normalizeHttpOptions(info.request);
 
-		this.orch.debugLog(`The App ${ info.appId } is requesting from the outter webs:`, info);
+		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
 		try {
 			return HTTP.call(info.method, info.url, info.request) as IHttpResponse;

@@ -79,10 +79,7 @@ const makeDangerBanner = (): IBanner => ({
 });
 
 export const createSeatsLimitBanners = async (): Promise<void> => {
-	const [warning, danger] = await Promise.all([
-		Banner.getById(WARNING_BANNER_ID),
-		Banner.getById(DANGER_BANNER_ID),
-	]);
+	const [warning, danger] = await Promise.all([Banner.getById(WARNING_BANNER_ID), Banner.getById(DANGER_BANNER_ID)]);
 	if (!warning) {
 		Banner.create(makeWarningBanner(0));
 	}
