@@ -1,8 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React, { lazy, ReactElement, useCallback } from 'react';
 
-import { Users } from '../../../../app/models/client/models/Users';
+import { Roles, Users } from '../../../../app/models/client';
 import { IUser } from '../../../../definition/IUser';
+import { useLayout } from '../../../contexts/LayoutContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser, useUserId } from '../../../contexts/UserContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -27,6 +28,42 @@ const MainLayout1 = (): ReactElement => {
 };
 
 const ResetPasswordPage = lazy(() => import('../../login/ResetPassword/ResetPassword'));
+const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
+
+const MainLayout5 = ({ center }: MainLayoutProps): ReactElement => {
+	0;
+
+	return <BlazeTemplate template='main' data={{ center }} />;
+};
+
+const MainLayout4 = ({ center }: MainLayoutProps): ReactElement => {
+	const { isEmbedded: embeddedLayout } = useLayout();
+	const user = useUser() as IUser | null;
+	const tfaEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
+	const require2faSetup = useReactiveValue(
+		useCallback(() => {
+			// User is already using 2fa
+			if (!user || user?.services?.totp?.enabled || user?.services?.email2fa?.enabled) {
+				return false;
+			}
+
+			const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+			return mandatoryRole !== undefined && tfaEnabled;
+		}, [tfaEnabled, user]),
+	);
+
+	if (require2faSetup) {
+		return (
+			<main id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
+				<div className='rc-old main-content content-background-color'>
+					<AccountSecurityPage />
+				</div>
+			</main>
+		);
+	}
+
+	return <MainLayout5 center={center} />;
+};
 
 const MainLayout3 = ({ center }: MainLayoutProps): ReactElement => {
 	const requirePasswordChange = (useUser() as IUser | null)?.requirePasswordChange === true;
@@ -35,7 +72,7 @@ const MainLayout3 = ({ center }: MainLayoutProps): ReactElement => {
 		return <ResetPasswordPage />;
 	}
 
-	return <BlazeTemplate template='main' data={{ center }} />;
+	return <MainLayout4 center={center} />;
 };
 
 const MainLayout2 = ({ center }: MainLayoutProps): ReactElement => {

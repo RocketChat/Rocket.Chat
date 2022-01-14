@@ -39,10 +39,6 @@ createTemplateForComponent('RoomForeword', () => import('./components/RoomForewo
 	attachment: 'at-parent',
 });
 
-createTemplateForComponent('accountSecurity', () => import('./views/account/security/AccountSecurityPage'), {
-	attachment: 'at-parent',
-});
-
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
 
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
