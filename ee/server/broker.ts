@@ -200,8 +200,12 @@ class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> =>
-				asyncLocalStorage.run(
+			service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
+				if (!this.isActionWhitelisted(`${name}.${method}`) && !(await this.allowed)) {
+					return;
+				}
+
+				return asyncLocalStorage.run(
 					{
 						id: ctx.id,
 						nodeID: ctx.nodeID,
@@ -209,12 +213,9 @@ class NetworkBroker implements IBroker {
 						broker: this,
 						ctx,
 					},
-					async (): Promise<any> => {
-						if (this.isActionWhitelisted(`${name}.${method}`) || (await this.allowed)) {
-							return i[method](...ctx.params);
-						}
-					},
+					() => i[method](...ctx.params),
 				);
+			};
 		}
 
 		this.broker.createService(service);
