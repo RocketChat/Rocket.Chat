@@ -144,5 +144,6 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 		})
 		.filter((el) => Object.keys(el).length) // Filter to remove all empty objects
 		.reduce((a, b) => Object.assign(a, b), {}); // Convert array to objects
-	return await setSettingsStatistics(settingsStatistics);
+	const staticticObject = await setSettingsStatistics(settingsStatistics);
+	return staticticObject;
 };
