@@ -244,6 +244,15 @@ export const statistics = {
 		const { value: liveStream } = await Settings.findOneById('Livestream_enabled');
 		const { value: broadcasting } = await Settings.findOneById('Broadcasting_enabled');
 
+		const { value: allowEditing } = await Settings.findOneById('Message_AllowEditing');
+		const { value: allowDeleting } = await Settings.findOneById('Message_AllowDeleting');
+		const { value: allowUnrecognizedSlashCommand } = await Settings.findOneById('Message_AllowUnrecognizedSlashCommand');
+		const { value: allowBadWordsFilter } = await Settings.findOneById('Message_AllowBadWordsFilter');
+		const { value: readReceiptEnabled } = await Settings.findOneById('Message_Read_Receipt_Enabled');
+		const { value: readReceiptStoreUsers } = await Settings.findOneById('Message_Read_Receipt_Store_Users');
+
+		const { value: globalSearchEnabled } = await Settings.findOneById('Search.defaultProvider.GlobalSearchEnabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -275,6 +284,19 @@ export const statistics = {
 			liveStreamAndBroadcasting: {
 				liveStream,
 				broadcasting,
+			},
+			message: {
+				allowEditing,
+				allowDeleting,
+				allowUnrecognizedSlashCommand,
+				allowBadWordsFilter,
+				readReceiptEnabled,
+				readReceiptStoreUsers,
+			},
+			search: {
+				defaultProvider: {
+					globalSearchEnabled,
+				},
 			},
 		};
 		const integrations = await Integrations.find(
