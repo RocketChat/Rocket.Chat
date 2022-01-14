@@ -125,6 +125,16 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	},
 });
 
+FlowRouter.route('/queue-list', {
+	name: 'queue-list',
+	action: () => {
+		const OmnichannelQueueList = createTemplateForComponent('QueueList', () => import('../views/omnichannel/queueList'), {
+			attachment: 'at-parent',
+		});
+		appLayout.render('main', { center: OmnichannelQueueList });
+	},
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
