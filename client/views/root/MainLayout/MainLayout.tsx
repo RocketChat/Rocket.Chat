@@ -1,7 +1,5 @@
-import React, { Fragment, ReactElement } from 'react';
-import { useSubscription } from 'use-subscription';
+import React, { ReactElement } from 'react';
 
-import { blazePortals } from '../../../lib/portals/blazePortals';
 import BlazeTemplate from '../BlazeTemplate';
 import PageLoading from '../PageLoading';
 import { useAllowRead } from './useAllowRead';
@@ -16,8 +14,6 @@ type MainLayoutProps = {
 };
 
 const MainLayout = ({ center }: MainLayoutProps): ReactElement => {
-	const portals = useSubscription(blazePortals);
-
 	const ready = useCollectionsAvailability();
 	useTooltipHandling();
 	useTouchEventCorrection();
@@ -29,14 +25,7 @@ const MainLayout = ({ center }: MainLayoutProps): ReactElement => {
 		return <PageLoading />;
 	}
 
-	return (
-		<>
-			<BlazeTemplate template='main' data={{ center }} />
-			{portals.map(({ key, node }) => (
-				<Fragment key={key} children={node} />
-			))}
-		</>
-	);
+	return <BlazeTemplate template='main' data={{ center }} />;
 };
 
 export default MainLayout;
