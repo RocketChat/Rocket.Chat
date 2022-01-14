@@ -114,12 +114,11 @@ export async function settings({ businessUnit = '' }) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
 	let departments = [];
-	if (businessUnitIds) {
-		logger.debug('Attempting to get departments connected to business units', businessUnitIds);
-		departments = await callbacks.run('livechat.findDepartmentsWithBusinessUnits', { businessUnitIds: businessUnitIds.split('-') });
-		logger.debug('Found following departments connected to the respective business units', departments, businessUnitIds);
+	if (businessUnit) {
+		logger.debug('Attempting to get departments connected to business unit', businessUnit);
+		departments = await callbacks.run('livechat.findDepartmentsWithBusinessUnits', { businessUnit });
+		logger.debug(`Found following departments connected to the respective business unit: ${businessUnit}`, departments);
 		if (!Array.isArray(departments)) {
-			// callback failed... maybe enterprise isn't valid
 			logger.warn(
 				`Livechat's attempt to get departments connected to the business units failed. Possibly because the license isn't valid. Method will fallback to return all active departments instead`,
 			);
