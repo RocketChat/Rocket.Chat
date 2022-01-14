@@ -16,18 +16,14 @@ const getUser = (): Meteor.User | null => Meteor.user();
 
 const loginWithPassword = (user: string | object, password: string): Promise<void> =>
 	new Promise((resolve, reject) => {
-		Meteor.loginWithPassword(
-			user,
-			password,
-			(error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
-				if (error) {
-					reject(error);
-					return;
-				}
+		Meteor.loginWithPassword(user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
+			if (error) {
+				reject(error);
+				return;
+			}
 
-				resolve();
-			},
-		);
+			resolve();
+		});
 	});
 
 const logout = (): Promise<void> =>
@@ -53,17 +49,13 @@ const UserProvider: FC = ({ children }) => {
 			user,
 			loginWithPassword,
 			logout,
-			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) =>
-				getUserPreference(userId, key, defaultValue),
+			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) => getUserPreference(userId, key, defaultValue)),
+			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) =>
+				Subscriptions.findOne(query, { fields }),
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>(
-				(query, fields) => Subscriptions.findOne(query, { fields }),
-			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) =>
-				Rooms.findOne(query, { fields }),
-			),
-			querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>(
-				(query, options) => (userId ? Subscriptions : Rooms).find(query, options).fetch(),
+			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
+			querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) =>
+				(userId ? Subscriptions : Rooms).find(query, options).fetch(),
 			),
 		}),
 		[userId, user],

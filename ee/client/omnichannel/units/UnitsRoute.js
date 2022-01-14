@@ -66,13 +66,7 @@ function UnitsRoute() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -93,14 +87,7 @@ function UnitsRoute() {
 
 	const renderRow = useCallback(
 		({ _id, name, visibility }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{visibility}</Table.Cell>
 				<RemoveUnitButton _id={_id} reload={reload} />
@@ -110,14 +97,7 @@ function UnitsRoute() {
 	);
 
 	if (context === 'edit' || context === 'new') {
-		return (
-			<UnitEditWithData
-				title={context === 'edit' ? t('Edit_Unit') : t('New_Unit')}
-				unitId={id}
-				reload={reload}
-				allUnits={data}
-			/>
-		);
+		return <UnitEditWithData title={context === 'edit' ? t('Edit_Unit') : t('New_Unit')} unitId={id} reload={reload} allUnits={data} />;
 	}
 
 	if (!canViewUnits) {

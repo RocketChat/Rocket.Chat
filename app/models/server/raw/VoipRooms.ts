@@ -8,10 +8,10 @@ type T = IVoipRoom;
 export class VoipRoomsRaw extends BaseRaw<T> {
 	logger = new Logger('VoipRoomsRaw');
 
-	findOneOpenByVisitorToken(visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
-		const query: FilterQuery <T> = {
-			t: 'v',
-			open: true,
+	findOneOpenByVisitorToken(visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T | null> {
+		const query: FilterQuery<T> = {
+			't': 'v',
+			'open': true,
 			'v.token': visitorToken,
 		};
 		if (options === undefined) {
@@ -21,9 +21,9 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 	}
 
 	findOpenByVisitorToken(visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Cursor<T> {
-		const query: FilterQuery <T> = {
-			t: 'v',
-			open: true,
+		const query: FilterQuery<T> = {
+			't': 'v',
+			'open': true,
 			'v.token': visitorToken,
 		};
 		if (options === undefined) {
@@ -38,9 +38,9 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 	 *
 	 * We have findOneByIdOrName. Do we still need findOneVoipRoomById?
 	 *
-	*/
-	async findOneVoipRoomById(id: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
-		const query: FilterQuery <T> = {
+	 */
+	async findOneVoipRoomById(id: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T | null> {
+		const query: FilterQuery<T> = {
 			t: 'v',
 			_id: id,
 		};
@@ -50,14 +50,17 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdOrName(_idOrName: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
-		const query: FilterQuery <T> = {
+	findOneByIdOrName(_idOrName: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T | null> {
+		const query: FilterQuery<T> = {
 			t: 'v',
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 		if (options === undefined) {
 			return this.findOne(query);
@@ -65,11 +68,15 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options?: undefined | WithoutProjection<FindOneOptions<T>>): Promise<T|null> {
-		const query: FilterQuery <T> = {
-			t: 'v',
-			_id: roomId,
-			open: true,
+	findOneOpenByRoomIdAndVisitorToken(
+		roomId: string,
+		visitorToken: string,
+		options?: undefined | WithoutProjection<FindOneOptions<T>>,
+	): Promise<T | null> {
+		const query: FilterQuery<T> = {
+			't': 'v',
+			'_id': roomId,
+			'open': true,
 			'v.token': visitorToken,
 		};
 		if (options === undefined) {
@@ -90,10 +97,10 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 	}
 
 	updateVisitorStatus(token: string, status: string): Promise<any> {
-		const query: FilterQuery <T> = {
+		const query: FilterQuery<T> = {
 			'v.token': token,
-			open: true,
-			t: 'v',
+			'open': true,
+			't': 'v',
 		};
 
 		const update = {
@@ -104,7 +111,7 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 		return this.update(query, update);
 	}
 
-	findOneByVisitorToken(visitorToken: string, fields: any): Promise<T|null> {
+	findOneByVisitorToken(visitorToken: string, fields: any): Promise<T | null> {
 		let options = {};
 
 		if (fields) {
@@ -113,14 +120,14 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 			};
 		}
 
-		const query: FilterQuery <T> = {
-			t: 'v',
+		const query: FilterQuery<T> = {
+			't': 'v',
 			'v.token': visitorToken,
 		};
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndVisitorToken(_id: string, visitorToken: string, fields: any): Promise<T|null> {
+	findOneByIdAndVisitorToken(_id: string, visitorToken: string, fields: any): Promise<T | null> {
 		let options = {};
 
 		if (fields) {
@@ -129,8 +136,8 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 			};
 		}
 
-		const query: FilterQuery <T> = {
-			t: 'v',
+		const query: FilterQuery<T> = {
+			't': 'v',
 			_id,
 			'v.token': visitorToken,
 		};
@@ -140,22 +147,25 @@ export class VoipRoomsRaw extends BaseRaw<T> {
 	closeByRoomId(roomId: string, closeInfo: any): Promise<any> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
-		return this.update({
-			_id: roomId,
-			t: 'v',
-		}, {
-			$set: {
-				closer,
-				closedBy,
-				closedAt,
-				'metrics.callDuration': callDuration,
-				'metrics.serviceTimeDuration': serviceTimeDuration,
-				'v.status': 'offline',
-				...extraData,
+		return this.update(
+			{
+				_id: roomId,
+				t: 'v',
 			},
-			$unset: {
-				open: 1,
+			{
+				$set: {
+					closer,
+					closedBy,
+					closedAt,
+					'metrics.callDuration': callDuration,
+					'metrics.serviceTimeDuration': serviceTimeDuration,
+					'v.status': 'offline',
+					...extraData,
+				},
+				$unset: {
+					open: 1,
+				},
 			},
-		});
+		);
 	}
 }

@@ -9,16 +9,15 @@
  * */
 export interface ICallbackContext {
 	/**
-      * Interface method for calling
-      * associated handler.
-      */
+	 * Interface method for calling
+	 * associated handler.
+	 */
 	call(event: any): boolean;
 
 	/**
-     * Interface method for validating the context of the callback
-     * when there parallel activity.
-     */
+	 * Interface method for validating the context of the callback
+	 * when there parallel activity.
+	 */
 
 	isValidContext(actionid: any): boolean;
-
 }

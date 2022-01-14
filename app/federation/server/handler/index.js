@@ -14,9 +14,11 @@ export async function federationSearchUsers(query) {
 
 	const [username, peerDomain] = query.split('@');
 
-	const uri = `/api/v1/federation.users.search?${ qs.stringify({ username, domain: peerDomain }) }`;
+	const uri = `/api/v1/federation.users.search?${qs.stringify({ username, domain: peerDomain })}`;
 
-	const { data: { users } } = await federationRequestToPeer('GET', peerDomain, uri);
+	const {
+		data: { users },
+	} = await federationRequestToPeer('GET', peerDomain, uri);
 
 	return users;
 }
@@ -30,9 +32,11 @@ export async function getUserByUsername(query) {
 
 	const [username, peerDomain] = query.split('@');
 
-	const uri = `/api/v1/federation.users.getByUsername?${ qs.stringify({ username }) }`;
+	const uri = `/api/v1/federation.users.getByUsername?${qs.stringify({ username })}`;
 
-	const { data: { user } } = await federationRequestToPeer('GET', peerDomain, uri);
+	const {
+		data: { user },
+	} = await federationRequestToPeer('GET', peerDomain, uri);
 
 	return user;
 }
@@ -42,13 +46,23 @@ export async function requestEventsFromLatest(domain, fromDomain, contextType, c
 		throw disabled('client.requestEventsFromLatest');
 	}
 
-	clientLogger.debug({ msg: 'requestEventsFromLatest', domain, contextType, contextQuery, latestEventIds });
+	clientLogger.debug({
+		msg: 'requestEventsFromLatest',
+		domain,
+		contextType,
+		contextQuery,
+		latestEventIds,
+	});
 
 	const uri = '/api/v1/federation.events.requestFromLatest';
 
-	await federationRequestToPeer('POST', domain, uri, { fromDomain, contextType, contextQuery, latestEventIds });
+	await federationRequestToPeer('POST', domain, uri, {
+		fromDomain,
+		contextType,
+		contextQuery,
+		latestEventIds,
+	});
 }
-
 
 export async function dispatchEvents(domains, events) {
 	if (!isFederationEnabled()) {
@@ -71,7 +85,9 @@ export async function dispatchEvent(domains, event) {
 }
 
 export async function getUpload(domain, fileId) {
-	const { data: { upload, buffer } } = await federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+	const {
+		data: { upload, buffer },
+	} = await federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${qs.stringify({ upload_id: fileId })}`);
 
 	return { upload, buffer: Buffer.from(buffer) };
 }

@@ -9,7 +9,9 @@ import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
-		const users = Meteor.users.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } }).fetch();
+		const users = Meteor.users
+			.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } })
+			.fetch();
 
 		return users.map((user) => ({
 			...user,

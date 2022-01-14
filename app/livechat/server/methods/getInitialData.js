@@ -46,7 +46,9 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = departmentId
+			? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch()
+			: LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -101,6 +103,10 @@ Meteor.methods({
 
 		info.online = Users.findOnlineAgents().count() > 0;
 
-		return deprecationWarning({ endpoint: 'livechat:getInitialData', versionWillBeRemoved: '5.0', response: info });
+		return deprecationWarning({
+			endpoint: 'livechat:getInitialData',
+			versionWillBeRemoved: '5.0',
+			response: info,
+		});
 	},
 });

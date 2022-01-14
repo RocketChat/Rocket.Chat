@@ -17,7 +17,7 @@ const options = {
 };
 
 if (process.platform === 'win32') {
-	execSync(`${ pluginPath }/build.bat`, options);
+	execSync(`${pluginPath}/build.bat`, options);
 } else {
-	execSync(`sh ${ pluginPath }/build.sh`, options);
+	execSync(`sh ${pluginPath}/build.sh`, options);
 }

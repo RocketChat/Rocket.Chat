@@ -14,7 +14,7 @@ function runDrop(fn) {
 	}
 }
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	const lastOperation = Imports.findLastImport();
 	let idToKeep = false;
 

@@ -11,8 +11,7 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const getWebdavAccounts = () => WebdavAccounts.find().fetch();
 
-const getServerName = ({ name, server_url, username }) =>
-	name || `${username}@${server_url.replace(/^https?\:\/\//i, '')}`;
+const getServerName = ({ name, server_url, username }) => name || `${username}@${server_url.replace(/^https?\:\/\//i, '')}`;
 
 const AccountIntegrationsPage = () => {
 	const t = useTranslation();
@@ -27,10 +26,7 @@ const AccountIntegrationsPage = () => {
 
 	const removeWebdavAccount = useMethod('removeWebdavAccount');
 
-	const options = useMemo(
-		() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]),
-		[accounts],
-	);
+	const options = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
 
 	const handleClickRemove = useCallback(() => {
 		try {
@@ -49,12 +45,7 @@ const AccountIntegrationsPage = () => {
 					<Field>
 						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
 						<Field.Row>
-							<Select
-								options={options}
-								onChange={handleSelected}
-								value={selected}
-								placeholder={t('Select_an_option')}
-							/>
+							<Select options={options} onChange={handleSelected} value={selected} placeholder={t('Select_an_option')} />
 							<Button primary danger onClick={handleClickRemove}>
 								{t('Remove')}
 							</Button>

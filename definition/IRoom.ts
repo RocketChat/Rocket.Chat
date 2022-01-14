@@ -96,7 +96,8 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 }
 
 export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
-export const isMultipleDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => isDirectMessageRoom(room) && room.uids.length > 2;
+export const isMultipleDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom =>
+	isDirectMessageRoom(room) && room.uids.length > 2;
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',
@@ -106,7 +107,6 @@ export enum OmnichannelSourceType {
 	API = 'api',
 	OTHER = 'other', // catch-all source type
 }
-
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
@@ -122,7 +122,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		replyTo: string;
 		subject: string;
 	};
-	source: { // TODO: looks like this is not so required as the definition suggests
+	source: {
+		// TODO: looks like this is not so required as the definition suggests
 		// The source, or client, which created the Omnichannel room
 		type: OmnichannelSourceType;
 		// An optional identification of external sources, such as an App

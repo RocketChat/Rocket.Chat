@@ -29,7 +29,9 @@ const validateTranscriptData = (instance) => {
 	}
 
 	const visitor = instance.visitor.get();
-	const { visitorEmails: { 0: visitorEmail } } = visitor;
+	const {
+		visitorEmails: { 0: visitorEmail },
+	} = visitor;
 
 	if (email !== visitorEmail.address) {
 		instance.errorMessage.set(t('Livechat_visitor_email_and_transcript_email_do_not_match'));
@@ -101,7 +103,10 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Your_email_has_been_queued_for_sending') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Your_email_has_been_queued_for_sending'),
+			});
 			this.save();
 		});
 	},
@@ -124,7 +129,10 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_has_been_requested') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Livechat_transcript_has_been_requested'),
+			});
 			this.save();
 		});
 	},
@@ -140,7 +148,10 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_request_has_been_canceled') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Livechat_transcript_request_has_been_canceled'),
+			});
 			this.save();
 		});
 	},
@@ -150,19 +161,19 @@ Template.visitorTranscript.events({
 	},
 });
 
-Template.visitorTranscript.onCreated(async function() {
+Template.visitorTranscript.onCreated(async function () {
 	this.room = new ReactiveVar();
 	this.visitor = new ReactiveVar();
 	this.errorMessage = new ReactiveVar('');
 	this.infoMessage = new ReactiveVar('');
 
 	this.autorun(async () => {
-		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${ Template.currentData().visitorId }`);
+		const { visitor } = await APIClient.v1.get(`livechat/visitors.info?visitorId=${Template.currentData().visitorId}`);
 		this.visitor.set(visitor);
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ Template.currentData().roomId }`);
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${Template.currentData().roomId}`);
 		this.room.set(room);
 
 		if (room?.transcriptRequest) {

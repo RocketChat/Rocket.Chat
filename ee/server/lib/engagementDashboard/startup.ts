@@ -17,10 +17,7 @@ export const detachCallbacks = (): void => {
 
 export const prepareAnalytics = async (): Promise<void> => {
 	const now = new Date();
-	await Promise.all([
-		fillFirstDaysOfUsersIfNeeded(now),
-		fillFirstDaysOfMessagesIfNeeded(now),
-	]);
+	await Promise.all([fillFirstDaysOfUsersIfNeeded(now), fillFirstDaysOfMessagesIfNeeded(now)]);
 };
 
 export const prepareAuthorization = async (): Promise<void> => {

@@ -40,12 +40,7 @@ const RoomAutoComplete = (props) => {
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (
-				<Option
-					key={value}
-					{...props}
-					label={label.name}
-					avatar={<Avatar value={value} {...label} />}
-				/>
+				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
 			)}
 			options={options}
 		/>

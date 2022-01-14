@@ -17,7 +17,10 @@ const getUploadFile = (details, fileUrl) => {
 
 	const fileStore = FileUpload.getStore('Uploads');
 
-	const { content, content: { length: size } } = response;
+	const {
+		content,
+		content: { length: size },
+	} = response;
 	return fileStore.insertSync({ ...details, size }, content);
 };
 
@@ -117,7 +120,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			try {
 				const uploadedFile = getUploadFile(details, smsUrl);
 				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
-				const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
 				attachment = {
 					title: file.name,
@@ -141,13 +144,15 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.video_size = file.size;
 				}
 			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${ e.message }`);
+				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
 				attachment = {
-					fields: [{
-						title: 'User upload failed',
-						value: 'An attachment was received, but upload to server failed',
-						short: true,
-					}],
+					fields: [
+						{
+							title: 'User upload failed',
+							value: 'An attachment was received, but upload to server failed',
+							short: true,
+						},
+					],
 					color: 'yellow',
 				};
 			}
@@ -159,9 +164,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			rid,
 			token,
 			msg: sms.body,
-			...location && { location },
-			...attachments && { attachments },
-			...file && { file },
+			...(location && { location }),
+			...(attachments && { attachments }),
+			...(file && { file }),
 		};
 
 		try {

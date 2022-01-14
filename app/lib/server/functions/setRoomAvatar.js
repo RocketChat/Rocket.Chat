@@ -6,7 +6,7 @@ import { Rooms, Messages } from '../../../models/server';
 import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
 
-export const setRoomAvatar = async function(rid, dataURI, user) {
+export const setRoomAvatar = async function (rid, dataURI, user) {
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
@@ -35,7 +35,7 @@ export const setRoomAvatar = async function(rid, dataURI, user) {
 			throw err;
 		}
 
-		Meteor.setTimeout(function() {
+		Meteor.setTimeout(function () {
 			if (current) {
 				fileStore.deleteById(current._id);
 			}

@@ -10,7 +10,7 @@ import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
-export const updateMessage = function(message, user, originalMessage) {
+export const updateMessage = function (message, user, originalMessage) {
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}
@@ -69,7 +69,7 @@ export const updateMessage = function(message, user, originalMessage) {
 		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(function() {
+	Meteor.defer(function () {
 		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
 	});
 };

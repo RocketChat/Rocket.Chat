@@ -60,7 +60,8 @@ export class CommandHandler {
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
 		}
-		connection.connect(config.host,
+		connection.connect(
+			config.host,
 			(config.configData as IManagementConfigData).port.toString(),
 			(config.configData as IManagementConfigData).username,
 			(config.configData as IManagementConfigData).password,
@@ -77,7 +78,7 @@ export class CommandHandler {
 	 * or rejected.
 	 */
 	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
-		this.logger.debug({ msg: `executeCommand() executing ${ Commands[commandToExecute] }` });
+		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
 		const command = CommandFactory.getCommandObject(commandToExecute);
 		command.connection = this.connections.get(command.type) as IConnection;
 		return command.executeCommand(commandData);

@@ -26,7 +26,7 @@ Template.mentionsFlexTab.helpers({
 	messageContext,
 });
 
-Template.mentionsFlexTab.onCreated(function() {
+Template.mentionsFlexTab.onCreated(function () {
 	this.messages = new Mongo.Collection(null);
 
 	this.hasMore = new ReactiveVar(true);
@@ -34,10 +34,10 @@ Template.mentionsFlexTab.onCreated(function() {
 
 	this.autorun(() => {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'mentions.username': Users.findOne(Meteor.userId(), { fields: { username: 1 } }).username,
-			rid: this.data.rid,
-			_updatedAt: {
+			'rid': this.data.rid,
+			'_updatedAt': {
 				$gt: new Date(),
 			},
 		};
@@ -61,7 +61,7 @@ Template.mentionsFlexTab.onCreated(function() {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${ this.data.rid }&count=${ limit }`);
+		const { messages, total } = await APIClient.v1.get(`chat.getMentionedMessages?roomId=${this.data.rid}&count=${limit}`);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 
@@ -69,13 +69,13 @@ Template.mentionsFlexTab.onCreated(function() {
 	});
 });
 
-Template.mentionsFlexTab.onDestroyed(function() {
+Template.mentionsFlexTab.onDestroyed(function () {
 	this.cursor.stop();
 });
 
 Template.mentionsFlexTab.events({
 	...getCommonRoomEvents(),
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}

@@ -9,10 +9,13 @@ import { Team } from '../sdk';
 
 Meteor.methods({
 	async removeUserFromRoom(data) {
-		check(data, Match.ObjectIncluding({
-			rid: String,
-			username: String,
-		}));
+		check(
+			data,
+			Match.ObjectIncluding({
+				rid: String,
+				username: String,
+			}),
+		);
 
 		const fromId = Meteor.userId();
 
@@ -40,7 +43,9 @@ Meteor.methods({
 
 		const fromUser = Users.findOneById(fromId);
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
+			fields: { _id: 1 },
+		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'removeUserFromRoom',
@@ -77,7 +82,7 @@ Meteor.methods({
 			await Team.removeMember(room.teamId, removedUser._id);
 		}
 
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
 

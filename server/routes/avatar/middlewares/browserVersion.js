@@ -3,13 +3,16 @@ import parser from 'ua-parser-js';
 
 import { getURL } from '../../../../app/utils/lib/getURL';
 
-return WebApp.connectHandlers.use(function(req, res, next) {
+return WebApp.connectHandlers.use(function (req, res, next) {
 	if (req.cookies.browser_version_check === 'bypass') {
 		return next();
 	}
 
 	const result = parser(req.headers['user-agent']);
-	if (req.cookies.browser_version_check !== 'force' && (!result || result.browser.name !== 'IE' || parseInt(result.browser.version) >= 11)) {
+	if (
+		req.cookies.browser_version_check !== 'force' &&
+		(!result || result.browser.name !== 'IE' || parseInt(result.browser.version) >= 11)
+	) {
 		return next();
 	}
 
@@ -36,7 +39,7 @@ return WebApp.connectHandlers.use(function(req, res, next) {
 
 				text-align: center;
 
-				background-image: url(${ getURL('/images/404.svg') });
+				background-image: url(${getURL('/images/404.svg')});
 				background-repeat: no-repeat;
 				background-position: center;
 				background-size: cover;

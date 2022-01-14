@@ -21,7 +21,6 @@ import { CallbackContext } from './CallbackContext';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Manager = require('asterisk-manager');
 
-
 export class AMIConnection implements IConnection {
 	connection: typeof Manager | undefined;
 
@@ -34,10 +33,7 @@ export class AMIConnection implements IConnection {
 		this.eventHandlers = new Map<string, CallbackContext[]>();
 	}
 
-	connect(connectionIpOrHostname: string,
-		connectionPort: string,
-		userName: string,
-		password: string): void {
+	connect(connectionIpOrHostname: string, connectionPort: string, userName: string, password: string): void {
 		this.logger.log({ msg: 'connect()' });
 		this.connection = new Manager(connectionPort, connectionIpOrHostname, userName, password, true);
 		/**
@@ -72,19 +68,19 @@ export class AMIConnection implements IConnection {
 	eventHandlerCallback(event: any): void {
 		this.logger.info({ msg: 'eventHandlerCallback()', event });
 		if (!this.eventHandlers.has(event.event.toLowerCase())) {
-			this.logger.info({ msg: `eventHandlerCallback() no event handler set for ${ event.event }` });
+			this.logger.info({ msg: `eventHandlerCallback() no event handler set for ${event.event}` });
 			return;
 		}
 		this.logger.debug({ msg: 'eventHandlerCallback() Event found', event: event.event });
 		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
-		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${ handlers.length }` });
+		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${handlers.length}` });
 		/* Go thru all the available handlers  and call each one of them if the actionid matches */
 		for (const handler of handlers) {
 			if (handler.call(event)) {
-				this.logger.debug({ msg: `eventHandlerCallback() called callback for action = ${ event.actionid }` });
+				this.logger.debug({ msg: `eventHandlerCallback() called callback for action = ${event.actionid}` });
 			} else {
 				this.logger.debug({
-					msg: `eventHandlerCallback() No command found for action = ${ event.actionid }`,
+					msg: `eventHandlerCallback() No command found for action = ${event.actionid}`,
 					event: event.event,
 				});
 			}
@@ -94,7 +90,7 @@ export class AMIConnection implements IConnection {
 	on(event: string, callbackContext: CallbackContext): void {
 		this.logger.info({ msg: 'on()' });
 		if (!this.eventHandlers.has(event)) {
-			this.logger.debug({ msg: `on() no existing handlers for event = ${ event }` });
+			this.logger.debug({ msg: `on() no existing handlers for event = ${event}` });
 			const array: CallbackContext[] = [];
 			this.eventHandlers.set(event, array);
 		}
@@ -104,19 +100,19 @@ export class AMIConnection implements IConnection {
 	off(event: string, command: Command): void {
 		this.logger.info({ msg: 'off()' });
 		if (!this.eventHandlers.has(event)) {
-			this.logger.warn({ msg: `off() No event handler found for ${ event }` });
+			this.logger.warn({ msg: `off() No event handler found for ${event}` });
 			return;
 		}
-		this.logger.debug({ msg: `off() Event found ${ event }` });
+		this.logger.debug({ msg: `off() Event found ${event}` });
 		const handlers = this.eventHandlers.get(event);
-		this.logger.debug({ msg: `off() Handler array length = ${ handlers.length }` });
+		this.logger.debug({ msg: `off() Handler array length = ${handlers.length}` });
 		for (const handler of handlers) {
 			if (!handler.isValidContext(command.actionid)) {
 				continue;
 			}
 			const newHandlers = handlers.filter((obj: any) => obj !== handler);
 			if (!newHandlers.length) {
-				this.logger.debug({ msg: `off() No handler for ${ event } deleting event from the map.` });
+				this.logger.debug({ msg: `off() No handler for ${event} deleting event from the map.` });
 				this.eventHandlers.delete(event);
 			} else {
 				this.eventHandlers.set(event, newHandlers);

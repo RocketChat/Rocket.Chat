@@ -61,9 +61,7 @@ const InvitesPage = (): ReactElement => {
 			<Page.Content>
 				<GenericTable>
 					<GenericTableHeader>
-						<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>
-							{t('Token')}
-						</GenericTableHeaderCell>
+						<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
 						{notSmall && (
 							<>
 								<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
@@ -75,9 +73,7 @@ const InvitesPage = (): ReactElement => {
 						<GenericTableHeaderCell />
 					</GenericTableHeader>
 					<GenericTableBody>
-						{phase === AsyncStatePhase.LOADING && (
-							<GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />
-						)}
+						{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />}
 						{phase === AsyncStatePhase.RESOLVED &&
 							Array.isArray(value) &&
 							value.map((invite) => <InviteRow key={invite._id} {...invite} onRemove={onRemove} />)}

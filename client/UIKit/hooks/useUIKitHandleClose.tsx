@@ -14,10 +14,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;
 
-const useUIKitHandleClose = <S extends UiKitPayload>(
-	state: S,
-	fn = emptyFn,
-): (() => Promise<void | UIKitInteractionType>) => {
+const useUIKitHandleClose = <S extends UiKitPayload>(state: S, fn = emptyFn): (() => Promise<void | UIKitInteractionType>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	return useMutableCallback(() =>
 		ActionManager.triggerCancel({

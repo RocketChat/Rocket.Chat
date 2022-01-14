@@ -8,9 +8,8 @@ import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorRe
 export enum CommandType {
 	ARI,
 	AMI,
-	AGI
+	AGI,
 }
-
 
 export class Command {
 	protected _type: CommandType;
@@ -31,7 +30,7 @@ export class Command {
 		return this._parametersNeeded;
 	}
 
-	protected _connection: IConnection ;
+	protected _connection: IConnection;
 
 	get connection(): IConnection {
 		return this._connection;
@@ -81,7 +80,6 @@ export class Command {
 		this._returnReject = reject;
 	}
 
-
 	constructor(command: string, parametersNeeded: boolean) {
 		this._commandText = command;
 		this._actionid = -1;
@@ -89,9 +87,11 @@ export class Command {
 		this.result = {};
 	}
 
-	protected prepareCommandAndExecution(amiCommand: any,
+	protected prepareCommandAndExecution(
+		amiCommand: any,
 		actionResultCallback: (err: any, res: any) => void,
-		eventHandlerSetupCallback: () => void): Promise <any> {
+		eventHandlerSetupCallback: () => void,
+	): Promise<any> {
 		const returnPromise = new Promise((_resolve, _reject) => {
 			this.returnResolve = _resolve;
 			this.returnReject = _reject;
@@ -101,7 +101,7 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any): Promise <IVoipConnectorResult> {
+	executeCommand(_data: any): Promise<IVoipConnectorResult> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});

@@ -3,13 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import {
-	popover,
-	MessageAction,
-} from '../../../../../ui-utils/client';
-import {
-	addMessageToList,
-} from '../../../../../ui-utils/client/lib/MessageAction';
+import { popover, MessageAction } from '../../../../../ui-utils/client';
+import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
@@ -51,7 +46,13 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
+	const [items, deleteItem] = menuItems.reduce(
+		(result, value) => {
+			result[value.id === 'delete-message' ? 1 : 0].push(value);
+			return result;
+		},
+		[[], []],
+	);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -106,11 +107,11 @@ export const getCommonRoomEvents = () => ({
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'AUDIO')) {
+				if (e.target && e.target.nodeName === 'AUDIO') {
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					e.preventDefault();
 					e.stopPropagation();
 				}
@@ -125,7 +126,7 @@ export const getCommonRoomEvents = () => ({
 
 			'touchend .message'(e) {
 				clearTimeout(touchtime);
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
 					if (touchMoved === true) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -175,23 +176,32 @@ export const getCommonRoomEvents = () => ({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { msg: { rid, _id, tmid } } = messageArgs(this);
+		const {
+			msg: { rid, _id, tmid },
+		} = messageArgs(this);
 		const room = Rooms.findOne({ _id: rid });
 
-		FlowRouter.go(FlowRouter.getRouteName(), {
-			rid,
-			name: room.name,
-			tab: 'thread',
-			context: tmid || _id,
-		}, {
-			jump: tmid && tmid !== _id && _id && _id,
-		});
+		FlowRouter.go(
+			FlowRouter.getRouteName(),
+			{
+				rid,
+				name: room.name,
+				tab: 'thread',
+				context: tmid || _id,
+			},
+			{
+				jump: tmid && tmid !== _id && _id && _id,
+			},
+		);
 	},
 
 	'click .image-to-download'(event) {
 		const { msg } = messageArgs(this);
-		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
+		ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
+		ChatMessage.update(
+			{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
+			{ $set: { 'attachments.$.downloadImages': true } },
+		);
 	},
 	'click .user-card-message'(e, instance) {
 		const { msg } = messageArgs(this);
@@ -238,11 +248,7 @@ export const getCommonRoomEvents = () => ({
 		let messages = $input.data('reply') || [];
 		messages = addMessageToList(messages, message);
 
-		$input
-			.focus()
-			.data('mention-user', false)
-			.data('reply', messages)
-			.trigger('dataChange');
+		$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
 	},
 	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const { rid } = instance.data;
@@ -255,7 +261,7 @@ export const getCommonRoomEvents = () => ({
 		msgObject = await onClientBeforeSendMessage(msgObject);
 
 		const _chatMessages = chatMessages[rid];
-		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+		if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
 			return;
 		}
 
@@ -274,11 +280,14 @@ export const getCommonRoomEvents = () => ({
 			modifier: item.color,
 		}));
 
-		const itemsBelowDivider = [
-			'delete-message',
-			'report-message',
-		];
-		const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
+		const itemsBelowDivider = ['delete-message', 'report-message'];
+		const [items, alertsItem] = allItems.reduce(
+			(result, value) => {
+				result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value);
+				return result;
+			},
+			[[], []],
+		);
 		const groups = [{ items }];
 
 		if (alertsItem.length) {
@@ -308,11 +317,18 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		const { currentTarget: { dataset: { channel, group, username } } } = e;
+		const {
+			currentTarget: {
+				dataset: { channel, group, username },
+			},
+		} = e;
 
 		if (channel) {
 			if (isLayoutEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', {
+					path: FlowRouter.path('channel', { name: channel }),
+					channel,
+				});
 			}
 			goToRoomById(channel);
 			return;

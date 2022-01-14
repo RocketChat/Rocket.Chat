@@ -28,11 +28,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		[setEmojiFile],
 	);
 
-	const saveAction = useEndpointUpload(
-		'emoji-custom.create',
-		{},
-		t('Custom_Emoji_Added_Successfully'),
-	);
+	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -84,9 +80,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				<Field.Row>
 					<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 				</Field.Row>
-				{errors.name && (
-					<Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>
-				)}
+				{errors.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 			</Field>
 			<Field>
 				<Field.Label>{t('Aliases')}</Field.Label>
@@ -96,32 +90,17 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 				{errors.aliases && <Field.Error>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</Field.Error>}
 			</Field>
 			<Field>
-				<Field.Label
-					alignSelf='stretch'
-					display='flex'
-					justifyContent='space-between'
-					alignItems='center'
-				>
+				<Field.Label alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
 					{t('Custom_Emoji')}
 					<Button square onClick={clickUpload}>
 						<Icon name='upload' size='x20' />
 					</Button>
 				</Field.Label>
-				{errors.emoji && (
-					<Field.Error>
-						{t('error-the-field-is-required', { field: t('Custom_Emoji') })}
-					</Field.Error>
-				)}
+				{errors.emoji && <Field.Error>{t('error-the-field-is-required', { field: t('Custom_Emoji') })}</Field.Error>}
 				{newEmojiPreview && (
 					<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 						<Margins inline='x4'>
-							<Box
-								is='img'
-								style={{ objectFit: 'contain' }}
-								w='x120'
-								h='x120'
-								src={newEmojiPreview}
-							/>
+							<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
 						</Margins>
 					</Box>
 				)}

@@ -10,13 +10,13 @@ const filterLanguage = (language) => {
 	const regex = /([a-z]{2,3})-([a-z]{2,4})/;
 	const matches = regex.exec(language);
 	if (matches) {
-		return `${ matches[1] }-${ matches[2].toUpperCase() }`;
+		return `${matches[1]}-${matches[2].toUpperCase()}`;
 	}
 
 	return language;
 };
 
-Template.loginFooter.onCreated(function() {
+Template.loginFooter.onCreated(function () {
 	this.suggestedLanguage = new ReactiveVar();
 
 	const loadAndSetSuggestedLanguage = async (language = 'en') => {

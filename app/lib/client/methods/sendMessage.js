@@ -32,7 +32,7 @@ Meteor.methods({
 			message.unread = true;
 		}
 		message = callbacks.run('beforeSaveMessage', message);
-		onClientMessageReceived(message).then(function(message) {
+		onClientMessageReceived(message).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});

@@ -97,14 +97,7 @@ function UsersPage() {
 						))}
 				</Page.Header>
 				<Page.Content>
-					<UsersTable
-						users={data.users}
-						total={data.total}
-						params={params}
-						onChangeParams={setParams}
-						sort={sort}
-						onChangeSort={setSort}
-					/>
+					<UsersTable users={data.users} total={data.total} params={params} onChangeParams={setParams} sort={sort} onChangeSort={setSort} />
 				</Page.Content>
 			</Page>
 			{context && (

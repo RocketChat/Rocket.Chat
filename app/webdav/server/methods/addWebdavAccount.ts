@@ -15,17 +15,25 @@ Meteor.methods({
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+				method: 'addWebdavAccount',
+			});
 		}
 
-		check(formData, Match.ObjectIncluding({
-			serverURL: String,
-			username: String,
-			password: String,
-			name: Match.Maybe(String),
-		}));
+		check(
+			formData,
+			Match.ObjectIncluding({
+				serverURL: String,
+				username: String,
+				password: String,
+				name: Match.Maybe(String),
+			}),
+		);
 
-		const duplicateAccount = await WebdavAccounts.findOneByUserIdServerUrlAndUsername({ userId, serverURL: formData.serverURL, username: formData.username }, {});
+		const duplicateAccount = await WebdavAccounts.findOneByUserIdServerUrlAndUsername(
+			{ userId, serverURL: formData.serverURL, username: formData.username },
+			{},
+		);
 
 		if (duplicateAccount !== null) {
 			throw new Meteor.Error('duplicated-account', 'Account not found', {
@@ -34,13 +42,10 @@ Meteor.methods({
 		}
 
 		try {
-			const client = new WebdavClientAdapter(
-				formData.serverURL,
-				{
-					username: formData.username,
-					password: formData.password,
-				},
-			);
+			const client = new WebdavClientAdapter(formData.serverURL, {
+				username: formData.username,
+				password: formData.password,
+			});
 
 			const accountData = {
 				userId,
@@ -57,7 +62,9 @@ Meteor.methods({
 				account: accountData,
 			});
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', {
+				method: 'addWebdavAccount',
+			});
 		}
 		return true;
 	},
@@ -70,20 +77,22 @@ Meteor.methods({
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+				method: 'addWebdavAccount',
+			});
 		}
 
-		check(data, Match.ObjectIncluding({
-			serverURL: String,
-			token: String,
-			name: Match.Maybe(String),
-		}));
+		check(
+			data,
+			Match.ObjectIncluding({
+				serverURL: String,
+				token: String,
+				name: Match.Maybe(String),
+			}),
+		);
 
 		try {
-			const client = new WebdavClientAdapter(
-				data.serverURL,
-				{ token: data.token },
-			);
+			const client = new WebdavClientAdapter(data.serverURL, { token: data.token });
 
 			const accountData = {
 				userId,
@@ -93,21 +102,27 @@ Meteor.methods({
 			};
 
 			await client.stat('/');
-			await WebdavAccounts.updateOne({
-				userId,
-				serverURL: data.serverURL,
-				name: data.name ?? '',
-			}, {
-				$set: accountData,
-			}, {
-				upsert: true,
-			});
+			await WebdavAccounts.updateOne(
+				{
+					userId,
+					serverURL: data.serverURL,
+					name: data.name ?? '',
+				},
+				{
+					$set: accountData,
+				},
+				{
+					upsert: true,
+				},
+			);
 			Notifications.notifyUser(userId, 'webdav', {
 				type: 'changed',
 				account: accountData,
 			});
 		} catch (error) {
-			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', { method: 'addWebdavAccount' });
+			throw new Meteor.Error('could-not-access-webdav', 'Could not access webdav', {
+				method: 'addWebdavAccount',
+			});
 		}
 
 		return true;

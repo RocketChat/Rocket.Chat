@@ -15,7 +15,7 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			return Meteor.call('unreadMessages', message, function(error) {
+			return Meteor.call('unreadMessages', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}

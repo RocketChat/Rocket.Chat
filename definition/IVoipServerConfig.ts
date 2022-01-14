@@ -23,3 +23,6 @@ export interface ICallServerConfigData {
 	websocketPort: number;
 	websocketPath: string;
 }
+
+export const isICallServerConfigData = (obj: any): obj is ICallServerConfigData =>
+	Number.isInteger(obj.websocketPort) && String(obj.websocketPath) === obj.websocketPath;

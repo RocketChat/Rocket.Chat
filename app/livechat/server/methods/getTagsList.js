@@ -5,7 +5,9 @@ import { callbacks } from '../../../callbacks';
 Meteor.methods({
 	'livechat:getTagsList'() {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:getTagsList' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:getTagsList',
+			});
 		}
 
 		return callbacks.run('livechat.beforeListTags');

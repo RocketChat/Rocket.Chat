@@ -25,14 +25,7 @@ function AuditLogTable({ data }) {
 			}
 			results={data}
 		>
-			{(props) => (
-				<UserRow
-					key={props._id}
-					formatDateAndTime={formatDateAndTime}
-					formatDate={formatDate}
-					{...props}
-				/>
-			)}
+			{(props) => <UserRow key={props._id} formatDateAndTime={formatDateAndTime} formatDate={formatDate} {...props} />}
 		</GenericTable>
 	);
 }

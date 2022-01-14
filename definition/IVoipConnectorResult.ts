@@ -2,5 +2,5 @@ import { IVoipExtensionConfig, IVoipExtensionBase, IQueueMembershipDetails, IReg
 import { IQueueDetails, IQueueSummary } from './ACDQueues';
 
 export interface IVoipConnectorResult {
-	result: IVoipExtensionConfig | IVoipExtensionBase [] | IQueueSummary [] | IQueueDetails | IQueueMembershipDetails | IRegistrationInfo;
+	result: IVoipExtensionConfig | IVoipExtensionBase[] | IQueueSummary[] | IQueueDetails | IQueueMembershipDetails | IRegistrationInfo;
 }

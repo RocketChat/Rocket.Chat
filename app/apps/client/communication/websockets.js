@@ -53,11 +53,11 @@ export class AppWebsocketReceiver extends Emitter {
 		APIClient.v1.get('commands.get', { command }).then((result) => {
 			slashCommands.commands[command] = result.command;
 		});
-	}
+	};
 
 	onCommandRemovedOrDisabled = (command) => {
 		delete slashCommands.commands[command];
-	}
+	};
 
 	onActionsChanged = () => loadButtons();
 }

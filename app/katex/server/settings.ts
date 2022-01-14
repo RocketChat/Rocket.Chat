@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settingsRegistry } from '../../settings/server';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	const enableQuery = {
 		_id: 'Katex_Enabled',
 		value: true,

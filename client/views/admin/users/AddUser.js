@@ -73,12 +73,7 @@ export function AddUser({ roles, onReload, ...props }) {
 		[router],
 	);
 
-	const saveAction = useEndpointAction(
-		'POST',
-		'users.create',
-		values,
-		t('User_created_successfully!'),
-	);
+	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -97,10 +92,7 @@ export function AddUser({ roles, onReload, ...props }) {
 		}
 	});
 
-	const availableRoles = useMemo(
-		() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [],
-		[roleData],
-	);
+	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 
 	const append = useMemo(
 		() => (
@@ -121,13 +113,6 @@ export function AddUser({ roles, onReload, ...props }) {
 	);
 
 	return (
-		<UserForm
-			errors={errors}
-			formValues={values}
-			formHandlers={handlers}
-			availableRoles={availableRoles}
-			append={append}
-			{...props}
-		/>
+		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
 	);
 }

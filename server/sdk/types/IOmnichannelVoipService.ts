@@ -4,7 +4,7 @@ import { IVoipRoom } from '../../../definition/IRoom';
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
-	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult> ;
+	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult>;
 	getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult>;
 	findAgent(agentId: string): Promise<any>;
 	getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IOmnichannelVoipServiceResult>;

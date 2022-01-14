@@ -1,7 +1,7 @@
 import { Icon, Button } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC } from 'react';
 
-const Action: FC<ComponentProps<typeof Button> & { icon: string; label: string }> = ({
+const Action: FC<ComponentProps<typeof Button> & { icon: ComponentProps<typeof Icon>['name']; label: string }> = ({
 	label,
 	icon,
 	...props

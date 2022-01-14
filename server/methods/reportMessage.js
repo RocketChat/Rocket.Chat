@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if ((description == null) || description.trim() === '') {
+		if (description == null || description.trim() === '') {
 			throw new Meteor.Error('error-invalid-description', 'Invalid description', {
 				method: 'reportMessage',
 			});

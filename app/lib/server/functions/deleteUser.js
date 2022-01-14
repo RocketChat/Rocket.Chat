@@ -43,7 +43,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function({ file }) {
+				Messages.findFilesByUserId(userId).forEach(function ({ file }) {
 					store.deleteById(file._id);
 				});
 				Messages.removeByUserId(userId);

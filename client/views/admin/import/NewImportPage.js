@@ -200,11 +200,7 @@ function NewImportPage() {
 									options={Importers.getAll().map(({ key, name }) => [key, t(name)])}
 								/>
 							</Field.Row>
-							{importer && (
-								<Field.Hint>
-									{t('Importer_From_Description', { from: t(importer.name) })}
-								</Field.Hint>
-							)}
+							{importer && <Field.Hint>{t('Importer_From_Description', { from: t(importer.name) })}</Field.Hint>}
 						</Field>
 						{importer && (
 							<Field>
@@ -247,11 +243,7 @@ function NewImportPage() {
 												{t('Importer_Source_File')}
 											</Field.Label>
 											<Field.Row>
-												<InputBox
-													type='file'
-													id={fileSourceInputId}
-													onChange={handleImportFileChange}
-												/>
+												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
 											</Field.Row>
 											{files?.length > 0 && (
 												<Field.Row>
@@ -271,11 +263,7 @@ function NewImportPage() {
 											{t('File_URL')}
 										</Field.Label>
 										<Field.Row>
-											<UrlInput
-												id={fileSourceInputId}
-												value={fileUrl}
-												onChange={handleFileUrlChange}
-											/>
+											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
 										</Field.Row>
 									</Field>
 								)}
@@ -285,11 +273,7 @@ function NewImportPage() {
 											{t('File_Path')}
 										</Field.Label>
 										<Field.Row>
-											<TextInput
-												id={fileSourceInputId}
-												value={filePath}
-												onChange={handleFilePathChange}
-											/>
+											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
 										</Field.Row>
 									</Field>
 								)}

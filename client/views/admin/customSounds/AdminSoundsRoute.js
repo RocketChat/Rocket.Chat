@@ -100,12 +100,8 @@ function CustomSoundsRoute() {
 						{context === 'new' && t('Custom_Sound_Add')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'edit' && (
-						<EditCustomSound _id={id} close={handleClose} onChange={handleChange} />
-					)}
-					{context === 'new' && (
-						<AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleChange} />
-					)}
+					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleChange} />}
+					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleChange} />}
 				</VerticalBar>
 			)}
 		</Page>

@@ -3,6 +3,7 @@ import { CommandHandler } from '../../services/voip/connector/asterisk/CommandHa
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { IRegistrationInfo } from '../../../definition/voip/IRegistrationInfo';
 
 export interface IVoipService {
 	getConfiguration(): any;
@@ -16,7 +17,6 @@ export interface IVoipService {
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
 	getExtensionList(): Promise<IVoipConnectorResult>;
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
-	getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult>;
-	// change IRoom for IVoipRoom
 	handleEvent(event: string, room: IRoom, user: IUser, comment?: string): Promise<void>;
+	getRegistrationInfo(requestParams: any): Promise<{ result: IRegistrationInfo }>; // TODO: Check the reason behind IVoipConnectorResult
 }

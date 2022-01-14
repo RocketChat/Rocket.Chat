@@ -7,26 +7,13 @@ import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { setupAutogrow } from './messageBoxAutogrow';
-import {
-	formattingButtons,
-	applyFormatting,
-} from './messageBoxFormatting';
+import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import {
-	fileUpload,
-	KonchatNotification,
-} from '../../../ui';
-import {
-	messageBox,
-	popover,
-} from '../../../ui-utils';
-import {
-	t,
-	roomTypes,
-	getUserPreference,
-} from '../../../utils/client';
+import { fileUpload, KonchatNotification } from '../../../ui';
+import { messageBox, popover } from '../../../ui-utils';
+import { t, roomTypes, getUserPreference } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './userActionIndicator.ts';
@@ -39,7 +26,7 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 
-Template.messageBox.onCreated(function() {
+Template.messageBox.onCreated(function () {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
@@ -70,7 +57,7 @@ Template.messageBox.onCreated(function() {
 			const newPosition = input.selectionStart + 1;
 			const before = input.value.substring(0, input.selectionStart);
 			const after = input.value.substring(input.selectionEnd, input.value.length);
-			input.value = `${ before }\n${ after }`;
+			input.value = `${before}\n${after}`;
 			input.selectionStart = newPosition;
 			input.selectionEnd = newPosition;
 		} else {
@@ -83,7 +70,6 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
-
 	this.send = (event) => {
 		const { input } = this;
 
@@ -91,7 +77,10 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
+		const {
+			autogrow,
+			data: { rid, tmid, onSend, tshow },
+		} = this;
 		const { value } = input;
 		this.set('');
 
@@ -106,12 +95,12 @@ Template.messageBox.onCreated(function() {
 	};
 });
 
-Template.messageBox.onRendered(function() {
+Template.messageBox.onRendered(function () {
 	let inputSetup = false;
 
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
-		const room = Session.get(`roomData${ rid }`);
+		const room = Session.get(`roomData${rid}`);
 
 		if (!inputSetup) {
 			const $input = $(this.find('.js-input-message'));
@@ -184,7 +173,7 @@ Template.messageBox.onRendered(function() {
 	});
 });
 
-Template.messageBox.onDestroyed(function() {
+Template.messageBox.onDestroyed(function () {
 	if (!this.autogrow) {
 		return;
 	}
@@ -251,8 +240,7 @@ Template.messageBox.helpers({
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
-		return Object.values(actionGroups)
-			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
+		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	formattingButtons() {
 		return formattingButtons.filter(({ condition }) => !condition || condition());
@@ -280,9 +268,7 @@ const handleFormattingShortcut = (event, instance) => {
 
 	const key = event.key.toLowerCase();
 
-	const { pattern } = formattingButtons
-		.filter(({ condition }) => !condition || condition())
-		.find(({ command }) => command === key) || {};
+	const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ command }) => command === key) || {};
 
 	if (!pattern) {
 		return false;
@@ -298,8 +284,7 @@ let sendOnEnterActive;
 
 Tracker.autorun(() => {
 	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal'
-		|| (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 });
 
 const handleSubmit = (event, instance) => {
@@ -347,7 +332,7 @@ Template.messageBox.events({
 		}
 
 		EmojiPicker.open(instance.source, (emoji) => {
-			const emojiValue = `:${ emoji }: `;
+			const emojiValue = `:${emoji}: `;
 
 			const { input } = instance;
 
@@ -406,13 +391,14 @@ Template.messageBox.events({
 
 				const imageExtension = getImageExtensionFromMime(fileItem.type);
 
-				const extension = imageExtension ? `.${ imageExtension }` : '';
+				const extension = imageExtension ? `.${imageExtension}` : '';
 
 				return {
 					file: fileItem,
-					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }${ extension }`,
+					name: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
 				};
-			}).filter(({ file }) => file !== null);
+			})
+			.filter(({ file }) => file !== null);
 
 		if (files.length) {
 			event.preventDefault();
@@ -513,9 +499,7 @@ Template.messageBox.events({
 		event.stopPropagation();
 
 		const { id } = event.currentTarget.dataset;
-		const { pattern } = formattingButtons
-			.filter(({ condition }) => !condition || condition())
-			.find(({ label }) => label === id) || {};
+		const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ label }) => label === id) || {};
 
 		if (!pattern) {
 			return;

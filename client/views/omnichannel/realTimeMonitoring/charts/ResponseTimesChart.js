@@ -27,12 +27,7 @@ const init = (canvas, context, t) =>
 	drawLineChart(
 		canvas,
 		context,
-		[
-			t('Avg_reaction_time'),
-			t('Longest_reaction_time'),
-			t('Avg_response_time'),
-			t('Longest_response_time'),
-		],
+		[t('Avg_reaction_time'), t('Longest_reaction_time'), t('Avg_response_time'), t('Longest_response_time')],
 		labels,
 		[initialData, initialData.slice(), initialData.slice(), initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
@@ -51,11 +46,7 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.responseTimesChart = reload;
 
