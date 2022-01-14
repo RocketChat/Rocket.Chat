@@ -10,7 +10,7 @@ const config = {
 	scope: 'name email',
 	mergeUsers: true,
 	accessTokenParam: 'access_token',
-	loginStyle: 'redirect',
+	loginStyle: 'popup',
 };
 
 new CustomOAuth('apple', config);
@@ -67,7 +67,7 @@ settings.watchMultiple(
 					showButton: false,
 					secret,
 					enabled: settings.get('Accounts_OAuth_Apple'),
-					loginStyle: 'redirect',
+					loginStyle: 'popup',
 					clientId,
 				},
 			},

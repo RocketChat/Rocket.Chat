@@ -7,7 +7,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 export const AppleOauthButton: FC = () => {
 	const enabled = useSetting('Accounts_OAuth_Apple');
 	const absoluteUrl = useAbsoluteUrl();
-	const appleClientID = useSetting('Accounts_OAuth_Apple_id') || '[CLIENT_ID]';
+	const appleClientID = useSetting('Accounts_OAuth_Apple_id');
 
 	const redirectURI = absoluteUrl('_oauth/apple');
 
