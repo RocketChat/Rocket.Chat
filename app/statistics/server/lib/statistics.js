@@ -230,6 +230,9 @@ export const statistics = {
 		const { value: e2e } = await Settings.findOneById('E2E_Enable');
 		const { value: e2eDefaultDirectRoom } = await Settings.findOneById('E2E_Enabled_Default_DirectRooms');
 		const { value: e2eDefaultPrivateRoom } = await Settings.findOneById('E2E_Enabled_Default_PrivateRooms');
+		const { value: smtpHost } = await Settings.findOneById('SMTP_Host');
+		const { value: smtpPort } = await Settings.findOneById('SMTP_Port');
+		const { value: fromEmail } = await Settings.findOneById('From_Email');
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -238,6 +241,13 @@ export const statistics = {
 				e2e,
 				e2eDefaultDirectRoom,
 				e2eDefaultPrivateRoom,
+			},
+			email: {
+				smtp: {
+					smtpHost,
+					smtpPort,
+					fromEmail,
+				},
 			},
 		};
 		const integrations = await Integrations.find(
