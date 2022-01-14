@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import { handleAPIError } from '../helpers';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
@@ -45,7 +46,7 @@ import { useCategoryToggle } from './useCategoryToggle';
 // 	},
 // ];
 
-type category = {
+type Category = {
 	id: string;
 	title: string;
 	description: string;
@@ -62,8 +63,10 @@ export const useCategories = (): [
 	const [categories, setCategories] = useState<CategoryDropDownListProps['groups']>([]);
 
 	const fetchCategories = async (): Promise<void> => {
-		await Apps.getCategories().then((categories: category[]) => {
-			const mappedCategories = categories.map((currentCategory: category) => ({
+		try {
+			const fetchedCategories = await Apps.getCategories();
+
+			const mappedCategories = fetchedCategories.map((currentCategory: Category) => ({
 				id: currentCategory.id,
 				label: currentCategory.title,
 				checked: false,
@@ -83,7 +86,9 @@ export const useCategories = (): [
 					items: mappedCategories,
 				},
 			]);
-		});
+		} catch (e) {
+			handleAPIError(e);
+		}
 	};
 
 	useEffect(() => {
