@@ -68,13 +68,19 @@ FlowRouter.route('/meet/:rid', {
 			// visitor login
 			const visitor = await APIClient.v1.get(`livechat/visitor/${queryParams?.token}`);
 			if (visitor?.visitor) {
-				return appLayout.render({ component: MeetPage });
+				appLayout.render({ component: MeetPage });
+				return;
 			}
-			return toastr.error(TAPi18n.__('Visitor_does_not_exist'));
+
+			toastr.error(TAPi18n.__('Visitor_does_not_exist'));
+			return;
 		}
+
 		if (!Meteor.userId()) {
 			FlowRouter.go('home');
+			return;
 		}
+
 		appLayout.render({ component: MeetPage });
 	},
 });
@@ -219,6 +225,47 @@ FlowRouter.route('/reset-password/:token', {
 	name: 'resetPassword',
 	action() {
 		appLayout.render({ component: ResetPasswordPage });
+	},
+});
+
+FlowRouter.route('/snippet/:snippetId/:snippetName', {
+	name: 'snippetView',
+	action() {
+		appLayout.render({ component: MainLayout, props: { center: 'snippetPage' } });
+	},
+});
+
+FlowRouter.route('/oauth/authorize', {
+	name: 'oauth/authorize',
+	action(_params, queryParams) {
+		appLayout.render({
+			component: MainLayout,
+			props: {
+				center: 'authorize',
+				modal: true,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				client_id: queryParams?.client_id,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				redirect_uri: queryParams?.redirect_uri,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				response_type: queryParams?.response_type,
+				state: queryParams?.state,
+			},
+		});
+	},
+});
+
+FlowRouter.route('/oauth/error/:error', {
+	name: 'oauth/error',
+	action(params) {
+		appLayout.render({
+			component: MainLayout,
+			props: {
+				center: 'oauth404',
+				modal: true,
+				error: params?.error,
+			},
+		});
 	},
 });
 
