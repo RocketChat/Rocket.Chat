@@ -10,7 +10,7 @@ import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../callbacks/client';
+import { callbacks } from '../../../lib/callbacks';
 import { isSyncReady } from '../../../client/lib/userData';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import './main.html';

@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 

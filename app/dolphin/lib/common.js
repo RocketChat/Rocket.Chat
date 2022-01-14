@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../settings';
 import { CustomOAuth } from '../../custom-oauth';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 const config = {
 	serverURL: '',
