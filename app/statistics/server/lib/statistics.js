@@ -241,6 +241,9 @@ export const statistics = {
 
 		const { value: updateChecker } = await Settings.findOneById('Update_EnableChecker');
 
+		const { value: liveStream } = await Settings.findOneById('Livestream_enabled');
+		const { value: broadcasting } = await Settings.findOneById('Broadcasting_enabled');
+
 		statistics.settings = {
 			accounts: {
 				account2fa,
@@ -268,6 +271,10 @@ export const statistics = {
 				update: {
 					updateChecker,
 				},
+			},
+			liveStreamAndBroadcasting: {
+				liveStream,
+				broadcasting,
 			},
 		};
 		const integrations = await Integrations.find(
