@@ -24,7 +24,7 @@ import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
-import { getSettingsStatistics } from '/server/lib/statistics/getSettingsStatistics';
+import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 

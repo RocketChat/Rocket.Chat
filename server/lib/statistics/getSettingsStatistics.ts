@@ -1,5 +1,6 @@
-import { Settings } from '/app/models/server/raw';
-import { ISettingStatistics, ISettingStatisticsObject } from '/definition/ISetting';
+import { Settings } from '../../../app/models/server/raw';
+import { ISettingStatistics, ISettingStatisticsObject } from '../../../definition/ISetting';
+
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {
 		account2fa,
