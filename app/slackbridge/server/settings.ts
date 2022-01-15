@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('SlackBridge', function() {
+settingsRegistry.addGroup('SlackBridge', function () {
 	this.add('SlackBridge_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',
@@ -38,27 +38,34 @@ settingsRegistry.addGroup('SlackBridge', function() {
 
 	this.add('SlackBridge_Out_All', false, {
 		type: 'boolean',
-		enableQuery: [{
-			_id: 'SlackBridge_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_Enabled',
-			value: true,
-		}],
+		enableQuery: [
+			{
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_Enabled',
+				value: true,
+			},
+		],
 	});
 
 	this.add('SlackBridge_Out_Channels', '', {
 		type: 'roomPick',
-		enableQuery: [{
-			_id: 'SlackBridge_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_Enabled',
-			value: true,
-		}, {
-			_id: 'SlackBridge_Out_All',
-			value: false,
-		}],
+		enableQuery: [
+			{
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_Enabled',
+				value: true,
+			},
+			{
+				_id: 'SlackBridge_Out_All',
+				value: false,
+			},
+		],
 	});
 
 	this.add('SlackBridge_AliasFormat', '', {

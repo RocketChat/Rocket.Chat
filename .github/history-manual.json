@@ -123,5 +123,12 @@
 			"sampaiodiego",
 			"pierre-lehnen-rc"
 		]
+	}],
+	"4.1.1": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }

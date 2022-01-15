@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { validateSetting } from './validateSetting';

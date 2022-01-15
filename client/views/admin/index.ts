@@ -1,2 +1,2 @@
 export { registerAdminRoute } from './routes';
-export { registerAdminSidebarItem } from './sidebarItems';
+export { registerAdminSidebarItem, unregisterSidebarItem as unregisterAdminSidebarItem } from './sidebarItems';

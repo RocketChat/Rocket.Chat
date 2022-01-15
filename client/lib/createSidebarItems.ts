@@ -2,6 +2,9 @@ import type { Subscription } from 'use-subscription';
 
 type SidebarItem = {
 	i18nLabel: string;
+	href?: string;
+	icon?: string;
+	permissionGranted?: boolean | (() => boolean);
 };
 
 export const createSidebarItems = (

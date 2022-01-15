@@ -100,6 +100,7 @@ export const roomFields = {
 	metrics: 1,
 	ts: 1,
 	waitingResponse: 1,
+	queuedAt: 1,
 
 	// fields used by DMs
 	usernames: 1,

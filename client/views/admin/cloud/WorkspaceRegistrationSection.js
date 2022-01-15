@@ -6,13 +6,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-function WorkspaceRegistrationSection({
-	token: initialToken,
-	workspaceId,
-	uniqueId,
-	onRegisterStatusChange,
-	...props
-}) {
+function WorkspaceRegistrationSection({ token: initialToken, workspaceId, uniqueId, onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -63,12 +57,7 @@ function WorkspaceRegistrationSection({
 				<Field>
 					<Field.Label htmlFor={tokenInputId}>{t('Token')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							id={tokenInputId}
-							disabled={isProcessing}
-							value={token}
-							onChange={handleTokenChange}
-						/>
+						<TextInput id={tokenInputId} disabled={isProcessing} value={token} onChange={handleTokenChange} />
 					</Field.Row>
 					<Field.Hint>{t('Cloud_manually_input_token')}</Field.Hint>
 				</Field>

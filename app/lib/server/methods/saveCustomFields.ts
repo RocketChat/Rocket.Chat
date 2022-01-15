@@ -10,5 +10,7 @@ Meteor.methods({
 });
 
 RateLimiter.limitMethod('saveCustomFields', 1, 1000, {
-	userId() { return true; },
+	userId() {
+		return true;
+	},
 });

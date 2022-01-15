@@ -28,10 +28,7 @@ function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...pro
 	const { handleName, handleDescription, handleDepartments } = handlers;
 	const { name, description, departments } = values;
 
-	const nameError = useMemo(
-		() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined),
-		[name, t],
-	);
+	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
 
 	const saveTag = useMethod('livechat:saveTag');
 
@@ -70,47 +67,23 @@ function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...pro
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
-						<Button
-							primary
-							mie='none'
-							flexGrow={1}
-							disabled={!hasUnsavedChanges || !canSave}
-							onClick={handleSave}
-						>
+						<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
 				</Page.Header>
 				<Page.ScrollableContentWithShadow>
-					<FieldGroup
-						w='full'
-						alignSelf='center'
-						maxWidth='x600'
-						is='form'
-						autoComplete='off'
-						{...props}
-					>
+					<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off' {...props}>
 						<Field>
 							<Field.Label>{t('Name')}*</Field.Label>
 							<Field.Row>
-								<TextInput
-									placeholder={t('Name')}
-									flexGrow={1}
-									value={name}
-									onChange={handleName}
-									error={hasUnsavedChanges && nameError}
-								/>
+								<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									placeholder={t('Description')}
-									flexGrow={1}
-									value={description}
-									onChange={handleDescription}
-								/>
+								<TextInput placeholder={t('Description')} flexGrow={1} value={description} onChange={handleDescription} />
 							</Field.Row>
 						</Field>
 						<Field>

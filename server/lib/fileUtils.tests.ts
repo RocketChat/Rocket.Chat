@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import { expect } from 'chai';
 
 import { fileName, joinPath } from './fileUtils';

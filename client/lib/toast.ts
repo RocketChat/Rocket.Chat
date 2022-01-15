@@ -16,6 +16,4 @@ export const dispatchToastMessage = (payload: ToastMessagePayload): void => {
 	emitter.emit('notify', payload);
 };
 
-export const subscribeToToastMessages = (
-	callback: (payload: ToastMessagePayload) => void,
-): (() => void) => emitter.on('notify', callback);
+export const subscribeToToastMessages = (callback: (payload: ToastMessagePayload) => void): (() => void) => emitter.on('notify', callback);

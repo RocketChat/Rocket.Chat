@@ -55,13 +55,7 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className}>
-			<InputComponent
-				value={value}
-				editor={editor}
-				onChangeValue={onChangeValue}
-				onChangeEditor={onChangeEditor}
-				{...inputProps}
-			/>
+			<InputComponent value={value} editor={editor} onChangeValue={onChangeValue} onChangeEditor={onChangeEditor} {...inputProps} />
 			{hint && <Field.Hint>{hint}</Field.Hint>}
 			{callout && (
 				<Margins block='x16'>

@@ -5,8 +5,8 @@ import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
 import { settings } from '../../app/settings/server';
 
-function generateStatistics(logger) {
-	const cronStatistics = statistics.save();
+async function generateStatistics(logger) {
+	const cronStatistics = await statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 
@@ -19,7 +19,7 @@ function generateStatistics(logger) {
 		const token = getWorkspaceAccessToken();
 
 		if (token) {
-			headers.Authorization = `Bearer ${ token }`;
+			headers.Authorization = `Bearer ${token}`;
 		}
 
 		HTTP.post('https://collector.rocket.chat/', {

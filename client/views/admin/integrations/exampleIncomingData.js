@@ -16,11 +16,6 @@ export function useExampleData({ additionalFields, url }) {
 			],
 		};
 
-		return [
-			exampleData,
-			`curl -X POST -H 'Content-Type: application/json' --data '${JSON.stringify(
-				exampleData,
-			)}' ${url}`,
-		];
+		return [exampleData, `curl -X POST -H 'Content-Type: application/json' --data '${JSON.stringify(exampleData)}' ${url}`];
 	}, [additionalFields, url]);
 }

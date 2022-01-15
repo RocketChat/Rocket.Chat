@@ -5,9 +5,7 @@ export function mapProps(Component) {
 		<Component replies={tcount} username={username} msg={msg} ts={ts} {...props} />
 	);
 
-	WrappedComponent.displayName = `mapProps(${
-		Component.displayName ?? Component.name ?? 'Component'
-	})`;
+	WrappedComponent.displayName = `mapProps(${Component.displayName ?? Component.name ?? 'Component'})`;
 
 	return WrappedComponent;
 }

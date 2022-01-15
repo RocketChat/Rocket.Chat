@@ -30,9 +30,7 @@ const CloudLoginModal = (props) => {
 				<Modal.Title>{t('Apps_Marketplace_Login_Required_Title')}</Modal.Title>
 				<Modal.Close onClick={handleCloseButtonClick} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
-				{t('Apps_Marketplace_Login_Required_Description')}
-			</Modal.Content>
+			<Modal.Content fontScale='p2'>{t('Apps_Marketplace_Login_Required_Description')}</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button ghost onClick={handleCancelButtonClick}>

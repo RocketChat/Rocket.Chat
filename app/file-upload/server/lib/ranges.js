@@ -25,7 +25,7 @@ export function getFileRange(file, req) {
 }
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-export const setRangeHeaders = function(range, file, res) {
+export const setRangeHeaders = function (range, file, res) {
 	if (!range) {
 		return;
 	}
@@ -36,13 +36,13 @@ export const setRangeHeaders = function(range, file, res) {
 		res.removeHeader('Content-Type');
 		res.removeHeader('Content-Disposition');
 		res.removeHeader('Last-Modified');
-		res.setHeader('Content-Range', `bytes */${ file.size }`);
+		res.setHeader('Content-Range', `bytes */${file.size}`);
 		res.writeHead(416);
 		res.end();
 		return;
 	}
 
-	res.setHeader('Content-Range', `bytes ${ range.start }-${ range.stop }/${ file.size }`);
+	res.setHeader('Content-Range', `bytes ${range.start}-${range.stop}/${file.size}`);
 	res.removeHeader('Content-Length');
 	res.setHeader('Content-Length', range.stop - range.start + 1);
 	res.statusCode = 206;

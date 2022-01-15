@@ -37,14 +37,7 @@ function AgentInfoActions({ reload }) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteAgent}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	const handleEditClick = useMutableCallback(() =>
@@ -55,20 +48,8 @@ function AgentInfoActions({ reload }) {
 	);
 
 	return [
-		<AgentInfo.Action
-			key={t('Remove')}
-			title={t('Remove')}
-			label={t('Remove')}
-			onClick={handleDelete}
-			icon={'trash'}
-		/>,
-		<AgentInfo.Action
-			key={t('Edit')}
-			title={t('Edit')}
-			label={t('Edit')}
-			onClick={handleEditClick}
-			icon={'edit'}
-		/>,
+		<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />,
+		<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />,
 	];
 }
 

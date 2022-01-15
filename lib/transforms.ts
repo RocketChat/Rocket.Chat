@@ -2,7 +2,7 @@ type Transform<T, U extends T | Promise<T>> = (x: T) => U;
 
 type TransformChain<T, U extends T | Promise<T>> = {
 	(x: T): U;
-	use(transform: Transform<T, U>): (() => void);
+	use(transform: Transform<T, U>): () => void;
 };
 
 export const createTransformChain = <T>(...transforms: Transform<T, T>[]): TransformChain<T, T> => {

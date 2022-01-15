@@ -69,7 +69,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (!rid) {
-		throw new Error('The \'rid\' property on the message object is missing.');
+		throw new Error("The 'rid' property on the message object is missing.");
 	}
 
 	try {

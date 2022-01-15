@@ -18,19 +18,14 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 		<Table.Row key={_id} tabIndex={0} role='link'>
 			<Table.Cell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					<UserAvatar
-						size={mediaQuery ? 'x28' : 'x40'}
-						title={username}
-						username={username}
-						etag={avatarETag}
-					/>
+					<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />
 					<Box display='flex' withTruncatedText mi='x8'>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2' withTruncatedText color='default'>
+							<Box fontScale='p2m' withTruncatedText color='default'>
 								{name || username}
 							</Box>
 							{name && (
-								<Box fontScale='p1' color='hint' withTruncatedText>
+								<Box fontScale='p2' color='hint' withTruncatedText>
 									{' '}
 									{`@${username}`}{' '}
 								</Box>
@@ -40,21 +35,15 @@ const UserRow = ({ u, results, ts, _id, formatDateAndTime, formatDate, fields, m
 				</Box>
 			</Table.Cell>
 			<Table.Cell>
-				<Box fontScale='p2' withTruncatedText color='hint'>
+				<Box fontScale='p2m' withTruncatedText color='hint'>
 					{msg}
 				</Box>{' '}
 				<Box mi='x4' />
 			</Table.Cell>
 			<Table.Cell withTruncatedText>{when}</Table.Cell>
 			<Table.Cell withTruncatedText>{results}</Table.Cell>
-			<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-				<FilterDisplay
-					t={t}
-					users={users}
-					room={room}
-					startDate={formatDate(startDate)}
-					endDate={formatDate(endDate)}
-				/>
+			<Table.Cell fontScale='p2' color='hint' withTruncatedText>
+				<FilterDisplay t={t} users={users} room={room} startDate={formatDate(startDate)} endDate={formatDate(endDate)} />
 			</Table.Cell>
 		</Table.Row>
 	);

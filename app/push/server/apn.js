@@ -47,10 +47,10 @@ export const sendAPN = ({ userToken, notification, _removeToken }) => {
 
 	apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
-			logger.debug(`Got error code ${ failure.status } for token ${ userToken }`);
+			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
 
 			if (['400', '410'].includes(failure.status)) {
-				logger.debug(`Removing token ${ userToken }`);
+				logger.debug(`Removing token ${userToken}`);
 				_removeToken({
 					apn: userToken,
 				});
@@ -91,7 +91,7 @@ export const initAPN = ({ options, absoluteUrl }) => {
 			}
 		} else {
 			// Warn about gateways we dont know about
-			logger.warn(`WARNING: Push APN unknown gateway "${ options.apn.gateway }"`);
+			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
 		}
 	} else if (options.apn.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {

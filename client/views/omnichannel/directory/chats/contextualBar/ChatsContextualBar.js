@@ -39,11 +39,7 @@ const ChatsContextualBar = ({ rid }) => {
 				)}
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
-			{context === 'edit' ? (
-				<RoomEditWithData id={rid} close={handleRoomEditBarCloseButtonClick} />
-			) : (
-				<ChatInfo route={PATH} id={rid} />
-			)}
+			{context === 'edit' ? <RoomEditWithData id={rid} close={handleRoomEditBarCloseButtonClick} /> : <ChatInfo route={PATH} id={rid} />}
 		</>
 	);
 };

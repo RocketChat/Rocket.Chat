@@ -1,6 +1,7 @@
 import './absoluteUrl';
 import './appRoot';
 import './banners';
+import './callbacks';
 import './contextualBar';
 import './customTranslations';
 import './e2e';

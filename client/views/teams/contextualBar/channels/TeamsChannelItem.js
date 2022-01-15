@@ -32,9 +32,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			<Option.Avatar>
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
-			<Option.Column>
-				{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}
-			</Option.Column>
+			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}</Option.Column>
 			<Option.Content>
 				<Box display='inline-flex' alignItems='center'>
 					{roomTypes.getRoomName(room.t, room)}{' '}
@@ -49,11 +47,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			</Option.Content>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<Option.Menu onClick={onClick}>
-					{showButton ? (
-						<RoomActions room={room} reload={reload} />
-					) : (
-						<ActionButton ghost tiny icon='kebab' />
-					)}
+					{showButton ? <RoomActions room={room} reload={reload} /> : <ActionButton ghost tiny icon='kebab' />}
 				</Option.Menu>
 			)}
 		</Option>

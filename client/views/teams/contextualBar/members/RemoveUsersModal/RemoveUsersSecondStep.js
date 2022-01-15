@@ -4,15 +4,7 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-const RemoveUsersSecondStep = ({
-	onClose,
-	onCancel,
-	onConfirm,
-	deletedRooms = {},
-	username,
-	rooms = [],
-	...props
-}) => {
+const RemoveUsersSecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, username, rooms = [], ...props }) => {
 	const t = useTranslation();
 
 	return (
