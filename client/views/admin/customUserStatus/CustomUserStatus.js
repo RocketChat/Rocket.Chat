@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
+import MarkdownText from '../../../components/MarkdownText';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -34,7 +35,7 @@ function CustomUserStatus({ data, sort, onClick, onHeaderClick, setParams, param
 		return (
 			<Table.Row key={_id} onKeyDown={onClick(_id, status)} onClick={onClick(_id, status)} tabIndex={0} role='link' action qa-user-id={_id}>
 				<Table.Cell fontScale='p2' color='default' style={style}>
-					{name}
+					<MarkdownText content={name} parseEmoji={true} variant='inline' />
 				</Table.Cell>
 				<Table.Cell fontScale='p2' color='default' style={style}>
 					{statusType}
