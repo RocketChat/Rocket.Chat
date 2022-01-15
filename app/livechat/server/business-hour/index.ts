@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { BusinessHourManager } from './BusinessHourManager';
 import { SingleBusinessHourBehavior } from './Single';
 import { cronJobs } from '../../../utils/server/lib/cron/Cronjobs';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { DefaultBusinessHour } from './Default';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);

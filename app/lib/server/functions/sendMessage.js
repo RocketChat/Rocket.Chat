@@ -2,7 +2,7 @@ import { Match, check } from 'meteor/check';
 import { parser } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
@@ -269,7 +269,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		Defer other updates as their return is not interesting to the user
 		*/
 		// Execute all callbacks
-		callbacks.runAsync('afterSaveMessage', message, room, user._id);
+		callbacks.runAsync('afterSaveMessage', message, room);
 		return message;
 	}
 };
