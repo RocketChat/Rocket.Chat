@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
@@ -402,7 +403,7 @@ API.v1.addRoute(
 	'users.setAvatar',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -433,11 +434,9 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { image, ...fields } = Promise.await(
-				getUploadFormData({
-					request: this.request,
-				}),
-			);
+			const { image, ...fields } = await getUploadFormData({
+				request: this.request,
+			});
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
@@ -976,11 +975,24 @@ API.v1.addRoute(
 	'users.logoutOtherClients',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			try {
-				const result = Meteor.call('logoutOtherClients');
+				const hashedToken = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
 
-				return API.v1.success(result);
+				if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				}
+
+				const me = await UsersRaw.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+
+				const token = me.services.resume.loginTokens.find((token) => token.hashedToken === hashedToken);
+
+				const tokenExpires = new Date(token.when.getTime() + settings.get('Accounts_LoginExpiration') * 1000);
+
+				return API.v1.success({
+					token: this.request.headers['x-auth-token'],
+					tokenExpires,
+				});
 			} catch (error) {
 				return API.v1.failure(error);
 			}

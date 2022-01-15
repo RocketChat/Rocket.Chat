@@ -819,6 +819,22 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	removeNonPATLoginTokensExcept(userId, authToken) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						when: { $exists: true },
+						hashedToken: { $ne: authToken },
+					},
+				},
+			},
+		);
+	}
+
 	removeRoomsByRoomIdsAndUserId(rids, userId) {
 		return this.update(
 			{
