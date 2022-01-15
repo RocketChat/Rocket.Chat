@@ -14,8 +14,6 @@ import { useAllowRead } from './useAllowRead';
 import { useCollectionsAvailability } from './useCollectionsAvailability';
 import { useCustomScript } from './useCustomScript';
 import { useIframeLogin } from './useIframeLogin';
-import { useTooltipHandling } from './useTooltipHandling';
-import { useTouchEventCorrection } from './useTouchEventCorrection';
 import { useViewportScrolling } from './useViewportScrolling';
 
 const MainLayout1 = (): ReactElement => {
@@ -94,6 +92,9 @@ const MainLayout3 = ({ center }: MainLayoutProps): ReactElement => {
 };
 
 const MainLayout2 = ({ center }: MainLayoutProps): ReactElement => {
+	useViewportScrolling();
+	useCustomScript();
+
 	const uid = useUserId();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
@@ -121,11 +122,7 @@ type MainLayoutProps = {
 
 const MainLayout = ({ center }: MainLayoutProps): ReactElement => {
 	const ready = useCollectionsAvailability();
-	useTooltipHandling();
-	useTouchEventCorrection();
 	const allowedRead = useAllowRead(ready);
-	useViewportScrolling(allowedRead);
-	useCustomScript(allowedRead);
 
 	if (!ready) {
 		return <PageLoading />;

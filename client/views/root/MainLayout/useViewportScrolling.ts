@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 
-export const useViewportScrolling = (active: boolean): void => {
+export const useViewportScrolling = (): void => {
 	useEffect(() => {
-		if (!active) {
-			return;
-		}
-
 		document.documentElement.classList.remove('scroll');
 		document.documentElement.classList.add('noscroll');
 
@@ -13,5 +9,5 @@ export const useViewportScrolling = (active: boolean): void => {
 			document.documentElement.classList.add('scroll');
 			document.documentElement.classList.remove('noscroll');
 		};
-	}, [active]);
+	}, []);
 };

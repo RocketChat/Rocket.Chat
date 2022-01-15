@@ -4,8 +4,11 @@ import { useSubscription } from 'use-subscription';
 import { appLayout } from '../../lib/appLayout';
 import { blazePortals } from '../../lib/portals/blazePortals';
 import PageLoading from './PageLoading';
+import { useTooltipHandling } from './useTooltipHandling';
 
 const AppLayout: FC = () => {
+	useTooltipHandling();
+
 	const descriptor = useSubscription(appLayout);
 	const portals = useSubscription(blazePortals);
 
