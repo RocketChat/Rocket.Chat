@@ -67,7 +67,6 @@ Template.body.onRendered(function () {
 	});
 
 	$(document.body).on('keydown', function (e) {
-		console.log(e);
 		if (e.shiftKey === true) {
 			e.stopPropagation();
 			$('.message-actions-default').removeClass('message-actions');
