@@ -32,11 +32,11 @@ function Section({ children = undefined, groupId, hasReset = true, help = undefi
 		dispatch(
 			editableSettings
 				.filter(({ disabled }) => !disabled)
-				.map(({ _id, value, packageValue, editor, packageEditor }) => ({
+				.map(({ _id, packageValue, packageEditor }) => ({
 					_id,
 					value: packageValue,
 					editor: packageEditor,
-					changed: JSON.stringify(value) !== JSON.stringify(packageValue) || JSON.stringify(editor) !== JSON.stringify(packageEditor),
+					changed: false,
 				})),
 		);
 	});
