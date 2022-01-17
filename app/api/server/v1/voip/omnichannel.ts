@@ -138,7 +138,7 @@ API.v1.addRoute(
 						},
 					});
 					const freeExt = await LivechatVoip.getFreeExtensions();
-					const extensions = [extension.extension, ...freeExt.result];
+					const extensions = [extension.extension, ...(freeExt.result as string[])];
 					return API.v1.success({ available: extensions });
 				}
 				default:
