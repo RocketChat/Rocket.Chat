@@ -7,7 +7,9 @@ import { useRole } from './useRole';
 const UsersInRolePageContainer = () => {
 	const _id = useRouteParameter('_id');
 
+	console.error('ID: ', _id);
 	const role = useRole(_id);
+	console.error('role: ', role);
 
 	if (!role) {
 		return null;
