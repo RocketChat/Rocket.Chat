@@ -1,4 +1,4 @@
-FROM node:12.22.8-buster-slim
+FROM node:14.18.2-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
@@ -20,12 +20,12 @@ RUN aptMark="$(apt-mark showmanual)" \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \
-       | awk '/=>/ { print $(NF-1) }' \
-       | sort -u \
-       | xargs -r dpkg-query --search \
-       | cut -d: -f1 \
-       | sort -u \
-       | xargs -r apt-mark manual \
+    | awk '/=>/ { print $(NF-1) }' \
+    | sort -u \
+    | xargs -r dpkg-query --search \
+    | cut -d: -f1 \
+    | sort -u \
+    | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && npm cache clear --force
 
