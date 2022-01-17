@@ -5,6 +5,7 @@ import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
 import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
+import { api } from '../../../../server/sdk/api';
 
 export const server = new Server();
 
@@ -91,6 +92,9 @@ server.methods({
 			await Account.logout({ userId: this.userId, token: this.userToken });
 		}
 
+		this.emit(DDP_EVENTS.LOGGEDOUT);
+		server.emit(DDP_EVENTS.LOGGEDOUT, this);
+
 		// TODO: run the handles on monolith to track SAU correctly
 		// accounts._successfulLogout(this.connection, this.userId);
 		this.userToken = undefined;
@@ -149,15 +153,34 @@ server.methods({
 	},
 });
 
-server.on(DDP_EVENTS.LOGGED, ({ userId, session }) => {
+server.on(DDP_EVENTS.LOGGED, (info) => {
+	// console.log('DDP_EVENTS.LOGGED ->', info);
+	const { userId, session, connection } = info;
 	Presence.newConnection(userId, session);
+	api.broadcast('accounts.login', { userId, session, connection });
 });
 
-server.on(DDP_EVENTS.DISCONNECTED, ({ userId, session }) => {
+server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
+	// console.log('DDP_EVENTS.LOGGEDOUT ->', info);
+	const { userId, session, connection } = info;
+	api.broadcast('accounts.logout', { userId, session, connection });
+});
+
+server.on(DDP_EVENTS.DISCONNECTED, (info) => {
+	const { userId, session, connection } = info;
+
+	// console.log('DDP_EVENTS.DISCONNECTED ->', info);
+	api.broadcast('socket.disconnected', { userId, session, connection });
+
 	if (!userId) {
 		return;
 	}
 	Presence.removeConnection(userId, session);
+});
+
+server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
+	// console.log('DDP_EVENTS.CONNECTED ->', connection);
+	api.broadcast('socket.connected', connection);
 });
 
 // TODO: resolve metrics

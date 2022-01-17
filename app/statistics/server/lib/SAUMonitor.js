@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server/raw';
 import { aggregates } from '../../../models/server/raw/Sessions';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from './getMostImportantRole';
+import { sauEvents } from '../../../../server/services/sauMonitor/events';
 
 const getDateObj = (dateTime = new Date()) => ({
 	day: dateTime.getDate(),
@@ -18,6 +18,12 @@ const getDateObj = (dateTime = new Date()) => ({
 const isSameDateObj = (oldest, newest) => oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
 
 const logger = new Logger('SAUMonitor');
+
+/**
+ * Every 60s run:
+ * - if changed the day, set lastActivityAt to 23:59:59 of last day and create a new record for today
+ * - if not changed the day, update lastActivityAt to 'now'
+ */
 
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
@@ -44,10 +50,10 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		await this._startMonitoring(() => {
-			this._started = true;
-			logger.debug(`[start] - InstanceId: ${this._instanceId}`);
-		});
+		await this._startMonitoring();
+
+		this._started = true;
+		logger.debug(`[start] - InstanceId: ${this._instanceId}`);
 	}
 
 	stop() {
@@ -70,16 +76,13 @@ export class SAUMonitorClass {
 		return this._started === true;
 	}
 
-	async _startMonitoring(callback) {
+	async _startMonitoring() {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
 			this._startSessionControl();
 			await this._initActiveServerSessions();
 			this._startAggregation();
-			if (callback) {
-				callback();
-			}
 		} catch (err) {
 			throw new Meteor.Error(err);
 		}
@@ -104,15 +107,12 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		Meteor.onConnection((connection) => {
+		sauEvents.on('socket.disconnected', async ({ connection }) => {
 			if (!this.isRunning()) {
 				return;
 			}
-			// this._handleSession(connection, getDateObj());
 
-			connection.onClose(async () => {
-				await Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
-			});
+			await Sessions.closeByInstanceIdAndSessionId(connection.instanceId, connection.id);
 		});
 	}
 
@@ -121,31 +121,32 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		Accounts.onLogin(async (info) => {
+		sauEvents.on('accounts.login', async ({ userId, connection }) => {
 			if (!this.isRunning()) {
 				return;
 			}
+			console.log('accounts.login', userId, connection);
 
-			const { roles, _id: userId } = info.user;
+			// TODO need to perform a find on user to get his roles
+			// const { roles = ['user'], _id: userId } = info.user;
+			const roles = ['user'];
 
 			const mostImportantRole = getMostImportantRole(roles);
 
 			const loginAt = new Date();
 			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
-			await this._handleSession(info.connection, params);
-			this._updateConnectionInfo(info.connection.id, { loginAt });
+			await this._handleSession(connection, params);
+
+			// TODO MS: need to take a look at this since it looks meteor's connections
+			this._updateConnectionInfo(connection.id, { loginAt });
 		});
 
-		Accounts.onLogout(async (info) => {
+		sauEvents.on('accounts.logout', async ({ userId, connection }) => {
 			if (!this.isRunning()) {
 				return;
 			}
 
-			const sessionId = info.connection.id;
-			if (info.user) {
-				const userId = info.user._id;
-				await Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
-			}
+			await Sessions.logoutByInstanceIdAndSessionIdAndUserId(connection.instanceId, connection.id, userId);
 		});
 	}
 
@@ -154,6 +155,7 @@ export class SAUMonitorClass {
 		await Sessions.createOrUpdate(data);
 	}
 
+	// TODO MS: rewrite to run once a day to switch to new day only and not rely on _instanceId
 	async _updateActiveSessions() {
 		if (!this.isRunning()) {
 			return;
@@ -205,7 +207,7 @@ export class SAUMonitorClass {
 		const info = {
 			type: 'session',
 			sessionId: connection.id,
-			instanceId: this._instanceId,
+			instanceId: connection.instanceId || this._instanceId,
 			ip,
 			host,
 			...this._getUserAgentInfo(connection),
@@ -287,6 +289,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
+		// TODO MS: ddp-streamer needs to provide current sessions as well to do the same
 		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
 		for await (const session of sessions) {
 			await callback(session.connectionHandle);

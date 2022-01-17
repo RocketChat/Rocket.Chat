@@ -29,6 +29,7 @@ export const DDP_EVENTS = {
 	UNSUBSCRIBE: 'unsub',
 	DISCONNECTED: 'disconnected',
 	LOGGED: 'logged',
+	LOGGEDOUT: 'loggedout',
 };
 
 export const WS_ERRORS = {
