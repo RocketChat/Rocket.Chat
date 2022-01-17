@@ -1,3 +1,5 @@
+import type { DeleteWriteOpResultObject } from 'mongodb';
+
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { FollowMessageMethod } from './methods/followMessage';
@@ -107,7 +109,7 @@ export type ServerMethods = {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (...args: any[]) => any;
+	'removeWebdavAccount': (accountId: string) => DeleteWriteOpResultObject;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
