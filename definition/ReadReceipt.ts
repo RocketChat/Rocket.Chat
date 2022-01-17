@@ -9,4 +9,4 @@ export type ReadReceipt = {
 	user: Pick<IUser, '_id' | 'name' | 'username'>;
 	userId: IUser['_id'];
 	_id: string;
-}
+};

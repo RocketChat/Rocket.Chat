@@ -4,7 +4,7 @@ import { MouseEvent } from 'react';
 export const usePreventProgation = (fn: (e: MouseEvent) => void): ((e: MouseEvent) => void) => {
 	const preventClickPropagation = useMutableCallback((e): void => {
 		e.stopPropagation();
-		fn && fn(e);
+		fn?.(e);
 	});
 	return preventClickPropagation;
 };

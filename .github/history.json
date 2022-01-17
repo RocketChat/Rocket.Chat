@@ -67142,6 +67142,1618 @@
           ]
         }
       ]
+    },
+    "4.2.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23769",
+          "title": "Chore: Update settings.ts",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23565",
+          "title": "[FIX] Registration not possible when any user is blocked for multiple failed logins",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23770",
+          "title": "Regression: Fix sendMessagesToAdmins not in Fiber",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23771",
+          "title": "Chore: Remove duplicated 'name' key from rate limiter logs",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23761",
+          "title": "[NEW] Enable LDAP manual sync to deployments without EE license",
+          "userLogin": "rodrigok",
+          "description": "Open the Enterprise LDAP API that executes background sync to be used without any Enterprise License and enforce 2FA requirements.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "rodrigok",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23732",
+          "title": "[NEW] Rate limiting for user registering",
+          "userLogin": "ostjen",
+          "milestone": "4.2.0",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23675",
+          "title": "Chore: add index on appId + associations for apps_persistence collection",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23768",
+          "title": "Chore: Bump Rocket.Chat@livechat to 1.10",
+          "userLogin": "KevLehman",
+          "milestone": "4.2.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23766",
+          "title": "[IMPROVE] Improve the add user drop down for add a user in create channel modal for UserAutoCompleteMultiple",
+          "userLogin": "dougfabris",
+          "description": "Seeing only the name of the person you are not adding is not practical in my opinion because two people can have the same name. Moreover, you can't see the username of the person you want to add in the dropdown. So I changed that and created another selection of users to show the username as well. I made this change so that it would appear in the key place for creating a room and adding a user.\r\n\r\nBefore:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287805-faac8d00-a150-11eb-871f-147ab011ced0.mp4\r\n\r\n\r\nAfter:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287664-d2249300-a150-11eb-8cf6-0e04730b425d.mp4",
+          "milestone": "4.2.0",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23533",
+          "title": "[FIX] New specific endpoint for contactChatHistoryMessages with right permissions",
+          "userLogin": "tiagoevanp",
+          "description": "Anyone with 'View Omnichannel Rooms' permission can see the History Messages.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23588",
+          "title": "[FIX][ENTERPRISE] OAuth \"Merge Roles\" removes roles from users",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix OAuth \"Merge Roles\": the \"Merge Roles\" option now synchronize only the roles described in the \"**Roles to Sync**\" setting available in each Custom OAuth settings' group (instead of replacing users' roles by their OAuth roles);\r\n- Fix \"Merge Roles\" and \"Channel Mapping\" not being performed/updated on OAuth login.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23547",
+          "title": "[IMPROVE] Engagement Dashboard",
+          "userLogin": "tassoevan",
+          "description": "- Adds helpers `onToggledFeature` for server and client code to handle license activation/deactivation without server restart;\r\n- Replaces usage of `useEndpointData` with `useQuery` (from [React Query](https://react-query.tanstack.com/));\r\n- Introduces `view-engagement-dashboard` permission.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23004",
+          "title": "[NEW] Audio and Video calling in Livechat",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "dhruvjain99",
+            "murtaza98",
+            "Deepak-learner"
+          ]
+        },
+        {
+          "pr": "23758",
+          "title": "Chore: Type omnichannel models",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23737",
+          "title": "[NEW] Allow registering by REG_TOKEN environment variable",
+          "userLogin": "geekgonecrazy",
+          "description": "You can provide the REG_TOKEN environment variable containing a registration token and it will automatically register to your cloud account.  This simplifies the registration flow",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "23686",
+          "title": "[NEW] Permission for download/uploading files on mobile",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23735",
+          "title": "[IMPROVE] Stricter API types",
+          "userLogin": "tassoevan",
+          "description": "It:\r\n- Adds stricter types for `API`;\r\n- Enables types for `urlParams`;\r\n- Removes mandatory passage of `undefined` payload on client;\r\n- Corrects some regressions;\r\n- Reassures my belief in TypeScript supremacy.",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23757",
+          "title": "Regression:  Units endpoint to TS",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23750",
+          "title": "[NEW] REST endpoints to manage Omnichannel Business Units",
+          "userLogin": "KevLehman",
+          "description": "Basic documentation about endpoints can be found at https://www.postman.com/kaleman960/workspace/rocketchat-public-api/request/3865466-71502450-8c8f-42b4-8954-1cd3d01fcb0c",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23738",
+          "title": "[FIX] Autofocus on search input in admin",
+          "userLogin": "gabriellsh",
+          "description": "Removed \"generic\" autofocus on sidenav template.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23745",
+          "title": "Chore: Generic Table ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23739",
+          "title": "[FIX] Await promise to handle error when attempting to transfer a room",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23673",
+          "title": "[FIX][ENTERPRISE] Private rooms and discussions can't be audited",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add Private rooms (groups) and Discussions to the Message Auditing (Channels) autocomplete;\r\n- Update \"Channels\" tab name to \"Rooms\".",
+          "contributors": [
+            "matheusbsilva137",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23734",
+          "title": "[FIX] Missing user roles in edit user tab",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23733",
+          "title": "[FIX] Discussions created inside discussions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23694",
+          "title": "[NEW] Allow Omnichannel statistics to be collected.",
+          "userLogin": "cauefcr",
+          "description": "This PR adds the possibility for business stakeholders to see what is actually being used of the Omnichannel integrations.",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23725",
+          "title": "[IMPROVE] Re-naming department query param for Twilio",
+          "userLogin": "murtaza98",
+          "description": "Since the endpoint supports both, department ID and department Name, so we're renaming it to reflect the same. `departmentName` -> `department`",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23468",
+          "title": "[FIX]  Fixed E2E default room settings not being honoured",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "TheDigitalEagle",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23659",
+          "title": "[FIX] broken avatar preview when changing avatar",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23705",
+          "title": "[FIX] Prevent UserAction.addStream without Subscription",
+          "userLogin": "tiagoevanp",
+          "description": "When you take an Omnichannel chat from queue, the guest's typing information will appear.",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23499",
+          "title": "[FIX] PhotoSwipe crashing on show",
+          "userLogin": "tassoevan",
+          "description": "Waits for initial content to load before showing it.",
+          "contributors": [
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23695",
+          "title": "Chore: add `no-bidi` rule",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23711",
+          "title": "[FIX] Fix typo in FR translation",
+          "userLogin": "Cormoran96",
+          "contributors": [
+            "Cormoran96"
+          ]
+        },
+        {
+          "pr": "23706",
+          "title": "Chore: Mocha testing configuration",
+          "userLogin": "tassoevan",
+          "description": "We've been writing integration tests for the REST API quite regularly, but we can't say the same for UI-related modules. This PR is based on the assumption that _improving the developer experience on writing tests_ would increase our coverage and promote the adoption even for newcomers.\r\n\r\nHere as summary of the proposal:\r\n\r\n- Change Mocha configuration files:\r\n  - Add a base configuration (`.mocharc.base.json`);\r\n  - Rename the configuration for REST API tests (`mocha_end_to_end.opts.js -> .mocharc.api.js`);\r\n  - Add a configuration for client modules (`.mocharc.client.js`);\r\n  - Enable ESLint for them.\r\n- Add a Mocha test command exclusive for client modules (`npm run testunit-client`);\r\n- Enable fast watch mode:\r\n  - Configure `ts-node` to only transpile code (skip type checking);\r\n  - Define a list of files to be watched.\r\n- Configure `mocha` environment on ESLint only for test files (required when using Mocha's globals);\r\n- Adopt Chai as our assertion library:\r\n  - Unify the setup of Chai plugins (`chai-spies`, `chai-datetime`, `chai-dom`);\r\n  - Replace `assert` with `chai`;\r\n  - Replace `chai.expect` with `expect`.\r\n- Enable integration tests with React components:\r\n  - Enable JSX support on our default Babel configuration;\r\n  - Adopt [testing library](https://testing-library.com/).",
+          "contributors": [
+            "tassoevan",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23701",
+          "title": "Chore: Api definitions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23703",
+          "title": "[FIX][ENTERPRISE] Replace all occurrences of a placeholder on string instead of just first one",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23641",
+          "title": "[FIX] Omnichannel webhooks can't be saved",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23595",
+          "title": "[FIX] Omnichannel business hours page breaking navigation",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23626",
+          "title": "[IMPROVE] Allow override of default department for SMS Livechat sessions",
+          "userLogin": "bhardwajaditya",
+          "contributors": [
+            "bhardwajaditya"
+          ]
+        },
+        {
+          "pr": "23691",
+          "title": "[FIX] Omnichannel contact center navigation",
+          "userLogin": "tiagoevanp",
+          "description": "Derives from: https://github.com/RocketChat/Rocket.Chat/pull/23656\r\n\r\nThis PR includes a different approach to solving navigation problems following the same code structure and UI definitions of other \"ActionButtons\" components in Sidebar.",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23692",
+          "title": "Regression: Improve AggregationCursor types",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23696",
+          "title": "Chore: Remove useCallbacks",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23387",
+          "title": "[IMPROVE] Reduce complexity in some functions",
+          "userLogin": "tassoevan",
+          "description": "Overhauls all places where eslint's `complexity` rule is disabled.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23633",
+          "title": "Chore: Convert Fiber models to async Step 1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23389",
+          "title": "[NEW] Permissions for interacting with Omnichannel Contact Center",
+          "userLogin": "cauefcr",
+          "description": "Adds a new permission, one that allows for control over user access to Omnichannel Contact Center,",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23587",
+          "title": "[FIX] Omnichannel status being changed on page refresh",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23661",
+          "title": "[FIX] Performance issues when running Omnichannel job queue dispatcher",
+          "userLogin": "renatobecker",
+          "milestone": "4.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23608",
+          "title": "[FIX] Advanced LDAP Sync Features",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23627",
+          "title": "[FIX] LDAP users not being re-activated on login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23576",
+          "title": "[FIX] \"to users\" not working in export message",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23607",
+          "title": "[FIX] App update flow failing in HA setups",
+          "userLogin": "d-gubert",
+          "description": "The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions",
+          "milestone": "4.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23566",
+          "title": "[FIX] Apps scheduler \"losing\" jobs after server restart",
+          "userLogin": "d-gubert",
+          "description": "If a job is scheduled and the server restarted, said job won't be executed, giving the impression it's been lost.\r\n\r\nWhat happens is that the scheduler is only started when some app tries to schedule an app - if that happens, all jobs that are \"late\" will be executed; if that doesn't happen, no job will run.\r\n\r\nThis PR starts the apps scheduler right after all apps have been loaded",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23603",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-01Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23498",
+          "title": "[NEW] Show on-hold metrics on analytics pages and current chats",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23452",
+          "title": "Chore: Rearrange module typings",
+          "userLogin": "tassoevan",
+          "description": "- Move all external module declarations (definitions and augmentations) to `/definition/externals`;\r\n- ~Symlink some modules on `/definition/externals` to `/ee/server/services/definition/externals`~ Share types with `/ee/server/services`;\r\n- Use TypeScript as server code entrypoint.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23487",
+          "title": "[FIX] Notifications are not being filtered",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;\r\n - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);\r\n - Rename 'mobileNotifications' user's preference to 'pushNotifications'.",
+          "milestone": "4.1.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23542",
+          "title": "[IMPROVE] MKP12 - New UI - Merge Apps and Marketplace Tabs and Content",
+          "userLogin": "rique223",
+          "description": "Merged the Marketplace and Apps page into a single page with a tabs component that changes between Markeplace and installed apps.\r\n![page merging](https://user-images.githubusercontent.com/43561537/138516558-f86d62e6-1a5c-4817-a229-a1b876323960.gif)",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23586",
+          "title": "Merge master into develop & Set version to 4.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23778",
+          "title": "Regression: Fix incorrect API path for livechat calls",
+          "userLogin": "murtaza98",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23775",
+          "title": "Regression: Fix LDAP sync route",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23793",
+          "title": "Regression: Include files on EE services build",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23789",
+          "title": "Regression: Fix sort param on omnichannel endpoints",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23802",
+          "title": "Regression: Add @rocket.chat/emitter to EE services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.2.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23774",
+          "title": "Regression: Add trash to raw models",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.2.0",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23820",
+          "title": "[FIX] LDAP users being disabled when an AD security policy is enabled",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.2.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23815",
+          "title": "Regression: \"When is the chat busier\" and \"Users by time of day\" charts are not working",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix \"When is the chat busier\" (Hours) and \"Users by time of day\" charts, which weren't displaying any data;",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23812",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-29Z",
+          "userLogin": "lingohub[bot]",
+          "milestone": "4.2.0",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23813",
+          "title": "Regression: Mark Livechat WebRTC video calling as alpha",
+          "userLogin": "murtaza98",
+          "description": "![image](https://user-images.githubusercontent.com/34130764/143832378-82b99a72-23e8-4115-8b28-a0d210de598b.png)",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23803",
+          "title": "Regression: Current Chats not Filtering",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "4.2.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.3.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24008",
+          "title": "Regression: Fix omnichannel empty source usage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23924",
+          "title": "[IMPROVE] Webdav methods sanitization",
+          "userLogin": "dougfabris",
+          "description": "The improvement modify `server_url` and `user_id` params into `serverURL` and `userId` more suitable to our camelCase pattern. Also converts the webdav methods into .ts helping us to prevent issues in the next modal rewrites efforts.",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23875",
+          "title": "Chore: update docker image base to latest node 12 patch",
+          "userLogin": "debdutdeb",
+          "contributors": [
+            "debdutdeb",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24007",
+          "title": "[IMPROVE] Replace SortListItem and CreateListItem with ListItem",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23912",
+          "title": "[NEW] Show Omnichannel room icon based on source definition",
+          "userLogin": "AllanPazRibeiro",
+          "milestone": "4.3.0",
+          "contributors": [
+            "AllanPazRibeiro",
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23925",
+          "title": "[NEW][APPS] Add new email event for apps",
+          "userLogin": "d-gubert",
+          "description": "Introduces a new event called before an email is sent by the Mailer. Apps can intercept and modify the email that will be sent, or even prevent it from being sent altogether. For more details, check https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/461/files#diff-301e8a58164edbf315da2a43c4923f153dbc909573de1e60aa9f730f7488ac82",
+          "milestone": "4.3.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19640",
+          "title": "[FIX] Changes on department agents should mark form as dirty",
+          "userLogin": "rafaelblink",
+          "milestone": "4.3.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "gabriellsh",
+            "renatobecker",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23904",
+          "title": "[FIX] Jitsi call already ended",
+          "userLogin": "Aman-Maheshwari",
+          "description": "- Fix Jitsi timeout update -- which caused the \"Jitsi call already ended\" error when trying to join a call some time after its creation;",
+          "contributors": [
+            "Aman-Maheshwari",
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "23939",
+          "title": "[NEW][EE] Introduce fallback department support",
+          "userLogin": "KevLehman",
+          "milestone": "4.3.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23959",
+          "title": "[FIX] teams.leave client usage",
+          "userLogin": "dougfabris",
+          "milestone": "4.3.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23679",
+          "title": "[NEW][APPS] Allow Rocket.Chat Apps to register custom action buttons",
+          "userLogin": "d-gubert",
+          "description": "Add an action button manager that allows apps to register custom action buttons that trigger interaction callbacks in them",
+          "milestone": "4.3.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23843",
+          "title": "[NEW][APPS] Allow apps to open contextual bar",
+          "userLogin": "thassiov",
+          "description": "Opens a contextual bar using app ui interactions (`CONTEXTUAL_BAR_OPEN`)\r\n\r\nhttps://user-images.githubusercontent.com/733282/146704076-d2d115f2-6ca6-4ed0-b450-81be580889a4.mp4",
+          "milestone": "4.3.0",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23786",
+          "title": "Chore: Enable prefer-optional-chain ESLint rule for TypeScript files",
+          "userLogin": "tassoevan",
+          "description": "> Code is bad. It rots. It requires periodic maintenance. It has bugs that need to be found. New features mean old code has to be adapted.\r\n> The more code you have, the more places there are for bugs to hide. The longer checkouts or compiles take. The longer it takes a new employee to make sense of your system. If you have to refactor there's more stuff to move around.\r\n> Furthermore, more code often means less flexibility and functionality. This is counter-intuitive, but a lot of times a simple, elegant solution is faster and more general than the plodding mess of code produced by a programmer of lesser talent.\r\n> Code is produced by engineers. To make more code requires more engineers. Engineers have n^2 communication costs, and all that code they add to the system, while expanding its capability, also increases a whole basket of costs.\r\n> You should do whatever possible to increase the productivity of individual programmers in terms of the expressive power of the code they write. Less code to do the same thing (and possibly better). Less programmers to hire. Less organizational communication costs.\r\n\r\n— <cite>[Rich Skrenta][1]</cite>\r\n\r\nMixing two problem domains in code is prone to errors. In this small example\r\n\r\n```ts\r\ndeclare const y: { z: unknown } | undefined;\r\n\r\nconst x = y && y.z;\r\n```\r\n\r\nwe're (1) checking the nullity of `y` and (2) attributing `y.z` to `x`, where (2) is _clearly_ the main problem we're solving with code. The optional chaining is a good technique to handle nullity as a mere implementation detail:\r\n\r\n```ts\r\ndeclare const y: { z: unknown } | undefined;\r\n\r\nconst x = y?.z;\r\n```\r\n\r\nAttributing `y.z` to `x` is more easily readable than the nullity check of `y`.\r\n\r\nThis PR aims to add `@typescript-eslint/prefer-optional-chain` rule to ESlint configuration at warning level.",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23996",
+          "title": "Chore: Remove the `mobile-download-file` permission",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove the `mobile-download-file` permission and its descriptions.",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23823",
+          "title": "[FIX] LDAP Sync doing nothing when set to only import new users.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.3.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23816",
+          "title": "Chore: Centralize email validation functionality",
+          "userLogin": "KevLehman",
+          "description": "- Create lib for validating emails\r\n- Modify places that validate emails to use the new central function",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23972",
+          "title": "[NEW][APPS] getUserUnreadMessageCount Bridge",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23993",
+          "title": "Chore: Deleted LivechatPageVisited",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23987",
+          "title": "[FIX] Broken links present in some languages",
+          "userLogin": "aswinidev",
+          "contributors": [
+            "aswinidev"
+          ]
+        },
+        {
+          "pr": "23846",
+          "title": "Chore: added last login to users.list",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23574",
+          "title": "[FIX] Email notifications settings not being honored on new DMs",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23805",
+          "title": "[FIX] Headers already sent error when user data download is disabled",
+          "userLogin": "sampaiodiego",
+          "description": "When using the export message tool when trying to download the file using the link sent via email if the feature \"Export User Data\" is disabled an error was being thrown causing the request to halt.\r\n\r\nThis is the error shown in the logs:\r\n```\r\n=== UnHandledPromiseRejection ===\r\nError [ERR_HTTP_HEADERS_SENT] [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client\r\n    at ServerResponse.setHeader (_http_outgoing.js:530:11)\r\n    at ServerResponse.res.setHeader (/app/bundle/programs/server/npm/node_modules/meteor/simple_json-routes/node_modules/connect/lib/patch.js:134:22)\r\n    at app/user-data-download/server/exportDownload.js:14:7\r\n    at /app/bundle/programs/server/npm/node_modules/meteor/promise/node_modules/meteor-promise/fiber_pool.js:43:40 {\r\n  code: 'ERR_HTTP_HEADERS_SENT'\r\n}\r\n---------------------------------\r\nErrors like this can cause oplog processing errors.\r\nSetting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process\r\nFuture node.js versions will automatically exit the process\r\n=================================\r\n```",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23991",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-12-20Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "23901",
+          "title": "[FIX] broken `Word Placement Anywhere` and `Run on edits` toggles in integration page",
+          "userLogin": "aswinidev",
+          "milestone": "4.3.0",
+          "contributors": [
+            "aswinidev"
+          ]
+        },
+        {
+          "pr": "23973",
+          "title": "[FIX] OTR not working",
+          "userLogin": "gabriellsh",
+          "description": "A rule on the user notification streamer was changed recently, and the check for writing on the streamer was wrong. Changed it to allow all logged users.",
+          "milestone": "4.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23833",
+          "title": "[FIX] Add missing .png to clipboard uploaded file name",
+          "userLogin": "dougfabris",
+          "milestone": "4.3.0",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23974",
+          "title": "Chore: Use only LivechatTriggerRaw model",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23948",
+          "title": "[FIX] Missing edit icon in sequential thread messages",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/146083450-ca6d7197-dc55-4058-8212-943b42c82473.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/146083055-36c9731a-33c6-483a-93a5-1355d8689e3a.png)",
+          "milestone": "4.3.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23910",
+          "title": "[FIX] Removing Edit message from messageBox on room changed",
+          "userLogin": "yash-rajpal",
+          "description": "Removing edit message from messageBox and local storage on messageBox destroyed.",
+          "milestone": "4.3.0",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "23945",
+          "title": "[IMPROVE] Allow e-mail channel to be used without default department.",
+          "userLogin": "cauefcr",
+          "description": "Due to a missing condition in the e-mail input processing, Rocket.Chat was unable to receive e-mails from e-mail channels that did not have a default department.",
+          "contributors": [
+            "cauefcr",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23466",
+          "title": "Bump mailparser from 3.2.0 to 3.4.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23853",
+          "title": "Bump thehanimo/pr-title-checker from 1.2 to 1.3.4",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23882",
+          "title": "[FIX] Custom emoji route in admin",
+          "userLogin": "sidmohanty11",
+          "description": "https://user-images.githubusercontent.com/73601258/144975689-912cfd73-da16-433c-899a-4d4ffac8e146.mp4",
+          "milestone": "4.3.0",
+          "contributors": [
+            "sidmohanty11",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23888",
+          "title": "[FIX] Popover position for arabic languages",
+          "userLogin": "yash-rajpal",
+          "milestone": "4.3.0",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "23347",
+          "title": "[FIX] creating room with federated member",
+          "userLogin": "qwertiko",
+          "milestone": "4.2.2",
+          "contributors": [
+            "qwertiko",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23930",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-12-13Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "21025",
+          "title": "[NEW][APPS] Possibility to set room closer via Apps LivechatBridge.closeRoom",
+          "userLogin": "cuonghuunguyen",
+          "description": "Add an optional param named `closer` into `LivechatBridge.closeRoom` so that it will be possible to close the room and send a close room message with the correct room closer.\r\nIf the param is not passed, use the room visitor as the room closer.",
+          "contributors": [
+            null,
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23860",
+          "title": "[FIX] Custom status doesn't update properly",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23921",
+          "title": "Bump cookie-parser from 1.4.5 to 1.4.6 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23914",
+          "title": "Chore: Fix hasRole warning",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23922",
+          "title": "Chore: Update pino deps",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23689",
+          "title": "Bump path-parse from 1.0.6 to 1.0.7",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23526",
+          "title": "Bump @rocket.chat/string-helpers from 0.29.0 to 0.30.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23289",
+          "title": "Bump pm2 from 5.1.1 to 5.1.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23913",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23908",
+          "title": "[FIX] Translations for App Select Settings not working",
+          "userLogin": "murtaza98",
+          "description": "Derived from PR https://github.com/RocketChat/Rocket.Chat/pull/19238",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23848",
+          "title": "[FIX] DMs being created with username instead of user's name",
+          "userLogin": "gabriellsh",
+          "milestone": "4.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23879",
+          "title": "[IMPROVE] Update \"Message Erasure Type\" setting's description",
+          "userLogin": "matheusbsilva137",
+          "description": "- Improves the \"Message Erasure Type\" setting's description by providing more details regarding the expected behavior of each option (\"Keep Messages and User Name\", \"Delete All Messages\" and \"Remove link between user and messages\");\r\n- Remove outdated translations (for this setting's description).",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23796",
+          "title": "[FIX] Segmentation fault on CentOS 7 due to outdated `sharp`",
+          "userLogin": "tassoevan",
+          "description": "Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.\r\n\r\nSuggested as a fix for versions `4.0.x` and `4.1.x`.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23819",
+          "title": "[IMPROVE] Omnichannel Visitor Endpoints error handling",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23857",
+          "title": "[FIX] teams.removeMembers client usage",
+          "userLogin": "dougfabris",
+          "milestone": "4.2.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23862",
+          "title": "Regression: Toolbox render item",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23558",
+          "title": "[FIX] Fix no message size limit for method sendMessageLivechat",
+          "userLogin": "cuonghuunguyen",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "23791",
+          "title": "[FIX] Modal keeps state if reset too fast.",
+          "userLogin": "gabriellsh",
+          "description": "~Queued updates so the Modal has a chance to close.~\r\nUsed a random key to ensure modal doesn't keep it's state.",
+          "milestone": "4.3.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23877",
+          "title": "Regression: Missing padding in popover with custom template",
+          "userLogin": "dougfabris",
+          "description": "![Screen Shot 2021-12-06 at 14 16 40](https://user-images.githubusercontent.com/27704687/144891474-a5bf982e-56af-46df-b472-adf9d999ce02.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23873",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-12-06Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23861",
+          "title": "[FIX] Wrong button for non trial apps",
+          "userLogin": "rique223",
+          "description": "This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  \r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  \r\nAfter:\r\n![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)",
+          "milestone": "4.2.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "23859",
+          "title": "[FIX] Error when creating an inactive user in admin panel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix `usersInRole` array used to send email to activate a user.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23822",
+          "title": "Chore: Create script to add new migrations",
+          "userLogin": "KevLehman",
+          "description": "- Create NPM script to add new migrations\r\n- TODO:  Infer next migration number from file list",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23215",
+          "title": "[FIX] Add CSP to authorize auto-close of CAS login window",
+          "userLogin": "goyome",
+          "description": "Add the hash of the JS inside the page that won't close ( window.close(); )",
+          "milestone": "4.1.0",
+          "contributors": [
+            "goyome",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23831",
+          "title": "[FIX] Missing custom user status ellipsis",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/144270229-baca14f5-e168-42b7-86d1-e7217be561a9.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/144274255-39216e69-8283-45c5-8a77-b835d284f655.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23839",
+          "title": "Chore: Change Menu props to accept next fuselage version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23756",
+          "title": "Chore: Replace new typography",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23827",
+          "title": "Merge master into develop & Set version to 4.3.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.2.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23917",
+          "title": "Release 4.2.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tiagoevanp",
+            "sampaiodiego",
+            "matheusbsilva137",
+            "rique223",
+            "dougfabris",
+            "tassoevan",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23913",
+          "title": "Chore: Update Livechat",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.2.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23796",
+          "title": "[FIX] Segmentation fault on CentOS 7 due to outdated `sharp`",
+          "userLogin": "tassoevan",
+          "description": "Upgrades `sharp` to avoid a segmentation fault on CentOS 7 during startup related to `sharp.node` being loaded via `process.dlopen()`.\r\n\r\nSuggested as a fix for versions `4.0.x` and `4.1.x`.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23857",
+          "title": "[FIX] teams.removeMembers client usage",
+          "userLogin": "dougfabris",
+          "milestone": "4.2.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23861",
+          "title": "[FIX] Wrong button for non trial apps",
+          "userLogin": "rique223",
+          "description": "This PR solves a bug on the marketplace that was happening with WhatsApp where it was displaying a trial button even though it didn't have a free trial period. The new verification I've added checks if the app is subscription-based and then checks if it has 0 trial days in all of its tiers. If it does, it shows a subscribe button. If it doesn't, it displays a trial button. Also, I've exposed the itsEnterpriseOnly flag as an extra measure in the case of apps like Facebook Messenger that are enterprise-only and consequently should show the subscribe button.  \r\nBefore:\r\n![image](https://user-images.githubusercontent.com/43561537/144687716-baef06ce-7a80-42fc-8393-b0283c0f349a.png)  \r\nAfter:\r\n![image](https://user-images.githubusercontent.com/43561537/144687924-1a3eb3a7-783f-4450-abd2-1efa0de64658.png)",
+          "milestone": "4.2.1",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "23859",
+          "title": "[FIX] Error when creating an inactive user in admin panel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix `usersInRole` array used to send email to activate a user.",
+          "milestone": "4.2.1",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        }
+      ]
+    },
+    "4.2.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23940",
+          "title": "Release 4.2.2",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "qwertiko",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23347",
+          "title": "[FIX] creating room with federated member",
+          "userLogin": "qwertiko",
+          "milestone": "4.2.2",
+          "contributors": [
+            "qwertiko",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.3.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24009",
+          "title": "Regression: Let Meteor.absoluteUrl.defaultOptions.rootUrl as baseURI",
+          "userLogin": "tassoevan",
+          "milestone": "4.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24012",
+          "title": "Regression: Add migration for omni rooms with no source",
+          "userLogin": "murtaza98",
+          "description": "Add a migration to add source property to all the omnichannel rooms which don't have it yet. All these rooms will have source type as `other`",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "4.3.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24018",
+          "title": "Regression: Remove self from fallback departments dropdown",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24019",
+          "title": "Regression: addAction verification breaking rooms",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
+    },
+    "4.3.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0-alpha.0.5711",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24035",
+          "title": "Regression: Ensure room action buttons only appear inside menu",
+          "userLogin": "d-gubert",
+          "description": "Currently, action buttons registered by apps to appear in the ROOM_ACTION context show in the first position of the list, but since they don't have an icon they are effectively invisible in the tab bar.\r\n\r\nHere we change the order configuration of the button so we make sure it only shows inside the room menu",
+          "milestone": "4.3.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24030",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-12-27Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24033",
+          "title": "Regression: Add optional chaining to possibly undefined fields",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24034",
+          "title": "Regression: Remove dangling console.log",
+          "userLogin": "tassoevan",
+          "description": "A empty array have been printed to console due to a promise chained to `console.log` and `console.error` calls, probably for debugging purposes.",
+          "milestone": "4.3.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "4.3.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24046",
+          "title": "Chore: Bump fuselage 0.31.0",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24045",
+          "title": "Chore: Update Apps-Engine to latest",
+          "userLogin": "d-gubert",
+          "milestone": "4.3.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24021",
+          "title": "Chore: Replace typography",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "4.3.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
     }
   }
 }

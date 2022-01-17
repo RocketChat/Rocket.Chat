@@ -42,8 +42,7 @@ export default function NewIntegrationsPage({ ...props }) {
 					{t('Outgoing')}
 				</Tabs.Item>
 			</Tabs>
-			{(tab === 'incoming' && <NewIncomingWebhook key='incoming' />) ||
-				(tab === 'outgoing' && <NewOutgoingWebhook key='outgoing' />)}
+			{(tab === 'incoming' && <NewIncomingWebhook key='incoming' />) || (tab === 'outgoing' && <NewOutgoingWebhook key='outgoing' />)}
 		</Page>
 	);
 }

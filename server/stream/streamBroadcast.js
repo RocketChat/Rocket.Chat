@@ -26,15 +26,18 @@ export const authLogger = logger.section('Auth');
 export const streamLogger = logger.section('Stream');
 
 function _authorizeConnection(instance) {
-	authLogger.info(`Authorizing with ${ instance }`);
+	authLogger.info(`Authorizing with ${instance}`);
 
-	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function(err, ok) {
+	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function (err, ok) {
 		if (err != null) {
-			return authLogger.error({ msg: `broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err });
+			return authLogger.error({
+				msg: `broadcastAuth error ${instance} ${InstanceStatus.id()} ${connections[instance].instanceId}`,
+				err,
+			});
 		}
 
 		connections[instance].broadcastAuth = ok;
-		return authLogger.info({ msg: `broadcastAuth with ${ instance }`, ok });
+		return authLogger.info({ msg: `broadcastAuth with ${instance}`, ok });
 	});
 }
 
@@ -44,7 +47,7 @@ function authorizeConnection(instance) {
 	};
 
 	if (!InstanceStatus.getCollection().findOne(query)) {
-		return Meteor.setTimeout(function() {
+		return Meteor.setTimeout(function () {
 			return authorizeConnection(instance);
 		}, 500);
 	}
@@ -65,7 +68,7 @@ function startMatrixBroadcast() {
 			cache.set(record._id, record);
 
 			const subPath = getURL('', { cdn: false, full: false });
-			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
+			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
 
 			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
 				authLogger.info({ msg: 'prevent self connect', instance });
@@ -73,7 +76,7 @@ function startMatrixBroadcast() {
 			}
 
 			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
+				instance = `localhost:${record.extraInformation.port}${subPath}`;
 			}
 
 			if (connections[instance] && connections[instance].instanceRecord) {
@@ -97,7 +100,7 @@ function startMatrixBroadcast() {
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
 
-			connections[instance].onReconnect = function() {
+			connections[instance].onReconnect = function () {
 				return authorizeConnection(instance);
 			};
 		}),
@@ -110,10 +113,10 @@ function startMatrixBroadcast() {
 			cache.delete(id);
 
 			const subPath = getURL('', { cdn: false, full: false });
-			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
+			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
 
 			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-				instance = `localhost:${ record.extraInformation.port }${ subPath }`;
+				instance = `localhost:${record.extraInformation.port}${subPath}`;
 			}
 
 			const query = {
@@ -129,17 +132,19 @@ function startMatrixBroadcast() {
 		},
 	};
 
-	InstanceStatusRaw.find({
-		'extraInformation.port': {
-			$exists: true,
+	InstanceStatusRaw.find(
+		{
+			'extraInformation.port': {
+				$exists: true,
+			},
 		},
-	}, {
-		sort: {
-			_createdAt: -1,
+		{
+			sort: {
+				_createdAt: -1,
+			},
 		},
-	}).forEach(matrixBroadCastActions.added);
+	).forEach(matrixBroadCastActions.added);
 }
-
 
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
@@ -159,7 +164,7 @@ function startStreamCastBroadcast(value) {
 	connections[instance] = connection;
 	connection.instanceId = instance;
 	connection.instanceRecord = {};
-	connection.onReconnect = function() {
+	connection.onReconnect = function () {
 		return authorizeConnection(instance);
 	};
 
@@ -197,9 +202,9 @@ export function startStreamBroadcast() {
 
 	logger.info('startStreamBroadcast');
 
-	settings.watch('Stream_Cast_Address', function(value) {
+	settings.watch('Stream_Cast_Address', function (value) {
 		// var connection, fn, instance;
-		const fn = function(instance, connection) {
+		const fn = function (instance, connection) {
 			connection.disconnect();
 			return delete connections[instance];
 		};
@@ -215,22 +220,24 @@ export function startStreamBroadcast() {
 		return startMatrixBroadcast();
 	});
 
-	function broadcast(streamName, eventName, args/* , userId*/) {
-		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
+	function broadcast(streamName, eventName, args /* , userId*/) {
+		const fromInstance = `${process.env.INSTANCE_IP}:${process.env.PORT}`;
 		const results = [];
 
 		for (const instance of Object.keys(connections)) {
 			const connection = connections[instance];
 
 			if (connection.status().connected === true) {
-				connection.call('stream', streamName, eventName, args, function(error, response) {
+				connection.call('stream', streamName, eventName, args, function (error, response) {
 					if (error) {
 						logger.error({ msg: 'Stream broadcast error', err: error });
 					}
 
 					switch (response) {
 						case 'self-not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`);
+							streamLogger.error(
+								`Stream broadcast from '${fromInstance}' to '${connection._stream.endpoint}' with name ${streamName} to self is not authorized`,
+							);
 							streamLogger.debug({
 								msg: 'self-not-authorized',
 								broadcastAuth: connection.broadcastAuth,
@@ -240,7 +247,9 @@ export function startStreamBroadcast() {
 							});
 							return;
 						case 'not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`);
+							streamLogger.error(
+								`Stream broadcast from '${fromInstance}' to '${connection._stream.endpoint}' with name ${streamName} not authorized`,
+							);
 							streamLogger.debug({
 								msg: 'not-authorized',
 								broadcastAuth: connection.broadcastAuth,
@@ -250,7 +259,9 @@ export function startStreamBroadcast() {
 							});
 							return authorizeConnection(instance);
 						case 'stream-not-exists':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`);
+							streamLogger.error(
+								`Stream broadcast from '${fromInstance}' to '${connection._stream.endpoint}' with name ${streamName} does not exist`,
+							);
 							streamLogger.debug({
 								msg: 'stream-not-exists',
 								broadcastAuth: connection.broadcastAuth,
@@ -269,7 +280,9 @@ export function startStreamBroadcast() {
 
 	let TroubleshootDisableInstanceBroadcast;
 	settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
-		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		if (TroubleshootDisableInstanceBroadcast === value) {
+			return;
+		}
 		TroubleshootDisableInstanceBroadcast = value;
 
 		if (value) {
@@ -286,10 +299,7 @@ function getConnection(address) {
 		return;
 	}
 
-	const {
-		instanceRecord,
-		broadcastAuth,
-	} = conn;
+	const { instanceRecord, broadcastAuth } = conn;
 
 	return {
 		address,
@@ -301,13 +311,13 @@ function getConnection(address) {
 
 export function getInstanceConnection(instance) {
 	const subPath = getURL('', { cdn: false, full: false });
-	const address = `${ instance.extraInformation.host }:${ instance.extraInformation.port }${ subPath }`;
+	const address = `${instance.extraInformation.host}:${instance.extraInformation.port}${subPath}`;
 
 	return getConnection(address);
 }
 
 Meteor.methods({
-	broadcastAuth(remoteId, selfId) {
+	'broadcastAuth'(remoteId, selfId) {
 		check(selfId, String);
 		check(remoteId, String);
 
@@ -322,7 +332,7 @@ Meteor.methods({
 		return this.connection.broadcastAuth === true;
 	},
 
-	stream(streamName, eventName, args) {
+	'stream'(streamName, eventName, args) {
 		if (!this.connection) {
 			return 'self-not-authorized';
 		}

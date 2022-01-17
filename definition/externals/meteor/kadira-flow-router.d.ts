@@ -1,25 +1,17 @@
 declare module 'meteor/kadira:flow-router' {
 	import { Subscription } from 'meteor/meteor';
 
-	type RouteOptions = {
-		name: string;
-		action?: (
-			this: Route,
-			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		) => void;
-		subscriptions?: (
-			this: Route,
-			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		) => void;
-		triggersEnter?: unknown[];
-		triggersExit?: unknown[];
-	};
-
 	type Context = {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
+	};
+
+	type RouteOptions = {
+		name: string;
+		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
+		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
+		triggersEnter?: ((context: Context, redirect: (pathDef: string) => void, stop: () => void) => void)[];
+		triggersExit?: ((context: Context) => void)[];
 	};
 
 	class Route {
@@ -65,11 +57,7 @@ declare module 'meteor/kadira:flow-router' {
 		prefix?: string;
 		triggersEnter?: unknown[];
 		triggersExit?: unknown[];
-		subscriptions?: (
-			this: Route,
-			params?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		) => void;
+		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 	};
 
 	class Group {
@@ -110,23 +98,11 @@ declare module 'meteor/kadira:flow-router' {
 
 		group(options: GroupOptions): Group;
 
-		path(
-			pathDef: string,
-			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		): string;
+		path(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
-		url(
-			pathDef: string,
-			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		): string;
+		url(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): string;
 
-		go(
-			pathDef: string,
-			fields?: Record<string, string>,
-			queryParams?: Record<string, string>,
-		): void;
+		go(pathDef: string, fields?: Record<string, string>, queryParams?: Record<string, string>): void;
 
 		reload(): void;
 

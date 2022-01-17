@@ -25,12 +25,12 @@ import PriorityField from './PriorityField';
 import SourceField from './SourceField';
 import VisitorClientInfo from './VisitorClientInfo';
 
+// TODO: Remove moment we are mixing moment and our own formatters :sadface:
 function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } =
-		useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
@@ -54,8 +54,10 @@ function ChatInfo({ id, route }) {
 	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
+	// TODO: use hook instead
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
+	// TODO: use hook instead
 	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
@@ -78,8 +80,7 @@ function ChatInfo({ id, route }) {
 	};
 
 	const onEditClick = useMutableCallback(() => {
-		const hasEditAccess =
-			!!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
+		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
 		if (!hasEditAccess) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
@@ -177,9 +178,7 @@ function ChatInfo({ id, route }) {
 					{canViewCustomFields() &&
 						livechatData &&
 						Object.keys(livechatData).map(
-							(key) =>
-								checkIsVisibleAndScopeRoom(key) &&
-								livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
+							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>

@@ -8,8 +8,8 @@ import { Users } from '../../models';
 import { api } from '../../../server/sdk/api';
 
 /*
-* Msg is a named function that will replace /msg commands
-*/
+ * Msg is a named function that will replace /msg commands
+ */
 
 function Msg(command, params, item) {
 	if (command !== 'msg' || !Match.test(params, String)) {
@@ -29,10 +29,14 @@ function Msg(command, params, item) {
 	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
 		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
-			msg: TAPi18n.__('Username_doesnt_exist', {
-				postProcess: 'sprintf',
-				sprintf: [targetUsernameOrig],
-			}, user.language),
+			msg: TAPi18n.__(
+				'Username_doesnt_exist',
+				{
+					postProcess: 'sprintf',
+					sprintf: [targetUsernameOrig],
+				},
+				user.language,
+			),
 		});
 		return;
 	}

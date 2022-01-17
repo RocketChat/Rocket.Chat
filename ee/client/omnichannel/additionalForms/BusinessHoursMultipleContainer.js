@@ -3,8 +3,7 @@ import React from 'react';
 import { useForm } from '../../../../client/hooks/useForm';
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
-const mapDepartments = (departments) =>
-	departments.map(({ _id, name }) => ({ value: _id, label: name }));
+const mapDepartments = (departments) => departments.map(({ _id, name }) => ({ value: _id, label: name }));
 
 const getInitialData = (data = {}) => ({
 	active: data.active ?? true,
@@ -12,12 +11,7 @@ const getInitialData = (data = {}) => ({
 	departments: mapDepartments(data.departments),
 });
 
-const BusinessHoursMultipleContainer = ({
-	onChange,
-	data: initialData,
-	className,
-	hasChangesAndIsValid = () => {},
-}) => {
+const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className, hasChangesAndIsValid = () => {} }) => {
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
 
 	const { name } = values;

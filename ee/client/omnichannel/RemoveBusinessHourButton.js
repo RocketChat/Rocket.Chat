@@ -35,18 +35,11 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onBusinessHour}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onBusinessHour} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Table.Cell fontScale='p2' color='hint' onClick={handleDelete} withTruncatedText>
 			<Button small ghost title={t('Remove')} onClick={handleDelete}>
 				<Icon name='trash' size='x16' />
 			</Button>

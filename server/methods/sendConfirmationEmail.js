@@ -18,7 +18,7 @@ Meteor.methods({
 		try {
 			return !!Accounts.sendVerificationEmail(user._id, email);
 		} catch (error) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 				method: 'registerUser',
 				message: error.message,
 			});

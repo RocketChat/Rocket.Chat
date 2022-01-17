@@ -5,7 +5,7 @@ import '../../crowd/client/index';
 import { reportError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
-Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
+Meteor.loginWithCrowdAndTOTP = function (username, password, code, callback) {
 	const loginRequest = {
 		crowd: true,
 		username,
@@ -13,12 +13,14 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 	};
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: loginRequest,
-				code,
+		methodArguments: [
+			{
+				totp: {
+					login: loginRequest,
+					code,
+				},
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
 				reportError(error, callback);
@@ -31,6 +33,6 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 
 const { loginWithCrowd } = Meteor;
 
-Meteor.loginWithCrowd = function(username, password, callback) {
+Meteor.loginWithCrowd = function (username, password, callback) {
 	overrideLoginMethod(loginWithCrowd, [username, password], callback, Meteor.loginWithCrowdAndTOTP);
 };

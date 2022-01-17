@@ -31,10 +31,10 @@ const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = 
 				roomName: shouldChangeOwner.pop(),
 			});
 		} else if (shouldChangeOwner.length <= 5) {
-			changeOwnerRooms = t(
-				'A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__',
-				{ count: shouldChangeOwner.length, rooms: shouldChangeOwner.join(', ') },
-			);
+			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__', {
+				count: shouldChangeOwner.length,
+				rooms: shouldChangeOwner.join(', '),
+			});
 		} else {
 			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to__count__rooms', {
 				count: shouldChangeOwner.length,
@@ -61,13 +61,7 @@ const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = 
 	}
 
 	return (
-		<GenericModal
-			variant='danger'
-			onClose={onCancel}
-			onCancel={onCancel}
-			confirmText={confirmLabel}
-			onConfirm={onConfirm}
-		>
+		<GenericModal variant='danger' onClose={onCancel} onCancel={onCancel} confirmText={confirmLabel} onConfirm={onConfirm}>
 			{contentTitle}
 
 			{changeOwnerRooms && (

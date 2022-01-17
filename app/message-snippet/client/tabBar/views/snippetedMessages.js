@@ -24,7 +24,7 @@ Template.snippetedMessages.helpers({
 	messageContext,
 });
 
-Template.snippetedMessages.onCreated(function() {
+Template.snippetedMessages.onCreated(function () {
 	this.rid = this.data.rid;
 	this.hasMore = new ReactiveVar(true);
 	this.messages = new Mongo.Collection(null);
@@ -56,7 +56,7 @@ Template.snippetedMessages.onCreated(function() {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getSnippetedMessages?roomId=${ this.rid }&count=${ limit }`);
+		const { messages, total } = await APIClient.v1.get(`chat.getSnippetedMessages?roomId=${this.rid}&count=${limit}`);
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 
@@ -64,12 +64,12 @@ Template.snippetedMessages.onCreated(function() {
 	});
 });
 
-Template.mentionsFlexTab.onDestroyed(function() {
+Template.mentionsFlexTab.onDestroyed(function () {
 	this.cursor.stop();
 });
 
 Template.snippetedMessages.events({
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}

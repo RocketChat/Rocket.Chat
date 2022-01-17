@@ -80,14 +80,7 @@ const ChatTable = ({ setChatReload }) => {
 				>
 					{t('Department')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'ts'}
-					direction={sort[1]}
-					active={sort[0] === 'ts'}
-					onClick={onHeaderClick}
-					sort='ts'
-					w='x200'
-				>
+				<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x200'>
 					{t('Started_At')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -116,14 +109,7 @@ const ChatTable = ({ setChatReload }) => {
 
 	const renderRow = useCallback(
 		({ _id, fname, ts, closedAt, department, tags }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={() => onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' flexDirection='column'>
 						<Box withTruncatedText>{fname}</Box>

@@ -9,9 +9,7 @@ import Imports from './models/Imports';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
-import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatRooms from './models/LivechatRooms';
-import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
@@ -36,9 +34,7 @@ export {
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,
-	LivechatPageVisited,
 	LivechatRooms,
-	LivechatTrigger,
 	LivechatVisitors,
 	LivechatAgentActivity,
 	LivechatExternalMessage,

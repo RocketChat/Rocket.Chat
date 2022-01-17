@@ -17,7 +17,7 @@ function getSamlServiceProviderOptions(provider: string): IServiceProviderOption
 
 	const providers = SAMLUtils.serviceProviders;
 
-	const samlProvider = function(element: IServiceProviderOptions): boolean {
+	const samlProvider = function (element: IServiceProviderOptions): boolean {
 		return element.provider === provider;
 	};
 
@@ -40,7 +40,7 @@ Meteor.methods({
 		}
 
 		const { nameID, idpSession } = user.services.saml;
-		SAMLUtils.log({ msg: `NameID for user ${ Meteor.userId() } found`, nameID });
+		SAMLUtils.log({ msg: `NameID for user ${Meteor.userId()} found`, nameID });
 
 		const _saml = new SAMLServiceProvider(providerConfig);
 
@@ -58,7 +58,7 @@ Meteor.methods({
 		Users.setSamlInResponseTo(Meteor.userId(), request.id);
 
 		const result = _saml.syncRequestToUrl(request.request, 'logout');
-		SAMLUtils.log(`SAML Logout Request ${ result }`);
+		SAMLUtils.log(`SAML Logout Request ${result}`);
 
 		return result;
 	},

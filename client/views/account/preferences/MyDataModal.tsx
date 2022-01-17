@@ -19,7 +19,7 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 				<Modal.Title>{title}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p2'>
 				<Box mb='x8'>{text}</Box>
 			</Modal.Content>
 			<Modal.Footer>

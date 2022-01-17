@@ -2,7 +2,6 @@ import { expect } from 'chai';
 
 import { timeAgo } from '../helpers';
 
-
 describe('Helpers', () => {
 	describe('timeAgo', () => {
 		it('returns formated time when the passed value is on the same day', () => {

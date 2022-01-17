@@ -7,7 +7,6 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
-
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
@@ -77,9 +76,11 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	canSendMessage(roomId) {
 		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
+		return (
+			ChatSubscription.find({
+				rid: roomId,
+			}).count() > 0
+		);
 	}
 
 	allowRoomSettingChange(room, setting) {

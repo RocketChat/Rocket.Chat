@@ -12,10 +12,7 @@ import { useWebRTC } from '../../../hooks/useWebRTC';
 import UserWebRTC from './UserWebRTC';
 import UserWebRTCButtons from './UserWebRTCButtons';
 
-const UserWebRTCWithData = (props: {
-	rid: IRoom['_id'];
-	peerName: IUser['username'];
-}): ReactElement => {
+const UserWebRTCWithData = (props: { rid: IRoom['_id']; peerName: IUser['username'] }): ReactElement => {
 	const webRTCData = useWebRTC(props.rid);
 	const { overlayEnabled } = webRTCData;
 

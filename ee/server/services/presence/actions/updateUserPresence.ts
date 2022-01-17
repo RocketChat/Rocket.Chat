@@ -21,9 +21,11 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	const User = await getCollection<IUser>(Collections.User);
 
 	const user = await User.findOne<IUser>(query, projection);
-	if (!user) { return; }
+	if (!user) {
+		return;
+	}
 
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const userSessions = (await UserSession.findOne(query)) || { connections: [] };
 	const { statusDefault = UserStatus.OFFLINE } = user;
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 	const result = await User.updateOne(query, {

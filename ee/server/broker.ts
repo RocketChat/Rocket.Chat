@@ -8,13 +8,13 @@ import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
-const events: {[k: string]: string} = {
+const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
 	onNodeUpdated: '$node.updated',
 	onNodeDisconnected: '$node.disconnected',
 };
 
-const lifecycle: {[k: string]: string} = {
+const lifecycle: { [k: string]: string } = {
 	created: 'created',
 	started: 'started',
 	stopped: 'stopped',
@@ -42,13 +42,17 @@ class NetworkBroker implements IBroker {
 	private whitelist = {
 		events: ['license.module', 'watch.settings'],
 		actions: ['license.hasLicense'],
-	}
+	};
 
 	// whether only internal services are allowed to be registered
 	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
 
 	// list of allowed services to run - has precedence over `internalOnly`
-	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(',').map((i) => i.trim()).filter((i) => i));
+	private allowedList = new Set<string>(
+		SERVICES_ALLOWED?.split(',')
+			.map((i) => i.trim())
+			.filter((i) => i),
+	);
 
 	metrics: IServiceMetrics;
 
@@ -79,7 +83,7 @@ class NetworkBroker implements IBroker {
 	async call(method: string, data: any): Promise<any> {
 		await this.started;
 
-		if (!(this.isActionWhitelisted(method) || await this.allowed)) {
+		if (!(this.isActionWhitelisted(method) || (await this.allowed))) {
 			return this.localBroker.call(method, data);
 		}
 
@@ -88,7 +92,9 @@ class NetworkBroker implements IBroker {
 			return context.ctx.call(method, data);
 		}
 
-		const services: {name: string}[] = await this.broker.call('$node.services', { onlyAvailable: true });
+		const services: { name: string }[] = await this.broker.call('$node.services', {
+			onlyAvailable: true,
+		});
 		if (!services.find((service) => service.name === method.split('.')[0])) {
 			return new Error('method-not-available');
 		}
@@ -98,12 +104,15 @@ class NetworkBroker implements IBroker {
 	async waitAndCall(method: string, data: any): Promise<any> {
 		await this.started;
 
-		if (!(this.isActionWhitelisted(method) || await this.allowed)) {
+		if (!(this.isActionWhitelisted(method) || (await this.allowed))) {
 			return this.localBroker.call(method, data);
 		}
 
 		try {
-			await this.broker.waitForServices(method.split('.')[0], this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout);
+			await this.broker.waitForServices(
+				method.split('.')[0],
+				this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout,
+			);
 		} catch (err) {
 			console.error(err);
 		}
@@ -161,7 +170,10 @@ class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+		const methods =
+			instance.constructor?.name === 'Object'
+				? Object.getOwnPropertyNames(instance)
+				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
@@ -175,33 +187,42 @@ class NetworkBroker implements IBroker {
 			}
 
 			if (lifecycle[method]) {
-				service[method] = (): void => asyncLocalStorage.run({
-					id: '',
-					nodeID: this.broker.nodeID,
-					requestID: null,
-					broker: this,
-				}, i[method].bind(i));
+				service[method] = (): void =>
+					asyncLocalStorage.run(
+						{
+							id: '',
+							nodeID: this.broker.nodeID,
+							requestID: null,
+							broker: this,
+						},
+						i[method].bind(i),
+					);
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> => asyncLocalStorage.run({
-				id: ctx.id,
-				nodeID: ctx.nodeID,
-				requestID: ctx.requestID,
-				broker: this,
-				ctx,
-			}, async (): Promise<any> => {
-				if (this.isActionWhitelisted(`${ name }.${ method }`) || await this.allowed) {
-					return i[method](...ctx.params);
+			service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
+				if (!this.isActionWhitelisted(`${name}.${method}`) && !(await this.allowed)) {
+					return;
 				}
-			});
+
+				return asyncLocalStorage.run(
+					{
+						id: ctx.id,
+						nodeID: ctx.nodeID,
+						requestID: ctx.requestID,
+						broker: this,
+						ctx,
+					},
+					() => i[method](...ctx.params),
+				);
+			};
 		}
 
 		this.broker.createService(service);
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		if (!(this.isEventWhitelisted(event) || await this.allowed)) {
+		if (!(this.isEventWhitelisted(event) || (await this.allowed))) {
 			return this.localBroker.broadcast(event, ...args);
 		}
 		return this.broker.broadcast(event, args);
@@ -275,12 +296,14 @@ if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 		transporter: TRANSPORTER,
 		metrics: {
 			enabled: MS_METRICS === 'true',
-			reporter: [{
-				type: 'Prometheus',
-				options: {
-					port: MS_METRICS_PORT,
+			reporter: [
+				{
+					type: 'Prometheus',
+					options: {
+						port: MS_METRICS_PORT,
+					},
 				},
-			}],
+			],
 		},
 		cacher: CACHE,
 		serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,

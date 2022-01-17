@@ -11,9 +11,7 @@ import { useMethodData } from '../../../hooks/useMethodData';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
-	requirePasswordChangeReason = requirePasswordChange
-		? 'You_need_to_change_your_password'
-		: 'Please_enter_your_new_password_below',
+	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
 } = {}) => requirePasswordChangeReason;
 
 const ResetPassword = () => {
@@ -31,10 +29,7 @@ const ResetPassword = () => {
 		[token],
 	);
 
-	const { value: { enabled: policyEnabled, policy: policies } = {} } = useMethodData(
-		'getPasswordPolicy',
-		params,
-	);
+	const { value: { enabled: policyEnabled, policy: policies } = {} } = useMethodData('getPasswordPolicy', params);
 
 	const router = useRoute('home');
 
@@ -44,10 +39,7 @@ const ResetPassword = () => {
 	const [isLoading, setIsLoading] = useSafely(useState(false));
 	const [error, setError] = useSafely(useState());
 
-	const handleOnChange = useCallback(
-		(event) => setNewPassword(event.currentTarget.value),
-		[setNewPassword],
-	);
+	const handleOnChange = useCallback((event) => setNewPassword(event.currentTarget.value), [setNewPassword]);
 
 	const isSubmitDisabled = !newPassword.trim() || isLoading;
 
@@ -72,16 +64,7 @@ const ResetPassword = () => {
 				setIsLoading(false);
 			}
 		},
-		[
-			isSubmitDisabled,
-			setIsLoading,
-			token,
-			resetPassword,
-			newPassword,
-			router,
-			setUserPassword,
-			setError,
-		],
+		[isSubmitDisabled, setIsLoading, token, resetPassword, newPassword, router, setUserPassword, setError],
 	);
 
 	return (

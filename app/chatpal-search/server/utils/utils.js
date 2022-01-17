@@ -4,9 +4,9 @@ import { HTTP } from 'meteor/http';
 import { baseUrl } from './settings';
 
 Meteor.methods({
-	'chatpalUtilsCreateKey'(email) {
+	chatpalUtilsCreateKey(email) {
 		try {
-			const response = HTTP.call('POST', `${ baseUrl }account`, { data: { email, tier: 'free' } });
+			const response = HTTP.call('POST', `${baseUrl}account`, { data: { email, tier: 'free' } });
 			if (response.statusCode === 201) {
 				return response.data.key;
 			}
@@ -15,9 +15,9 @@ Meteor.methods({
 			return false;
 		}
 	},
-	'chatpalUtilsGetTaC'(lang) {
+	chatpalUtilsGetTaC(lang) {
 		try {
-			const response = HTTP.call('GET', `${ baseUrl }terms/${ lang }.html`);
+			const response = HTTP.call('GET', `${baseUrl}terms/${lang}.html`);
 			if (response.statusCode === 200) {
 				return response.content;
 			}

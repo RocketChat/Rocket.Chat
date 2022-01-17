@@ -1,14 +1,14 @@
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
-	_pushError(name, value/* , payload */) {
+	_pushError(name, value /* , payload */) {
 		// TODO implement a (performant) cache
-		SearchLogger.debug(`Error on event '${ name }' with id '${ value }'`);
+		SearchLogger.debug(`Error on event '${name}' with id '${value}'`);
 	}
 
 	promoteEvent(name, value, payload) {
@@ -33,13 +33,15 @@ function afterDeleteMessage(m) {
 	return m;
 }
 
-
-settings.get('Search.Provider', _.debounce(() => {
-	if (searchProviderService.activeProvider?.on) {
-		callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
-		callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
-	} else {
-		callbacks.remove('afterSaveMessage', 'search-events');
-		callbacks.remove('afterDeleteMessage', 'search-events-delete');
-	}
-}, 1000));
+settings.get(
+	'Search.Provider',
+	_.debounce(() => {
+		if (searchProviderService.activeProvider?.on) {
+			callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
+			callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
+		} else {
+			callbacks.remove('afterSaveMessage', 'search-events');
+			callbacks.remove('afterDeleteMessage', 'search-events-delete');
+		}
+	}, 1000),
+);

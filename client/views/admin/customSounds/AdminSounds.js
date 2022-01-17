@@ -11,13 +11,7 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 
 	const header = useMemo(
 		() => [
-			<GenericTable.HeaderCell
-				key='name'
-				direction={sort[1]}
-				active={sort[0] === 'name'}
-				onClick={onHeaderClick}
-				sort='name'
-			>
+			<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 				{t('Name')}
 			</GenericTable.HeaderCell>,
 			<GenericTable.HeaderCell w='x40' key='action' />,
@@ -38,26 +32,12 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 		const { _id, name } = sound;
 
 		return (
-			<Table.Row
-				key={_id}
-				onKeyDown={onClick(_id, sound)}
-				onClick={onClick(_id, sound)}
-				tabIndex={0}
-				role='link'
-				action
-				qa-user-id={_id}
-			>
-				<Table.Cell fontScale='p1' color='default'>
+			<Table.Row key={_id} onKeyDown={onClick(_id, sound)} onClick={onClick(_id, sound)} tabIndex={0} role='link' action qa-user-id={_id}>
+				<Table.Cell fontScale='p2' color='default'>
 					<Box withTruncatedText>{name}</Box>
 				</Table.Cell>
 				<Table.Cell alignItems={'end'}>
-					<Button
-						ghost
-						small
-						square
-						aria-label={t('Play')}
-						onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}
-					>
+					<Button ghost small square aria-label={t('Play')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}>
 						<Icon name='play' size='x20' />
 					</Button>
 				</Table.Cell>

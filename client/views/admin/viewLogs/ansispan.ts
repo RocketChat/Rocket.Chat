@@ -25,8 +25,6 @@ export const ansispan = (str: string): string => {
 		.replace(/\033\[39m/g, '</span>');
 	return Object.entries(foregroundColors).reduce((str, [ansiCode, color]) => {
 		const span = `<span style="color: ${color}">`;
-		return str
-			.replace(new RegExp(`\\033\\[${ansiCode}m`, 'g'), span)
-			.replace(new RegExp(`\\033\\[0;${ansiCode}m`, 'g'), span);
+		return str.replace(new RegExp(`\\033\\[${ansiCode}m`, 'g'), span).replace(new RegExp(`\\033\\[0;${ansiCode}m`, 'g'), span);
 	}, str);
 };

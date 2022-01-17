@@ -32,7 +32,12 @@ describe('TeamsConvertToChannelProps (definition/rest/v1)', () => {
 		});
 
 		it('should return false if an additionalProperties is provided', () => {
-			assert.isFalse(isTeamsConvertToChannelProps({ teamName: 'teamName', additionalProperties: 'additionalProperties' }));
+			assert.isFalse(
+				isTeamsConvertToChannelProps({
+					teamName: 'teamName',
+					additionalProperties: 'additionalProperties',
+				}),
+			);
 		});
 	});
 });

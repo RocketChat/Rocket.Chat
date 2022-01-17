@@ -1,6 +1,6 @@
-export const getSettingPermissionId = function(settingId) {
+export const getSettingPermissionId = function (settingId) {
 	// setting-based permissions
-	return `change-setting-${ settingId }`;
+	return `change-setting-${settingId}`;
 };
 
 export const CONSTANTS = {

@@ -148,7 +148,7 @@ Meteor.methods({
 
 		// Query for senders
 		const from = [];
-		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
+		text = text.replace(/from:([a-z0-9.-_]+)/gi, function (match, username) {
 			if (username === 'me' && !from.includes(currentUserName)) {
 				username = currentUserName;
 			}
@@ -165,7 +165,7 @@ Meteor.methods({
 
 		// Query for senders
 		const mention = [];
-		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
+		text = text.replace(/mention:([a-z0-9.-_]+)/gi, function (match, username) {
 			mention.push(username);
 			return '';
 		});
@@ -251,10 +251,12 @@ Meteor.methods({
 				};
 			}
 
-			result.message.docs = Promise.await(Messages.find(query, {
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray());
+			result.message.docs = Promise.await(
+				Messages.find(query, {
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			);
 		}
 
 		return result;
