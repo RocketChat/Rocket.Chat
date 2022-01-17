@@ -1,8 +1,7 @@
 import URL from 'url';
 import querystring from 'querystring';
 
-import { Meteor } from 'meteor/meteor';
-import { HTTPInternals } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
@@ -13,12 +12,12 @@ import jschardet from 'jschardet';
 import { Messages } from '../../models/server';
 import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { Info } from '../../utils/server';
+import { getUnsafeAgent } from '../../../server/lib/getUnsafeAgent';
 
-const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
 
 //  Detect encoding
@@ -63,7 +62,7 @@ const toUtf8 = function (contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, callback) {
+const getUrlContent = async function (urlObj, redirectCount = 5) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -77,17 +76,17 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
-		return callback();
+		throw new Error('invalid host');
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 
 	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
-		return callback();
+		throw new Error('invalid/unsafe port');
 	}
 
 	const data = callbacks.run('oembed:beforeGetUrlContent', {
@@ -95,61 +94,38 @@ const getUrlContent = Meteor.wrapAsync(function (urlObj, redirectCount = 5, call
 		parsedUrl,
 	});
 	if (data.attachments != null) {
-		return callback(null, data);
+		return data;
 	}
+
 	const url = URL.format(data.urlObj);
-	const opts = {
-		url,
-		strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
-		gzip: true,
-		maxRedirects: redirectCount,
+
+	const chunks = [];
+
+	const response = await fetch(url, {
+		compress: true,
+		follow: redirectCount,
 		headers: {
 			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
-	};
-	let headers = null;
-	let statusCode = null;
-	let error = null;
-	const chunks = [];
-	let chunksTotalLength = 0;
-	const stream = request(opts);
-	stream.on('response', function (response) {
-		statusCode = response.statusCode;
-		headers = response.headers;
-		if (response.statusCode !== 200) {
-			return stream.abort();
-		}
-	});
-	stream.on('data', function (chunk) {
-		chunks.push(chunk);
-		chunksTotalLength += chunk.length;
-		if (chunksTotalLength > 250000) {
-			return stream.abort();
-		}
-	});
-	stream.on(
-		'end',
-		Meteor.bindEnvironment(function () {
-			if (error != null) {
-				return callback(null, {
-					error,
-					parsedUrl,
-				});
-			}
-			const buffer = Buffer.concat(chunks);
-			return callback(null, {
-				headers,
-				body: toUtf8(headers['content-type'], buffer),
-				parsedUrl,
-				statusCode,
-			});
+		size: 250000, // max size of the response body
+		...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
+			agent: getUnsafeAgent(parsedUrl.protocol),
 		}),
-	);
-	return stream.on('error', function (err) {
-		error = err;
 	});
-});
+
+	for await (const chunk of response.body) {
+		chunks.push(chunk);
+	}
+
+	const buffer = Buffer.concat(chunks);
+	return {
+		headers: Object.fromEntries(response.headers),
+		body: toUtf8(response.headers.get('content-type'), buffer),
+		parsedUrl,
+		statusCode: response.status,
+	};
+};
 
 OEmbed.getUrlMeta = function (url, withFragment) {
 	const urlObj = URL.parse(url);
@@ -164,13 +140,16 @@ OEmbed.getUrlMeta = function (url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContent(urlObj, 5);
+	const content = Promise.await(getUrlContent(urlObj, 5));
+
 	if (!content) {
 		return;
 	}
+
 	if (content.attachments != null) {
 		return content;
 	}
+
 	let metas = undefined;
 	if (content && content.body) {
 		metas = {};

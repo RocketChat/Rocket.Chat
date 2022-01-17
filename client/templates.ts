@@ -160,6 +160,14 @@ createTemplateForComponent('SortList', () => import('./components/SortList'));
 
 createTemplateForComponent('CreateRoomList', () => import('./sidebar/header/actions/CreateRoomList'));
 
+createTemplateForComponent('AppleOauthButton', () => import('./views/login/AppleOauth/AppleOauthButton'), {
+	renderContainerView: () => HTML.DIV({ style: 'display: flex; justify-content: center;' }),
+});
+
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
 
 createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
+
+createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomNotFound'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
+});
