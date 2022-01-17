@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { lazy } from 'react';
 
 import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
@@ -132,11 +131,9 @@ Meteor.startup(() => {
 	});
 });
 
-const MainLayout = lazy(() => import('../root/MainLayout'));
-
 registerAdminRoute('/chatpal', {
 	name: 'chatpal-admin',
 	action() {
-		appLayout.render({ component: MainLayout, props: { center: 'ChatpalAdmin' } });
+		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
 	},
 });

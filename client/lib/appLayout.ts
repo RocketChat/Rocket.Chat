@@ -1,13 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ComponentType } from 'react';
+import { ComponentProps, createElement, lazy, ReactElement } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
 
-type ComponentLayoutDescriptor<Props extends {} = {}> = {
-	component: ComponentType<Props>;
-	props?: Props;
-};
+const MainLayout = lazy(() => import('../views/root/MainLayout'));
 
-type AppLayoutDescriptor = ComponentLayoutDescriptor | null;
+type AppLayoutDescriptor = ReactElement | null;
 
 class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscription<AppLayoutDescriptor> {
 	private descriptor: AppLayoutDescriptor = null;
@@ -21,13 +18,13 @@ class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscri
 		this.emit('update');
 	}
 
-	render = <Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void => {
-		this.setCurrentValue(descriptor as ComponentLayoutDescriptor);
-	};
+	renderMainLayout(props: ComponentProps<typeof MainLayout> = {}): void {
+		this.setCurrentValue(createElement(MainLayout, props));
+	}
 
-	reset = (): void => {
-		this.setCurrentValue(null);
-	};
+	render(element: ReactElement): void {
+		this.setCurrentValue(element);
+	}
 }
 
 export const appLayout = new AppLayoutSubscription();

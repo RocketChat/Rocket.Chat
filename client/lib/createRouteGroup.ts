@@ -6,8 +6,6 @@ import { ComponentType, createElement, lazy, ReactNode } from 'react';
 import { appLayout } from './appLayout';
 import { createTemplateForComponent } from './portals/createTemplateForComponent';
 
-const MainLayout = lazy(() => import('../views/root/MainLayout'));
-
 type RouteRegister = {
 	(
 		path: string,
@@ -78,7 +76,7 @@ const registerLazyComponentRoute = (
 					props: () => ({ renderRoute }),
 				},
 			);
-			appLayout.render({ component: MainLayout, props: { center } });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 
@@ -131,7 +129,7 @@ export const createRouteGroup = (
 			const center = createTemplateForComponent(`${name}-index`, importRouter, {
 				attachment: 'at-parent',
 			});
-			appLayout.render({ component: MainLayout, props: { center } });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 

@@ -6,7 +6,7 @@ import Preload from './Preload';
 
 type MainLayoutProps = {
 	center?: string;
-};
+} & Record<string, unknown>;
 
 const MainLayout = ({ center }: MainLayoutProps): ReactElement => (
 	<Preload>

@@ -1,4 +1,4 @@
-import React, { createElement, FC, Fragment, Suspense } from 'react';
+import React, { FC, Fragment, Suspense } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { appLayout } from '../../lib/appLayout';
@@ -9,16 +9,12 @@ import { useTooltipHandling } from './useTooltipHandling';
 const AppLayout: FC = () => {
 	useTooltipHandling();
 
-	const descriptor = useSubscription(appLayout);
+	const layout = useSubscription(appLayout);
 	const portals = useSubscription(blazePortals);
-
-	if (descriptor === null) {
-		return null;
-	}
 
 	return (
 		<>
-			<Suspense fallback={<PageLoading />}>{createElement(descriptor.component, descriptor.props)}</Suspense>
+			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
 			{portals.map(({ key, node }) => (
 				<Fragment key={key} children={node} />
 			))}

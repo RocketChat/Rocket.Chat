@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import { lazy } from 'react';
+import React, { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
@@ -15,7 +15,6 @@ import { createTemplateForComponent } from '../lib/portals/createTemplateForComp
 import { dispatchToastMessage } from '../lib/toast';
 import { handleError } from '../lib/utils/handleError';
 
-const MainLayout = lazy(() => import('../views/root/MainLayout'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('../views/root/CMSPage'));
@@ -30,7 +29,7 @@ FlowRouter.wait();
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		appLayout.render({ component: MainLayout, props: { center: 'loading' } });
+		appLayout.renderMainLayout({ center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -68,7 +67,7 @@ FlowRouter.route('/meet/:rid', {
 			// visitor login
 			const visitor = await APIClient.v1.get(`livechat/visitor/${queryParams?.token}`);
 			if (visitor?.visitor) {
-				appLayout.render({ component: MeetPage });
+				appLayout.render(<MeetPage />);
 				return;
 			}
 
@@ -81,7 +80,7 @@ FlowRouter.route('/meet/:rid', {
 			return;
 		}
 
-		appLayout.render({ component: MeetPage });
+		appLayout.render(<MeetPage />);
 	},
 });
 
@@ -105,13 +104,13 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.render({ component: MainLayout, props: { center: 'home' } });
+				appLayout.renderMainLayout({ center: 'home' });
 			});
 
 			return;
 		}
 
-		appLayout.render({ component: MainLayout, props: { center: 'home' } });
+		appLayout.renderMainLayout({ center: 'home' });
 	},
 });
 
@@ -121,7 +120,7 @@ FlowRouter.route('/directory/:tab?', {
 		const DirectoryPage = createTemplateForComponent('DirectoryPage', () => import('../views/directory/DirectoryPage'), {
 			attachment: 'at-parent',
 		});
-		appLayout.render({ component: MainLayout, props: { center: DirectoryPage } });
+		appLayout.renderMainLayout({ center: DirectoryPage });
 	},
 });
 
@@ -133,7 +132,7 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
 			{ attachment: 'at-parent' },
 		);
-		appLayout.render({ component: MainLayout, props: { center: OmnichannelDirectoryPage } });
+		appLayout.renderMainLayout({ center: OmnichannelDirectoryPage });
 	},
 });
 
@@ -143,28 +142,28 @@ FlowRouter.route('/account/:group?', {
 		const AccountRoute = createTemplateForComponent('AccountRoute', () => import('../views/account/AccountRoute'), {
 			attachment: 'at-parent',
 		});
-		appLayout.render({ component: MainLayout, props: { center: AccountRoute } });
+		appLayout.renderMainLayout({ center: AccountRoute });
 	},
 });
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
 	action: () => {
-		appLayout.render({ component: CMSPage, props: { page: 'Layout_Terms_of_Service' } as const });
+		appLayout.render(<CMSPage page='Layout_Terms_of_Service' />);
 	},
 });
 
 FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
 	action: () => {
-		appLayout.render({ component: CMSPage, props: { page: 'Layout_Privacy_Policy' } as const });
+		appLayout.render(<CMSPage page='Layout_Privacy_Policy' />);
 	},
 });
 
 FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
-		appLayout.render({ component: CMSPage, props: { page: 'Layout_Legal_Notice' } as const });
+		appLayout.render(<CMSPage page='Layout_Legal_Notice' />);
 	},
 });
 
@@ -172,35 +171,35 @@ FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
-		appLayout.render({ component: MainLayout, props: { center: 'roomNotFound' } });
+		appLayout.renderMainLayout({ center: 'roomNotFound' });
 	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 	action: () => {
-		appLayout.render({ component: SecretURLPage });
+		appLayout.render(<SecretURLPage />);
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
-		appLayout.render({ component: InvitePage });
+		appLayout.render(<InvitePage />);
 	},
 });
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render({ component: SetupWizardRoute });
+		appLayout.render(<SetupWizardRoute />);
 	},
 });
 
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
 	action: () => {
-		appLayout.render({ component: MailerUnsubscriptionPage });
+		appLayout.render(<MailerUnsubscriptionPage />);
 	},
 });
 
@@ -224,33 +223,30 @@ FlowRouter.route('/login-token/:token', {
 FlowRouter.route('/reset-password/:token', {
 	name: 'resetPassword',
 	action() {
-		appLayout.render({ component: ResetPasswordPage });
+		appLayout.render(<ResetPasswordPage />);
 	},
 });
 
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',
 	action() {
-		appLayout.render({ component: MainLayout, props: { center: 'snippetPage' } });
+		appLayout.renderMainLayout({ center: 'snippetPage' });
 	},
 });
 
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
 	action(_params, queryParams) {
-		appLayout.render({
-			component: MainLayout,
-			props: {
-				center: 'authorize',
-				modal: true,
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				client_id: queryParams?.client_id,
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				redirect_uri: queryParams?.redirect_uri,
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				response_type: queryParams?.response_type,
-				state: queryParams?.state,
-			},
+		appLayout.renderMainLayout({
+			center: 'authorize',
+			modal: true,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			client_id: queryParams?.client_id,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			redirect_uri: queryParams?.redirect_uri,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			response_type: queryParams?.response_type,
+			state: queryParams?.state,
 		});
 	},
 });
@@ -258,20 +254,17 @@ FlowRouter.route('/oauth/authorize', {
 FlowRouter.route('/oauth/error/:error', {
 	name: 'oauth/error',
 	action(params) {
-		appLayout.render({
-			component: MainLayout,
-			props: {
-				center: 'oauth404',
-				modal: true,
-				error: params?.error,
-			},
+		appLayout.renderMainLayout({
+			center: 'oauth404',
+			modal: true,
+			error: params?.error,
 		});
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
-		appLayout.render({ component: NotFoundPage });
+		appLayout.render(<NotFoundPage />);
 	},
 };
 
