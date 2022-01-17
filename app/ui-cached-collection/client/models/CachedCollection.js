@@ -210,7 +210,9 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(
+			data.records.map((record) => [this.collection._collection._docs._idStringify(record._id), record]),
+		);
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
