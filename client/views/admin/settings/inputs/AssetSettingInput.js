@@ -51,9 +51,7 @@ function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {}
 
 	return (
 		<>
-			<Field.Label htmlFor={_id} title={_id}>
-				{label}
-			</Field.Label>
+			<Field.Label htmlFor={_id}>{label}</Field.Label>
 			<Field.Row>
 				<div className='settings-file-preview'>
 					{value.url ? (

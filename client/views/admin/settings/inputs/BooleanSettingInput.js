@@ -20,9 +20,7 @@ function BooleanSettingInput({ _id, label, disabled, readonly, value, hasResetBu
 				readOnly={readonly}
 				onChange={handleChange}
 			/>
-			<Field.Label htmlFor={_id} title={_id}>
-				{label}
-			</Field.Label>
+			<Field.Label htmlFor={_id}>{label}</Field.Label>
 			{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 		</Field.Row>
 	);
