@@ -27,15 +27,12 @@ const logger = new Logger('SAUMonitor');
 export class SAUMonitorClass {
 	private _started: boolean;
 
-	private _today: DateObj;
-
 	private _dailyComputeJobName: string;
 
 	private _dailyFinishSessionsJobName: string;
 
 	constructor() {
 		this._started = false;
-		this._today = getDateObj();
 		this._dailyComputeJobName = 'aggregate-sessions';
 		this._dailyFinishSessionsJobName = 'aggregate-sessions';
 	}
