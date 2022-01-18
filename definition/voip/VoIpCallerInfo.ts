@@ -9,7 +9,7 @@ export interface IState {
 
 export type VoIpCallerInfo =
 	| {
-			state: Exclude<CallStates, 'IN_CALL' | 'OFFER_RECEIVED'>;
+			state: Exclude<CallStates, 'IN_CALL' | 'OFFER_RECEIVED' | 'ON_HOLD'>;
 			userState: UserState;
 	  }
 	| {
@@ -19,6 +19,11 @@ export type VoIpCallerInfo =
 	  }
 	| {
 			state: 'IN_CALL';
+			userState: UserState;
+			callerInfo: ICallerInfo;
+	  }
+	| {
+			state: 'ON_HOLD';
 			userState: UserState;
 			callerInfo: ICallerInfo;
 	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)
