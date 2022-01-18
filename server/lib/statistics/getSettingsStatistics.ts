@@ -35,7 +35,7 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 	} = settings;
 
 	// If Canned Response does not exist add blank object to the statistic else add canned response object
-	const cannedRes = !cannedResponsesEnabled ? {} : { cannedResponses: cannedResponsesEnabled };
+	const cannedRes = !cannedResponsesEnabled ? {} : { cannedResponses: { cannedResponsesEnabled } };
 
 	const statisticObject = {
 		accounts: {
