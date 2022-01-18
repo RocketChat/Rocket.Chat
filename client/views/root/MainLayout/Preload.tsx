@@ -1,7 +1,9 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 
 import { CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
+import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
+import { mainReady } from '../../../../app/ui-utils/client';
 import { useUserId } from '../../../contexts/UserContext';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';
@@ -14,6 +16,11 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	const userDataReady = useReactiveVar(isSyncReady);
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
+
+	useEffect(() => {
+		CachedCollectionManager.syncEnabled = ready;
+		mainReady.set(ready);
+	}, [ready]);
 
 	if (!ready) {
 		return <PageLoading />;
