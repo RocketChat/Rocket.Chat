@@ -1,1 +1,1 @@
-export { default } from './CallJitsWithData';
+export { default } from './CallJitsiWithData';

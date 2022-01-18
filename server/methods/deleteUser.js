@@ -3,10 +3,11 @@ import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
+import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 
 Meteor.methods({
-	deleteUser(userId, confirmRelinquish = false) {
+	async deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
 
 		if (!Meteor.userId()) {
@@ -45,7 +46,9 @@ Meteor.methods({
 			});
 		}
 
-		deleteUser(userId, confirmRelinquish);
+		await deleteUser(userId, confirmRelinquish);
+
+		callbacks.run('afterDeleteUser', user);
 
 		return true;
 	},

@@ -5,7 +5,6 @@ import { MessageAttachmentBase } from './MessageAttachmentBase';
 export type MarkdownFields = 'text' | 'pretext' | 'fields';
 
 export type MessageAttachmentDefault = {
-
 	author_icon?: string;
 	author_link?: string;
 	author_name?: string;

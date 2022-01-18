@@ -3,9 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import * as Models from '..';
 
-const Roles = new Mongo.Collection(null);
-
-Object.assign(Roles, {
+const Roles = Object.assign(new Mongo.Collection(null), {
 	findUsersInRole(name, scope, options) {
 		const role = this.findOne(name);
 		const roleScope = (role && role.scope) || 'Users';

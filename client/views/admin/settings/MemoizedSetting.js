@@ -15,6 +15,7 @@ import PasswordSettingInput from './inputs/PasswordSettingInput';
 import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
 import RoomPickSettingInput from './inputs/RoomPickSettingInput';
 import SelectSettingInput from './inputs/SelectSettingInput';
+import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 
 const MemoizedSetting = ({
@@ -26,8 +27,13 @@ const MemoizedSetting = ({
 	onChangeValue = () => {},
 	onChangeEditor = () => {},
 	className,
+	invisible,
 	...inputProps
 }) => {
+	if (invisible) {
+		return null;
+	}
+
 	const InputComponent =
 		{
 			boolean: BooleanSettingInput,
@@ -44,17 +50,12 @@ const MemoizedSetting = ({
 			action: ActionSettingInput,
 			asset: AssetSettingInput,
 			roomPick: RoomPickSettingInput,
+			timezone: SelectTimezoneSettingInput,
 		}[type] || GenericSettingInput;
 
 	return (
 		<Field className={className}>
-			<InputComponent
-				value={value}
-				editor={editor}
-				onChangeValue={onChangeValue}
-				onChangeEditor={onChangeEditor}
-				{...inputProps}
-			/>
+			<InputComponent value={value} editor={editor} onChangeValue={onChangeValue} onChangeEditor={onChangeEditor} {...inputProps} />
 			{hint && <Field.Hint>{hint}</Field.Hint>}
 			{callout && (
 				<Margins block='x16'>

@@ -1,8 +1,9 @@
 import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 function sendToRDStation(room) {
 	if (!settings.get('Livechat_RDStation_Token')) {
@@ -50,7 +51,7 @@ function sendToRDStation(room) {
 	try {
 		HTTP.call('POST', 'https://www.rdstation.com.br/api/1.3/conversions', options);
 	} catch (e) {
-		console.error('Error sending lead to RD Station ->', e);
+		SystemLogger.error('Error sending lead to RD Station ->', e);
 	}
 
 	return room;

@@ -1,15 +1,4 @@
-import {
-	Field,
-	TextInput,
-	Box,
-	ToggleSwitch,
-	Icon,
-	TextAreaInput,
-	FieldGroup,
-	Margins,
-	Select,
-	Accordion,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, Margins, Select, Accordion } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
@@ -43,10 +32,10 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		retryCount,
 		retryDelay,
 		triggerWordAnywhere,
+		runOnEdits,
 	} = formValues;
 
 	const {
-		runOnEdits,
 		handleEvent,
 		handleEnabled,
 		handleName,
@@ -78,10 +67,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		[t],
 	);
 
-	const eventOptions = useMemo(
-		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]),
-		[t],
-	);
+	const eventOptions = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
@@ -120,12 +106,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<Field>
 									<Field.Label>{t('Event_Trigger')}</Field.Label>
 									<Field.Row>
-										<Select
-											flexGrow={1}
-											value={event}
-											options={eventOptions}
-											onChange={handleEvent}
-										/>
+										<Select flexGrow={1} value={event} options={eventOptions} onChange={handleEvent} />
 									</Field.Row>
 									<Field.Hint>{t('Event_Trigger_Description')}</Field.Hint>
 								</Field>
@@ -150,9 +131,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Row>
 										<TextInput flexGrow={1} value={name} onChange={handleName} />
 									</Field.Row>
-									<Field.Hint>
-										{t('You_should_name_it_to_easily_manage_your_integrations')}
-									</Field.Hint>
+									<Field.Hint>{t('You_should_name_it_to_easily_manage_your_integrations')}</Field.Hint>
 								</Field>
 							),
 							[handleName, name, t],
@@ -163,28 +142,15 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field>
 										<Field.Label>{t('Channel')}</Field.Label>
 										<Field.Row>
-											<TextInput
-												flexGrow={1}
-												value={channel}
-												onChange={handleChannel}
-												addon={<Icon name='at' size='x20' />}
-											/>
+											<TextInput flexGrow={1} value={channel} onChange={handleChannel} addon={<Icon name='at' size='x20' />} />
 										</Field.Row>
 										<Field.Hint>{t('Channel_to_listen_on')}</Field.Hint>
 										<Field.Hint
 											dangerouslySetInnerHTML={{
-												__html: t(
-													'Start_with_s_for_user_or_s_for_channel_Eg_s_or_s',
-													'@',
-													'#',
-													'@john',
-													'#general',
-												),
+												__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
 											}}
 										/>
-										<Field.Hint
-											dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }}
-										/>
+										<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }} />
 									</Field>
 								),
 							[showChannel, t, channel, handleChannel],
@@ -197,9 +163,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 										<Field.Row>
 											<TextInput flexGrow={1} value={triggerWords} onChange={handleTriggerWords} />
 										</Field.Row>
-										<Field.Hint>
-											{t('When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below')}
-										</Field.Hint>
+										<Field.Hint>{t('When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below')}</Field.Hint>
 										<Field.Hint>{t('Separate_multiple_words_with_commas')}</Field.Hint>
 									</Field>
 								),
@@ -216,13 +180,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 										<Field.Hint>{t('TargetRoom_Description')}</Field.Hint>
 										<Field.Hint
 											dangerouslySetInnerHTML={{
-												__html: t(
-													'Start_with_s_for_user_or_s_for_channel_Eg_s_or_s',
-													'@',
-													'#',
-													'@john',
-													'#general',
-												),
+												__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
 											}}
 										/>
 									</Field>
@@ -234,13 +192,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<Field>
 									<Field.Label>{t('URLs')}</Field.Label>
 									<Field.Row>
-										<TextAreaInput
-											rows={10}
-											flexGrow={1}
-											value={urls}
-											onChange={handleUrls}
-											addon={<Icon name='permalink' size='x20' />}
-										/>
+										<TextAreaInput rows={10} flexGrow={1} value={urls} onChange={handleUrls} addon={<Icon name='permalink' size='x20' />} />
 									</Field.Row>
 								</Field>
 							),
@@ -262,16 +214,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<Field>
 									<Field.Label>{t('Post_as')}</Field.Label>
 									<Field.Row>
-										<TextInput
-											flexGrow={1}
-											value={username}
-											onChange={handleUsername}
-											addon={<Icon name='user' size='x20' />}
-										/>
+										<TextInput flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='user' size='x20' />} />
 									</Field.Row>
-									<Field.Hint>
-										{t('Choose_the_username_that_this_integration_will_post_as')}
-									</Field.Hint>
+									<Field.Hint>{t('Choose_the_username_that_this_integration_will_post_as')}</Field.Hint>
 									<Field.Hint>{t('Should_exists_a_user_with_this_username')}</Field.Hint>
 								</Field>
 							),
@@ -282,16 +227,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<Field>
 									<Field.Label>{`${t('Alias')} (${t('optional')})`}</Field.Label>
 									<Field.Row>
-										<TextInput
-											flexGrow={1}
-											value={alias}
-											onChange={handleAlias}
-											addon={<Icon name='edit' size='x20' />}
-										/>
+										<TextInput flexGrow={1} value={alias} onChange={handleAlias} addon={<Icon name='edit' size='x20' />} />
 									</Field.Row>
-									<Field.Hint>
-										{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}
-									</Field.Hint>
+									<Field.Hint>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</Field.Hint>
 								</Field>
 							),
 							[alias, handleAlias, t],
@@ -337,12 +275,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 								<Field>
 									<Field.Label>{`${t('Token')} (${t('Optional')})`}</Field.Label>
 									<Field.Row>
-										<TextInput
-											flexGrow={1}
-											value={token}
-											onChange={handleToken}
-											addon={<Icon name='key' size='x20' />}
-										/>
+										<TextInput flexGrow={1} value={token} onChange={handleToken} addon={<Icon name='key' size='x20' />} />
 									</Field.Row>
 								</Field>
 							),
@@ -382,7 +315,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Label>{t('Responding')}</Field.Label>
 									<Field.Hint>{t('Response_description_pre')}</Field.Hint>
 									<Field.Row>
-										<Box fontScale='p1' withRichContent flexGrow={1}>
+										<Box fontScale='p2' withRichContent flexGrow={1}>
 											<pre>
 												<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
 											</pre>
@@ -425,16 +358,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field>
 										<Field.Label>{t('Integration_Retry_Delay')}</Field.Label>
 										<Field.Row>
-											<Select
-												flexGrow={1}
-												value={retryDelay}
-												options={retryDelayOptions}
-												onChange={handleRetryDelay}
-											/>
+											<Select flexGrow={1} value={retryDelay} options={retryDelayOptions} onChange={handleRetryDelay} />
 										</Field.Row>
-										<Field.Hint
-											dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }}
-										/>
+										<Field.Hint dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }} />
 									</Field>
 								),
 								[handleRetryDelay, retryDelay, retryDelayOptions, t],
@@ -446,34 +372,20 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 											<Field>
 												<Field.Label display='flex' justifyContent='space-between' w='full'>
 													{t('Integration_Word_Trigger_Placement')}
-													<ToggleSwitch
-														checked={triggerWordAnywhere}
-														onChange={handleTriggerWordAnywhere}
-													/>
+													<ToggleSwitch checked={triggerWordAnywhere} onChange={handleTriggerWordAnywhere} />
 												</Field.Label>
-												<Field.Hint>
-													{t('Integration_Word_Trigger_Placement_Description')}
-												</Field.Hint>
+												<Field.Hint>{t('Integration_Word_Trigger_Placement_Description')}</Field.Hint>
 											</Field>
 											<Field>
 												<Field.Label display='flex' justifyContent='space-between' w='full'>
 													{t('Integration_Run_When_Message_Is_Edited')}
 													<ToggleSwitch checked={runOnEdits} onChange={handleRunOnEdits} />
 												</Field.Label>
-												<Field.Hint>
-													{t('Integration_Run_When_Message_Is_Edited_Description')}
-												</Field.Hint>
+												<Field.Hint>{t('Integration_Run_When_Message_Is_Edited_Description')}</Field.Hint>
 											</Field>
 										</FieldGroup>
 									),
-								[
-									event,
-									t,
-									triggerWordAnywhere,
-									handleTriggerWordAnywhere,
-									runOnEdits,
-									handleRunOnEdits,
-								],
+								[event, t, triggerWordAnywhere, handleTriggerWordAnywhere, runOnEdits, handleRunOnEdits],
 							)}
 						</FieldGroup>
 					</Accordion.Item>

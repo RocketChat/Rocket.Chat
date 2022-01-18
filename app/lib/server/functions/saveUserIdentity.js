@@ -1,5 +1,5 @@
 import { _setUsername } from './setUsername';
-import { setRealName } from './setRealName';
+import { _setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
@@ -36,7 +36,7 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!setRealName(_id, name, user)) {
+		if (!_setRealName(_id, name, user)) {
 			return false;
 		}
 	}
@@ -46,8 +46,8 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
-			Messages.findByMention(previousUsername).forEach(function(msg) {
-				const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
+			Messages.findByMention(previousUsername).forEach(function (msg) {
+				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 			});
 			Rooms.replaceUsername(previousUsername, username);

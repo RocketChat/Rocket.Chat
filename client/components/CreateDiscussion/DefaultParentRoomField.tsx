@@ -6,11 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
-const DefaultParentRoomField = ({
-	defaultParentRoom,
-}: {
-	defaultParentRoom: string;
-}): ReactElement => {
+const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
 		'rooms.info',
@@ -27,16 +23,10 @@ const DefaultParentRoomField = ({
 	}
 
 	if (!value || !value.room) {
-		return <Callout type={'error'}>{t('Error')}</Callout>;
+		return <Callout type={'danger'}>{t('Error')}</Callout>;
 	}
 
-	return (
-		<TextInput
-			value={roomTypes.getRoomName(value.room.t, value.room)}
-			disabled
-			onChange={(): string => ''}
-		/>
-	);
+	return <TextInput value={roomTypes.getRoomName(value.room.t, value.room)} disabled onChange={(): string => ''} />;
 };
 
 export default DefaultParentRoomField;

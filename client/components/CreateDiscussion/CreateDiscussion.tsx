@@ -1,14 +1,4 @@
-import {
-	Modal,
-	Field,
-	FieldGroup,
-	ToggleSwitch,
-	TextInput,
-	TextAreaInput,
-	ButtonGroup,
-	Button,
-	Icon,
-} from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
@@ -16,9 +6,9 @@ import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
-import { goToRoomById } from '../../lib/goToRoomById';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 import DefaultParentRoomField from './DefaultParentRoomField';
@@ -38,12 +28,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
-const CreateDiscussion = ({
-	onClose,
-	defaultParentRoom,
-	parentMessageId,
-	nameSuggestion,
-}: CreateDiscussionProps): ReactElement => {
+const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
@@ -54,11 +39,9 @@ const CreateDiscussion = ({
 		firstMessage: '',
 	});
 
-	const { name, parentRoom, encrypted, usernames, firstMessage } =
-		values as CreateDiscussionFormValues;
+	const { name, parentRoom, encrypted, usernames, firstMessage } = values as CreateDiscussionFormValues;
 
-	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } =
-		handlers;
+	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } = handlers;
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
@@ -75,7 +58,7 @@ const CreateDiscussion = ({
 				...(parentMessageId && { pmid: parentMessageId }),
 			});
 
-			goToRoomById(result?.discussion?.rid);
+			goToRoomById(result.discussion._id);
 			onClose();
 		} catch (error) {
 			console.warn(error);
@@ -106,9 +89,7 @@ const CreateDiscussion = ({
 					<Field>
 						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
 						<Field.Row>
-							{defaultParentRoom && (
-								<DefaultParentRoomField defaultParentRoom={defaultParentRoom} />
-							)}
+							{defaultParentRoom && <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 
 							{!defaultParentRoom && (
 								<RoomAutoComplete
@@ -120,11 +101,11 @@ const CreateDiscussion = ({
 							)}
 						</Field.Row>
 					</Field>
-					<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label>{t('Encrypted')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted} />
-						</Field.Row>
+					<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Box display='flex' flexDirection='column' width='full'>
+							<Field.Label>{t('Encrypted')}</Field.Label>
+						</Box>
+						<ToggleSwitch checked={encrypted} onChange={handleEncrypted} />
 					</Field>
 					<Field>
 						<Field.Label>{t('Discussion_name')}</Field.Label>
@@ -139,12 +120,8 @@ const CreateDiscussion = ({
 					</Field>
 					<Field>
 						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row>
-							<UserAutoCompleteMultiple
-								value={usernames}
-								onChange={onChangeUsers}
-								placeholder={t('Username_Placeholder')}
-							/>
+						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+							<UserAutoCompleteMultiple value={usernames} onChange={onChangeUsers} placeholder={t('Username_Placeholder')} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -158,16 +135,13 @@ const CreateDiscussion = ({
 								disabled={encrypted}
 							/>
 						</Field.Row>
-						{encrypted && (
-							<Field.Description>
-								{t('Discussion_first_message_disabled_due_to_e2e')}
-							</Field.Description>
-						)}
+						{encrypted && <Field.Description>{t('Discussion_first_message_disabled_due_to_e2e')}</Field.Description>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>

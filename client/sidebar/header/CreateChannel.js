@@ -1,13 +1,4 @@
-import {
-	Box,
-	Modal,
-	ButtonGroup,
-	Button,
-	TextInput,
-	Icon,
-	Field,
-	ToggleSwitch,
-} from '@rocket.chat/fuselage';
+import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -30,7 +21,7 @@ const CreateChannel = ({
 }) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
-	const namesValidation = useSetting('UTF8_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const channelNameExists = useMethod('roomNameExists');
 
@@ -77,92 +68,77 @@ const CreateChannel = ({
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Field mbe='x24'>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							error={hasUnsavedChanges ? nameError : undefined}
-							addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />}
-							placeholder={t('Channel_name')}
-							onChange={handlers.handleName}
-						/>
-					</Field.Row>
-					{hasUnsavedChanges && nameError && <Field.Error>{nameError}</Field.Error>}
-				</Field>
-				<Field mbe='x24'>
-					<Field.Label>
-						{t('Topic')}{' '}
-						<Box is='span' color='neutral-600'>
-							({t('optional')})
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Name')}</Field.Label>
+						<Field.Row>
+							<TextInput
+								error={hasUnsavedChanges ? nameError : undefined}
+								addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />}
+								placeholder={t('Channel_name')}
+								onChange={handlers.handleName}
+							/>
+						</Field.Row>
+						{hasUnsavedChanges && nameError && <Field.Error>{nameError}</Field.Error>}
+					</Field>
+					<Field>
+						<Field.Label>
+							{t('Topic')}{' '}
+							<Box is='span' color='neutral-600'>
+								({t('optional')})
+							</Box>
+						</Field.Label>
+						<Field.Row>
+							<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription} />
+						</Field.Row>
+					</Field>
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Private')}</Field.Label>
+								<Field.Description>
+									{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}
+								</Field.Description>
+							</Box>
+							<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType} />
 						</Box>
-					</Field.Label>
-					<Field.Row>
-						<TextInput
-							placeholder={t('Channel_what_is_this_channel_about')}
-							onChange={handlers.handleDescription}
-						/>
-					</Field.Row>
-				</Field>
-				<Field mbe='x24'>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Private')}</Field.Label>
-							<Field.Description>
-								{values.type
-									? t('Only_invited_users_can_acess_this_channel')
-									: t('Everyone_can_access_this_channel')}
-							</Field.Description>
+					</Field>
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Read_only')}</Field.Label>
+								<Field.Description>
+									{values.readOnly
+										? t('Only_authorized_users_can_write_new_messages')
+										: t('All_users_in_the_channel_can_write_new_messages')}
+								</Field.Description>
+							</Box>
+							<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly} />
 						</Box>
-						<ToggleSwitch
-							checked={values.type}
-							disabled={!!canOnlyCreateOneType}
-							onChange={onChangeType}
-						/>
-					</Box>
-				</Field>
-				<Field mbe='x24'>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Read_only')}</Field.Label>
-							<Field.Description>
-								{t('All_users_in_the_channel_can_write_new_messages')}
-							</Field.Description>
+					</Field>
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Encrypted')}</Field.Label>
+								<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
+							</Box>
+							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
 						</Box>
-						<ToggleSwitch
-							checked={values.readOnly}
-							disabled={values.broadcast}
-							onChange={handlers.handleReadOnly}
-						/>
-					</Box>
-				</Field>
-				<Field mbe='x24'>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Encrypted')}</Field.Label>
-							<Field.Description>
-								{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
-							</Field.Description>
+					</Field>
+					<Field>
+						<Box display='flex' justifyContent='space-between' alignItems='start'>
+							<Box display='flex' flexDirection='column' width='full'>
+								<Field.Label>{t('Broadcast')}</Field.Label>
+								<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
+							</Box>
+							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
 						</Box>
-						<ToggleSwitch
-							checked={values.encrypted}
-							disabled={e2edisabled}
-							onChange={handlers.handleEncrypted}
-						/>
-					</Box>
-				</Field>
-				<Field mbe='x24'>
-					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Broadcast')}</Field.Label>
-							<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
-						</Box>
-						<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
-					</Box>
-				</Field>
-				<Field mbe='x24'>
-					<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
-					<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
-				</Field>
+					</Field>
+					<Field>
+						<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
+						<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>

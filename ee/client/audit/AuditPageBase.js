@@ -1,13 +1,4 @@
-import {
-	Box,
-	Field,
-	TextInput,
-	ButtonGroup,
-	Button,
-	Margins,
-	Tabs,
-	Flex,
-} from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs, Flex } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -56,7 +47,7 @@ export const AuditPageBase = ({
 			<Page.Header title={t('Message_auditing')} />
 			<Tabs>
 				<Tabs.Item selected={type === ''} onClick={useHandleType('')}>
-					{t('Channels')}
+					{t('Rooms')}
 				</Tabs.Item>
 				<Tabs.Item selected={type === 'u'} onClick={useHandleType('u')}>
 					{t('Users')}
@@ -91,18 +82,10 @@ export const AuditPageBase = ({
 					<Box display='flex' flexDirection='row' alignItems='flex-end'>
 						<Flex.Item shrink={1}>
 							{type === '' && <ChannelTab errors={errors} rid={rid} handleRid={handleRid} />}
-							{type === 'u' && (
-								<UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />
-							)}
-							{type === 'd' && <DirectTab />}
+							{type === 'u' && <UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
+							{type === 'd' && <DirectTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
 							{type === 'l' && (
-								<VisitorsTab
-									errors={errors}
-									visitor={visitor}
-									handleVisitor={handleVisitor}
-									agent={agent}
-									handleAgent={handleAgent}
-								/>
+								<VisitorsTab errors={errors} visitor={visitor} handleVisitor={handleVisitor} agent={agent} handleAgent={handleAgent} />
 							)}
 							<ButtonGroup mis='x8' align='end'>
 								<Button primary onClick={apply}>

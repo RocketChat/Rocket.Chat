@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 /* eslint-disable func-names, prefer-arrow-callback, no-var, space-before-function-paren,
 quotes, prefer-template, no-undef, no-unused-vars*/
 
@@ -20,13 +19,13 @@ describe('[Discussion]', function () {
 		sideNav.createChannel(parentChannelName, true, false);
 	});
 
-	describe('via creation screen', function() {
+	describe('via creation screen', function () {
 		it('Create a discussion', function () {
 			discussion.createDiscussion(parentChannelName, discussionName, message);
 		});
 	});
 
-	describe('from context menu', function() {
+	describe('from context menu', function () {
 		before(() => {
 			mainContent.sendMessage(message);
 		});

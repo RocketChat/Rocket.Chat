@@ -5,6 +5,10 @@ import { businessHourManager } from '../business-hour';
 
 Meteor.methods({
 	'livechat:saveBusinessHour'(businessHourData: ILivechatBusinessHour) {
-		businessHourManager.saveBusinessHour(businessHourData);
+		try {
+			Promise.await(businessHourManager.saveBusinessHour(businessHourData));
+		} catch (e) {
+			throw new Meteor.Error(e.message);
+		}
 	},
 });

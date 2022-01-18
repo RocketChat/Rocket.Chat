@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-
 import { hasAtLeastOnePermission } from './hasPermission';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { APIClient } from '../../utils/client';
@@ -30,10 +29,10 @@ Meteor.startup(() => {
 	const events = {
 		changed: (role) => {
 			delete role.type;
-			Roles.upsert({ _id: role.name }, role);
+			Roles.upsert({ _id: role._id }, role);
 		},
 		removed: (role) => {
-			Roles.remove({ _id: role.name });
+			Roles.remove({ _id: role._id });
 		},
 	};
 

@@ -1,6 +1,4 @@
-import { settings, SettingsEvents } from './functions/settings';
+import { settings, settingsRegistry } from './functions/settings';
+import { SettingsEvents } from './SettingsRegistry';
 
-export {
-	settings,
-	SettingsEvents,
-};
+export { settings, settingsRegistry, SettingsEvents };

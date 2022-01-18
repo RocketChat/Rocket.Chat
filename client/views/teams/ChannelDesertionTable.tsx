@@ -2,6 +2,7 @@ import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
 import { IRoom } from '../../../definition/IRoom';
+import { Serialized } from '../../../definition/Serialized';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
@@ -9,12 +10,12 @@ import ChannelRow from './contextualBar/ChannelRow';
 
 type ChannelDesertionTableProps = {
 	lastOwnerWarning: boolean | undefined;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
 	params?: {};
 	onChangeParams?: () => void;
-	onChangeRoomSelection: (room: IRoom) => void;
-	selectedRooms: { [key: string]: IRoom };
+	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
+	selectedRooms: { [key: string]: Serialized<IRoom> };
 	onToggleAllRooms: () => void;
 };
 
@@ -33,10 +34,7 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
 
 	const checked = eligibleRoomsLength === selectedRoomsLength;
-	const indeterminate =
-		eligibleRoomsLength && eligibleRoomsLength > selectedRoomsLength
-			? selectedRoomsLength > 0
-			: false;
+	const indeterminate = eligibleRoomsLength && eligibleRoomsLength > selectedRoomsLength ? selectedRoomsLength > 0 : false;
 
 	const formatDate = useFormatDateAndTime();
 
@@ -46,11 +44,7 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 				header={
 					<>
 						<GenericTable.HeaderCell key='name' sort='name'>
-							<CheckBox
-								indeterminate={indeterminate}
-								checked={checked}
-								onChange={onToggleAllRooms}
-							/>
+							<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
 							<Box mi='x8'>{t('Channel_name')}</Box>
 						</GenericTable.HeaderCell>
 						<GenericTable.HeaderCell key='joinedAt' sort='joinedAt'>
@@ -66,11 +60,11 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 				fixed={false}
 				pagination={false}
 			>
-				{(room: IRoom, key: string): ReactElement => (
+				{(room, key): ReactElement => (
 					<ChannelRow
+						key={key}
 						formatDate={formatDate}
 						room={room}
-						key={key}
 						onChange={onChangeRoomSelection}
 						selected={!!selectedRooms[room._id]}
 						lastOwnerWarning={lastOwnerWarning}

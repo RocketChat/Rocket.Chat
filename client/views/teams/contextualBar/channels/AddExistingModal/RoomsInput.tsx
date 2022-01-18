@@ -1,30 +1,23 @@
-import {
-	AutoComplete,
-	Box,
-	Icon,
-	Option,
-	Options,
-	Chip,
-	AutoCompleteProps,
-} from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Icon, Option, Options, Chip, AutoCompleteProps } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
+import { Serialized } from '../../../../../../definition/Serialized';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
 type RoomsInputProps = {
-	value: IRoom[];
-	onChange: (value: IRoom, action: 'remove' | undefined) => void;
+	value: Serialized<IRoom>[];
+	onChange: (value: Serialized<IRoom>, action: 'remove' | undefined) => void;
 };
 
 // TODO: Make AutoComplete accept arbitrary kinds of values
 const useRoomsAutoComplete = (
 	name: string,
 ): {
-	rooms: Record<IRoom['_id'], IRoom>;
+	rooms: Record<IRoom['_id'], Serialized<IRoom>>;
 	options: AutoCompleteProps['options'];
 } => {
 	const params = useMemo(
@@ -40,18 +33,18 @@ const useRoomsAutoComplete = (
 			return [];
 		}
 
-		return data.items.map((room: IRoom) => ({
+		return data.items.map((room: Serialized<IRoom>) => ({
 			label: roomTypes.getRoomName(room.t, room),
 			value: room._id,
 		}));
 	}, [data]);
 
-	const rooms = useMemo<Record<IRoom['_id'], IRoom>>(
+	const rooms = useMemo<Record<IRoom['_id'], Serialized<IRoom>>>(
 		() =>
 			data?.items.reduce((obj, room) => {
 				obj[room._id] = room;
 				return obj;
-			}, {} as Record<IRoom['_id'], IRoom>) ?? {},
+			}, {} as Record<IRoom['_id'], Serialized<IRoom>>) ?? {},
 		[data],
 	);
 
@@ -100,11 +93,7 @@ const RoomsInput: FC<RoomsInputProps> = ({ onChange, ...props }) => {
 
 	const renderItem = useCallback<FC<{ value: IRoom['_id'] }>>(
 		({ value: rid, ...props }) => (
-			<Option
-				key={rooms[rid]._id}
-				{...props}
-				avatar={<RoomAvatar room={rooms[rid]} size={Options.AvatarSize} />}
-			/>
+			<Option key={rooms[rid]._id} {...props} avatar={<RoomAvatar room={rooms[rid]} size={Options.AvatarSize} />} />
 		),
 		[rooms],
 	);

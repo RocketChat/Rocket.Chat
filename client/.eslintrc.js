@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: ['@rocket.chat/eslint-config', 'prettier'],
 	parser: 'babel-eslint',
-	plugins: ['react', 'react-hooks', 'prettier'],
+	plugins: ['react', 'react-hooks', 'prettier', 'testing-library', 'anti-trojan-source'],
 	rules: {
 		'import/named': 'error',
 		'import/order': [
@@ -16,7 +16,7 @@ module.exports = {
 			},
 		],
 		'jsx-quotes': ['error', 'prefer-single'],
-		'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.DIV', 'SHA256'] }],
+		'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 		'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
 		'prettier/prettier': 2,
 		'react/display-name': 'error',
@@ -32,6 +32,7 @@ module.exports = {
 				additionalHooks: '(useComponentDidUpdate)',
 			},
 		],
+		'anti-trojan-source/no-bidi': 'error',
 	},
 	settings: {
 		'import/resolver': {
@@ -60,6 +61,8 @@ module.exports = {
 			plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
 			rules: {
 				'@typescript-eslint/ban-ts-ignore': 'off',
+				'@typescript-eslint/explicit-function-return-type': 'warn',
+				// '@typescript-eslint/explicit-module-boundary-types': 'off',
 				'@typescript-eslint/indent': 'off',
 				'@typescript-eslint/interface-name-prefix': ['error', 'always'],
 				'@typescript-eslint/no-extra-parens': 'off',
@@ -70,6 +73,7 @@ module.exports = {
 						argsIgnorePattern: '^_',
 					},
 				],
+				'@typescript-eslint/prefer-optional-chain': 'warn',
 				'func-call-spacing': 'off',
 				'indent': 'off',
 				'import/order': [
@@ -83,7 +87,7 @@ module.exports = {
 					},
 				],
 				'jsx-quotes': ['error', 'prefer-single'],
-				'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.DIV', 'SHA256'] }],
+				'new-cap': ['error', { capIsNewExceptions: ['HTML.Comment', 'HTML.Raw', 'HTML.DIV', 'SHA256'] }],
 				'no-extra-parens': 'off',
 				'no-spaced-func': 'off',
 				'no-unused-vars': 'off',
@@ -104,6 +108,7 @@ module.exports = {
 						additionalHooks: '(useComponentDidUpdate)',
 					},
 				],
+				'anti-trojan-source/no-bidi': 'error',
 			},
 			env: {
 				browser: true,
@@ -125,6 +130,26 @@ module.exports = {
 			rules: {
 				'react/display-name': 'off',
 				'react/no-multi-comp': 'off',
+			},
+		},
+		{
+			files: ['**/*.tests.js', '**/*.tests.ts', '**/*.spec.ts', '**/*.spec.tsx'],
+			extends: ['plugin:testing-library/react'],
+			rules: {
+				'testing-library/no-await-sync-events': 'warn',
+				'testing-library/no-manual-cleanup': 'warn',
+				'testing-library/prefer-explicit-assert': 'warn',
+				'testing-library/prefer-user-event': 'warn',
+			},
+			env: {
+				mocha: true,
+			},
+		},
+		{
+			files: ['**/*.stories.ts', '**/*.stories.tsx'],
+			rules: {
+				'@typescript-eslint/explicit-function-return-type': 'off',
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
 			},
 		},
 	],

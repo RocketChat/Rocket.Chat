@@ -1,8 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations/server';
-import { Settings } from '../../../app/models/server';
-import { NotificationQueue } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
+import { NotificationQueue, Settings } from '../../../app/models/server/raw';
 
 function convertNotification(notification) {
 	try {
@@ -10,7 +9,7 @@ function convertNotification(notification) {
 		const username = notification.payload.sender?.username;
 		const roomName = notification.title !== username ? notification.title : '';
 
-		const message = roomName === '' ? notification.text : notification.text.replace(`${ username }: `, '');
+		const message = roomName === '' ? notification.text : notification.text.replace(`${username}: `, '');
 
 		return {
 			_id: notification._id,
@@ -18,17 +17,19 @@ function convertNotification(notification) {
 			rid: notification.payload.rid,
 			mid: notification.payload.messageId,
 			ts: notification.createdAt,
-			items: [{
-				type: 'push',
-				data: {
-					payload: notification.payload,
-					roomName,
-					username,
-					message,
-					badge: notification.badge,
-					category: notification.apn?.category,
+			items: [
+				{
+					type: 'push',
+					data: {
+						payload: notification.payload,
+						roomName,
+						username,
+						message,
+						badge: notification.badge,
+						category: notification.apn?.category,
+					},
 				},
-			}],
+			],
 		};
 	} catch (e) {
 		//
@@ -53,16 +54,16 @@ async function migrateNotifications() {
 	return notificationsCollection.rawCollection().drop();
 }
 
-Migrations.add({
+addMigration({
 	version: 187,
-	up() {
-		Settings.remove({ _id: 'Push_send_interval' });
-		Settings.remove({ _id: 'Push_send_batch_size' });
-		Settings.remove({ _id: 'Push_debug' });
-		Settings.remove({ _id: 'Notifications_Always_Notify_Mobile' });
+	async up() {
+		await Settings.removeById('Push_send_interval');
+		await Settings.removeById('Push_send_batch_size');
+		await Settings.removeById('Push_debug');
+		await Settings.removeById('Notifications_Always_Notify_Mobile');
 
 		try {
-			Promise.await(migrateNotifications());
+			await migrateNotifications();
 		} catch (err) {
 			// Ignore if the collection does not exist
 			if (!err.code || err.code !== 26) {

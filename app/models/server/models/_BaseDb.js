@@ -7,20 +7,18 @@ import _ from 'underscore';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
-export const trash = new Mongo.Collection(`${ baseName }_trash`);
+export const trash = new Mongo.Collection(`${baseName}_trash`);
 try {
 	trash._ensureIndex({ __collection__: 1 });
-	trash._ensureIndex(
-		{ _deletedAt: 1 },
-		{ expireAfterSeconds: 60 * 60 * 24 * 30 },
-	);
+	trash._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	console.log(e);
+	SystemLogger.error(e);
 }
 
 const actions = {
@@ -29,31 +27,14 @@ const actions = {
 	d: 'remove',
 };
 
-export class BaseDb extends EventEmitter {
-	constructor(model, baseModel, options = {}) {
+export class BaseDbWatch extends EventEmitter {
+	constructor(collectionName) {
 		super();
-
-		if (Match.test(model, String)) {
-			this.name = model;
-			this.collectionName = this.baseName + this.name;
-			this.model = new Mongo.Collection(this.collectionName);
-		} else {
-			this.name = model._name;
-			this.collectionName = this.name;
-			this.model = model;
-		}
-
-		this.baseModel = baseModel;
-
-		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
-
-		this.wrapModel();
+		this.collectionName = collectionName;
 
 		if (!process.env.DISABLE_DB_WATCH) {
 			this.initDbWatch();
 		}
-
-		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
 
 	initDbWatch() {
@@ -79,128 +60,16 @@ export class BaseDb extends EventEmitter {
 				`);
 			}
 
-			_oplogHandle.onOplogEntry(
-				query,
-				this.processOplogRecord.bind(this),
-			);
+			_oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
 			// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
 			if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
-				_oplogHandle._defineTooFarBehind(
-					Number.MAX_SAFE_INTEGER,
-				);
+				_oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
 			}
 		};
 
 		if (_oplogHandle) {
 			this.on('newListener', handleListener);
 		}
-	}
-
-	get baseName() {
-		return baseName;
-	}
-
-	setUpdatedAt(record = {}) {
-		if (this.preventSetUpdatedAt) {
-			return record;
-		}
-		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
-		// setUpdatedAt(record = {}, checkQuery = false, query) {
-		// if (checkQuery === true) {
-		// 	if (!query || Object.keys(query).length === 0) {
-		// 		throw new Meteor.Error('Models._Base: Empty query');
-		// 	}
-		// }
-
-		setUpdatedAt(record);
-
-		return record;
-	}
-
-	wrapModel() {
-		this.originals = {
-			insert: this.model.insert.bind(this.model),
-			update: this.model.update.bind(this.model),
-			remove: this.model.remove.bind(this.model),
-		};
-		const self = this;
-
-		this.model.insert = function(...args) {
-			return self.insert(...args);
-		};
-
-		this.model.update = function(...args) {
-			return self.update(...args);
-		};
-
-		this.model.remove = function(...args) {
-			return self.remove(...args);
-		};
-	}
-
-	_ensureDefaultFields(options) {
-		if (!this.baseModel.defaultFields) {
-			return options;
-		}
-
-		if (!options) {
-			return { fields: this.baseModel.defaultFields };
-		}
-
-		if (options.fields != null && Object.keys(options.fields).length > 0) {
-			return options;
-		}
-
-		return {
-			...options,
-			fields: this.baseModel.defaultFields,
-		};
-	}
-
-	_doNotMixInclusionAndExclusionFields(options) {
-		const optionsDef = this._ensureDefaultFields(options);
-		if (!optionsDef?.fields) {
-			return optionsDef;
-		}
-
-		const keys = Object.keys(optionsDef.fields);
-		const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
-		if (keys.length > removeKeys.length) {
-			removeKeys.forEach((key) => delete optionsDef.fields[key]);
-		}
-
-		return optionsDef;
-	}
-
-	find(query = {}, options = {}) {
-		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
-		return this.model.find(query, optionsDef);
-	}
-
-	findById(_id, options) {
-		return this.find({ _id }, options);
-	}
-
-	findOne(query = {}, options = {}) {
-		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
-		return this.model.findOne(query, optionsDef);
-	}
-
-	findOneById(_id, options) {
-		return this.findOne({ _id }, options);
-	}
-
-	findOneByIds(ids, options) {
-		return this.findOne({ _id: { $in: ids } }, options);
-	}
-
-	updateHasPositionalOperator(update) {
-		return Object.keys(update).some(
-			(key) =>
-				key.includes('.$')
-				|| (Match.test(update[key], Object)
-					&& this.updateHasPositionalOperator(update[key])),
-		);
 	}
 
 	processOplogRecord({ id, op }) {
@@ -270,6 +139,138 @@ export class BaseDb extends EventEmitter {
 				oplog: true,
 			});
 		}
+	}
+}
+
+export class BaseDb extends BaseDbWatch {
+	constructor(model, baseModel, options = {}) {
+		const collectionName = Match.test(model, String) ? baseName + model : model._name;
+
+		super(collectionName);
+
+		this.collectionName = collectionName;
+
+		if (Match.test(model, String)) {
+			this.name = model;
+			this.collectionName = this.baseName + this.name;
+			this.model = new Mongo.Collection(this.collectionName);
+		} else {
+			this.name = model._name;
+			this.collectionName = this.name;
+			this.model = model;
+		}
+
+		this.baseModel = baseModel;
+
+		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
+
+		this.wrapModel();
+
+		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
+	}
+
+	get baseName() {
+		return baseName;
+	}
+
+	setUpdatedAt(record = {}) {
+		if (this.preventSetUpdatedAt) {
+			return record;
+		}
+		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
+		// setUpdatedAt(record = {}, checkQuery = false, query) {
+		// if (checkQuery === true) {
+		// 	if (!query || Object.keys(query).length === 0) {
+		// 		throw new Meteor.Error('Models._Base: Empty query');
+		// 	}
+		// }
+
+		setUpdatedAt(record);
+
+		return record;
+	}
+
+	wrapModel() {
+		this.originals = {
+			insert: this.model.insert.bind(this.model),
+			update: this.model.update.bind(this.model),
+			remove: this.model.remove.bind(this.model),
+		};
+		const self = this;
+
+		this.model.insert = function (...args) {
+			return self.insert(...args);
+		};
+
+		this.model.update = function (...args) {
+			return self.update(...args);
+		};
+
+		this.model.remove = function (...args) {
+			return self.remove(...args);
+		};
+	}
+
+	_ensureDefaultFields(options) {
+		if (!this.baseModel.defaultFields) {
+			return options;
+		}
+
+		if (!options) {
+			return { fields: this.baseModel.defaultFields };
+		}
+
+		if (options.fields != null && Object.keys(options.fields).length > 0) {
+			return options;
+		}
+
+		return {
+			...options,
+			fields: this.baseModel.defaultFields,
+		};
+	}
+
+	_doNotMixInclusionAndExclusionFields(options) {
+		const optionsDef = this._ensureDefaultFields(options);
+		if (!optionsDef?.fields) {
+			return optionsDef;
+		}
+
+		const keys = Object.keys(optionsDef.fields);
+		const removeKeys = keys.filter((key) => optionsDef.fields[key] === 0);
+		if (keys.length > removeKeys.length) {
+			removeKeys.forEach((key) => delete optionsDef.fields[key]);
+		}
+
+		return optionsDef;
+	}
+
+	find(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.find(query, optionsDef);
+	}
+
+	findById(_id, options) {
+		return this.find({ _id }, options);
+	}
+
+	findOne(query = {}, options = {}) {
+		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		return this.model.findOne(query, optionsDef);
+	}
+
+	findOneById(_id, options) {
+		return this.findOne({ _id }, options);
+	}
+
+	findOneByIds(ids, options) {
+		return this.findOne({ _id: { $in: ids } }, options);
+	}
+
+	updateHasPositionalOperator(update) {
+		return Object.keys(update).some(
+			(key) => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])),
+		);
 	}
 
 	insert(record, ...args) {

@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, handleError } from '../../../utils';
+import { t, getUserPreference } from '../../../utils';
 import './modal.html';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 let modalStack = [];
 
@@ -182,7 +183,6 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
-
 	showFooter() {
 		const { showCancelButton, showConfirmButton } = this;
 		return showCancelButton || showConfirmButton;
@@ -191,7 +191,7 @@ Template.rc_modal.helpers({
 		return !!this.action;
 	},
 	type() {
-		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
+		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${this.type}`;
 	},
 	modalIcon() {
 		switch (this.type) {
@@ -202,12 +202,12 @@ Template.rc_modal.helpers({
 			case 'info':
 				return 'info-circled';
 			default:
-				return `modal-${ this.type }`;
+				return `modal-${this.type}`;
 		}
 	},
 });
 
-Template.rc_modal.onRendered(function() {
+Template.rc_modal.onRendered(function () {
 	this.oldFocus = document.activeElement;
 	if (this.data.input) {
 		$('.js-modal-input', this.firstNode).focus();
@@ -220,7 +220,7 @@ Template.rc_modal.onRendered(function() {
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
-Template.rc_modal.onDestroyed(function() {
+Template.rc_modal.onDestroyed(function () {
 	this.oldFocus && this.oldFocus.focus();
 	document.removeEventListener('keydown', modal.onKeyDown);
 });
@@ -256,7 +256,7 @@ Template.rc_modal.events({
 				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', { dontAskAgainList }, function(error) {
+			Meteor.call('saveUserPreferences', { dontAskAgainList }, function (error) {
 				if (error) {
 					return handleError(error);
 				}

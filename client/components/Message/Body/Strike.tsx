@@ -3,11 +3,14 @@ import React, { FC } from 'react';
 
 import Bold from './Bold';
 import Italic from './Italic';
+import Link from './Link';
 
 const Strike: FC<{ value: ASTStrike['value'] }> = ({ value = [] }) => (
 	<del>
 		{value.map((block, index) => {
 			switch (block.type) {
+				case 'LINK':
+					return <Link key={index} value={block.value} />;
 				case 'PLAIN_TEXT':
 					return block.value;
 				case 'BOLD':

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { renderEmoji } from '../../app/emoji/client/index';
+import { renderEmoji } from '../lib/utils/renderEmoji';
 
 function Emoji({ emojiHandle, className = undefined }) {
 	const markup = { __html: `${renderEmoji(emojiHandle)}` };

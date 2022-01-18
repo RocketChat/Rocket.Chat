@@ -9,3 +9,8 @@ registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
 	lazyRouteComponent: () => import('./priorities/PrioritiesRoute'),
 });
+
+registerOmnichannelRoute('/canned-responses/:context?/:id?', {
+	name: 'omnichannel-canned-responses',
+	lazyRouteComponent: () => import('./cannedResponses/CannedResponsesRoute'),
+});

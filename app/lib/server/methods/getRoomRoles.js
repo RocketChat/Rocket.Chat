@@ -4,7 +4,6 @@ import { check } from 'meteor/check';
 import { settings } from '../../../settings';
 import { getRoomRoles } from '../lib/getRoomRoles';
 
-
 Meteor.methods({
 	getRoomRoles(rid) {
 		check(rid, String);

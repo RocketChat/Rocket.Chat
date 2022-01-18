@@ -15,15 +15,15 @@ export const normalizeThreadTitle = ({ ...message }) => {
 		}
 		const uid = Meteor.userId();
 		const me = uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username;
-		const pattern = settings.get('UTF8_Names_Validation');
+		const pattern = settings.get('UTF8_User_Names_Validation');
 		const useRealName = settings.get('UI_Use_Real_Name');
 
 		const instance = new MentionsParser({
 			pattern: () => pattern,
 			useRealName: () => useRealName,
 			me: () => me,
-			userTemplate: ({ label }) => `<strong> ${ label } </strong>`,
-			roomTemplate: ({ prefix, mention }) => `${ prefix }<strong> ${ mention } </strong>`,
+			userTemplate: ({ label }) => `<strong> ${label} </strong>`,
+			roomTemplate: ({ prefix, mention }) => `${prefix}<strong> ${mention} </strong>`,
 		});
 		const { html } = emojiParser({ html: filteredMessage });
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;

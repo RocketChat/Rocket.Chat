@@ -22,7 +22,7 @@ const Load: FC<LoadProps> = ({ load, ...props }) => {
 	return (
 		<ImageBox className={clickable} {...props} onClick={load}>
 			<Icon name='image' color='neutral-700' size='x64' />
-			<Box fontScale='h1' color='default'>
+			<Box fontScale='h2' color='default'>
 				{t('Click_to_load')}
 			</Box>
 		</ImageBox>

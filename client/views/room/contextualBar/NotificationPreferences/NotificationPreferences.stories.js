@@ -40,7 +40,6 @@ const handleOptions = {
 const handleSelect = { desktop: {}, mobile: {}, email: {} };
 
 handleSelect.desktop.alert = 'default';
-handleSelect.desktop.audio = 'default';
 handleSelect.desktop.sound = 'chime';
 
 handleSelect.mobile.alert = 'mentions';
@@ -56,7 +55,6 @@ export const Default = () => (
 			handleSelect={handleSelect}
 			handleChangeOption={{
 				desktopAlert: () => {},
-				desktopAudio: () => {},
 				mobileAlert: () => {},
 				emailAlert: () => {},
 			}}

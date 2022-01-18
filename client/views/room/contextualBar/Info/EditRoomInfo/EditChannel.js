@@ -24,16 +24,12 @@ import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import {
-	usePermission,
-	useAtLeastOnePermission,
-	useRole,
-} from '../../../../../contexts/AuthorizationContext';
+import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
 
 const typeMap = {
@@ -43,18 +39,7 @@ const typeMap = {
 };
 
 const useInitialValues = (room, settings) => {
-	const {
-		t,
-		ro,
-		archived,
-		topic,
-		description,
-		announcement,
-		joinCodeRequired,
-		sysMes,
-		encrypted,
-		retention = {},
-	} = room;
+	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention = {} } = room;
 
 	const { retentionPolicyEnabled, maxAgeDefault } = settings;
 
@@ -64,8 +49,7 @@ const useInitialValues = (room, settings) => {
 
 	return useMemo(
 		() => ({
-			roomName:
-				t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
+			roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
 			roomType: t,
 			readOnly: !!ro,
 			reactWhenReadOnly: false,
@@ -113,8 +97,7 @@ const useInitialValues = (room, settings) => {
 };
 
 const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) =>
-	(!room.default || isAdmin) &&
-	((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
+	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
 function EditChannel({ room, onClickClose, onClickBack }) {
 	const t = useTranslation();
@@ -143,10 +126,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		onChange,
 	);
 
-	const sysMesOptions = useMemo(
-		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]),
-		[t],
-	);
+	const sysMesOptions = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
 	const {
 		roomName,
@@ -234,22 +214,13 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		room._id,
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
-	const canToggleEncryption =
-		usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
-	const saveAction = useEndpointActionExperimental(
-		'POST',
-		'rooms.saveRoomSettings',
-		t('Room_updated_successfully'),
-	);
-	const archiveAction = useEndpointActionExperimental(
-		'POST',
-		'rooms.changeArchivationState',
-		t(archiveMessage),
-	);
+	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
+	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
@@ -260,15 +231,13 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				...data,
 				...(joinCode && { joinCode: joinCodeRequired ? joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes ? systemMessages : [],
+					systemMessages: hideSysMes && systemMessages,
 				}),
 			});
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
 
-		await Promise.all(
-			[hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean),
-		);
+		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
 		saveData.current = {};
 		commit();
 	});
@@ -283,12 +252,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onConfirm}
-				onCancel={onCancel}
-				confirmText={t('Yes_delete_it')}
-			>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={onCancel} confirmText={t('Yes_delete_it')}>
 				{t('Delete_Room_Warning')}
 			</GenericModal>,
 		);
@@ -310,35 +274,21 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.ScrollableContent
-				p='x24'
-				is='form'
-				onSubmit={useMutableCallback((e) => e.preventDefault())}
-			>
+			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 				<Box display='flex' justifyContent='center'>
 					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar} />
 				</Box>
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
-						<TextInput
-							disabled={!canViewName}
-							value={roomName}
-							onChange={handleRoomName}
-							flexGrow={1}
-						/>
+						<TextInput disabled={!canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
 					</Field.Row>
 				</Field>
 				{canViewDescription && (
 					<Field>
 						<Field.Label>{t('Description')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput
-								rows={4}
-								value={roomDescription}
-								onChange={handleRoomDescription}
-								flexGrow={1}
-							/>
+							<TextAreaInput rows={4} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
 						</Field.Row>
 					</Field>
 				)}
@@ -346,12 +296,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Field>
 						<Field.Label>{t('Announcement')}</Field.Label>
 						<Field.Row>
-							<TextAreaInput
-								rows={4}
-								value={roomAnnouncement}
-								onChange={handleRoomAnnouncement}
-								flexGrow={1}
-							/>
+							<TextAreaInput rows={4} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 						</Field.Row>
 					</Field>
 				)}
@@ -368,11 +313,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Private')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									disabled={!canChangeType}
-									checked={roomType === 'p'}
-									onChange={changeRoomType}
-								/>
+								<ToggleSwitch disabled={!canChangeType} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 						</Box>
 						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
@@ -394,14 +335,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('React_when_read_only')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									disabled={!canSetReactWhenRo}
-									checked={reactWhenReadOnly}
-									onChange={handleReactWhenReadOnly}
-								/>
+								<ToggleSwitch disabled={!canSetReactWhenRo} checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						<Field.Hint>{t('Only_authorized_users_can_react_to_messages')}</Field.Hint>
 					</Field>
 				)}
 				{canViewArchived && (
@@ -409,11 +346,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									disabled={!canArchiveOrUnarchive}
-									checked={archived}
-									onChange={handleArchived}
-								/>
+								<ToggleSwitch disabled={!canArchiveOrUnarchive} checked={archived} onChange={handleArchived} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -463,11 +396,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Encrypted')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									disabled={!canToggleEncryption}
-									checked={encrypted}
-									onChange={handleEncrypted}
-								/>
+								<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted} />
 							</Field.Row>
 						</Box>
 					</Field>
@@ -477,12 +406,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Accordion.Item title={t('Prune')}>
 							<FieldGroup>
 								<Field>
-									<Box
-										display='flex'
-										flexDirection='row'
-										justifyContent='space-between'
-										flexGrow={1}
-									>
+									<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 										<Field.Label>{t('RetentionPolicyRoom_Enabled')}</Field.Label>
 										<Field.Row>
 											<ToggleSwitch checked={retentionEnabled} onChange={handleRetentionEnabled} />
@@ -490,12 +414,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 									</Box>
 								</Field>
 								<Field>
-									<Box
-										display='flex'
-										flexDirection='row'
-										justifyContent='space-between'
-										flexGrow={1}
-									>
+									<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 										<Field.Label>{t('RetentionPolicyRoom_OverrideGlobal')}</Field.Label>
 										<Field.Row>
 											<ToggleSwitch
@@ -512,46 +431,24 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 											<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
 										</Callout>
 										<Field>
-											<Field.Label>
-												{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}
-											</Field.Label>
+											<Field.Label>{t('RetentionPolicyRoom_MaxAge', { max: maxAgeDefault })}</Field.Label>
 											<Field.Row>
-												<NumberInput
-													value={retentionMaxAge}
-													onChange={onChangeMaxAge}
-													flexGrow={1}
-												/>
+												<NumberInput value={retentionMaxAge} onChange={onChangeMaxAge} flexGrow={1} />
 											</Field.Row>
 										</Field>
 										<Field>
-											<Box
-												display='flex'
-												flexDirection='row'
-												justifyContent='space-between'
-												flexGrow={1}
-											>
+											<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 												<Field.Label>{t('RetentionPolicyRoom_ExcludePinned')}</Field.Label>
 												<Field.Row>
-													<ToggleSwitch
-														checked={retentionExcludePinned}
-														onChange={handleRetentionExcludePinned}
-													/>
+													<ToggleSwitch checked={retentionExcludePinned} onChange={handleRetentionExcludePinned} />
 												</Field.Row>
 											</Box>
 										</Field>
 										<Field>
-											<Box
-												display='flex'
-												flexDirection='row'
-												justifyContent='space-between'
-												flexGrow={1}
-											>
+											<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 												<Field.Label>{t('RetentionPolicyRoom_FilesOnly')}</Field.Label>
 												<Field.Row>
-													<ToggleSwitch
-														checked={retentionFilesOnly}
-														onChange={handleRetentionFilesOnly}
-													/>
+													<ToggleSwitch checked={retentionFilesOnly} onChange={handleRetentionFilesOnly} />
 												</Field.Row>
 											</Box>
 										</Field>

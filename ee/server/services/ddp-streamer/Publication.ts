@@ -1,20 +1,17 @@
 import { EventEmitter } from 'events';
 
+import type { IPublication } from 'meteor/rocketchat:streamer';
+
 import { Server } from './Server';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
-import { IPublication } from '../../../../server/modules/streamer/streamer.module';
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];
 
 	connection: IPublication['connection'];
 
-	constructor(
-		public client: Client,
-		private packet: IPacket,
-		private server: Server,
-	) {
+	constructor(public client: Client, private packet: IPacket, private server: Server) {
 		super();
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);

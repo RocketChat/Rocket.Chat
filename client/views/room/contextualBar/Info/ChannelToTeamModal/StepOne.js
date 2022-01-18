@@ -17,6 +17,7 @@ const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
 			onClose={onClose}
 			onCancel={onCancel}
 			onConfirm={onConfirm}
+			confirmDisabled={!teamId}
 		>
 			<Margins blockEnd='x20'>
 				<Box>{t('Teams_move_channel_to_team_description_first')}</Box>

@@ -18,15 +18,28 @@ apiServer.disable('x-powered-by');
 let corsEnabled = false;
 let allowListOrigins = [];
 
-settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
+settings.watch('API_Enable_CORS', (value) => {
+	corsEnabled = value;
+});
 
-settings.get('API_CORS_Origin', (_, value) => {
-	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
+settings.watch('API_CORS_Origin', (value) => {
+	allowListOrigins = value
+		? value
+				.trim()
+				.split(',')
+				.map((origin) => String(origin).trim().toLocaleLowerCase())
+		: [];
 });
 
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || !corsEnabled || allowListOrigins.includes('*') || allowListOrigins.includes(origin) || origin === settings.get('Site_Url')) {
+		if (
+			!origin ||
+			!corsEnabled ||
+			allowListOrigins.includes('*') ||
+			allowListOrigins.includes(origin) ||
+			origin === settings.get('Site_Url')
+		) {
 			callback(null, true);
 		} else {
 			callback('Not allowed by CORS', false);
@@ -39,10 +52,11 @@ WebApp.connectHandlers.use(apiServer);
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-const unauthorized = (res) => res.status(401).send({
-	status: 'error',
-	message: 'You must be logged in to do this.',
-});
+const unauthorized = (res) =>
+	res.status(401).send({
+		status: 'error',
+		message: 'You must be logged in to do this.',
+	});
 
 Meteor.startup(() => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
@@ -50,18 +64,14 @@ Meteor.startup(() => {
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 		max: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
 		skip: () =>
-			settings.get('API_Enable_Rate_Limiter') !== true
-			|| (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
+			settings.get('API_Enable_Rate_Limiter') !== true ||
+			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
 	router.use(apiLimiter);
 });
 
 router.use((req, res, next) => {
-	const {
-		'x-user-id': userId,
-		'x-auth-token': authToken,
-		'x-visitor-token': visitorToken,
-	} = req.headers;
+	const { 'x-user-id': userId, 'x-auth-token': authToken, 'x-visitor-token': visitorToken } = req.headers;
 
 	if (userId && authToken) {
 		req.user = Users.findOneByIdAndLoginToken(userId, authToken);
@@ -83,15 +93,7 @@ apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router);
 
 const getPayloadForType = (type, req) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
-		const {
-			type,
-			actionId,
-			triggerId,
-			mid,
-			rid,
-			payload,
-			container,
-		} = req.body;
+		const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 		const { visitor, user } = req;
 		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
@@ -114,10 +116,7 @@ const getPayloadForType = (type, req) => {
 		const {
 			type,
 			actionId,
-			payload: {
-				view,
-				isCleared,
-			},
+			payload: { view, isCleared },
 		} = req.body;
 
 		const { user } = req;
@@ -134,12 +133,7 @@ const getPayloadForType = (type, req) => {
 	}
 
 	if (type === UIKitIncomingInteractionType.VIEW_SUBMIT) {
-		const {
-			type,
-			actionId,
-			triggerId,
-			payload,
-		} = req.body;
+		const { type, actionId, triggerId, payload } = req.body;
 
 		const { user } = req;
 
@@ -156,18 +150,14 @@ const getPayloadForType = (type, req) => {
 };
 
 router.post('/:appId', async (req, res, next) => {
-	const {
-		appId,
-	} = req.params;
+	const { appId } = req.params;
 
 	const isCore = await UiKitCoreApp.isRegistered(appId);
 	if (!isCore) {
 		return next();
 	}
 
-	const {
-		type,
-	} = req.body;
+	const { type } = req.body;
 
 	try {
 		const payload = {
@@ -185,25 +175,13 @@ router.post('/:appId', async (req, res, next) => {
 });
 
 const appsRoutes = (orch) => (req, res) => {
-	const {
-		appId,
-	} = req.params;
+	const { appId } = req.params;
 
-	const {
-		type,
-	} = req.body;
+	const { type } = req.body;
 
 	switch (type) {
 		case UIKitIncomingInteractionType.BLOCK: {
-			const {
-				type,
-				actionId,
-				triggerId,
-				mid,
-				rid,
-				payload,
-				container,
-			} = req.body;
+			const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 			const { visitor } = req;
 			const room = orch.getConverters().get('rooms').convertById(rid);
@@ -239,10 +217,7 @@ const appsRoutes = (orch) => (req, res) => {
 			const {
 				type,
 				actionId,
-				payload: {
-					view,
-					isCleared,
-				},
+				payload: { view, isCleared },
 			} = req.body;
 
 			const user = orch.getConverters().get('users').convertToApp(req.user);
@@ -263,19 +238,13 @@ const appsRoutes = (orch) => (req, res) => {
 
 				res.sendStatus(200);
 			} catch (e) {
-				console.error(e);
 				res.status(500).send(e.message);
 			}
 			break;
 		}
 
 		case UIKitIncomingInteractionType.VIEW_SUBMIT: {
-			const {
-				type,
-				actionId,
-				triggerId,
-				payload,
-			} = req.body;
+			const { type, actionId, triggerId, payload } = req.body;
 
 			const user = orch.getConverters().get('users').convertToApp(req.user);
 
@@ -296,6 +265,47 @@ const appsRoutes = (orch) => (req, res) => {
 				res.status(500).send(e.message);
 			}
 			break;
+		}
+
+		case UIKitIncomingInteractionType.ACTION_BUTTON: {
+			const {
+				type,
+				actionId,
+				triggerId,
+				rid,
+				mid,
+				payload: { context },
+			} = req.body;
+
+			const room = orch.getConverters().get('rooms').convertById(rid);
+			const user = orch.getConverters().get('users').convertToApp(req.user);
+			const message = mid && orch.getConverters().get('messages').convertById(mid);
+
+			const action = {
+				type,
+				appId,
+				actionId,
+				triggerId,
+				user,
+				room,
+				message,
+				payload: {
+					context,
+				},
+			};
+
+			try {
+				const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+
+				res.send(result);
+			} catch (e) {
+				res.status(500).send(e.message);
+			}
+			break;
+		}
+
+		default: {
+			res.status(400).send({ error: 'Unknown action' });
 		}
 	}
 

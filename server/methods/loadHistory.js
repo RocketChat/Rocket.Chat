@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../app/models';
-import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
+import { Subscriptions, Rooms } from '../../app/models/server';
+import { canAccessRoom, hasPermission } from '../../app/authorization/server';
+import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
 Meteor.methods({
@@ -17,7 +17,15 @@ Meteor.methods({
 		}
 
 		const fromId = Meteor.userId();
-		const room = Meteor.call('canAccessRoom', rid, fromId);
+
+		const room = Rooms.findOneById(rid, { fields: { t: 1 } });
+		if (!room) {
+			return false;
+		}
+
+		if (!canAccessRoom(room, { _id: fromId })) {
+			return false;
+		}
 
 		if (!room) {
 			return false;

@@ -44,14 +44,7 @@ function BusinessHoursRow(props) {
 	};
 
 	return (
-		<Table.Row
-			key={_id}
-			role='link'
-			action
-			tabIndex={0}
-			onClick={handleClick}
-			onKeyDown={handleKeyDown}
-		>
+		<Table.Row key={_id} role='link' action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<Table.Cell withTruncatedText>{name || t('Default')}</Table.Cell>
 			<Table.Cell withTruncatedText>{t(timezone.name)}</Table.Cell>
 			<Table.Cell withTruncatedText>{openDays.join(', ')}</Table.Cell>

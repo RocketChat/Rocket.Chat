@@ -1,9 +1,7 @@
 import moment from 'moment';
 
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
-import {
-	IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw,
-} from '../../../models/server/raw/LivechatBusinessHours';
+import { IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw } from '../../../models/server/raw/LivechatBusinessHours';
 import { UsersRaw } from '../../../models/server/raw/Users';
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
@@ -19,6 +17,7 @@ export interface IBusinessHourBehavior {
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
+	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
 }
 
 export interface IBusinessHourType {
@@ -44,6 +43,15 @@ export abstract class AbstractBusinessHourBehavior {
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
+
+	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+		return this.UsersRepository.setLivechatStatusIf(
+			agentId,
+			status,
+			{ livechatStatusSystemModified: true },
+			{ livechatStatusSystemModified: true },
+		);
+	}
 }
 
 export abstract class AbstractBusinessHourType {
@@ -64,8 +72,8 @@ export abstract class AbstractBusinessHourType {
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
 		businessHourData.workHours.forEach((hour: any) => {
-			const startUtc = moment.tz(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
-			const finishUtc = moment.tz(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
 			hour.start = {
 				time: hour.start,
 				utc: {
@@ -100,6 +108,8 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
-		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format(format);
+		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm')
+			.add(moment().utcOffset() / 60, 'hours')
+			.format(format);
 	}
 }

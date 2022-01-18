@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatRooms } from '../../../../../app/models/server';
 
 const handleAfterSaveMessage = (message, { _id: rid }) => {

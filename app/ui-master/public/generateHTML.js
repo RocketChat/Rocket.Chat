@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const sort = function(a, b) {
+const sort = function (a, b) {
 	if (a.toLocaleLowerCase() < b.toLocaleLowerCase()) {
 		return -1;
 	}
@@ -10,7 +10,7 @@ const sort = function(a, b) {
 	return 0;
 };
 
-const iconHTML = (name) => `<div class="icon" title="${ name }"><svg><use href="#icon-${ name }"/></svg></div>`;
+const iconHTML = (name) => `<div class="icon" title="${name}"><svg><use href="#icon-${name}"/></svg></div>`;
 
 const header = `<html><body><style>
 	* {
@@ -48,11 +48,12 @@ const start = async () => {
 					.sort(sort)
 					.filter((file) => {
 						if (!/\.svg/.test(file)) {
-							console.log(`invalid extension ${ file }`);
+							console.log(`invalid extension ${file}`);
 							return false;
 						}
 						return true;
-					}).forEach(async (file) => {
+					})
+					.forEach(async (file) => {
 						const name = file.replace('.svg', '').toLocaleLowerCase();
 						console.log(name);
 						html.write(iconHTML(name));

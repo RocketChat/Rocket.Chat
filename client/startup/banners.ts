@@ -4,14 +4,15 @@ import { Tracker } from 'meteor/tracker';
 import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import { IBanner, BannerPlatform } from '../../definition/IBanner';
+import { Serialized } from '../../definition/Serialized';
 import * as banners from '../lib/banners';
 
 const fetchInitialBanners = async (): Promise<void> => {
-	const response = (await APIClient.get('v1/banners.getNew', {
-		platform: BannerPlatform.Web,
-	})) as {
+	const response: Serialized<{
 		banners: IBanner[];
-	};
+	}> = await APIClient.get('v1/banners', {
+		platform: BannerPlatform.Web,
+	});
 
 	for (const banner of response.banners) {
 		banners.open({
@@ -21,13 +22,16 @@ const fetchInitialBanners = async (): Promise<void> => {
 	}
 };
 
-const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
-	const response = (await APIClient.get('v1/banners.getNew', {
-		platform: BannerPlatform.Web,
-		bid: event.bannerId,
-	})) as {
+const handleBanner = async (event: { bannerId: string }): Promise<void> => {
+	const response: Serialized<{
 		banners: IBanner[];
-	};
+	}> = await APIClient.get(`v1/banners/${event.bannerId}`, {
+		platform: BannerPlatform.Web,
+	});
+
+	if (!response.banners.length) {
+		return banners.closeById(event.bannerId);
+	}
 
 	for (const banner of response.banners) {
 		banners.open({
@@ -40,10 +44,10 @@ const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
 const watchBanners = (): (() => void) => {
 	fetchInitialBanners();
 
-	Notifications.onLogged('new-banner', handleNewBanner);
+	Notifications.onLogged('banner-changed', handleBanner);
 
 	return (): void => {
-		Notifications.unLogged(handleNewBanner);
+		Notifications.unLogged(handleBanner);
 		banners.clear();
 	};
 };

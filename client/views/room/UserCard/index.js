@@ -51,9 +51,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name: showRealNames ? name : username,
 			username,
-			roles:
-				roles &&
-				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			etag: avatarETag,
 			localTime: Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
@@ -68,9 +66,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		onClose && onClose();
 	});
 
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions(user, rid),
-	);
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(useUserInfoActions(user, rid));
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {
@@ -83,9 +79,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 				mi='x2'
 				key='menu'
 				ghost={false}
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option {...props} label={label} icon={icon} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
@@ -102,12 +96,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	return (
 		<>
 			<Backdrop bg='transparent' onClick={onClose} />
-			<PositionAnimated
-				anchor={ref}
-				placement='top-start'
-				margin={8}
-				visible={AnimatedVisibility.UNHIDING}
-			>
+			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
 				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} t={t} />
 			</PositionAnimated>
 		</>

@@ -5,22 +5,22 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin } from '../../ui-utils';
+import { mainReady, iframeLogin } from '../../ui-utils';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
-import { callbacks } from '../../callbacks/client';
+import { callbacks } from '../../../lib/callbacks';
 import { isSyncReady } from '../../../client/lib/userData';
-import { fireGlobalEvent } from '../../ui-utils/client';
-
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import './main.html';
-
+import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
 callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.main.helpers({
-	removeSidenav: () => Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
+	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
 		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			document.documentElement.classList.add('noscroll');
@@ -63,7 +63,11 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
+		if (
+			!user ||
+			(user.services.totp !== undefined && user.services.totp.enabled) ||
+			(user.services.email2fa !== undefined && user.services.email2fa.enabled)
+		) {
 			return false;
 		}
 		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
@@ -78,7 +82,7 @@ Template.main.helpers({
 		fireGlobalEvent('Custom_Script_Logged_In');
 	},
 	embeddedVersion: () => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			return 'embedded-view';
 		}
 	},
@@ -89,12 +93,23 @@ Template.main.helpers({
 	},
 });
 
-Template.main.onCreated(function() {
+Template.main.onCreated(function () {
 	tooltip.init();
 });
 
-Template.main.onRendered(function() {
-	Tracker.autorun(function() {
+Template.main.onRendered(function () {
+	// iOS prevent click if elements matches hover
+	isIOsDevice &&
+		window.matchMedia('(hover: none)').matches &&
+		$(document.body).on('touchend', 'a', (e) => {
+			if (!e.target.matches(':hover')) {
+				return;
+			}
+
+			e.target.click();
+		});
+
+	Tracker.autorun(function () {
 		const userId = Meteor.userId();
 
 		if (getUserPreference(userId, 'hideUsernames')) {

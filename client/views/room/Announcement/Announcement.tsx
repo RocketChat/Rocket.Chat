@@ -23,9 +23,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 			return;
 		}
 
-		announcementDetails
-			? announcementDetails()
-			: setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
+		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
 	};
 
 	return announcement ? (

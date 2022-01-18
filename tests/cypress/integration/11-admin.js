@@ -83,7 +83,7 @@ describe('[Administration]', () => {
 					admin.roomsChannelsCheckbox.should('be.visible');
 				});
 
-				it('it should show the direct messsage checkbox', () => {
+				it('it should show the direct message checkbox', () => {
 					admin.roomsDirectCheckbox.should('be.visible');
 				});
 
@@ -154,11 +154,11 @@ describe('[Administration]', () => {
 					switch (checkbox) {
 						case 1:
 							admin.roomsChannelsCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 2:
 							admin.roomsDirectCheckbox.click();
-							checkbox ++;
+							checkbox++;
 							break;
 						case 3:
 							admin.roomsPrivateCheckbox.click();
@@ -195,9 +195,8 @@ describe('[Administration]', () => {
 				admin.usersFilter.should('be.visible');
 			});
 
-
 			it('it should show rocket.cat', () => {
-			// it cant find the user if there is too many users
+				// it cant find the user if there is too many users
 				admin.usersRocketCat.should('be.visible');
 			});
 
@@ -643,8 +642,12 @@ describe('[Administration]', () => {
 					admin.generalUTF8Regex.scrollIntoView();
 				});
 
-				it('it should show the utf8 regex field', () => {
-					admin.generalUTF8Regex.should('be.visible');
+				it('it should show the usernames utf8 regex field', () => {
+					admin.generalUTF8UsernamesRegex.should('be.visible');
+				});
+
+				it('it should show the channels utf8 regex field', () => {
+					admin.generalUTF8ChannelsRegex.should('be.visible');
 				});
 
 				it('it should show the utf8 names slug checkboxes', () => {
@@ -681,15 +684,6 @@ describe('[Administration]', () => {
 
 				it('the idle timeout limit field value should be 300', () => {
 					admin.accountsidleTimeLimit.should('have.value', '300');
-				});
-
-				it('it should show the audio notifications select field', () => {
-					admin.accountsAudioNotifications.scrollIntoView();
-					admin.accountsAudioNotifications.should('be.visible');
-				});
-
-				it('the audio notifications field value should be mentions', () => {
-					admin.accountsAudioNotifications.should('have.value', 'mentions');
 				});
 
 				it('it should show the desktop audio notifications select field', () => {

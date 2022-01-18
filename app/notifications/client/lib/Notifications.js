@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import './Presence';
+
 class Notifications {
 	constructor(...args) {
 		this.logged = Meteor.userId() !== null;
@@ -17,11 +19,12 @@ class Notifications {
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
+
 		if (this.debug === true) {
-			this.onAll(function() {
+			this.onAll(function () {
 				return console.log('RocketChat.Notifications: onAll', args);
 			});
-			this.onUser(function() {
+			this.onUser(function () {
 				return console.log('RocketChat.Notifications: onAll', args);
 			});
 		}
@@ -38,7 +41,7 @@ class Notifications {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyRoom', [room, eventName, ...args]);
 		}
-		args.unshift(`${ room }/${ eventName }`);
+		args.unshift(`${room}/${eventName}`);
 		return this.streamRoom.emit.apply(this.streamRoom, args);
 	}
 
@@ -46,7 +49,7 @@ class Notifications {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyUser', [userId, eventName, ...args]);
 		}
-		args.unshift(`${ userId }/${ eventName }`);
+		args.unshift(`${userId}/${eventName}`);
 		return this.streamUser.emit.apply(this.streamUser, args);
 	}
 
@@ -54,7 +57,7 @@ class Notifications {
 		if (this.debug === true) {
 			console.log('RocketChat.Notifications: notifyUsersOfRoom', [room, eventName, ...args]);
 		}
-		args.unshift(`${ room }/${ eventName }`);
+		args.unshift(`${room}/${eventName}`);
 		return this.streamRoomUsers.emit.apply(this.streamRoomUsers, args);
 	}
 
@@ -68,16 +71,16 @@ class Notifications {
 
 	onRoom(room, eventName, callback) {
 		if (this.debug === true) {
-			this.streamRoom.on(room, function() {
-				return console.log(`RocketChat.Notifications: onRoom ${ room }`, [room, eventName, callback]);
+			this.streamRoom.on(room, function () {
+				return console.log(`RocketChat.Notifications: onRoom ${room}`, [room, eventName, callback]);
 			});
 		}
-		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
+		return this.streamRoom.on(`${room}/${eventName}`, callback);
 	}
 
-	async onUser(eventName, callback) {
-		await this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
-		return () => this.unUser(eventName, callback);
+	async onUser(eventName, callback, visitorId = null) {
+		await this.streamUser.on(`${Meteor.userId() || visitorId}/${eventName}`, callback);
+		return () => this.unUser(eventName, callback, visitorId);
 	}
 
 	unAll(callback) {
@@ -89,11 +92,11 @@ class Notifications {
 	}
 
 	unRoom(room, eventName, callback) {
-		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
+		return this.streamRoom.removeListener(`${room}/${eventName}`, callback);
 	}
 
-	unUser(eventName, callback) {
-		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
+	unUser(eventName, callback, visitorId = null) {
+		return this.streamUser.removeListener(`${Meteor.userId() || visitorId}/${eventName}`, callback);
 	}
 }
 

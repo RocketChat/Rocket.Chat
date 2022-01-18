@@ -4,6 +4,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 
 class ExternalQueue {
 	constructor() {
@@ -21,15 +22,15 @@ class ExternalQueue {
 	getNextAgent(department, ignoreAgentId) {
 		for (let i = 0; i < 10; i++) {
 			try {
-				let queryString = department ? `?departmentId=${ department }` : '';
+				let queryString = department ? `?departmentId=${department}` : '';
 				if (ignoreAgentId) {
-					const ignoreAgentIdParam = `ignoreAgentId=${ ignoreAgentId }`;
-					queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoreAgentIdParam }` : `?${ ignoreAgentIdParam }`;
+					const ignoreAgentIdParam = `ignoreAgentId=${ignoreAgentId}`;
+					queryString = queryString.startsWith('?') ? `${queryString}&${ignoreAgentIdParam}` : `?${ignoreAgentIdParam}`;
 				}
-				const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
+				const result = HTTP.call('GET', `${settings.get('Livechat_External_Queue_URL')}${queryString}`, {
 					headers: {
 						'User-Agent': 'RocketChat Server',
-						Accept: 'application/json',
+						'Accept': 'application/json',
 						'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 					},
 				});
@@ -45,7 +46,7 @@ class ExternalQueue {
 					}
 				}
 			} catch (e) {
-				console.error('Error requesting agent from external queue.', e);
+				SystemLogger.error('Error requesting agent from external queue.', e);
 				break;
 			}
 		}

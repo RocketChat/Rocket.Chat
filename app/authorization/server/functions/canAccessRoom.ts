@@ -1,5 +1,3 @@
-import { Promise } from 'meteor/promise';
-
 import { Authorization } from '../../../../server/sdk';
 import { IAuthorization } from '../../../../server/sdk/types/IAuthorization';
 
