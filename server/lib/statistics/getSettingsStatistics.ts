@@ -4,6 +4,7 @@ import { ISettingStatistics, ISettingStatisticsObject } from '../../../definitio
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {
 		account2fa,
+		cannedResponsesEnabled,
 		e2e,
 		e2eDefaultDirectRoom,
 		e2eDefaultPrivateRoom,
@@ -32,10 +33,15 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 		webRTCEnablePrivate,
 		webRTCEnableDirect,
 	} = settings;
-	const staticticObject = {
+
+	// If Canned Response does not exist add blank object to the statistic else add canned response object
+	const cannedRes = !cannedResponsesEnabled ? {} : { cannedResponses: cannedResponsesEnabled };
+
+	const statisticObject = {
 		accounts: {
 			account2fa,
 		},
+		...cannedRes,
 		e2ee: {
 			e2e,
 			e2eDefaultDirectRoom,
@@ -96,54 +102,59 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 			webRTCEnableDirect,
 		},
 	};
-	return staticticObject;
+	return statisticObject;
 };
 export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject> => {
-	const settingsBase = [
-		{ key: 'Accounts_TwoFactorAuthentication_Enabled', alias: 'account2fa' },
-		{ key: 'E2E_Enable', alias: 'e2e' },
-		{ key: 'E2E_Enabled_Default_DirectRooms', alias: 'e2eDefaultDirectRoom' },
-		{ key: 'E2E_Enabled_Default_PrivateRooms', alias: 'e2eDefaultPrivateRoom' },
-		{ key: 'SMTP_Host', alias: 'smtpHost' },
-		{ key: 'SMTP_Port', alias: 'smtpPort' },
-		{ key: 'From_Email', alias: 'fromEmail' },
-		{ key: 'Apps_Framework_Development_Mode', alias: 'frameworkDevMode' },
-		{ key: 'Apps_Framework_enabled', alias: 'frameworkEnable' },
-		{ key: 'NPS_survey_enabled', alias: 'surveyEnabled' },
-		{ key: 'Update_EnableChecker', alias: 'updateChecker' },
-		{ key: 'Livestream_enabled', alias: 'liveStream' },
-		{ key: 'Broadcasting_enabled', alias: 'broadcasting' },
-		{ key: 'Message_AllowEditing', alias: 'allowEditing' },
-		{ key: 'Message_AllowDeleting', alias: 'allowDeleting' },
-		{ key: 'Message_AllowUnrecognizedSlashCommand', alias: 'allowUnrecognizedSlashCommand' },
-		{ key: 'Message_AllowBadWordsFilter', alias: 'allowBadWordsFilter' },
-		{ key: 'Message_Read_Receipt_Enabled', alias: 'readReceiptEnabled' },
-		{ key: 'Message_Read_Receipt_Store_Users', alias: 'readReceiptStoreUsers' },
-		{ key: 'Search.defaultProvider.GlobalSearchEnabled', alias: 'globalSearchEnabled' },
-		{ key: 'OTR_Enable', alias: 'otrEnable' },
-		{ key: 'Push_enable', alias: 'pushEnable' },
-		{ key: 'Threads_enabled', alias: 'threadsEnabled' },
-		{ key: 'bigbluebutton_Enabled', alias: 'bigBlueButton' },
-		{ key: 'Jitsi_Enabled', alias: 'jitsiEnabled' },
-		{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },
-		{ key: 'WebRTC_Enable_Private', alias: 'webRTCEnablePrivate' },
-		{ key: 'WebRTC_Enable_Direct', alias: 'webRTCEnableDirect' },
-	];
+	try {
+		const settingsBase = [
+			{ key: 'Accounts_TwoFactorAuthentication_Enabled', alias: 'account2fa' },
+			{ key: 'E2E_Enable', alias: 'e2e' },
+			{ key: 'E2E_Enabled_Default_DirectRooms', alias: 'e2eDefaultDirectRoom' },
+			{ key: 'E2E_Enabled_Default_PrivateRooms', alias: 'e2eDefaultPrivateRoom' },
+			{ key: 'SMTP_Host', alias: 'smtpHost' },
+			{ key: 'SMTP_Port', alias: 'smtpPort' },
+			{ key: 'From_Email', alias: 'fromEmail' },
+			{ key: 'Apps_Framework_Development_Mode', alias: 'frameworkDevMode' },
+			{ key: 'Apps_Framework_enabled', alias: 'frameworkEnable' },
+			{ key: 'NPS_survey_enabled', alias: 'surveyEnabled' },
+			{ key: 'Update_EnableChecker', alias: 'updateChecker' },
+			{ key: 'Livestream_enabled', alias: 'liveStream' },
+			{ key: 'Broadcasting_enabled', alias: 'broadcasting' },
+			{ key: 'Message_AllowEditing', alias: 'allowEditing' },
+			{ key: 'Message_AllowDeleting', alias: 'allowDeleting' },
+			{ key: 'Message_AllowUnrecognizedSlashCommand', alias: 'allowUnrecognizedSlashCommand' },
+			{ key: 'Message_AllowBadWordsFilter', alias: 'allowBadWordsFilter' },
+			{ key: 'Message_Read_Receipt_Enabled', alias: 'readReceiptEnabled' },
+			{ key: 'Message_Read_Receipt_Store_Users', alias: 'readReceiptStoreUsers' },
+			{ key: 'Search.defaultProvider.GlobalSearchEnabled', alias: 'globalSearchEnabled' },
+			{ key: 'OTR_Enable', alias: 'otrEnable' },
+			{ key: 'Push_enable', alias: 'pushEnable' },
+			{ key: 'Threads_enabled', alias: 'threadsEnabled' },
+			{ key: 'bigbluebutton_Enabled', alias: 'bigBlueButton' },
+			{ key: 'Jitsi_Enabled', alias: 'jitsiEnabled' },
+			{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },
+			{ key: 'WebRTC_Enable_Private', alias: 'webRTCEnablePrivate' },
+			{ key: 'WebRTC_Enable_Direct', alias: 'webRTCEnableDirect' },
+			{ key: 'Canned_Responses_Enable', alias: 'cannedResponses' },
+		];
 
-	// Mapping only _id values
-	const settingsIDs = settingsBase.map((el) => el.key);
+		// Mapping only _id values
+		const settingsIDs = settingsBase.map((el) => el.key);
 
-	const settingsArray = await Settings.findByIds(settingsIDs).toArray();
+		const settingsArray = await Settings.findByIds(settingsIDs).toArray();
+		const settingsStatistics = settingsArray
+			.map((el): ISettingStatistics => {
+				const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
 
-	const settingsStatistics = settingsArray
-		.map((el): ISettingStatistics => {
-			const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
+				if (!!alias && Object.keys(el).length) return { [String(alias)]: el.value };
+				return alias;
+			})
+			.filter((el) => Object.keys(el).length) // Filter to remove all empty objects
+			.reduce((a, b) => Object.assign(a, b), {}); // Convert array to objects
+		const staticticObject = await setSettingsStatistics(settingsStatistics);
 
-			if (!!alias && Object.keys(el).length) return { [String(alias)]: el.value };
-			return alias;
-		})
-		.filter((el) => Object.keys(el).length) // Filter to remove all empty objects
-		.reduce((a, b) => Object.assign(a, b), {}); // Convert array to objects
-	const staticticObject = await setSettingsStatistics(settingsStatistics);
-	return staticticObject;
+		return staticticObject;
+	} catch (error: any) {
+		return error;
+	}
 };

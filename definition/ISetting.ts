@@ -140,6 +140,7 @@ export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset 
 
 export interface ISettingStatistics {
 	account2fa?: boolean;
+	cannedResponsesEnabled?: boolean;
 	e2e?: boolean;
 	e2eDefaultDirectRoom?: boolean;
 	e2eDefaultPrivateRoom?: boolean;

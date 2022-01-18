@@ -227,7 +227,8 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const settingsStatisticsObject = await getSettingsStatistics();
+		// If getSettingsStatistics9) throw error save data as empty object
+		const settingsStatisticsObject = (await getSettingsStatistics()) || {};
 		statistics.settings = settingsStatisticsObject;
 
 		const integrations = await Integrations.find(
