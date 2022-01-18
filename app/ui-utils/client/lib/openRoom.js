@@ -31,7 +31,7 @@ export const openRoom = async function (type, name, render = true) {
 	window.currentTracker = Tracker.autorun(async function (c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			appLayout.render('main');
+			appLayout.renderMainLayout();
 			return;
 		}
 
@@ -51,7 +51,9 @@ export const openRoom = async function (type, name, render = true) {
 
 			RoomManager.open(type + name);
 
-			render && appLayout.render('main', { center: 'room' });
+			if (render) {
+				appLayout.renderMainLayout({ center: 'room' });
+			}
 
 			c.stop();
 
@@ -99,7 +101,7 @@ export const openRoom = async function (type, name, render = true) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return appLayout.render('main', { center: 'roomNotFound' });
+			appLayout.renderMainLayout({ center: 'roomNotFound' });
 		}
 	});
 };
