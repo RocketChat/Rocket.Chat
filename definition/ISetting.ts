@@ -174,6 +174,9 @@ export interface ISettingStatisticsObject {
 	accounts?: {
 		account2fa?: boolean;
 	};
+	cannedResponses?: {
+		cannedResponsesEnabled?: boolean;
+	};
 	e2ee?: {
 		e2e?: boolean;
 		e2eDefaultDirectRoom?: boolean;
