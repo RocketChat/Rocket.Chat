@@ -15,15 +15,7 @@ const getDateObj = (dateTime = new Date()) => ({
 	year: dateTime.getFullYear(),
 });
 
-const isSameDateObj = (oldest, newest) => oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
-
 const logger = new Logger('SAUMonitor');
-
-/**
- * Every 60s run:
- * - if changed the day, set lastActivityAt to 23:59:59 of last day and create a new record for today
- * - if not changed the day, update lastActivityAt to 'now'
- */
 
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
@@ -31,29 +23,20 @@ const logger = new Logger('SAUMonitor');
 export class SAUMonitorClass {
 	constructor() {
 		this._started = false;
-		this._monitorTime = 60000;
-		this._timer = null;
 		this._today = getDateObj();
-		this._instanceId = null;
-		this._jobName = 'aggregate-sessions';
+		this._dailyComputeJobName = 'aggregate-sessions';
+		this._dailyFinishSessionsJobName = 'aggregate-sessions';
 	}
 
-	async start(instanceId) {
+	async start() {
 		if (this.isRunning()) {
-			return;
-		}
-
-		this._instanceId = instanceId;
-
-		if (!this._instanceId) {
-			logger.debug('[start] - InstanceId is not defined.');
 			return;
 		}
 
 		await this._startMonitoring();
 
 		this._started = true;
-		logger.debug(`[start] - InstanceId: ${this._instanceId}`);
+		logger.debug('[start]');
 	}
 
 	stop() {
@@ -63,13 +46,10 @@ export class SAUMonitorClass {
 
 		this._started = false;
 
-		if (this._timer) {
-			Meteor.clearInterval(this._timer);
-		}
+		SyncedCron.remove(this._dailyComputeJobName);
+		SyncedCron.remove(this._dailyFinishSessionsJobName);
 
-		SyncedCron.remove(this._jobName);
-
-		logger.debug(`[stop] - InstanceId: ${this._instanceId}`);
+		logger.debug('[stop]');
 	}
 
 	isRunning() {
@@ -80,26 +60,10 @@ export class SAUMonitorClass {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
-			this._startSessionControl();
-			await this._initActiveServerSessions();
-			this._startAggregation();
+			this._startCronjobs();
 		} catch (err) {
 			throw new Meteor.Error(err);
 		}
-	}
-
-	_startSessionControl() {
-		if (this.isRunning()) {
-			return;
-		}
-
-		if (this._monitorTime < 0) {
-			return;
-		}
-
-		this._timer = Meteor.setInterval(async () => {
-			await this._updateActiveSessions();
-		}, this._monitorTime);
 	}
 
 	_handleOnConnection() {
@@ -155,44 +119,48 @@ export class SAUMonitorClass {
 		await Sessions.createOrUpdate(data);
 	}
 
-	// TODO MS: rewrite to run once a day to switch to new day only and not rely on _instanceId
-	async _updateActiveSessions() {
+	async _finishSessionsFromDate(yesterday, today) {
 		if (!this.isRunning()) {
 			return;
 		}
 
-		const { year, month, day } = this._today;
-		const currentDateTime = new Date();
-		const currentDay = getDateObj(currentDateTime);
+		const { day, month, year } = getDateObj(yesterday);
+		const beforeDateTime = new Date(year, month - 1, day, 23, 59, 59, 999);
 
-		if (!isSameDateObj(this._today, currentDay)) {
-			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
-			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
+		const currentDate = getDateObj(today);
+		const nextDateTime = new Date(currentDate.year, currentDate.month - 1, currentDate.day);
 
-			const createSessions = async (objects, ids) => {
-				await Sessions.createBatch(objects);
+		const cursor = Sessions.findSessionsNotClosedByDateWithoutLastActivity({ year, month, day });
 
-				Meteor.defer(() => {
-					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, {
-						lastActivityAt: beforeDateTime,
-					});
-				});
-			};
-			this._applyAllServerSessionsBatch(createSessions, {
+		const batch = [];
+
+		for await (const session of cursor) {
+			// create a new session for the current day
+			batch.push({
+				...session,
+				...currentDate,
 				createdAt: nextDateTime,
-				lastActivityAt: nextDateTime,
-				...currentDay,
 			});
-			this._today = currentDay;
-			return;
+
+			if (batch.length === 2) {
+				await Sessions.createBatch(batch);
+				batch.length = 0;
+			}
 		}
 
-		// Otherwise, just update the lastActivityAt field
-		await this._applyAllServerSessionsIds(async (sessions) => {
-			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, {
-				lastActivityAt: currentDateTime,
-			});
-		});
+		if (batch.length > 0) {
+			await Sessions.createBatch(batch);
+		}
+
+		// close all sessions from current 'date'
+		await Sessions.updateActiveSessionsByDate(
+			{ year, month, day },
+			{
+				lastActivityAt: beforeDateTime,
+			},
+		);
+
+		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
 	_getConnectionInfo(connection, params = {}) {
@@ -207,7 +175,7 @@ export class SAUMonitorClass {
 		const info = {
 			type: 'session',
 			sessionId: connection.id,
-			instanceId: connection.instanceId || this._instanceId,
+			instanceId: connection.instanceId,
 			ip,
 			host,
 			...this._getUserAgentInfo(connection),
@@ -278,43 +246,6 @@ export class SAUMonitorClass {
 		};
 	}
 
-	async _initActiveServerSessions() {
-		await this._applyAllServerSessions(async (connectionHandle) => {
-			await this._handleSession(connectionHandle, getDateObj());
-		});
-	}
-
-	async _applyAllServerSessions(callback) {
-		if (!callback || typeof callback !== 'function') {
-			return;
-		}
-
-		// TODO MS: ddp-streamer needs to provide current sessions as well to do the same
-		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
-		for await (const session of sessions) {
-			await callback(session.connectionHandle);
-		}
-	}
-
-	async recursive(callback, sessionIds) {
-		await callback(sessionIds.splice(0, 500));
-
-		if (sessionIds.length) {
-			await this.recursive(callback, sessionIds);
-		}
-	}
-
-	async _applyAllServerSessionsIds(callback) {
-		if (!callback || typeof callback !== 'function') {
-			return;
-		}
-
-		const sessionIds = Object.values(Meteor.server.sessions)
-			.filter((session) => session.userId)
-			.map((s) => s.id);
-		await this.recursive(callback, sessionIds);
-	}
-
 	_updateConnectionInfo(sessionId, data = {}) {
 		if (!sessionId) {
 			return;
@@ -327,39 +258,25 @@ export class SAUMonitorClass {
 		}
 	}
 
-	_applyAllServerSessionsBatch(callback, params) {
-		const batch = (arr, limit) => {
-			if (!arr.length) {
-				return Promise.resolve();
-			}
-			const ids = [];
-			return Promise.all(
-				arr.splice(0, limit).map((item) => {
-					ids.push(item.id);
-					return this._getConnectionInfo(item.connectionHandle, params);
-				}),
-			)
-				.then(async (data) => {
-					await callback(data, ids);
-					return batch(arr, limit);
-				})
-				.catch((e) => {
-					logger.debug(`Error: ${e.message}`);
-				});
-		};
-
-		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
-		batch(sessions, 500);
-	}
-
-	_startAggregation() {
+	_startCronjobs() {
 		logger.info('[aggregate] - Start Cron.');
 
 		SyncedCron.add({
-			name: this._jobName,
+			name: this._dailyComputeJobName,
 			schedule: (parser) => parser.text('at 2:00 am'),
 			job: async () => {
 				await this.aggregate();
+			},
+		});
+
+		SyncedCron.add({
+			name: this._dailyFinishSessionsJobName,
+			schedule: (parser) => parser.text('at 1:05 am'),
+			job: async () => {
+				const yesterday = new Date();
+				yesterday.setDate(yesterday.getDate() - 1);
+
+				await this._finishSessionsFromDate(yesterday, new Date());
 			},
 		});
 	}
