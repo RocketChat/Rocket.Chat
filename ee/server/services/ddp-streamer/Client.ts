@@ -33,7 +33,10 @@ const getClientAddress = (req: IncomingMessage): string | undefined => {
 	if (!forwardedFor) {
 		return;
 	}
-	const forwardedForClean = forwardedFor.trim().split(/\s*,\s*/);
+	const forwardedForClean = forwardedFor
+		.trim()
+		.split(',')
+		.map((ip) => ip.trim());
 
 	// Typically the first value in the `x-forwarded-for` header is
 	// the original IP address of the client connecting to the first
