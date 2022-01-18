@@ -155,27 +155,27 @@ server.methods({
 
 server.on(DDP_EVENTS.LOGGED, (info) => {
 	// console.log('DDP_EVENTS.LOGGED ->', info);
-	const { userId, session, connection } = info;
-	Presence.newConnection(userId, session);
-	api.broadcast('accounts.login', { userId, session, connection });
+	const { userId, connection } = info;
+	Presence.newConnection(userId, connection.id);
+	api.broadcast('accounts.login', { userId, connection });
 });
 
 server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 	// console.log('DDP_EVENTS.LOGGEDOUT ->', info);
-	const { userId, session, connection } = info;
-	api.broadcast('accounts.logout', { userId, session, connection });
+	const { userId, connection } = info;
+	api.broadcast('accounts.logout', { userId, connection });
 });
 
 server.on(DDP_EVENTS.DISCONNECTED, (info) => {
-	const { userId, session, connection } = info;
+	const { userId, connection } = info;
 
 	// console.log('DDP_EVENTS.DISCONNECTED ->', info);
-	api.broadcast('socket.disconnected', { userId, session, connection });
+	api.broadcast('socket.disconnected', connection);
 
 	if (!userId) {
 		return;
 	}
-	Presence.removeConnection(userId, session);
+	Presence.removeConnection(userId, connection.id);
 });
 
 server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {

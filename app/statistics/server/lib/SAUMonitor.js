@@ -71,12 +71,12 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('socket.disconnected', async ({ connection }) => {
+		sauEvents.on('socket.disconnected', async ({ id, instanceId }) => {
 			if (!this.isRunning()) {
 				return;
 			}
 
-			await Sessions.closeByInstanceIdAndSessionId(connection.instanceId, connection.id);
+			await Sessions.closeByInstanceIdAndSessionId(instanceId, id);
 		});
 	}
 
@@ -89,7 +89,6 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
-			console.log('accounts.login', userId, connection);
 
 			// TODO need to perform a find on user to get his roles
 			// const { roles = ['user'], _id: userId } = info.user;
