@@ -682,7 +682,7 @@ jobs:
           mention_if: 'failure'
           url: ${{ secrets.RELEASE_IMAGES_ROCKETCHAT_WEBHOOK }}
 
-  release_cloud:
+  release_cloud_marketplaces:
     runs-on: ubuntu-latest
     needs: deploy
     if: github.event_name == 'release'
