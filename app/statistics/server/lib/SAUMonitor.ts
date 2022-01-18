@@ -1,15 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
+import mem from 'mem';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { Sessions } from '../../../models/server/raw';
+import { Sessions, Users } from '../../../models/server/raw';
 import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from './getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { ISession, ISessionDevice } from '../../../../definition/ISession';
 import { ISocketConnection } from '../../../../definition/ISocketConnection';
+import { IUser } from '../../../../definition/IUser';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -20,6 +22,15 @@ const getDateObj = (dateTime = new Date()): DateObj => ({
 });
 
 const logger = new Logger('SAUMonitor');
+
+const getUserRoles = mem(
+	async (userId: string): Promise<string[]> => {
+		const user = await Users.findOneById<IUser>(userId, { projection: { roles: 1 } });
+
+		return user?.roles || [];
+	},
+	{ maxAge: 5000 },
+);
 
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
@@ -75,7 +86,7 @@ export class SAUMonitorClass {
 		}
 	}
 
-	_handleOnConnection(): void {
+	private _handleOnConnection(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -89,7 +100,7 @@ export class SAUMonitorClass {
 		});
 	}
 
-	_handleAccountEvents(): void {
+	private _handleAccountEvents(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -99,18 +110,13 @@ export class SAUMonitorClass {
 				return;
 			}
 
-			// TODO need to perform a find on user to get his roles
-			// const { roles = ['user'], _id: userId } = info.user;
-			const roles = ['user'];
+			const roles = await getUserRoles(userId);
 
 			const mostImportantRole = getMostImportantRole(roles);
 
 			const loginAt = new Date();
 			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
 			await this._handleSession(connection, params);
-
-			// TODO MS: need to take a look at this since it looks meteor's connections
-			this._updateConnectionInfo(connection.id, { loginAt });
 		});
 
 		sauEvents.on('accounts.logout', async ({ userId, connection }) => {
@@ -122,7 +128,7 @@ export class SAUMonitorClass {
 		});
 	}
 
-	async _handleSession(
+	private async _handleSession(
 		connection: ISocketConnection,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
@@ -133,7 +139,7 @@ export class SAUMonitorClass {
 		await Sessions.createOrUpdate(data);
 	}
 
-	async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
+	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -156,7 +162,7 @@ export class SAUMonitorClass {
 				createdAt: nextDateTime,
 			});
 
-			if (batch.length === 2) {
+			if (batch.length === 500) {
 				await Sessions.createBatch(batch);
 				batch.length = 0;
 			}
@@ -177,7 +183,7 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
-	_getConnectionInfo(
+	private _getConnectionInfo(
 		connection: ISocketConnection,
 		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt'> | undefined {
@@ -200,16 +206,9 @@ export class SAUMonitorClass {
 			...this._getUserAgentInfo(connection),
 			...params,
 		};
-
-		// TODO need to store loginAt in the connection object?
-		// if (connection.loginAt) {
-		// 	info.loginAt = connection.loginAt;
-		// }
-
-		// return info;
 	}
 
-	_getUserAgentInfo(connection: ISocketConnection): { device: ISessionDevice } | undefined {
+	private _getUserAgentInfo(connection: ISocketConnection): { device: ISessionDevice } | undefined {
 		if (!connection?.httpHeaders?.['user-agent']) {
 			return;
 		}
@@ -286,26 +285,14 @@ export class SAUMonitorClass {
 		};
 	}
 
-	_updateConnectionInfo(sessionId: string, data: Record<any, any> = {}): void {
-		if (!sessionId) {
-			return;
-		}
-		const session = Meteor.server.sessions.get(sessionId);
-		if (session) {
-			Object.keys(data).forEach((p) => {
-				session.connectionHandle = Object.assign({}, session.connectionHandle, { [p]: data[p] });
-			});
-		}
-	}
-
-	_startCronjobs(): void {
+	private _startCronjobs(): void {
 		logger.info('[aggregate] - Start Cron.');
 
 		SyncedCron.add({
 			name: this._dailyComputeJobName,
 			schedule: (parser: any) => parser.text('at 2:00 am'),
 			job: async () => {
-				await this.aggregate();
+				await this._aggregate();
 			},
 		});
 
@@ -321,7 +308,7 @@ export class SAUMonitorClass {
 		});
 	}
 
-	async aggregate(): Promise<void> {
+	private async _aggregate(): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
