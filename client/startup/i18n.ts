@@ -7,6 +7,7 @@ import moment from 'moment';
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { isRtl } from '../../app/utils/client';
+import { filterLanguage } from '../lib/utils/filterLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
@@ -16,17 +17,6 @@ Meteor.startup(() => {
 	currentLanguage.set(Meteor._localStorage.getItem('userLanguage'));
 
 	const availableLanguages = TAPi18n.getLanguages();
-
-	const filterLanguage = (language: string): string => {
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		const regex = /([a-z]{2,3})-([a-z]{2,4})/;
-		const matches = regex.exec(language);
-		if (matches) {
-			return `${matches[1]}-${matches[2].toUpperCase()}`;
-		}
-
-		return language;
-	};
 
 	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
