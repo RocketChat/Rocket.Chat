@@ -1177,7 +1177,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async createOrUpdate(data: ISession): Promise<UpdateWriteOpResult | undefined> {
+	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {

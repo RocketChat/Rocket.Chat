@@ -8,8 +8,12 @@ import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from './getMostImportantRole';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { ISession, ISessionDevice } from '../../../../definition/ISession';
+import { ISocketConnection } from '../../../../definition/ISocketConnection';
 
-const getDateObj = (dateTime = new Date()) => ({
+type DateObj = { day: number; month: number; year: number };
+
+const getDateObj = (dateTime = new Date()): DateObj => ({
 	day: dateTime.getDate(),
 	month: dateTime.getMonth() + 1,
 	year: dateTime.getFullYear(),
@@ -21,6 +25,14 @@ const logger = new Logger('SAUMonitor');
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
  */
 export class SAUMonitorClass {
+	private _started: boolean;
+
+	private _today: DateObj;
+
+	private _dailyComputeJobName: string;
+
+	private _dailyFinishSessionsJobName: string;
+
 	constructor() {
 		this._started = false;
 		this._today = getDateObj();
@@ -28,7 +40,7 @@ export class SAUMonitorClass {
 		this._dailyFinishSessionsJobName = 'aggregate-sessions';
 	}
 
-	async start() {
+	async start(): Promise<void> {
 		if (this.isRunning()) {
 			return;
 		}
@@ -39,7 +51,7 @@ export class SAUMonitorClass {
 		logger.debug('[start]');
 	}
 
-	stop() {
+	stop(): void {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -52,21 +64,21 @@ export class SAUMonitorClass {
 		logger.debug('[stop]');
 	}
 
-	isRunning() {
+	isRunning(): boolean {
 		return this._started === true;
 	}
 
-	async _startMonitoring() {
+	async _startMonitoring(): Promise<void> {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
 			this._startCronjobs();
-		} catch (err) {
+		} catch (err: any) {
 			throw new Meteor.Error(err);
 		}
 	}
 
-	_handleOnConnection() {
+	_handleOnConnection(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -80,7 +92,7 @@ export class SAUMonitorClass {
 		});
 	}
 
-	_handleAccountEvents() {
+	_handleAccountEvents(): void {
 		if (this.isRunning()) {
 			return;
 		}
@@ -113,12 +125,18 @@ export class SAUMonitorClass {
 		});
 	}
 
-	async _handleSession(connection, params) {
+	async _handleSession(
+		connection: ISocketConnection,
+		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
+	): Promise<void> {
 		const data = this._getConnectionInfo(connection, params);
+		if (!data) {
+			return;
+		}
 		await Sessions.createOrUpdate(data);
 	}
 
-	async _finishSessionsFromDate(yesterday, today) {
+	async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -162,16 +180,21 @@ export class SAUMonitorClass {
 		// TODO missing an action to perform on dangling sessions (for example remove sessions not closed one month ago)
 	}
 
-	_getConnectionInfo(connection, params = {}) {
+	_getConnectionInfo(
+		connection: ISocketConnection,
+		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
+	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt'> | undefined {
 		if (!connection) {
 			return;
 		}
 
 		const ip = connection.httpHeaders
-			? connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for']
-			: connection.clientAddress;
-		const host = connection.httpHeaders && connection.httpHeaders.host;
-		const info = {
+			? String(connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'])
+			: String(connection.clientAddress);
+
+		const host = connection.httpHeaders?.host || '';
+
+		return {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
@@ -181,35 +204,56 @@ export class SAUMonitorClass {
 			...params,
 		};
 
-		if (connection.loginAt) {
-			info.loginAt = connection.loginAt;
-		}
+		// TODO need to store loginAt in the connection object?
+		// if (connection.loginAt) {
+		// 	info.loginAt = connection.loginAt;
+		// }
 
-		return info;
+		// return info;
 	}
 
-	_getUserAgentInfo(connection) {
-		if (!(connection && connection.httpHeaders && connection.httpHeaders['user-agent'])) {
+	_getUserAgentInfo(connection: ISocketConnection): { device: ISessionDevice } | undefined {
+		if (!connection?.httpHeaders?.['user-agent']) {
 			return;
 		}
 
 		const uaString = connection.httpHeaders['user-agent'];
-		let result;
 
-		if (UAParserMobile.isMobileApp(uaString)) {
-			result = UAParserMobile.uaObject(uaString);
-		} else if (UAParserDesktop.isDesktopApp(uaString)) {
-			result = UAParserDesktop.uaObject(uaString);
-		} else {
+		// TODO define a type for "result" below
+		// | UAParser.IResult
+		// | { device: { type: string; model?: string }; browser: undefined; os: undefined; app: { name: string; version: string } }
+		// | {
+		// 		device: { type: string; model?: string };
+		// 		browser: undefined;
+		// 		os: string;
+		// 		app: { name: string; version: string };
+		//   }
+
+		const result = ((): any => {
+			if (UAParserMobile.isMobileApp(uaString)) {
+				return UAParserMobile.uaObject(uaString);
+			}
+
+			if (UAParserDesktop.isDesktopApp(uaString)) {
+				return UAParserDesktop.uaObject(uaString);
+			}
+
 			const ua = new UAParser(uaString);
-			result = ua.getResult();
-		}
+			return ua.getResult();
+		})();
 
-		const info = {
+		const info: ISessionDevice = {
 			type: 'other',
+			name: '',
+			longVersion: '',
+			os: {
+				name: '',
+				version: '',
+			},
+			version: '',
 		};
 
-		const removeEmptyProps = (obj) => {
+		const removeEmptyProps = (obj: any): any => {
 			Object.keys(obj).forEach((p) => (!obj[p] || obj[p] === undefined) && delete obj[p]);
 			return obj;
 		};
@@ -217,17 +261,17 @@ export class SAUMonitorClass {
 		if (result.browser && result.browser.name) {
 			info.type = 'browser';
 			info.name = result.browser.name;
-			info.longVersion = result.browser.version;
+			info.longVersion = result.browser.version || '';
 		}
 
-		if (result.os && result.os.name) {
-			info.os = removeEmptyProps(result.os);
+		if (typeof result.os !== 'string' && result.os?.name) {
+			info.os = removeEmptyProps(result.os) || '';
 		}
 
 		if (result.device && (result.device.type || result.device.model)) {
-			info.type = result.device.type;
+			info.type = result.device.type || '';
 
-			if (result.app && result.app.name) {
+			if (result.hasOwnProperty('app') && result.app?.name) {
 				info.name = result.app.name;
 				info.longVersion = result.app.version;
 				if (result.app.bundle) {
@@ -237,7 +281,7 @@ export class SAUMonitorClass {
 		}
 
 		if (typeof info.longVersion === 'string') {
-			info.version = info.longVersion.match(/(\d+\.){0,2}\d+/)[0];
+			info.version = info.longVersion.match(/(\d+\.){0,2}\d+/)?.[0] || '';
 		}
 
 		return {
@@ -245,7 +289,7 @@ export class SAUMonitorClass {
 		};
 	}
 
-	_updateConnectionInfo(sessionId, data = {}) {
+	_updateConnectionInfo(sessionId: string, data: Record<any, any> = {}): void {
 		if (!sessionId) {
 			return;
 		}
@@ -257,12 +301,12 @@ export class SAUMonitorClass {
 		}
 	}
 
-	_startCronjobs() {
+	_startCronjobs(): void {
 		logger.info('[aggregate] - Start Cron.');
 
 		SyncedCron.add({
 			name: this._dailyComputeJobName,
-			schedule: (parser) => parser.text('at 2:00 am'),
+			schedule: (parser: any) => parser.text('at 2:00 am'),
 			job: async () => {
 				await this.aggregate();
 			},
@@ -270,7 +314,7 @@ export class SAUMonitorClass {
 
 		SyncedCron.add({
 			name: this._dailyFinishSessionsJobName,
-			schedule: (parser) => parser.text('at 1:05 am'),
+			schedule: (parser: any) => parser.text('at 1:05 am'),
 			job: async () => {
 				const yesterday = new Date();
 				yesterday.setDate(yesterday.getDate() - 1);
@@ -280,7 +324,7 @@ export class SAUMonitorClass {
 		});
 	}
 
-	async aggregate() {
+	async aggregate(): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -299,8 +343,11 @@ export class SAUMonitorClass {
 		};
 
 		await aggregates.dailySessionsOfYesterday(Sessions.col, yesterday).forEach(async (record) => {
-			record._id = `${record.userId}-${record.year}-${record.month}-${record.day}`;
-			await Sessions.updateOne({ _id: record._id }, { $set: record }, { upsert: true });
+			await Sessions.updateOne(
+				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
+				{ $set: record },
+				{ upsert: true },
+			);
 		});
 
 		await Sessions.updateMany(match, {
