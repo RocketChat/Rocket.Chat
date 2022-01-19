@@ -191,9 +191,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const ip = connection.httpHeaders
-			? String(connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'])
-			: String(connection.clientAddress);
+		const ip = connection.clientAddress || connection.httpHeaders?.['x-real-ip'] || connection.httpHeaders?.['x-forwarded-for'];
 
 		const host = connection.httpHeaders?.host || '';
 
@@ -201,7 +199,7 @@ export class SAUMonitorClass {
 			type: 'session',
 			sessionId: connection.id,
 			instanceId: connection.instanceId,
-			ip,
+			ip: (Array.isArray(ip) ? ip[0] : ip) || '',
 			host,
 			...this._getUserAgentInfo(connection),
 			...params,
