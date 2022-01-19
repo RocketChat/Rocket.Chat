@@ -2,10 +2,13 @@ import { Random } from 'meteor/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
+import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
+
+import { setUserStatus } from '/app/lib/server/functions/setStatus';
+import { UserStatus } from '/definition/UserStatus';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
@@ -90,9 +93,8 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		if (typeof fields.statusText === 'string') {
-			await _setStatusTextPromise(user.id, fields.statusText);
-			delete fields.statusText;
+		if (fields.status || fields.statusText) {
+			await setUserStatus(user.id, fields.status as UserStatus, fields.statusText);
 		}
 
 		if (!Object.keys(fields).length) {
