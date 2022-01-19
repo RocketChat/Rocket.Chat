@@ -6,9 +6,8 @@ import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../l
 import { Users } from '../../../models/server';
 import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
-
-import { setUserStatus } from '/app/lib/server/functions/setStatus';
-import { UserStatus } from '/definition/UserStatus';
+import { setUserStatus } from '../../../lib/server/functions/setStatus';
+import { UserStatus } from '../../../../definition/UserStatus';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function

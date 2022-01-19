@@ -1,5 +1,4 @@
-import { UserStatus } from '/definition/UserStatus';
-
+import { UserStatus } from '../../../../definition/UserStatus';
 import { api } from '../../../../server/sdk/api';
 import { Users as UsersRaw } from '../../../models/server/raw';
 
