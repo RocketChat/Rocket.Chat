@@ -85,19 +85,24 @@ export class AppHttpBridge extends HttpBridge {
 
 			if (request.encoding === null) {
 				/**
-				 * So, here we have a problem. The property is not appropriately typed
-				 * in the Apps-Engine. Thus, even though it was  previously supported to
-				 * return it as a Buffer. Apps ended up needing to use that same type
-				 * assertion you see below.
+				 * The property `content` is not appropriately typed in the
+				 * Apps-engine definition, and we can't simply change it there
+				 * as it would be a breaking change. Thus, we're left with this
+				 * type assertion.
 				 */
 				result.content = body as any;
 			} else {
 				result.content = body.toString(request.encoding);
 				result.data = ((): any => {
+					const contentType = (response.headers.get('content-type') || '').split(';')[0];
+					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						return null;
+					}
+
 					try {
 						return JSON.parse(result.content);
 					} catch {
-						return undefined;
+						return null;
 					}
 				})();
 			}
