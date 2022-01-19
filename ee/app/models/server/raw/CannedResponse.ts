@@ -24,7 +24,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> {
 		if (_id) {
 			await this.update({ _id }, { $set: record });
 		} else {
-			_id = await (await this.insertOne(record)).insertedId;
+			_id = (await this.insertOne(record)).insertedId;
 		}
 
 		return _.extend(record, { _id });

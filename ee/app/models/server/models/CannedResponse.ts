@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Base } from '../../../../../app/models/server';
 import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
 /**
- * Livechat Department model
+ * Canned Responses model
  */
 export class CannedResponse extends Base {
 	constructor() {

@@ -6,6 +6,7 @@ import CannedResponse from '../../../models/server/raw/CannedResponse';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
+import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 
 export async function findAllCannedResponses({ userId }: { userId: string }): Promise<IOmnichannelCannedResponse[]> {
 	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
@@ -53,7 +54,7 @@ export async function findAllCannedResponses({ userId }: { userId: string }): Pr
 	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
 	const combinedDepartments = [
 		...departments.map((department) => department.departmentId),
-		...monitoredDepartments.map((department: any) => department._id),
+		...monitoredDepartments.map((department: ILivechatDepartment) => department._id),
 	];
 
 	return CannedResponse.find({
