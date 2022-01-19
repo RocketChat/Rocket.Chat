@@ -4,7 +4,7 @@ import { Statistics } from '../../../models/server/raw';
 import { statistics } from '../../../statistics';
 import { LICENSE_VERSION } from '../license';
 
-export async function buildWorkspaceRegistrationData() {
+export async function buildWorkspaceRegistrationData(contactEmail) {
 	const stats = (await Statistics.findLast()) || statistics.get();
 
 	const address = settings.get('Site_Url');
@@ -39,7 +39,7 @@ export async function buildWorkspaceRegistrationData() {
 		workspaceId,
 		address,
 		contactName,
-		// contactEmail,
+		contactEmail,
 		seats,
 		allowMarketing,
 		accountName,

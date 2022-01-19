@@ -3,11 +3,10 @@ import { HTTP } from 'meteor/http';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings/server';
-import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export async function startRegisterWorkspace(resend = false) {
+export async function startRegisterWorkspace(resend = false, email) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
 		await syncWorkspace(true);
@@ -15,17 +14,12 @@ export async function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	Settings.updateValueById('Register_Server', true);
-
-	const regInfo = await buildWorkspaceRegistrationData();
-
-	console.log('regInfo', regInfo);
-
+	const regInfo = await buildWorkspaceRegistrationData(email);
 	const cloudUrl = settings.get('Cloud_Url');
 
 	let result;
 	try {
-		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace/intent`, {
+		result = HTTP.post(`${cloudUrl}/api/v2/register/workspace/intent?resent=${resend}`, {
 			data: regInfo,
 		});
 	} catch (e) {
@@ -40,14 +34,9 @@ export async function startRegisterWorkspace(resend = false) {
 
 	const { data } = result;
 
-	console.log(result);
-
 	if (!data) {
 		return false;
 	}
-
-	// check why??
-	// Settings.updateValueById('Cloud_Workspace_Id', data.id);
 
 	return data;
 }

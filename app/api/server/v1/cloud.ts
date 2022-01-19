@@ -7,69 +7,84 @@ import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retr
 import { startRegisterWorkspace } from '../../../cloud/server/functions/startRegisterWorkspace';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 
-API.v1.addRoute('cloud.manualRegister', { authRequired: true }, {
-	post() {
-		check(this.bodyParams, {
-			cloudBlob: String,
-		});
+API.v1.addRoute(
+	'cloud.manualRegister',
+	{ authRequired: true },
+	{
+		post() {
+			check(this.bodyParams, {
+				cloudBlob: String,
+			});
 
-		if (!hasRole(this.userId, 'admin')) {
-			return API.v1.unauthorized();
-		}
+			if (!hasRole(this.userId, 'admin')) {
+				return API.v1.unauthorized();
+			}
 
-		const registrationInfo = retrieveRegistrationStatus();
+			const registrationInfo = retrieveRegistrationStatus();
 
-		if (registrationInfo.workspaceRegistered) {
-			return API.v1.failure('Workspace is already registered');
-		}
+			if (registrationInfo.workspaceRegistered) {
+				return API.v1.failure('Workspace is already registered');
+			}
 
-		const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
+			const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
 
-		Promise.await(saveRegistrationData(settingsData));
+			Promise.await(saveRegistrationData(settingsData));
 
-		return API.v1.success();
+			return API.v1.success();
+		},
 	},
-});
+);
 
-API.v1.addRoute('cloud.createRegistrationIntent', { authRequired: true }, {
-	async post() {
-		check(this.bodyParams, {
-			// cloudBlob: String,
-		});
+API.v1.addRoute(
+	'cloud.createRegistrationIntent',
+	{ authRequired: true },
+	{
+		async post() {
+			check(this.bodyParams, {
+				resend: Boolean,
+				email: String,
+			});
 
-		if (!hasPermission(this.userId, 'manage-cloud')) {
-			return API.v1.unauthorized();
-		}
+			if (!hasPermission(this.userId, 'manage-cloud')) {
+				return API.v1.unauthorized();
+			}
 
-		const intentData = await startRegisterWorkspace();
+			const intentData = await startRegisterWorkspace(this.bodyParams.resend, this.bodyParams.email);
 
-		if (intentData) {
-			return API.v1.success({ intentData });
-		}
+			if (intentData) {
+				return API.v1.success({ intentData });
+			}
 
-		return API.v1.failure('Invalid query');
+			return API.v1.failure('Invalid query');
+		},
 	},
-});
+);
 
-API.v1.addRoute('cloud.confirmationPoll', { authRequired: true }, {
-	async get() {
-		const { deviceCode } = this.queryParams;
-		// check(this.bodyParams, {
-		// 	// cloudBlob: String,
-		// });
-		console.log(deviceCode);
+API.v1.addRoute(
+	'cloud.confirmationPoll',
+	{ authRequired: true },
+	{
+		async get() {
+			const { deviceCode } = this.queryParams;
+			check(this.queryParams, {
+				deviceCode: String,
+			});
 
-		if (!hasPermission(this.userId, 'manage-cloud')) {
-			return API.v1.unauthorized();
-		}
+			if (!hasPermission(this.userId, 'manage-cloud')) {
+				return API.v1.unauthorized();
+			}
 
-		const pollData = await getConfirmationPoll(deviceCode);
-		console.log('poolData', pollData);
+			if (!deviceCode) {
+				return API.v1.failure('Invalid query');
+			}
 
-		if (pollData) {
-			return API.v1.success({ pollData });
-		}
+			const pollData = await getConfirmationPoll(deviceCode);
+			if (pollData) {
+				Promise.await(saveRegistrationData(pollData.payload));
+				return API.v1.success({ pollData });
+			}
 
-		return API.v1.failure('Invalid query');
+			return API.v1.failure('Invalid query');
+		},
 	},
-});
+);
