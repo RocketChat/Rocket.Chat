@@ -1,6 +1,56 @@
 
+# 4.3.2
+`2022-01-19  ·  5 🐛  ·  1 🔍  ·  10 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.29.2`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Leading slashes in Engagement Dashboard API requests ([#24142](https://github.com/RocketChat/Rocket.Chat/pull/24142))
+
+  - Remove trailing slashes from Engagement Dashboard API requests;
+
+- App Framework Enable hanging indefinitely ([#24158](https://github.com/RocketChat/Rocket.Chat/pull/24158))
+
+- CSV Importer failing to import users ([#24090](https://github.com/RocketChat/Rocket.Chat/pull/24090))
+
+  - Update use of `setRealName` function to `_setRealName`.
+
+- Integration section crashing opening in My Account ([#24068](https://github.com/RocketChat/Rocket.Chat/pull/24068))
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Apps-Engine to 1.29.2 ([#24171](https://github.com/RocketChat/Rocket.Chat/pull/24171))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@gronke](https://github.com/gronke)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 # 4.3.1
-`2022-01-04  ·  6 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+`2022-01-05  ·  6 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.22.1`
