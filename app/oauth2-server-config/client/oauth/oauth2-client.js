@@ -1,34 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { appLayout } from '../../../../client/lib/appLayout';
 import { APIClient } from '../../../utils/client';
-
-FlowRouter.route('/oauth/authorize', {
-	action(params, queryParams) {
-		appLayout.render('main', {
-			center: 'authorize',
-			modal: true,
-			client_id: queryParams.client_id,
-			redirect_uri: queryParams.redirect_uri,
-			response_type: queryParams.response_type,
-			state: queryParams.state,
-		});
-	},
-});
-
-FlowRouter.route('/oauth/error/:error', {
-	action(params) {
-		appLayout.render('main', {
-			center: 'oauth404',
-			modal: true,
-			error: params.error,
-		});
-	},
-});
 
 Template.authorize.onCreated(async function () {
 	this.oauthApp = new ReactiveVar({});

@@ -2,7 +2,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../app/settings/client';
 
-export const fireGlobalEvent = (eventName: string, detail: unknown): void => {
+export const fireGlobalEvent = (eventName: string, detail?: unknown): void => {
 	window.dispatchEvent(new CustomEvent(eventName, { detail }));
 
 	Tracker.autorun((computation) => {
