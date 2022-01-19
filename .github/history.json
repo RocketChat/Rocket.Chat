@@ -68842,6 +68842,74 @@
           ]
         }
       ]
+    },
+    "4.3.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.2",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24068",
+          "title": "[FIX] Integration section crashing opening in My Account",
+          "userLogin": "dougfabris",
+          "milestone": "4.3.2",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24171",
+          "title": "Chore: Update Apps-Engine to 1.29.2",
+          "userLogin": "d-gubert",
+          "milestone": "4.3.2",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24158",
+          "title": "[FIX] App Framework Enable hanging indefinitely",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.3.2",
+          "contributors": [
+            "geekgonecrazy",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24090",
+          "title": "[FIX] CSV Importer failing to import users",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "- Update use of `setRealName` function to `_setRealName`.",
+          "milestone": "4.3.2",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24142",
+          "title": "[FIX][ENTERPRISE] Leading slashes in Engagement Dashboard API requests",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove trailing slashes from Engagement Dashboard API requests;",
+          "milestone": "4.3.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        }
+      ]
     }
   }
 }

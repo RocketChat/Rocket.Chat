@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
@@ -68,7 +68,7 @@ export class AppMethods {
 					});
 				}
 
-				settings.set('Apps_Framework_enabled', true);
+				Settings.updateValueById('Apps_Framework_enabled', true);
 
 				Promise.await(waitToLoad(instance._orch));
 			}),
@@ -86,7 +86,7 @@ export class AppMethods {
 					});
 				}
 
-				settings.set('Apps_Framework_enabled', false);
+				Settings.updateValueById('Apps_Framework_enabled', false);
 
 				Promise.await(waitToUnload(instance._orch));
 			}),

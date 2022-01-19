@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "4.3.1",
+	"version": "4.3.2",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -173,7 +173,7 @@
 		"@nivo/heatmap": "0.73.0",
 		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
-		"@rocket.chat/apps-engine": "^1.29.1",
+		"@rocket.chat/apps-engine": "^1.29.2",
 		"@rocket.chat/css-in-js": "^0.31.1",
 		"@rocket.chat/emitter": "^0.31.1",
 		"@rocket.chat/fuselage": "^0.31.1",
