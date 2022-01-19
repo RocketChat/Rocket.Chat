@@ -24,14 +24,17 @@ Meteor.methods({
 			return false;
 		}
 		dispatchToastMessage({ type: 'success', message: TAPi18n.__('Message_has_been_pinned') });
-		return ChatMessage.update({
-			_id: message._id,
-			rid: message.rid,
-		}, {
-			$set: {
-				pinned: true,
+		return ChatMessage.update(
+			{
+				_id: message._id,
+				rid: message.rid,
 			},
-		});
+			{
+				$set: {
+					pinned: true,
+				},
+			},
+		);
 	},
 	unpinMessage(message) {
 		if (!Meteor.userId()) {
@@ -51,13 +54,16 @@ Meteor.methods({
 			return false;
 		}
 		dispatchToastMessage({ type: 'success', message: TAPi18n.__('Message_has_been_unpinned') });
-		return ChatMessage.update({
-			_id: message._id,
-			rid: message.rid,
-		}, {
-			$set: {
-				pinned: false,
+		return ChatMessage.update(
+			{
+				_id: message._id,
+				rid: message.rid,
 			},
-		});
+			{
+				$set: {
+					pinned: false,
+				},
+			},
+		);
 	},
 });

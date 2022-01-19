@@ -20,7 +20,6 @@ Meteor.methods({
 	},
 });
 
-
 // Limit setting username once per minute
 // DDPRateLimiter.addRule
 //	type: 'method'

@@ -13,11 +13,7 @@ const CannedResponseEditWithData: FC<{
 	reload: () => void;
 	totalDataReload: () => void;
 }> = ({ cannedResponseId, reload, totalDataReload }) => {
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData(`canned-responses/${cannedResponseId}`);
+	const { value: data, phase: state, error } = useEndpointData(`canned-responses/${cannedResponseId}`);
 
 	const { cannedResponse } = data || {};
 
@@ -36,22 +32,10 @@ const CannedResponseEditWithData: FC<{
 	}
 
 	if (cannedResponse?.scope === 'department') {
-		return (
-			<CannedResponseEditWithDepartmentData
-				data={{ cannedResponse }}
-				reload={reload}
-				totalDataReload={totalDataReload}
-			/>
-		);
+		return <CannedResponseEditWithDepartmentData data={{ cannedResponse }} reload={reload} totalDataReload={totalDataReload} />;
 	}
 
-	return (
-		<CannedResponseEdit
-			data={{ cannedResponse }}
-			reload={reload}
-			totalDataReload={totalDataReload}
-		/>
-	);
+	return <CannedResponseEdit data={{ cannedResponse }} reload={reload} totalDataReload={totalDataReload} />;
 };
 
 export default CannedResponseEditWithData;

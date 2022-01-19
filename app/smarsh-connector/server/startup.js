@@ -5,7 +5,6 @@ import { settings } from '../../settings/server';
 
 const smarshJobName = 'Smarsh EML Connector';
 
-
 settings.watchMultiple(['Smarsh_Enabled', 'Smarsh_Email', 'From_Email', 'Smarsh_Interval'], function __addSmarshSyncedCronJobDebounced() {
 	if (SyncedCron.nextScheduledAtDate(smarshJobName)) {
 		SyncedCron.remove(smarshJobName);

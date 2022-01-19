@@ -44,11 +44,7 @@ const NewBusinessHoursPage = () => {
 
 	const handleSave = useMutableCallback(async () => {
 		const {
-			current: {
-				form,
-				multiple: { departments, ...multiple } = {},
-				timezone: { name: timezoneName } = {},
-			},
+			current: { form, multiple: { departments, ...multiple } = {}, timezone: { name: timezoneName } = {} },
 		} = saveData;
 
 		if (multiple.name === '') {
@@ -95,11 +91,7 @@ const NewBusinessHoursPage = () => {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<BusinessHoursFormContainer
-					data={defaultBusinessHour}
-					saveRef={saveData}
-					onChange={setHasChanges}
-				/>
+				<BusinessHoursFormContainer data={defaultBusinessHour} saveRef={saveData} onChange={setHasChanges} />
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);

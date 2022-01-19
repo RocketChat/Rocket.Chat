@@ -5,9 +5,11 @@ import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
 import CannedResponse from '../models/CannedResponse';
 import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
 
-
 export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> {
-	async createOrUpdateCannedResponse(_id: string, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt'>): Promise<IOmnichannelCannedResponse> {
+	async createOrUpdateCannedResponse(
+		_id: string,
+		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt'>,
+	): Promise<IOmnichannelCannedResponse> {
 		const record = {
 			shortcut,
 			text,

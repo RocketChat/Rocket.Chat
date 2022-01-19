@@ -11,11 +11,7 @@ import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {
-	const [period, periodSelectorProps] = usePeriodSelectorState(
-		'last 7 days',
-		'last 30 days',
-		'last 90 days',
-	);
+	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const t = useTranslation();
 
@@ -33,16 +29,14 @@ const ChannelsTab = (): ReactElement => {
 			return;
 		}
 
-		return data?.channels?.map(
-			({ room: { t, name, usernames, ts, _updatedAt }, messages, diffFromLastWeek }) => ({
-				t,
-				name: name || usernames?.join(' × '),
-				createdAt: ts,
-				updatedAt: _updatedAt,
-				messagesCount: messages,
-				messagesVariation: diffFromLastWeek,
-			}),
-		);
+		return data?.channels?.map(({ room: { t, name, usernames, ts, _updatedAt }, messages, diffFromLastWeek }) => ({
+			t,
+			name: name || usernames?.join(' × '),
+			createdAt: ts,
+			updatedAt: _updatedAt,
+			messagesCount: messages,
+			messagesVariation: diffFromLastWeek,
+		}));
 	}, [data]);
 
 	return (
@@ -85,26 +79,22 @@ const ChannelsTab = (): ReactElement => {
 							</Table.Row>
 						</Table.Head>
 						<Table.Body>
-							{channels?.map(
-								({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
-									<Table.Row key={i}>
-										<Table.Cell>{i + 1}.</Table.Cell>
-										<Table.Cell>
-											<Margins inlineEnd='x4'>
-												{(t === 'd' && <Icon name='at' />) ||
-													(t === 'c' && <Icon name='lock' />) ||
-													(t === 'p' && <Icon name='hashtag' />)}
-											</Margins>
-											{name}
-										</Table.Cell>
-										<Table.Cell>{moment(createdAt).format('L')}</Table.Cell>
-										<Table.Cell>{moment(updatedAt).format('L')}</Table.Cell>
-										<Table.Cell>
-											{messagesCount} <Growth>{messagesVariation}</Growth>
-										</Table.Cell>
-									</Table.Row>
-								),
-							)}
+							{channels?.map(({ t, name, createdAt, updatedAt, messagesCount, messagesVariation }, i) => (
+								<Table.Row key={i}>
+									<Table.Cell>{i + 1}.</Table.Cell>
+									<Table.Cell>
+										<Margins inlineEnd='x4'>
+											{(t === 'd' && <Icon name='at' />) || (t === 'c' && <Icon name='lock' />) || (t === 'p' && <Icon name='hashtag' />)}
+										</Margins>
+										{name}
+									</Table.Cell>
+									<Table.Cell>{moment(createdAt).format('L')}</Table.Cell>
+									<Table.Cell>{moment(updatedAt).format('L')}</Table.Cell>
+									<Table.Cell>
+										{messagesCount} <Growth>{messagesVariation}</Growth>
+									</Table.Cell>
+								</Table.Row>
+							))}
 							{!channels &&
 								Array.from({ length: 5 }, (_, i) => (
 									<Table.Row key={i}>

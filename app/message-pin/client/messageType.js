@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'message_pinned',
 		system: true,

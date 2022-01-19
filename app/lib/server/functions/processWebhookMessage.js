@@ -6,9 +6,12 @@ import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOption
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
+import {
+	getDirectMessageByIdWithOptionToJoin,
+	getDirectMessageByNameOrIdWithOptionToJoin,
+} from './getDirectMessageByNameOrIdWithOptionToJoin';
 
-export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -20,22 +23,37 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 
 		switch (channelType) {
 			case '#':
-				room = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
+				room = getRoomByNameOrIdWithOptionToJoin({
+					currentUserId: user._id,
+					nameOrId: channelValue,
+					joinChannel: true,
+				});
 				break;
 			case '@':
-				room = getDirectMessageByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue });
+				room = getDirectMessageByNameOrIdWithOptionToJoin({
+					currentUserId: user._id,
+					nameOrId: channelValue,
+				});
 				break;
 			default:
 				channelValue = channelType + channelValue;
 
 				// Try to find the room by id or name if they didn't include the prefix.
-				room = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
+				room = getRoomByNameOrIdWithOptionToJoin({
+					currentUserId: user._id,
+					nameOrId: channelValue,
+					joinChannel: true,
+					errorOnEmpty: false,
+				});
 				if (room) {
 					break;
 				}
 
 				// We didn't get a room, let's try finding direct messages
-				room = getDirectMessageByIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue });
+				room = getDirectMessageByIdWithOptionToJoin({
+					currentUserId: user._id,
+					nameOrId: channelValue,
+				});
 				if (room) {
 					break;
 				}
@@ -45,7 +63,10 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 		}
 
 		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
-			SystemLogger.warn({ msg: 'Attachments should be Array, ignoring value', attachments: messageObj.attachments });
+			SystemLogger.warn({
+				msg: 'Attachments should be Array, ignoring value',
+				attachments: messageObj.attachments,
+			});
 			messageObj.attachments = undefined;
 		}
 

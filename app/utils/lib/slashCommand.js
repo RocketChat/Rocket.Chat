@@ -4,7 +4,15 @@ export const slashCommands = {
 	commands: {},
 };
 
-slashCommands.add = function _addingSlashCommand(command, callback, options = {}, result, providesPreview = false, previewer, previewCallback) {
+slashCommands.add = function _addingSlashCommand(
+	command,
+	callback,
+	options = {},
+	result,
+	providesPreview = false,
+	previewer,
+	previewCallback,
+) {
 	slashCommands.commands[command] = {
 		command,
 		callback,

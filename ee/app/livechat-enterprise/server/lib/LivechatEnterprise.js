@@ -9,7 +9,7 @@ import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { logger } from './logger';
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
@@ -166,10 +166,10 @@ export const LivechatEnterprise = {
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {
-		logger.debug(`Attempting to place room ${ room._id } on hold by user ${ onHoldBy?._id }`);
+		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
-			logger.debug(`Room ${ roomId } invalid or already on hold. Skipping`);
+			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
@@ -180,7 +180,7 @@ export const LivechatEnterprise = {
 			callbacks.run('livechat:afterOnHold', room);
 		});
 
-		logger.debug(`Room ${ room._id } set on hold succesfully`);
+		logger.debug(`Room ${room._id} set on hold succesfully`);
 		return true;
 	},
 

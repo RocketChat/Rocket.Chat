@@ -15,19 +15,19 @@ const businessHours = {
 	Single: new SingleBusinessHourBehavior(),
 };
 
-settings.change('Livechat_max_queue_wait_time', function() {
+settings.change('Livechat_max_queue_wait_time', function () {
 	updateQueueInactivityTimeout();
 });
 
-Meteor.startup(async function() {
-	settings.change('Livechat_abandoned_rooms_action', function(value) {
+Meteor.startup(async function () {
+	settings.change('Livechat_abandoned_rooms_action', function (value) {
 		updatePredictedVisitorAbandonment();
 		if (!value || value === 'none') {
 			return visitorActivityMonitor.stop();
 		}
 		visitorActivityMonitor.start();
 	});
-	settings.change('Livechat_visitor_inactivity_timeout', function() {
+	settings.change('Livechat_visitor_inactivity_timeout', function () {
 		updatePredictedVisitorAbandonment();
 	});
 	settings.change<string>('Livechat_business_hour_type', (value) => {

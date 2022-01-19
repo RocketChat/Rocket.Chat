@@ -15,7 +15,10 @@ export class CannedResponse extends Base {
 		});
 	}
 
-	createOrUpdateCannedResponse(_id: string, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Partial<IOmnichannelCannedResponse>): IOmnichannelCannedResponse {
+	createOrUpdateCannedResponse(
+		_id: string,
+		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Partial<IOmnichannelCannedResponse>,
+	): IOmnichannelCannedResponse {
 		const record = {
 			shortcut,
 			text,

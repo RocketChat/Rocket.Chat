@@ -2,24 +2,25 @@ import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Messages, Users, Rooms } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { isTheLastMessage } from '../../../lib';
 
 Meteor.methods({
 	snippetMessage(message, filename) {
 		if (Meteor.userId() == null) {
 			// noinspection JSUnresolvedFunction
-			throw new Meteor.Error('error-invalid-user', 'Invalid user',
-				{ method: 'snippetMessage' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'snippetMessage' });
 		}
 
 		const room = Rooms.findOne({ _id: message.rid });
 
-		if ((typeof room === 'undefined') || (room === null)) {
+		if (typeof room === 'undefined' || room === null) {
 			return false;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), {
+			fields: { _id: 1 },
+		});
 		if (!subscription) {
 			return false;
 		}
@@ -41,14 +42,14 @@ Meteor.methods({
 		message = callbacks.run('beforeSaveMessage', message);
 
 		// Create the SnippetMessage
-		Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
-			message.snippeted, Date.now, filename);
+		Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy, message.snippeted, Date.now, filename);
 		if (isTheLastMessage(room, message)) {
-			Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy,
-				message.snippeted, Date.now, filename);
+			Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy, message.snippeted, Date.now, filename);
 		}
 
-		Messages.createWithTypeRoomIdMessageAndUser(
-			'message_snippeted', message.rid, '', me, {	snippetId: message._id, snippetName: filename });
+		Messages.createWithTypeRoomIdMessageAndUser('message_snippeted', message.rid, '', me, {
+			snippetId: message._id,
+			snippetName: filename,
+		});
 	},
 });

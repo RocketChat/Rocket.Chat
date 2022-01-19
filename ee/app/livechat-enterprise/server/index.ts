@@ -9,7 +9,6 @@ import { onLicense } from '../../license/server';
 import { createPermissions } from './permissions';
 import { createSettings } from './settings';
 
-
 onLicense('livechat-enterprise', () => {
 	require('../lib/messageTypes');
 	require('./methods/addMonitor');
@@ -45,14 +44,10 @@ onLicense('livechat-enterprise', () => {
 	require('./api');
 	require('./hooks');
 
-	Meteor.startup(function() {
+	Meteor.startup(function () {
 		createSettings();
 		createPermissions();
 	});
 });
 
-export {
-	LivechatUnit,
-	LivechatTag,
-	LivechatUnitMonitors,
-};
+export { LivechatUnit, LivechatTag, LivechatUnitMonitors };

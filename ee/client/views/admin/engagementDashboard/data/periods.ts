@@ -5,10 +5,7 @@ import { TranslationKey } from '../../../../../../client/contexts/TranslationCon
 const label = (
 	translationKey: TranslationKey,
 	...replacements: unknown[]
-): readonly [translationKey: TranslationKey, ...replacements: unknown[]] => [
-	translationKey,
-	...replacements,
-];
+): readonly [translationKey: TranslationKey, ...replacements: unknown[]] => [translationKey, ...replacements];
 
 const lastNDays =
 	(
@@ -24,9 +21,7 @@ const lastNDays =
 					.startOf('day')
 					.subtract(n + 1, 'days')
 					.toDate(),
-		end: utc
-			? moment.utc().endOf('day').subtract(1, 'days').toDate()
-			: moment().endOf('day').toDate(),
+		end: utc ? moment.utc().endOf('day').subtract(1, 'days').toDate() : moment().endOf('day').toDate(),
 	});
 
 export const periods = [

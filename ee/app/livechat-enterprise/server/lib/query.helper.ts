@@ -16,16 +16,15 @@ export const addQueryRestrictionsToRoomsModel = (originalQuery: FilterQuery<IRoo
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [
-			{ departmentAncestors: { $in: units } },
-			{ departmentId: { $in: units } },
-		],
+		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: units } }],
 	};
 	query.$and = [condition, ...expressions];
 	return query;
 };
 
-export const addQueryRestrictionsToDepartmentsModel = (originalQuery: FilterQuery<ILivechatDepartment> = {}): FilterQuery<ILivechatDepartment> => {
+export const addQueryRestrictionsToDepartmentsModel = (
+	originalQuery: FilterQuery<ILivechatDepartment> = {},
+): FilterQuery<ILivechatDepartment> => {
 	const query = { ...originalQuery, type: { $ne: 'u' } };
 
 	const units = getUnitsFromUser();

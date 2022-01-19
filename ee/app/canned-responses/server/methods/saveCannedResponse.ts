@@ -16,7 +16,7 @@ type CannedResponseDTO = {
 	userId: string;
 	_createdAt: Date;
 	departmentId?: string;
-}
+};
 
 Meteor.methods({
 	async saveCannedResponse(_id: string, responseData: CannedResponseDTO) {
@@ -37,12 +37,16 @@ Meteor.methods({
 
 		const canSaveAll = hasPermission(userId, 'save-all-canned-responses');
 		if (!canSaveAll && ['global'].includes(responseData.scope)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', { method: 'saveCannedResponse' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', {
+				method: 'saveCannedResponse',
+			});
 		}
 
 		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
 		if (!canSaveAll && !canSaveDepartment && ['department'].includes(responseData.scope)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', { method: 'saveCannedResponse' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', {
+				method: 'saveCannedResponse',
+			});
 		}
 
 		// to avoid inconsistencies

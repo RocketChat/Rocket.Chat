@@ -47,8 +47,8 @@ const CustomEmojiRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<Page.Header title={t('Custom_Emoji')}>
-					<Button small onClick={handleAddEmoji} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>
@@ -62,9 +62,7 @@ const CustomEmojiRoute = (): ReactElement => {
 						{context === 'new' && t('Custom_Emoji_Add')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'edit' && id && (
-						<EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />
-					)}
+					{context === 'edit' && id && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
 				</VerticalBar>
 			)}

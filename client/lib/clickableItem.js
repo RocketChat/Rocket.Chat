@@ -16,9 +16,7 @@ const clickable = css`
 export function clickableItem(Component) {
 	const WrappedComponent = (props) => <Component className={clickable} tabIndex={0} {...props} />;
 
-	WrappedComponent.displayName = `clickableItem(${
-		Component.displayName ?? Component.name ?? 'Component'
-	})`;
+	WrappedComponent.displayName = `clickableItem(${Component.displayName ?? Component.name ?? 'Component'})`;
 
 	return WrappedComponent;
 }

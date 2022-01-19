@@ -7,11 +7,14 @@ import { ILivechatPriority } from '../../../../../definition/ILIvechatPriority';
 export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> {
 	findOneByIdOrName(_idOrName: string, options: FindOneOptions<ILivechatPriority>): Promise<ILivechatPriority | null> {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);

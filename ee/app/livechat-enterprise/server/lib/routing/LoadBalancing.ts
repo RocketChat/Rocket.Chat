@@ -4,10 +4,10 @@ import { IRoutingManagerConfig } from '../../../../../../definition/IRoutingMana
 import { IOmnichannelCustomAgent } from '../../../../../../definition/IOmnichannelCustomAgent';
 
 /* Load Balancing Queuing method:
-	*
-	* default method where the agent with the least number
-	* of open chats is paired with the incoming livechat
-*/
+ *
+ * default method where the agent with the least number
+ * of open chats is paired with the incoming livechat
+ */
 class LoadBalancing {
 	private _config: IRoutingManagerConfig;
 

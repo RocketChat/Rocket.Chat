@@ -8,7 +8,7 @@ import { IAnalyticsSeatRequest } from '../../../definition/IAnalytic';
 export class AnalyticsService extends ServiceClass implements IAnalyticsService {
 	protected name = 'analytics';
 
-	private Analytics: AnalyticsRaw
+	private Analytics: AnalyticsRaw;
 
 	constructor(db: Db) {
 		super();

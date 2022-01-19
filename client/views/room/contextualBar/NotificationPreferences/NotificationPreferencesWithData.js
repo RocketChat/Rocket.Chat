@@ -16,26 +16,16 @@ const NotificationPreferencesWithData = ({ rid }) => {
 
 	const customSound = useCustomSound();
 	const handleClose = useTabBarClose();
-	const saveSettings = useEndpointActionExperimental(
-		'POST',
-		'rooms.saveNotification',
-		t('Room_updated_successfully'),
-	);
+	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		turnOn: !subscription?.disableNotifications,
 		muteGroupMentions: subscription?.muteGroupMentions,
 		showCounter: !subscription?.hideUnreadStatus,
-		desktopAlert:
-			(subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
-			'default',
+		desktopAlert: (subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) || 'default',
 		desktopSound: subscription?.audioNotificationValue || 'default',
-		mobileAlert:
-			(subscription?.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
-			'default',
-		emailAlert:
-			(subscription?.emailPrefOrigin === 'subscription' && subscription.emailNotifications) ||
-			'default',
+		mobileAlert: (subscription?.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) || 'default',
+		emailAlert: (subscription?.emailPrefOrigin === 'subscription' && subscription.emailNotifications) || 'default',
 	});
 
 	const defaultOption = [
@@ -45,10 +35,7 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		['nothing', t('Nothing')],
 	];
 
-	const customSoundAsset = Object.entries(customSound.list.get()).map((value) => [
-		value[0],
-		value[1].name,
-	]);
+	const customSoundAsset = Object.entries(customSound.list.get()).map((value) => [value[0], value[1].name]);
 
 	const handleOptions = {
 		alerts: defaultOption,

@@ -8,11 +8,15 @@ Meteor.methods({
 	removeSlackBridgeChannelLinks() {
 		const user = Meteor.user();
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'removeSlackBridgeChannelLinks' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'removeSlackBridgeChannelLinks',
+			});
 		}
 
 		if (!hasRole(user._id, 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'removeSlackBridgeChannelLinks' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'removeSlackBridgeChannelLinks',
+			});
 		}
 
 		if (settings.get('SlackBridge_Enabled') !== true) {

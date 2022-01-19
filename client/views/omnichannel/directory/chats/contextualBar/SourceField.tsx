@@ -1,5 +1,5 @@
 import { Icon, Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ComponentProps, FC } from 'react';
 
 import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -51,7 +51,10 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		other: t('External'),
 	};
 
-	const sourceIcon = useRoomIcon(room) as { name: string; color?: string | undefined };
+	const sourceIcon = useRoomIcon(room) as {
+		name: ComponentProps<typeof Icon>['name'];
+		color?: string | undefined;
+	};
 
 	const sourceName = sourceIcon?.name || '';
 
