@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
+import { ObjectId } from 'mongodb';
 
 import { ImportData as ImportDataRaw } from '../../../models/server/raw';
 import { IImportUser } from '../../../../definition/IImportUser';
@@ -120,6 +121,7 @@ export class ImportDataConverter {
 
 	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
+			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
 			...options,
@@ -307,54 +309,54 @@ export class ImportDataConverter {
 
 	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const users = Promise.await(this.getUsersToImport());
-		users.forEach(({ data, _id }) => {
+		users.forEach(({ data: u, _id }) => {
 			try {
-				if (beforeImportFn && !beforeImportFn(data, 'user')) {
+				if (beforeImportFn && !beforeImportFn(u, 'user')) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				data.emails = data.emails.filter((item) => item);
-				data.importIds = data.importIds.filter((item) => item);
+				u.emails = u.emails.filter((item) => item);
+				u.importIds = u.importIds.filter((item) => item);
 
-				if (!data.emails.length && !data.username) {
+				if (!u.emails.length && !u.username) {
 					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				let existingUser = this.findExistingUser(data);
+				let existingUser = this.findExistingUser(u);
 				if (existingUser && this._options.skipExistingUsers) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				if (!data.username) {
-					data.username = generateUsernameSuggestion({
-						name: data.name,
-						emails: data.emails,
+				if (!u.username) {
+					u.username = generateUsernameSuggestion({
+						name: u.name,
+						emails: u.emails,
 					});
 				}
 
 				const isNewUser = !existingUser;
 
 				if (existingUser) {
-					this.updateUser(existingUser, data);
+					this.updateUser(existingUser, u);
 				} else {
-					if (!data.name && data.username) {
-						data.name = guessNameFromUsername(data.username);
+					if (!u.name && u.username) {
+						u.name = guessNameFromUsername(u.username);
 					}
 
-					existingUser = this.insertUser(data);
+					existingUser = this.insertUser(u);
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
-				if (data.deleted && existingUser?.active) {
-					setUserActiveStatus(data._id, false, true);
-				} else if (data.deleted === false && existingUser?.active === false) {
-					setUserActiveStatus(data._id, true);
+				if (u.deleted && existingUser?.active) {
+					setUserActiveStatus(u._id, false, true);
+				} else if (u.deleted === false && existingUser?.active === false) {
+					setUserActiveStatus(u._id, true);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'user', isNewUser);
+					afterImportFn(u, 'user', isNewUser);
 				}
 			} catch (e) {
 				this._logger.error(e);
