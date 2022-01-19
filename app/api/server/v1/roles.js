@@ -141,6 +141,10 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			mandatory2fa: Match.Maybe(Boolean),
 		});
 
+		if (!hasPermission(this.userId, 'access-permissions')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+		}
+
 		const roleData = {
 			roleId: this.bodyParams.roleId,
 			name: this.bodyParams.name,
