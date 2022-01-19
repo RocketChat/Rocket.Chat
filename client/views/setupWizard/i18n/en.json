@@ -5,7 +5,9 @@
       "action": {
         "back": "Back",
         "next": "Next",
-        "skip": "Skip this step"
+        "skip": "Skip this step",
+        "register": "Register",
+        "confirm": "Confirm"
       },
       "requiredField": "This field is required",
       "termsAndConditions": "I agree with <1>Terms and Conditions</1> and <3>Privacy Policy</3>"
@@ -117,87 +119,29 @@
         }
       }
     },
-    "accountEmailForm": {
-      "description": "To register your server, we need to connect it to your cloud account. If you already have one - we can link it automatically for you. Otherwise, a new account will be created.",
-      "inputLabel": "Cloud account email",
-      "inputPlaceholder": "Please enter your Email"
-    },
-    "serverRegistrationForm": {
+    "registeredServerForm": {
       "title": "Register Your Server",
-      "register": {
-        "title": "Register server",
-        "subtitle": "What is included",
-        "description": "Preconfigured gateways and proxies provided by Rocket.Chat Technologies Corp.",
-        "included": {
-          "push": "Mobile push notification gateway",
-          "livechat": "Livechat omnichannel proxy",
-          "oAuth": "OAuth proxy for social network",
-          "apps": "Apps Marketplace"
-        },
-        "includeUpdates": "Include product and security updates"
+      "included": {
+        "push": "Mobile push notifications",
+        "externalProviders": "Integration with external providers (WhatsApp, Facebook, Telegram, Twitter)",
+        "apps": "Access to marketplace apps"
       },
-      "standalone": {
-        "title": "Standalone server",
-        "description": "You will have to set up the environment by yourself:",
-        "actionList": {
-          "accounts": "create accounts with service providers",
-          "settings": "update preconfigured settings",
-          "mobile": "and recompile mobile apps with your certificates"
-        }
-      }
-    },
-    "createCloudWorkspace": {
-      "title": "Create Cloud Workspace",
       "fields": {
-        "orgName": "Organization name",
-        "orgEmail": {
-          "label": "Organization email",
-          "placeholder": "Email",
-          "invalid": "Invalid email"
-        },
-        "workspaceName": {
-          "label": "Workspace name",
-          "tooltip": "How should be a good Workspace name"
-        },
-        "workspaceUrl": {
-          "label": "Workspace URL",
-          "placeholder": "workspaceurl",
-          "tooltip": "URL of your Workspace",
-          "exists": "Workspace already exists"
-        },
-        "serverRegion": {
-          "label": "Server region",
-          "tooltip": "Where is your server located"
-        },
-        "keepMePosted": "Keep me posted about Rocket.Chat updates"
-      }
-    },
-    "requestTrialForm": {
-      "fields": {
-        "emailAddress": {
-          "label": "Email address",
-          "placeholder": "Enter email address"
-        },
-        "organizationName": {
-          "label": "Organization name",
-          "placeholder": "Organization name"
-        },
-        "organizationSize": {
-          "label": "Organization size",
-          "placeholder": "Select"
-        },
-        "country": {
-          "label": "Country",
-          "placeholder": "Select"
+        "accountEmail": {
+          "inputLabel": "Cloud account email",
+          "tooltipLabel": "To register your server, we need to connect it to your cloud account. If you already have one - we wll link it automatically. Otherwise, a new account will be created",
+          "inputPlaceholder": "Please enter your Email"
         }
       },
-      "button": {
-        "text": "Request Trial"
-      },
-      "hasWorkspace": {
-        "label": "Already registered a workspace?",
-        "description": "Use the same email address to continue"
-      }
+      "keepInformed": "Keep me informed about news and events",
+      "continueStandalone": "Continue as standalone",
+      "agreeToReceiveUpdates": "By registering I agree to receive relevant product and security updates"
+    },
+    "standaloneServerForm": {
+      "title": "Standalone Server Confirmation",
+      "servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
+      "publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
+      "manuallyIntegrate": "Need to manually integrate with external services"
     }
   }
 }
