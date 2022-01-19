@@ -1,21 +1,7 @@
 import type { AdminInfoPage, OrganizationInfoPage, RegisteredServerPage } from '@rocket.chat/onboarding-ui';
 import { ComponentProps, createContext, useContext, Dispatch, SetStateAction } from 'react';
 
-// type WizardSettingValues = {
-// 	values: Array<{
-// 		i18nLabel: any;
-// 		key: string;
-// 	}>;
-// } & ISetting;
-
-// type WizardSettings =
-// 	| [
-// 			{ _id: 'Country' } & WizardSettingValues,
-// 			{ _id: 'Organization_Type' } & WizardSettingValues,
-// 			{ _id: 'Industry' } & WizardSettingValues,
-// 			{ _id: 'Size' } & WizardSettingValues,
-// 	  ]
-// 	| [];
+import { ISetting } from '../../../../definition/ISetting';
 
 type SetupWizardData = {
 	adminData: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>;
@@ -35,11 +21,7 @@ type SetupWizarContextValue = {
 	setupWizardData: SetupWizardData;
 	setSetupWizardData: Dispatch<SetStateAction<SetupWizardData>>;
 	loaded: boolean;
-	// TODO FIX THIS TYPE
-	// TODO FIX THIS TYPE
-	// TODO FIX THIS TYPE
-	// TODO FIX THIS TYPE
-	settings: Array<string>;
+	settings: Array<ISetting>;
 	currentStep: number;
 	validateEmail: (email: string) => string | true;
 	canDeclineServerRegistration: boolean;

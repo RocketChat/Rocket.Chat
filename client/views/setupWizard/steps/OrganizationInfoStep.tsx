@@ -1,8 +1,27 @@
 import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import React, { ComponentProps, ReactElement } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { ISetting } from '../../../../definition/ISetting';
+import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
+
+const getSettingOptions = (
+	settings: Array<ISetting> | undefined,
+	settingId: ISetting['_id'],
+	t: ReturnType<typeof useTranslation>,
+): Array<[key: string, text: string]> => {
+	if (!settings) {
+		return [];
+	}
+
+	const setting = settings.find(({ _id }) => _id === settingId);
+
+	if (!setting || !setting.values) {
+		return [];
+	}
+
+	return setting.values.map(({ i18nLabel, key }) => [String(key), t(i18nLabel as TranslationKey)]);
+};
 
 const OrganizationInfoStep = (): ReactElement => {
 	const t = useTranslation();
@@ -16,17 +35,10 @@ const OrganizationInfoStep = (): ReactElement => {
 		currentStep,
 	} = useSetupWizardContext();
 
-	const countryOptions = settings?.find(({ _id }) => _id === 'Country').values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
-
-	const organizationTypeOptions = settings
-		.find(({ _id }) => _id === 'Organization_Type')
-		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
-
-	const organizationIndustryOptions = settings
-		.find(({ _id }) => _id === 'Industry')
-		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
-
-	const organizationSizeOptions = settings.find(({ _id }) => _id === 'Size').values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
+	const countryOptions = getSettingOptions(settings, 'Country', t);
+	const organizationTypeOptions = getSettingOptions(settings, 'Organization_Type', t);
+	const organizationIndustryOptions = getSettingOptions(settings, 'Industry', t);
+	const organizationSizeOptions = getSettingOptions(settings, 'Size', t);
 
 	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));

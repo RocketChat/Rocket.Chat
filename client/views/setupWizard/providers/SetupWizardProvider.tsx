@@ -37,7 +37,7 @@ const emailRegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i;
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
-	const [setupWizardData, setSetupWizardData] = useState(initialData);
+	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { loaded, settings, canDeclineServerRegistration } = useParameters();
 

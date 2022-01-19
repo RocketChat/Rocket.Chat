@@ -23,7 +23,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 				deviceCode: registrationData.device_code,
 			});
 
-			if (pollData?.successful) {
+			if ('successful' in pollData && pollData.successful) {
 				await saveWorkspaceData();
 				return setShowSetupWizard('completed');
 			}

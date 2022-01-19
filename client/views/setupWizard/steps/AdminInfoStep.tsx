@@ -49,6 +49,11 @@ const AdminInfoStep = (): ReactElement => {
 
 	return (
 		<AdminInfoPage
+			// TODO find out if we need to implement this on iteration ONE
+			// TODO find out if we need to implement this on iteration ONE
+			// TODO find out if we need to implement this on iteration ONE
+			validatePassword={(pw): boolean => pw.length > 0}
+			passwordRulesHint={''}
 			validateUsername={validateUsername}
 			validateEmail={validateEmail}
 			currentStep={currentStep}

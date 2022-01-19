@@ -2,8 +2,9 @@ import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { CloudConfirmationPollData } from '../../../../definition/ICloud';
 
-export async function getConfirmationPoll(deviceCode: string): Promise<void | boolean> {
+export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
 	const cloudUrl = settings.get('Cloud_Url');
 
 	let result;
@@ -16,13 +17,13 @@ export async function getConfirmationPoll(deviceCode: string): Promise<void | bo
 			SystemLogger.error(e);
 		}
 
-		return false;
+		throw e;
 	}
 
 	const { data } = result;
 
 	if (!data) {
-		return false;
+		throw new Error('Failed to retrieve registration confirmation poll data');
 	}
 
 	return data;

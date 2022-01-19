@@ -4,7 +4,7 @@ import { API } from '../api';
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
-import { startRegisterWorkspace } from '../../../cloud/server/functions/startRegisterWorkspace';
+import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 
 API.v1.addRoute(
@@ -49,7 +49,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const intentData = await startRegisterWorkspace(this.bodyParams.resend, this.bodyParams.email);
+			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
 
 			if (intentData) {
 				return API.v1.success({ intentData });
@@ -80,7 +80,9 @@ API.v1.addRoute(
 
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
-				Promise.await(saveRegistrationData(pollData.payload));
+				if ('successful' in pollData && pollData.successful) {
+					Promise.await(saveRegistrationData(pollData.payload));
+				}
 				return API.v1.success({ pollData });
 			}
 
