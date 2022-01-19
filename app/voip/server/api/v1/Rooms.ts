@@ -46,7 +46,7 @@ API.v1.addRoute('voip/room', {
 				},
 			};
 			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo);
-			return API.v1.success({ room: room.result });
+			return API.v1.success({ room });
 		}
 		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
 		if (!room) {
@@ -69,17 +69,17 @@ API.v1.addRoute('voip/room.close', {
 				throw new Meteor.Error('invalid-token');
 			}
 			const roomResult = await LivechatVoip.findRoom(token, rid);
-			if (!roomResult.result) {
+			if (!roomResult) {
 				throw new Meteor.Error('invalid-room');
 			}
-			const room: IVoipRoom = roomResult.result as IVoipRoom;
+			const room: IVoipRoom = roomResult;
 			if (!room.open) {
 				throw new Meteor.Error('room-closed');
 			}
 			const language = 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 			const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
-			if (!closeResult.result) {
+			if (!closeResult) {
 				return API.v1.failure();
 			}
 			return API.v1.success({ rid, comment });

@@ -1,13 +1,13 @@
-import { IOmnichannelVoipServiceResult } from '../../../definition/IOmnichannelVoipServiceResult';
+import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
 import { IVoipRoom } from '../../../definition/IRoom';
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
-	getFreeExtensions(): Promise<IOmnichannelVoipServiceResult>;
-	getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult>;
+	getFreeExtensions(): Promise<string[]>;
+	getExtensionAllocationDetails(): Promise<IAgentExtensionMap[]>;
 	findAgent(agentId: string): Promise<any>;
-	getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IOmnichannelVoipServiceResult>;
-	findRoom(token: string, rid: string): Promise<IOmnichannelVoipServiceResult>;
-	closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, options: any): Promise<IOmnichannelVoipServiceResult>;
+	getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IRoomCreationResponse>;
+	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
+	closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, options: any): Promise<boolean>;
 }

@@ -9,7 +9,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IVoipExtensionBase } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
-import { IOmnichannelVoipServiceResult } from '../../../definition/IOmnichannelVoipServiceResult';
+import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
@@ -51,7 +51,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return Object.assign(extraData);
 	}
 
-	private async createVoipRoom(rid: string, name: string, agent: any, guest: ILivechatVisitor): Promise<any> {
+	private async createVoipRoom(rid: string, name: string, agent: any, guest: ILivechatVisitor): Promise<string> {
 		check(rid, String);
 		check(name, String);
 		check(
@@ -125,7 +125,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return {};
 	}
 
-	async getFreeExtensions(): Promise<IOmnichannelVoipServiceResult> {
+	async getFreeExtensions(): Promise<string[]> {
 		const allExtensions = await Voip.getExtensionList();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
@@ -135,25 +135,21 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			_.pluck(allocatedExtensions, 'extension'),
 		) as string[];
 		this.logger.debug({ msg: 'getAvailableExtensions()', found: filtered.length });
-		return {
-			result: filtered,
-		};
+		return filtered;
 	}
 
-	async getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult> {
+	async getExtensionAllocationDetails(): Promise<IAgentExtensionMap[]> {
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			username: 1,
 			roles: 1,
 			extension: 1,
 		});
 		this.logger.debug({ msg: 'getExtensionAllocationDetails() all extension length ', length: allocatedExtensions.length });
-		return {
-			result: allocatedExtensions.map((user: any) => ({
-				_id: user._id,
-				agentName: user.username,
-				extension: user.extension,
-			})),
-		};
+		return allocatedExtensions.map((user: any) => ({
+			_id: user._id,
+			agentName: user.username,
+			extension: user.extension,
+		}));
 	}
 
 	/* Voip calls */
@@ -161,7 +157,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return this.normalizeAgent(agentId);
 	}
 
-	async getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IOmnichannelVoipServiceResult> {
+	async getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const message = {
 			_id: Random.id(),
@@ -193,14 +189,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			throw new Meteor.Error('cannot-access-room');
 		}
 		return {
-			result: {
-				room,
-				newRoom,
-			},
+			room,
+			newRoom,
 		};
 	}
 
-	async findRoom(token: string, rid: string): Promise<IOmnichannelVoipServiceResult> {
+	async findRoom(token: string, rid: string): Promise<IVoipRoom | null> {
 		const fields = {
 			t: 1,
 			departmentId: 1,
@@ -209,18 +203,13 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			v: 1,
 			ts: 1,
 		};
-		let room: IVoipRoom | null;
 		if (!rid) {
-			room = await this.voipRoom.findOneByVisitorToken(token, fields);
-		} else {
-			room = await this.voipRoom.findOneByIdAndVisitorToken(rid, token, fields);
+			return this.voipRoom.findOneByVisitorToken(token, fields);
 		}
-		return Promise.resolve({
-			result: room,
-		});
+		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, fields);
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, /* comment: any,*/ options = {}): Promise<any> {
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, /* comment: any,*/ options = {}): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -287,9 +276,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		});
 		callbacks.runAsync('livechat.closeRoom', room);
 		*/
-		return Promise.resolve({
-			result: true,
-		});
+		return true;
 	}
 
 	/*

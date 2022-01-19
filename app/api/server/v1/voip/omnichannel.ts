@@ -114,14 +114,14 @@ API.v1.addRoute(
 					if (!extension) {
 						return API.v1.failure('Error in finding free extensons');
 					}
-					return API.v1.success({ extensions: extension.result });
+					return API.v1.success({ extensions: extension });
 				}
 				case 'allocated': {
 					const association = await LivechatVoip.getExtensionAllocationDetails();
 					if (!association) {
 						return API.v1.failure('Error in allocated extensions');
 					}
-					return API.v1.success({ allocations: association.result });
+					return API.v1.success({ allocations: association });
 				}
 				case 'available': {
 					const user = await Users.findOneByAgentUsername(username, {
@@ -138,7 +138,7 @@ API.v1.addRoute(
 						},
 					});
 					const freeExt = await LivechatVoip.getFreeExtensions();
-					const extensions = [extension.extension, ...(freeExt.result as string[])];
+					const extensions = [extension.extension, ...freeExt];
 					return API.v1.success({ available: extensions });
 				}
 				default:

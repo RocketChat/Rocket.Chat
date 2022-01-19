@@ -19,13 +19,13 @@ API.v1.addRoute(
 			const { rid, event, comment } = this.requestParams();
 
 			const room = await VoipRoom.findOneVoipRoomById(rid);
-			if (room) {
-				if (!canAccessRoom(room, this.user)) {
-					return API.v1.unauthorized();
-				}
-				return Voip.handleEvent(event, room, this.user, comment);
+			if (!room) {
+				return API.v1.notFound();
 			}
-			return API.v1.notFound();
+			if (!canAccessRoom(room, this.user)) {
+				return API.v1.unauthorized();
+			}
+			return Voip.handleEvent(event, room, this.user, comment);
 		},
 	},
 );
