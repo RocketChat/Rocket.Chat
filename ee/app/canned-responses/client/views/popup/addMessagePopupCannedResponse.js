@@ -4,9 +4,8 @@ import { Tracker } from 'meteor/tracker';
 import { CannedResponse } from '../../collections/CannedResponse';
 import { addMessagePopup, removeMessagePopup } from '../../../../../../app/ui-message/client/popup/customMessagePopups';
 import { t } from '../../../../../../app/utils';
-import { settings } from '../../../../../../app/settings';
+import { settings } from '../../../../../../app/settings/client';
 
-// const added = new ReactiveVar(false);
 Tracker.autorun(() => {
 	const templateFunc = (template) => ({
 		title: t('Canned_Responses'),
