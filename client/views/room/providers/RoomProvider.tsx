@@ -61,4 +61,5 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		</RoomContext.Provider>
 	);
 };
+
 export default memo(RoomProvider);

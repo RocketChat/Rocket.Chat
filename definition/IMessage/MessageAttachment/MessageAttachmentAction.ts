@@ -19,6 +19,4 @@ export type MessageAttachmentAction = {
 	actions: Array<Action>;
 } & MessageAttachmentBase;
 
-export const isActionAttachment = (
-	attachment: MessageAttachmentBase,
-): attachment is MessageAttachmentAction => 'actions' in attachment;
+export const isActionAttachment = (attachment: MessageAttachmentBase): attachment is MessageAttachmentAction => 'actions' in attachment;

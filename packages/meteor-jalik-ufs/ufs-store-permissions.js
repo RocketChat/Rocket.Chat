@@ -31,11 +31,14 @@ import { _ } from 'meteor/underscore';
 export class StorePermissions {
 	constructor(options) {
 		// Default options
-		options = _.extend({
-			insert: null,
-			remove: null,
-			update: null,
-		}, options);
+		options = _.extend(
+			{
+				insert: null,
+				remove: null,
+				update: null,
+			},
+			options,
+		);
 
 		// Check options
 		if (options.insert && typeof options.insert !== 'function') {
@@ -57,14 +60,14 @@ export class StorePermissions {
 	}
 
 	/**
-   * Checks the permission for the action
-   * @param action
-   * @param userId
-   * @param file
-   * @param fields
-   * @param modifiers
-   * @return {*}
-   */
+	 * Checks the permission for the action
+	 * @param action
+	 * @param userId
+	 * @param file
+	 * @param fields
+	 * @param modifiers
+	 * @return {*}
+	 */
 	check(action, userId, file, fields, modifiers) {
 		if (typeof this.actions[action] === 'function') {
 			return this.actions[action](userId, file, fields, modifiers);
@@ -73,33 +76,33 @@ export class StorePermissions {
 	}
 
 	/**
-   * Checks the insert permission
-   * @param userId
-   * @param file
-   * @returns {*}
-   */
+	 * Checks the insert permission
+	 * @param userId
+	 * @param file
+	 * @returns {*}
+	 */
 	checkInsert(userId, file) {
 		return this.check('insert', userId, file);
 	}
 
 	/**
-   * Checks the remove permission
-   * @param userId
-   * @param file
-   * @returns {*}
-   */
+	 * Checks the remove permission
+	 * @param userId
+	 * @param file
+	 * @returns {*}
+	 */
 	checkRemove(userId, file) {
 		return this.check('remove', userId, file);
 	}
 
 	/**
-   * Checks the update permission
-   * @param userId
-   * @param file
-   * @param fields
-   * @param modifiers
-   * @returns {*}
-   */
+	 * Checks the update permission
+	 * @param userId
+	 * @param file
+	 * @param fields
+	 * @param modifiers
+	 * @returns {*}
+	 */
 	checkUpdate(userId, file, fields, modifiers) {
 		return this.check('update', userId, file, fields, modifiers);
 	}

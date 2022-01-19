@@ -16,7 +16,7 @@ function _bugsnagDebug(message: any, stack: any, ...args: any): void {
 		});
 	} else {
 		if (typeof stack === 'string') {
-			message += ` ${ stack }`;
+			message += ` ${stack}`;
 		}
 
 		const error = new Error(message);

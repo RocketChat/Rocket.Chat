@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { LivechatAgentActivity, Users } from '../../../models/server';
 import { Sessions } from '../../../models/server/raw';
 
@@ -69,8 +69,15 @@ export class LivechatAgentActivityMonitor {
 			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
 			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
 			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: { startedAt: session.lastStartedAt, stoppedAt },
+			});
 			this._createOrUpdateSession(session.agentId, startedAt);
 		}
 	}
@@ -141,8 +148,15 @@ export class LivechatAgentActivityMonitor {
 		if (livechatSession) {
 			const stoppedAt = new Date();
 			const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
-			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
-			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt } });
+			LivechatAgentActivity.updateLastStoppedAt({
+				...data,
+				availableTime,
+				lastStoppedAt: stoppedAt,
+			});
+			LivechatAgentActivity.updateServiceHistory({
+				...data,
+				serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt },
+			});
 		}
 	}
 }

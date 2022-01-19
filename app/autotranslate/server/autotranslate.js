@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
@@ -40,7 +40,9 @@ export class TranslationProviderRegistry {
 	}
 
 	static getSupportedLanguages(...args) {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args) : undefined;
+		return TranslationProviderRegistry.enabled
+			? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args)
+			: undefined;
 	}
 
 	static translateMessage(...args) {
@@ -118,8 +120,8 @@ export class AutoTranslate {
 
 	tokenizeEmojis(message) {
 		let count = message.tokens.length;
-		message.msg = message.msg.replace(/:[+\w\d]+:/g, function(match) {
-			const token = `<i class=notranslate>{${ count++ }}</i>`;
+		message.msg = message.msg.replace(/:[+\w\d]+:/g, function (match) {
+			const token = `<i class=notranslate>{${count++}}</i>`;
 			message.tokens.push({
 				token,
 				text: match,
@@ -136,38 +138,44 @@ export class AutoTranslate {
 		const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
-		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: pretoken,
-				text: pre,
-			});
+		message.msg = message.msg.replace(
+			new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'),
+			function (match, pre, text, post) {
+				const pretoken = `<i class=notranslate>{${count++}}</i>`;
+				message.tokens.push({
+					token: pretoken,
+					text: pre,
+				});
 
-			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: posttoken,
-				text: post,
-			});
+				const posttoken = `<i class=notranslate>{${count++}}</i>`;
+				message.tokens.push({
+					token: posttoken,
+					text: post,
+				});
 
-			return pretoken + text + posttoken;
-		});
+				return pretoken + text + posttoken;
+			},
+		);
 
 		// Support <http://link|Text>
-		message.msg = message.msg.replace(new RegExp(`((?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'), function(match, pre, text, post) {
-			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: pretoken,
-				text: pre,
-			});
+		message.msg = message.msg.replace(
+			new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'),
+			function (match, pre, text, post) {
+				const pretoken = `<i class=notranslate>{${count++}}</i>`;
+				message.tokens.push({
+					token: pretoken,
+					text: pre,
+				});
 
-			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
-			message.tokens.push({
-				token: posttoken,
-				text: post,
-			});
+				const posttoken = `<i class=notranslate>{${count++}}</i>`;
+				message.tokens.push({
+					token: posttoken,
+					text: post,
+				});
 
-			return pretoken + text + posttoken;
-		});
+				return pretoken + text + posttoken;
+			},
+		);
 
 		return message;
 	}
@@ -185,7 +193,7 @@ export class AutoTranslate {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
 				const { token } = message.tokens[tokenIndex];
 				if (token.indexOf('notranslate') === -1) {
-					const newToken = `<i class=notranslate>{${ count++ }}</i>`;
+					const newToken = `<i class=notranslate>{${count++}}</i>`;
 					message.msg = message.msg.replace(token, newToken);
 					message.tokens[tokenIndex].token = newToken;
 				}
@@ -200,8 +208,8 @@ export class AutoTranslate {
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach((mention) => {
-				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), (match) => {
-					const token = `<i class=notranslate>{${ count++ }}</i>`;
+				message.msg = message.msg.replace(new RegExp(`(@${mention.username})`, 'gm'), (match) => {
+					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens.push({
 						token,
 						text: match,
@@ -213,8 +221,8 @@ export class AutoTranslate {
 
 		if (message.channels && message.channels.length > 0) {
 			message.channels.forEach((channel) => {
-				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), (match) => {
-					const token = `<i class=notranslate>{${ count++ }}</i>`;
+				message.msg = message.msg.replace(new RegExp(`(#${channel.name})`, 'gm'), (match) => {
+					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens.push({
 						token,
 						text: match,
@@ -294,7 +302,6 @@ export class AutoTranslate {
 	_getProviderMetadata() {
 		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
-
 
 	/**
 	 * Provides the possible languages _from_ which a message can be translated into a target language

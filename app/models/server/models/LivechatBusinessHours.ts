@@ -18,23 +18,23 @@ export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 			start: {
 				time: '08:00',
 				utc: {
-					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ day }:08:00`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: moment(`${day}:08:00`, 'dddd:HH:mm').utc().format('dddd'),
+					time: moment(`${day}:08:00`, 'dddd:HH:mm').utc().format('HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ day }:08:00`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ day }:08:00`, 'dddd:HH:mm').format('HH:mm'),
+					dayOfWeek: moment(`${day}:08:00`, 'dddd:HH:mm').format('dddd'),
+					time: moment(`${day}:08:00`, 'dddd:HH:mm').format('HH:mm'),
 				},
 			},
 			finish: {
 				time: '20:00',
 				utc: {
-					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ day }:20:00`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: moment(`${day}:20:00`, 'dddd:HH:mm').utc().format('dddd'),
+					time: moment(`${day}:20:00`, 'dddd:HH:mm').utc().format('HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ day }:20:00`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ day }:20:00`, 'dddd:HH:mm').format('HH:mm'),
+					dayOfWeek: moment(`${day}:20:00`, 'dddd:HH:mm').format('dddd'),
+					time: moment(`${day}:20:00`, 'dddd:HH:mm').format('HH:mm'),
 				},
 			},
 			code: index + 1,

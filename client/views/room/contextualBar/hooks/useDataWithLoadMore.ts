@@ -30,19 +30,12 @@ export const useDataWithLoadMore = <T, P>(
 	}, [reset, getData, params, resolve, dispatchToastMessage, reject]);
 
 	const more = useMutableCallback(
-		(
-			extraParams: P | ((prev: P) => P),
-			setState: (prev: T | undefined, value: T) => T = (_prev: T | undefined, value: T): T => value,
-		) => {
+		(extraParams: P | ((prev: P) => P), setState: (prev: T | undefined, value: T) => T = (_prev: T | undefined, value: T): T => value) => {
 			if ([AsyncStatePhase.LOADING, AsyncStatePhase.UPDATING].includes(state.phase)) {
 				return;
 			}
 			update();
-			return getData(
-				typeof extraParams === 'function'
-					? (extraParams as (prev: P | undefined) => P)(params)
-					: extraParams,
-			)
+			return getData(typeof extraParams === 'function' ? (extraParams as (prev: P | undefined) => P)(params) : extraParams)
 				.then((result) => resolve((prev) => setState(prev, result)))
 				.catch((error) => {
 					console.error(error);

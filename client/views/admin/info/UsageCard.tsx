@@ -99,10 +99,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Uploads')}</Card.Col.Title>
 						<TextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
-						<TextSeparator
-							label={t('Stats_Total_Uploads_Size')}
-							value={formatMemorySize(statistics.uploadsTotalSize)}
-						/>
+						<TextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 					</Card.Col.Section>
 				</Card.Col>
 				<Card.Divider />
@@ -162,22 +159,10 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 						<Card.Col.Title>{t('Messages')}</Card.Col.Title>
 						<TextSeparator label={t('Stats_Total_Messages')} value={statistics.totalMessages} />
 						<TextSeparator label={t('Total_Threads')} value={statistics.totalThreads} />
-						<TextSeparator
-							label={t('Stats_Total_Messages_Channel')}
-							value={statistics.totalChannelMessages}
-						/>
-						<TextSeparator
-							label={t('Stats_Total_Messages_PrivateGroup')}
-							value={statistics.totalPrivateGroupMessages}
-						/>
-						<TextSeparator
-							label={t('Stats_Total_Messages_Direct')}
-							value={statistics.totalDirectMessages}
-						/>
-						<TextSeparator
-							label={t('Stats_Total_Messages_Livechat')}
-							value={statistics.totalLivechatMessages}
-						/>
+						<TextSeparator label={t('Stats_Total_Messages_Channel')} value={statistics.totalChannelMessages} />
+						<TextSeparator label={t('Stats_Total_Messages_PrivateGroup')} value={statistics.totalPrivateGroupMessages} />
+						<TextSeparator label={t('Stats_Total_Messages_Direct')} value={statistics.totalDirectMessages} />
+						<TextSeparator label={t('Stats_Total_Messages_Livechat')} value={statistics.totalLivechatMessages} />
 					</Card.Col.Section>
 				</Card.Col>
 			</Card.Body>

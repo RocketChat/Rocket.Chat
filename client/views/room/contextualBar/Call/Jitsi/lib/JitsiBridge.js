@@ -3,10 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { JitsiMeetExternalAPI } from './Jitsi';
 
 export class JitsiBridge extends Emitter {
-	constructor(
-		{ openNewWindow, ssl, domain, jitsiRoomName, accessToken, desktopSharingChromeExtId, name },
-		heartbeat,
-	) {
+	constructor({ openNewWindow, ssl, domain, jitsiRoomName, accessToken, desktopSharingChromeExtId, name }, heartbeat) {
 		super();
 
 		this.openNewWindow = openNewWindow;
@@ -31,15 +28,7 @@ export class JitsiBridge extends Emitter {
 		const heartbeatTimer = setInterval(() => this.emit('HEARTBEAT', true), this.heartbeat);
 		this.once('dispose', () => clearTimeout(heartbeatTimer));
 
-		const {
-			openNewWindow,
-			ssl,
-			domain,
-			jitsiRoomName,
-			accessToken,
-			desktopSharingChromeExtId,
-			name,
-		} = this;
+		const { openNewWindow, ssl, domain, jitsiRoomName, accessToken, desktopSharingChromeExtId, name } = this;
 
 		const protocol = ssl ? 'https://' : 'http://';
 
@@ -51,10 +40,7 @@ export class JitsiBridge extends Emitter {
 
 		if (openNewWindow) {
 			const queryString = accessToken ? `?jwt=${accessToken}` : '';
-			const newWindow = window.open(
-				`${protocol + domain}/${jitsiRoomName}${queryString}`,
-				jitsiRoomName,
-			);
+			const newWindow = window.open(`${protocol + domain}/${jitsiRoomName}${queryString}`, jitsiRoomName);
 
 			if (!newWindow) {
 				return;

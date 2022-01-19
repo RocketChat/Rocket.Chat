@@ -3,7 +3,7 @@ import { API } from '../api';
 
 API.helperMethods.set('insertUserObject', function _addUserToObject({ object, userId }) {
 	const user = Users.findOneById(userId);
-	object.user = { };
+	object.user = {};
 	if (user) {
 		object.user = {
 			_id: userId,
@@ -11,7 +11,6 @@ API.helperMethods.set('insertUserObject', function _addUserToObject({ object, us
 			name: user.name,
 		};
 	}
-
 
 	return object;
 });

@@ -35,7 +35,7 @@ export const createReactiveSubscriptionFactory =
 					callbacks.delete(callback);
 
 					if (callbacks.size === 0) {
-						computation && computation.stop();
+						computation?.stop();
 					}
 				};
 			},

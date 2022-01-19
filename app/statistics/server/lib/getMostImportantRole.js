@@ -11,10 +11,7 @@ const order = [
 	'anonymous',
 ];
 
-const rolesToConsiderAsUser = [
-	'auditor',
-	'auditor-log',
-];
+const rolesToConsiderAsUser = ['auditor', 'auditor-log'];
 
 export function getMostImportantRole(roles = []) {
 	if (!roles.length) {

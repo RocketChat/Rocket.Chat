@@ -18,7 +18,7 @@ addMigration({
 			_id: { $in: [/^Accounts_OAuth_(Custom-)?([^-_]+)$/, 'Accounts_OAuth_GitHub_Enterprise'] },
 			value: true,
 		};
-		const CustomOauthEnabled = !! await Settings.findOne(query);
+		const CustomOauthEnabled = !!(await Settings.findOne(query));
 
 		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
 

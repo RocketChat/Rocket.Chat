@@ -30,9 +30,7 @@ function wrapMeteorDDPCalls(): void {
 			return _send.call(Meteor.connection, message);
 		}
 
-		const endpoint = Tracker.nonreactive(() =>
-			!Meteor.userId() ? 'method.callAnon' : 'method.call',
-		);
+		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
 
 		const restParams = {
 			message: DDPCommon.stringifyDDP({ ...message }),

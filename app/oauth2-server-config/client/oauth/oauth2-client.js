@@ -1,38 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { appLayout } from '../../../../client/lib/appLayout';
 import { APIClient } from '../../../utils/client';
 
-FlowRouter.route('/oauth/authorize', {
-	action(params, queryParams) {
-		appLayout.render('main', {
-			center: 'authorize',
-			modal: true,
-			client_id: queryParams.client_id,
-			redirect_uri: queryParams.redirect_uri,
-			response_type: queryParams.response_type,
-			state: queryParams.state,
-		});
-	},
-});
-
-FlowRouter.route('/oauth/error/:error', {
-	action(params) {
-		appLayout.render('main', {
-			center: 'oauth404',
-			modal: true,
-			error: params.error,
-		});
-	},
-});
-
-Template.authorize.onCreated(async function() {
+Template.authorize.onCreated(async function () {
 	this.oauthApp = new ReactiveVar({});
-	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${ this.data.client_id() }`);
+	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${this.data.client_id()}`);
 	this.oauthApp.set(oauthApp);
 });
 
@@ -54,7 +29,7 @@ Template.authorize.events({
 	},
 });
 
-Template.authorize.onRendered(function() {
+Template.authorize.onRendered(function () {
 	const user = Meteor.user();
 	if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
 		$('button[type=submit]').click();

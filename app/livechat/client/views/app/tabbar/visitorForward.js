@@ -22,7 +22,7 @@ Template.visitorForward.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	agentConditions() {
@@ -40,7 +40,7 @@ Template.visitorForward.helpers({
 	departmentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `${f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	onClickTagDepartment() {
@@ -58,7 +58,7 @@ Template.visitorForward.helpers({
 	},
 });
 
-Template.visitorForward.onCreated(async function() {
+Template.visitorForward.onCreated(async function () {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.departments = new ReactiveVar([]);
@@ -102,7 +102,6 @@ Template.visitorForward.onCreated(async function() {
 	const { departments } = await APIClient.v1.get('livechat/department');
 	this.departments.set(departments);
 });
-
 
 Template.visitorForward.events({
 	'submit form'(event, instance) {

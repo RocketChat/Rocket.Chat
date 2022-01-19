@@ -5,6 +5,7 @@ import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
 import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
+import { api } from '../../../../server/sdk/api';
 
 export const server = new Server();
 
@@ -16,7 +17,7 @@ const loginServices = new Map<string, any>();
 
 MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
 
-server.publish(loginServiceConfigurationPublication, async function() {
+server.publish(loginServiceConfigurationPublication, async function () {
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
 
 	const fn = (action: string, record: any): void => {
@@ -48,7 +49,7 @@ MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 });
 
 const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
-server.publish(autoUpdateCollection, function() {
+server.publish(autoUpdateCollection, function () {
 	autoUpdateRecords.forEach((record) => this.added(autoUpdateCollection, record._id, record));
 
 	const fn = (record: any): void => {
@@ -66,7 +67,7 @@ server.publish(autoUpdateCollection, function() {
 });
 
 server.methods({
-	async login({ resume, user, password }: {resume: string; user: {username: string}; password: string}) {
+	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
 		const result = await Account.login({ resume, user, password });
 		if (!result) {
 			throw new Error('login error');
@@ -86,13 +87,14 @@ server.methods({
 			type: result.type,
 		};
 	},
-	async logout() {
+	async 'logout'() {
 		if (this.userToken && this.userId) {
 			await Account.logout({ userId: this.userId, token: this.userToken });
 		}
 
-		// TODO: run the handles on monolith to track SAU correctly
-		// accounts._successfulLogout(this.connection, this.userId);
+		this.emit(DDP_EVENTS.LOGGEDOUT);
+		server.emit(DDP_EVENTS.LOGGEDOUT, this);
+
 		this.userToken = undefined;
 		this.userId = undefined;
 
@@ -149,15 +151,32 @@ server.methods({
 	},
 });
 
-server.on(DDP_EVENTS.LOGGED, ({ userId, session }) => {
-	Presence.newConnection(userId, session);
+server.on(DDP_EVENTS.LOGGED, (info) => {
+	const { userId, connection } = info;
+
+	Presence.newConnection(userId, connection.id);
+	api.broadcast('accounts.login', { userId, connection });
 });
 
-server.on(DDP_EVENTS.DISCONNECTED, ({ userId, session }) => {
+server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
+	const { userId, connection } = info;
+
+	api.broadcast('accounts.logout', { userId, connection });
+});
+
+server.on(DDP_EVENTS.DISCONNECTED, (info) => {
+	const { userId, connection } = info;
+
+	api.broadcast('socket.disconnected', connection);
+
 	if (!userId) {
 		return;
 	}
-	Presence.removeConnection(userId, session);
+	Presence.removeConnection(userId, connection.id);
+});
+
+server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
+	api.broadcast('socket.connected', connection);
 });
 
 // TODO: resolve metrics

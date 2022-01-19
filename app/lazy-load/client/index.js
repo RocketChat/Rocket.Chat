@@ -23,20 +23,22 @@ const loadImage = (el) => {
 	img.src = src;
 };
 
-const observer = featureExists && new IntersectionObserver(
-	(entries, observer) => entries.forEach((entry) => {
-		if (entry.isIntersecting) {
-			observer.unobserve(entry.target);
-			return loadImage(entry.target);
-		}
-	})
-	,
-	{
-		threshold: [0],
-		trackVisibility: true,
-		delay: 230,
-	},
-);
+const observer =
+	featureExists &&
+	new IntersectionObserver(
+		(entries, observer) =>
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					observer.unobserve(entry.target);
+					return loadImage(entry.target);
+				}
+			}),
+		{
+			threshold: [0],
+			trackVisibility: true,
+			delay: 230,
+		},
+	);
 
 export const addImage = (instance) => {
 	const el = instance.firstNode;

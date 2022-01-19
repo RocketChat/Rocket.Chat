@@ -16,7 +16,7 @@ Template.visitorEditCustomFieldsForm.helpers({
 	},
 });
 
-Template.visitorEditCustomFieldsForm.onCreated(async function() {
+Template.visitorEditCustomFieldsForm.onCreated(async function () {
 	this.priorities = new ReactiveVar([]);
 	this.roomPriority = new ReactiveVar(null);
 

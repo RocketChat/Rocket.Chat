@@ -2,7 +2,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { Settings } from '../../../../models/server/raw';
 
 export async function findAppearance({ userId }) {
-	if (!await hasPermissionAsync(userId, 'view-livechat-manager')) {
+	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}
 	const query = {

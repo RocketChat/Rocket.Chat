@@ -26,13 +26,7 @@ const RoomInfo = ({
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 
-	const {
-		retentionPolicyEnabled,
-		filesOnlyDefault,
-		excludePinnedDefault,
-		maxAgeDefault,
-		retentionEnabledDefault,
-	} = retentionPolicy;
+	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault, retentionEnabledDefault } = retentionPolicy;
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -86,16 +80,7 @@ const RoomInfo = ({
 				},
 			}),
 		}),
-		[
-			onClickEdit,
-			t,
-			onClickDelete,
-			onClickMoveToTeam,
-			onClickConvertToTeam,
-			onClickHide,
-			onClickLeave,
-			onClickEnterRoom,
-		],
+		[onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom],
 	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
@@ -112,18 +97,14 @@ const RoomInfo = ({
 				mi='x2'
 				key='menu'
 				ghost={false}
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option {...props} label={label} icon={icon} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => (
-			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
-		);
+		const mapAction = ([key, { label, icon, action }]) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
@@ -131,11 +112,7 @@ const RoomInfo = ({
 	return (
 		<>
 			<VerticalBar.Header>
-				{onClickBack ? (
-					<VerticalBar.Back onClick={onClickBack} />
-				) : (
-					<VerticalBar.Icon name='info-circled' />
-				)}
+				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled' />}
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>

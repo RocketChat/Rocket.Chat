@@ -1,7 +1,6 @@
 import { Permissions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
-
 const roleName = 'admin';
 
 addMigration({

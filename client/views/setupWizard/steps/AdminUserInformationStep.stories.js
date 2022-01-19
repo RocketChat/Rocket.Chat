@@ -7,6 +7,4 @@ export default {
 	component: AdminUserInformationStep,
 };
 
-export const _default = () => (
-	<AdminUserInformationStep step={[1, 2, 3, 4, 'final'][0]} title={'Admin Info'} active={true} />
-);
+export const _default = () => <AdminUserInformationStep step={[1, 2, 3, 4, 'final'][0]} title={'Admin Info'} active={true} />;

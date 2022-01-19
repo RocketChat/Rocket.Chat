@@ -16,10 +16,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'livechat:sendOfflineMessage',
-	connectionId() {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'livechat:sendOfflineMessage',
+		connectionId() {
+			return true;
+		},
 	},
-}, 1, 5000);
+	1,
+	5000,
+);
