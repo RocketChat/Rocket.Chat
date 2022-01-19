@@ -78,16 +78,28 @@ export class AppHttpBridge extends HttpBridge {
 				url: info.url,
 				method: info.method,
 				statusCode: response.status,
-				data: await response.json(),
 				headers: Object.fromEntries(response.headers as unknown as any),
 			};
 
-			if (request.hasOwnProperty('encoding')) {
-				if (request.encoding === null) {
-					result.content = Buffer.from(await response.arrayBuffer()).toString();
-				} else {
-					result.content = await response.text();
-				}
+			const body = Buffer.from(await response.arrayBuffer());
+
+			if (request.encoding === null) {
+				/**
+				 * So, here we have a problem. The property is not appropriately typed
+				 * in the Apps-Engine. Thus, even though it was  previously supported to
+				 * return it as a Buffer. Apps ended up needing to use that same type
+				 * assertion you see below.
+				 */
+				result.content = body as any;
+			} else {
+				result.content = body.toString(request.encoding);
+				result.data = ((): any => {
+					try {
+						return JSON.parse(result.content);
+					} catch {
+						return undefined;
+					}
+				})();
 			}
 
 			return result;
