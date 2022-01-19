@@ -1,8 +1,6 @@
-import { AsyncLocalStorage } from 'async_hooks';
-
+import { IServiceContext } from './types/ServiceClass';
 import { proxify, proxifyWithWait } from './lib/proxify';
 import { IAuthorization } from './types/IAuthorization';
-import { IServiceContext } from './types/ServiceClass';
 import { IPresence } from './types/IPresence';
 import { IAccount } from './types/IAccount';
 import { ILicense } from './types/ILicense';
@@ -17,6 +15,7 @@ import { IMediaService } from './types/IMediaService';
 import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
 import { IE2EEService } from './types/e2ee/IE2EEService';
+import { FibersContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -38,4 +37,5 @@ export const E2EE = proxifyWithWait<IE2EEService>('e2ee');
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
-export const asyncLocalStorage = new AsyncLocalStorage<IServiceContext>();
+// TODO Evalute again using AsyncContextStore instead of FibersContextStore in a future Meteor release (after 2.5)
+export const asyncLocalStorage = new FibersContextStore<IServiceContext>();
