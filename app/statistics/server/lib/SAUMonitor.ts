@@ -324,13 +324,13 @@ export class SAUMonitorClass {
 			day: { $lte: yesterday.day },
 		};
 
-		await aggregates.dailySessionsOfYesterday(Sessions.col, yesterday).forEach(async (record) => {
+		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
 			await Sessions.updateOne(
 				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
 				{ $set: record },
 				{ upsert: true },
 			);
-		});
+		}
 
 		await Sessions.updateMany(match, {
 			$set: {
