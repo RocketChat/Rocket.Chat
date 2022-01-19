@@ -49,7 +49,6 @@ const AppsRoute: FC = () => {
 	const isMarketplace = !context;
 
 	const id = useRouteParameter('id');
-	// const version = useRouteParameter('version');
 
 	if (!canViewAppsAndMarketplace) {
 		return <NotAuthorizedPage />;
