@@ -4663,6 +4663,7 @@
   "Webdav_Password": "WebDAV Password",
   "Webdav_Server_URL": "WebDAV Server Access URL",
   "Webdav_Username": "WebDAV Username",
+  "Webdav_account_removed": "WebDAV account removed", 
   "webdav-account-saved": "WebDAV account saved",
   "webdav-account-updated": "WebDAV account updated",
   "Webhook_Details": "WebHook Details",
