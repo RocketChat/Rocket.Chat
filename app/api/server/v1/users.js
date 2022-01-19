@@ -195,6 +195,17 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 		const { username, userId } = this.requestParams();
 		const { fields } = this.parseJsonQuery();
 
+		check(userId, Match.Maybe(String));
+		check(username, Match.Maybe(String));
+
+		if (userId !== undefined && username !== undefined) {
+			throw new Meteor.Error('invalid-filter', 'Cannot filter by id and username at once');
+		}
+
+		if (!userId && !username) {
+			throw new Meteor.Error('invalid-filter', 'Must filter by id or username');
+		}
+
 		const user = getFullUserDataByIdOrUsername({ userId: this.userId, filterId: userId, filterUsername: username });
 
 		if (!user) {
