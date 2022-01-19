@@ -1,11 +1,5 @@
-import type {
-	AdminInfoPage,
-	// RegisterServerPage,
-	OrganizationInfoPage,
-} from '@rocket.chat/onboarding-ui';
+import type { AdminInfoPage, OrganizationInfoPage, RegisteredServerPage } from '@rocket.chat/onboarding-ui';
 import { ComponentProps, createContext, useContext, Dispatch, SetStateAction } from 'react';
-
-import { ISetting } from '../../../../definition/ISetting';
 
 // type WizardSettingValues = {
 // 	values: Array<{
@@ -25,11 +19,15 @@ import { ISetting } from '../../../../definition/ISetting';
 
 type SetupWizardData = {
 	adminData: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>;
-	organizationData: ComponentProps<typeof OrganizationInfoPage>['initialValues'];
+	organizationData: Parameters<ComponentProps<typeof OrganizationInfoPage>['onSubmit']>[0];
+	serverData: Parameters<ComponentProps<typeof RegisteredServerPage>['onSubmit']>[0];
 	registrationData: {
-		cloudEmail: string;
-		user_code: string;
 		device_code: string;
+		user_code: string;
+		cloudEmail: string;
+		verification_url?: string;
+		interval?: number;
+		expires_in?: number;
 	};
 };
 
@@ -41,14 +39,17 @@ type SetupWizarContextValue = {
 	// TODO FIX THIS TYPE
 	// TODO FIX THIS TYPE
 	// TODO FIX THIS TYPE
-	settings: ISetting[];
+	settings: Array<string>;
 	currentStep: number;
 	validateEmail: (email: string) => string | true;
 	canDeclineServerRegistration: boolean;
 	goToPreviousStep: () => void;
 	goToNextStep: () => void;
+	goToStep: (step: number) => void;
 	registerAdminUser: () => Promise<void>;
 	registerServer: (params: { email: string; resend?: boolean }) => Promise<void>;
+	saveWorkspaceData: () => Promise<void>;
+	saveOrganizationData: () => Promise<void>;
 };
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
@@ -61,6 +62,12 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 			organizationSize: '',
 			country: '',
 		},
+		serverData: {
+			agreement: false,
+			email: '',
+			registerType: 'registered',
+			updates: false,
+		},
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },
 	},
@@ -70,8 +77,11 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	canDeclineServerRegistration: false,
 	goToPreviousStep: () => undefined,
 	goToNextStep: () => undefined,
+	goToStep: () => undefined,
 	registerAdminUser: async () => undefined,
 	registerServer: async () => undefined,
+	saveWorkspaceData: async () => undefined,
+	saveOrganizationData: async () => undefined,
 	validateEmail: () => true,
 	currentStep: 1,
 });

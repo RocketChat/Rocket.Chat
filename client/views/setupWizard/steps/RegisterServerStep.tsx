@@ -1,37 +1,28 @@
-import { RegisterServerPage } from '@rocket.chat/onboarding-ui';
-import React, { ComponentProps, ReactElement } from 'react';
+import { RegisteredServerPage } from '@rocket.chat/onboarding-ui';
+import React, { ReactElement, ComponentProps } from 'react';
 
-import { useSettingSetValue } from '../../../contexts/SettingsContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const RegisterServerStep = (): ReactElement => {
-	const {
-		// canDeclineServerRegistration,
-		registerAdminUser,
-		goToPreviousStep,
-		goToNextStep,
-		currentStep,
-		// goToFinalStep,
-	} = useSetupWizardContext();
-	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
+	const { goToPreviousStep, goToNextStep, currentStep, setSetupWizardData, registerServer } = useSetupWizardContext();
 
-	const handleSelectServerType: ComponentProps<typeof RegisterServerPage>['onSubmit'] = async ({
-		registerType,
-	}) => {
-		if (registerType !== 'registered') {
-			await registerAdminUser();
-			return setShowSetupWizard('completed');
-		}
+	const handleSubmit: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
+		// TO-DO FIX REGISTER_TYPE
+		// 	if (registerType !== 'registered') {
+		// 		await registerAdminUser();
+		// 		return setShowSetupWizard('completed');
+		// 	}
 
-		setShowSetupWizard('in_progress');
-		return goToNextStep();
+		setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
+		await registerServer(data);
 	};
 
 	return (
-		<RegisterServerPage
+		<RegisteredServerPage
+			onClickContinue={goToNextStep}
 			onBackButtonClick={goToPreviousStep}
 			stepCount={4}
-			onSubmit={handleSelectServerType}
+			onSubmit={handleSubmit}
 			currentStep={currentStep}
 		/>
 	);

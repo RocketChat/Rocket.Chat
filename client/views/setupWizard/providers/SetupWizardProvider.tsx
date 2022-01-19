@@ -1,12 +1,12 @@
 // import type { RegisterServerPage } from '@rocket.chat/onboarding-ui';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType, useEffect } from 'react';
 
-// import SetupWizardPage from '../SetupWizardPage';
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
-import { useSettingSetValue, useSetting } from '../../../contexts/SettingsContext';
+import { useSettingSetValue, useSetting, useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword, useUserId } from '../../../contexts/UserContext';
@@ -23,12 +23,17 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 		organizationSize: '',
 		country: '',
 	},
+	serverData: {
+		agreement: false,
+		email: '',
+		registerType: 'registered',
+		updates: false,
+	},
 	// eslint-disable-next-line @typescript-eslint/camelcase
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 
 const emailRegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i;
-
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
@@ -37,6 +42,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const { loaded, settings, canDeclineServerRegistration } = useParameters();
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const dispatchSettings = useSettingsDispatch();
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const cloudEmail = useSetting('Organization_mail') as string;
 	const t = useTranslation();
@@ -57,15 +63,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}));
 	}, [cloudEmail]);
 
-	const goToPreviousStep = useCallback(
-		() => setCurrentStep((currentStep) => currentStep - 1),
-		[setCurrentStep],
-	);
-
-	const goToNextStep = useCallback(
-		() => setCurrentStep((currentStep) => currentStep + 1),
-		[setCurrentStep],
-	);
+	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
+	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
+	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const validateEmail = useCallback(
 		(email: string): true | string => {
@@ -83,7 +83,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			adminData: { fullname, username, companyEmail, password },
 		} = setupWizardData;
 		await registerUser({ name: fullname, username, email: companyEmail, pass: password });
-		callbacks.run('userRegistered');
+		callbacks.run('userRegistered', {});
 
 		try {
 			await loginWithPassword(companyEmail, password);
@@ -102,57 +102,95 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		setForceLogin(false);
 
 		await defineUsername(username);
-		callbacks.run('usernameSet');
-	}, [
-		defineUsername,
-		dispatchToastMessage,
-		loginWithPassword,
-		registerUser,
-		setForceLogin,
-		setupWizardData,
-		t,
-	]);
+		callbacks.run('usernameSet', {});
+	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, setupWizardData, t]);
 
-	const registerServer: HandleRegisterServer = useCallback(
-		async ({ email, resend = false }): Promise<void> => {
-			if (!userId) {
-				try {
-					await registerAdminUser();
-				} catch (e) {
-					if (e instanceof Error || typeof e === 'string')
-						return dispatchToastMessage({
-							type: 'error',
-							message: e,
-						});
-				}
-			}
+	const saveWorkspaceData = useCallback(async (): Promise<void> => {
+		const {
+			serverData: { updates, agreement },
+		} = setupWizardData;
 
+		await dispatchSettings([
+			{
+				_id: 'Statistics_reporting',
+				value: true,
+			},
+			{
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Allow_Marketing_Emails',
+				value: updates,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: agreement,
+			},
+		]);
+	}, [dispatchSettings, setupWizardData]);
+
+	const saveOrganizationData = useCallback(async (): Promise<void> => {
+		const {
+			organizationData: { organizationName, organizationType, organizationIndustry, organizationSize, country },
+		} = setupWizardData;
+
+		await dispatchSettings([
+			{
+				_id: 'Country',
+				value: country,
+			},
+			{
+				_id: 'Organization_Type',
+				value: organizationType,
+			},
+			{
+				_id: 'Industry',
+				value: organizationIndustry,
+			},
+			{
+				_id: 'Size',
+				value: organizationSize,
+			},
+			{
+				_id: 'Organization_Name',
+				value: organizationName,
+			},
+		]);
+	}, [dispatchSettings, setupWizardData]);
+
+	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
+		if (!userId) {
 			try {
-				const intentData = await createRegistrationIntent({ resend });
-				console.log(intentData);
-
-				setSetupWizardData((prevState) => ({
-					...prevState,
-					registrationData: { ...intentData, cloudEmail: email },
-				}));
-
-				goToNextStep();
-				setShowSetupWizard('in_progress');
+				await registerAdminUser();
 			} catch (e) {
-				console.log(e);
+				if (e instanceof Error || typeof e === 'string')
+					return dispatchToastMessage({
+						type: 'error',
+						message: e,
+					});
 			}
-		},
-		[
-			createRegistrationIntent,
-			dispatchToastMessage,
-			goToNextStep,
-			registerAdminUser,
-			setShowSetupWizard,
-			userId,
-		],
-	);
+		}
 
-	// const goToFinalStep = useCallback(() => setCurrentStep(FINAL_STEP), [setCurrentStep]);
+		try {
+			await saveOrganizationData();
+			const { intentData } = await createRegistrationIntent({ resend, email });
+
+			setSetupWizardData((prevState) => ({
+				...prevState,
+				registrationData: { ...intentData, cloudEmail: email },
+			}));
+
+			goToStep(5);
+			setShowSetupWizard('in_progress');
+		} catch (e) {
+			console.log(e);
+		}
+	});
 
 	const value = useMemo(
 		() => ({
@@ -164,9 +202,12 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			canDeclineServerRegistration,
 			goToPreviousStep,
 			goToNextStep,
+			goToStep,
 			registerAdminUser,
 			validateEmail,
 			registerServer,
+			saveWorkspaceData,
+			saveOrganizationData,
 		}),
 		[
 			setupWizardData,
@@ -178,8 +219,11 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			canDeclineServerRegistration,
 			goToPreviousStep,
 			goToNextStep,
+			goToStep,
 			validateEmail,
 			registerServer,
+			saveWorkspaceData,
+			saveOrganizationData,
 		],
 	);
 

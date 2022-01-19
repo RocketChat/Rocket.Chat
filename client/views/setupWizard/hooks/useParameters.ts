@@ -10,16 +10,14 @@ export const useParameters = (): {
 } => {
 	const [loaded, setLoaded] = useState<boolean>(false);
 	const [settings, setSettings] = useState<Array<ISetting>>([]);
-	const [canDeclineServerRegistration, setCapableOfDeclineServerRegistration] =
-		useState<boolean>(false);
+	const [canDeclineServerRegistration, setCapableOfDeclineServerRegistration] = useState<boolean>(false);
 	const getSetupWizardParameters = useMethod('getSetupWizardParameters');
 
 	useEffect(() => {
 		let mounted = true;
 		const requestParameters = async (): Promise<void> => {
 			try {
-				const { settings = [], allowStandaloneServer = false } =
-					(await getSetupWizardParameters()) || {};
+				const { settings = [], allowStandaloneServer = false } = (await getSetupWizardParameters()) || {};
 
 				if (!mounted) {
 					return;
