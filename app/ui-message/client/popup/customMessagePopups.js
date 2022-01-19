@@ -21,8 +21,9 @@ export const removeMessagePopup = (popupName) => {
 	if (element < 0) {
 		return;
 	}
-	const listWithRemovedElement = [...customMessagePopupsList.slice(0, element), ...customMessagePopupsList.slice(element + 1, customMessagePopupsList.length)];
-	customMessagePopups.set([
-		...listWithRemovedElement,
-	]);
+	const listWithRemovedElement = [
+		...customMessagePopupsList.slice(0, element),
+		...customMessagePopupsList.slice(element + 1, customMessagePopupsList.length),
+	];
+	customMessagePopups.set([...listWithRemovedElement]);
 };
