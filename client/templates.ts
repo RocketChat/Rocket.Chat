@@ -39,10 +39,6 @@ createTemplateForComponent('RoomForeword', () => import('./components/RoomForewo
 	attachment: 'at-parent',
 });
 
-createTemplateForComponent('accountSecurity', () => import('./views/account/security/AccountSecurityPage'), {
-	attachment: 'at-parent',
-});
-
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
 
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
@@ -138,9 +134,9 @@ createTemplateForComponent('PruneMessages', () => import('./views/room/contextua
 
 createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
 
-createTemplateForComponent('resetPassword', () => import('./views/login/ResetPassword/ResetPassword'), {
-	renderContainerView: () => HTML.DIV({ style: 'display: flex;' }),
-});
+createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
+
+createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
 
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
@@ -160,6 +156,14 @@ createTemplateForComponent('SortList', () => import('./components/SortList'));
 
 createTemplateForComponent('CreateRoomList', () => import('./sidebar/header/actions/CreateRoomList'));
 
+createTemplateForComponent('AppleOauthButton', () => import('./views/login/AppleOauth/AppleOauthButton'), {
+	renderContainerView: () => HTML.DIV({ style: 'display: flex; justify-content: center;' }),
+});
+
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
 
 createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
+
+createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomNotFound'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
+});
