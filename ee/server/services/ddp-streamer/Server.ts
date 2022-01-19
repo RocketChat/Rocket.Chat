@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import ejson from 'ejson';
+import { v1 as uuidv1 } from 'uuid';
 
 import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
@@ -21,6 +22,8 @@ export class Server extends EventEmitter {
 	private _subscriptions = new Map<string, SubscriptionFn>();
 
 	private _methods = new Map<string, MethodFn>();
+
+	public readonly id = uuidv1();
 
 	serialize = ejson.stringify;
 
