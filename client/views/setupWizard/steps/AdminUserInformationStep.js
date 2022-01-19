@@ -51,12 +51,17 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
+	const [isNameValid, validateName] = useState(true);
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
 
 	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
 
 	const [commiting, setCommiting] = useState(false);
+
+	useEffect(() => {
+		validateName(name.trim().length > 0);
+	}, [name]);
 
 	useEffect(() => {
 		validateUsername(username && usernameRegExp.test(username));
@@ -121,6 +126,7 @@ function AdminUserInformationStep({ step, title, active }) {
 								onChange={({ currentTarget: { value } }) => setName(value)}
 							/>
 						</Field.Row>
+						{!isNameValid && <Field.Error>{t('Invalid_name')}</Field.Error>}
 					</Field>
 					<Field>
 						<Field.Label htmlFor={usernameInputId} required>
