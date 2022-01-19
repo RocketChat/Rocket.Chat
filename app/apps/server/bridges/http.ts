@@ -78,16 +78,33 @@ export class AppHttpBridge extends HttpBridge {
 				url: info.url,
 				method: info.method,
 				statusCode: response.status,
-				data: await response.json(),
 				headers: Object.fromEntries(response.headers as unknown as any),
 			};
 
-			if (request.hasOwnProperty('encoding')) {
-				if (request.encoding === null) {
-					result.content = Buffer.from(await response.arrayBuffer()).toString();
-				} else {
-					result.content = await response.text();
-				}
+			const body = Buffer.from(await response.arrayBuffer());
+
+			if (request.encoding === null) {
+				/**
+				 * The property `content` is not appropriately typed in the
+				 * Apps-engine definition, and we can't simply change it there
+				 * as it would be a breaking change. Thus, we're left with this
+				 * type assertion.
+				 */
+				result.content = body as any;
+			} else {
+				result.content = body.toString(request.encoding);
+				result.data = ((): any => {
+					const contentType = (response.headers.get('content-type') || '').split(';')[0];
+					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						return null;
+					}
+
+					try {
+						return JSON.parse(result.content);
+					} catch {
+						return null;
+					}
+				})();
 			}
 
 			return result;

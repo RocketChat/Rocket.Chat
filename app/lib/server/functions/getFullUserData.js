@@ -75,20 +75,22 @@ const removePasswordInfo = (user) => {
 		delete user.services.email2fa;
 		delete user.services.totp;
 	}
+
 	return user;
 };
 
 export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
-	const myself = userId === filterId || filterUsername === caller.username;
-	const canViewAllInfo = myself || hasPermission(userId, 'view-full-other-user-info');
+	const targetUser = filterId || filterUsername;
+	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
+	const canViewAllInfo = !!myself || hasPermission(userId, 'view-full-other-user-info');
 
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
 	};
-	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	const user = Users.findOneByIdOrUsername(targetUser, options);
 	if (!user) {
 		return null;
 	}
