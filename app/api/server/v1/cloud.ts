@@ -11,7 +11,7 @@ API.v1.addRoute(
 	'cloud.manualRegister',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				cloudBlob: String,
 			});
@@ -28,7 +28,7 @@ API.v1.addRoute(
 
 			const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
 
-			Promise.await(saveRegistrationData(settingsData));
+			await saveRegistrationData(settingsData);
 
 			return API.v1.success();
 		},
