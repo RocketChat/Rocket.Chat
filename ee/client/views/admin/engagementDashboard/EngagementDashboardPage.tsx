@@ -12,10 +12,7 @@ type EngagementDashboardPageProps = {
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };
 
-const EngagementDashboardPage = ({
-	tab = 'users',
-	onSelectTab,
-}: EngagementDashboardPageProps): ReactElement => {
+const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const timezoneOptions = useMemo<readonly [timezone: 'utc' | 'local', label: string][]>(
@@ -27,12 +24,10 @@ const EngagementDashboardPage = ({
 	);
 
 	const [timezoneId, setTimezoneId] = useState<'utc' | 'local'>('utc');
-	const handleTimezoneChange = (timezoneId: string): void =>
-		setTimezoneId(timezoneId as 'utc' | 'local');
+	const handleTimezoneChange = (timezoneId: string): void => setTimezoneId(timezoneId as 'utc' | 'local');
 
 	const handleTabClick = useCallback(
-		(tab: 'users' | 'messages' | 'channels'): undefined | (() => void) =>
-			onSelectTab ? (): void => onSelectTab(tab) : undefined,
+		(tab: 'users' | 'messages' | 'channels'): undefined | (() => void) => (onSelectTab ? (): void => onSelectTab(tab) : undefined),
 		[onSelectTab],
 	);
 

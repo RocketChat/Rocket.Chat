@@ -21,9 +21,7 @@ import ThreadView from './ThreadView';
 const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() =>
-		Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })),
-	);
+	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
@@ -42,11 +40,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 			}
 
 			setMessage((prevMsg) => {
-				if (
-					!prevMsg ||
-					prevMsg._id !== msg._id ||
-					prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()
-				) {
+				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
 					return msg;
 				}
 
@@ -77,10 +71,7 @@ const ThreadComponent: FC<{
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
-	const headerTitle = useMemo(
-		() => (threadMessage ? normalizeThreadTitle(threadMessage) : null),
-		[threadMessage],
-	);
+	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
 	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 

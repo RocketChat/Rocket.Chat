@@ -4,7 +4,7 @@ import sideNav from '../pageobjects/side-nav.page';
 import { checkIfUserIsValid } from '../../data/checks';
 import { username, email, password } from '../../data/user.js';
 
-describe('[Main Elements Render]', function() {
+describe('[Main Elements Render]', function () {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearchIcon.click();

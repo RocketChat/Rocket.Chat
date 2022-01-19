@@ -4,7 +4,7 @@ import s from 'underscore.string';
 
 import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -32,7 +32,7 @@ Meteor.methods({
 			message.unread = true;
 		}
 		message = callbacks.run('beforeSaveMessage', message);
-		onClientMessageReceived(message).then(function(message) {
+		onClientMessageReceived(message).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});

@@ -20,24 +20,29 @@ import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const showErrorMessage = function(res: ServerResponse, err: string): void {
+const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
 		'Content-Type': 'text/html',
 	});
-	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ escapeHTML(err) }</div></body></html>`;
+	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${escapeHTML(err)}</div></body></html>`;
 	res.end(content, 'utf-8');
 };
 
 export class SAML {
-	public static processRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	public static processRequest(
+		req: IIncomingMessage,
+		res: ServerResponse,
+		service: IServiceProviderOptions,
+		samlObject: ISAMLAction,
+	): void {
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
 			if (samlObject.actionName === 'metadata') {
-				showErrorMessage(res, `Unexpected SAML service ${ samlObject.serviceName }`);
+				showErrorMessage(res, `Unexpected SAML service ${samlObject.serviceName}`);
 				return;
 			}
 
-			throw new Error(`Unexpected SAML service ${ samlObject.serviceName }`);
+			throw new Error(`Unexpected SAML service ${samlObject.serviceName}`);
 		}
 
 		switch (samlObject.actionName) {
@@ -52,12 +57,12 @@ export class SAML {
 			case 'validate':
 				return this.processValidateAction(req, res, service, samlObject);
 			default:
-				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
+				throw new Error(`Unexpected SAML action ${samlObject.actionName}`);
 		}
 	}
 
 	public static async hasCredential(credentialToken: string): Promise<boolean> {
-		return await CredentialTokens.findOneNotExpiredById(credentialToken) != null;
+		return (await CredentialTokens.findOneNotExpiredById(credentialToken)) != null;
 	}
 
 	public static async retrieveCredential(credentialToken: string): Promise<Record<string, any> | undefined> {
@@ -68,23 +73,34 @@ export class SAML {
 		}
 	}
 
-	public static async storeCredential(credentialToken: string, loginResult: {profile: Record<string, any>}): Promise<void> {
+	public static async storeCredential(credentialToken: string, loginResult: { profile: Record<string, any> }): Promise<void> {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole = 'user' } = SAMLUtils.globalSettings;
+	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): { userId: string; token: string } {
+		const {
+			generateUsername,
+			immutableProperty,
+			nameOverwrite,
+			mailOverwrite,
+			channelsAttributeUpdate,
+			defaultUserRole = 'user',
+		} = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
 		let user = null;
 
 		// First, try searching by custom identifier
-		if (userObject.identifier.type === 'custom' && userObject.identifier.attribute && userObject.attributeList.has(userObject.identifier.attribute)) {
+		if (
+			userObject.identifier.type === 'custom' &&
+			userObject.identifier.attribute &&
+			userObject.attributeList.has(userObject.identifier.attribute)
+		) {
 			customIdentifierAttributeName = userObject.identifier.attribute;
 
 			const query: Record<string, any> = {};
-			query[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
+			query[`services.saml.${customIdentifierAttributeName}`] = userObject.attributeList.get(customIdentifierAttributeName);
 			user = Users.findOne(query);
 
 			if (user) {
@@ -94,7 +110,7 @@ export class SAML {
 
 		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
-			const expression = userObject.emailList.map((email) => `^${ escapeRegExp(email) }$`).join('|');
+			const expression = userObject.emailList.map((email) => `^${escapeRegExp(email)}$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
 
 			user = SAML.findUser(userObject.username, emailRegex);
@@ -170,7 +186,7 @@ export class SAML {
 
 		// If the user was not found through the customIdentifier property, then update it's value
 		if (customIdentifierMatch === false && customIdentifierAttributeName) {
-			updateData[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
+			updateData[`services.saml.${customIdentifierAttributeName}`] = userObject.attributeList.get(customIdentifierAttributeName);
 		}
 
 		// Overwrite mail if needed
@@ -192,11 +208,14 @@ export class SAML {
 			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
-		Users.update({
-			_id: user._id,
-		}, {
-			$set: updateData,
-		});
+		Users.update(
+			{
+				_id: user._id,
+			},
+			{
+				$set: updateData,
+			},
+		);
 
 		if (username && username !== user.username) {
 			saveUserIdentity({ _id: user._id, username });
@@ -231,7 +250,7 @@ export class SAML {
 	}
 
 	private static _logoutRemoveTokens(userId: string): void {
-		SAMLUtils.log(`Found user ${ userId }`);
+		SAMLUtils.log(`Found user ${userId}`);
 
 		Users.unsetLoginTokens(userId);
 		Users.removeSamlServiceSession(userId);
@@ -325,7 +344,7 @@ export class SAML {
 			}
 
 			const logOutUser = (inResponseTo: string): void => {
-				SAMLUtils.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
+				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
 
 				const cursor = Users.findBySAMLInResponseTo(inResponseTo);
 				const count = cursor.count();
@@ -378,10 +397,15 @@ export class SAML {
 		});
 	}
 
-	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
+	private static processValidateAction(
+		req: IIncomingMessage,
+		res: ServerResponse,
+		service: IServiceProviderOptions,
+		_samlObject: ISAMLAction,
+	): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile/* , loggedOut*/) => {
+		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile /* , loggedOut*/) => {
 			try {
 				if (err) {
 					SAMLUtils.error(err);
@@ -402,7 +426,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
+				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
 				res.writeHead(302, {
 					Location: url,
 				});

@@ -45,13 +45,7 @@ function ChannelsTable() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -118,14 +112,7 @@ function ChannelsTable() {
 			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
 
 			return (
-				<Table.Row
-					key={_id}
-					onKeyDown={onClick(name, t)}
-					onClick={onClick(name, t)}
-					tabIndex={0}
-					role='link'
-					action
-				>
+				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
 					<Table.Cell>
 						<Box display='flex'>
 							<Box flexGrow={0}>
@@ -134,38 +121,30 @@ function ChannelsTable() {
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
 									<Icon name={roomTypes.getIcon(room)} color='hint' />{' '}
-									<Box fontScale='p2' mi='x4'>
+									<Box fontScale='p2m' mi='x4'>
 										{fname || name}
 									</Box>
 									<RoomTags room={room} style={style} />
 								</Box>
-								{topic && (
-									<MarkdownText
-										variant='inlineWithoutBreaks'
-										fontScale='p1'
-										color='hint'
-										style={style}
-										content={topic}
-									/>
-								)}
+								{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' style={style} content={topic} />}
 							</Box>
 						</Box>
 					</Table.Cell>
-					<Table.Cell fontScale='p1' color='hint' style={style}>
+					<Table.Cell fontScale='p2' color='hint' style={style}>
 						{usersCount}
 					</Table.Cell>
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p2' color='hint' style={style}>
 							{formatDate(ts)}
 						</Table.Cell>
 					)}
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p2' color='hint' style={style}>
 							{lastMessage && formatDate(lastMessage.ts)}
 						</Table.Cell>
 					)}
 					{mediaQuery && (
-						<Table.Cell fontScale='p1' color='hint' style={style}>
+						<Table.Cell fontScale='p2' color='hint' style={style}>
 							{belongsTo}
 						</Table.Cell>
 					)}
@@ -179,12 +158,7 @@ function ChannelsTable() {
 		<GenericTable
 			header={header}
 			renderFilter={({ onChange, ...props }) => (
-				<FilterByText
-					placeholder={t('Search_Channels')}
-					inputRef={refAutoFocus}
-					onChange={onChange}
-					{...props}
-				/>
+				<FilterByText placeholder={t('Search_Channels')} inputRef={refAutoFocus} onChange={onChange} {...props} />
 			)}
 			renderRow={renderRow}
 			results={data.result}

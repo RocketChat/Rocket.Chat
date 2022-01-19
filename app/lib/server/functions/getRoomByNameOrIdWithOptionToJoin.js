@@ -3,7 +3,14 @@ import _ from 'underscore';
 
 import { Rooms, Users, Subscriptions } from '../../../models';
 
-export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
+export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({
+	currentUserId,
+	nameOrId,
+	type = '',
+	tryDirectByUserIdOnly = false,
+	joinChannel = true,
+	errorOnEmpty = true,
+}) {
 	let room;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
@@ -38,7 +45,7 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 				}
 			}
 
-			room = Meteor.runAsUser(currentUserId, function() {
+			room = Meteor.runAsUser(currentUserId, function () {
 				const { rid } = Meteor.call('createDirectMessage', roomUser.username);
 				return Rooms.findOneById(rid);
 			});
@@ -72,7 +79,7 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
 		if (!sub) {
-			Meteor.runAsUser(currentUserId, function() {
+			Meteor.runAsUser(currentUserId, function () {
 				return Meteor.call('joinRoom', room._id);
 			});
 		}

@@ -7,6 +7,7 @@ import moment from 'moment';
 import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { isRtl } from '../../app/utils/client';
+import { filterLanguage } from '../lib/utils/filterLanguage';
 
 const currentLanguage = new ReactiveVar<string | null>(null);
 
@@ -17,19 +18,7 @@ Meteor.startup(() => {
 
 	const availableLanguages = TAPi18n.getLanguages();
 
-	const filterLanguage = (language: string): string => {
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		const regex = /([a-z]{2,3})-([a-z]{2,4})/;
-		const matches = regex.exec(language);
-		if (matches) {
-			return `${matches[1]}-${matches[2].toUpperCase()}`;
-		}
-
-		return language;
-	};
-
-	const getBrowserLanguage = (): string =>
-		filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
+	const getBrowserLanguage = (): string => filterLanguage(window.navigator.userLanguage ?? window.navigator.language);
 
 	const loadMomentLocale = (language: string): Promise<string> =>
 		new Promise((resolve, reject) => {
@@ -79,14 +68,13 @@ Meteor.startup(() => {
 	};
 	window.setLanguage = setLanguage;
 
-	const defaultUserLanguage = (): string =>
-		settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = (): string => settings.get('Language') || getBrowserLanguage() || 'en';
 	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {
 		const user = Users.findOne(Meteor.userId(), { fields: { language: 1 } });
 
-		setLanguage((user && user.language) || defaultUserLanguage());
+		setLanguage(user?.language || defaultUserLanguage());
 	});
 
 	Tracker.autorun(() => {

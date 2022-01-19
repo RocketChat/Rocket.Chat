@@ -8,94 +8,107 @@ import PushNotification from '../../../push-notifications/server/lib/PushNotific
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { Users, Messages, Rooms } from '../../../models/server';
 
-API.v1.addRoute('push.token', { authRequired: true }, {
-	post() {
-		const { type, value, appName } = this.bodyParams;
-		let { id } = this.bodyParams;
+API.v1.addRoute(
+	'push.token',
+	{ authRequired: true },
+	{
+		post() {
+			const { type, value, appName } = this.bodyParams;
+			let { id } = this.bodyParams;
 
-		if (id && typeof id !== 'string') {
-			throw new Meteor.Error('error-id-param-not-valid', 'The required "id" body param is invalid.');
-		} else {
-			id = Random.id();
-		}
+			if (id && typeof id !== 'string') {
+				throw new Meteor.Error('error-id-param-not-valid', 'The required "id" body param is invalid.');
+			} else {
+				id = Random.id();
+			}
 
-		if (!type || (type !== 'apn' && type !== 'gcm')) {
-			throw new Meteor.Error('error-type-param-not-valid', 'The required "type" body param is missing or invalid.');
-		}
+			if (!type || (type !== 'apn' && type !== 'gcm')) {
+				throw new Meteor.Error('error-type-param-not-valid', 'The required "type" body param is missing or invalid.');
+			}
 
-		if (!value || typeof value !== 'string') {
-			throw new Meteor.Error('error-token-param-not-valid', 'The required "value" body param is missing or invalid.');
-		}
+			if (!value || typeof value !== 'string') {
+				throw new Meteor.Error('error-token-param-not-valid', 'The required "value" body param is missing or invalid.');
+			}
 
-		if (!appName || typeof appName !== 'string') {
-			throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
-		}
+			if (!appName || typeof appName !== 'string') {
+				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
+			}
 
+			let result;
+			Meteor.runAsUser(this.userId, () => {
+				result = Meteor.call('raix:push-update', {
+					id,
+					token: { [type]: value },
+					appName,
+					userId: this.userId,
+				});
+			});
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('raix:push-update', {
-				id,
-				token: { [type]: value },
-				appName,
+			return API.v1.success({ result });
+		},
+		delete() {
+			const { token } = this.bodyParams;
+
+			if (!token || typeof token !== 'string') {
+				throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
+			}
+
+			const affectedRecords = appTokensCollection.remove({
+				$or: [
+					{
+						'token.apn': token,
+					},
+					{
+						'token.gcm': token,
+					},
+				],
 				userId: this.userId,
 			});
-		});
 
-		return API.v1.success({ result });
+			if (affectedRecords === 0) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.success();
+		},
 	},
-	delete() {
-		const { token } = this.bodyParams;
+);
 
-		if (!token || typeof token !== 'string') {
-			throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
-		}
+API.v1.addRoute(
+	'push.get',
+	{ authRequired: true },
+	{
+		get() {
+			const params = this.requestParams();
+			check(
+				params,
+				Match.ObjectIncluding({
+					id: String,
+				}),
+			);
 
-		const affectedRecords = appTokensCollection.remove({
-			$or: [{
-				'token.apn': token,
-			}, {
-				'token.gcm': token,
-			}],
-			userId: this.userId,
-		});
+			const receiver = Users.findOneById(this.userId);
+			if (!receiver) {
+				throw new Error('error-user-not-found');
+			}
 
-		if (affectedRecords === 0) {
-			return API.v1.notFound();
-		}
+			const message = Messages.findOneById(params.id);
+			if (!message) {
+				throw new Error('error-message-not-found');
+			}
 
-		return API.v1.success();
+			const room = Rooms.findOneById(message.rid);
+			if (!room) {
+				throw new Error('error-room-not-found');
+			}
+
+			if (!canAccessRoom(room, receiver)) {
+				throw new Error('error-not-allowed');
+			}
+
+			const data = PushNotification.getNotificationForMessageId({ receiver, room, message });
+
+			return API.v1.success({ data });
+		},
 	},
-});
-
-API.v1.addRoute('push.get', { authRequired: true }, {
-	get() {
-		const params = this.requestParams();
-		check(params, Match.ObjectIncluding({
-			id: String,
-		}));
-
-		const receiver = Users.findOneById(this.userId);
-		if (!receiver) {
-			throw new Error('error-user-not-found');
-		}
-
-		const message = Messages.findOneById(params.id);
-		if (!message) {
-			throw new Error('error-message-not-found');
-		}
-
-		const room = Rooms.findOneById(message.rid);
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-
-		if (!canAccessRoom(room, receiver)) {
-			throw new Error('error-not-allowed');
-		}
-
-		const data = PushNotification.getNotificationForMessageId({ receiver, room, message });
-
-		return API.v1.success({ data });
-	},
-});
+);

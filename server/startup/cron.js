@@ -16,7 +16,7 @@ SyncedCron.config({
 	collectionName: 'rocketchat_cron_history',
 });
 
-Meteor.defer(function() {
+Meteor.defer(function () {
 	oembedCron(SyncedCron);
 	statsCron(SyncedCron, logger);
 	npsCron(SyncedCron);

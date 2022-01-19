@@ -11,7 +11,7 @@ function Counter({ count, variation = 0, description }) {
 					<Box
 						is='span'
 						color='default'
-						fontScale='h1'
+						fontScale='h2'
 						style={{
 							fontSize: '3em',
 							lineHeight: 1,
@@ -19,12 +19,12 @@ function Counter({ count, variation = 0, description }) {
 					>
 						{count}
 					</Box>
-					<Growth fontScale='s1'>{variation}</Growth>
+					<Growth fontScale='h4'>{variation}</Growth>
 				</Box>
 			</Flex.Container>
 			<Margins block='x12'>
 				<Flex.Container alignItems='center'>
-					<Box fontScale='p1' color='hint'>
+					<Box fontScale='p2' color='hint'>
 						{description}
 					</Box>
 				</Flex.Container>

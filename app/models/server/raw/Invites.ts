@@ -12,16 +12,19 @@ export class InvitesRaw extends BaseRaw<T> {
 			userId,
 			days: daysToExpire,
 			maxUses,
-			...daysToExpire > 0 ? { expires: { $gt: new Date() } } : {},
-			...maxUses > 0 ? { uses: { $lt: maxUses } } : {},
+			...(daysToExpire > 0 ? { expires: { $gt: new Date() } } : {}),
+			...(maxUses > 0 ? { uses: { $lt: maxUses } } : {}),
 		});
 	}
 
 	increaseUsageById(_id: string, uses = 1): Promise<UpdateWriteOpResult> {
-		return this.updateOne({ _id }, {
-			$inc: {
-				uses,
+		return this.updateOne(
+			{ _id },
+			{
+				$inc: {
+					uses,
+				},
 			},
-		});
+		);
 	}
 }

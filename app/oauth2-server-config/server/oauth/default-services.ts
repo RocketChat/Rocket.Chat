@@ -1,7 +1,7 @@
 import { OAuthApps } from '../../../models/server/raw';
 
 async function run(): Promise<void> {
-	if (!await OAuthApps.findOneById('zapier')) {
+	if (!(await OAuthApps.findOneById('zapier'))) {
 		await OAuthApps.insertOne({
 			_id: 'zapier',
 			name: 'Zapier',

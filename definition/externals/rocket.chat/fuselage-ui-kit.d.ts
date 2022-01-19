@@ -10,19 +10,8 @@ declare module '@rocket.chat/fuselage-ui-kit' {
 	import { Context, FC, ReactChildren } from 'react';
 
 	export const kitContext: Context<{
-		action: (action: {
-			blockId: string;
-			appId: string;
-			actionId: string;
-			value: unknown;
-			viewId: string;
-		}) => void | Promise<void>;
-		state?: (state: {
-			blockId: string;
-			appId: string;
-			actionId: string;
-			value: unknown;
-		}) => void | Promise<void>;
+		action: (action: { blockId: string; appId: string; actionId: string; value: unknown; viewId: string }) => void | Promise<void>;
+		state?: (state: { blockId: string; appId: string; actionId: string; value: unknown }) => void | Promise<void>;
 		appId: string;
 		errors?: {
 			[fieldName: string]: string;
@@ -37,16 +26,7 @@ declare module '@rocket.chat/fuselage-ui-kit' {
 
 	type BannerBlocks = IDividerBlock | ISectionBlock | IActionsBlock | IContextBlock | IInputBlock;
 
-	export const UiKitBanner: (
-		blocks: BannerBlocks[],
-		conditions?: { [param: string]: unknown },
-	) => ReactChildren;
-	export const UiKitMessage: (
-		blocks: IBlock[],
-		conditions?: { [param: string]: unknown },
-	) => ReactChildren;
-	export const UiKitModal: (
-		blocks: IBlock[],
-		conditions?: { [param: string]: unknown },
-	) => ReactChildren;
+	export const UiKitBanner: (blocks: BannerBlocks[], conditions?: { [param: string]: unknown }) => ReactChildren;
+	export const UiKitMessage: (blocks: IBlock[], conditions?: { [param: string]: unknown }) => ReactChildren;
+	export const UiKitModal: (blocks: IBlock[], conditions?: { [param: string]: unknown }) => ReactChildren;
 }

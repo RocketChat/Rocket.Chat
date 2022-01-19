@@ -41,10 +41,7 @@ export default memo(function Message({
 	return (
 		<MessageTemplate.Message
 			{...props}
-			className={[
-				...(isIterable(className) ? className : [className]),
-				!following && followStyle,
-			].filter(Boolean)}
+			className={[...(isIterable(className) ? className : [className]), !following && followStyle].filter(Boolean)}
 		>
 			<MessageTemplate.Container mb='neg-x2'>
 				<UserAvatar username={username} className='rcx-message__avatar' size='x36' />

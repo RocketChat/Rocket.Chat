@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import Filter from 'bad-words';
 
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { IMessage } from '../../../../definition/IMessage';
 
 const Dep = new Tracker.Dependency();
@@ -25,7 +25,11 @@ Meteor.startup(() => {
 		const whiteList = settings.get('Message_BadWordsWhitelist') as string | undefined;
 
 		const options = {
-			list: badWordsList?.split(',').map((word) => word.trim()).filter(Boolean) || [],
+			list:
+				badWordsList
+					?.split(',')
+					.map((word) => word.trim())
+					.filter(Boolean) || [],
 			// library definition does not allow optional definition
 			exclude: undefined,
 			splitRegex: undefined,
@@ -41,16 +45,21 @@ Meteor.startup(() => {
 			filter.removeWords(...whiteList.split(',').map((word) => word.trim()));
 		}
 
-		callbacks.add('beforeSaveMessage', function(message: IMessage) {
-			if (!message.msg) {
-				return message;
-			}
-			try {
-				message.msg = filter.clean(message.msg);
-			} finally {
-				// eslint-disable-next-line no-unsafe-finally
-				return message;
-			}
-		}, callbacks.priority.HIGH, 'filterBadWords');
+		callbacks.add(
+			'beforeSaveMessage',
+			(message: IMessage) => {
+				if (!message.msg) {
+					return message;
+				}
+				try {
+					message.msg = filter.clean(message.msg);
+				} finally {
+					// eslint-disable-next-line no-unsafe-finally
+					return message;
+				}
+			},
+			callbacks.priority.HIGH,
+			'filterBadWords',
+		);
 	});
 });

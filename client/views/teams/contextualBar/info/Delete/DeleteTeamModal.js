@@ -39,9 +39,7 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	});
 
 	const onSelectRooms = useMutableCallback(() => {
-		const keptRooms = Object.fromEntries(
-			rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]),
-		);
+		const keptRooms = Object.fromEntries(rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]));
 		setKeptRooms(keptRooms);
 		onContinue();
 	});

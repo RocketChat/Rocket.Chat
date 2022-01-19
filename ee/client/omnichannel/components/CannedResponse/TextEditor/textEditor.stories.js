@@ -16,10 +16,7 @@ export const deafult = () => {
 		const text = textAreaRef.current.value;
 		const startPos = textAreaRef.current.selectionStart;
 		const endPos = textAreaRef.current.selectionEnd;
-		textAreaRef.current.value = `${text.slice(0, startPos)}*${text.slice(
-			startPos,
-			endPos,
-		)}*${text.slice(endPos)}`;
+		textAreaRef.current.value = `${text.slice(0, startPos)}*${text.slice(startPos, endPos)}*${text.slice(endPos)}`;
 		textAreaRef.current.focus();
 		textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
 	};

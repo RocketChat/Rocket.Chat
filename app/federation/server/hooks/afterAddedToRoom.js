@@ -6,7 +6,6 @@ import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 
-
 async function afterAddedToRoom(involvedUsers, room) {
 	const { user: addedUser } = involvedUsers;
 
@@ -54,7 +53,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 			// Check if the number of domains is allowed
 			if (!checkRoomDomainsLength(domainsAfterAdd)) {
-				throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
+				throw new Error(`Cannot federate rooms with more than ${process.env.FEDERATED_DOMAINS_LENGTH || 10} domains`);
 			}
 
 			//
@@ -64,7 +63,13 @@ async function afterAddedToRoom(involvedUsers, room) {
 			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
 			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
-			const addUserEvent = await FederationRoomEvents.createAddUserEvent(localDomain, room._id, normalizedSourceUser, normalizedSourceSubscription, domainsAfterAdd);
+			const addUserEvent = await FederationRoomEvents.createAddUserEvent(
+				localDomain,
+				room._id,
+				normalizedSourceUser,
+				normalizedSourceSubscription,
+				domainsAfterAdd,
+			);
 
 			// Dispatch the events
 			dispatchEvent(domainsAfterAdd, addUserEvent);
