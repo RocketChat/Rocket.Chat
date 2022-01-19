@@ -7,3 +7,4 @@ import './instance';
 import './presence';
 import './serverRunning';
 import './coreApps';
+import '../hooks';
