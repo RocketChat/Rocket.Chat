@@ -27,7 +27,6 @@ import '../app/integrations/client/startup';
 import '../app/lib/client';
 import '../app/livestream/client';
 import '../app/logger/client';
-import '../app/token-login/client';
 import '../app/markdown/client';
 import '../app/mentions-flextab/client';
 import '../app/message-attachments/client';

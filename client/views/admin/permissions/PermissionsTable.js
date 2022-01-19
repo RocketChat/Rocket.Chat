@@ -60,8 +60,8 @@ const PermissionsTable = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Permissions')}>
-					<Button small square onClick={handleAdd}>
-						<Icon name='plus' />
+					<Button primary onClick={handleAdd} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New_role')}
 					</Button>
 				</Page.Header>
 				<Margins blockEnd='x16'>
