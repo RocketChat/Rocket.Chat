@@ -11,7 +11,6 @@ const Search = (props) => {
 	const ref = useRef();
 	const handleCloseSearch = useMutableCallback(() => {
 		setSearchOpen(false);
-		// viewRef.current && Blaze.remove(viewRef.current);
 	});
 
 	useOutsideClick(ref, handleCloseSearch);
