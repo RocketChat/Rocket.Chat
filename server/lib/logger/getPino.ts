@@ -13,18 +13,28 @@ function logMethod(this: P.Logger, args: unknown[], method: any): void {
 	return method.apply(this, args);
 }
 
+const mainPino = pino({
+	hooks: { logMethod },
+	customLevels: {
+		http: 35,
+		method: 35,
+		subscription: 35,
+		startup: 51,
+	},
+	level: 'warn',
+	timestamp: pino.stdTimeFunctions.isoTime,
+	...(process.env.NODE_ENV !== 'production'
+		? {
+				transport: {
+					target: 'pino-pretty',
+					options: {
+						colorize: true,
+					},
+				},
+		  }
+		: {}),
+});
+
 export function getPino(name: string, level = 'warn'): P.Logger {
-	return pino({
-		name,
-		hooks: { logMethod },
-		customLevels: {
-			http: 35,
-			method: 35,
-			subscription: 35,
-			startup: 51,
-		},
-		level,
-		timestamp: pino.stdTimeFunctions.isoTime,
-		...(process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {}),
-	});
+	return mainPino.child({ name, level });
 }
