@@ -84,7 +84,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		if (!name || !username || !email || !password) {
+		if (!name || !username || !email || !password || passwordValidationError) {
 			return;
 		}
 
