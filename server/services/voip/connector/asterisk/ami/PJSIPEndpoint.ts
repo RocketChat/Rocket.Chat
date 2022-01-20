@@ -120,7 +120,6 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
-		// const { result } = this;
 		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
 			return o.extension;
 		});
