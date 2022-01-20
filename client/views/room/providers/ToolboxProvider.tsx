@@ -1,5 +1,5 @@
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect, MouseEventHandler } from 'react';
+import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, MouseEventHandler } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
@@ -65,22 +65,19 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		});
 	});
 
-	const openUserInfo = useCallback(
-		(username) => {
-			switch (room.t) {
-				case 'l':
-					open('room-info', username);
-					break;
-				case 'd':
-					open('user-info', username);
-					break;
-				default:
-					open('members-list', username);
-					break;
-			}
-		},
-		[room.t, open],
-	);
+	const openUserInfo = useMutableCallback((username) => {
+		switch (room.t) {
+			case 'l':
+				open('room-info', username);
+				break;
+			case 'd':
+				room.uids?.length > 2 ? open('user-info-group', username) : open('user-info', username);
+				break;
+			default:
+				open('members-list', username);
+				break;
+		}
+	});
 
 	useLayoutEffect(() => {
 		if (!tab) {
