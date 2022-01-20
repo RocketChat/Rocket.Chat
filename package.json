@@ -189,7 +189,7 @@
 		"@rocket.chat/memo": "^0.31.1",
 		"@rocket.chat/message-parser": "^0.31.1",
 		"@rocket.chat/mp3-encoder": "^0.24.0",
-		"@rocket.chat/onboarding-ui": "^0.6.3-dev.398",
+		"@rocket.chat/onboarding-ui": "^0.6.3-dev.405",
 		"@rocket.chat/string-helpers": "^0.31.1",
 		"@rocket.chat/ui-kit": "^0.31.1",
 		"@slack/client": "^4.12.0",

@@ -7,14 +7,10 @@ const RegisterServerStep = (): ReactElement => {
 	const { goToPreviousStep, goToNextStep, currentStep, setSetupWizardData, registerServer } = useSetupWizardContext();
 
 	const handleSubmit: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
-		// TO-DO FIX REGISTER_TYPE
-		// 	if (registerType !== 'registered') {
-		// 		await registerAdminUser();
-		// 		return setShowSetupWizard('completed');
-		// 	}
-
-		setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
-		await registerServer(data);
+		if (data.registerType !== 'standalone') {
+			setSetupWizardData((prevState) => ({ ...prevState, serverData: data }));
+			await registerServer(data);
+		}
 	};
 
 	return (
