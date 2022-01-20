@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import SetupWizardPage from './SetupWizardPage';
 import { useRouteLock } from './hooks/useRouteLock';
-import I18nProvider from './providers/I18nProvider';
+import OnboardingI18nProvider from './providers/OnboardingI18nProvider';
 import SetupWizardProvider from './providers/SetupWizardProvider';
 
 export const SetupWizardRoute = (): ReactElement | null => {
@@ -13,11 +13,11 @@ export const SetupWizardRoute = (): ReactElement | null => {
 	}
 
 	return (
-		<I18nProvider>
+		<OnboardingI18nProvider>
 			<SetupWizardProvider>
 				<SetupWizardPage />
 			</SetupWizardProvider>
-		</I18nProvider>
+		</OnboardingI18nProvider>
 	);
 };
 
