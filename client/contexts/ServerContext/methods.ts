@@ -1,3 +1,5 @@
+import type { DeleteWriteOpResultObject } from 'mongodb';
+
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
@@ -98,7 +100,6 @@ export type ServerMethods = {
 	'livechat:saveTrigger': (...args: any[]) => any;
 	'livechat:saveUnit': (...args: any[]) => any;
 	'livechat:webhookTest': (...args: any[]) => any;
-	'logoutOtherClients': (...args: any[]) => any;
 	'Mailer.sendMail': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
@@ -109,7 +110,7 @@ export type ServerMethods = {
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': (...args: any[]) => any;
+	'removeWebdavAccount': (accountId: string) => DeleteWriteOpResultObject;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
@@ -141,6 +142,7 @@ export type ServerMethods = {
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
+	'checkRegistrationSecretURL': (hash: string) => boolean;
 };
 
 export type ServerMethodName = keyof ServerMethods;
