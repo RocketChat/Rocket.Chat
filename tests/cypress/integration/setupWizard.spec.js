@@ -1,5 +1,6 @@
 import setupWizard from '../pageobjects/setup-wizard.page';
-import { adminFullname, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
+import { userFullname, username, email, password } from '../../data/user.js';
+import { organizationName, organizationType, organizationIndustry, organizationSize, country } from '../../data/organization.js';
 
 describe('[Setup Wizard]', () => {
 	before(() => {
@@ -26,7 +27,7 @@ describe('[Setup Wizard]', () => {
 		});
 
 		after(() => {
-			setupWizard.fillAdminInfo({ adminFullname, adminUsername, adminEmail, adminPassword });
+			setupWizard.fillAdminInfo({ userFullname, username, email, password });
 			setupWizard.goToNextStep();
 		});
 	});
@@ -34,6 +35,47 @@ describe('[Setup Wizard]', () => {
 	describe('Render - OrganizationInfo', () => {
 		it('should show organizationName field', () => {
 			setupWizard.organizationName.should('be.visible');
+		});
+
+		it('should show organizationType field', () => {
+			setupWizard.organizationType.should('be.visible');
+		});
+
+		it('should show organizationIndustry field', () => {
+			setupWizard.organizationIndustry.should('be.visible');
+		});
+
+		it('should show organizationSize field', () => {
+			setupWizard.organizationIndustry.should('be.visible');
+		});
+
+		it('should show country field', () => {
+			setupWizard.country.should('be.visible');
+		});
+
+		after(() => {
+			setupWizard.fillOrganizationInfo({ organizationName, organizationType, organizationIndustry, organizationSize, country });
+			setupWizard.goToNextStep();
+		});
+	});
+
+	describe('Render - Register Server', () => {
+		it('should show continue as standalone button', () => {
+			setupWizard.continueStandaloneButton.should('be.visible');
+		});
+
+		after(() => {
+			setupWizard.skipToStandalone();
+		});
+	});
+
+	describe('Render - Standalone Server Confirmation', () => {
+		it('should show the next button', () => {
+			setupWizard.nextButton.should('be.visible');
+		});
+
+		after(() => {
+			setupWizard.goToNextStep();
 		});
 	});
 
@@ -122,7 +164,7 @@ describe('[Setup Wizard]', () => {
 	// 	});
 	// });
 
-	// after(() => {
-	// 	cy.logout();
-	// });
+	after(() => {
+		cy.logout();
+	});
 });

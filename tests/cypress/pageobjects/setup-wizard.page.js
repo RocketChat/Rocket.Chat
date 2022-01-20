@@ -22,58 +22,28 @@ class SetupWizard extends Page {
 		return cy.get('input[name="organizationName"]');
 	}
 
+	get organizationType() {
+		return cy.get('div[name="organizationType"]');
+	}
+
+	get organizationIndustry() {
+		return cy.get('div[name="organizationIndustry"]');
+	}
+
+	get organizationSize() {
+		return cy.get('div[name="organizationSize"]');
+	}
+
+	get country() {
+		return cy.get('div[name="country"]');
+	}
+
 	get nextButton() {
 		return cy.get('button[type="submit"]');
 	}
 
-	get nextStep() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]');
-	}
-
-	get goToWorkspace() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="go-to-workspace"]');
-	}
-
-	get organizationType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Type"]');
-	}
-
-	// get organizationName() { return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Name"]'); }
-
-	get industry() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Industry"]');
-	}
-
-	get size() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Size"]');
-	}
-
-	get country() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Country"]');
-	}
-
-	get website() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Website"]');
-	}
-
-	get siteName() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Site_Name"]');
-	}
-
-	get language() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Language"]');
-	}
-
-	get serverType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Server_Type"]');
-	}
-
-	get registeredServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server"]');
-	}
-
-	get standaloneServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server-standalone"]');
+	get continueStandaloneButton() {
+		return cy.get('.rcx-button').contains('Continue as standalone');
 	}
 
 	get serviceTermsAndPrivacyPolicyLabel() {
@@ -92,23 +62,23 @@ class SetupWizard extends Page {
 	// 	cy.login(adminEmail, adminPassword);
 	// }
 
-	fillAdminInfo({ adminFullname, adminUsername, adminEmail, adminPassword }) {
-		this.fullname.type(adminFullname);
-		this.username.type(adminUsername);
-		this.companyEmail.type(adminEmail);
-		this.password.type(adminPassword);
+	fillAdminInfo({ userFullname, username, email, password }) {
+		this.fullname.type(userFullname);
+		this.username.type(username);
+		this.companyEmail.type(email);
+		this.password.type(password);
 	}
 
-	goNext() {
-		this.nextStep.click();
+	fillOrganizationInfo({ organizationName }) {
+		this.organizationName.type(organizationName);
 	}
 
 	goToNextStep() {
 		this.nextButton.click();
 	}
 
-	goToHome() {
-		this.goToWorkspace.click();
+	skipToStandalone() {
+		this.continueStandaloneButton.click();
 	}
 }
 
