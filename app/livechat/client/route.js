@@ -59,14 +59,3 @@ AccountBox.addRoute(
 	livechatManagerRoutes,
 	load,
 );
-
-AccountBox.addRoute(
-	{
-		name: 'livechat-queue',
-		path: '/livechat-queue',
-		i18nPageTitle: 'Livechat_Queue',
-		pageTemplate: 'livechatQueue',
-	},
-	null,
-	load,
-);
