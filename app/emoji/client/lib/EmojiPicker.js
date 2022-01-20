@@ -132,6 +132,9 @@ export const EmojiPicker = {
 
 		this.recent.unshift(_emoji);
 
+		// limit recent emojis to 27 (3 rows of 9)
+		this.recent.splice(27);
+
 		updatePositions = true;
 
 		Meteor._localStorage.setItem('emoji.recent', this.recent);

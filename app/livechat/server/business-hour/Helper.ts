@@ -4,7 +4,9 @@ import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../de
 import { LivechatBusinessHours, Users } from '../../../models/server/raw';
 import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
 
-export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> => {
+export const filterBusinessHoursThatMustBeOpened = async (
+	businessHours: ILivechatBusinessHour[],
+): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 	return businessHours

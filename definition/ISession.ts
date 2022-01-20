@@ -1,20 +1,23 @@
+export interface ISessionDevice {
+	type: string;
+	name: string;
+	longVersion: string;
+	os: {
+		name: string;
+		version: string;
+	};
+	version: string;
+}
+
 export interface ISession {
 	_id: string;
 
 	type: string;
 	mostImportantRole: string;
 	userId: string;
-	lastActivityAt: Date;
-	device: {
-		type: string;
-		name: string;
-		longVersion: string;
-		os: {
-			name: string;
-			version: string;
-		};
-		version: string;
-	};
+	lastActivityAt?: Date;
+	device?: ISessionDevice;
+	roles: string[];
 	year: number;
 	month: number;
 	day: number;
@@ -25,5 +28,5 @@ export interface ISession {
 	host: string;
 	ip: string;
 	loginAt: Date;
-	closedAt: Date;
+	closedAt?: Date;
 }

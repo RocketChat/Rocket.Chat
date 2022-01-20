@@ -1178,16 +1178,6 @@
 
 		line-height: 20px;
 	}
-
-	& .social {
-		& h4 {
-			margin-bottom: 8px;
-		}
-
-		& nav {
-			margin-left: -4px;
-		}
-	}
 }
 
 .rc-old .page-list {
