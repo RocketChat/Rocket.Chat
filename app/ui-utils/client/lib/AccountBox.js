@@ -78,13 +78,13 @@ export const AccountBox = (function () {
 			async action() {
 				await wait();
 				Session.set('openedRoom');
-				return appLayout.render('main', routeConfig);
+				appLayout.renderMainLayout(routeConfig);
 			},
 			triggersEnter: [
 				function () {
 					if (newRoute.sideNav != null) {
 						SideNav.setFlex(newRoute.sideNav);
-						return SideNav.openFlex();
+						SideNav.openFlex();
 					}
 				},
 			],
