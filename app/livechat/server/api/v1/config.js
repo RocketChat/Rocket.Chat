@@ -5,7 +5,7 @@ import { Livechat } from '../../lib/Livechat';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
 API.v1.addRoute('livechat/config', {
-	get() {
+	async get() {
 		try {
 			check(this.queryParams, {
 				token: Match.Maybe(String),
@@ -28,7 +28,7 @@ API.v1.addRoute('livechat/config', {
 			const room = guest && findOpenRoom(token);
 			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
-			const extra = Promise.await(getExtraConfigInfo(room));
+			const extra = await getExtraConfigInfo(room);
 			return API.v1.success({
 				config: { ...config, online: status, guest, room, agent, ...extra },
 			});
