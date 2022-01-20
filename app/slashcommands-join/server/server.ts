@@ -7,8 +7,7 @@ import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
 import { api } from '../../../server/sdk/api';
 
-
-function Join(command:string, params:string, item:any) {
+function Join(command: string, params: string, item: Record<string, string>): void {
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
 	}
@@ -16,29 +15,26 @@ function Join(command:string, params:string, item:any) {
 	if (channel === '') {
 		return;
 	}
-    const userId = Meteor.userId();
-    if (!userId) {
-        return;
-    }
+	const userId = Meteor.userId();
+	if (!userId) {
+		return;
+	}
 	channel = channel.replace('#', '');
 	const user = Meteor.users.findOne(userId);
 	const room = Rooms.findOneByNameAndType(channel, 'c');
 	if (!room) {
 		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: TAPi18n.__(
-				'Channel_doesnt_exist',
-				{
-					postProcess: 'sprintf',
-					sprintf: channel,
-					lng: settings.get('Lenguage') || 'en'
-				}
-			),
+			msg: TAPi18n.__('Channel_doesnt_exist', {
+				postProcess: 'sprintf',
+				sprintf: [channel],
+				lng: settings.get('Language') || 'en',
+			}),
 		});
 	}
 
-    if (!user) {
-        return;
-    }
+	if (!user) {
+		return;
+	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		fields: { _id: 1 },
