@@ -110,21 +110,7 @@ export function normalizeHttpHeaderData(headers = {}) {
 export async function settings({ businessUnit = '' }) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
-	let departments = [];
-	departments = findDepartments(businessUnit);
-	// if (businessUnit) {
-	// 	logger.debug('Attempting to get departments connected to business unit', businessUnit);
-	// 	departments = await callbacks.run('livechat.findDepartmentsWithBusinessUnits', { businessUnit });
-	// 	logger.debug(`Found following departments connected to the respective business unit: ${businessUnit}`, departments);
-	// 	if (!Array.isArray(departments)) {
-	// 		logger.warn(
-	// 			`Livechat's attempt to get departments connected to the business units failed. Possibly because the license isn't valid. Method will fallback to return all active departments instead`,
-	// 		);
-	// 		departments = findDepartments();
-	// 	}
-	// } else {
-	// 	departments = findDepartments();
-	// }
+	const departments = findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {
