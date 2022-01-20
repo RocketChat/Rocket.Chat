@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
+
+console.log('T');
 
 slashCommands.add(
-    'join',
+	'join',
 	undefined,
 	{
 		description: 'Join_the_given_channel',
@@ -11,6 +13,7 @@ slashCommands.add(
 		permission: 'view-c-room',
 	},
 	function (err: Meteor.Error, result:unknown, params:any) {
+		console.log(err, result, params);
 		if (err.error === 'error-user-already-in-room') {
 			params.cmd = 'open';
 			params.msg.msg = params.msg.msg.replace('join', 'open');

@@ -28,6 +28,8 @@ function Join(command:string, params:string, item:any) {
 			msg: TAPi18n.__(
 				'Channel_doesnt_exist',
 				{
+					postProcess: 'sprintf',
+					sprintf: channel,
 					lng: settings.get('Lenguage') || 'en'
 				}
 			),

@@ -62,8 +62,6 @@ export const slashCommands = {
 	}
 };
 
-export {slashCommands as slc};
-
 /*
 slashCommands.add = function _addingSlashCommand(
 	command,
