@@ -28,7 +28,7 @@
  * 7. Important to note that the intermediate events containing a result part for an execution of a particular command
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
@@ -123,7 +123,6 @@ export class PJSIPEndpoint extends Command {
 		const extensions = _.sortBy(this.result.endpoints, function (o: any) {
 			return o.extension;
 		});
-		this.logger.debug({ msg: `onEndpointListComplete() Complete. Data = ${JSON.stringify(extensions)}` });
 		this.returnResolve({ result: extensions } as IVoipConnectorResult);
 	}
 
