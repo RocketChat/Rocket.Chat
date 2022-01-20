@@ -20,7 +20,7 @@ API.v1.addRoute('livechat/config', {
 
 			const { token, department, businessUnit } = this.queryParams;
 
-			const config = Promise.await(settings({ businessUnit }));
+			const config = await settings({ businessUnit });
 
 			const status = Livechat.online(department);
 			const guest = token && Livechat.findGuest(token);
