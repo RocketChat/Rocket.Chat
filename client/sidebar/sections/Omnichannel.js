@@ -17,7 +17,7 @@ const OmnichannelSection = (props) => {
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('omnichannel-directory');
-	const queueListRoute = useRoute('queue-list');
+	const queueListRoute = useRoute('livechat-queue');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const icon = {
