@@ -1,5 +1,5 @@
 export const validatePassword = (password: string): string => {
-	let errorMessage: string = '';
+	let errorMessage = '';
 	const passwordRegex = /(?=.*[0-9])/;
 
 	if (!password) {

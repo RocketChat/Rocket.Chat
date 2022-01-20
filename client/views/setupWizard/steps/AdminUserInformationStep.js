@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as emailValidator } from '../../../../lib/emailValidator';
+import { validatePassword as passwordValidator } from '../../../../lib/passwordValidator';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -54,6 +55,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [isNameValid, validateName] = useState(true);
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
+	const [passwordValidationError, validatePassword] = useState('');
 
 	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
 
@@ -70,6 +72,10 @@ function AdminUserInformationStep({ step, title, active }) {
 	useEffect(() => {
 		validateEmail(emailValidator(email));
 	}, [email]);
+
+	useEffect(() => {
+		validatePassword(passwordValidator(password));
+	}, [password]);
 
 	const t = useTranslation();
 
@@ -173,6 +179,7 @@ function AdminUserInformationStep({ step, title, active }) {
 								onChange={({ currentTarget: { value } }) => setPassword(value)}
 							/>
 						</Field.Row>
+						{passwordValidationError.length > 0 && <Field.Error>{passwordValidationError}</Field.Error>}
 					</Field>
 				</FieldGroup>
 			</Margins>
