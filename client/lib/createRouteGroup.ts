@@ -76,7 +76,7 @@ const registerLazyComponentRoute = (
 					props: () => ({ renderRoute }),
 				},
 			);
-			appLayout.render('main', { center });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 
@@ -129,7 +129,7 @@ export const createRouteGroup = (
 			const center = createTemplateForComponent(`${name}-index`, importRouter, {
 				attachment: 'at-parent',
 			});
-			appLayout.render('main', { center });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 
