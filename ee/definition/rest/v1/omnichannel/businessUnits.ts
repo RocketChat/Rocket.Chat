@@ -1,4 +1,4 @@
-import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
+import { ILivechatUnitMonitor } from '../../../../../definition/ILivechatUnitMonitor';
 import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 
@@ -12,7 +12,7 @@ export type OmnichannelBusinessUnitsEndpoints = {
 		GET: (params: { unitId: string }) => IOmnichannelBusinessUnit;
 	};
 	'livechat/unitMonitors.list': {
-		GET: (params: { unitId: string }) => { monitors: ILivechatMonitor[] };
+		GET: (params: { unitId: string }) => { monitors: ILivechatUnitMonitor[] };
 	};
 	'livechat/units': {
 		GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };

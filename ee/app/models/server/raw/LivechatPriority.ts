@@ -1,8 +1,11 @@
+import { FindOneOptions } from 'mongodb';
+
 import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
 import LivechatPriority from '../models/LivechatPriority';
+import { ILivechatPriority } from '../../../../../definition/ILIvechatPriority';
 
-export class LivechatPriorityRaw extends BaseRaw {
-	findOneByIdOrName(_idOrName, options) {
+export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> {
+	findOneByIdOrName(_idOrName: string, options: FindOneOptions<ILivechatPriority>): Promise<ILivechatPriority | null> {
 		const query = {
 			$or: [
 				{
@@ -18,4 +21,5 @@ export class LivechatPriorityRaw extends BaseRaw {
 	}
 }
 
+// @ts-expect-error
 export default new LivechatPriorityRaw(LivechatPriority.model.rawCollection());

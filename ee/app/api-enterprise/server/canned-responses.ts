@@ -8,9 +8,9 @@ API.v1.addRoute(
 	'canned-responses.get',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			return API.v1.success({
-				responses: Promise.await(findAllCannedResponses({ userId: this.userId })),
+				responses: await findAllCannedResponses({ userId: this.userId }),
 			});
 		},
 	},
@@ -20,30 +20,29 @@ API.v1.addRoute(
 	'canned-responses',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { shortcut, text, scope, tags, departmentId, createdBy } = this.requestParams();
 			check(shortcut, Match.Maybe(String));
 			check(text, Match.Maybe(String));
 			check(tags, Match.Maybe([String]));
-			const { cannedResponses, total } = Promise.await(
-				findAllCannedResponsesFilter({
-					shortcut,
-					text,
-					scope,
-					tags,
-					departmentId,
-					userId: this.userId,
-					createdBy,
-					options: {
-						sort,
-						offset,
-						count,
-						fields,
-					},
-				}),
-			);
+			const { cannedResponses, total } = await findAllCannedResponsesFilter({
+				shortcut,
+				text,
+				scope,
+				// @ts-expect-error
+				tags,
+				departmentId,
+				userId: this.userId,
+				createdBy,
+				options: {
+					sort,
+					offset,
+					count,
+					projection: fields,
+				},
+			});
 			return API.v1.success({
 				cannedResponses,
 				count: cannedResponses.length,
@@ -87,16 +86,18 @@ API.v1.addRoute(
 	'canned-responses/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { _id } = this.urlParams;
 			check(_id, String);
 
-			const cannedResponse = Promise.await(
-				findOneCannedResponse({
-					userId: this.userId,
-					_id,
-				}),
-			);
+			const cannedResponse = await findOneCannedResponse({
+				userId: this.userId,
+				_id,
+			});
+
+			if (!cannedResponse) {
+				return API.v1.notFound();
+			}
 
 			return API.v1.success({ cannedResponse });
 		},

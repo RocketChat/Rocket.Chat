@@ -179,11 +179,7 @@ export const RoutingManager = {
 			return room;
 		}
 
-		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
-			agent,
-			inquiry,
-			options,
-		});
+		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, { inquiry, options });
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
 			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
@@ -221,9 +217,7 @@ export const RoutingManager = {
 
 	delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${inquiry._id}`);
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, {
-			department: inquiry?.department,
-		});
+		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, { department: inquiry?.department });
 
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
