@@ -81,6 +81,22 @@ export class LivechatVisitors extends Base {
 		return this.update(query, update);
 	}
 
+	updateBatchLivechatDataByToken(token, fields) {
+		const query = { token };
+		const user = this.findOne(query, { fields: { livechatData: 1 } });
+		const updates = {};
+
+		fields.map((f) => {
+			if (!f.overwrite && user.livechatData && typeof user.livechatData[f.key] !== 'undefined') {
+				return null;
+			}
+			updates[`livechatData.${f.key}`] = f.value;
+			return null;
+		});
+
+		return this.update(query, { $set: updates });
+	}
+
 	updateLastAgentByToken(token, lastAgent) {
 		const query = {
 			token,

@@ -47,16 +47,24 @@ API.v1.addRoute('livechat/visitor', {
 		});
 
 		if (customFields && customFields instanceof Array) {
+			const customFieldKeys = customFields.map(({ key }) => key);
+			const customFieldsFromDB = LivechatCustomField.findByIds(customFieldKeys, { fields: { _id: 1, scope: 1 } }).fetch();
+			const fieldsToUpdate: { key: string; value: string; overwrite: boolean }[] = [];
+
 			customFields.forEach((field) => {
-				const customField = LivechatCustomField.findOneById(field.key);
-				if (!customField) {
+				const { key } = field;
+				const cf = customFieldsFromDB.find((f: { _id: string }) => f._id === key);
+				if (!cf) {
 					return;
 				}
-				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
-					return API.v1.failure();
+				if (cf.scope === 'visitor') {
+					fieldsToUpdate.push(field);
 				}
 			});
+
+			if (!LivechatVisitors.updateBatchLivechatDataByToken(token, fieldsToUpdate)) {
+				throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor custom fields');
+			}
 
 			visitor = await VisitorsRaw.findOneById(visitorId, {});
 		}

@@ -53,16 +53,12 @@ API.v1.addRoute('livechat/custom.fields', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		const fields = this.bodyParams.customFields.map((customField) => {
-			const data = Object.assign({ token }, customField);
-			if (!Livechat.setCustomFields(data)) {
-				return API.v1.failure();
-			}
+		const result = Livechat.setMultipleCustomFields(token, this.bodyParams.customFields);
+		if (!result) {
+			return API.v1.failure('Cannot store custom fields');
+		}
 
-			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-		});
-
-		return API.v1.success({ fields });
+		return API.v1.success({ fields: result });
 	},
 });
 

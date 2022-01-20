@@ -17,6 +17,12 @@ export class LivechatCustomField extends Base {
 		return this.findOne(query, options);
 	}
 
+	findByIds(ids, options) {
+		const query = { _id: { $in: ids } };
+
+		return this.find(query, options);
+	}
+
 	createOrUpdateCustomField(_id, field, label, scope, visibility, extraData) {
 		const record = {
 			label,

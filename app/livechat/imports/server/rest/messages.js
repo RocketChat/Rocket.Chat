@@ -7,23 +7,21 @@ API.v1.addRoute(
 	'livechat/messages.external/:roomId',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				roomId: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const departments = Promise.await(
-				findExternalMessages({
-					roomId: this.urlParams.roomId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const departments = await findExternalMessages({
+				roomId: this.urlParams.roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
 
 			return API.v1.success(departments);
 		},

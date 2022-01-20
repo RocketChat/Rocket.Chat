@@ -522,6 +522,31 @@ export const Livechat = {
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
 
+	setMultipleCustomFields(token, fields = []) {
+		check(token, String);
+		const customfieldKeys = fields.map((f) => f.key);
+		const customFields = LivechatCustomField.findByIds(customfieldKeys, { fields: { _id: 1, scope: 1 } }).fetch();
+		const visitorFields = [];
+		const roomFields = [];
+
+		fields.forEach((field) => {
+			const customField = customFields.find((f) => f._id === field.key);
+			if (!customField) {
+				return;
+			}
+			if (customField.scope === 'room') {
+				roomFields.push(field);
+			} else {
+				visitorFields.push(field);
+			}
+		});
+
+		visitorFields.length && LivechatVisitors.updateBatchLivechatDataByToken(token, visitorFields);
+		roomFields.length && LivechatRooms.updateBatchDataByToken(token, roomFields);
+
+		return [...visitorFields, ...roomFields];
+	},
+
 	enabled() {
 		return settings.get('Livechat_enabled');
 	},

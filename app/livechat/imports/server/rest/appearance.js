@@ -5,8 +5,8 @@ API.v1.addRoute(
 	'livechat/appearance',
 	{ authRequired: true },
 	{
-		get() {
-			const { appearance } = Promise.await(findAppearance({ userId: this.userId }));
+		async get() {
+			const { appearance } = await findAppearance({ userId: this.userId });
 
 			return API.v1.success({
 				appearance,

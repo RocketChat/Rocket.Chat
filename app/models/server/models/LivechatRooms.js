@@ -81,6 +81,22 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
+	updateBatchDataByToken(token, fields) {
+		const query = { 'v.token': token, 'open': true };
+		const room = this.findOne(query, { fields: { livechatData: 1 } });
+		const updates = {};
+
+		fields.map((f) => {
+			if (!f.overwrite && room.livechatData && typeof room.livechatData[f.key] !== 'undefined') {
+				return null;
+			}
+			updates[`livechatData.${f.key}`] = f.value;
+			return null;
+		});
+
+		return this.update(query, { $set: updates });
+	}
+
 	saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
 		const setData = { ...extra };
 		const unsetData = {};
@@ -328,6 +344,16 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v._id': visitorId,
+		};
+
+		return this.find(query);
+	}
+
+	findOpenByVisitorId(visitorId) {
+		const query = {
+			't': 'l',
+			'v._id': visitorId,
+			'open': true,
 		};
 
 		return this.find(query);

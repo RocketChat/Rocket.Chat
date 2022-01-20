@@ -11,18 +11,19 @@ API.v1.addRoute(
 	'livechat/users/:type',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				type: String,
 			});
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
+			const { type } = this.urlParams;
 
-			if (this.urlParams.type === 'agent') {
-				return API.v1.success(
-					Promise.await(
-						findAgents({
+			switch (type) {
+				case 'agent':
+					return API.v1.success(
+						await findAgents({
 							userId: this.userId,
 							text,
 							pagination: {
@@ -31,13 +32,10 @@ API.v1.addRoute(
 								sort,
 							},
 						}),
-					),
-				);
-			}
-			if (this.urlParams.type === 'manager') {
-				return API.v1.success(
-					Promise.await(
-						findManagers({
+					);
+				case 'manager':
+					return API.v1.success(
+						await findManagers({
 							userId: this.userId,
 							text,
 							pagination: {
@@ -46,10 +44,10 @@ API.v1.addRoute(
 								sort,
 							},
 						}),
-					),
-				);
+					);
+				default:
+					throw new Error('Invalid type');
 			}
-			throw new Error('Invalid type');
 		},
 		post() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {

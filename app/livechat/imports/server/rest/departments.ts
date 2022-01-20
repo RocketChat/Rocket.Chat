@@ -16,28 +16,26 @@ API.v1.addRoute(
 	'livechat/department',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
 			const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
-			const { departments, total } = Promise.await(
-				findDepartments({
-					userId: this.userId,
-					text,
-					enabled,
-					onlyMyDepartments: onlyMyDepartments === 'true',
-					excludeDepartmentId,
-					pagination: {
-						offset,
-						count,
-						// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
-						// or the form { [k: keyof T]: number | string }
-						sort: sort as any,
-					},
-				}),
-			);
+			const { departments, total } = await findDepartments({
+				userId: this.userId,
+				text,
+				enabled,
+				onlyMyDepartments: onlyMyDepartments === 'true',
+				excludeDepartmentId,
+				pagination: {
+					offset,
+					count,
+					// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+					// or the form { [k: keyof T]: number | string }
+					sort: sort as any,
+				},
+			});
 
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
@@ -74,21 +72,19 @@ API.v1.addRoute(
 	'livechat/department/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				_id: String,
 			});
 
 			const { onlyMyDepartments } = this.queryParams;
 
-			const { department, agents } = Promise.await(
-				findDepartmentById({
-					userId: this.userId,
-					departmentId: this.urlParams._id,
-					includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
-					onlyMyDepartments: onlyMyDepartments === 'true',
-				}),
-			);
+			const { department, agents } = await findDepartmentById({
+				userId: this.userId,
+				departmentId: this.urlParams._id,
+				includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
+			});
 
 			// TODO: return 404 when department is not found
 			// Currently, FE relies on the fact that this endpoint returns an empty payload
@@ -164,20 +160,18 @@ API.v1.addRoute(
 	'livechat/department.autocomplete',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { selector, onlyMyDepartments } = this.queryParams;
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findDepartmentsToAutocomplete({
-						uid: this.userId,
-						selector: JSON.parse(selector),
-						onlyMyDepartments: onlyMyDepartments === 'true',
-					}),
-				),
+				await findDepartmentsToAutocomplete({
+					uid: this.userId,
+					selector: JSON.parse(selector),
+					onlyMyDepartments: onlyMyDepartments === 'true',
+				}),
 			);
 		},
 	},
@@ -233,7 +227,7 @@ API.v1.addRoute(
 	'livechat/department.listByIds',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { ids } = this.queryParams;
 			const { fields } = this.parseJsonQuery();
 			if (!ids) {
@@ -244,13 +238,11 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findDepartmentsBetweenIds({
-						uid: this.userId,
-						ids,
-						fields,
-					}),
-				),
+				await findDepartmentsBetweenIds({
+					uid: this.userId,
+					ids,
+					fields,
+				}),
 			);
 		},
 	},

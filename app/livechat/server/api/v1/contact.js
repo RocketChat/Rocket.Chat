@@ -28,12 +28,12 @@ API.v1.addRoute(
 				return API.v1.failure(e);
 			}
 		},
-		get() {
+		async get() {
 			check(this.queryParams, {
 				contactId: String,
 			});
 
-			const contact = Promise.await(LivechatVisitors.findOneById(this.queryParams.contactId));
+			const contact = await LivechatVisitors.findOneById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},

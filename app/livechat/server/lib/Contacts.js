@@ -55,7 +55,7 @@ export const Contacts = {
 
 		LivechatVisitors.updateById(contactId, updateUser);
 
-		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
+		const rooms = LivechatRooms.findOpenByVisitorId(contactId).fetch();
 
 		rooms?.length &&
 			rooms.forEach((room) => {
