@@ -1,13 +1,14 @@
 export const validatePassword = (password: string): string => {
-	let errorMessage = '';
-	const passwordRegex = /(?=.*[0-9])/;
+	const passwordRegex = /(?=.*\d)(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z]).{8,}/;
 
 	if (!password) {
-		errorMessage = 'Password cannot be empty';
-	} else if (password.length < 8) {
-		errorMessage = 'Password must be 8 characters long';
-	} else if (!passwordRegex.test(password)) {
-		errorMessage = 'Invalid password. Must contain one number';
+		return 'Password cannot be empty';
 	}
-	return errorMessage;
+	if (password.length < 8) {
+		return 'Password must be 8 characters long';
+	}
+	if (!passwordRegex.test(password)) {
+		return 'Invalid password. Must contain one number, one capital letter, one small letter and one special character (!@#$%^&*)';
+	}
+	return '';
 };
