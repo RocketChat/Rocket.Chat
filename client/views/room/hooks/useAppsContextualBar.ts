@@ -2,12 +2,14 @@ import { IUIKitContextualBarInteraction } from '@rocket.chat/apps-engine/definit
 import { useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
+import { ChatRoom } from '../../../../app/models/client';
 import { getUserInteractionPayloadByViewId } from '../../../../app/ui-message/client/ActionManager';
 import { useCurrentRoute } from '../../../contexts/RouterContext';
 import { App } from '../../admin/apps/types';
 
 type AppsContextualBarData = {
 	viewId: string;
+	roomId: string;
 	payload: IUIKitContextualBarInteraction;
 	appInfo: App;
 };
@@ -18,6 +20,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	const [appInfo, setAppInfo] = useState<App>();
 
 	const viewId = params?.context;
+	const { _id: roomId } = ChatRoom.findOne({ name: params?.name }, { fields: { _id: 1 } });
 
 	useEffect(() => {
 		async function getAppData(appId: string): Promise<void> {
@@ -42,6 +45,7 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	if (viewId && payload && appInfo) {
 		return {
 			viewId,
+			roomId,
 			payload,
 			appInfo,
 		};
