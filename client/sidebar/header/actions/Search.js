@@ -9,12 +9,11 @@ const Search = (props) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 
 	const ref = useRef();
-
 	const handleCloseSearch = useMutableCallback(() => {
 		setSearchOpen(false);
-		// viewRef.current && Blaze.remove(viewRef.current);
 	});
 
+	useOutsideClick(ref, handleCloseSearch);
 	const openSearch = useMutableCallback(() => {
 		setSearchOpen(true);
 	});
