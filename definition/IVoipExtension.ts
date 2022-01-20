@@ -4,6 +4,8 @@ export enum EndpointState {
 	UNKNOWN = 'unknown',
 	REGISTERED = 'registered',
 	UNREGISTERED = 'unregistered',
+	RINGING = 'ringing',
+	BUSY = 'busy',
 }
 export interface IVoipExtensionBase {
 	extension: string;
