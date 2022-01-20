@@ -2,11 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Subscriptions } from '../../models';
-import { slashCommands } from '../../utils';
+import { Rooms, Subscriptions } from '../../models/server';
+import { settings } from '../../settings/server';
+import { slashCommands } from '../../utils/server';
 import { api } from '../../../server/sdk/api';
 
-function Join(command, params, item) {
+
+function Join(command:string, params:string, item:any) {
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
 	}
@@ -14,21 +16,27 @@ function Join(command, params, item) {
 	if (channel === '') {
 		return;
 	}
+    const userId = Meteor.userId();
+    if (!userId) {
+        return;
+    }
 	channel = channel.replace('#', '');
-	const user = Meteor.users.findOne(Meteor.userId());
+	const user = Meteor.users.findOne(userId);
 	const room = Rooms.findOneByNameAndType(channel, 'c');
 	if (!room) {
-		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
+		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__(
 				'Channel_doesnt_exist',
 				{
-					postProcess: 'sprintf',
-					sprintf: [channel],
-				},
-				user.language,
+					lng: settings.get('Lenguage') || 'en'
+				}
 			),
 		});
 	}
+
+    if (!user) {
+        return;
+    }
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		fields: { _id: 1 },
