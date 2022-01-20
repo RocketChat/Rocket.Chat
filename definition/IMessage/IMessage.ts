@@ -69,7 +69,7 @@ export interface IMessage extends IRocketChatRecord {
 
 	tcount?: number;
 	t?: MessageTypesValues;
-	e2e?: 'pending';
+	e2e?: 'pending' | 'done';
 
 	urls?: {
 		url: string;

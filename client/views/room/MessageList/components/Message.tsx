@@ -124,10 +124,13 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 					</MessageHeader>
 				)}
 				<MessageBody>
-					{!message.blocks && message.md && (
-						<MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />
-					)}
+					{message.e2e === 'pending'
+						? t('E2E_message_encrypted_placeholder')
+						: message.e2e !== 'done' &&
+						  !message.blocks &&
+						  message.md && <MessageBodyRender onMentionClick={openUserCard} mentions={message.mentions} tokens={message.md} />}
 					{!message.blocks && !message.md && message.msg}
+					{message.e2e === 'done' && message.msg}
 				</MessageBody>
 				{message.blocks && <MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
