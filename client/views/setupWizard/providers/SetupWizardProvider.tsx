@@ -1,4 +1,3 @@
-// import type { RegisterServerPage } from '@rocket.chat/onboarding-ui';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType, useEffect } from 'react';
@@ -89,7 +88,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			await loginWithPassword(companyEmail, password);
 		} catch (error) {
 			if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
-				// onRegistrationEmailSent && onRegistrationEmailSent();
 				dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
 				return;
 			}
