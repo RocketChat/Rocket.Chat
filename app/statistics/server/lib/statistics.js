@@ -227,7 +227,7 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		// If getSettingsStatistics9) throw error save data as empty object
+		// If getSettingsStatistics() returns an error, save as empty object.
 		const settingsStatisticsObject = (await getSettingsStatistics()) || {};
 		statistics.settings = settingsStatisticsObject;
 
