@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils';
+import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Unflip is a named function that will replace /unflip commands
  * @param {Object} message - The message object
  */
 
-function Unflip(command, params, item) {
+function Unflip(command:string, params:Record<string, string>, item:Record<string, string>) {
 	if (command === 'unflip') {
 		const msg = item;
 		msg.msg = `${params} ┬─┬ ノ( ゜-゜ノ)`;

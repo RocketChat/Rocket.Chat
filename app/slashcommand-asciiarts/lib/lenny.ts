@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils';
+import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Lenny is a named function that will replace /lenny commands
  * @param {Object} message - The message object
  */
 
-function LennyFace(command, params, item) {
+function LennyFace(command:string, params:Record<string, string>, item:Record<string, string>) {
 	if (command === 'lennyface') {
 		const msg = item;
 		msg.msg = `${params} ( ͡° ͜ʖ ͡°)`;

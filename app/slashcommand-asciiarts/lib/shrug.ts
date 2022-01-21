@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils';
+import { slashCommands } from '../../utils/lib/slashCommand';
 /*
  * Shrug is a named function that will replace /shrug commands
  * @param {Object} message - The message object
  */
 
-function Shrug(command, params, item) {
+function Shrug(command:string, params:Record<string, string>, item:Record<string, string>) {
 	if (command === 'shrug') {
 		const msg = item;
 		msg.msg = `${params} ¯\\_(ツ)_/¯`;
