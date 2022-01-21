@@ -1024,7 +1024,7 @@
   "Enter_a_regex": "输入一个正则表达式",
   "Enter_a_room_name": "输入房间名称",
   "Enter_a_username": "输入用户名",
-  "Enter_Alternative": "备选模式（使用Enter + Ctrl / Alt / Shift / CMD发送）",
+  "Enter_Alternative": "备选模式（使用Ctrl/Alt/Shift/CMD + Enter发送）",
   "Enter_authentication_code": "输入验证码",
   "Enter_Behaviour": "输入关键行为",
   "Enter_Behaviour_Description": "如果回车键发送消息或执行换行符，则会发生更改",

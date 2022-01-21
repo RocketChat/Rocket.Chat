@@ -1472,7 +1472,7 @@
   "Enter_a_room_name": "대화방명을 입력하세요.",
   "Enter_a_tag": "태그 입력",
   "Enter_a_username": "사용자명을 입력하세요.",
-  "Enter_Alternative": "대체 모드 (Enter + Ctrl / Alt / Shift / CMD로 전송)",
+  "Enter_Alternative": "대체 모드 (Ctrl/Alt/Shift/CMD + Enter로 전송)",
   "Enter_authentication_code": "인증 코드 입력",
   "Enter_Behaviour": "Enter 키 동작",
   "Enter_Behaviour_Description": "Enter 키가 메시지를 보내거나 줄 바꿈을하면 변경됩니다.",

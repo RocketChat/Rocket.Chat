@@ -1632,7 +1632,7 @@
   "Enter_a_room_name": "Saisissez un nom de salon",
   "Enter_a_tag": "Entrez une balise",
   "Enter_a_username": "Saisissez un nom d'utilisateur",
-  "Enter_Alternative": "Mode alternatif (envoyé avec Entrée + Ctrl/Alt/Shift/CMD)",
+  "Enter_Alternative": "Mode alternatif (envoyé avec Ctrl/Alt/Shift/CMD + Entrée)",
   "Enter_authentication_code": "Entrez le code d'authentification",
   "Enter_Behaviour": "Comportement de la touche Entrée",
   "Enter_Behaviour_Description": "Cela change si la touche Entrée envoie un message ou fait un saut de ligne",

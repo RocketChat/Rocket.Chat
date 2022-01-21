@@ -1630,7 +1630,7 @@
   "Enter_a_room_name": "Introdueix un nom de sala",
   "Enter_a_tag": "Introduïu una etiqueta",
   "Enter_a_username": "Introdueix un nom d'usuari",
-  "Enter_Alternative": "Mode alternatiu (envia amb Enter + Ctrl/Alt/Shift/CMD)",
+  "Enter_Alternative": "Mode alternatiu (envia amb Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Entra el codi d'autenticació",
   "Enter_Behaviour": "Comportament de la tecla Enter",
   "Enter_Behaviour_Description": "Canvia si la tecla Enter envia el missatge o fa un salt de línia",

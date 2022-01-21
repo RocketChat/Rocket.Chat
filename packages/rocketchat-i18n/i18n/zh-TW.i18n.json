@@ -1583,7 +1583,7 @@
   "Enter_a_room_name": "輸入一個頻道名稱",
   "Enter_a_tag": "輸入標籤",
   "Enter_a_username": "輸入一個使用者名稱",
-  "Enter_Alternative": "替代模式（使用Enter + Ctrl / Alt / Shift / CMD發送）",
+  "Enter_Alternative": "替代模式（使用Ctrl/Alt/Shift/CMD + Enter發送）",
   "Enter_authentication_code": "輸入驗證碼",
   "Enter_Behaviour": "輸入關鍵行為",
   "Enter_Behaviour_Description": "這個變更會影響你按 Enter 時會傳送訊息或是換行",

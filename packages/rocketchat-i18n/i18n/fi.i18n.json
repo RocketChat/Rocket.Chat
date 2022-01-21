@@ -1004,7 +1004,7 @@
   "Enter_a_regex": "Syötä säännöllinen lause (regex)",
   "Enter_a_room_name": "Syötä huoneen nimi",
   "Enter_a_username": "Syötä käyttäjätunnus",
-  "Enter_Alternative": "Vaihtoehtoinen tila (lähetä Enter + Ctrl / Alt / Shift / CMD)",
+  "Enter_Alternative": "Vaihtoehtoinen tila (lähetä Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "Anna todennuskoodi",
   "Enter_Behaviour": "Anna avaimen käyttäytyminen",
   "Enter_Behaviour_Description": "Tämä muuttuu, jos Enter-näppäin lähettää viestin tai rivinvaihto",

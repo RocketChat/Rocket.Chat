@@ -1499,7 +1499,7 @@
   "Enter_a_room_name": "ルーム名を入力します。",
   "Enter_a_tag": "タグを入力してください",
   "Enter_a_username": "ユーザー名を入力",
-  "Enter_Alternative": "代替モード (Enter + Ctrl / Alt / Shift / CMDで送信)",
+  "Enter_Alternative": "代替モード (Ctrl/Alt/Shift/CMD + Enter で送信)",
   "Enter_authentication_code": "認証コードを入力",
   "Enter_Behaviour": "Enterキーの動作",
   "Enter_Behaviour_Description": "これにより、Enterキーでメッセージを送信するか改行するかが変更されます",

@@ -1003,7 +1003,7 @@
   "Enter_a_regex": "ป้อน regex",
   "Enter_a_room_name": "ป้อนชื่อห้อง",
   "Enter_a_username": "ป้อนชื่อผู้ใช้",
-  "Enter_Alternative": "โหมดทางเลือก (ส่งพร้อมด้วย Enter + Ctrl / Alt / Shift / CMD)",
+  "Enter_Alternative": "โหมดทางเลือก (ส่งพร้อมด้วย Ctrl/Alt/Shift/CMD + Enter)",
   "Enter_authentication_code": "ป้อนรหัสรับรองความถูกต้อง",
   "Enter_Behaviour": "ป้อนพฤติกรรมที่สำคัญ",
   "Enter_Behaviour_Description": "การเปลี่ยนแปลงนี้หากคีย์ป้อนจะส่งข้อความหรือหยุดพักบรรทัด",
