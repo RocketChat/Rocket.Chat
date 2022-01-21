@@ -76,9 +76,10 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const { source } = extraParams || {};
 		// `source` will likely have the properties below, so we tell TS it's alright
-		const { sidebarIcon, defaultIcon } = (source || {}) as {
+		const { sidebarIcon, defaultIcon, label } = (source || {}) as {
 			sidebarIcon?: string;
 			defaultIcon?: string;
+			label?: string;
 		};
 
 		let agentRoom;
@@ -95,7 +96,8 @@ export class AppLivechatBridge extends LivechatBridge {
 				source: {
 					type: OmnichannelSourceType.APP,
 					id: appId,
-					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
+					label,
 					sidebarIcon,
 					defaultIcon,
 				},
