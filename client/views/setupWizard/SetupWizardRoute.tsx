@@ -1,4 +1,5 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { DarkModeProvider } from '@rocket.chat/onboarding-ui';
 import React, { ReactElement } from 'react';
 
 import SetupWizardPage from './SetupWizardPage';
@@ -20,7 +21,9 @@ export const SetupWizardRoute = (): ReactElement | null => {
 	return (
 		<OnboardingI18nProvider>
 			<SetupWizardProvider>
-				<SetupWizardPage />
+				<DarkModeProvider>
+					<SetupWizardPage />
+				</DarkModeProvider>
 			</SetupWizardProvider>
 		</OnboardingI18nProvider>
 	);

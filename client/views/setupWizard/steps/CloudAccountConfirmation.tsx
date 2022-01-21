@@ -38,7 +38,9 @@ const CloudAccountConfirmation = (): ReactElement => {
 	}, [cloudConfirmationPoll, registrationData.device_code, setShowSetupWizard, saveWorkspaceData, dispatchToastMessage, t]);
 
 	useEffect(() => {
-		setInterval(() => getConfirmation(), setIntervalTime(registrationData.interval));
+		const pollInterval = setInterval(() => getConfirmation(), setIntervalTime(registrationData.interval));
+
+		return (): void => clearInterval(pollInterval);
 	}, [getConfirmation, registrationData.interval]);
 
 	return (
