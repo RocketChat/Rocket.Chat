@@ -1,5 +1,3 @@
-import { UserStatus } from '../../UserStatus';
-
 declare module 'meteor/konecty:user-presence' {
 	namespace UserPresenceMonitor {
 		function processUserSession(userSession: any, event: string): void;
@@ -10,6 +8,6 @@ declare module 'meteor/konecty:user-presence' {
 		function removeConnectionsByInstanceId(id: string): void;
 		function start(): void;
 		function stopTimer(): void;
-		function setDefaultStatus(userId: string, status: UserStatus | string): void;
+		function setDefaultStatus(userId: string, status: string): void;
 	}
 }
