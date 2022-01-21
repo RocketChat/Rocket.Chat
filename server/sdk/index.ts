@@ -14,6 +14,7 @@ import { IRoomService } from './types/IRoomService';
 import { IMediaService } from './types/IMediaService';
 import { IAnalyticsService } from './types/IAnalyticsService';
 import { ILDAPService } from './types/ILDAPService';
+import { ISAUMonitorService } from './types/ISAUMonitorService';
 import { FibersContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -30,6 +31,7 @@ export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
+export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

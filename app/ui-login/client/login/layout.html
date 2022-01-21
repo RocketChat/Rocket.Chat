@@ -1,9 +1,9 @@
 <template name="loginLayout">
 	<section class="rc-old full-page color-tertiary-font-color" style="{{#with backgroundUrl}}background-image: url('{{.}}'){{/with}}">
 		<div class="wrapper">
-			{{> loginHeader }}
-			{{> Template.dynamic template=center}}
-			{{> loginFooter }}
+			{{> loginLayoutHeader}}
+			{{> loginForm}}
+			{{> loginLayoutFooter}}
 		</div>
 	</section>
 </template>

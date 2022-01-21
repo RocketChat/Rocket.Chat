@@ -6,6 +6,7 @@ import {
 	IndexSpecification,
 	UpdateWriteOpResult,
 	FilterQuery,
+	Cursor,
 } from 'mongodb';
 
 import type { ISession } from '../../../../definition/ISession';
@@ -774,6 +775,19 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		);
 	}
 
+	findSessionsNotClosedByDateWithoutLastActivity({ year, month, day }: DestructuredDate): Cursor<ISession> {
+		const query = {
+			year,
+			month,
+			day,
+			type: 'session',
+			closedAt: { $exists: false },
+			lastActivityAt: { $exists: false },
+		};
+
+		return this.find(query);
+	}
+
 	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<
 		{
 			day: number;
@@ -1163,7 +1177,7 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		};
 	}
 
-	async createOrUpdate(data: ISession): Promise<UpdateWriteOpResult | undefined> {
+	async createOrUpdate(data: Omit<ISession, '_id' | 'createdAt' | '_updatedAt'>): Promise<UpdateWriteOpResult | undefined> {
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
@@ -1215,6 +1229,23 @@ export class SessionsRaw extends BaseRaw<ISession> {
 			day,
 			sessionId: { $in: sessions },
 			closedAt: { $exists: false },
+		};
+
+		const update = {
+			$set: data,
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data = {}): Promise<UpdateWriteOpResult> {
+		const query = {
+			year,
+			month,
+			day,
+			type: 'session',
+			closedAt: { $exists: false },
+			lastActivityAt: { $exists: false },
 		};
 
 		const update = {
