@@ -1,11 +1,9 @@
-import { IRocketChatRecord } from './IRocketChatRecord';
-
 export enum ServerType {
 	MANAGEMENT = 'management',
 	CALL_SERVER = 'call-server',
 }
 
-export interface IVoipServerConfig extends IRocketChatRecord {
+export interface IVoipServerConfig {
 	type: ServerType;
 	host: string;
 	name: string;
