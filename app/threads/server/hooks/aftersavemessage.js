@@ -73,32 +73,32 @@ export const processThreads = async (message, room) => {
 			}
 		});
 
-		Promise.all(
-			mentions.map(async (userId) => {
-				await callJoinRoom(userId, room._id);
+		try {
+			const users = await Promise.all(
+				mentions.map(async (userId) => {
+					await callJoinRoom(userId, room._id);
 
-				return userId;
-			}),
-		)
-			.then((users) => {
-				users.forEach((userId) => {
-					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+					return userId;
+				}),
+			);
 
-					sendNotification({
-						subscription,
-						sender,
-						hasMentionToAll,
-						hasMentionToHere,
-						message,
-						notificationMessage,
-						room,
-						mentionIds,
-					});
+			users.forEach((userId) => {
+				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+
+				sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds,
 				});
-			})
-			.catch((error) => {
-				throw new Meteor.Error(error);
 			});
+		} catch (error) {
+			throw new Meteor.Error(error);
+		}
 	}
 
 	return message;
