@@ -89,10 +89,12 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 
 const AppsWithData = ({
 	viewId,
+	roomId,
 	payload,
 	appInfo,
 }: {
 	viewId: string;
+	roomId: string;
 	payload: IUIKitContextualBarInteraction;
 	appInfo: App;
 }): JSX.Element => {
@@ -145,6 +147,7 @@ const AppsWithData = ({
 				},
 				actionId,
 				appId,
+				rid: roomId,
 				value,
 				blockId,
 			}),
