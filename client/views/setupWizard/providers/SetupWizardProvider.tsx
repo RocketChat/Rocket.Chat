@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useCallback, useMemo, useState, ReactElement, ContextType, useEffect } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { validateEmail } from '../../../../lib/emailValidator';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSettingSetValue, useSetting, useSettingsDispatch } from '../../../contexts/SettingsContext';
@@ -33,7 +34,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 
-const emailRegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i;
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
@@ -67,9 +67,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
 	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
 
-	const validateEmail = useCallback(
+	const _validateEmail = useCallback(
 		(email: string): true | string => {
-			if (!emailRegExp.test(email)) {
+			if (!validateEmail(email)) {
 				return t('Invalid_email');
 			}
 
@@ -204,7 +204,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToNextStep,
 			goToStep,
 			registerAdminUser,
-			validateEmail,
+			validateEmail: _validateEmail,
 			registerServer,
 			saveWorkspaceData,
 			saveOrganizationData,
@@ -220,7 +220,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
-			validateEmail,
+			_validateEmail,
 			registerServer,
 			saveWorkspaceData,
 			saveOrganizationData,
