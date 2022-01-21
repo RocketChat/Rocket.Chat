@@ -22,6 +22,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
 		this.tryEnsureIndex({ source: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'open': 1, 'v.token': 1 });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
