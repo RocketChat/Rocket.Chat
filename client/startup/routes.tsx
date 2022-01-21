@@ -136,6 +136,16 @@ FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	},
 });
 
+FlowRouter.route('/livechat-queue', {
+	name: 'livechat-queue',
+	action: () => {
+		const OmnichannelQueueList = createTemplateForComponent('QueueList', () => import('../views/omnichannel/queueList'), {
+			attachment: 'at-parent',
+		});
+		appLayout.renderMainLayout({ center: OmnichannelQueueList });
+	},
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
