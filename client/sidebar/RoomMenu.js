@@ -172,17 +172,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[
-			t,
-			handleHide,
-			isUnread,
-			handleToggleRead,
-			canFavorite,
-			isFavorite,
-			handleToggleFavorite,
-			canLeave,
-			handleLeave,
-		],
+		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
 	);
 
 	return (
@@ -192,9 +182,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }) => (
-				<Option label={label} title={label} icon={icon} {...props} />
-			)}
+			renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
 		/>
 	);
 };

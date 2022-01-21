@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - appearance', function() {
+describe('LIVECHAT - appearance', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -15,7 +15,8 @@ describe('LIVECHAT - appearance', function() {
 	describe('livechat/appearance', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
-				request.get(api('livechat/appearance'))
+				request
+					.get(api('livechat/appearance'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -27,18 +28,18 @@ describe('LIVECHAT - appearance', function() {
 			});
 		});
 		it('should return an array of settings', (done) => {
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => {
-					request.get(api('livechat/appearance'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.appearance).to.be.an('array');
-						})
-						.end(done);
-				});
+			updatePermission('view-livechat-manager', ['admin']).then(() => {
+				request
+					.get(api('livechat/appearance'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.appearance).to.be.an('array');
+					})
+					.end(done);
+			});
 		});
 	});
 });

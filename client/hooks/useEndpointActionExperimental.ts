@@ -1,20 +1,11 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
-import {
-	MatchPathPattern,
-	Method,
-	OperationParams,
-	OperationResult,
-	PathFor,
-} from '../../definition/rest';
+import { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-export const useEndpointActionExperimental = <
-	TMethod extends Method,
-	TPath extends PathFor<TMethod>,
->(
+export const useEndpointActionExperimental = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
 	path: TPath,
 	successMessage?: string,

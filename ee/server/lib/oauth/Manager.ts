@@ -7,7 +7,13 @@ import { Roles } from '../../../../app/models/server/raw';
 export const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(user: Record<string, any>, identity: Record<string, any>, groupClaimName: string, channelsMap: Record<string, any> | undefined, channelsAdmin: string): void {
+	static mapSSOGroupsToChannels(
+		user: Record<string, any>,
+		identity: Record<string, any>,
+		groupClaimName: string,
+		channelsMap: Record<string, any> | undefined,
+		channelsAdmin: string,
+	): void {
 		if (user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
@@ -22,7 +28,7 @@ export class OAuthEEManager {
 						if (!room) {
 							room = createRoom('c', channel, channelsAdmin, [], false);
 							if (!room || !room.rid) {
-								logger.error(`could not create channel ${ channel }`);
+								logger.error(`could not create channel ${channel}`);
 								return;
 							}
 						}
@@ -61,7 +67,9 @@ export class OAuthEEManager {
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)));
+				roles = identity[roleClaimName].filter(
+					(val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)),
+				);
 			}
 		}
 

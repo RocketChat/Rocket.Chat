@@ -67,7 +67,8 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
-const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolean =>
+const hasKeys =
+	(requiredKeys: string[]): ((data?: Record<string, any>) => boolean) =>
 	(data?: Record<string, any>): boolean => {
 		if (!data) {
 			return false;
@@ -103,22 +104,25 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
-	const getUserNameCached = mem(async (userId: string): Promise<string | undefined> => {
-		const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
-		return user?.name;
-	}, { maxAge: 10000 });
+	const getUserNameCached = mem(
+		async (userId: string): Promise<string | undefined> => {
+			const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+			return user?.name;
+		},
+		{ maxAge: 10000 },
+	);
 
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message: IMessage | undefined = data ?? await Messages.findOne({ _id: id });
+				const message: IMessage | undefined = data ?? (await Messages.findOne({ _id: id }));
 				if (!message) {
 					return;
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = await getSettingCached('UI_Use_Real_Name') === true;
+					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
 
 					if (UseRealName) {
 						if (message.u?._id) {
@@ -153,7 +157,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, { projection: subscriptionFields });
+				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, {
+					projection: subscriptionFields,
+				});
 				if (!subscription) {
 					return;
 				}
@@ -162,7 +168,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, { projection: { u: 1, rid: 1 } });
+				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, {
+					projection: { u: 1, rid: 1 },
+				});
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
@@ -176,16 +184,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const role = clientAction === 'removed'
-			? { _id: id, name: id }
-			: data || await Roles.findOneById(id);
+		const role = clientAction === 'removed' ? { _id: id, name: id } : data || (await Roles.findOneById(id));
 
 		if (!role) {
 			return;
 		}
 
 		broadcast('watch.roles', {
-			clientAction: clientAction !== 'removed' ? 'changed' as const : clientAction,
+			clientAction: clientAction !== 'removed' ? ('changed' as const) : clientAction,
 			role,
 		});
 	});
@@ -195,7 +201,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			switch (clientAction) {
 				case 'inserted':
 				case 'updated':
-					const data = eventData ?? await UsersSessions.findOneById(id);
+					const data = eventData ?? (await UsersSessions.findOneById(id));
 					if (!data) {
 						return;
 					}
@@ -213,11 +219,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				data = data ?? await LivechatInquiry.findOneById(id) ?? undefined;
+				data = data ?? (await LivechatInquiry.findOneById(id)) ?? undefined;
 				break;
 
 			case 'removed':
-				data = await LivechatInquiry.trashFindOneById(id) ?? undefined;
+				data = (await LivechatInquiry.trashFindOneById(id)) ?? undefined;
 				break;
 		}
 
@@ -230,7 +236,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 
 	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, diff }) => {
 		if (clientAction === 'removed') {
-			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
+			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, {
+				projection: { agentId: 1, departmentId: 1 },
+			});
 			if (!data) {
 				return;
 			}
@@ -238,13 +246,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const data = await LivechatDepartmentAgents.findOneById<Pick<ILivechatDepartmentAgents, 'agentId' |'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
+		const data = await LivechatDepartmentAgents.findOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, {
+			projection: { agentId: 1, departmentId: 1 },
+		});
 		if (!data) {
 			return;
 		}
 		broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
 	});
-
 
 	watch<IPermission>(Permissions, async ({ clientAction, id, data: eventData, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
@@ -255,7 +264,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'updated':
 			case 'inserted':
-				data = eventData ?? await Permissions.findOneById(id);
+				data = eventData ?? (await Permissions.findOneById(id));
 				break;
 
 			case 'removed':
@@ -282,7 +291,8 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	watch<ISetting>(Settings, async ({ clientAction, id, data, diff }) => {
-		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
+			// avoid useless changes
 			return;
 		}
 
@@ -290,12 +300,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'updated':
 			case 'inserted': {
-				setting = data ?? await Settings.findOneById(id);
+				setting = data ?? (await Settings.findOneById(id));
 				break;
 			}
 
 			case 'removed': {
-				setting = data ?? await Settings.trashFindOneById(id);
+				setting = data ?? (await Settings.trashFindOneById(id));
 				break;
 			}
 		}
@@ -317,7 +327,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const room = data ?? await Rooms.findOneById(id, { projection: roomFields });
+		const room = data ?? (await Rooms.findOneById(id, { projection: roomFields }));
 		if (!room) {
 			return;
 		}
@@ -347,7 +357,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'updated': {
-				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, { projection: { 'integration._id': 1 } });
+				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, {
+					projection: { 'integration._id': 1 },
+				});
 				if (!history || !history.integration) {
 					return;
 				}
@@ -370,7 +382,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const data = eventData ?? await Integrations.findOneById(id);
+		const data = eventData ?? (await Integrations.findOneById(id));
 		if (!data) {
 			return;
 		}
@@ -384,7 +396,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const data = eventData ?? await EmailInbox.findOneById(id);
+		const data = eventData ?? (await EmailInbox.findOneById(id));
 		if (!data) {
 			return;
 		}

@@ -8,10 +8,7 @@ type GenericTableProps = {
 	children: ReactNode;
 };
 
-export const GenericTable = forwardRef<HTMLElement, GenericTableProps>(function GenericTable(
-	{ fixed = true, children },
-	ref,
-) {
+export const GenericTable = forwardRef<HTMLElement, GenericTableProps>(function GenericTable({ fixed = true, children }, ref) {
 	return (
 		<Box mi='neg-x24' pi='x24' flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
 			<ScrollableContentWrapper overflowX>

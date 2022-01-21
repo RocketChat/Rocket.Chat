@@ -15,12 +15,7 @@ type ContentForHoursProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ContentForHours = ({
-	displacement,
-	onPreviousDateClick,
-	onNextDateClick,
-	timezone,
-}: ContentForHoursProps): ReactElement => {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps): ReactElement => {
 	const utc = timezone === 'utc';
 	const { data } = useHourlyChatActivity({ displacement, utc });
 
@@ -89,8 +84,7 @@ const ContentForHours = ({
 									tickPadding: 4,
 									tickRotation: isLgScreen ? 0 : 25,
 									tickValues: 'every 2 hours',
-									format: (hour): string =>
-										moment().set({ hour, minute: 0, second: 0 }).format('LT'),
+									format: (hour): string => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 								}}
 								axisLeft={null}
 								animate={true}
@@ -115,14 +109,13 @@ const ContentForHours = ({
 									tooltip: {
 										// @ts-ignore
 										backgroundColor: colors.n900,
-										boxShadow:
-											'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+										boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 										borderRadius: 2,
 										padding: 4,
 									},
 								}}
 								tooltip={({ value }): ReactElement => (
-									<Box fontScale='p2' color='alternative'>
+									<Box fontScale='p1m' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>
 								)}

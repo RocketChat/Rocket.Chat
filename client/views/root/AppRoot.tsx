@@ -1,12 +1,11 @@
 import React, { FC, lazy, Suspense } from 'react';
 import { QueryClientProvider } from 'react-query';
 
+import { OmnichannelRoomIconProvider } from '../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import { queryClient } from '../../lib/queryClient';
 import PageLoading from './PageLoading';
 
-const ConnectionStatusBar = lazy(
-	() => import('../../components/connectionStatus/ConnectionStatusBar'),
-);
+const ConnectionStatusBar = lazy(() => import('../../components/connectionStatus/ConnectionStatusBar'));
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const BannerRegion = lazy(() => import('../banners/BannerRegion'));
 const AppLayout = lazy(() => import('./AppLayout'));
@@ -16,10 +15,12 @@ const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
 		<MeteorProvider>
 			<QueryClientProvider client={queryClient}>
-				<ConnectionStatusBar />
-				<BannerRegion />
-				<AppLayout />
-				<PortalsWrapper />
+				<OmnichannelRoomIconProvider>
+					<ConnectionStatusBar />
+					<BannerRegion />
+					<AppLayout />
+					<PortalsWrapper />
+				</OmnichannelRoomIconProvider>
 			</QueryClientProvider>
 		</MeteorProvider>
 	</Suspense>

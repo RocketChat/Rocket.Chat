@@ -88,11 +88,7 @@ const AccountPreferencesPage = () => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
-						<PreferencesLocalizationSection
-							commitRef={commitRef}
-							onChange={onChange}
-							defaultExpanded
-						/>
+						<PreferencesLocalizationSection commitRef={commitRef} onChange={onChange} defaultExpanded />
 						<PreferencesGlobalSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesUserPresenceSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesNotificationsSection commitRef={commitRef} onChange={onChange} />

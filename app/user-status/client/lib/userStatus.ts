@@ -12,7 +12,7 @@ type UserStatusTypes = {
 	list: {
 		[status: string]: Status;
 	};
-}
+};
 
 export const userStatus: UserStatusTypes = {
 	packages: {
@@ -49,4 +49,4 @@ export const userStatus: UserStatusTypes = {
 			statusType: UserStatus.OFFLINE,
 		},
 	},
-};
+} as const;

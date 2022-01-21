@@ -8,11 +8,17 @@ import LivechatTag from '../../../models/server/models/LivechatTag';
 import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
-import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
+import {
+	processWaitingQueue,
+	removePriorityFromRooms,
+	updateInquiryQueuePriority,
+	updatePriorityInquiries,
+	updateRoomPriorityHistory,
+} from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
@@ -22,7 +28,9 @@ export const LivechatEnterprise = {
 		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addMonitor' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:addMonitor',
+			});
 		}
 
 		if (addUserRoles(user._id, 'livechat-monitor')) {
@@ -38,7 +46,9 @@ export const LivechatEnterprise = {
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeMonitor' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:removeMonitor',
+			});
 		}
 
 		if (removeUserFromRoles(user._id, 'livechat-monitor')) {
@@ -89,7 +99,9 @@ export const LivechatEnterprise = {
 		if (_id) {
 			const unit = LivechatUnit.findOneById(_id);
 			if (!unit) {
-				throw new Meteor.Error('error-unit-not-found', 'Unit not found', { method: 'livechat:saveUnit' });
+				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
+					method: 'livechat:saveUnit',
+				});
 			}
 
 			ancestors = unit.ancestors;
@@ -154,7 +166,9 @@ export const LivechatEnterprise = {
 		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!priority) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', { method: 'livechat:removePriority' });
+			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
+				method: 'livechat:removePriority',
+			});
 		}
 		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
@@ -169,10 +183,10 @@ export const LivechatEnterprise = {
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {
-		logger.debug(`Attempting to place room ${ room._id } on hold by user ${ onHoldBy?._id }`);
+		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
-			logger.debug(`Room ${ roomId } invalid or already on hold. Skipping`);
+			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
@@ -183,7 +197,7 @@ export const LivechatEnterprise = {
 			callbacks.run('livechat:afterOnHold', room);
 		});
 
-		logger.debug(`Room ${ room._id } set on hold succesfully`);
+		logger.debug(`Room ${room._id} set on hold succesfully`);
 		return true;
 	},
 
@@ -213,7 +227,7 @@ const queueWorker = {
 		}
 
 		const activeQueues = await this.getActiveQueues();
-		queueLogger.debug(`Active queues: ${ activeQueues.length }`);
+		queueLogger.debug(`Active queues: ${activeQueues.length}`);
 
 		await OmnichannelQueue.initQueue();
 		this.running = true;
@@ -243,24 +257,24 @@ const queueWorker = {
 		}
 
 		const queue = await this.nextQueue();
-		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ queueDelayTimeout }`);
+		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
 
 		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	},
 
 	async checkQueue(queue) {
-		queueLogger.debug(`Processing items for queue ${ queue || 'Public' }`);
+		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
 			if (await OmnichannelQueue.lockQueue()) {
 				await processWaitingQueue(queue);
-				queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
+				queueLogger.debug(`Queue ${queue || 'Public'} processed. Unlocking`);
 				await OmnichannelQueue.unlockQueue();
 			} else {
 				queueLogger.debug('Queue locked. Waiting');
 			}
 		} catch (e) {
 			queueLogger.error({
-				msg: `Error processing queue ${ queue || 'public' }`,
+				msg: `Error processing queue ${queue || 'public'}`,
 				err: e,
 			});
 		} finally {
@@ -268,7 +282,6 @@ const queueWorker = {
 		}
 	},
 };
-
 
 let omnichannelIsEnabled = false;
 function shouldQueueStart() {
@@ -278,11 +291,11 @@ function shouldQueueStart() {
 	}
 
 	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
-	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
-		routingSupportsAutoAssign
-			? 'Starting'
-			: 'Stopping'
-	} queue`);
+	queueLogger.debug(
+		`Routing method ${RoutingManager.methodName} supports auto assignment: ${routingSupportsAutoAssign}. ${
+			routingSupportsAutoAssign ? 'Starting' : 'Stopping'
+		} queue`,
+	);
 
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
 }

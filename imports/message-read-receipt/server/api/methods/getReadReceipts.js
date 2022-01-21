@@ -11,13 +11,15 @@ Meteor.methods({
 		}
 
 		if (!messageId) {
-			throw new Meteor.Error('error-invalid-message', 'The required \'messageId\' param is missing.', { method: 'getReadReceipts' });
+			throw new Meteor.Error('error-invalid-message', "The required 'messageId' param is missing.", { method: 'getReadReceipts' });
 		}
 
 		const message = Messages.findOneById(messageId);
 
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'getReadReceipts' });
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+				method: 'getReadReceipts',
+			});
 		}
 
 		if (!canAccessRoom({ _id: message.rid }, { _id: Meteor.userId() })) {

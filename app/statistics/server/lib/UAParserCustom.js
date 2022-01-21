@@ -9,10 +9,14 @@ const mergeDeep = (target, source) => {
 		if (source[key] === null && (target[key] === undefined || target[key] === null)) {
 			target[key] = null;
 		} else if (source[key] instanceof Array) {
-			if (!target[key]) { target[key] = []; }
+			if (!target[key]) {
+				target[key] = [];
+			}
 			target[key] = target[key].concat(source[key]);
 		} else if (typeof source[key] === 'object') {
-			if (!target[key]) { target[key] = {}; }
+			if (!target[key]) {
+				target[key] = {};
+			}
 			mergeDeep(target[key], source[key]);
 		} else {
 			target[key] = source[key];
@@ -55,6 +59,11 @@ export const UAParserMobile = {
 		return splitUA && splitUA[0] && splitUA[0].trim() === this.appName;
 	},
 
+	/**
+	 *
+	 * @param {string} uaString
+	 * @returns { device: { type: '' }, app: { name: '', version: '' } }
+	 */
 	uaObject(uaString) {
 		if (!this.isMobileApp(uaString)) {
 			return {};
@@ -116,6 +125,11 @@ export const UAParserDesktop = {
 		return uaString.includes(' Electron/');
 	},
 
+	/**
+	 *
+	 * @param {string} uaString
+	 * @returns { device: { type: '' }, os: '' || {}, app: { name: '', version: '' } }
+	 */
 	uaObject(uaString) {
 		if (!this.isDesktopApp(uaString)) {
 			return {};

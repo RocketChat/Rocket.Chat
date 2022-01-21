@@ -36,11 +36,7 @@ export class Session {
 		const sodium = await this.sodium();
 		const nonce = await sodium.randombytes_buf(24);
 
-		const ciphertext = await sodium.crypto_secretbox(
-			Buffer.from(plaintext).toString(this.stringFormatRawData),
-			nonce,
-			this.encryptKey,
-		);
+		const ciphertext = await sodium.crypto_secretbox(Buffer.from(plaintext).toString(this.stringFormatRawData), nonce, this.encryptKey);
 
 		return Buffer.concat([nonce, ciphertext]);
 	}
@@ -54,11 +50,7 @@ export class Session {
 		const sodium = await this.sodium();
 		const buffer = Buffer.from(Buffer.isBuffer(data) ? data.toString() : data, this.stringFormatEncryptedData);
 
-		const decrypted = await sodium.crypto_secretbox_open(
-			buffer.slice(24),
-			buffer.slice(0, 24),
-			this.decryptKey,
-		);
+		const decrypted = await sodium.crypto_secretbox_open(buffer.slice(24), buffer.slice(0, 24), this.decryptKey);
 
 		return Buffer.from(decrypted.toString(), this.stringFormatRawData);
 	}

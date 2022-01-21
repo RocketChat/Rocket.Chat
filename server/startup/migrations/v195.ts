@@ -25,39 +25,41 @@ const migrateCollection = async (): Promise<void> => {
 		active: true,
 		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
-		workHours: officeHours.map((officeHour): IBusinessHourWorkHour => ({
-			day: officeHour.day,
-			start: {
-				time: officeHour.start as any,
-				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
+		workHours: officeHours.map(
+			(officeHour): IBusinessHourWorkHour => ({
+				day: officeHour.day,
+				start: {
+					time: officeHour.start as any,
+					utc: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').utc().format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').utc().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.start}`, 'dddd:HH:mm').format('HH:mm'),
+					},
 				},
-				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('HH:mm'),
+				finish: {
+					time: officeHour.finish as any,
+					utc: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').utc().format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').utc().format('HH:mm'),
+					},
+					cron: {
+						dayOfWeek: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').format('dddd'),
+						time: moment(`${officeHour.day}:${officeHour.finish}`, 'dddd:HH:mm').format('HH:mm'),
+					},
 				},
-			},
-			finish: {
-				time: officeHour.finish as any,
-				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
-				},
-				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('HH:mm'),
-				},
-			},
-			code: officeHour.code,
-			open: officeHour.open,
-		})),
+				code: officeHour.code,
+				open: officeHour.open,
+			}),
+		),
 		timezone: {
 			name: moment.tz.guess(),
 			utc: String(moment().utcOffset() / 60),
 		},
 	};
-	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
+	if ((await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count()) === 0) {
 		LivechatBusinessHours.insertOne(businessHour);
 	} else {
 		LivechatBusinessHours.update({ type: LivechatBusinessHourTypes.DEFAULT }, { $set: { ...businessHour } });

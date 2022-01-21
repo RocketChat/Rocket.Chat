@@ -1,12 +1,4 @@
-import {
-	AutoComplete,
-	Box,
-	Icon,
-	Option,
-	Options,
-	Chip,
-	AutoCompleteProps,
-} from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Icon, Option, Options, Chip, AutoCompleteProps } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
@@ -101,11 +93,7 @@ const RoomsInput: FC<RoomsInputProps> = ({ onChange, ...props }) => {
 
 	const renderItem = useCallback<FC<{ value: IRoom['_id'] }>>(
 		({ value: rid, ...props }) => (
-			<Option
-				key={rooms[rid]._id}
-				{...props}
-				avatar={<RoomAvatar room={rooms[rid]} size={Options.AvatarSize} />}
-			/>
+			<Option key={rooms[rid]._id} {...props} avatar={<RoomAvatar room={rooms[rid]} size={Options.AvatarSize} />} />
 		),
 		[rooms],
 	);

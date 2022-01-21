@@ -9,11 +9,7 @@ export let instance = new MentionsParser({
 
 export let renderMentions = (message) => message;
 
-export const createMentionsMessageRenderer = ({
-	me,
-	pattern,
-	useRealName,
-}) => {
+export const createMentionsMessageRenderer = ({ me, pattern, useRealName }) => {
 	instance = new MentionsParser({
 		me: () => me,
 		pattern: () => pattern,

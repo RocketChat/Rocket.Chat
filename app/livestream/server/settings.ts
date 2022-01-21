@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { settingsRegistry } from '../../settings/server';
 
-Meteor.startup(function() {
-	settingsRegistry.addGroup('LiveStream & Broadcasting', function() {
+Meteor.startup(function () {
+	settingsRegistry.addGroup('LiveStream & Broadcasting', function () {
 		this.add('Livestream_enabled', false, {
 			type: 'boolean',
 			public: true,
@@ -17,9 +17,25 @@ Meteor.startup(function() {
 			enableQuery: { _id: 'Livestream_enabled', value: true },
 		});
 
-		this.add('Broadcasting_client_id', '', { type: 'string', public: false, enableQuery: { _id: 'Broadcasting_enabled', value: true } });
-		this.add('Broadcasting_client_secret', '', { type: 'string', public: false, enableQuery: { _id: 'Broadcasting_enabled', value: true } });
-		this.add('Broadcasting_api_key', '', { type: 'string', public: false, enableQuery: { _id: 'Broadcasting_enabled', value: true } });
-		this.add('Broadcasting_media_server_url', '', { type: 'string', public: true, enableQuery: { _id: 'Broadcasting_enabled', value: true } });
+		this.add('Broadcasting_client_id', '', {
+			type: 'string',
+			public: false,
+			enableQuery: { _id: 'Broadcasting_enabled', value: true },
+		});
+		this.add('Broadcasting_client_secret', '', {
+			type: 'string',
+			public: false,
+			enableQuery: { _id: 'Broadcasting_enabled', value: true },
+		});
+		this.add('Broadcasting_api_key', '', {
+			type: 'string',
+			public: false,
+			enableQuery: { _id: 'Broadcasting_enabled', value: true },
+		});
+		this.add('Broadcasting_media_server_url', '', {
+			type: 'string',
+			public: true,
+			enableQuery: { _id: 'Broadcasting_enabled', value: true },
+		});
 	});
 });

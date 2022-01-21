@@ -1,6 +1,13 @@
 import { Random } from 'meteor/random';
 
-import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord, IImportRecord, IImportRecordType, IImportData } from '../../../../definition/IImportRecord';
+import type {
+	IImportUserRecord,
+	IImportChannelRecord,
+	IImportMessageRecord,
+	IImportRecord,
+	IImportRecordType,
+	IImportData,
+} from '../../../../definition/IImportRecord';
 import { IImportChannel } from '../../../../definition/IImportChannel';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';

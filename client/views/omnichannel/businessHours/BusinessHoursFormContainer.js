@@ -35,12 +35,8 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	const TimezoneForm = useBusinessHoursTimeZone();
 	const MultipleBHForm = useBusinessHoursMultiple();
 
-	const showTimezone = useReactiveValue(
-		useMutableCallback(() => businessHourManager.showTimezoneTemplate()),
-	);
-	const showMultipleBHForm = useReactiveValue(
-		useMutableCallback(() => businessHourManager.showCustomTemplate(data)),
-	);
+	const showTimezone = useReactiveValue(useMutableCallback(() => businessHourManager.showTimezoneTemplate()));
+	const showMultipleBHForm = useReactiveValue(useMutableCallback(() => businessHourManager.showCustomTemplate(data)));
 
 	const onChangeTimezone = useChangeHandler('timezone', saveRef);
 	const onChangeMultipleBHForm = useChangeHandler('multiple', saveRef);
@@ -50,29 +46,17 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	saveRef.current.form = values;
 
 	useEffect(() => {
-		onChange(
-			hasUnsavedChanges ||
-				(showMultipleBHForm && hasChangesMultiple) ||
-				(showTimezone && hasChangesTimeZone),
-		);
+		onChange(hasUnsavedChanges || (showMultipleBHForm && hasChangesMultiple) || (showTimezone && hasChangesTimeZone));
 	});
 
 	return (
 		<Box maxWidth='600px' w='full' alignSelf='center'>
 			<FieldGroup>
 				{showMultipleBHForm && MultipleBHForm && (
-					<MultipleBHForm
-						onChange={onChangeMultipleBHForm}
-						data={data}
-						hasChangesAndIsValid={setHasChangesMultiple}
-					/>
+					<MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />
 				)}
 				{showTimezone && TimezoneForm && (
-					<TimezoneForm
-						onChange={onChangeTimezone}
-						data={data?.timezone?.name ?? data?.timezoneName}
-						hasChanges={setHasChangesTimeZone}
-					/>
+					<TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName} hasChanges={setHasChangesTimeZone} />
 				)}
 				<BusinessHourForm values={values} handlers={handlers} />
 			</FieldGroup>

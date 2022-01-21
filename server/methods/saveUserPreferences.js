@@ -77,7 +77,12 @@ Meteor.methods({
 				if (settings.desktopNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.desktopNotifications, 'desktopNotifications', 'desktopPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.desktopNotifications,
+						'desktopNotifications',
+						'desktopPrefOrigin',
+					);
 				}
 			}
 
@@ -85,7 +90,12 @@ Meteor.methods({
 				if (settings.pushNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.pushNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.pushNotifications,
+						'mobilePushNotifications',
+						'mobilePrefOrigin',
+					);
 				}
 			}
 
@@ -93,7 +103,12 @@ Meteor.methods({
 				if (settings.emailNotificationMode === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
-					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
+					Subscriptions.updateNotificationUserPreferences(
+						user._id,
+						settings.emailNotificationMode,
+						'emailNotifications',
+						'emailPrefOrigin',
+					);
 				}
 			}
 
