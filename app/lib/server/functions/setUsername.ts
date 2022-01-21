@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
-import { hasPermission } from '../../../authorization';
+//import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
@@ -13,7 +13,10 @@ import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const _setUsername = function (userId, u, fullUser) {
+import { IUser } from '../../../../definition/IUser';
+import { hasPermission } from '/app/authorization/server';
+
+export const _setUsername = function (userId: string, u: string, fullUser: IUser) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
@@ -47,7 +50,10 @@ export const _setUsername = function (userId, u, fullUser) {
 			});
 		}
 	} catch (e) {
-		SystemLogger.error(e);
+		SystemLogger.info(`Could not send enrollment email.`);
+		throw new Meteor.Error('error-cannot-send-enrollment-email', `ICould not send enrollment email.`, {
+			function: 'setUsername'
+		});
 	}
 	// Set new username*
 	Users.setUsername(user._id, username);
@@ -55,7 +61,7 @@ export const _setUsername = function (userId, u, fullUser) {
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
 		let gravatar;
-		Object.keys(avatarSuggestions).some((service) => {
+		Object.keys(avatarSuggestions).some((service: string) => {
 			const avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
 				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
@@ -66,7 +72,7 @@ export const _setUsername = function (userId, u, fullUser) {
 			return false;
 		});
 		if (gravatar != null) {
-			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
+			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
 
