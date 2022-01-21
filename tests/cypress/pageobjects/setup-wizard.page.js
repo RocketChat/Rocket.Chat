@@ -1,49 +1,57 @@
 import Page from './Page';
-// import { adminEmail, adminPassword } from '../../data/user';
+import { adminEmail, adminPassword } from '../../data/user';
 
 class SetupWizard extends Page {
-	get fullname() {
-		return cy.get('input[name="fullname"]');
+	get nextStep() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]');
 	}
 
-	get username() {
-		return cy.get('input[name="username"]');
-	}
-
-	get companyEmail() {
-		return cy.get('input[name="companyEmail"]');
-	}
-
-	get password() {
-		return cy.get('input[name="password"]');
-	}
-
-	get organizationName() {
-		return cy.get('input[name="organizationName"]');
+	get goToWorkspace() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="go-to-workspace"]');
 	}
 
 	get organizationType() {
-		return cy.get('div[name="organizationType"]');
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Type"]');
 	}
 
-	get organizationIndustry() {
-		return cy.get('div[name="organizationIndustry"]');
+	get organizationName() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Name"]');
 	}
 
-	get organizationSize() {
-		return cy.get('div[name="organizationSize"]');
+	get industry() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Industry"]');
+	}
+
+	get size() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Size"]');
 	}
 
 	get country() {
-		return cy.get('div[name="country"]');
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Country"]');
 	}
 
-	get nextButton() {
-		return cy.get('button[type="submit"]');
+	get website() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Website"]');
 	}
 
-	get continueStandaloneButton() {
-		return cy.get('.rcx-button').contains('Continue as standalone');
+	get siteName() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Site_Name"]');
+	}
+
+	get language() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Language"]');
+	}
+
+	get serverType() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="Server_Type"]');
+	}
+
+	get registeredServer() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server"]');
+	}
+
+	get standaloneServer() {
+		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server-standalone"]');
 	}
 
 	get serviceTermsAndPrivacyPolicyLabel() {
@@ -54,31 +62,16 @@ class SetupWizard extends Page {
 		return browser.element('[data-qa="setup-wizard"] [data-qa="agree-terms-and-privacy"]');
 	}
 
-	open() {
-		super.open('');
+	login() {
+		cy.login(adminEmail, adminPassword);
 	}
 
-	// login() {
-	// 	cy.login(adminEmail, adminPassword);
-	// }
-
-	fillAdminInfo({ userFullname, username, email, password }) {
-		this.fullname.type(userFullname);
-		this.username.type(username);
-		this.companyEmail.type(email);
-		this.password.type(password);
+	goNext() {
+		this.nextStep.click();
 	}
 
-	fillOrganizationInfo({ organizationName }) {
-		this.organizationName.type(organizationName);
-	}
-
-	goToNextStep() {
-		this.nextButton.click();
-	}
-
-	skipToStandalone() {
-		this.continueStandaloneButton.click();
+	goToHome() {
+		this.goToWorkspace.click();
 	}
 }
 

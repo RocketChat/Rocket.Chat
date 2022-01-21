@@ -1,4 +1,3 @@
-export const userFullname = 'User Test';
 export const username = 'user.test';
 export const email = `${username}@rocket.chat`;
 export const password = 'rocket.chat';

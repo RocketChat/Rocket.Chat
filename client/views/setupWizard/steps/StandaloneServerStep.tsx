@@ -7,14 +7,14 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const CloudAccountStep = (): ReactElement => {
-	const { goToPreviousStep, currentStep, registerAdminUser } = useSetupWizardContext();
+	const { goToPreviousStep, currentStep, registerAdminUser, saveOrganizationData } = useSetupWizardContext();
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const handleConfirmStandalone: ComponentProps<typeof StandaloneServerPage>['onSubmit'] = async ({ registerType }) => {
 		if (registerType !== 'registered') {
-			await registerAdminUser();
+			Promise.all([registerAdminUser(), saveOrganizationData()]);
 			dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 			return setShowSetupWizard('completed');
 		}
