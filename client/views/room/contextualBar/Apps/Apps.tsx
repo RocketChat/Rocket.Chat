@@ -19,7 +19,7 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appInfo }: AppsProps): JSX.El
 	<>
 		<VerticalBar.Header>
 			<Avatar url={getURL(`/api/apps/${appInfo.id}/icon`)} />
-			<VerticalBar.Text>{appInfo.name}</VerticalBar.Text>
+			<VerticalBar.Text>{modalParser.text(view.title)}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
