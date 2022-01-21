@@ -1,24 +1,12 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import React, { ReactElement, ComponentProps } from 'react';
 
-// import { useMethod } from '../../../contexts/ServerContext';
-// import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-// import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-// import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const AdminInfoStep = (): ReactElement => {
 	const t = useTranslation();
-	// const loginWithPassword = useLoginWithPassword();
-	// const registerUser = useMethod('registerUser');
-	// const defineUsername = useMethod('setUsername');
-
-	// const setForceLogin = useSessionDispatch('forceLogin');
-	// const callbacks = useCallbacks();
-	// const dispatchToastMessage = useToastMessageDispatch();
-
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
 
@@ -30,10 +18,7 @@ const AdminInfoStep = (): ReactElement => {
 		validateEmail,
 	} = useSetupWizardContext();
 
-	// todo check if username exists
-	// todo check if username exists
-	// todo check if username exists
-	// todo check if username exists
+	// TODO: check if username exists
 	const validateUsername = (username: string): boolean | string => {
 		if (!usernameRegExp.test(username)) {
 			return t('Invalid_username');
@@ -49,10 +34,7 @@ const AdminInfoStep = (): ReactElement => {
 
 	return (
 		<AdminInfoPage
-			// TODO find out if we need to implement this on iteration ONE
-			// TODO find out if we need to implement this on iteration ONE
-			// TODO find out if we need to implement this on iteration ONE
-			validatePassword={(pw): boolean => pw.length > 0}
+			validatePassword={(password): boolean => password.length > 0}
 			passwordRulesHint={''}
 			validateUsername={validateUsername}
 			validateEmail={validateEmail}
