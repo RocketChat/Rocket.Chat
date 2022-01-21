@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import { UserPresence } from 'meteor/konecty:user-presence';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
@@ -6,18 +7,6 @@ import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../l
 import { Users } from '../../../models/server';
 import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
-import { UserStatus } from '../../../../definition/UserStatus';
-import { api } from '../../../../server/sdk/api';
-import { setUserStatusMethod } from '../../../user-status/server/methods/setUserStatus';
-
-const updateUserPresence = function (user: IUser, status = UserStatus.OFFLINE, statusText = ''): void {
-	const { id, username } = user;
-	setUserStatusMethod(status, statusText);
-
-	api.broadcast('presence.status', {
-		user: { _id: id, username, status, statusText },
-	});
-};
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
@@ -102,15 +91,18 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		if (fields.status || fields.statusText) {
-			updateUserPresence(user, fields.status as UserStatus, fields.statusText);
-		}
-
 		if (!Object.keys(fields).length) {
 			return true;
 		}
 
+		const { status } = fields;
+		delete fields.status;
+
 		await UsersRaw.update({ _id: user.id }, { $set: fields });
+
+		if (status) {
+			UserPresence.setDefaultStatus(user.id, status);
+		}
 
 		return true;
 	}
