@@ -249,49 +249,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		}
 
 		this.voipRoom.closeByRoomId(rid, closeData);
-		// Retreive the closed room
-		/**
-		 * Note (Amol) How do we handle the code below
-		 */
-		/*
-		const closedRoom = await VoipRoom.findOneByIdOrName(rid, {});
-
-		this.logger.debug(`Sending closing message to room ${ room._id }`);
-		const message = {
-			t: 'livechat-close',
-			msg: comment,
-			groupable: false,
-			transcriptRequested: !!transcriptRequest,
-		};
-		sendMessage(visitor, message, closedRoom);
-
-
-		Meteor.defer(() => {
-			/**
-			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
-			 * in the next major version of the Apps-Engine
-
-			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-		});
-		callbacks.runAsync('livechat.closeRoom', room);
-		*/
 		return true;
 	}
-
-	/*
-	async saveRoomInfo(roomData: IRoom, guestData: ILivechatVisitor): Promise<any> {
-		this.logger.debug(`Saving room information on room ${ roomData._id }`);
-		if (!_.isEmpty(guestData.name)) {
-			const { _id: rid } = roomData;
-			const { name } = guestData;
-			if (name) {
-				return await VoipRoom.setFnameById(rid, name)
-				// This one needs to be the last since the agent may not have the subscription
-				// when the conversation is in the queue, then the result will be 0(zero)
-				&& updateSubscriptionDisplayNameByRoomId(rid, name);
-			}
-		}
-	}
-	*/
 }
