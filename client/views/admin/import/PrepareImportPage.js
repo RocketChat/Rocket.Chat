@@ -190,7 +190,7 @@ function PrepareImportPage() {
 					<Button ghost onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
-					<Button primary disabled={isImporting} onClick={handleStartButtonClick}>
+					<Button primary disabled={isImporting || (!usersCount && !channelsCount && !messageCount)} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>
