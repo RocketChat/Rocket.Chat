@@ -58,6 +58,9 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		return;
 	}
 
+	// Remove data from any other user that we may have retained
+	Meteor.users.remove({ _id: { $ne: uid } });
+
 	cancel?.();
 
 	cancel = await Notifications.onUser('userData', (data: IUserDataEvent) => {
@@ -90,3 +93,5 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 
 	return userData;
 };
+
+export const removeLocalUserData = (): number => Meteor.users.remove({});
