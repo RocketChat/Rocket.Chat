@@ -2,16 +2,20 @@ import { settingsRegistry } from '../../settings/server';
 
 settingsRegistry.add('Markdown_Parser', 'original', {
 	type: 'select',
-	values: [{
-		key: 'disabled',
-		i18nLabel: 'Disabled',
-	}, {
-		key: 'original',
-		i18nLabel: 'Original',
-	}, {
-		key: 'marked',
-		i18nLabel: 'Marked',
-	}],
+	values: [
+		{
+			key: 'disabled',
+			i18nLabel: 'Disabled',
+		},
+		{
+			key: 'original',
+			i18nLabel: 'Original',
+		},
+		{
+			key: 'marked',
+			i18nLabel: 'Marked',
+		},
+	],
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
@@ -61,13 +65,16 @@ settingsRegistry.add('Markdown_Marked_Pedantic', false, {
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
-	enableQuery: [{
-		_id: 'Markdown_Parser',
-		value: 'marked',
-	}, {
-		_id: 'Markdown_Marked_GFM',
-		value: false,
-	}],
+	enableQuery: [
+		{
+			_id: 'Markdown_Parser',
+			value: 'marked',
+		},
+		{
+			_id: 'Markdown_Marked_GFM',
+			value: false,
+		},
+	],
 });
 settingsRegistry.add('Markdown_Marked_SmartLists', true, {
 	type: 'boolean',

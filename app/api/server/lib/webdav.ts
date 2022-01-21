@@ -7,8 +7,7 @@ export async function findWebdavAccountsByUserId({ uid }: { uid: string }): Prom
 			projection: {
 				_id: 1,
 				username: 1,
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				server_url: 1,
+				serverURL: 1,
 				name: 1,
 			},
 		}).toArray(),

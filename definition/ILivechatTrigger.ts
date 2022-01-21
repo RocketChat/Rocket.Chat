@@ -3,7 +3,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 export enum ILivechatTriggerType {
 	TIME_ON_SITE = 'time-on-site',
 	PAGE_URL = 'page-url',
-	CHAT_OPENED_BY_VISITOR = 'chat-opened-by-visitor'
+	CHAT_OPENED_BY_VISITOR = 'chat-opened-by-visitor',
 }
 
 export interface ILivechatTriggerCondition {

@@ -63,19 +63,13 @@ const UserCard = forwardRef(function UserCard(
 				<Box withTruncatedText display='flex'>
 					<Username status={status} name={name} title={username !== name ? username : undefined} />
 					{nickname && (
-						<Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>
+						<Box title={t('Nickname')} color='hint' mis='x8' fontScale='p2' withTruncatedText>
 							({nickname})
 						</Box>
 					)}
 				</Box>
 				{customStatus && (
-					<Info>
-						{typeof customStatus === 'string' ? (
-							<MarkdownText content={customStatus} />
-						) : (
-							customStatus
-						)}
-					</Info>
+					<Info>{typeof customStatus === 'string' ? <MarkdownText content={customStatus} parseEmoji={true} /> : customStatus}</Info>
 				)}
 				<Roles>{roles}</Roles>
 				<Info>{localTime}</Info>

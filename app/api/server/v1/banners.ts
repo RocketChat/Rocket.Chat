@@ -50,20 +50,28 @@ import { BannerPlatform } from '../../../../definition/IBanner';
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
-	async get() {
-		check(this.queryParams, Match.ObjectIncluding({
-			platform: Match.OneOf(...Object.values(BannerPlatform)),
-			bid: Match.Maybe(String),
-		}));
+API.v1.addRoute(
+	'banners.getNew',
+	{ authRequired: true },
+	{
+		// deprecated
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					platform: Match.OneOf(...Object.values(BannerPlatform)),
+					bid: Match.Maybe(String),
+				}),
+			);
 
-		const { platform, bid: bannerId } = this.queryParams;
+			const { platform, bid: bannerId } = this.queryParams;
 
-		const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
+			const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
 
-		return API.v1.success({ banners });
+			return API.v1.success({ banners });
+		},
 	},
-});
+);
 
 /**
  * @openapi
@@ -111,23 +119,34 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/:id/banners
-	async get() {
-		check(this.urlParams, Match.ObjectIncluding({
-			id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-		}));
-		check(this.queryParams, Match.ObjectIncluding({
-			platform: Match.OneOf(...Object.values(BannerPlatform)),
-		}));
+API.v1.addRoute(
+	'banners/:id',
+	{ authRequired: true },
+	{
+		// TODO: move to users/:id/banners
+		async get() {
+			check(
+				this.urlParams,
+				Match.ObjectIncluding({
+					id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
+				}),
+			);
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					platform: Match.OneOf(...Object.values(BannerPlatform)),
+				}),
+			);
 
-		const { platform } = this.queryParams;
-		const { id } = this.urlParams;
+			const { platform } = this.queryParams;
+			const { id } = this.urlParams;
 
-		const banners = await Banner.getBannersForUser(this.userId, platform, id);
+			const banners = await Banner.getBannersForUser(this.userId, platform, id);
 
-		return API.v1.success({ banners });
+			return API.v1.success({ banners });
+		},
 	},
-});
+);
 
 /**
  * @openapi
@@ -166,19 +185,26 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('banners', { authRequired: true }, {
-	async get() {
-		check(this.queryParams, Match.ObjectIncluding({
-			platform: Match.OneOf(...Object.values(BannerPlatform)),
-		}));
+API.v1.addRoute(
+	'banners',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					platform: Match.OneOf(...Object.values(BannerPlatform)),
+				}),
+			);
 
-		const { platform } = this.queryParams;
+			const { platform } = this.queryParams;
 
-		const banners = await Banner.getBannersForUser(this.userId, platform);
+			const banners = await Banner.getBannersForUser(this.userId, platform);
 
-		return API.v1.success({ banners });
+			return API.v1.success({ banners });
+		},
 	},
-});
+);
 
 /**
  * @openapi
@@ -213,15 +239,22 @@ API.v1.addRoute('banners', { authRequired: true }, {
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('banners.dismiss', { authRequired: true }, {
-	async post() {
-		check(this.bodyParams, Match.ObjectIncluding({
-			bannerId: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-		}));
+API.v1.addRoute(
+	'banners.dismiss',
+	{ authRequired: true },
+	{
+		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					bannerId: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
+				}),
+			);
 
-		const { bannerId } = this.bodyParams;
+			const { bannerId } = this.bodyParams;
 
-		await Banner.dismiss(this.userId, bannerId);
-		return API.v1.success();
+			await Banner.dismiss(this.userId, bannerId);
+			return API.v1.success();
+		},
 	},
-});
+);

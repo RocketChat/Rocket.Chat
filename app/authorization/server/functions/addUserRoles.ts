@@ -18,7 +18,8 @@ export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], s
 		});
 	}
 
-	if (!Array.isArray(roleNames)) { // TODO: remove this check
+	if (!Array.isArray(roleNames)) {
+		// TODO: remove this check
 		roleNames = [roleNames];
 	}
 

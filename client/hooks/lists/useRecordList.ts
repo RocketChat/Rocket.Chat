@@ -11,9 +11,7 @@ type RecordListValue<T> = {
 	error: Error | undefined;
 };
 
-export const useRecordList = <T extends IRocketChatRecord>(
-	recordList: RecordList<T>,
-): RecordListValue<T> => {
+export const useRecordList = <T extends IRocketChatRecord>(recordList: RecordList<T>): RecordListValue<T> => {
 	const [state, setState] = useState<RecordListValue<T>>(() => ({
 		phase: recordList.phase,
 		items: recordList.items,

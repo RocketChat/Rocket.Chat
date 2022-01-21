@@ -11,7 +11,7 @@ export function StepHeader({ number, title }) {
 			<Box is='p' fontScale='c1' color='hint'>
 				{t('Step')} {number}
 			</Box>
-			<Box is='h2' fontScale='h1' color='default'>
+			<Box is='h2' fontScale='h2' color='default'>
 				{title}
 			</Box>
 		</Box>

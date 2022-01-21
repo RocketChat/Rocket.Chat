@@ -22,7 +22,9 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, {
+			fields: { _id: 1 },
+		});
 		if (subscription) {
 			return room.name;
 		}

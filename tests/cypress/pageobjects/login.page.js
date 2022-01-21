@@ -1,39 +1,73 @@
 import Page from './Page';
 
 class LoginPage extends Page {
-	get registerButton() { return browser.element('button.register'); }
+	get registerButton() {
+		return browser.element('button.register');
+	}
 
-	get forgotPasswordButton() { return browser.element('.forgot-password'); }
+	get forgotPasswordButton() {
+		return browser.element('.forgot-password');
+	}
 
-	get backToLoginButton() { return browser.element('.back-to-login'); }
+	get backToLoginButton() {
+		return browser.element('.back-to-login');
+	}
 
-	get submitButton() { return browser.element('.login'); }
+	get submitButton() {
+		return browser.element('.login');
+	}
 
-	get emailOrUsernameField() { return browser.element('[name=emailOrUsername]'); }
+	get emailOrUsernameField() {
+		return browser.element('[name=emailOrUsername]');
+	}
 
-	get nameField() { return browser.element('[name=name]'); }
+	get nameField() {
+		return browser.element('[name=name]');
+	}
 
-	get emailField() { return browser.element('[name=email]'); }
+	get emailField() {
+		return browser.element('[name=email]');
+	}
 
-	get passwordField() { return browser.element('[name=pass]'); }
+	get passwordField() {
+		return browser.element('[name=pass]');
+	}
 
-	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get confirmPasswordField() {
+		return browser.element('[name=confirm-pass]');
+	}
 
-	get reasonField() { return browser.element('[name=reason]'); }
+	get reasonField() {
+		return browser.element('[name=reason]');
+	}
 
-	get inputUsername() { return browser.element('form#login-card input#username'); }
+	get inputUsername() {
+		return browser.element('form#login-card input#username');
+	}
 
-	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
+	get emailOrUsernameInvalidText() {
+		return browser.element('[name=emailOrUsername]~.input-error');
+	}
 
-	get nameInvalidText() { return browser.element('[name=name]~.input-error'); }
+	get nameInvalidText() {
+		return browser.element('[name=name]~.input-error');
+	}
 
-	get emailInvalidText() { return browser.element('[name=email]~.input-error'); }
+	get emailInvalidText() {
+		return browser.element('[name=email]~.input-error');
+	}
 
-	get passwordInvalidText() { return browser.element('[name=pass]~.input-error'); }
+	get passwordInvalidText() {
+		return browser.element('[name=pass]~.input-error');
+	}
 
-	get confirmPasswordInvalidText() { return browser.element('[name=confirm-pass]~.input-error'); }
+	get confirmPasswordInvalidText() {
+		return browser.element('[name=confirm-pass]~.input-error');
+	}
 
-	get registrationSucceededCard() { return browser.element('#login-card h2'); }
+	get registrationSucceededCard() {
+		return browser.element('#login-card h2');
+	}
 
 	open() {
 		super.open('');

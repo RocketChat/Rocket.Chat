@@ -10,12 +10,17 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	findByNameRegexWithExceptionsAndConditions(searchTerm: string, exceptions: string[] = [], conditions: FilterQuery<ILivechatDepartmentRecord> = {}, options: FindOneOptions<ILivechatDepartmentRecord> = {}): Cursor<ILivechatDepartmentRecord> {
+	findByNameRegexWithExceptionsAndConditions(
+		searchTerm: string,
+		exceptions: string[] = [],
+		conditions: FilterQuery<ILivechatDepartmentRecord> = {},
+		options: FindOneOptions<ILivechatDepartmentRecord> = {},
+	): Cursor<ILivechatDepartmentRecord> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
-		const nameRegex = new RegExp(`^${ escapeRegExp(searchTerm).trim() }`, 'i');
+		const nameRegex = new RegExp(`^${escapeRegExp(searchTerm).trim()}`, 'i');
 
 		const query = {
 			name: nameRegex,
@@ -33,8 +38,28 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	findEnabledByBusinessHourId(businessHourId: string, options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
+	findEnabledByBusinessHourId(
+		businessHourId: string,
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
 		const query = { businessHourId, enabled: true };
+		return this.find(query, options);
+	}
+
+	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
+		businessHourIds: string[],
+		departmentIds: string[],
+		options: FindOneOptions<ILivechatDepartmentRecord>,
+	): Cursor<ILivechatDepartmentRecord> {
+		const query: FilterQuery<ILivechatDepartmentRecord> = {
+			enabled: true,
+			businessHourId: {
+				$in: businessHourIds,
+			},
+			_id: {
+				$in: departmentIds,
+			},
+		};
 		return this.find(query, options);
 	}
 

@@ -9,7 +9,7 @@ export interface IInquiry {
 export enum LivechatInquiryStatus {
 	QUEUED = 'queued',
 	TAKEN = 'taken',
-	READY = 'ready'
+	READY = 'ready',
 }
 
 export interface IVisitor {

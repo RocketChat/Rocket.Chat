@@ -42,9 +42,7 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 			confirmText={t('Delete')}
 		>
 			<Box mb='x8'>
-				{isPassword
-					? t('For_your_security_you_must_enter_your_current_password_to_continue')
-					: t('If_you_are_sure_type_in_your_username')}
+				{isPassword ? t('For_your_security_you_must_enter_your_current_password_to_continue') : t('If_you_are_sure_type_in_your_username')}
 			</Box>
 			<FieldGroup w='full'>
 				<Field>

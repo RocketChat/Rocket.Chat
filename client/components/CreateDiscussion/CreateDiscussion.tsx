@@ -1,15 +1,4 @@
-import {
-	Modal,
-	Field,
-	FieldGroup,
-	ToggleSwitch,
-	TextInput,
-	TextAreaInput,
-	ButtonGroup,
-	Button,
-	Icon,
-	Box,
-} from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
@@ -39,12 +28,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
-const CreateDiscussion = ({
-	onClose,
-	defaultParentRoom,
-	parentMessageId,
-	nameSuggestion,
-}: CreateDiscussionProps): ReactElement => {
+const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
@@ -55,11 +39,9 @@ const CreateDiscussion = ({
 		firstMessage: '',
 	});
 
-	const { name, parentRoom, encrypted, usernames, firstMessage } =
-		values as CreateDiscussionFormValues;
+	const { name, parentRoom, encrypted, usernames, firstMessage } = values as CreateDiscussionFormValues;
 
-	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } =
-		handlers;
+	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } = handlers;
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
@@ -107,9 +89,7 @@ const CreateDiscussion = ({
 					<Field>
 						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
 						<Field.Row>
-							{defaultParentRoom && (
-								<DefaultParentRoomField defaultParentRoom={defaultParentRoom} />
-							)}
+							{defaultParentRoom && <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 
 							{!defaultParentRoom && (
 								<RoomAutoComplete
@@ -121,13 +101,7 @@ const CreateDiscussion = ({
 							)}
 						</Field.Row>
 					</Field>
-					<Field
-						display='flex'
-						alignItems='center'
-						flexDirection='row'
-						justifyContent='spaceBetween'
-						flexGrow={1}
-					>
+					<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Encrypted')}</Field.Label>
 						</Box>
@@ -147,11 +121,7 @@ const CreateDiscussion = ({
 					<Field>
 						<Field.Label>{t('Invite_Users')}</Field.Label>
 						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
-							<UserAutoCompleteMultiple
-								value={usernames}
-								onChange={onChangeUsers}
-								placeholder={t('Username_Placeholder')}
-							/>
+							<UserAutoCompleteMultiple value={usernames} onChange={onChangeUsers} placeholder={t('Username_Placeholder')} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -165,11 +135,7 @@ const CreateDiscussion = ({
 								disabled={encrypted}
 							/>
 						</Field.Row>
-						{encrypted && (
-							<Field.Description>
-								{t('Discussion_first_message_disabled_due_to_e2e')}
-							</Field.Description>
-						)}
+						{encrypted && <Field.Description>{t('Discussion_first_message_disabled_due_to_e2e')}</Field.Description>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

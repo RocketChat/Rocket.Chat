@@ -53,6 +53,10 @@
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+		&--templateless {
+			padding: var(--popover-padding) 0;
+		}
 	}
 
 	&__column {
@@ -82,6 +86,8 @@
 
 		margin-bottom: 8px;
 
+		padding: 0 var(--popover-padding);
+
 		text-transform: uppercase;
 
 		color: var(--popover-title-color);
@@ -96,7 +102,7 @@
 
 		width: 100%;
 
-		padding: 4px 0;
+		padding: 4px var(--popover-padding);
 
 		cursor: pointer;
 
@@ -108,6 +114,10 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&:hover {
+			background-color: #f7f8fa;
+		}
 
 		&--alert {
 			color: var(--rc-color-error);
@@ -179,9 +189,9 @@
 	}
 
 	&__divider {
-		width: 100%;
+		width: 88%;
 		height: var(--popover-divider-height);
-		margin: 1rem 0;
+		margin: 1rem auto;
 
 		background: var(--popover-divider-color);
 

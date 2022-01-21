@@ -18,9 +18,7 @@ const FilterComponent = ({ onChange }) => {
 		setFilter(value);
 	});
 
-	return (
-		<TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} flexGrow={0} />
-	);
+	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} flexGrow={0} />;
 };
 
 export default FilterComponent;

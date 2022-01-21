@@ -82,5 +82,4 @@ export const some = <T>(x: T | T[], f: (x: T | T[]) => boolean): boolean => {
 	return Array.isArray(x) && x.some(f);
 };
 
-export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } =>
-	Array.isArray(value) && value.length === 0;
+export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } => Array.isArray(value) && value.length === 0;

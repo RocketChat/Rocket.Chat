@@ -16,16 +16,22 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-name', 'Invalid name', { method: 'addOAuthApp' });
 		}
 		if (!_.isString(application.redirectUri) || application.redirectUri.trim() === '') {
-			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'addOAuthApp' });
+			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
+				method: 'addOAuthApp',
+			});
 		}
 		if (!_.isBoolean(application.active)) {
-			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', { method: 'addOAuthApp' });
+			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
+				method: 'addOAuthApp',
+			});
 		}
 
 		application.redirectUri = parseUriList(application.redirectUri);
 
 		if (application.redirectUri.length === 0) {
-			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', { method: 'addOAuthApp' });
+			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
+				method: 'addOAuthApp',
+			});
 		}
 
 		application.clientId = Random.id();

@@ -5,13 +5,7 @@ import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
-const UserStatusMenu = ({
-	onChange,
-	optionWidth = undefined,
-	initialStatus = 'offline',
-	placement = 'bottom-end',
-	...props
-}) => {
+const UserStatusMenu = ({ onChange, optionWidth = undefined, initialStatus = 'offline', placement = 'bottom-end', ...props }) => {
 	const t = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption');
@@ -39,15 +33,11 @@ const UserStatusMenu = ({
 		return statuses;
 	}, [t, allowInvisibleStatus]);
 
-	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(
-		-1,
-		options,
-		([selected], [, hide]) => {
-			setStatus(selected);
-			reset();
-			hide();
-		},
-	);
+	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
+		setStatus(selected);
+		reset();
+		hide();
+	});
 
 	const ref = useRef();
 	const onClick = useCallback(() => {
@@ -68,17 +58,7 @@ const UserStatusMenu = ({
 
 	return (
 		<>
-			<Button
-				ref={ref}
-				small
-				square
-				ghost
-				onClick={onClick}
-				onBlur={hide}
-				onKeyUp={handleKeyUp}
-				onKeyDown={handleKeyDown}
-				{...props}
-			>
+			<Button ref={ref} small square ghost onClick={onClick} onBlur={hide} onKeyUp={handleKeyUp} onKeyDown={handleKeyDown} {...props}>
 				<UserStatus status={status} />
 			</Button>
 			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>

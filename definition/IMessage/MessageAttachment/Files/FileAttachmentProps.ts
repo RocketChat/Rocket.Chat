@@ -1,4 +1,3 @@
-
 import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { AudioAttachmentProps } from './AudioAttachmentProps';
 import { FileProp } from './FileProp';

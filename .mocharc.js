@@ -11,18 +11,17 @@ const base = require('./.mocharc.base.json');
  * covers test files too.
  */
 
-Object.assign(process.env, {
-	TS_NODE_FILES: true,
-	TS_NODE_TRANSPILE_ONLY: true,
-}, process.env);
+Object.assign(
+	process.env,
+	{
+		TS_NODE_FILES: true,
+		TS_NODE_TRANSPILE_ONLY: true,
+	},
+	process.env,
+);
 
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
-	spec: [
-		'app/**/*.spec.ts',
-		'app/**/*.tests.js',
-		'app/**/*.tests.ts',
-		'server/**/*.tests.ts',
-	],
+	spec: ['app/**/*.spec.ts', 'app/**/*.tests.js', 'app/**/*.tests.ts', 'server/**/*.tests.ts'],
 };

@@ -12,9 +12,7 @@ export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsO
 		async () => {
 			const { start, end } = getPeriodRange(period);
 
-			const response = await getFromRestApi(
-				'/v1/engagement-dashboard/messages/top-five-popular-channels',
-			)({
+			const response = await getFromRestApi('/v1/engagement-dashboard/messages/top-five-popular-channels')({
 				start: start.toISOString(),
 				end: end.toISOString(),
 			});

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Messages, Subscriptions } from '../../../models/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
@@ -49,8 +49,8 @@ export const processThreads = async (message, room) => {
 
 	const replies = [
 		...new Set([
-			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
-			...!parentMessage.tcount && room.t === 'd' ? room.uids : [],
+			...((!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || []),
+			...(!parentMessage.tcount && room.t === 'd' ? room.uids : []),
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
@@ -58,13 +58,11 @@ export const processThreads = async (message, room) => {
 	notifyUsersOnReply(message, replies, room);
 	metaData(message, parentMessage, replies);
 
-	const {
-		sender,
-		hasMentionToAll,
-		hasMentionToHere,
-		notificationMessage,
-		mentionIdsWithoutGroups,
-	} = await notification(message, room, replies);
+	const { sender, hasMentionToAll, hasMentionToHere, notificationMessage, mentionIdsWithoutGroups } = await notification(
+		message,
+		room,
+		replies,
+	);
 
 	if (room.t === 'c') {
 		const mentions = [...mentionIdsWithoutGroups];
@@ -75,37 +73,39 @@ export const processThreads = async (message, room) => {
 			}
 		});
 
-		Promise.all(mentions
-			.map(async (userId) => {
+		Promise.all(
+			mentions.map(async (userId) => {
 				await callJoinRoom(userId, room._id);
 
 				return userId;
 			}),
-		).then((users) => {
-			users.forEach((userId) => {
-				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+		)
+			.then((users) => {
+				users.forEach((userId) => {
+					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
 
-				sendNotification({
-					subscription,
-					sender,
-					hasMentionToAll,
-					hasMentionToHere,
-					message,
-					notificationMessage,
-					room,
-					mentionIds,
+					sendNotification({
+						subscription,
+						sender,
+						hasMentionToAll,
+						hasMentionToHere,
+						message,
+						notificationMessage,
+						room,
+						mentionIds,
+					});
 				});
+			})
+			.catch((error) => {
+				throw new Meteor.Error(error);
 			});
-		}).catch((error) => {
-			throw new Meteor.Error(error);
-		});
 	}
 
 	return message;
 };
 
-Meteor.startup(function() {
-	settings.watch('Threads_enabled', function(value) {
+Meteor.startup(function () {
+	settings.watch('Threads_enabled', function (value) {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
