@@ -1,7 +1,6 @@
 import { Random } from 'meteor/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
-import { Meteor } from 'meteor/meteor';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
@@ -9,11 +8,11 @@ import { Subscriptions, Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 import { UserStatus } from '../../../../definition/UserStatus';
 import { api } from '../../../../server/sdk/api';
+import { setUserStatusMethod } from '../../../user-status/server/methods/setUserStatus';
 
 const updateUserPresence = function (user: IUser, status = UserStatus.OFFLINE, statusText = ''): void {
 	const { id, username } = user;
-
-	Meteor.call('setUserStatus', status, statusText);
+	setUserStatusMethod(status, statusText);
 
 	api.broadcast('presence.status', {
 		user: { _id: id, username, status, statusText },
@@ -98,7 +97,6 @@ export class AppUserBridge extends UserBridge {
 
 	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
-		console.debug(`The App ${appId} is updating a user`);
 
 		if (!user) {
 			throw new Error('User not provided');
