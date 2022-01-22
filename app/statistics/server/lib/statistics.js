@@ -28,8 +28,8 @@ import { getSettingsStatistics } from '../../../../server/lib/statistics/getSett
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
-const getUserLanguages = (totalUsers) => {
-	const result = Promise.await(UsersRaw.getUserLanguages());
+const getUserLanguages = async (totalUsers) => {
+	const result = await UsersRaw.getUserLanguages();
 
 	const languages = {
 		none: totalUsers,
@@ -87,7 +87,7 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
-		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
+		statistics.userLanguages = await getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
@@ -111,7 +111,7 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
+		statistics.omnichannelSources = (await RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
 			id,
 			alias,
 			type,
