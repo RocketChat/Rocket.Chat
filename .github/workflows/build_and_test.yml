@@ -536,7 +536,9 @@ jobs:
       run: |
         cd /tmp/build
 
-        DOCKER_TAG="${GITHUB_REF#*tags/}"
+        GIT_TAG="${GITHUB_REF#*tags/}"
+
+        DOCKER_TAG=$GIT_TAG
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
           IMAGE_NAME="${IMAGE_NAME}.preview"
