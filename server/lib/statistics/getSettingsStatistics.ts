@@ -141,8 +141,7 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 		// Mapping only _id values
 		const settingsIDs = settingsBase.map((el) => el.key);
 
-		const settingsArray = await Settings.findByIds(settingsIDs).toArray();
-		const settingsStatistics = settingsArray
+		const settingsStatistics = (await Settings.findByIds(settingsIDs).toArray())
 			.map((el): ISettingStatistics => {
 				const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
 
