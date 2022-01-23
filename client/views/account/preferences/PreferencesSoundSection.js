@@ -1,5 +1,5 @@
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 
 import { CustomSounds } from '../../../../app/custom-sounds/client';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -32,6 +32,23 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 		(e) => handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100))),
 		[handleNotificationsSoundVolume],
 	);
+
+	const [sound, setSound] = useState({ newMessageSound: newMessageNotification, newRoomSound: newRoomNotification });
+	useEffect(() => {
+		let playSound;
+		if (sound.newMessageSound !== newMessageNotification) {
+			playSound = newMessageNotification;
+			setSound({ newMessageSound: newMessageNotification });
+		} else if (sound.newRoomSound !== newRoomNotification) {
+			playSound = newRoomNotification;
+			setSound({ newRoomSound: newRoomNotification });
+		}
+
+		CustomSounds.play(playSound, {
+			volume: Number((notificationsSoundVolume / 100).toPrecision(2)),
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [newMessageNotification, newRoomNotification]);
 
 	commitRef.current.sound = commit;
 
