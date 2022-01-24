@@ -21,7 +21,7 @@ export const isUseVoipClientResultError = (result: UseVoipClientResult): result 
 	!!(result as UseVoipClientResultError).error;
 
 export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
-	result === undefined || Object.keys(result).length === 0;
+	!result || !Object.keys(result).length;
 
 export const useVoipClient = (): UseVoipClientResult => {
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
