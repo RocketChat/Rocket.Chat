@@ -8,9 +8,13 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
+
+import { IMessage } from '/definition/IMessage';
+import { IUser } from '/definition/IUser';
+
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
-export const updateMessage = function (message, user, originalMessage) {
+export const updateMessage = function (message: IMessage, user: IUser, originalMessage: IMessage) {
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}
@@ -19,14 +23,15 @@ export const updateMessage = function (message, user, originalMessage) {
 	if (message && Apps && Apps.isLoaded()) {
 		const appMessage = Object.assign({}, originalMessage, message);
 
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage));
+		// Assert that 'Apps.getBridges()' is non-null using the 'Non-null assertion operator' (!)
+		const prevent = Promise.await(Apps.getBridges()!.getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage));
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
+		result = Promise.await(Apps.getBridges()!.getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage));
+		result = Promise.await(Apps.getBridges()!.getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
 
 		if (typeof result === 'object') {
 			message = Object.assign(appMessage, result);
@@ -52,11 +57,15 @@ export const updateMessage = function (message, user, originalMessage) {
 		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
 			message.md = parser(message.msg);
 		}
-	} catch (e) {
-		SystemLogger.error(e); // errors logged while the parser is at experimental stage
+	} catch (e: unknown) {
+		if(e instanceof Error){
+			SystemLogger.error(e); // errors logged while the parser is at experimental stage
+			throw e;
+		}
 	}
 
 	const tempid = message._id;
+	//Change IMessage props: _id: string | undefined; or use _id as optional
 	delete message._id;
 
 	Messages.update({ _id: tempid }, { $set: message });
@@ -66,7 +75,7 @@ export const updateMessage = function (message, user, originalMessage) {
 	if (Apps && Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageUpdated', message);
+		Apps.getBridges()!.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
 	Meteor.defer(function () {
