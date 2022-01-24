@@ -20,7 +20,8 @@ export const useAppsContextualBar = (): AppsContextualBarData | undefined => {
 	const [appInfo, setAppInfo] = useState<App>();
 
 	const viewId = params?.context;
-	const { _id: roomId } = ChatRoom.findOne({ name: params?.name }, { fields: { _id: 1 } });
+	const currentChatRoom = ChatRoom.findOne({ name: params?.name }, { fields: { _id: 1 } });
+	const { _id: roomId } = currentChatRoom === undefined ? { _id: 0 } : currentChatRoom;
 
 	useEffect(() => {
 		async function getAppData(appId: string): Promise<void> {
