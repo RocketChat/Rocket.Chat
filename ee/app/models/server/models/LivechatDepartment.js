@@ -51,7 +51,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
 		}
 
-		return LivechatDepartmentModel.findByUnitIds([businessUnit], { fields });
+		return LivechatDepartmentModel.findActiveByUnitIds([businessUnit], { fields });
 	},
 });
 
