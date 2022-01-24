@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server';
 
 slashCommands.add(
 	'join',
