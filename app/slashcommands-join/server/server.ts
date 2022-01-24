@@ -8,9 +8,6 @@ import { slashCommands } from '../../utils/server';
 import { api } from '../../../server/sdk/api';
 
 function Join(command: string, params: string, item: Record<string, string>): void {
-
-	//console.log(slashCommands);
-
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
 	}
