@@ -39,8 +39,12 @@ export class AppCommandsBridge extends CommandBridge {
 		if (!this.disabledCommands.has(cmd)) {
 			throw new Error(`The command is not currently disabled: "${cmd}"`);
 		}
+		const slCommandsCmd = this.disabledCommands.get(cmd);
+		if (!slCommandsCmd) {
+			return;
+		}
 
-		slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
+		slashCommands.commands[cmd] = slCommandsCmd;
 		this.disabledCommands.delete(cmd);
 
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -81,6 +85,7 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 
 		const item = slashCommands.commands[cmd];
+
 		item.params = command.i18nParamsExample ? command.i18nParamsExample : item.params;
 		item.description = command.i18nDescription ? command.i18nDescription : item.params;
 		item.callback = this._appCommandExecutor.bind(this);

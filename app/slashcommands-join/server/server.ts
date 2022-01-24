@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/server';
+import { slashCommands } from '../../utils/lib/slashCommand';
 import { api } from '../../../server/sdk/api';
 
 function Join(command: string, params: string, item: Record<string, string>): void {
@@ -50,8 +50,16 @@ function Join(command: string, params: string, item: Record<string, string>): vo
 	Meteor.call('joinRoom', room._id);
 }
 
-slashCommands.add('join', Join, {
-	description: 'Join_the_given_channel',
-	params: '#channel',
-	permission: 'view-c-room',
-});
+slashCommands.add(
+	'join',
+	Join,
+	{
+		description: 'Join_the_given_channel',
+		params: '#channel',
+		permission: 'view-c-room',
+	},
+	undefined,
+	false,
+	undefined,
+	undefined,
+);
