@@ -2,12 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { Users } from '../../../models/server';
-import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+//import { settings } from '../../../settings';
+//import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setRealName = function (userId, name, fullUser) {
+import { hasPermission } from '/app/authorization/server';
+import { IUser } from '../../../../definition/IUser';
+import { settings } from '/app/settings/server/functions/settings';
+
+export const _setRealName = function (userId: string, name: string, fullUser: IUser) {
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -17,7 +21,8 @@ export const _setRealName = function (userId, name, fullUser) {
 	const user = fullUser || Users.findOneById(userId);
 
 	// User already has desired name, return
-	if (s.trim(user.name) === name) {
+	// Assert that 'user' is non-null and access 'name' 		 using the 'Non-null assertion operator' (!)
+	if (s.trim(user.name!) === name) {
 		return user;
 	}
 
