@@ -1,42 +1,82 @@
-import { useContext } from 'react';
+import { useMemo, ContextType } from 'react';
 
-import { AppsContext } from '../AppsContext';
+import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
+import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
+import type { AppsContext } from '../AppsContext';
+import { filterAppByCategories } from '../helpers/filterAppByCategories';
+import { filterAppByText } from '../helpers/filterAppByText';
 import { App } from '../types';
 
+type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
+
 export const useFilteredApps = ({
-	filterFunction = (text: string): ((app: App) => boolean) => {
-		if (!text) {
-			return (): boolean => true;
-		}
-		return (app: App): boolean => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-	},
+	appsData,
 	text,
-	sort: [, sortDirection],
+	sortDirection,
 	current,
+	categories = [],
 	itemsPerPage,
 }: {
-	filterFunction: (text: string) => (app: App) => boolean;
+	appsData: appsDataType;
 	text: string;
-	sort: [string, 'asc' | 'desc'];
+	sortDirection: 'asc' | 'desc';
 	current: number;
 	itemsPerPage: number;
-	apps: App[];
-}): [App[] | null, number] => {
-	const { apps } = useContext(AppsContext);
+	categories?: string[];
+}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
+	const value = useMemo(() => {
+		if (appsData.value === undefined) {
+			return undefined;
+		}
 
-	if (!Array.isArray(apps) || apps.length === 0) {
-		return [null, 0];
+		const { apps } = appsData.value;
+
+		let filtered: App[] = apps;
+		let shouldShowSearchText = true;
+
+		if (Boolean(categories.length) && Boolean(text)) {
+			filtered = apps.filter((app) => filterAppByCategories(app, categories)).filter(({ name }) => filterAppByText(name, text));
+			shouldShowSearchText = true;
+		}
+
+		if (Boolean(categories.length) && !text) {
+			filtered = apps.filter((app) => filterAppByCategories(app, categories));
+			shouldShowSearchText = false;
+		}
+
+		if (!categories.length && Boolean(text)) {
+			filtered = apps.filter(({ name }) => filterAppByText(name, text));
+			shouldShowSearchText = true;
+		}
+
+		if (sortDirection === 'desc') {
+			filtered.reverse();
+		}
+
+		const total = filtered.length;
+		const offset = current > total ? 0 : current;
+		const end = current + itemsPerPage;
+		const slice = filtered.slice(offset, end);
+
+		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
+	}, [categories, current, appsData, itemsPerPage, sortDirection, text]);
+
+	if (appsData.phase === AsyncStatePhase.RESOLVED) {
+		if (!value) {
+			throw new Error('useFilteredApps - Unexpected state');
+		}
+		return {
+			...appsData,
+			value,
+		};
 	}
 
-	const filtered = apps.filter(filterFunction(text));
-	if (sortDirection === 'desc') {
-		filtered.reverse();
+	if (appsData.phase === AsyncStatePhase.UPDATING) {
+		throw new Error('useFilteredApps - Unexpected state');
 	}
 
-	const total = filtered.length;
-	const start = current > total ? 0 : current;
-	const end = current + itemsPerPage;
-	const slice = filtered.slice(start, end);
-
-	return [slice, total];
+	return {
+		...appsData,
+		value: undefined,
+	};
 };
