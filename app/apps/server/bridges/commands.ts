@@ -24,6 +24,7 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 
 		const cmd = command.toLowerCase();
+
 		return typeof slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
 	}
 

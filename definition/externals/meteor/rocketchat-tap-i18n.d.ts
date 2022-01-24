@@ -8,7 +8,7 @@ declare module 'meteor/rocketchat:tap-i18n' {
 			options?: {
 				lng?: string;
 			} & {
-				[replacements: string]: boolean | number | string;
+				[replacements: string]: boolean | number | string | string[];
 			},
 		): string;
 		function getLanguages(): {
