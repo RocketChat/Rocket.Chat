@@ -141,14 +141,17 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 		// Mapping only _id values
 		const settingsIDs = settingsBase.map((el) => el.key);
 
-		const settingsStatistics = (await Settings.findByIds(settingsIDs).toArray())
-			.map((el): ISettingStatistics => {
-				const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
+		const settingsStatistics = (
+			await Settings.findByIds(settingsIDs)
+				.map((el): ISettingStatistics => {
+					const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
 
-				if (!!alias && Object.keys(el).length) return { [String(alias)]: el.value };
-				return alias;
-			})
-			.filter((el) => Object.keys(el).length) // Filter to remove all empty objects
+					if (!!alias && Object.keys(el).length) return { [String(alias)]: el.value };
+					return alias;
+				})
+				.filter((el: ISettingStatistics) => Object.keys(el).length)
+				.toArray()
+		) // Filter to remove all empty objects
 			.reduce((a, b) => Object.assign(a, b), {}); // Convert array to objects
 		const staticticObject = await setSettingsStatistics(settingsStatistics);
 
