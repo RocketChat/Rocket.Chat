@@ -16,10 +16,12 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 		status = !user ? 'online' : 'offline',
 		username,
 		avatarETag,
+		statusText,
 	} = user || {
 		_id: '',
 		username: 'Anonymous',
 		status: 'online',
+		statusText: '',
 	};
 
 	// const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
@@ -58,7 +60,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 					mie='neg-x2'
 					mbe='neg-x2'
 				>
-					<UserStatus small status={status} />
+					<UserStatus small status={status} statusText={statusText} />
 				</Box>
 			</Box>
 			{user &&

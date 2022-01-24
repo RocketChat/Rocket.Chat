@@ -130,5 +130,15 @@
 		"contributors": [
 			"sampaiodiego"
 		]
+	}],
+	"4.3.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"yash-rajpal",
+			"pierre-lehnen-rc",
+			"gronke"
+		]
 	}]
 }

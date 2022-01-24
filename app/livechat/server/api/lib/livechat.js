@@ -22,8 +22,8 @@ async function findTriggers() {
 	}));
 }
 
-export function findDepartments() {
-	return LivechatDepartment.findEnabledWithAgents({
+export function findDepartments(businessUnit) {
+	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
 		_id: 1,
 		name: 1,
 		showOnRegistration: 1,
@@ -107,10 +107,10 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export async function settings() {
+export async function settings({ businessUnit = '' }) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
-	const departments = findDepartments();
+	const departments = findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {
