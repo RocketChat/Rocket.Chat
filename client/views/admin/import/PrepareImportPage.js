@@ -183,6 +183,9 @@ function PrepareImportPage() {
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
+	const handleMinimumImportData = () =>
+		!!((!usersCount && !channelsCount && !messageCount) || (!usersCount && !channelsCount && messageCount !== 0));
+
 	return (
 		<Page>
 			<Page.Header title={t('Importing_Data')}>
@@ -190,7 +193,7 @@ function PrepareImportPage() {
 					<Button ghost onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
-					<Button primary disabled={isImporting || (!usersCount && !channelsCount && !messageCount)} onClick={handleStartButtonClick}>
+					<Button primary disabled={isImporting || handleMinimumImportData()} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>
