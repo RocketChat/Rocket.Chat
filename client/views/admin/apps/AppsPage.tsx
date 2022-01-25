@@ -7,14 +7,12 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import AppsTable from './AppsTable';
-import MarketplaceTable from './MarketplaceTable';
 
 type AppsPageProps = {
-	isMarketPlace: boolean;
-	context: string;
+	isMarketplace: boolean;
 };
 
-const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
+const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
@@ -44,7 +42,7 @@ const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
 		<Page>
 			<Page.Header title={t('Apps')}>
 				<ButtonGroup>
-					{isMarketPlace && !isLoggedInCloud && (
+					{isMarketplace && !isLoggedInCloud && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
 							{isLoggedInCloud === undefined ? (
 								<Skeleton width='x80' />
@@ -63,14 +61,16 @@ const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketPlace}>
+				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: 'installed' })} selected={context === 'installed'}>
+				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: 'installed' })} selected={!isMarketplace}>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
-			<Page.Content>{context === 'installed' ? <AppsTable /> : <MarketplaceTable />}</Page.Content>
+			<Page.Content>
+				<AppsTable isMarketplace={isMarketplace} />
+			</Page.Content>
 		</Page>
 	);
 };

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization';
 
 function Topic(command, params, item) {

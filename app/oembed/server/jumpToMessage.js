@@ -6,7 +6,7 @@ import _ from 'underscore';
 
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
 

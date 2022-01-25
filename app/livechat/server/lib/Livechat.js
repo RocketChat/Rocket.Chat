@@ -15,7 +15,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import {
 	Users,
 	LivechatRooms,

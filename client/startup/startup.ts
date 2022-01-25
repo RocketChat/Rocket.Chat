@@ -13,7 +13,7 @@ import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
-import { synchronizeUserData } from '../lib/userData';
+import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 if (window.DISABLE_ANIMATION) {
@@ -39,6 +39,7 @@ Meteor.startup(() => {
 	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
+			removeLocalUserData();
 			return;
 		}
 		if (!Meteor.status().connected) {
