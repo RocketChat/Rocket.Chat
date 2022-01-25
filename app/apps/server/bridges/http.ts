@@ -6,6 +6,8 @@ import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges'
 import { AppServerOrchestrator } from '../orchestrator';
 import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
+const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
+
 export class AppHttpBridge extends HttpBridge {
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -38,7 +40,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		let paramsForBody;
 
-		if (content || method === 'get' || method === 'head') {
+		if (content || isGetOrHead(method)) {
 			if (request.params) {
 				Object.keys(request.params).forEach((key) => {
 					if (request.params?.[key]) {
@@ -57,6 +59,10 @@ export class AppHttpBridge extends HttpBridge {
 			});
 			content = data.toString();
 			headers['Content-Type'] = 'application/x-www-form-urlencoded';
+		}
+
+		if (isGetOrHead(method)) {
+			content = undefined;
 		}
 
 		// end comptability with old HTTP.call API
