@@ -78,7 +78,6 @@ OTR.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
-		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
 	generateKeyPair() {
@@ -114,9 +113,6 @@ OTR.Room = class {
 			})
 			.then((exportedPublicKey) => {
 				this.exportedPublicKey = exportedPublicKey;
-
-				// Once we have generated new keys, it's safe to delete old messages
-				Meteor.call('deleteOldOTRMessages', this.roomId);
 			})
 			.catch((e) => {
 				dispatchToastMessage({ type: 'error', message: e });

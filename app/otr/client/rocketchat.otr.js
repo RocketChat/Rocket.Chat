@@ -94,7 +94,6 @@ Meteor.startup(function () {
 				}
 				if (data.userId !== Meteor.userId()) {
 					return otrRoom.encryptText(ack).then((ack) => {
-						Meteor.call('updateOTRAck', message._id, ack);
 						return message;
 					});
 				}

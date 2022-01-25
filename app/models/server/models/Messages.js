@@ -104,17 +104,6 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
-		return this.remove(query);
-	}
-
-	updateOTRAck(_id, otrAck) {
-		const query = { _id };
-		const update = { $set: { otrAck } };
-		return this.update(query, update);
-	}
-
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
