@@ -16,8 +16,6 @@ import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 export function executeSendMessage(uid, message) {
-	console.log("New message = ", message);
-
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -77,10 +75,12 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+
 		const otrStreamer = notifications.streamRoomMessage;
 		if(message.t === 'otr') {
-			return 	otrStreamer.emit(message.rid, message, user, room);
+			return otrStreamer.emit(message.rid, message, user, room);
 		}
+
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
 	} catch (error) {

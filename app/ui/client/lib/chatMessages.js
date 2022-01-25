@@ -26,7 +26,6 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
-import { OTR } from '/app/otr/client/rocketchat.otr';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -334,10 +333,6 @@ export class ChatMessages {
 		if (await this.processSlashCommand(message)) {
 			return;
 		}
-
-		// if(message.t === 'otr') {
-		// 	return OTR.getInstanceByRoomId(message.rid).sendMessage(message);
-		// }
 
 		await callWithErrorHandling('sendMessage', message);
 	}
