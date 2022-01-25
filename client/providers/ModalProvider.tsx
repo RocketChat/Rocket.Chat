@@ -56,7 +56,7 @@ const ModalProvider: FC = ({ children }) => {
 			{children}
 			{currentModal && (
 				<ModalPortal>
-					<Modal.Backdrop zIndex={9999} id={BACKDROP_ID} onClick={closeModalOnBackdropClick}>
+					<Modal.Backdrop zIndex={9999} id={BACKDROP_ID} onMouseDown={closeModalOnBackdropClick}>
 						{currentModal}
 					</Modal.Backdrop>
 				</ModalPortal>
