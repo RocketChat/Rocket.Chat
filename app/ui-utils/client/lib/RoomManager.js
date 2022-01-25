@@ -19,6 +19,7 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { message } from '/tests/data/api-data';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -46,6 +47,7 @@ export const RoomManager = new (function () {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
+	const otrStream = new Meteor.Streamer('test-otr');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 
@@ -102,7 +104,35 @@ export const RoomManager = new (function () {
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
-								msgStream.on(record.rid, async (msg) => {
+								otrStream.on(`otr-message/${record.rid}`, (...args) => {
+									console.log("From Room Manager = ", args);
+								})
+								msgStream.on(record.rid, async (msg, user, room) => {
+									if (msg.t === 'otr') {
+
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										console.log("sub = ", subscription);
+										console.log("From Room Manager = ", msg);
+										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+										const { _id, username, name } = user;
+										msg.u = {
+											_id,
+											username,
+											name,
+										};
+										msg.rid = room._id;
+										msg.room = {
+											type,
+											name,
+										};
+										upsertMessage({ msg, subscription });
+										if (isNew) {
+											menu.updateUnreadBars();
+											callbacks.run('streamNewMessage', msg);
+										}
+
+										return console.log("From Room Manager = ", msg);
+									}
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
@@ -127,7 +157,6 @@ export const RoomManager = new (function () {
 									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 									handleTrackSettingsChange(msg);
-
 									callbacks.run('streamMessage', msg);
 
 									return fireGlobalEvent('new-message', msg);

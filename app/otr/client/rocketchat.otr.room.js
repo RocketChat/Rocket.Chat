@@ -31,6 +31,10 @@ OTR.Room = class {
 		this.sessionKey = null;
 	}
 
+	sendMessage(message) {
+		Notifications.notifyRoom(this.roomId, 'otr-message', message);
+	}
+
 	handshake(refresh) {
 		this.establishing.set(true);
 		this.firstPeer = true;
@@ -305,6 +309,10 @@ OTR.Room = class {
 			case 'acknowledge':
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
+					const testRoomStreamer = new Meteor.Streamer('test-otr');
+					testRoomStreamer.on(`otr-message/${this.roomId}`, (...args) => {
+						console.log('jhghjbjb', args);
+					});
 				});
 				break;
 
