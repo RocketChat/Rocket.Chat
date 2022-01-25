@@ -91,9 +91,11 @@ export const openRoom = async function (type, name, render = true) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
-				if (result) {
-					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+				try {
+					const { rid } = await call('createDirectMessage', ...name.split(', '));
+					return FlowRouter.go('direct', { rid }, FlowRouter.current().queryParams);
+				} catch (error) {
+					console.error(error);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
