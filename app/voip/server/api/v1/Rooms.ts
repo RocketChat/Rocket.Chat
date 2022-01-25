@@ -17,14 +17,15 @@ API.v1.addRoute('voip/room', {
 		};
 		check(this.queryParams, defaultCheckParams);
 
-		const { token, rid: roomId, agentId } = this.queryParams;
+		const { token, rid, agentId } = this.queryParams;
 		const guest = await LivechatVisitors.getVisitorByToken(token, {});
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
 
 		let room;
-		if (!roomId) {
+
+		if (!rid) {
 			room = await VoipRoom.findOneOpenByVisitorToken(token, {});
 			if (room) {
 				return API.v1.success({ room, newRoom: false });
@@ -46,9 +47,9 @@ API.v1.addRoute('voip/room', {
 				},
 			};
 			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo);
-			return API.v1.success({ room });
+			return API.v1.success(room);
 		}
-		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token);
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}
