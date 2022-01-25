@@ -11,10 +11,7 @@ type TwoFactorPasswordModalProps = {
 	onClose: () => void;
 };
 
-const TwoFactorPasswordModal = ({
-	onConfirm,
-	onClose,
-}: TwoFactorPasswordModalProps): ReactElement => {
+const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalProps): ReactElement => {
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus();
@@ -40,12 +37,7 @@ const TwoFactorPasswordModal = ({
 		>
 			<Box mbe='x16'>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</Box>
 			<Box mbe='x16' display='flex' justifyContent='stretch'>
-				<PasswordInput
-					ref={ref as Ref<HTMLInputElement>}
-					value={code}
-					onChange={onChange}
-					placeholder={t('Password')}
-				></PasswordInput>
+				<PasswordInput ref={ref as Ref<HTMLInputElement>} value={code} onChange={onChange} placeholder={t('Password')}></PasswordInput>
 			</Box>
 		</GenericModal>
 	);

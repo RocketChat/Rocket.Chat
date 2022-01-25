@@ -20,16 +20,19 @@ settings.watch('GoogleNaturalLanguage_ServiceAccount', (value) => {
 	}
 });
 
-const setRoomSentiment = function(message) {
+const setRoomSentiment = function (message) {
 	if (!languageClient) {
 		return message;
 	}
 
-	languageClient.detectSentiment(message.msg, Meteor.bindEnvironment((error, result) => {
-		if (!error) {
-			Rooms.setSentiment(message.rid, result);
-		}
-	}));
+	languageClient.detectSentiment(
+		message.msg,
+		Meteor.bindEnvironment((error, result) => {
+			if (!error) {
+				Rooms.setSentiment(message.rid, result);
+			}
+		}),
+	);
 
 	return message;
 };

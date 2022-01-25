@@ -23,9 +23,13 @@ addMigration({
 
 		// If we're sure the server is AD, then select it - otherwise keep it as generic ldap
 		const useAdDefaults = settings.get('LDAP_User_Search_Field') === 'sAMAccountName';
-		Settings.update({ _id: 'LDAP_Server_Type' }, { $set: { value: useAdDefaults ? 'ad' : '' } }, {
-			upsert: true,
-		});
+		Settings.update(
+			{ _id: 'LDAP_Server_Type' },
+			{ $set: { value: useAdDefaults ? 'ad' : '' } },
+			{
+				upsert: true,
+			},
+		);
 
 		// The setting to use the field map also determined if the user data was updated on login or not
 		copySettingValue('LDAP_Update_Data_On_Login', 'LDAP_Sync_User_Data');

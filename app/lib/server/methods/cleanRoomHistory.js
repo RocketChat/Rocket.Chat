@@ -5,7 +5,18 @@ import { hasPermission } from '../../../authorization';
 import { cleanRoomHistory } from '../functions';
 
 Meteor.methods({
-	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads }) {
+	cleanRoomHistory({
+		roomId,
+		latest,
+		oldest,
+		inclusive = true,
+		limit,
+		excludePinned = false,
+		ignoreDiscussion = true,
+		filesOnly = false,
+		fromUsers = [],
+		ignoreThreads,
+	}) {
 		check(roomId, String);
 		check(latest, Date);
 		check(oldest, Date);
@@ -26,6 +37,17 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
-		return cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers, ignoreThreads });
+		return cleanRoomHistory({
+			rid: roomId,
+			latest,
+			oldest,
+			inclusive,
+			limit,
+			excludePinned,
+			ignoreDiscussion,
+			filesOnly,
+			fromUsers,
+			ignoreThreads,
+		});
 	},
 });

@@ -56,7 +56,7 @@ Template.livechatReadOnly.events({
 	},
 });
 
-Template.livechatReadOnly.onCreated(function() {
+Template.livechatReadOnly.onCreated(function () {
 	this.rid = Template.currentData().rid;
 	this.room = new ReactiveVar();
 	this.inquiry = new ReactiveVar();
@@ -84,7 +84,7 @@ Template.livechatReadOnly.onCreated(function() {
 
 	this.loadInquiry = async (roomId) => {
 		this.preparing.set(true);
-		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${ roomId }`);
+		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${roomId}`);
 		this.inquiry.set(inquiry);
 		if (inquiry && inquiry._id) {
 			inquiryDataStream.on(inquiry._id, this.updateInquiry);
@@ -98,7 +98,7 @@ Template.livechatReadOnly.onCreated(function() {
 	});
 });
 
-Template.livechatReadOnly.onDestroyed(function() {
+Template.livechatReadOnly.onDestroyed(function () {
 	const inquiry = this.inquiry.get();
 	if (inquiry && inquiry._id) {
 		inquiryDataStream.removeListener(inquiry._id, this.updateInquiry);

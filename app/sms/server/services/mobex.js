@@ -28,7 +28,7 @@ class Mobex {
 		}
 
 		if (isNaN(numMedia)) {
-			SystemLogger.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
 			return returnData;
 		}
 
@@ -40,8 +40,8 @@ class Mobex {
 				contentType: '',
 			};
 
-			const mediaUrl = data[`MediaUrl${ mediaIndex }`];
-			const contentType = data[`MediaContentType${ mediaIndex }`];
+			const mediaUrl = data[`MediaUrl${mediaIndex}`];
+			const contentType = data[`MediaContentType${mediaIndex}`];
 
 			media.url = mediaUrl;
 			media.contentType = contentType;
@@ -76,15 +76,18 @@ class Mobex {
 		};
 
 		try {
-			const response = HTTP.call('GET', `${ currentAddress }/send?username=${ currentUsername }&password=${ currentPassword }&to=${ strippedTo }&from=${ currentFrom }&content=${ message }`);
+			const response = HTTP.call(
+				'GET',
+				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
+			);
 			if (response.statusCode === 200) {
 				result.resultMsg = response.content;
 				result.isSuccess = true;
 			} else {
-				result.resultMsg = `Could not able to send SMS. Code:  ${ response.statusCode }`;
+				result.resultMsg = `Could not able to send SMS. Code:  ${response.statusCode}`;
 			}
 		} catch (e) {
-			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
+			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${e}`;
 			SystemLogger.error('Error while sending SMS with Mobex', e);
 		}
 
@@ -103,33 +106,31 @@ class Mobex {
 			response: false,
 		};
 
-		const userPass = `${ this.username }:${ this.password }`;
+		const userPass = `${this.username}:${this.password}`;
 
 		const authToken = Base64.encode(userPass);
 
 		try {
-			const response = await HTTP.call('POST', `${ this.restAddress }/secure/sendbatch`,
-				{
-					headers: {
-						Authorization: `Basic ${ authToken }`,
-					},
-					data: {
-						messages: [
-							{
-								to: toNumbersArr,
-								from: currentFrom,
-								content: message,
-							},
-						],
-					},
+			const response = await HTTP.call('POST', `${this.restAddress}/secure/sendbatch`, {
+				headers: {
+					Authorization: `Basic ${authToken}`,
 				},
-			);
+				data: {
+					messages: [
+						{
+							to: toNumbersArr,
+							from: currentFrom,
+							content: message,
+						},
+					],
+				},
+			});
 
 			result.isSuccess = true;
 			result.resultMsg = 'Success';
 			result.response = response;
 		} catch (e) {
-			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
+			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${e}`;
 			SystemLogger.error('Error while sending SMS with Mobex', e);
 		}
 
@@ -148,13 +149,13 @@ class Mobex {
 	error(error) {
 		let message = '';
 		if (error.reason) {
-			message = `<Message>${ error.reason }</Message>`;
+			message = `<Message>${error.reason}</Message>`;
 		}
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
 			},
-			body: `<Response>${ message }</Response>`,
+			body: `<Response>${message}</Response>`,
 		};
 	}
 }

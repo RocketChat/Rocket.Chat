@@ -16,18 +16,21 @@ export class LivechatAgentActivity extends Base {
 			return;
 		}
 
-		return this.upsert({ agentId, date }, {
-			$unset: {
-				lastStoppedAt: 1,
+		return this.upsert(
+			{ agentId, date },
+			{
+				$unset: {
+					lastStoppedAt: 1,
+				},
+				$set: {
+					lastStartedAt: lastStartedAt || new Date(),
+				},
+				$setOnInsert: {
+					date,
+					agentId,
+				},
 			},
-			$set: {
-				lastStartedAt: lastStartedAt || new Date(),
-			},
-			$setOnInsert: {
-				date,
-				agentId,
-			},
-		});
+		);
 	}
 
 	updateLastStoppedAt({ agentId, date, lastStoppedAt, availableTime }) {

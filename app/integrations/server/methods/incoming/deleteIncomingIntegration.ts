@@ -11,15 +11,19 @@ Meteor.methods({
 			integration = Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
 			integration = Integrations.findOne({
-				_id: integrationId,
+				'_id': integrationId,
 				'_createdBy._id': this.userId,
 			});
 		} else {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'deleteIncomingIntegration' });
+			throw new Meteor.Error('not_authorized', 'Unauthorized', {
+				method: 'deleteIncomingIntegration',
+			});
 		}
 
 		if (!integration) {
-			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', { method: 'deleteIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+				method: 'deleteIncomingIntegration',
+			});
 		}
 
 		await Integrations.removeById(integrationId);

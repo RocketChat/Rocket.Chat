@@ -27,7 +27,7 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			file = FileUpload.addExtensionTo(file);
-			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 
@@ -105,7 +105,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
@@ -119,7 +119,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-settings.watch('FileUpload_FileSystemPath', function() {
+settings.watch('FileUpload_FileSystemPath', function () {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};

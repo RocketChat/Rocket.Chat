@@ -36,21 +36,20 @@ import { Uploader } from './ufs-uploader';
 const stores = {};
 
 export const UploadFS = {
-
 	/**
-   * Contains all stores
-   */
+	 * Contains all stores
+	 */
 	store: {},
 
 	/**
-   * Collection of tokens
-   */
+	 * Collection of tokens
+	 */
 	tokens: Tokens,
 
 	/**
-   * Adds the "etag" attribute to files
-   * @param where
-   */
+	 * Adds the "etag" attribute to files
+	 * @param where
+	 */
 	addETagAttributeToFiles(where) {
 		this.getStores().forEach((store) => {
 			const files = store.getCollection();
@@ -63,18 +62,18 @@ export const UploadFS = {
 	},
 
 	/**
-   * Adds the MIME type for an extension
-   * @param extension
-   * @param mime
-   */
+	 * Adds the MIME type for an extension
+	 * @param extension
+	 * @param mime
+	 */
 	addMimeType(extension, mime) {
 		MIME[extension.toLowerCase()] = mime;
 	},
 
 	/**
-   * Adds the "path" attribute to files
-   * @param where
-   */
+	 * Adds the "path" attribute to files
+	 * @param where
+	 */
 	addPathAttributeToFiles(where) {
 		this.getStores().forEach((store) => {
 			const files = store.getCollection();
@@ -87,9 +86,9 @@ export const UploadFS = {
 	},
 
 	/**
-   * Registers the store
-   * @param store
-   */
+	 * Registers the store
+	 * @param store
+	 */
 	addStore(store) {
 		if (!(store instanceof Store)) {
 			throw new TypeError('ufs: store is not an instance of UploadFS.Store.');
@@ -98,63 +97,63 @@ export const UploadFS = {
 	},
 
 	/**
-   * Generates a unique ETag
-   * @return {string}
-   */
+	 * Generates a unique ETag
+	 * @return {string}
+	 */
 	generateEtag() {
 		return Random.id();
 	},
 
 	/**
-   * Returns the MIME type of the extension
-   * @param extension
-   * @returns {*}
-   */
+	 * Returns the MIME type of the extension
+	 * @param extension
+	 * @returns {*}
+	 */
 	getMimeType(extension) {
 		extension = extension.toLowerCase();
 		return MIME[extension];
 	},
 
 	/**
-   * Returns all MIME types
-   */
+	 * Returns all MIME types
+	 */
 	getMimeTypes() {
 		return MIME;
 	},
 
 	/**
-   * Returns the store by its name
-   * @param name
-   * @return {UploadFS.Store}
-   */
+	 * Returns the store by its name
+	 * @param name
+	 * @return {UploadFS.Store}
+	 */
 	getStore(name) {
 		return stores[name];
 	},
 
 	/**
-   * Returns all stores
-   * @return {object}
-   */
+	 * Returns all stores
+	 * @return {object}
+	 */
 	getStores() {
 		return stores;
 	},
 
 	/**
-   * Returns the temporary file path
-   * @param fileId
-   * @return {string}
-   */
+	 * Returns the temporary file path
+	 * @param fileId
+	 * @return {string}
+	 */
 	getTempFilePath(fileId) {
-		return `${ this.config.tmpDir }/${ fileId }`;
+		return `${this.config.tmpDir}/${fileId}`;
 	},
 
 	/**
-   * Imports a file from a URL
-   * @param url
-   * @param file
-   * @param store
-   * @param callback
-   */
+	 * Imports a file from a URL
+	 * @param url
+	 * @param file
+	 * @param store
+	 * @param callback
+	 */
 	importFromURL(url, file, store, callback) {
 		if (typeof store === 'string') {
 			Meteor.call('ufsImportURL', url, file, store, callback);
@@ -164,19 +163,19 @@ export const UploadFS = {
 	},
 
 	/**
-   * Returns file and data as ArrayBuffer for each files in the event
-   * @deprecated
-   * @param event
-   * @param callback
-   */
+	 * Returns file and data as ArrayBuffer for each files in the event
+	 * @deprecated
+	 * @param event
+	 * @param callback
+	 */
 	readAsArrayBuffer() {
 		console.error('UploadFS.readAsArrayBuffer is deprecated, see https://github.com/jalik/jalik-ufs#uploading-from-a-file');
 	},
 
 	/**
-   * Opens a dialog to select a single file
-   * @param callback
-   */
+	 * Opens a dialog to select a single file
+	 * @param callback
+	 */
 	selectFile(callback) {
 		const input = document.createElement('input');
 		input.type = 'file';
@@ -196,9 +195,9 @@ export const UploadFS = {
 	},
 
 	/**
-   * Opens a dialog to select multiple files
-   * @param callback
-   */
+	 * Opens a dialog to select multiple files
+	 * @param callback
+	 */
 	selectFiles(callback) {
 		const input = document.createElement('input');
 		input.type = 'file';

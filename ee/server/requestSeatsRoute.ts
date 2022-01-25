@@ -7,11 +7,14 @@ import { getSeatsRequestLink } from '../app/license/server/getSeatsRequestLink';
 import { Analytics } from '../../server/sdk';
 
 Meteor.startup(() => {
-	WebApp.connectHandlers.use('/requestSeats/', Meteor.bindEnvironment((_: IncomingMessage, res: ServerResponse) => {
-		const url = getSeatsRequestLink();
+	WebApp.connectHandlers.use(
+		'/requestSeats/',
+		Meteor.bindEnvironment((_: IncomingMessage, res: ServerResponse) => {
+			const url = getSeatsRequestLink();
 
-		Analytics.saveSeatRequest();
-		res.writeHead(302, { Location: url });
-		res.end();
-	}));
+			Analytics.saveSeatRequest();
+			res.writeHead(302, { Location: url });
+			res.end();
+		}),
+	);
 });

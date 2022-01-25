@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
+import { LivechatRooms, Users, LivechatDepartment, LivechatVisitors } from '../../../models/server';
+import { LivechatTrigger } from '../../../models/server/raw';
 import { Livechat } from '../lib/Livechat';
 import { deprecationWarning } from '../../../api/server/helpers/deprecationWarning';
 
 Meteor.methods({
-	'livechat:getInitialData'(visitorToken, departmentId) {
+	async 'livechat:getInitialData'(visitorToken, departmentId) {
 		const info = {
 			enabled: null,
 			title: null,
@@ -45,7 +46,9 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = departmentId ? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = departmentId
+			? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch()
+			: LivechatRooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -89,7 +92,7 @@ Meteor.methods({
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
-		LivechatTrigger.findEnabled().forEach((trigger) => {
+		await LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
@@ -100,6 +103,10 @@ Meteor.methods({
 
 		info.online = Users.findOnlineAgents().count() > 0;
 
-		return deprecationWarning({ endpoint: 'livechat:getInitialData', versionWillBeRemoved: '5.0', response: info });
+		return deprecationWarning({
+			endpoint: 'livechat:getInitialData',
+			versionWillBeRemoved: '5.0',
+			response: info,
+		});
 	},
 });

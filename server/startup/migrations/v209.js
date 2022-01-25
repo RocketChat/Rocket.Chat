@@ -22,13 +22,16 @@ addMigration({
 				return;
 			}
 
-			Subscriptions.update({
-				_id,
-			}, {
-				$set: {
-					department: room.departmentId,
+			Subscriptions.update(
+				{
+					_id,
 				},
-			});
+				{
+					$set: {
+						department: room.departmentId,
+					},
+				},
+			);
 		});
 	},
 });

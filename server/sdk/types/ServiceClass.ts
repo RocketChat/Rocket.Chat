@@ -26,9 +26,9 @@ export interface IServiceContext {
 
 export interface IServiceClass {
 	getName(): string;
-	onNodeConnected?({ node, reconnected }: {node: IBrokerNode; reconnected: boolean}): void;
-	onNodeUpdated?({ node }: {node: IBrokerNode }): void;
-	onNodeDisconnected?({ node, unexpected }: {node: IBrokerNode; unexpected: boolean}): Promise<void>;
+	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
+	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
+	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 

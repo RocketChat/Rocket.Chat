@@ -36,27 +36,19 @@ describe('TeamsUpdateMemberProps (definition/rest/v1)', () => {
 		});
 
 		it('should return true if member with role is provided and teamId is provided', () => {
-			assert.isTrue(
-				isTeamsUpdateMemberProps({ member: { userId: '123', roles: ['123'] }, teamId: '123' }),
-			);
+			assert.isTrue(isTeamsUpdateMemberProps({ member: { userId: '123', roles: ['123'] }, teamId: '123' }));
 		});
 
 		it('should return true if member with role is provided and teamName is provided', () => {
-			assert.isTrue(
-				isTeamsUpdateMemberProps({ member: { userId: '123', roles: ['123'] }, teamName: '123' }),
-			);
+			assert.isTrue(isTeamsUpdateMemberProps({ member: { userId: '123', roles: ['123'] }, teamName: '123' }));
 		});
 
 		it('should return false if teamName was provided and member contains an invalid property', () => {
-			assert.isFalse(
-				isTeamsUpdateMemberProps({ member: { userId: '123', invalid: '123' }, teamName: '123' }),
-			);
+			assert.isFalse(isTeamsUpdateMemberProps({ member: { userId: '123', invalid: '123' }, teamName: '123' }));
 		});
 
 		it('should return false if teamId was provided and member contains an invalid property', () => {
-			assert.isFalse(
-				isTeamsUpdateMemberProps({ member: { userId: '123', invalid: '123' }, teamId: '123' }),
-			);
+			assert.isFalse(isTeamsUpdateMemberProps({ member: { userId: '123', invalid: '123' }, teamId: '123' }));
 		});
 
 		it('should return false if contains an invalid property', () => {

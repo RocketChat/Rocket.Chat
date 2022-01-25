@@ -13,27 +13,37 @@ const validChannelChars = ['@', '#'];
 Meteor.methods({
 	async addIncomingIntegration(integration) {
 		if (!hasPermission(this.userId, 'manage-incoming-integrations') && !hasPermission(this.userId, 'manage-own-incoming-integrations')) {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'addIncomingIntegration' });
+			throw new Meteor.Error('not_authorized', 'Unauthorized', {
+				method: 'addIncomingIntegration',
+			});
 		}
 
 		if (!_.isString(integration.channel)) {
-			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', { method: 'addIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+				method: 'addIncomingIntegration',
+			});
 		}
 
 		if (integration.channel.trim() === '') {
-			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', { method: 'addIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+				method: 'addIncomingIntegration',
+			});
 		}
 
 		const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {
-				throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' });
+				throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+					method: 'updateIncomingIntegration',
+				});
 			}
 		}
 
 		if (!_.isString(integration.username) || integration.username.trim() === '') {
-			throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'addIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+				method: 'addIncomingIntegration',
+			});
 		}
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
@@ -56,35 +66,38 @@ Meteor.methods({
 			switch (channelType) {
 				case '#':
 					record = Rooms.findOne({
-						$or: [
-							{ _id: channel },
-							{ name: channel },
-						],
+						$or: [{ _id: channel }, { name: channel }],
 					});
 					break;
 				case '@':
 					record = Users.findOne({
-						$or: [
-							{ _id: channel },
-							{ username: channel },
-						],
+						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
 			}
 
 			if (!record) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'addIncomingIntegration' });
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+					method: 'addIncomingIntegration',
+				});
 			}
 
-			if (!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'addIncomingIntegration' });
+			if (
+				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
+				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
+			) {
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+					method: 'addIncomingIntegration',
+				});
 			}
 		}
 
 		const user = Users.findOne({ username: integration.username });
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'addIncomingIntegration',
+			});
 		}
 
 		const token = Random.id(48);

@@ -1,32 +1,29 @@
 import { expect } from 'chai';
 
-import {
-	getCredentials,
-	api,
-	request,
-	credentials,
-} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
 
-describe('[Commands]', function() {
+describe('[Commands]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('[/commands.get]', () => {
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			request.get(api('commands.get'))
+			request
+				.get(api('commands.get'))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The query param \"command\" must be provided.');
+					expect(res.body.error).to.be.equal('The query param "command" must be provided.');
 				})
 				.end(done);
 		});
 		it('should return an error when call the endpoint with an invalid command', (done) => {
-			request.get(api('commands.get'))
+			request
+				.get(api('commands.get'))
 				.set(credentials)
 				.query({
 					command: 'invalid-command',
@@ -39,7 +36,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return success when parameters are correct', (done) => {
-			request.get(api('commands.get'))
+			request
+				.get(api('commands.get'))
 				.set(credentials)
 				.query({
 					command: 'help',
@@ -59,7 +57,8 @@ describe('[Commands]', function() {
 
 	describe('[/commands.list]', () => {
 		it('should return a list of commands', (done) => {
-			request.get(api('commands.list'))
+			request
+				.get(api('commands.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -78,27 +77,27 @@ describe('[Commands]', function() {
 		let threadMessage;
 
 		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.commands.${ Date.now() }` })
-				.end((err, res) => {
-					testChannel = res.body.channel;
+			createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` }).end((err, res) => {
+				testChannel = res.body.channel;
+				sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Message to create thread',
+				}).end((err, message) => {
 					sendSimpleMessage({
 						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
+						text: 'Thread Message',
+						tmid: message.body.message._id,
+					}).end((err, res) => {
+						threadMessage = res.body.message;
+						done();
 					});
 				});
+			});
 		});
 
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
@@ -108,7 +107,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the param "params" and it is not a string', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
@@ -122,7 +122,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return an error when call the endpoint without "roomId" required parameter', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
@@ -131,12 +132,13 @@ describe('[Commands]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The room\'s id where to execute this command must be provided and be a string.');
+					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
 				})
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the param "tmid" and it is not a string', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
@@ -152,7 +154,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the invalid "command" param', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'invalid-command',
@@ -167,7 +170,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with an invalid thread id', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'tableflip',
@@ -183,7 +187,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with a valid thread id of wrong channel', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'tableflip',
@@ -199,7 +204,8 @@ describe('[Commands]', function() {
 				.end(done);
 		});
 		it('should return success when parameters are correct', (done) => {
-			request.post(api('commands.run'))
+			request
+				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'tableflip',

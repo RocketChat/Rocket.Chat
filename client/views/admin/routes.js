@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
+import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-export const registerAdminRoute = createRouteGroup('admin', '/admin', () =>
-	import('./AdministrationRouter'),
-);
+export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
@@ -130,4 +129,11 @@ Meteor.startup(() => {
 		name: 'admin',
 		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
+});
+
+registerAdminRoute('/chatpal', {
+	name: 'chatpal-admin',
+	action() {
+		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
+	},
 });

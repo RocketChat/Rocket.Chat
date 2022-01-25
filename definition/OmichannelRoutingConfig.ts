@@ -10,9 +10,11 @@ export type OmichannelRoutingConfig = {
 	autoAssignAgent: boolean;
 };
 
-export type Inquiries = {
-	enabled: true;
-	queue: Array<IRoom>;
-} | {
-	enabled: false;
-}
+export type Inquiries =
+	| {
+			enabled: true;
+			queue: Array<IRoom>;
+	  }
+	| {
+			enabled: false;
+	  };

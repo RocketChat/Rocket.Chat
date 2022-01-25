@@ -12,11 +12,7 @@ export function validate(soundData, soundFile) {
 
 	if (soundFile) {
 		if (!soundData.previousSound || soundData.previousSound !== soundFile) {
-			if (
-				!/audio\/mp3/.test(soundFile.type) &&
-				!/audio\/mpeg/.test(soundFile.type) &&
-				!/audio\/x-mpeg/.test(soundFile.type)
-			) {
+			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
 				errors.push('FileType');
 			}
 		}

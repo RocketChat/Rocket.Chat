@@ -5,7 +5,7 @@ import { adminEmail, adminUsername, adminPassword, password } from '../../data/u
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
 
-describe('miscellaneous', function() {
+describe('miscellaneous', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -15,7 +15,8 @@ describe('miscellaneous', function() {
 		describe('/info', () => {
 			let version;
 			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', (done) => {
-				request.get('/api/info')
+				request
+					.get('/api/info')
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -29,7 +30,8 @@ describe('miscellaneous', function() {
 					.end(done);
 			});
 			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
-				request.get('/api/info')
+				request
+					.get('/api/info')
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -48,7 +50,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/login (wrapper username)', (done) => {
-		request.post(api('login'))
+		request
+			.post(api('login'))
 			.send({
 				user: {
 					username: adminUsername,
@@ -68,7 +71,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/login (wrapper email)', (done) => {
-		request.post(api('login'))
+		request
+			.post(api('login'))
 			.send({
 				user: {
 					email: adminEmail,
@@ -88,7 +92,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/login by user', (done) => {
-		request.post(api('login'))
+		request
+			.post(api('login'))
 			.send({
 				user: adminEmail,
 				password: adminPassword,
@@ -106,7 +111,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/login by username', (done) => {
-		request.post(api('login'))
+		request
+			.post(api('login'))
 			.send({
 				username: adminUsername,
 				password: adminPassword,
@@ -124,7 +130,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/me', (done) => {
-		request.get(api('me'))
+		request
+			.get(api('me'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -183,9 +190,10 @@ describe('miscellaneous', function() {
 		let user;
 		let testChannel;
 		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
@@ -194,16 +202,21 @@ describe('miscellaneous', function() {
 				});
 		});
 		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(done);
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+				})
+				.end(done);
 			user = undefined;
 		});
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
+			request
+				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`,
+					name: `channel.test.${Date.now()}`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -211,7 +224,8 @@ describe('miscellaneous', function() {
 				});
 		});
 		it('should return an array(result) when search by user and execute successfully', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set(credentials)
 				.query({
 					query: JSON.stringify({
@@ -238,7 +252,8 @@ describe('miscellaneous', function() {
 
 		let normalUser;
 		before((done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					username: user.username,
 					password,
@@ -255,7 +270,8 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should not return the emails field for non admins', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set({
 					'X-Auth-Token': normalUser.authToken,
 					'X-User-Id': normalUser.userId,
@@ -283,7 +299,8 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should return an array(result) when search by channel and execute successfully', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set(credentials)
 				.query({
 					query: JSON.stringify({
@@ -307,7 +324,8 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should return an array(result) when search by channel with sort params correctly and execute successfully', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set(credentials)
 				.query({
 					query: JSON.stringify({
@@ -334,7 +352,8 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should return an error when send invalid query', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set(credentials)
 				.query({
 					query: JSON.stringify({
@@ -350,7 +369,8 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should return an error when have more than one sort parameter', (done) => {
-			request.get(api('directory'))
+			request
+				.get(api('directory'))
 				.set(credentials)
 				.query({
 					query: JSON.stringify({
@@ -373,9 +393,10 @@ describe('miscellaneous', function() {
 	describe('[/spotlight]', () => {
 		let user;
 		before((done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
@@ -387,7 +408,8 @@ describe('miscellaneous', function() {
 		let userCredentials;
 		let testChannel;
 		before((done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: user.username,
 					password,
@@ -402,16 +424,21 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		after((done) => {
-			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id,
-			}).end(done);
+			request
+				.post(api('users.delete'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+				})
+				.end(done);
 			user = undefined;
 		});
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
+			request
+				.post(api('channels.create'))
 				.set(userCredentials)
 				.send({
-					name: `channel.test.${ Date.now() }`,
+					name: `channel.test.${Date.now()}`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -419,7 +446,8 @@ describe('miscellaneous', function() {
 				});
 		});
 		it('should fail when does not have query param', (done) => {
-			request.get(api('spotlight'))
+			request
+				.get(api('spotlight'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -430,9 +458,10 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('should return object inside users array when search by a valid user', (done) => {
-			request.get(api('spotlight'))
+			request
+				.get(api('spotlight'))
 				.query({
-					query: `@${ adminUsername }`,
+					query: `@${adminUsername}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -449,9 +478,10 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', (done) => {
-			request.get(api('spotlight'))
+			request
+				.get(api('spotlight'))
 				.query({
-					query: `#${ testChannel.name }`,
+					query: `#${testChannel.name}`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -476,7 +506,8 @@ describe('miscellaneous', function() {
 		});
 
 		it('should fail if user is logged in but is unauthorized', (done) => {
-			request.get(api('instances.get'))
+			request
+				.get(api('instances.get'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -488,7 +519,8 @@ describe('miscellaneous', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.get(api('instances.get'))
+			request
+				.get(api('instances.get'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
@@ -499,14 +531,17 @@ describe('miscellaneous', function() {
 		});
 
 		it('should return instances if user is logged in and is authorized', (done) => {
-			request.get(api('instances.get'))
+			request
+				.get(api('instances.get'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const { instances: [instance] } = res.body;
+					const {
+						instances: [instance],
+					} = res.body;
 
 					expect(instance).to.have.property('_id');
 					expect(instance).to.have.property('extraInformation');
@@ -527,7 +562,8 @@ describe('miscellaneous', function() {
 	describe('[/shield.svg]', () => {
 		it('should fail if API_Enable_Shields is disabled', (done) => {
 			updateSetting('API_Enable_Shields', false).then(() => {
-				request.get(api('shield.svg'))
+				request
+					.get(api('shield.svg'))
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
@@ -540,7 +576,8 @@ describe('miscellaneous', function() {
 
 		it('should succeed if API_Enable_Shields is enabled', (done) => {
 			updateSetting('API_Enable_Shields', true).then(() => {
-				request.get(api('shield.svg'))
+				request
+					.get(api('shield.svg'))
 					.query({
 						type: 'online',
 						icon: true,

@@ -2,14 +2,15 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe('[Permissions]', function() {
+describe('[Permissions]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('[/permissions.listAll]', () => {
 		it('should return an array with update and remove properties', (done) => {
-			request.get(api('permissions.listAll'))
+			request
+				.get(api('permissions.listAll'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -22,7 +23,8 @@ describe('[Permissions]', function() {
 		});
 
 		it('should return an array with update and remov properties when search by "updatedSince" query parameter', (done) => {
-			request.get(api('permissions.listAll?updatedSince=2018-11-27T13:52:01Z'))
+			request
+				.get(api('permissions.listAll?updatedSince=2018-11-27T13:52:01Z'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -35,7 +37,8 @@ describe('[Permissions]', function() {
 		});
 
 		it('should return an error when updatedSince query parameter is not a valid ISODate string', (done) => {
-			request.get(api('permissions.listAll?updatedSince=fsafdf'))
+			request
+				.get(api('permissions.listAll?updatedSince=fsafdf'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -54,9 +57,10 @@ describe('[Permissions]', function() {
 					roles: ['admin', 'user'],
 				},
 			];
-			request.post(api('permissions.update'))
+			request
+				.post(api('permissions.update'))
 				.set(credentials)
-				.send({ permissions	})
+				.send({ permissions })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -77,9 +81,10 @@ describe('[Permissions]', function() {
 					roles: ['admin'],
 				},
 			];
-			request.post(api('permissions.update'))
+			request
+				.post(api('permissions.update'))
 				.set(credentials)
-				.send({ permissions	})
+				.send({ permissions })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -94,9 +99,10 @@ describe('[Permissions]', function() {
 					roles: ['this-role-does-not-exist'],
 				},
 			];
-			request.post(api('permissions.update'))
+			request
+				.post(api('permissions.update'))
 				.set(credentials)
-				.send({ permissions	})
+				.send({ permissions })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -106,9 +112,10 @@ describe('[Permissions]', function() {
 		});
 		it('should 400 when trying to set permissions to a string', (done) => {
 			const permissions = '';
-			request.post(api('permissions.update'))
+			request
+				.post(api('permissions.update'))
 				.set(credentials)
-				.send({ permissions	})
+				.send({ permissions })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {

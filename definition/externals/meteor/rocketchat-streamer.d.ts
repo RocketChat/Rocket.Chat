@@ -6,7 +6,7 @@ declare module 'meteor/rocketchat:streamer' {
 		ws: any;
 		userId?: string;
 		send: Function;
-	}
+	};
 
 	interface IPublication {
 		onStop: Function;
@@ -33,9 +33,15 @@ declare module 'meteor/rocketchat:streamer' {
 	type DDPSubscription = {
 		eventName: string;
 		subscription: IPublication;
-	}
+	};
 
-	type TransformMessage = (streamer: IStreamer, subscription: DDPSubscription, eventName: string, args: any[], allowed: boolean | object) => string | false;
+	type TransformMessage = (
+		streamer: IStreamer,
+		subscription: DDPSubscription,
+		eventName: string,
+		args: any[],
+		allowed: boolean | object,
+	) => string | false;
 
 	interface IStreamer {
 		serverOnly: boolean;
@@ -66,12 +72,12 @@ declare module 'meteor/rocketchat:streamer' {
 
 		changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 
-		_publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}): Promise<void>;
+		_publish(publication: IPublication, eventName: string, options: boolean | { useCollection?: boolean; args?: any }): Promise<void>;
 	}
 
 	interface IStreamerConstructor {
 		// eslint-disable-next-line @typescript-eslint/no-misused-new
-		new(name: string, options?: {retransmit?: boolean; retransmitToSelf?: boolean}): IStreamer;
+		new (name: string, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer;
 	}
 }
 

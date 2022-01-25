@@ -10,7 +10,9 @@ Meteor.methods({
 		}
 		const application = await OAuthApps.findOneById(applicationId);
 		if (application == null) {
-			throw new Meteor.Error('error-application-not-found', 'Application not found', { method: 'deleteOAuthApp' });
+			throw new Meteor.Error('error-application-not-found', 'Application not found', {
+				method: 'deleteOAuthApp',
+			});
 		}
 		await OAuthApps.deleteOne({ _id: applicationId });
 		return true;

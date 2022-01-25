@@ -14,7 +14,8 @@ class DefaultProvider extends SearchProvider {
 		super('defaultProvider');
 		this._settings.add('GlobalSearchEnabled', 'boolean', false, {
 			i18nLabel: 'Global_Search',
-			alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert:
+				'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 		});
 		this._settings.add('PageSize', 'int', 10, {
 			i18nLabel: 'Search_Page_Size',

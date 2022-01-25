@@ -1,7 +1,4 @@
-import type {
-	ITeamAutocompleteResult,
-	ITeamMemberInfo,
-} from '../../../../server/sdk/types/ITeamService';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '../../../../server/sdk/types/ITeamService';
 import type { IRoom } from '../../../IRoom';
 import type { ITeam } from '../../../ITeam';
 import type { IUser } from '../../../IUser';
@@ -26,13 +23,9 @@ type TeamProps =
 	| TeamsLeaveProps
 	| TeamsUpdateProps;
 
-export const isTeamPropsWithTeamName = <T extends TeamProps>(
-	props: T,
-): props is T & { teamName: string } => 'teamName' in props;
+export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
-export const isTeamPropsWithTeamId = <T extends TeamProps>(
-	props: T,
-): props is T & { teamId: string } => 'teamId' in props;
+export const isTeamPropsWithTeamId = <T extends TeamProps>(props: T): props is T & { teamId: string } => 'teamId' in props;
 
 export type TeamsEndpoints = {
 	'teams.list': {
@@ -84,11 +77,7 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.addRooms': {
-		POST: (
-			params:
-				| { rooms: IRoom['_id'][]; teamId: string }
-				| { rooms: IRoom['_id'][]; teamName: string },
-		) => { rooms: IRoom[] };
+		POST: (params: { rooms: IRoom['_id'][]; teamId: string } | { rooms: IRoom['_id'][]; teamName: string }) => { rooms: IRoom[] };
 	};
 
 	'teams.removeRoom': {
@@ -155,8 +144,7 @@ export type TeamsEndpoints = {
 
 	'teams.listRooms': {
 		GET: (
-			params: PaginatedRequest &
-				({ teamId: string } | { teamName: string }) & { filter?: string; type?: string },
+			params: PaginatedRequest & ({ teamId: string } | { teamName: string }) & { filter?: string; type?: string },
 		) => PaginatedResult & { rooms: IRoom[] };
 	};
 
