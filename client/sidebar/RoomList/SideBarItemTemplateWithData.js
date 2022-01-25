@@ -7,6 +7,7 @@ import { useLayout } from '../../contexts/LayoutContext';
 import RoomMenu from '../RoomMenu';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
+import { VRecDialog } from '../../../app/ui-vrecord/client';
 const getMessage = (room, lastMessage, t) => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
@@ -87,7 +88,10 @@ function SideBarItemTemplateWithData({
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
-			onClick={() => !selected && sidebar.toggle()}
+			onClick={(e) => {
+				VRecDialog.close();
+				!selected && sidebar.toggle();
+			}}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}
