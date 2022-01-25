@@ -117,11 +117,11 @@ API.v1.addRoute(
 					return API.v1.success({ extensions });
 				}
 				case 'allocated': {
-					const allocations = await LivechatVoip.getExtensionAllocationDetails();
-					if (!allocations) {
+					const extensions = await LivechatVoip.getExtensionAllocationDetails();
+					if (!extensions) {
 						return API.v1.failure('Error in allocated extensions');
 					}
-					return API.v1.success({ allocations });
+					return API.v1.success({ extensions });
 				}
 				case 'available': {
 					const user = await Users.findOneByAgentUsername(username, {
@@ -139,7 +139,7 @@ API.v1.addRoute(
 					});
 					const freeExt = await LivechatVoip.getFreeExtensions();
 					const extensions = [extension.extension, ...freeExt];
-					return API.v1.success({ available: extensions });
+					return API.v1.success({ extensions });
 				}
 				default:
 					return API.v1.notFound(`${type} not found `);

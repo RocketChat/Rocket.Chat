@@ -86,9 +86,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			},
 			queuedAt: newRoomAt,
 		});
-		const result = await this.voipRoom.insertOne(room);
-
-		return result.insertedId;
+		return (await this.voipRoom.insertOne(room)).insertedId;
 	}
 
 	private async getAllocatedExtesionAllocationData(projection: Partial<{ [P in keyof IUser]: number }>): Promise<IUser[]> {
@@ -157,7 +155,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			room = null;
 		}
 		if (room == null) {
-			// delegate room creation to QueueManager
 			const name = roomInfo?.fname || guest.name || guest.username;
 			const roomId = await this.createVoipRoom(rid, name, agent, guest);
 			room = await this.voipRoom.findOneVoipRoomById(roomId);
@@ -203,6 +200,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
+			// TODO: calculate actual call duration
 			callDuration: now.getTime() / 1000,
 			// ...extraData,
 		};

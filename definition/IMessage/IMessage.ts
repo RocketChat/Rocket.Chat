@@ -9,6 +9,14 @@ import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
+type VoipMessageTypesValues =
+	| 'voip-call-started'
+	| 'voip-call-answered'
+	| 'voip-call-declined'
+	| 'voip-call-put-on-hold'
+	| 'voip-call-unhold'
+	| 'voip-call-ended';
+
 type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -29,7 +37,8 @@ type MessageTypesValues =
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close';
+	| 'livechat-close'
+	| VoipMessageTypesValues;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;

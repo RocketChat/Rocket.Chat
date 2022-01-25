@@ -167,6 +167,10 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
 	t: 'v';
+	// The timestamp when call was started
+	callStarted: Date;
+	// The amount of time the call lasted, in milliseconds
+	callDuration: number;
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -180,6 +184,8 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+
+export const isOmnichannelVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {

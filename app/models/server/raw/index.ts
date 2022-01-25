@@ -145,6 +145,7 @@ export const UserDataFiles = new UserDataFilesRaw(db.collection(`${prefix}user_d
 export const Uploads = new UploadsRaw(db.collection(`${prefix}uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webdav_accounts`), trashCollection);
 export const VoipRoom = new VoipRoomsRaw(db.collection(`${prefix}room`), trashCollection);
+
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,

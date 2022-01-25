@@ -25,7 +25,8 @@ API.v1.addRoute(
 			if (!canAccessRoom(room, this.user)) {
 				return API.v1.unauthorized();
 			}
-			return Voip.handleEvent(event, room, this.user, comment);
+
+			return API.v1.success(await Voip.handleEvent(event, room, this.user, comment));
 		},
 	},
 );
