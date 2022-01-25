@@ -1,5 +1,5 @@
 import { Modal } from '@rocket.chat/fuselage';
-import React, { useState, useMemo, memo, FC, ComponentProps, ReactNode, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, memo, FC, ComponentProps, ReactNode, useEffect, useRef, useCallback } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
 import ModalPortal from '../components/ModalPortal';
@@ -12,6 +12,8 @@ const getBackdrop = (): HTMLElement | null => document.getElementById(BACKDROP_I
 
 const ModalProvider: FC = ({ children }) => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
+
+	const hasClicked = useRef<boolean>(false);
 
 	const contextValue = useMemo<ComponentProps<typeof ModalContext.Provider>['value']>(
 		() =>
@@ -26,11 +28,20 @@ const ModalProvider: FC = ({ children }) => {
 
 		// checking for parent since myNode.contains(myNode) is true
 		if (!backdrop || backdrop.contains(e.target.parentElement)) {
+			hasClicked.current = false;
 			return;
 		}
 
-		e.stopPropagation();
-		setCurrentModal(null);
+		if (e.type === 'mousedown') {
+			hasClicked.current = true;
+			return;
+		}
+
+		if (e.type === 'mouseup' && hasClicked.current) {
+			hasClicked.current = false;
+			e.stopPropagation();
+			setCurrentModal(null);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -56,7 +67,7 @@ const ModalProvider: FC = ({ children }) => {
 			{children}
 			{currentModal && (
 				<ModalPortal>
-					<Modal.Backdrop zIndex={9999} id={BACKDROP_ID} onMouseDown={closeModalOnBackdropClick}>
+					<Modal.Backdrop zIndex={9999} id={BACKDROP_ID} onMouseDown={closeModalOnBackdropClick} onMouseUp={closeModalOnBackdropClick}>
 						{currentModal}
 					</Modal.Backdrop>
 				</ModalPortal>
