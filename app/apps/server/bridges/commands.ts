@@ -39,12 +39,8 @@ export class AppCommandsBridge extends CommandBridge {
 		if (!this.disabledCommands.has(cmd)) {
 			throw new Error(`The command is not currently disabled: "${cmd}"`);
 		}
-		const slCommandsCmd = this.disabledCommands.get(cmd);
-		if (!slCommandsCmd) {
-			return;
-		}
 
-		slashCommands.commands[cmd] = slCommandsCmd;
+		slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
 		this.disabledCommands.delete(cmd);
 
 		this.orch.getNotifier().commandUpdated(cmd);
