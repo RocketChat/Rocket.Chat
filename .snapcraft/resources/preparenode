@@ -1,6 +1,6 @@
 #!/bin/bash
 
-node_version="v12.22.1"
+node_version="v14.18.2"
 
 unamem="$(uname -m)"
 if [[ $unamem == *aarch64* ]]; then

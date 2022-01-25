@@ -10,6 +10,9 @@ export type VoipEvents = {
 	callestablished: undefined;
 	incomingcall: ICallerInfo;
 	callterminated: undefined;
-
+	hold: undefined;
+	holderror: undefined;
+	unhold: undefined;
+	unholderror: undefined;
 	stateChanged: undefined;
 };

@@ -1,5 +1,5 @@
 import { check } from 'meteor/check';
-import { HTTP } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
@@ -133,7 +133,7 @@ const avatarProviders = {
 	},
 };
 
-export function getAvatarSuggestionForUser(user) {
+export async function getAvatarSuggestionForUser(user) {
 	check(user, Object);
 
 	const avatars = [];
@@ -150,19 +150,15 @@ export function getAvatarSuggestionForUser(user) {
 	}
 
 	const validAvatars = {};
-	for (const avatar of avatars) {
+	for await (const avatar of avatars) {
 		try {
-			const result = HTTP.get(avatar.url, {
-				npmRequestOptions: {
-					encoding: 'binary',
-				},
-			});
+			const response = await fetch(avatar.url);
 
-			if (result.statusCode === 200) {
-				let blob = `data:${result.headers['content-type']};base64,`;
-				blob += Buffer.from(result.content, 'binary').toString('base64');
+			if (response.status === 200) {
+				let blob = `data:${response.headers.get('content-type')};base64,`;
+				blob += Buffer.from(await response.arrayBuffer()).toString('base64');
 				avatar.blob = blob;
-				avatar.contentType = result.headers['content-type'];
+				avatar.contentType = response.headers.get('content-type');
 				validAvatars[avatar.service] = avatar;
 			}
 		} catch (error) {

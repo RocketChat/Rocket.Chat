@@ -16,7 +16,7 @@ import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -156,7 +156,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setEmailError(!email ? t('The_field_is_required', 'email') : '');
 	}, [t, email]);
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+		setEmailError(!validateEmail(email) ? t('Validate_email_address') : '');
 	}, [t, email]);
 	useComponentDidUpdate(() => {
 		setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : '');
@@ -173,7 +173,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			setEmailError(t('The_field_is_required', 'email'));
 			error = true;
 		}
-		if (!isEmail(email)) {
+		if (!validateEmail(email)) {
 			setEmailError(t('Validate_email_address'));
 			error = true;
 		}
@@ -236,7 +236,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	});
 
 	const invalidForm =
-		!name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+		!name || !email || !validateEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 

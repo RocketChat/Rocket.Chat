@@ -130,6 +130,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		id?: string;
 		// A human readable alias that goes with the ID, for post analytical purposes
 		alias?: string;
+		// A label to be shown in the room info
+		label?: string;
 		// The sidebar icon
 		sidebarIcon?: string;
 		// The default sidebar icon

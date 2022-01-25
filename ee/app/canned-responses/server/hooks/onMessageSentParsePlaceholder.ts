@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
 import { IMessage } from '../../../../../definition/IMessage';
 import { IOmnichannelRoom, isOmnichannelRoom } from '../../../../../definition/IRoom';
@@ -31,13 +31,13 @@ const placeholderFields = {
 
 const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
 
-const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any => {
+const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IMessage => {
 	if (!message.msg || message.msg === '') {
 		return message;
 	}
 
 	room = room?._id ? room : Rooms.findOneById(message.rid);
-	if (!isOmnichannelRoom(room)) {
+	if (!room || !isOmnichannelRoom(room)) {
 		return message;
 	}
 

@@ -13,7 +13,11 @@ import { usePagination } from './hooks/usePagination';
 const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
 
-type GenericTableParams = { text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 };
+type GenericTableParams = {
+	text?: string;
+	current?: number;
+	itemsPerPage?: 25 | 50 | 100;
+};
 
 type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps extends { _id?: Key }> = {
 	fixed?: boolean;
@@ -56,7 +60,7 @@ const GenericTable = forwardRef(function GenericTable<
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ text: params.text || '', current, itemsPerPage });
+		setParams({ ...params, text: params.text || '', current, itemsPerPage });
 	}, [params, current, itemsPerPage, setParams]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);

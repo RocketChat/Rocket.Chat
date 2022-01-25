@@ -1,5 +1,6 @@
 import React, { useMemo, FC, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
@@ -37,12 +38,12 @@ export const CallProvider: FC = ({ children }) => {
 			actions: {
 				mute: (): void => undefined, // voipClient.mute(),
 				unmute: (): void => undefined, // voipClient.unmute()
-				pause: (): void => undefined, // voipClient.pause()
-				resume: (): void => undefined, // voipClient.resume()
-				end: (): Promise<unknown> => voipClient.endCall(),
-				pickUp: async (): Promise<unknown> =>
+				pause: (): Promise<void> => voipClient.holdCall(true), // voipClient.pause()
+				resume: (): Promise<void> => voipClient.holdCall(false), // voipClient.resume()
+				end: (): Promise<OutgoingByeRequest | void> => voipClient.endCall(),
+				pickUp: async (): Promise<void | null> =>
 					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
-				reject: (): Promise<unknown> => voipClient.rejectCall(),
+				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
 		};
 	}, [result]);
