@@ -1,8 +1,8 @@
 export interface IRoomClosingInfo {
-	closer: string;
-	closedBy: string;
-	closedAt: string;
-	callDuration: string;
-	serviceTimeDuration: string;
-	extraData: any;
+	closedAt: Date;
+	callDuration: number;
+	closer?: string;
+	closedBy?: Record<string, any>;
+	serviceTimeDuration?: string;
+	extraData?: Record<string, any>;
 }

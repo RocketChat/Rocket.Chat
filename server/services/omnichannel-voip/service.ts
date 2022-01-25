@@ -1,7 +1,4 @@
-import { Db } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Db, FindOneOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
@@ -18,7 +15,7 @@ import { Users } from '../../../app/models/server';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
 // import { VoipRoom } from '../../../app/models/server/raw';
 import { IVoipRoom } from '../../../definition/IRoom';
-import { callbacks } from '../../../app/callbacks/server';
+import { IRoomClosingInfo } from '../../../definition/IRoomClosingInfo';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -52,22 +49,11 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	}
 
 	private async createVoipRoom(rid: string, name: string, agent: any, guest: ILivechatVisitor): Promise<string> {
-		check(rid, String);
-		check(name, String);
-		check(
-			guest,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				status: Match.Maybe(String),
-				department: Match.Maybe(String),
-			}),
-		);
-
-		const { _id, username, department: departmentId, status = 'online' } = guest;
+		const status = 'online';
+		const { _id, username, department: departmentId } = guest;
 		const newRoomAt = new Date();
 
-		this.logger.debug(`Creating livechat room for visitor ${_id}`);
+		this.logger.debug(`Creating Voip room for visitor ${_id}`);
 
 		const room = Object.assign({
 			_id: rid,
@@ -102,8 +88,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		});
 		const result = await this.voipRoom.insertOne(room);
 
-		const roomId = await result.insertedId;
-		return roomId;
+		return result.insertedId;
 	}
 
 	private async getAllocatedExtesionAllocationData(projection: Partial<{ [P in keyof IUser]: number }>): Promise<IUser[]> {
@@ -157,27 +142,22 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return this.normalizeAgent(agentId);
 	}
 
-	async getNewRoom(guest: ILivechatVisitor, agent: any, rid: string, roomInfo: any): Promise<IRoomCreationResponse> {
+	async getNewRoom(
+		guest: ILivechatVisitor,
+		agent: any,
+		rid: string,
+		roomInfo: any,
+		options: FindOneOptions<IVoipRoom> = {},
+	): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-		const message = {
-			_id: Random.id(),
-			rid,
-			msg: '',
-			token: guest.token,
-			ts: new Date(),
-		};
-
-		let room = await this.voipRoom.findOneById(message.rid);
+		let room = await this.voipRoom.findOneById(rid, options);
 		let newRoom = false;
 		if (room && !room.open) {
 			this.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
-			message.rid = Random.id();
 			room = null;
 		}
 		if (room == null) {
 			// delegate room creation to QueueManager
-			this.logger.debug(`Calling QueueManager to request a room for visitor ${guest._id}`);
-			// room = await QueueManager.requestRoom({ guest, message, roomInfo, agent: defaultAgent, extraData });
 			const name = roomInfo?.fname || guest.name || guest.username;
 			const roomId = await this.createVoipRoom(rid, name, agent, guest);
 			room = await this.voipRoom.findOneVoipRoomById(roomId);
@@ -186,7 +166,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		}
 		if (!room) {
 			this.logger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
-			throw new Meteor.Error('cannot-access-room');
+			throw new Error('cannot-access-room');
 		}
 		return {
 			room,
@@ -209,24 +189,24 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, fields);
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, /* comment: any,*/ options = {}): Promise<boolean> {
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom /* , comment: any, options = {}*/): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
 		}
 
-		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
-		const { extraData } = params;
+		// const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		// const { extraData } = params;
 
 		const now = new Date();
 		const { _id: rid } = room;
 
-		const closeData = {
+		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() / 1000,
-			...extraData,
+			// ...extraData,
 		};
-		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
+		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 
 		/*
 		// We should be able to handle nearend and farend call end.

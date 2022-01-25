@@ -24,9 +24,8 @@ API.v1.addRoute('voip/room', {
 		}
 
 		let room;
-
 		if (!rid) {
-			room = await VoipRoom.findOneOpenByVisitorToken(token, {});
+			room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 			if (room) {
 				return API.v1.success({ room, newRoom: false });
 			}
@@ -46,10 +45,10 @@ API.v1.addRoute('voip/room', {
 					type: OmnichannelSourceType.API,
 				},
 			};
-			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo);
+			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo, { projection: API.v1.defaultFieldsToExclude });
 			return API.v1.success(room);
 		}
-		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token);
+		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}

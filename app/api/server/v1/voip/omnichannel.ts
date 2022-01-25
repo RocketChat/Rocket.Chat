@@ -110,18 +110,18 @@ API.v1.addRoute(
 			const { type, username } = this.queryParams;
 			switch ((type as string).toLowerCase()) {
 				case 'free': {
-					const extension = await LivechatVoip.getFreeExtensions();
-					if (!extension) {
+					const extensions = await LivechatVoip.getFreeExtensions();
+					if (!extensions) {
 						return API.v1.failure('Error in finding free extensons');
 					}
-					return API.v1.success({ extensions: extension });
+					return API.v1.success({ extensions });
 				}
 				case 'allocated': {
-					const association = await LivechatVoip.getExtensionAllocationDetails();
-					if (!association) {
+					const allocations = await LivechatVoip.getExtensionAllocationDetails();
+					if (!allocations) {
 						return API.v1.failure('Error in allocated extensions');
 					}
-					return API.v1.success({ allocations: association });
+					return API.v1.success({ allocations });
 				}
 				case 'available': {
 					const user = await Users.findOneByAgentUsername(username, {

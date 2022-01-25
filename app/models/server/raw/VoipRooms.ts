@@ -8,7 +8,7 @@ import { IRoomClosingInfo } from '../../../../definition/IRoomClosingInfo';
 export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 	logger = new Logger('VoipRoomsRaw');
 
-	findOneOpenByVisitorToken(visitorToken: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
+	findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			'open': true,
@@ -40,7 +40,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 	findOneOpenByRoomIdAndVisitorToken(
 		roomId: string,
 		visitorToken: string,
-		options: WithoutProjection<FindOneOptions<IVoipRoom>> = {},
+		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
@@ -100,7 +100,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		return this.findOne(query, options);
 	}
 
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<any> {
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<WriteOpResult> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
 		return this.update(
