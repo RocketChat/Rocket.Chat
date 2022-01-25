@@ -55,8 +55,6 @@ export class NotificationsModule {
 
 	public readonly streamPresence: IStreamer;
 
-	public readonly testStreamer: IStreamer;
-
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
@@ -74,20 +72,13 @@ export class NotificationsModule {
 		this.streamRoomData = new this.Streamer('room-data');
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
-		this.testStreamer = new this.Streamer('test-otr');
-
-		this.testStreamer.allowRead('all');
-		this.testStreamer.allowWrite('all');
-
-		this.testStreamer.on('otr-message',async (...args: any) => {
-			console.log("teh args are = ", args);
-	});
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
 			}
+
 			const userEvent = (clientAction: string, { rid }: { rid: string }): void => {
 				switch (clientAction) {
 					case 'removed':

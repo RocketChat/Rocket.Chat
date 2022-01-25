@@ -19,7 +19,6 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
-import { message } from '/tests/data/api-data';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -104,9 +103,12 @@ export const RoomManager = new (function () {
 							if (record.streamActive !== true) {
 								record.streamActive = true;
 								msgStream.on(record.rid, async (msg, user, room) => {
+									// Should not send message to room if room has not loaded all the current messages
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
+									}
 									if (msg.t === 'otr') {
 										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-
 										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 										const { _id, username, name } = user;
 										msg.u = {
@@ -119,7 +121,9 @@ export const RoomManager = new (function () {
 											type,
 											name,
 										};
+
 										upsertMessage({ msg, subscription });
+
 										if (isNew) {
 											menu.updateUnreadBars();
 											callbacks.run('streamNewMessage', msg);
@@ -127,10 +131,7 @@ export const RoomManager = new (function () {
 
 										return;
 									}
-									// Should not send message to room if room has not loaded all the current messages
-									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-										return;
-									}
+
 									// Do not load command messages into channel
 									if (msg.t !== 'command') {
 										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
