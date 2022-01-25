@@ -13,7 +13,7 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 
 let html = '';
 let passwordChangedHtml = '';

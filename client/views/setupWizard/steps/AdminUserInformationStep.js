@@ -2,7 +2,7 @@ import { EmailInput, Field, FieldGroup, Icon, Margins, PasswordInput, TextInput 
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { callbacks } from '../../../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as emailValidator } from '../../../../lib/emailValidator';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';

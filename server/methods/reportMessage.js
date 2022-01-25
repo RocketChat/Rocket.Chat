@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Messages } from '../../app/models/server';
-import { Reports } from '../../app/models/server/raw';
+import { Reports, Rooms } from '../../app/models/server/raw';
+import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {
@@ -28,7 +29,17 @@ Meteor.methods({
 			});
 		}
 
-		await Reports.createWithMessageDescriptionAndUserId(message, description, Meteor.userId());
+		const uid = Meteor.userId();
+		const { rid } = message;
+		// If the user can't access the room where the message is, report that the message id is invalid
+		const room = await Rooms.findOneById(rid);
+		if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
+			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
+				method: 'reportMessage',
+			});
+		}
+
+		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
 
 		return true;
 	},

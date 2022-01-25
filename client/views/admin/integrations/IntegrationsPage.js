@@ -31,7 +31,7 @@ function IntegrationsPage() {
 		<Page flexDirection='column'>
 			<Page.Header title={t('Integrations')}>
 				<ButtonGroup>
-					<Button onClick={handleNewButtonClick}>
+					<Button primary onClick={handleNewButtonClick}>
 						<Icon name='plus' /> {t('New')}
 					</Button>
 				</ButtonGroup>

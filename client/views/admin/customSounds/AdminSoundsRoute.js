@@ -78,8 +78,8 @@ function CustomSoundsRoute() {
 		<Page flexDirection='row'>
 			<Page name='admin-custom-sounds'>
 				<Page.Header title={t('Custom_Sounds')}>
-					<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

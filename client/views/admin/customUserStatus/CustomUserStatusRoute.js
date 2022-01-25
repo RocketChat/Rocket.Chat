@@ -75,8 +75,8 @@ function CustomUserStatusRoute() {
 		<Page flexDirection='row'>
 			<Page name='admin-custom-user-status'>
 				<Page.Header title={t('Custom_User_Status')}>
-					<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
-						<Icon name='plus' />
+					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
+						<Icon name='plus' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>

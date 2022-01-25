@@ -2,6 +2,7 @@ import vm from 'vm';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { fetch } from 'meteor/fetch';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -15,6 +16,7 @@ import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
+import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
 export class RocketChatIntegrationHandler {
 	constructor() {
@@ -164,8 +166,14 @@ export class RocketChatIntegrationHandler {
 			Promise.await(IntegrationHistory.updateOne({ _id: historyId }, { $set: history }));
 			return historyId;
 		}
+
 		history._createdAt = new Date();
-		return Promise.await(IntegrationHistory.insertOne({ _id: Random.id(), ...history }));
+
+		const _id = Random.id();
+
+		Promise.await(IntegrationHistory.insertOne({ _id, ...history }));
+
+		return _id;
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
@@ -712,10 +720,6 @@ export class RocketChatIntegrationHandler {
 			url,
 			data,
 			auth: undefined,
-			npmRequestOptions: {
-				rejectUnauthorized: !settings.get('Allow_Invalid_SelfSigned_Certs'),
-				strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
-			},
 			headers: {
 				'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
 			},
@@ -746,155 +750,194 @@ export class RocketChatIntegrationHandler {
 			return;
 		}
 
+		// based on HTTP.call implementation
+		if (opts.auth) {
+			if (opts.auth.indexOf(':') < 0) {
+				throw new Error('auth option should be of the form "username:password"');
+			}
+
+			const base64 = Buffer.from(opts.auth, 'ascii').toString('base64');
+			opts.headers.Authorization = `Basic ${base64}`;
+		}
+
 		this.updateHistory({
 			historyId,
 			step: 'pre-http-call',
 			url: opts.url,
 			httpCallData: opts.data,
 		});
-		HTTP.call(opts.method, opts.url, opts, (error, result) => {
-			if (!result) {
-				outgoingLogger.warn(`Result for the Integration ${trigger.name} to ${url} is empty`);
-			} else {
-				outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${result.statusCode}`);
-			}
 
-			this.updateHistory({
-				historyId,
-				step: 'after-http-call',
-				httpError: error,
-				httpResult: result,
-			});
+		if (opts.data) {
+			opts.headers['Content-Type'] = 'application/json';
+		}
 
-			if (this.hasScriptAndMethod(trigger, 'process_outgoing_response')) {
-				const sandbox = {
-					request: opts,
-					response: {
-						error,
-						status_code: result ? result.statusCode : undefined, // These values will be undefined to close issues #4175, #5762, and #5896
-						content: result ? result.data : undefined,
-						content_raw: result ? result.content : undefined,
-						headers: result ? result.headers : {},
-					},
-				};
-
-				const scriptResult = this.executeScript(trigger, 'process_outgoing_response', sandbox, historyId);
-
-				if (scriptResult && scriptResult.content) {
-					const resultMessage = this.sendMessage({
-						trigger,
-						room,
-						message: scriptResult.content,
-						data,
-					});
-					this.updateHistory({
-						historyId,
-						step: 'after-process-send-message',
-						processSentMessage: resultMessage,
-						finished: true,
-					});
-					return;
+		fetch(opts.url, {
+			method: opts.method,
+			headers: opts.headers,
+			...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
+				agent: getUnsafeAgent(opts.url.startsWith('https:') ? 'https:' : 'http:'),
+			}),
+			...(opts.data && { body: JSON.stringify(opts.data) }),
+		})
+			.then(async (res) => {
+				const content = await res.text();
+				if (!content) {
+					outgoingLogger.warn(`Result for the Integration ${trigger.name} to ${url} is empty`);
+				} else {
+					outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${res.status}`);
 				}
 
-				if (scriptResult === false) {
-					this.updateHistory({ historyId, step: 'after-process-false-result', finished: true });
-					return;
-				}
-			}
-
-			// if the result contained nothing or wasn't a successful statusCode
-			if (!result || !this.successResults.includes(result.statusCode)) {
-				if (error) {
-					outgoingLogger.error({
-						msg: `Error for the Integration "${trigger.name}" to ${url}`,
-						err: error,
-					});
-				}
-
-				if (result) {
-					outgoingLogger.error({
-						msg: `Error for the Integration "${trigger.name}" to ${url}`,
-						result,
-					});
-
-					if (result.statusCode === 410) {
-						this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
-						outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
-						Promise.await(Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } }));
-						return;
+				const data = (() => {
+					const contentType = (res.headers.get('content-type') || '').split(';')[0];
+					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						return null;
 					}
 
-					if (result.statusCode === 500) {
-						this.updateHistory({ historyId, step: 'after-process-http-status-500', error: true });
-						outgoingLogger.error({
-							msg: `Error "500" for the Integration "${trigger.name}" to ${url}.`,
-							content: result.content,
+					try {
+						return JSON.parse(content);
+					} catch (_error) {
+						return null;
+					}
+				})();
+
+				this.updateHistory({
+					historyId,
+					step: 'after-http-call',
+					httpError: null,
+					httpResult: content,
+				});
+
+				if (this.hasScriptAndMethod(trigger, 'process_outgoing_response')) {
+					const sandbox = {
+						request: opts,
+						response: {
+							error: null,
+							status_code: res.status, // These values will be undefined to close issues #4175, #5762, and #5896
+							content,
+							content_raw: content,
+							headers: Object.fromEntries(res.headers),
+						},
+					};
+
+					const scriptResult = this.executeScript(trigger, 'process_outgoing_response', sandbox, historyId);
+
+					if (scriptResult && scriptResult.content) {
+						const resultMessage = this.sendMessage({
+							trigger,
+							room,
+							message: scriptResult.content,
+							data,
+						});
+						this.updateHistory({
+							historyId,
+							step: 'after-process-send-message',
+							processSentMessage: resultMessage,
+							finished: true,
 						});
 						return;
 					}
-				}
 
-				if (trigger.retryFailedCalls) {
-					if (tries < trigger.retryCount && trigger.retryDelay) {
-						this.updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
+					if (scriptResult === false) {
+						this.updateHistory({ historyId, step: 'after-process-false-result', finished: true });
+						return;
+					}
 
-						let waitTime;
+					// if the result contained nothing or wasn't a successful statusCode
+					if (!content || !this.successResults.includes(res.status)) {
+						if (content) {
+							outgoingLogger.error({
+								msg: `Error for the Integration "${trigger.name}" to ${url}`,
+								result: content,
+							});
 
-						switch (trigger.retryDelay) {
-							case 'powers-of-ten':
-								// Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s, 27h46m40s, etc
-								waitTime = Math.pow(10, tries + 2);
-								break;
-							case 'powers-of-two':
-								// 2 seconds, 4 seconds, 8 seconds
-								waitTime = Math.pow(2, tries + 1) * 1000;
-								break;
-							case 'increments-of-two':
-								// 2 second, 4 seconds, 6 seconds, etc
-								waitTime = (tries + 1) * 2 * 1000;
-								break;
-							default:
-								const er = new Error("The integration's retryDelay setting is invalid.");
-								this.updateHistory({
-									historyId,
-									step: 'failed-and-retry-delay-is-invalid',
-									error: true,
-									errorStack: er.stack,
+							if (res.status === 410) {
+								this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
+								outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
+								await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
+								return;
+							}
+
+							if (res.status === 500) {
+								this.updateHistory({ historyId, step: 'after-process-http-status-500', error: true });
+								outgoingLogger.error({
+									msg: `Error "500" for the Integration "${trigger.name}" to ${url}.`,
+									content,
 								});
 								return;
+							}
 						}
 
-						outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
-						Meteor.setTimeout(() => {
-							this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
-						}, waitTime);
-					} else {
-						this.updateHistory({ historyId, step: 'too-many-retries', error: true });
+						if (trigger.retryFailedCalls) {
+							if (tries < trigger.retryCount && trigger.retryDelay) {
+								this.updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
+
+								let waitTime;
+
+								switch (trigger.retryDelay) {
+									case 'powers-of-ten':
+										// Try again in 0.1s, 1s, 10s, 1m40s, 16m40s, 2h46m40s, 27h46m40s, etc
+										waitTime = Math.pow(10, tries + 2);
+										break;
+									case 'powers-of-two':
+										// 2 seconds, 4 seconds, 8 seconds
+										waitTime = Math.pow(2, tries + 1) * 1000;
+										break;
+									case 'increments-of-two':
+										// 2 second, 4 seconds, 6 seconds, etc
+										waitTime = (tries + 1) * 2 * 1000;
+										break;
+									default:
+										const er = new Error("The integration's retryDelay setting is invalid.");
+										this.updateHistory({
+											historyId,
+											step: 'failed-and-retry-delay-is-invalid',
+											error: true,
+											errorStack: er.stack,
+										});
+										return;
+								}
+
+								outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
+								Meteor.setTimeout(() => {
+									this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
+								}, waitTime);
+							} else {
+								this.updateHistory({ historyId, step: 'too-many-retries', error: true });
+							}
+						} else {
+							this.updateHistory({
+								historyId,
+								step: 'failed-and-not-configured-to-retry',
+								error: true,
+							});
+						}
+
+						return;
 					}
-				} else {
-					this.updateHistory({
-						historyId,
-						step: 'failed-and-not-configured-to-retry',
-						error: true,
-					});
-				}
 
-				return;
-			}
-
-			// process outgoing webhook response as a new message
-			if (result && this.successResults.includes(result.statusCode)) {
-				if (result && result.data && (result.data.text || result.data.attachments)) {
-					const resultMsg = this.sendMessage({ trigger, room, message: result.data, data });
-					this.updateHistory({
-						historyId,
-						step: 'url-response-sent-message',
-						resultMessage: resultMsg,
-						finished: true,
-					});
+					// process outgoing webhook response as a new message
+					if (content && this.successResults.includes(res.status)) {
+						if (data?.text || data?.attachments) {
+							const resultMsg = this.sendMessage({ trigger, room, message: data, data });
+							this.updateHistory({
+								historyId,
+								step: 'url-response-sent-message',
+								resultMessage: resultMsg,
+								finished: true,
+							});
+						}
+					}
 				}
-			}
-		});
+			})
+			.catch((error) => {
+				outgoingLogger.error(error);
+				this.updateHistory({
+					historyId,
+					step: 'after-http-call',
+					httpError: error,
+					httpResult: null,
+				});
+			});
 	}
 
 	replay(integration, history) {
