@@ -13,7 +13,7 @@ import {
 	getAgentsProductivityMetrics,
 	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
-import { Users } from '../../../../models';
+import { Users } from '../../../../models/server';
 
 interface IParams {
 	start: string | Date;

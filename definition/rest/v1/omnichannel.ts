@@ -186,4 +186,7 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
+	'livechat/agents/:agentId/departments': {
+		GET: (params: { agentId: string; enabledDepartmentsOnly?: string }) => { departments: ILivechatDepartmentAgents[] };
+	};
 };

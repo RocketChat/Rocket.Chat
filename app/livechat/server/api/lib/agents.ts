@@ -1,7 +1,18 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents } from '../../../../models/server/raw';
+import { ILivechatDepartmentAgents } from '../../../../../definition/ILivechatDepartmentAgents';
 
-export async function findAgentDepartments({ userId, enabledDepartmentsOnly, agentId }) {
+interface IFindAgentDepartmentsParams {
+	userId: string;
+	enabledDepartmentsOnly: boolean | string | undefined;
+	agentId: string;
+}
+
+export async function findAgentDepartments({
+	userId,
+	enabledDepartmentsOnly,
+	agentId,
+}: IFindAgentDepartmentsParams): Promise<{ departments: ILivechatDepartmentAgents[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}

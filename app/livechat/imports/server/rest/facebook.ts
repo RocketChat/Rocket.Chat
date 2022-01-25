@@ -3,8 +3,8 @@ import crypto from 'crypto';
 import { Random } from 'meteor/random';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms, LivechatVisitors } from '../../../../models';
-import { settings } from '../../../../settings';
+import { LivechatRooms, LivechatVisitors } from '../../../../models/server';
+import { settings } from '../../../../settings/server';
 import { Livechat } from '../../../server/lib/Livechat';
 
 /**
@@ -19,16 +19,16 @@ interface IApiParams extends Array<any> {
 	token: string; // Facebook user's token
 	first_name: string; // Facebook user's first name
 	last_name: string; // Facebook user's last name
-	// [text] // Facebook message text
 	text: string;
 	// [attachments] // Facebook message attachments
-	attachments: string;
+	attachments: any[];
 }
 
 interface ISendMessage {
 	message: IMessage;
-	roomInfo?: any;
-	guest?: any;
+	roomInfo: any;
+	guest: any;
+	agent: any;
 }
 
 interface IMessage {
@@ -63,7 +63,7 @@ API.v1.addRoute('livechat/facebook', {
 
 		// validate if request come from omni
 		const signature = crypto
-			.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret'))
+			.createHmac('sha1', settings.get<string>('Livechat_Facebook_API_Secret'))
 			.update(JSON.stringify(this.request.body))
 			.digest('hex');
 		if (this.request.headers['x-hub-signature'] !== `sha1=${signature}`) {
@@ -82,8 +82,10 @@ API.v1.addRoute('livechat/facebook', {
 					page: BodyParams.page,
 				},
 			},
+			agent: undefined,
+			guest: undefined,
 		};
-		let visitor = LivechatVisitors.getVisitorByToken(BodyParams.token);
+		let visitor = LivechatVisitors.getVisitorByToken(BodyParams.token, {});
 		if (visitor) {
 			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
@@ -99,6 +101,12 @@ API.v1.addRoute('livechat/facebook', {
 			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
 				name: `${BodyParams.first_name} ${BodyParams.last_name}`,
+				email: undefined,
+				department: undefined,
+				phone: undefined,
+				username: undefined,
+				id: undefined,
+				connectionData: undefined,
 			});
 
 			visitor = LivechatVisitors.findOneById(userId);
