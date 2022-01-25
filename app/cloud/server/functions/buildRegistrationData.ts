@@ -33,7 +33,7 @@ type WorkspaceRegistrationData = {
 };
 
 export async function buildWorkspaceRegistrationData(contactEmail: string): Promise<WorkspaceRegistrationData> {
-	const stats = (await Statistics.findLast()) || statistics.get();
+	const stats = (await Statistics.findLast()) || (await statistics.get());
 
 	const address = settings.get('Site_Url');
 	const siteName = settings.get('Site_Name');
