@@ -153,7 +153,8 @@ export const RoomManager = new (function () {
 										}
 									}
 
-									msg.name = room.name;
+									msg.name = room && room.name ? room.name : '';
+
 									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 									handleTrackSettingsChange(msg);
