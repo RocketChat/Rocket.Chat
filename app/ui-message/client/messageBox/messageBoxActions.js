@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox, modal } from '../../../ui-utils';
@@ -24,8 +25,8 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/video\/webm|video\/\*/i)) &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action: async ({ rid, tmid, messageBox }) => {
-		permissionStatus = await navigator.permissions.query({ name: 'camera' });
-		if (permissionStatus.state == 'denied') return dispatchToastMessage({ type: 'error', message: t('Camera_is_blocked') });
+		const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+		if (permissionStatus.state === 'denied') return dispatchToastMessage({ type: 'error', message: t('Camera_is_blocked') });
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid });
 	},
 });
