@@ -15,6 +15,12 @@ import {
 } from '../../../server/lib/analytics/dashboards';
 import { Users } from '../../../../models';
 
+interface IParams {
+	start: string | Date;
+	end: string | Date;
+	departmentId: string | undefined;
+}
+
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
 	{ authRequired: true },
@@ -23,19 +29,15 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			let { start, end }: IParams = this.requestParams();
+			const { departmentId }: IParams = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);

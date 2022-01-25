@@ -12,17 +12,37 @@ import { Livechat } from '../../../server/lib/Livechat';
  * @apiName Facebook
  * @apiGroup Livechat
  *
- * @apiParam {String} mid Facebook message id
- * @apiParam {String} page Facebook pages id
- * @apiParam {String} token Facebook user's token
- * @apiParam {String} first_name Facebook user's first name
- * @apiParam {String} last_name Facebook user's last name
- * @apiParam {String} [text] Facebook message text
- * @apiParam {String} [attachments] Facebook message attachments
  */
+interface IApiParams extends Array<any> {
+	mid: string; // Facebook message id
+	page: string; // Facebook pages id
+	token: string; // Facebook user's token
+	first_name: string; // Facebook user's first name
+	last_name: string; // Facebook user's last name
+	// [text] // Facebook message text
+	text: string;
+	// [attachments] // Facebook message attachments
+	attachments: string;
+}
+
+interface ISendMessage {
+	message: IMessage;
+	roomInfo?: any;
+	guest?: any;
+}
+
+interface IMessage {
+	_id: string;
+	rid?: string;
+	token?: string;
+	msg?: string;
+}
+
 API.v1.addRoute('livechat/facebook', {
 	post() {
-		if (!this.bodyParams.text && !this.bodyParams.attachments) {
+		const BodyParams: IApiParams = this.bodyParams;
+
+		if (!BodyParams.text && !BodyParams.attachments) {
 			return {
 				success: false,
 			};
@@ -53,17 +73,17 @@ API.v1.addRoute('livechat/facebook', {
 			};
 		}
 
-		const sendMessage = {
+		const sendMessage: ISendMessage = {
 			message: {
-				_id: this.bodyParams.mid,
+				_id: BodyParams.mid,
 			},
 			roomInfo: {
 				facebook: {
-					page: this.bodyParams.page,
+					page: BodyParams.page,
 				},
 			},
 		};
-		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
+		let visitor = LivechatVisitors.getVisitorByToken(BodyParams.token);
 		if (visitor) {
 			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
@@ -74,17 +94,17 @@ API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.token = visitor.token;
 		} else {
 			sendMessage.message.rid = Random.id();
-			sendMessage.message.token = this.bodyParams.token;
+			sendMessage.message.token = BodyParams.token;
 
 			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
-				name: `${this.bodyParams.first_name} ${this.bodyParams.last_name}`,
+				name: `${BodyParams.first_name} ${BodyParams.last_name}`,
 			});
 
 			visitor = LivechatVisitors.findOneById(userId);
 		}
 
-		sendMessage.message.msg = this.bodyParams.text;
+		sendMessage.message.msg = BodyParams.text;
 		sendMessage.guest = visitor;
 
 		try {
