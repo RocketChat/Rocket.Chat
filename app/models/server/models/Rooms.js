@@ -5,6 +5,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { getValidRoomName } from '../../../utils/lib/getValidRoomName';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -375,7 +376,6 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
