@@ -1,13 +1,13 @@
 import { Badge, Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
+import { VRecDialog } from '../../../app/ui-vrecord/client';
 import { roomTypes } from '../../../app/utils/client';
 import { RoomIcon } from '../../components/RoomIcon';
 import { useLayout } from '../../contexts/LayoutContext';
 import RoomMenu from '../RoomMenu';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
-import { VRecDialog } from '../../../app/ui-vrecord/client';
 const getMessage = (room, lastMessage, t) => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
@@ -88,7 +88,7 @@ function SideBarItemTemplateWithData({
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
-			onClick={(e) => {
+			onClick={() => {
 				VRecDialog.close();
 				!selected && sidebar.toggle();
 			}}
