@@ -13,6 +13,7 @@ import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
 import { AnalyticsService } from './analytics/service';
 import { LDAPService } from './ldap/service';
+import { SAUMonitorService } from './sauMonitor/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -28,3 +29,4 @@ api.registerService(new VoipService(db));
 api.registerService(new OmnichannelVoipService(db));
 api.registerService(new AnalyticsService(db));
 api.registerService(new LDAPService());
+api.registerService(new SAUMonitorService());

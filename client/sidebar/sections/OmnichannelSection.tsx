@@ -5,7 +5,7 @@ import React, { memo, ReactElement } from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useLayout } from '../../contexts/LayoutContext';
-import { useOmnichannelShowQueueLink, useOmnichannelQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
+import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -14,17 +14,16 @@ import { OmnichannelCallToggle } from './components/OmnichannelCallToggle';
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const isCallEnabled = useIsCallEnabled();
 	const hasPermission = usePermission('view-omnichannel-contact-center');
 	const agentAvailable = useOmnichannelAgentAvailable();
 
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
-	const queueLink = useOmnichannelQueueLink();
-
 	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('omnichannel-directory');
+	const queueListRoute = useRoute('livechat-queue');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const availableIcon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
@@ -45,9 +44,17 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		}
 	});
 
-	const handleDirectory = useMutableCallback(() => {
+	const handleRoute = useMutableCallback((route) => {
 		sidebar.toggle();
-		directoryRoute.push({});
+
+		switch (route) {
+			case 'directory':
+				directoryRoute.push({});
+				break;
+			case 'queue':
+				queueListRoute.push({});
+				break;
+		}
 	});
 
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
@@ -55,10 +62,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />}
+				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={(): void => handleRoute('queue')} />}
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<Sidebar.TopBar.Action {...availableIcon} onClick={handleAvailableStatusChange} />
-				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />}
+				{hasPermission && <Sidebar.TopBar.Action {...directoryIcon} onClick={(): void => handleRoute('directory')} />}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);
