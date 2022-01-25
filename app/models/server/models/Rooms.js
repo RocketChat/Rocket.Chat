@@ -250,10 +250,7 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly, hasPermission) {
-		if (!hasPermission) {
-			throw new Error('You must provide "hasPermission" function to be able to call this method');
-		}
+	setReadOnlyById(_id, readOnly) {
 		const query = {
 			_id,
 		};

@@ -19,6 +19,7 @@ import {
 export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
+// pesquisar isso tambeḿ
 	const hasAllPermissionsResult = hasAllPermissions ? hasPermission(hasAllPermissions) : true;
 	const hasOnePermissionResult = hasOnePermission ? hasAtLeastOnePermission(hasOnePermission) : true;
 	const hasAllRolesResult = hasAllRoles ? hasAllRoles.every((role) => hasRole(Meteor.userId(), role, room?._id)) : true;

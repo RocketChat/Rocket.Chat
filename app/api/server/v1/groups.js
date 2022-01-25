@@ -640,7 +640,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+			if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list', findResult.rid)) {
 				return API.v1.unauthorized();
 			}
 

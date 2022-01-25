@@ -7,7 +7,7 @@ import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server/raw';
 import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../logger';
-import { getMostImportantRole } from './getMostImportantRole';
+import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 
 const getDateObj = (dateTime = new Date()) => ({
 	day: dateTime.getDate(),

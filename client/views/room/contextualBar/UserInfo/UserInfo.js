@@ -45,6 +45,7 @@ function UserInfo({
 	const customFieldsToShow = customFieldsToShowObj
 		? Object.values(customFieldsToShowObj).map((value) => {
 				const role = Object.values(value);
+				// name?
 				const roleNameToShow = Object.keys(value);
 				const customField = {};
 				customField[roleNameToShow] = customFields[role];

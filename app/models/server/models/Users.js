@@ -637,6 +637,11 @@ export class Users extends Base {
 		);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {IRoom['_id']} scope the value for the role scope (room id)
+	 * @param {any} options
+	 */
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -647,6 +652,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {IRole['_id'][]} roles the list of role ids
+	 * @param {undefined} scope
+	 * @param {any} options
+	 */
 	findActiveUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -1300,6 +1310,11 @@ export class Users extends Base {
 		return this.update({}, update, { multi: true });
 	}
 
+	/**
+	 * @param latestLastLoginDate
+	 * @param {IRole['_id']} role the role id
+	 * @param {boolean} active
+	 */
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
 		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
 		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };

@@ -1,8 +1,10 @@
+import type { IRole } from './IRole';
+
 export interface ISession {
 	_id: string;
 
 	type: string;
-	mostImportantRole: string;
+	mostImportantRole: IRole['_id'];
 	userId: string;
 	lastActivityAt: Date;
 	device: {

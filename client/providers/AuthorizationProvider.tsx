@@ -7,6 +7,7 @@ import { AuthorizationContext, RoleStore } from '../contexts/AuthorizationContex
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
+// pesquisar isso também
 const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory((permission, scope) => hasPermission(permission, scope)),
 	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),

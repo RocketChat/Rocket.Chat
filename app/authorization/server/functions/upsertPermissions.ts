@@ -199,6 +199,18 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
+		{ _id: 'send-mail', roles: ['admin'] },
+		{ _id: 'view-federation-data', roles: ['admin'] },
+		{ _id: 'add-all-to-room', roles: ['admin'] },
+		{ _id: 'get-server-info', roles: ['admin'] },
+		{ _id: 'register-on-cloud', roles: ['admin'] },
+		{ _id: 'test-admin-options', roles: ['admin'] },
+		{ _id: 'sync-auth-services-users', roles: ['admin'] },
+		{ _id: 'manage-chatpal', roles: ['admin'] },
+		{ _id: 'restart-server', roles: ['admin'] },
+		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
+		{ _id: 'view-import-operations', roles: ['admin'] },
+		{ _id: 'clear-oembed-cache', roles: ['admin'] },
 	];
 
 	for await (const permission of permissions) {
@@ -217,10 +229,10 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'anonymous', scope: 'Users', description: '' },
 		{ name: 'livechat-agent', scope: 'Users', description: 'Livechat Agent' },
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
-	];
+	] as const;
 
 	for await (const role of defaultRoles) {
-		await Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
+		await Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
 	}
 
 	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {

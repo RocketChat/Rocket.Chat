@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../models/server';
-import { hasRole } from '../../authorization/server';
+import { hasPermission } from '../../authorization/server';
 import { settings } from '../../settings/server';
 
 Meteor.methods({
@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasRole(user._id, 'admin')) {
+		if (!hasPermission(user._id, 'remove-slackbridge-links')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'removeSlackBridgeChannelLinks',
 			});

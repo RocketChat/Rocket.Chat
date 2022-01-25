@@ -13,8 +13,9 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { IRole } from '../../../definition/IRole';
-import { ISubscription } from '../../../definition/ISubscription';
+import type { IRole } from '../../../definition/IRole';
+import type { IRoom } from '../../../definition/IRoom';
+import type { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -100,7 +101,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
-	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {
+	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
@@ -144,7 +145,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		{ maxAge: 10000 },
 	);
 
-	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
+	private async rolesHasPermission(permission: string, roles: IRole['_id'][]): Promise<boolean> {
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
 		}
@@ -153,7 +154,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return !!result;
 	}
 
-	private async getRoles(uid: string, scope?: string): Promise<string[]> {
+	private async getRoles(uid: string, scope?: IRoom['_id']): Promise<string[]> {
 		const { roles: userRoles = [] } = (await this.Users.findOneById(uid, { projection: { roles: 1 } })) || {};
 		const { roles: subscriptionsRoles = [] } =
 			(scope &&

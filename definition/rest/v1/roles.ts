@@ -91,6 +91,7 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 		username: {
 			type: 'string',
 		},
+		// Check what's the new signature
 		roleName: {
 			type: 'string',
 		},

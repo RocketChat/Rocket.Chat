@@ -11,7 +11,8 @@ if hasPermission(userId, 'edit-message') ...
 	# at runtime by removing the permission for user's role instead of modifying the action code.
 
 # role based check
-if hasRole(userId, ['admin','site-moderator','moderator'])
+if hasRole(userId, 'admin')
+if hasAnyRole(userId, ['admin','site-moderator','moderator'])
 	# action is statically associated with the role
 	# action code has to be modified to add/remove role authorization
 

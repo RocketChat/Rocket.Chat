@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
 import { APIClient, t } from '../../../../../utils';
-import { hasRole } from '../../../../../authorization';
+import { hasAnyRole } from '../../../../../authorization';
 import './closeRoom.html';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 
@@ -27,7 +27,7 @@ const validateRoomTags = (tagsRequired, tags) => {
 };
 
 const checkUserTagPermission = (availableUserTags = [], tag) => {
-	if (hasRole(Meteor.userId(), ['admin', 'livechat-manager'])) {
+	if (hasAnyRole(Meteor.userId(), ['admin', 'livechat-manager'])) {
 		return true;
 	}
 
@@ -182,7 +182,7 @@ Template.closeRoom.onCreated(async function () {
 
 	Meteor.call('livechat:getTagsList', (err, tagsList) => {
 		this.availableTags.set(tagsList);
-		const isAdmin = hasRole(uid, ['admin', 'livechat-manager']);
+		const isAdmin = hasAnyRole(uid, ['admin', 'livechat-manager']);
 		const availableTags = tagsList
 			.filter(({ departments }) => isAdmin || departments.length === 0 || departments.some((i) => agentDepartments.includes(i)))
 			.map(({ name }) => name);

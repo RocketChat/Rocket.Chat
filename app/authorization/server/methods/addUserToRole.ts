@@ -6,9 +6,11 @@ import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 import { Roles } from '../../../models/server/raw';
+import type { IRole } from '../../../../definition/IRole';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	async 'authorization:addUserToRole'(roleName, username, scope) {
+	async 'authorization:addUserToRole'(roleId, username, scope) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:addUserToRole',
@@ -16,13 +18,26 @@ Meteor.methods({
 			});
 		}
 
-		if (!roleName || !_.isString(roleName) || !username || !_.isString(username)) {
+		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:addUserToRole',
 			});
 		}
 
-		if (roleName === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
+		let role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
+		if (!role) {
+			role = await Roles.findOneByName<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
+
+			if (!role) {
+				throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
+					method: 'authorization:addUserToRole',
+				});
+			}
+
+			apiDeprecationLogger.warn(`Calling authorization:addUserToRole with role names will be deprecated in future versions of Rocket.Chat`);
+		}
+
+		if (role._id === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
 				action: 'Assign_admin',
@@ -42,18 +57,18 @@ Meteor.methods({
 		}
 
 		// verify if user can be added to given scope
-		if (scope && !(await Roles.canAddUserToRole(user._id, roleName, scope))) {
+		if (scope && !(await Roles.canAddUserToRole(user._id, role._id, scope))) {
 			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});
 		}
 
-		const add = await Roles.addUserRoles(user._id, [roleName], scope);
+		const add = await Roles.addUserRoles(user._id, [role._id], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'added',
-				_id: roleName,
+				_id: role._id,
 				u: {
 					_id: user._id,
 					username,
