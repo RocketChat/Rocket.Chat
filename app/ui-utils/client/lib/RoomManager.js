@@ -47,7 +47,6 @@ export const RoomManager = new (function () {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
-	const otrStream = new Meteor.Streamer('test-otr');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 
@@ -104,15 +103,10 @@ export const RoomManager = new (function () {
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
-								otrStream.on(`otr-message/${record.rid}`, (...args) => {
-									console.log("From Room Manager = ", args);
-								})
 								msgStream.on(record.rid, async (msg, user, room) => {
 									if (msg.t === 'otr') {
-
 										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-										console.log("sub = ", subscription);
-										console.log("From Room Manager = ", msg);
+
 										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
 										const { _id, username, name } = user;
 										msg.u = {
@@ -131,7 +125,7 @@ export const RoomManager = new (function () {
 											callbacks.run('streamNewMessage', msg);
 										}
 
-										return console.log("From Room Manager = ", msg);
+										return;
 									}
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
