@@ -10,7 +10,6 @@ import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-
 import notifications from '../../../notifications/server/lib/Notifications';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;

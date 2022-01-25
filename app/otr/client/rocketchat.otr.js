@@ -93,7 +93,7 @@ Meteor.startup(function () {
 					});
 				}
 				if (data.userId !== Meteor.userId()) {
-					return otrRoom.encryptText(ack).then((ack) => {
+					return otrRoom.encryptText(ack).then(() => {
 						return message;
 					});
 				}
