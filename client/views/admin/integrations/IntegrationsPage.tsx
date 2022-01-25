@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
-import React, { useCallback } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 
 import Page from '../../../components/Page';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
@@ -8,18 +8,15 @@ import IntegrationsTable from './IntegrationsTable';
 import NewBot from './new/NewBot';
 import NewZapier from './new/NewZapier';
 
-function IntegrationsPage() {
+const IntegrationsPage = (): ReactElement => {
 	const t = useTranslation();
-
 	const router = useRoute('admin-integrations');
+	const context = useRouteParameter('context');
+	const showTable = !['zapier', 'bots'].includes(context || '');
 
 	const handleNewButtonClick = useCallback(() => {
 		router.push({ context: 'new', type: 'incoming' });
 	}, [router]);
-
-	const context = useRouteParameter('context');
-
-	const showTable = !['zapier', 'bots'].includes(context);
 
 	const goToAll = useCallback(() => router.push({ context: '' }), [router]);
 	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), [router]);
@@ -60,6 +57,6 @@ function IntegrationsPage() {
 			</Page.Content>
 		</Page>
 	);
-}
+};
 
 export default IntegrationsPage;
