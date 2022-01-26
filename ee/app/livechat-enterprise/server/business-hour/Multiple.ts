@@ -175,16 +175,21 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				{ projection: { _id: 1, businessHourId: 1 } },
 			).toArray();
 
-			if (departmentsWithActiveBH.length) {
-				const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
-				await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
-
+			if (!departmentsWithActiveBH.length) {
 				bhLogger.debug(
-					`Business hour status recheck passed for agentId: ${agentId}. Found following business hours to be active:`,
-					activeBusinessHoursForAgent,
+					`Business hour status recheck failed for agentId: ${agentId}. No opened business hour found for any of the departments connected to the agent`,
 				);
-				return true;
+				return false;
 			}
+
+			const activeBusinessHoursForAgent = departmentsWithActiveBH.map(({ businessHourId }) => businessHourId);
+			await this.UsersRepository.openAgentBusinessHoursByBusinessHourIdsAndAgentId(activeBusinessHoursForAgent, agentId);
+
+			bhLogger.debug(
+				`Business hour status recheck passed for agentId: ${agentId}. Found following business hours to be active:`,
+				activeBusinessHoursForAgent,
+			);
+			return true;
 		}
 
 		// check if default businessHour is active
