@@ -5,6 +5,7 @@ import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';
 import { ISubscription } from '../../definition/ISubscription';
+import { IUser } from '../../definition/IUser';
 import { callbacks } from '../../lib/callbacks';
 import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
@@ -12,7 +13,7 @@ import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionF
 
 const getUserId = (): string | null => Meteor.userId();
 
-const getUser = (): Meteor.User | null => Meteor.user();
+const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
 const loginWithPassword = (user: string | object, password: string): Promise<void> =>
 	new Promise((resolve, reject) => {
@@ -28,7 +29,7 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 
 const logout = (): Promise<void> =>
 	new Promise((resolve) => {
-		const user = Meteor.user();
+		const user = getUser();
 
 		if (!user) {
 			return resolve();
