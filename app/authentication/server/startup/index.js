@@ -11,7 +11,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Settings, Users } from '../../../models/server';
 import { Roles, Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../authorization/server';
-import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -261,7 +261,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = getAvatarSuggestionForUser(user);
+			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
