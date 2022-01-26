@@ -14,7 +14,7 @@ import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
 import { settings } from '/app/settings/server/functions/settings';
 import { Rooms, Subscriptions, Users } from '/app/models/server';
-import { IUser } from '/definition/IUser';
+import { IUser, IUserEmail } from '/definition/IUser';
 import { IRoom } from '/definition/IRoom';
 
 function reactivateDirectConversations(userId: string) {
@@ -23,7 +23,7 @@ function reactivateDirectConversations(userId: string) {
 	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
 		projection: { _id: 1, uids: 1 },
 	}).fetch();
-	const userIds = directConversations.reduce((acc, r) => acc.push(...r.uids) && acc, []);
+	const userIds = directConversations.reduce((acc: string[], r: IRoom) => acc.push(...r.uids) && acc, []);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).fetch();
 	const activeUserIds = activeUsers.map((u: IUser) => u._id);
@@ -105,11 +105,11 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 		return true;
 	}
 
-	const destinations = Array.isArray(user.emails) && user.emails.map((email) => `${user.name || user.username}<${email.address}>`);
+	const destinations = Array.isArray(user.emails) && user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
 
 	const email = {
-		to: destinations,
-		from: settings.get('From_Email'),
+		to: String(destinations),
+		from: String(settings.get('From_Email')),
 		subject: Accounts.emailTemplates.userActivated.subject({ active }),
 		html: Accounts.emailTemplates.userActivated.html({
 			active,
