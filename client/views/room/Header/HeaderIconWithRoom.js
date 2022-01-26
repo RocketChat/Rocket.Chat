@@ -8,7 +8,7 @@ import { useRoomIcon } from '../../../hooks/useRoomIcon';
 const HeaderIconWithRoom = ({ room }) => {
 	const icon = useRoomIcon(room);
 	if (isOmnichannelRoom(room)) {
-		return <OmnichannelRoomIcon room={room} size='x16' placement='default' />;
+		return <OmnichannelRoomIcon room={room} size='x20' placement='default' />;
 	}
 	return <Header.Icon icon={icon} />;
 };
