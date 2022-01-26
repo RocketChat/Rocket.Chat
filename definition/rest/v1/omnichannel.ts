@@ -1,4 +1,5 @@
 import { ILivechatAgent } from '../../ILivechatAgent';
+import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
@@ -9,6 +10,7 @@ import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+import { SuccessResult, FailureResult, UnauthorizedResult } from './../../../app/api/server/api.d';
 
 type booleanString = 'true' | 'false';
 
@@ -16,6 +18,11 @@ export type OmnichannelEndpoints = {
 	'livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];
+		};
+	};
+	'livechat/business-hour': {
+		GET: (params: { _id: string; type: string }) => {
+			businessHour: ILivechatBusinessHour;
 		};
 	};
 	'livechat/visitors.info': {
@@ -189,4 +196,46 @@ export type OmnichannelEndpoints = {
 	'livechat/agents/:agentId/departments': {
 		GET: (params: { agentId: string; enabledDepartmentsOnly?: string }) => { departments: ILivechatDepartmentAgents[] };
 	};
+	'livechat/analytics/dashboards/conversation-totalizers': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
+	};
+	'livechat/analytics/dashboards/agents-productivity-totalizers': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
+	};
+	'livechat/analytics/dashboards/chats-totalizers': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
+	};
+	'livechat/analytics/dashboards/productivity-totalizers': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
+	};
+	'livechat/analytics/dashboards/charts/chats': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {};
+	};
+	// 'livechat/analytics/dashboards/charts/chats-per-agent': {
+	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
+	// 		open: number;
+	// 		closed: number;
+	// 		queued: number;
+	// 		onhold: number;
+	// 	};
+	// };
+	'livechat/analytics/dashboards/charts/agents-status': {
+		GET: (params: { departmentId: undefined }) => {};
+	};
+	// 'livechat/analytics/dashboards/charts/chats-per-department': {
+	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
+	// 		open: number;
+	// 		closed: number;
+	// 		queued: number;
+	// 		onhold: number;
+	// 	};
+	// };
+	// 'livechat/analytics/dashboards/charts/timings': {
+	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
+	// 		open: number;
+	// 		closed: number;
+	// 		queued: number;
+	// 		onhold: number;
+	// 	};
+	// };
 };

@@ -15,22 +15,16 @@ import {
 } from '../../../server/lib/analytics/dashboards';
 import { Users } from '../../../../models/server';
 
-interface IParams {
-	start: string | Date;
-	end: string | Date;
-	departmentId: string | undefined;
-}
-
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			let { start, end }: IParams = this.requestParams();
-			const { departmentId }: IParams = this.requestParams();
+			let { start, end } = this.requestParams();
+			const { departmentId } = this.requestParams();
 
 			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -54,23 +48,19 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/agents-productivity-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -87,23 +77,19 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/chats-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -118,23 +104,19 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/productivity-totalizers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -152,26 +134,23 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllChatsStatus({ start, end, departmentId });
 
 			return API.v1.success(result);
@@ -183,26 +162,23 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
 	{ authRequired: true },
 	{
-		get() {
+		asyncget() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllChatMetricsByAgent({ start, end, departmentId });
 
 			return API.v1.success(result);
@@ -214,13 +190,12 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/agents-status',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 
 			const { departmentId } = this.requestParams();
-			check(departmentId, Match.Maybe(String));
 
 			const result = findAllAgentsStatus({ departmentId });
 
@@ -233,26 +208,23 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-department',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllChatMetricsByDepartment({ start, end, departmentId });
 
 			return API.v1.success(result);
@@ -264,26 +236,23 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/timings',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
+			if (!start) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
+			if (!end) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
+
 			const result = findAllResponseTimeMetrics({ start, end, departmentId });
 
 			return API.v1.success(result);

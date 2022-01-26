@@ -3,12 +3,12 @@ import type { IUser } from '../../../definition/IUser';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
-type SuccessResult<T> = {
+export type SuccessResult<T> = {
 	statusCode: 200;
 	body: T extends object ? { success: true } & T : T;
 };
 
-type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
+export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
 	statusCode: 400;
 	body: T extends object
 		? { success: false } & T
@@ -22,7 +22,7 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
-type UnauthorizedResult<T> = {
+export type UnauthorizedResult<T> = {
 	statusCode: 403;
 	body: {
 		success: false;
@@ -30,7 +30,7 @@ type UnauthorizedResult<T> = {
 	};
 };
 
-type NotFoundResult<T> = {
+export type NotFoundResult<T> = {
 	statusCode: 403;
 	body: {
 		success: false;
