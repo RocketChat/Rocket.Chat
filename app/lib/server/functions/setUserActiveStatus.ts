@@ -3,15 +3,21 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import * as Mailer from '../../../mailer';
-import { Users, Subscriptions, Rooms } from '../../../models';
-import { settings } from '../../../settings';
+//import { Users, Subscriptions, Rooms } from '../../../models';
+//import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
-function reactivateDirectConversations(userId) {
+
+import { settings } from '/app/settings/server/functions/settings';
+import { Rooms, Subscriptions, Users } from '/app/models/server';
+import { IUser } from '/definition/IUser';
+import { IRoom } from '/definition/IRoom';
+
+function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
 	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
@@ -20,8 +26,8 @@ function reactivateDirectConversations(userId) {
 	const userIds = directConversations.reduce((acc, r) => acc.push(...r.uids) && acc, []);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).fetch();
-	const activeUserIds = activeUsers.map((u) => u._id);
-	const roomsToReactivate = directConversations.reduce((acc, room) => {
+	const activeUserIds = activeUsers.map((u: IUser) => u._id);
+	const roomsToReactivate = directConversations.reduce((acc, room: IRoom) => {
 		const otherUserId = room.uids.find((u) => u !== userId);
 		if (activeUserIds.includes(otherUserId)) {
 			acc.push(room._id);
@@ -32,7 +38,7 @@ function reactivateDirectConversations(userId) {
 	Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
 }
 
-export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
+export function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false) {
 	check(userId, String);
 	check(active, Boolean);
 

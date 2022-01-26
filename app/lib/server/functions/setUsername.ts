@@ -60,9 +60,8 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
-		let gravatar;
-		Object.keys(avatarSuggestions).some((service: string) => {
-			const avatarData = avatarSuggestions[service];
+		let gravatar: null | Record<string,unknown> = null;
+		Object.entries(avatarSuggestions).some(([service, avatarData]) => {
 			if (service !== 'gravatar') {
 				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
 				gravatar = null;
@@ -70,8 +69,9 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 			}
 			gravatar = avatarData;
 			return false;
-		});
-		if (gravatar != null) {
+		})
+
+		if (gravatar !== null) {
 			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}

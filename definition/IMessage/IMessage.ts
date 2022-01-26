@@ -32,6 +32,8 @@ type MessageTypesValues =
 	| 'livechat-close';
 
 export interface IMessage extends IRocketChatRecord {
+	editedBy?: { _id: string; username: string; };
+	editedAt?: Date;
 	rid: RoomID;
 	msg: string;
 	tmid?: string;

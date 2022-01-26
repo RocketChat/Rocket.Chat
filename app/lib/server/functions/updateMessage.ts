@@ -18,6 +18,9 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}
+	if(!user.username){
+		throw new Meteor.Error('error-not-allowed', 'Missing username.');
+	}
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
@@ -64,12 +67,11 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		}
 	}
 
-	const tempid = message._id;
 	//Change IMessage props: _id: string | undefined; or use _id as optional
-	delete message._id;
+	const {_id, ...messageUpdated} = message;
 
-	Messages.update({ _id: tempid }, { $set: message });
-
+	Messages.update({ _id }, { $set: messageUpdated });
+	
 	const room = Rooms.findOneById(message.rid);
 
 	if (Apps && Apps.isLoaded()) {
@@ -78,7 +80,5 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		Apps.getBridges()!.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
-	});
+	callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
 };

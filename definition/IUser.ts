@@ -102,6 +102,7 @@ export interface IRole {
 }
 
 export interface IUser extends IRocketChatRecord {
+	inviteToken?: string;
 	_id: string;
 	createdAt: Date;
 	roles: string[];
