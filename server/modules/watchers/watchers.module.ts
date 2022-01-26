@@ -7,6 +7,7 @@ import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { VoipEventsRaw } from '../../../app/models/server/raw/VoipEvents';
 import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IRole } from '../../../definition/IRole';
@@ -35,6 +36,7 @@ import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
+import { IVoipEvent } from '../../../definition/voip/IVoipEvent';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -52,6 +54,7 @@ interface IModelsParam {
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
 	EmailInbox: EmailInboxRaw;
+	VoipEvents: VoipEventsRaw;
 }
 
 interface IChange<T> {
@@ -100,6 +103,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		VoipEvents,
 	} = models;
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
@@ -402,5 +406,19 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.emailInbox', { clientAction, data, id });
+	});
+
+	watch<IVoipEvent>(VoipEvents, async ({ clientAction, id, data: eventData }) => {
+		if (clientAction === 'removed') {
+			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
+		const data = eventData ?? (await VoipEvents.findOneById(id));
+		if (!data) {
+			return;
+		}
+
+		broadcast('watch.voipevents', { clientAction, event: data });
 	});
 }

@@ -1,6 +1,8 @@
 import React, { useMemo, FC, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
+import { Notifications } from '../../../app/notifications/client';
+import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
@@ -13,6 +15,18 @@ export const CallProvider: FC = ({ children }) => {
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
 	const contextValue: CallContextValue = useMemo(() => {
+		const handleQueueData = (queue: any): void => {
+			console.log(`Received call from ${queue}`);
+		};
+		const handleQueueJoined = async (joiningDetails: any): Promise<void> => {
+			console.log(`Queue Joined ${joiningDetails}`);
+			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
+				extension: '80000',
+			});
+			console.log(`Call waiting for 80000 ${JSON.stringify(list)}`);
+		};
+		Notifications.onUser('customerCalling', handleQueueData);
+		Notifications.onUser('queueJoined', handleQueueJoined);
 		if (isUseVoipClientResultError(result)) {
 			return {
 				enabled: true,

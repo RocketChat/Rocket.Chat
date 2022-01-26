@@ -96,9 +96,9 @@ export class AMIConnection implements IConnection {
 		}
 		this.eventHandlers.get(event)?.push(callbackContext);
 		/*
-		this.logger.error({ msg: 'AMOL_DEBUG 2 on()', events: JSON.stringify(this.eventHandlers) });
+		this.logger.error({ msg: 'ROCKETCHAT_DEBUGBUG 2 on()', events: JSON.stringify(this.eventHandlers) });
 		this.eventHandlers.forEach((value: any, key: string) => {
-			this.logger.error({ msg: 'AMOL_DEBUG 3 on()', key });
+			this.logger.error({ msg: 'ROCKETCHAT_DEBUGBUG 3 on()', key });
 		});
 		*/
 	}
