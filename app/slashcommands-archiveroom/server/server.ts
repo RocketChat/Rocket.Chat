@@ -31,6 +31,7 @@ function Archive(_command: 'archive', params: string, item: Record<string, strin
 				lng: settings.get('Language') || 'en',
 			}),
 		});
+		return;
 	}
 
 	// You can not archive direct messages.
