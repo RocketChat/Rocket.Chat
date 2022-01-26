@@ -69670,6 +69670,149 @@
           ]
         }
       ]
+    },
+    "4.4.0-rc.1": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0-alpha.5836",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24298",
+          "title": "Regression: Update tap-i18n package",
+          "userLogin": "sampaiodiego",
+          "description": "Fix the issue breaking IE11.",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24302",
+          "title": "Regression: Fix pino child log levels",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24259",
+          "title": "Regression: Fix Alpine release tag",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "23676",
+          "title": "[IMPROVE] Setup Wizard Registration Flow",
+          "userLogin": "dougfabris",
+          "description": "This pull request brings a few improvements in our setup wizard flow, the very first contact with a Rocket.Chat. Some of them: \r\n- A brand new visual design;\r\n- Form validation improves;\r\n- Allow users to navigate back to all steps;\r\n- Optimized steps to register your workspace or keep standalone. And many more!\r\n\r\n\r\n![Kapture 2022-01-20 at 11 19 47](https://user-images.githubusercontent.com/27704687/150356868-425666b4-511f-4690-9ce5-e61b839b1d19.gif)",
+          "milestone": "4.4.0",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24254",
+          "title": "Chore: Slash Commands Join to Typescript",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert the slash commands .js files to .ts files.",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24288",
+          "title": "Regression: Fix Default Business hour overriding other Business Hours",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24268",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-01-24Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24276",
+          "title": "Regression: Fix incompatibility of apps http requests",
+          "userLogin": "d-gubert",
+          "description": "HTTP GET and HEAD requests made with an empty object as `data` were breaking, as the bridge converted this to the request's body as `'{}'` but meteor's new lib doesn't allow for body content on either of this request methods.\n\nTo maintain compatibility, we forced an empty body whenever we have a GET or HEAD request. This was probably the case previously, with the body of requests made with this methods being ignored either before being sent or in the third party server receiving the request",
+          "milestone": "4.4.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24177",
+          "title": "[IMPROVE] lib/Statistics improved and metrics collector",
+          "userLogin": "albuquerquefabio",
+          "description": "- On `statistics` object the property `get`  is an async function now.\r\n- We need to collect additional data of feature activation through the statistics collector.\r\n  - Some codes were splitted into another file just to organize.",
+          "contributors": [
+            "albuquerquefabio",
+            "ostjen",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24218",
+          "title": "[FIX] Fixing the changing custom status behavior",
+          "userLogin": "AllanPazRibeiro",
+          "milestone": "4.4.0",
+          "contributors": [
+            "AllanPazRibeiro",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24269",
+          "title": "Regression: Align Omni-Source icon sizes with designs",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24267",
+          "title": "Regression: Fix Inactive Departments still visible on Livechat",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24262",
+          "title": "[FIX] Solved Report Message Blank ",
+          "userLogin": "nishant23122000",
+          "description": "After resolving issue #24261  :\r\n\r\nhttps://user-images.githubusercontent.com/53515714/150629459-5f0a9cf6-9b0e-417f-8fc1-44c810bd5428.mp4",
+          "contributors": [
+            "nishant23122000"
+          ]
+        }
+      ]
     }
   }
 }
