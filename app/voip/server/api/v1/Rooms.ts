@@ -7,7 +7,58 @@ import { API } from '../../../../api/server';
 import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
-
+/**
+ * @openapi
+ *  /voip/server/api/v1/voip/room <AMOL Verify during code review>
+ *    get:
+ *      description: Creates a new room if rid is not passed, else gets an existing room
+ * 		based on rid and token
+ *      security:
+ *      parameters:
+ *        - name: token
+ *          in: query
+ *          description: The visitor token
+ *          required: true
+ *          schema:
+ *            type: string
+ *          example: ByehQjC44FwMeiLbX
+ *        - name: rid
+ *          in: query
+ *          description: The room id
+ *          required: false
+ *          schema:
+ *            type: string
+ *          example: ByehQjC44FwMeiLbX
+ *        - name: agentId
+ *          in: query
+ *          description: Agent Id
+ *          required: false
+ *          schema:
+ *            type: string
+ *          example: ByehQjC44FwMeiLbX
+ *      responses:
+ *        200:
+ *          description: Room object and flag indicating whether a new room is created.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      room:
+ *                        type: object
+ *                        items:
+ *                          $ref: '#/components/schemas/IRoom'
+ *                      newRoom:
+ *                        type: boolean
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('voip/room', {
 	async get() {
 		const defaultCheckParams = {
@@ -55,6 +106,46 @@ API.v1.addRoute('voip/room', {
 		return API.v1.success({ room, newRoom: false });
 	},
 });
+
+/**
+ * @openapi
+ *  /voip/server/api/v1/voip/room.close <AMOL Verify during code review>
+ *    post:
+ *      description: Closes an open room
+ * 		based on rid and token
+ *      security:
+ *		requestBody:
+ *      required: true
+ *      content:
+ *			application/json:
+ *          schema:
+ *          	type: object
+ *			  	properties:
+ *					rid:
+ *                 		type: string
+ *					token:
+ *						type: string
+ *      responses:
+ *        200:
+ *          description: rid of closed room and a comment for closing room
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      rid:
+ *                        	type: string
+ *                      comment:
+ *                      	type: string
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('voip/room.close', {
 	async post() {
 		try {
