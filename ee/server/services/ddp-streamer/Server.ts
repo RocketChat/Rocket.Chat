@@ -8,6 +8,7 @@ import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
+import { ClientSafeError } from '../../../../server/sdk/errors';
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
@@ -51,6 +52,10 @@ export class Server extends EventEmitter {
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
 		} catch (error) {
+			console.log('error', error);
+			if (error instanceof ClientSafeError) {
+				return this.result(client, packet, null, error.toJSON());
+			}
 			return this.result(client, packet, null, error.toString());
 		}
 	}
