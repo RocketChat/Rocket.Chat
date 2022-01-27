@@ -59,7 +59,7 @@ httpServer.listen(port);
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
+wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
 // export default {
 // 	name: 'streamer',
