@@ -33,9 +33,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [
-		data._id,
-	]);
+	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
@@ -61,12 +59,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDelete}
-				onCancel={closeModal}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onDelete} onCancel={closeModal} confirmText={t('Delete')}>
 				{t('Integration_Delete_Warning')}
 			</GenericModal>,
 		);

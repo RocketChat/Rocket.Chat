@@ -2,7 +2,7 @@ import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import ChannelDesertionTable from '../../ChannelDesertionTable';
+import ChannelDesertionTable from '../../../ChannelDesertionTable';
 
 export const StepOne = ({
 	rooms,

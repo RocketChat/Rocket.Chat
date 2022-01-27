@@ -1,12 +1,4 @@
-import {
-	Button,
-	ButtonGroup,
-	TextInput,
-	Field,
-	TextAreaInput,
-	ToggleSwitch,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -41,8 +33,10 @@ export default function OAuthAddApp(props) {
 		}
 	}, [close, dispatchToastMessage, newData, saveApp, t]);
 
-	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) =>
-		setNewData({ ...newData, [field]: getValue(e) });
+	const handleChange =
+		(field, getValue = (e) => e.currentTarget.value) =>
+		(e) =>
+			setNewData({ ...newData, [field]: getValue(e) });
 
 	const { active, name, redirectUri } = newData;
 
@@ -60,18 +54,14 @@ export default function OAuthAddApp(props) {
 					<Field.Row>
 						<TextInput value={name} onChange={handleChange('name')} />
 					</Field.Row>
-					<Field.Hint>
-						{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}
-					</Field.Hint>
+					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
 				</Field>
 				<Field>
 					<Field.Label>{t('Redirect_URI')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')} />
 					</Field.Row>
-					<Field.Hint>
-						{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}
-					</Field.Hint>
+					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
 				</Field>
 				<Field>
 					<Field.Row>

@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 
+import BurgerMenu from '../../../components/BurgerMenu';
 import TemplateHeader from '../../../components/Header';
 import { useLayout } from '../../../contexts/LayoutContext';
-import Burger from './Burger';
 import DirectRoomHeader from './DirectRoomHeader';
 import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
 import RoomHeader from './RoomHeader';
@@ -14,7 +14,7 @@ const Header = ({ room }) => {
 		() => ({
 			start: isMobile && (
 				<TemplateHeader.ToolBox>
-					<Burger />
+					<BurgerMenu />
 				</TemplateHeader.ToolBox>
 			),
 		}),

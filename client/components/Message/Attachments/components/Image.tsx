@@ -8,6 +8,7 @@ import Retry from './Retry';
 
 type ImageProps = {
 	previewUrl?: string;
+	dataSrc?: string;
 	src: string;
 	loadImage?: boolean;
 	setLoadImage: () => void;
@@ -31,7 +32,7 @@ const getDimensions = (
 	return { width: (height / originalHeight) * originalWidth, height };
 };
 
-const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src, ...size }) => {
+const Image: FC<ImageProps> = ({ previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
 	const { width = limits.width, height = limits.height } = size;
 	const [error, setError] = useState(false);
@@ -63,7 +64,7 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 			{...dimensions}
 			is='picture'
 		>
-			<img className='gallery-item' src={src} {...dimensions} />
+			<img className='gallery-item' data-src={dataSrc || src} src={src} {...dimensions} />
 		</ImageBox>
 	);
 };

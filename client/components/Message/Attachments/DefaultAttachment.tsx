@@ -1,10 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 
 import { isActionAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentAction';
-import {
-	MarkdownFields,
-	MessageAttachmentDefault,
-} from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
+import { MarkdownFields, MessageAttachmentDefault } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';
@@ -15,7 +12,7 @@ const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
+): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant='inline' content={text} /> : text);
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
@@ -25,9 +22,7 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 			color={attachment.color}
 			pre={
 				attachment.pretext && (
-					<Attachment.Text>
-						{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}
-					</Attachment.Text>
+					<Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}</Attachment.Text>
 				)
 			}
 		>
@@ -64,11 +59,7 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 				)}
 				{!collapsed && (
 					<>
-						{attachment.text && (
-							<Attachment.Text>
-								{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}
-							</Attachment.Text>
-						)}
+						{attachment.text && <Attachment.Text>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}</Attachment.Text>}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
 							<FieldsAttachment
@@ -77,24 +68,17 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 										return field;
 									}
 
-									const { value, ...rest } = field;
+									const { value, title, ...rest } = field;
 
-									const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
-										if (line.trim() === '') {
-											return `${line}  <br/>`;
-										}
-										return `${line}  `;
-									});
-									return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+									return {
+										...rest,
+										title: <MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />,
+										value: <MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />,
+									};
 								})}
 							/>
 						)}
-						{attachment.image_url && (
-							<Attachment.Image
-								{...(attachment.image_dimensions as any)}
-								src={attachment.image_url}
-							/>
-						)}
+						{attachment.image_url && <Attachment.Image {...(attachment.image_dimensions as any)} src={attachment.image_url} />}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

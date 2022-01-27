@@ -1,14 +1,4 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	TextInput,
-	Field,
-	ToggleSwitch,
-	Icon,
-	Callout,
-	TextAreaInput,
-} from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
@@ -20,14 +10,11 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 
 const getInitialValues = (room) => ({
-	roomName:
-		room.t === 'd'
-			? room.usernames.join(' x ')
-			: roomTypes.getRoomName(room.t, { type: room.t, ...room }),
+	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
 	roomType: room.t,
 	readOnly: !!room.ro,
 	archived: !!room.archived,
@@ -49,26 +36,19 @@ function EditRoom({ room, onChange }) {
 
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
-	const [
-		canViewName,
-		canViewTopic,
-		canViewAnnouncement,
-		canViewArchived,
-		canViewDescription,
-		canViewType,
-		canViewReadOnly,
-	] = useMemo(() => {
-		const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
-		return [
-			isAllowed(room, RoomSettingsEnum.NAME),
-			isAllowed(room, RoomSettingsEnum.TOPIC),
-			isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
-			isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
-			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
-			isAllowed(room, RoomSettingsEnum.TYPE),
-			isAllowed(room, RoomSettingsEnum.READ_ONLY),
-		];
-	}, [room]);
+	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
+		useMemo(() => {
+			const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
+			return [
+				isAllowed(room, RoomSettingsEnum.NAME),
+				isAllowed(room, RoomSettingsEnum.TOPIC),
+				isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
+				isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
+				isAllowed(room, RoomSettingsEnum.DESCRIPTION),
+				isAllowed(room, RoomSettingsEnum.TYPE),
+				isAllowed(room, RoomSettingsEnum.READ_ONLY),
+			];
+		}, [room]);
 
 	const {
 		roomName,
@@ -105,16 +85,8 @@ function EditRoom({ room, onChange }) {
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
 
-	const saveAction = useEndpointActionExperimental(
-		'POST',
-		'rooms.saveRoomSettings',
-		t('Room_updated_successfully'),
-	);
-	const archiveAction = useEndpointActionExperimental(
-		'POST',
-		'rooms.changeArchivationState',
-		t(archiveMessage),
-	);
+	const saveAction = useEndpointActionExperimental('POST', 'rooms.saveRoomSettings', t('Room_updated_successfully'));
+	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
 		const save = () =>
@@ -134,9 +106,7 @@ function EditRoom({ room, onChange }) {
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
 
-		await Promise.all(
-			[hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean),
-		);
+		await Promise.all([hasUnsavedChanges && save(), changeArchivation && archive()].filter(Boolean));
 		onChange();
 	});
 
@@ -155,22 +125,14 @@ function EditRoom({ room, onChange }) {
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onConfirm}
-				onCancel={onCancel}
-				confirmText={t('Yes_delete_it')}
-			>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={onCancel} confirmText={t('Yes_delete_it')}>
 				{t('Delete_Room_Warning')}
 			</GenericModal>,
 		);
 	});
 
 	return (
-		<VerticalBar.ScrollableContent
-			is='form'
-			onSubmit={useMutableCallback((e) => e.preventDefault())}
-		>
+		<VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 			{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 			{room.t !== 'd' && (
 				<Box pbe='x24' display='flex' justifyContent='center'>
@@ -180,12 +142,7 @@ function EditRoom({ room, onChange }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						disabled={deleted || !canViewName}
-						value={roomName}
-						onChange={handleRoomName}
-						flexGrow={1}
-					/>
+					<TextInput disabled={deleted || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
 				</Field.Row>
 			</Field>
 			{room.t !== 'd' && (
@@ -193,20 +150,14 @@ function EditRoom({ room, onChange }) {
 					<Field>
 						<Field.Label>{t('Owner')}</Field.Label>
 						<Field.Row>
-							<Box fontScale='p1'>{room.u?.username}</Box>
+							<Box fontScale='p2'>{room.u?.username}</Box>
 						</Field.Row>
 					</Field>
 					{canViewDescription && (
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput
-									rows={4}
-									disabled={deleted}
-									value={roomDescription}
-									onChange={handleRoomDescription}
-									flexGrow={1}
-								/>
+								<TextAreaInput rows={4} disabled={deleted} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -214,13 +165,7 @@ function EditRoom({ room, onChange }) {
 						<Field>
 							<Field.Label>{t('Announcement')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput
-									rows={4}
-									disabled={deleted}
-									value={roomAnnouncement}
-									onChange={handleRoomAnnouncement}
-									flexGrow={1}
-								/>
+								<TextAreaInput rows={4} disabled={deleted} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -228,13 +173,7 @@ function EditRoom({ room, onChange }) {
 						<Field>
 							<Field.Label>{t('Topic')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput
-									rows={4}
-									disabled={deleted}
-									value={roomTopic}
-									onChange={handleRoomTopic}
-									flexGrow={1}
-								/>
+								<TextAreaInput rows={4} disabled={deleted} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -242,11 +181,7 @@ function EditRoom({ room, onChange }) {
 						<Field>
 							<Field.Row>
 								<Field.Label>{t('Private')}</Field.Label>
-								<ToggleSwitch
-									disabled={deleted}
-									checked={roomType === 'p'}
-									onChange={changeRoomType}
-								/>
+								<ToggleSwitch disabled={deleted} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 							<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
 						</Field>
@@ -314,13 +249,7 @@ function EditRoom({ room, onChange }) {
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button
-						primary
-						flexGrow={1}
-						danger
-						disabled={deleted || !canDelete}
-						onClick={handleDelete}
-					>
+					<Button primary flexGrow={1} danger disabled={deleted || !canDelete} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

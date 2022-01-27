@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { LivechatRooms, Subscriptions } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 222,
 	async up() {
 		Subscriptions.find({

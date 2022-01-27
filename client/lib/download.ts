@@ -8,10 +8,7 @@ export const download = (href: string, filename: string): void => {
 	document.body.removeChild(anchorElement);
 };
 
-export const downloadAs = (
-	{ data, ...options }: { data: BlobPart[] } & BlobPropertyBag,
-	filename: string,
-): void => {
+export const downloadAs = ({ data, ...options }: { data: BlobPart[] } & BlobPropertyBag, filename: string): void => {
 	const blob = new Blob(data, options);
 
 	if (navigator.msSaveOrOpenBlob) {
@@ -37,12 +34,9 @@ export const downloadJsonAs = (jsonObject: unknown, basename: string): void => {
 	);
 };
 
-export const downloadCsvAs = (csvData: unknown[][], basename: string): void => {
+export const downloadCsvAs = (csvData: readonly (readonly unknown[])[], basename: string): void => {
 	const escapeCell = (cell: unknown): string => `"${String(cell).replace(/"/g, '""')}"`;
-	const content = csvData.reduce(
-		(content, row) => `${content + row.map(escapeCell).join(';')}\n`,
-		'',
-	);
+	const content = csvData.reduce((content, row) => `${content + row.map(escapeCell).join(';')}\n`, '');
 
 	downloadAs(
 		{

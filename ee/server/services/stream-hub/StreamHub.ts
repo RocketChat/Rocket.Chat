@@ -31,13 +31,15 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
 		const Settings = new SettingsRaw(db.collection('rocketchat_settings'), Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
-		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash);
-		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
+		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash, {
+			preventSetUpdatedAt: true,
+		});
+		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), { Users }, Trash);
 		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
 		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
 		const Permissions = new PermissionsRaw(db.collection('rocketchat_permissions'), Trash);
-		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
+		const Roles = new RolesRaw(db.collection('rocketchat_roles'), { Users, Subscriptions }, Trash);
 		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
 		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
 		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);

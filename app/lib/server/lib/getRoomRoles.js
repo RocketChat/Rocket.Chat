@@ -1,7 +1,8 @@
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
-import { Subscriptions, Users, Roles } from '../../../models';
+import { Subscriptions, Users } from '../../../models';
+import { Roles } from '../../../models/server/raw';
 
 export function getRoomRoles(rid) {
 	const options = {
@@ -17,7 +18,7 @@ export function getRoomRoles(rid) {
 
 	const UI_Use_Real_Name = settings.get('UI_Use_Real_Name') === true;
 
-	const roles = Roles.find({ scope: 'Subscriptions', description: { $exists: 1, $ne: '' } }).fetch();
+	const roles = Promise.await(Roles.find({ scope: 'Subscriptions', description: { $exists: 1, $ne: '' } }).toArray());
 	const subscriptions = Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch();
 
 	if (!UI_Use_Real_Name) {

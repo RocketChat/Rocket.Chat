@@ -5,7 +5,6 @@
 			"preserve": true
 		},
 		"postcss-media-minmax": {},
-		"postcss-selector-not": {},
 		"postcss-nested": {},
 		"autoprefixer": {}
 	},

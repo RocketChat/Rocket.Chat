@@ -30,7 +30,7 @@ const AccountTokensRow: FC<AccountTokensRowProps> = ({
 
 	return (
 		<Table.Row key={name} tabIndex={0} role='link' action qa-token-name={name}>
-			<Table.Cell withTruncatedText color='default' fontScale='p2'>
+			<Table.Cell withTruncatedText color='default' fontScale='p2m'>
 				{name}
 			</Table.Cell>
 			{isMedium && <Table.Cell withTruncatedText>{formatDateAndTime(createdAt)}</Table.Cell>}

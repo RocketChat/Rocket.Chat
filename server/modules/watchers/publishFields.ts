@@ -17,7 +17,6 @@ export const subscriptionFields = {
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,
-	audioNotifications: 1,
 	audioNotificationValue: 1,
 	desktopNotifications: 1,
 	mobilePushNotifications: 1,
@@ -41,7 +40,7 @@ export const subscriptionFields = {
 	department: 1,
 	v: 1,
 	onHold: 1,
-};
+} as const;
 
 export const roomFields = {
 	_id: 1,
@@ -95,11 +94,13 @@ export const roomFields = {
 	v: 1,
 	departmentId: 1,
 	servedBy: 1,
+	source: 1,
 	transcriptRequest: 1,
 	onHold: 1,
 	metrics: 1,
 	ts: 1,
 	waitingResponse: 1,
+	queuedAt: 1,
 
 	// fields used by DMs
 	usernames: 1,

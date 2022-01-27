@@ -1,9 +1,11 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
@@ -13,9 +15,9 @@ export class MessagesRaw extends BaseRaw {
 
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
-			_hidden: { $ne: true },
+			'_hidden': { $ne: true },
 			'starred._id': userId,
-			rid: roomId,
+			'rid': roomId,
 		};
 
 		return this.find(query, options);
@@ -27,7 +29,9 @@ export class MessagesRaw extends BaseRaw {
 			t: type,
 		};
 
-		if (options == null) { options = {}; }
+		if (options == null) {
+			options = {};
+		}
 
 		return this.find(query, options);
 	}
@@ -52,11 +56,7 @@ export class MessagesRaw extends BaseRaw {
 		const query = {
 			rid,
 			drid: { $exists: true },
-			...text && {
-				$text: {
-					$search: text,
-				},
-			},
+			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
 		return this.find(query, options);
@@ -142,22 +142,14 @@ export class MessagesRaw extends BaseRaw {
 					_id: {
 						_id: '$room._id',
 						name: {
-							$cond: [{ $ifNull: ['$room.fname', false] },
-								'$room.fname',
-								'$room.name'],
+							$cond: [{ $ifNull: ['$room.fname', false] }, '$room.fname', '$room.name'],
 						},
 						t: '$room.t',
 						usernames: {
-							$cond: [{ $ifNull: ['$room.usernames', false] },
-								'$room.usernames',
-								[]],
+							$cond: [{ $ifNull: ['$room.usernames', false] }, '$room.usernames', []],
 						},
 						date: {
-							$concat: [
-								{ $substr: ['$ts', 0, 4] },
-								{ $substr: ['$ts', 5, 2] },
-								{ $substr: ['$ts', 8, 2] },
-							],
+							$concat: [{ $substr: ['$ts', 0, 4] }, { $substr: ['$ts', 5, 2] }, { $substr: ['$ts', 8, 2] }],
 						},
 					},
 					messages: { $sum: 1 },
@@ -185,5 +177,15 @@ export class MessagesRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	findLivechatClosedMessages(rid, options) {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
 	}
 }

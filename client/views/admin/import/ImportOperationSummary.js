@@ -50,19 +50,11 @@ function ImportOperationSummary({
 	const canContinue = useMemo(
 		() =>
 			valid &&
-			[
-				ProgressStep.USER_SELECTION,
-				...ImportWaitingStates,
-				...ImportFileReadyStates,
-				...ImportPreparingStartedStates,
-			].includes(status),
+			[ProgressStep.USER_SELECTION, ...ImportWaitingStates, ...ImportFileReadyStates, ...ImportPreparingStartedStates].includes(status),
 		[valid, status],
 	);
 
-	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [
-		valid,
-		status,
-	]);
+	const canCheckProgress = useMemo(() => valid && ImportingStartedStates.includes(status), [valid, status]);
 
 	const prepareImportRoute = useRoute('admin-import-prepare');
 	const importProgressRoute = useRoute('admin-import-progress');

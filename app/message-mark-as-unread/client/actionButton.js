@@ -3,9 +3,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -15,7 +15,7 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			return Meteor.call('unreadMessages', message, function(error) {
+			return Meteor.call('unreadMessages', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}

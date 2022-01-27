@@ -1,6 +1,7 @@
 {
   "extends": [
-    "@rocket.chat/eslint-config"
+    "@rocket.chat/eslint-config",
+    "plugin:prettier/recommended"
   ],
   "parser": "babel-eslint",
   "globals": {
@@ -54,7 +55,8 @@
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
-        "@rocket.chat/eslint-config"
+        "@rocket.chat/eslint-config",
+        "plugin:prettier/recommended"
       ],
       "globals": {
         "Atomics": "readonly",
@@ -72,7 +74,8 @@
       },
       "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "anti-trojan-source"
       ],
       "rules": {
         "func-call-spacing": "off",
@@ -81,7 +84,7 @@
           "prefer-single"
         ],
         "indent": "off",
-        "no-extra-parens": "off",
+        "no-dupe-class-members": "off",
         "no-spaced-func": "off",
         "no-unused-vars": "off",
         "no-useless-constructor": "off",
@@ -94,33 +97,18 @@
           "syntax"
         ],
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/indent": [
-          "error",
-          "tab",
-          {
-            "SwitchCase": 1
-          }
-        ],
         "@typescript-eslint/interface-name-prefix": [
           "error",
           "always"
         ],
-        "@typescript-eslint/no-extra-parens": [
-          "error",
-          "all",
-          {
-            "conditionalAssign": true,
-            "nestedBinaryExpressions": false,
-            "returnAssign": true,
-            "ignoreJSX": "all",
-            "enforceForArrowConditionals": false
-          }
-        ],
+        "@typescript-eslint/no-dupe-class-members": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": ["error", {
           "argsIgnorePattern": "^_",
           "ignoreRestSiblings": true
-        }]
+        }],
+        "@typescript-eslint/prefer-optional-chain": "warn",
+        "anti-trojan-source/no-bidi": "error"
       },
       "env": {
         "browser": true,
@@ -141,6 +129,16 @@
         "react": {
           "version": "detect"
         }
+      }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
       }
     }
   ]

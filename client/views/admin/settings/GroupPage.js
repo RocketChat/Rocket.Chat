@@ -3,17 +3,14 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, memo } from 'react';
 
 import Page from '../../../components/Page';
-import {
-	useEditableSettingsDispatch,
-	useEditableSettings,
-} from '../../../contexts/EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings } from '../../../contexts/EditableSettingsContext';
 import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
-function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription }) {
+function GroupPage({ children = undefined, headerButtons = undefined, _id, i18nLabel, i18nDescription = undefined, tabs = undefined }) {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -55,8 +52,7 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 			await dispatch(changes);
 
 			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng =
-					user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
+				const lng = user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
 
 				await loadLanguage(lng);
 				dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
@@ -136,10 +132,12 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 				</ButtonGroup>
 			</Page.Header>
 
+			{tabs}
+
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 					{t.has(i18nDescription) && (
-						<Box is='p' color='hint' fontScale='p1'>
+						<Box is='p' color='hint' fontScale='p2'>
 							{t(i18nDescription)}
 						</Box>
 					)}

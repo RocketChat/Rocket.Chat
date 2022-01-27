@@ -21,20 +21,10 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	const records = end != null
-		? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
-			rid,
-			end,
-			hiddenMessageTypes,
-			options,
-			showThreadMessages,
-		).fetch()
-		: Messages.findVisibleByRoomIdNotContainingTypes(
-			rid,
-			hiddenMessageTypes,
-			options,
-			showThreadMessages,
-		).fetch();
+	const records =
+		end != null
+			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options, showThreadMessages).fetch()
+			: Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).fetch();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;

@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 import { useCustomSound } from '../../../../contexts/CustomSoundContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../hooks/useForm';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import NotificationPreferences from './NotificationPreferences';
@@ -16,29 +16,16 @@ const NotificationPreferencesWithData = ({ rid }) => {
 
 	const customSound = useCustomSound();
 	const handleClose = useTabBarClose();
-	const saveSettings = useEndpointActionExperimental(
-		'POST',
-		'rooms.saveNotification',
-		t('Room_updated_successfully'),
-	);
+	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
-		turnOn: !subscription.disableNotifications,
-		muteGroupMentions: subscription.muteGroupMentions,
-		showCounter: !subscription.hideUnreadStatus,
-		desktopAlert:
-			(subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
-			'default',
-		desktopAudio:
-			(subscription.audioPrefOrigin === 'subscription' && subscription.audioNotifications) ||
-			'default',
-		desktopSound: subscription.audioNotificationValue || 'default',
-		mobileAlert:
-			(subscription.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
-			'default',
-		emailAlert:
-			(subscription.emailPrefOrigin === 'subscription' && subscription.emailNotifications) ||
-			'default',
+		turnOn: !subscription?.disableNotifications,
+		muteGroupMentions: subscription?.muteGroupMentions,
+		showCounter: !subscription?.hideUnreadStatus,
+		desktopAlert: (subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) || 'default',
+		desktopSound: subscription?.audioNotificationValue || 'default',
+		mobileAlert: (subscription?.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) || 'default',
+		emailAlert: (subscription?.emailPrefOrigin === 'subscription' && subscription.emailNotifications) || 'default',
 	});
 
 	const defaultOption = [
@@ -48,10 +35,7 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		['nothing', t('Nothing')],
 	];
 
-	const customSoundAsset = Object.entries(customSound.list.get()).map((value) => [
-		value[0],
-		value[1].name,
-	]);
+	const customSoundAsset = Object.entries(customSound.list.get()).map((value) => [value[0], value[1].name]);
 
 	const handleOptions = {
 		alerts: defaultOption,
@@ -68,7 +52,6 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		notifications.muteGroupMentions = values.muteGroupMentions ? '1' : '0';
 		notifications.hideUnreadStatus = values.showCounter ? '0' : '1';
 		notifications.desktopNotifications = values.desktopAlert;
-		notifications.audioNotifications = values.desktopAudio;
 		notifications.audioNotificationValue = values.desktopSound;
 		notifications.mobilePushNotifications = values.mobileAlert;
 		notifications.emailNotifications = values.emailAlert;

@@ -1,22 +1,12 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ComponentType } from 'react';
+import { ComponentProps, createElement, lazy, ReactElement } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
 
-type BlazeLayoutDescriptor = {
-	template: string;
-	data?: EJSONable;
-};
+const MainLayout = lazy(() => import('../views/root/MainLayout'));
 
-type ComponentLayoutDescriptor<Props extends {} = {}> = {
-	component: ComponentType<Props>;
-	props?: Props;
-};
+type AppLayoutDescriptor = ReactElement | null;
 
-type AppLayoutDescriptor = BlazeLayoutDescriptor | ComponentLayoutDescriptor | null;
-
-class AppLayoutSubscription
-	extends Emitter<{ update: void }>
-	implements Subscription<AppLayoutDescriptor> {
+class AppLayoutSubscription extends Emitter<{ update: void }> implements Subscription<AppLayoutDescriptor> {
 	private descriptor: AppLayoutDescriptor = null;
 
 	getCurrentValue = (): AppLayoutDescriptor => this.descriptor;
@@ -28,22 +18,13 @@ class AppLayoutSubscription
 		this.emit('update');
 	}
 
-	render: {
-		(template: string, data?: EJSONable): void;
-		(descriptor: BlazeLayoutDescriptor): void;
-		<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
-	} = (templateOrDescriptor: string | AppLayoutDescriptor, data?: EJSONable): void => {
-		if (typeof templateOrDescriptor === 'string') {
-			this.setCurrentValue({ template: templateOrDescriptor, data });
-			return;
-		}
+	renderMainLayout(props: ComponentProps<typeof MainLayout> = {}): void {
+		this.setCurrentValue(createElement(MainLayout, props));
+	}
 
-		this.setCurrentValue(templateOrDescriptor);
-	};
-
-	reset = (): void => {
-		this.setCurrentValue(null);
-	};
+	render(element: ReactElement): void {
+		this.setCurrentValue(element);
+	}
 }
 
 export const appLayout = new AppLayoutSubscription();

@@ -7,17 +7,7 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import { useForm } from '../hooks/useForm';
 
-const CustomTextInput = ({
-	label,
-	name,
-	required,
-	minLength,
-	maxLength,
-	setState,
-	state,
-	className,
-	setCustomFieldsError = () => [],
-}) => {
+const CustomTextInput = ({ label, name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 
 	const [inputError, setInputError] = useState('');
@@ -36,9 +26,7 @@ const CustomTextInput = ({
 	}, [state, required, minLength, t, label, name]);
 
 	useEffect(() => {
-		setCustomFieldsError((oldErrors) =>
-			verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name),
-		);
+		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
 	}, [name, setCustomFieldsError, verify]);
 
 	useComponentDidUpdate(() => {
@@ -69,31 +57,18 @@ const CustomTextInput = ({
 	);
 };
 
-const CustomSelect = ({
-	label,
-	name,
-	required,
-	options = {},
-	setState,
-	state,
-	className,
-	setCustomFieldsError = () => [],
-}) => {
+const CustomSelect = ({ label, name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 	const [selectError, setSelectError] = useState('');
 
-	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [
-		options,
-	]);
+	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
 	const verify = useMemo(
 		() => (!state.length && required ? t('The_field_is_required', label || name) : ''),
 		[name, label, required, state.length, t],
 	);
 
 	useEffect(() => {
-		setCustomFieldsError((oldErrors) =>
-			verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name),
-		);
+		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
 	}, [name, setCustomFieldsError, verify]);
 
 	useComponentDidUpdate(() => {
@@ -108,14 +83,7 @@ const CustomSelect = ({
 					{required && '*'}
 				</Field.Label>
 				<Field.Row>
-					<Select
-						name={name}
-						error={selectError}
-						flexGrow={1}
-						value={state}
-						options={mappedOptions}
-						onChange={(val) => setState(val)}
-					/>
+					<Select name={name} error={selectError} flexGrow={1} value={state} options={mappedOptions} onChange={(val) => setState(val)} />
 				</Field.Row>
 				<Field.Error>{selectError}</Field.Error>
 			</Field>
@@ -145,13 +113,7 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		return null;
 	});
 
-export default function CustomFieldsForm({
-	jsonCustomFields,
-	customFieldsData,
-	setCustomFieldsData,
-	onLoadFields = () => {},
-	...props
-}) {
+export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
 	const accountsCustomFieldsJson = useSetting('Accounts_CustomFields');
 
 	const [customFields] = useState(() => {
@@ -185,12 +147,5 @@ export default function CustomFieldsForm({
 		return null;
 	}
 
-	return (
-		<CustomFieldsAssembler
-			formValues={values}
-			formHandlers={handlers}
-			customFields={customFields}
-			{...props}
-		/>
-	);
+	return <CustomFieldsAssembler formValues={values} formHandlers={handlers} customFields={customFields} {...props} />;
 }

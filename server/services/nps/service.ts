@@ -5,7 +5,7 @@ import { Db } from 'mongodb';
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
+import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
@@ -42,12 +42,7 @@ export class NPSService extends ServiceClass implements INPSService {
 			notifyAdmins(nps.startAt);
 		}
 
-		const {
-			npsId,
-			startAt,
-			expireAt,
-			createdBy,
-		} = nps;
+		const { npsId, startAt, expireAt, createdBy } = nps;
 
 		const { result } = await this.Nps.save({
 			_id: npsId,
@@ -71,7 +66,7 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const npsSending = await this.Nps.getOpenExpiredAlreadySending();
 
-		const nps = npsSending || await this.Nps.getOpenExpiredAndStartSending();
+		const nps = npsSending || (await this.Nps.getOpenExpiredAndStartSending());
 		if (!nps) {
 			return;
 		}
@@ -99,26 +94,32 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const today = new Date();
 
-		const sending = await Promise.all(votesToSend.map(async (vote) => {
-			const { value } = await this.NpsVote.col.findOneAndUpdate({
-				_id: vote._id,
-				status: INpsVoteStatus.NEW,
-			}, {
-				$set: {
-					status: INpsVoteStatus.SENDING,
-					sentAt: today,
-				},
-			}, {
-				projection: {
-					_id: 0,
-					identifier: 1,
-					roles: 1,
-					score: 1,
-					comment: 1,
-				},
-			});
-			return value;
-		}));
+		const sending = await Promise.all(
+			votesToSend.map(async (vote) => {
+				const { value } = await this.NpsVote.col.findOneAndUpdate(
+					{
+						_id: vote._id,
+						status: INpsVoteStatus.NEW,
+					},
+					{
+						$set: {
+							status: INpsVoteStatus.SENDING,
+							sentAt: today,
+						},
+					},
+					{
+						projection: {
+							_id: 0,
+							identifier: 1,
+							roles: 1,
+							score: 1,
+							comment: 1,
+						},
+					},
+				);
+				return value;
+			}),
+		);
 
 		const votes = sending.filter(Boolean) as INpsVote[];
 		if (votes.length > 0) {
@@ -143,13 +144,7 @@ export class NPSService extends ServiceClass implements INPSService {
 		await this.Nps.updateStatusById(nps._id, NPSStatus.SENT);
 	}
 
-	async vote({
-		userId,
-		npsId,
-		roles,
-		score,
-		comment,
-	}: NPSVotePayload): Promise<void> {
+	async vote({ userId, npsId, roles, score, comment }: NPSVotePayload): Promise<void> {
 		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
 		if (!npsEnabled) {
 			return;
@@ -159,7 +154,9 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('Invalid NPS id');
 		}
 
-		const nps = await this.Nps.findOneById(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
+		const nps = await this.Nps.findOneById<Pick<INps, 'status' | 'startAt' | 'expireAt'>>(npsId, {
+			projection: { status: 1, startAt: 1, expireAt: 1 },
+		});
 		if (!nps) {
 			return;
 		}
@@ -177,7 +174,7 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('NPS survey not started');
 		}
 
-		const identifier = createHash('sha256').update(`${ userId }${ npsId }`).digest('hex');
+		const identifier = createHash('sha256').update(`${userId}${npsId}`).digest('hex');
 
 		const result = await this.NpsVote.save({
 			ts: new Date(),

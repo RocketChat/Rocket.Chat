@@ -2,9 +2,9 @@ import './settings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Users, Rooms } from '../../models';
-import { settings } from '../../settings';
-import { hasRole } from '../../authorization';
+import { Users, Rooms } from '../../models/server';
+import { settings } from '../../settings/server';
+import { hasRole } from '../../authorization/server';
 
 /**
  * BotHelpers helps bots
@@ -36,7 +36,8 @@ class BotHelpers {
 	request(prop, ...params) {
 		if (typeof this[prop] === 'undefined') {
 			return null;
-		} if (typeof this[prop] === 'function') {
+		}
+		if (typeof this[prop] === 'function') {
 			return this[prop](...params);
 		}
 		return this[prop];
@@ -77,7 +78,10 @@ class BotHelpers {
 
 	// generic error whenever property access insufficient to fill request
 	requestError() {
-		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', { method: 'botRequest', action: 'bot_request' });
+		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', {
+			method: 'botRequest',
+			action: 'bot_request',
+		});
 	}
 
 	// "public" properties accessed by getters
@@ -151,7 +155,7 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
+settings.watch('BotHelpers_userFields', function (settingValue) {
 	botHelpers.setupCursors(settingValue);
 });
 

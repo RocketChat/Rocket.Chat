@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import toastr from 'toastr';
 
-import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
@@ -20,7 +20,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.starred = Meteor.userId();
-			Meteor.call('starMessage', message, function(error) {
+			Meteor.call('starMessage', message, function (error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			message.starred = false;
-			Meteor.call('starMessage', message, function(error) {
+			Meteor.call('starMessage', message, function (error) {
 				if (error) {
 					handleError(error);
 				}
@@ -77,15 +77,19 @@ Meteor.startup(function() {
 				Template.instance().tabBar.close();
 			}
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
-					tab: 'thread',
-					context: message.tmid,
-					rid: message.rid,
-					jump: message._id,
-					name: Rooms.findOne({ _id: message.rid }).name,
-				}, {
-					jump: message._id,
-				});
+				return FlowRouter.go(
+					FlowRouter.getRouteName(),
+					{
+						tab: 'thread',
+						context: message.tmid,
+						rid: message.rid,
+						jump: message._id,
+						name: Rooms.findOne({ _id: message.rid }).name,
+					},
+					{
+						jump: message._id,
+					},
+				);
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
@@ -110,7 +114,7 @@ Meteor.startup(function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ msg, subscription, u }) {
 			if (subscription == null) {

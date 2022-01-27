@@ -18,10 +18,6 @@ Template.sideNav.helpers({
 		return SideNav.getFlex().data;
 	},
 
-	footer() {
-		return String(settings.get('Layout_Sidenav_Footer')).trim();
-	},
-
 	roomType() {
 		return roomTypes.getTypes().map((roomType) => ({
 			template: roomType.customTemplate || 'roomList',
@@ -100,11 +96,11 @@ const redirectToDefaultChannelIfNeeded = () => {
 		}
 
 		c.stop();
-		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+		FlowRouter.go(`/channel/${firstChannelAfterLogin}`);
 	});
 };
 
-Template.sideNav.onRendered(function() {
+Template.sideNav.onRendered(function () {
 	SideNav.init();
 	menu.init();
 	redirectToDefaultChannelIfNeeded();
@@ -112,7 +108,7 @@ Template.sideNav.onRendered(function() {
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
 
-Template.sideNav.onCreated(function() {
+Template.sideNav.onCreated(function () {
 	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {

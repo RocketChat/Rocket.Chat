@@ -14,6 +14,12 @@ registerOmnichannelSidebarItem({
 });
 
 registerOmnichannelSidebarItem({
+	href: 'omnichannel-canned-responses',
+	i18nLabel: 'Canned_Responses',
+	permissionGranted: () => hasPermission('manage-livechat-canned-responses'),
+});
+
+registerOmnichannelSidebarItem({
 	href: 'omnichannel/tags',
 	i18nLabel: 'Tags',
 	permissionGranted: () => hasPermission('manage-livechat-tags'),

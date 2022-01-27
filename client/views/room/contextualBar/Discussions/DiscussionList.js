@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -7,21 +7,11 @@ import ScrollableContentWrapper from '../../../../components/ScrollableContentWr
 import VerticalBar from '../../../../components/VerticalBar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { goToRoomById } from '../../../../lib/goToRoomById';
+import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';
 
-function DiscussionList({
-	total = 10,
-	discussions = [],
-	loadMoreItems,
-	loading,
-	onClose,
-	error,
-	userId,
-	text,
-	setText,
-}) {
+function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const t = useTranslation();
@@ -42,6 +32,7 @@ function DiscussionList({
 				</Box>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
+
 			<VerticalBar.Content paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
@@ -60,44 +51,40 @@ function DiscussionList({
 						addon={<Icon name='magnifier' size='x20' />}
 					/>
 				</Box>
+
+				{loading && (
+					<Box pi='x24' pb='x12'>
+						<Throbber size='x12' />
+					</Box>
+				)}
+
+				{error && (
+					<Callout mi='x24' type='danger'>
+						{error.toString()}
+					</Callout>
+				)}
+
+				{!loading && total === 0 && (
+					<Box width='full' textAlign='center' p='x24' color='neutral-600'>
+						{t('No_Discussions_found')}
+					</Box>
+				)}
+
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{error && (
-						<Callout mi='x24' type='danger'>
-							{error.toString()}
-						</Callout>
-					)}
-
-					{total === 0 && (
-						<Box width='full' textAlign='center' p='x24' color='neutral-600'>
-							{t('No_Discussions_found')}
-						</Box>
-					)}
-
 					{!error && total > 0 && discussions.length > 0 && (
-						<>
-							<Virtuoso
-								style={{
-									minHeight: blockSize,
-									width: inlineSize,
-									overflow: 'hidden',
-								}}
-								totalCount={total}
-								endReached={
-									loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
-								}
-								overscan={25}
-								data={discussions}
-								components={{ Scroller: ScrollableContentWrapper }}
-								itemContent={(index, data) => (
-									<Row
-										discussion={data}
-										showRealNames={showRealNames}
-										userId={userId}
-										onClick={onClick}
-									/>
-								)}
-							/>
-						</>
+						<Virtuoso
+							style={{
+								height: blockSize,
+								width: inlineSize,
+								overflow: 'hidden',
+							}}
+							totalCount={total}
+							endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+							overscan={25}
+							data={discussions}
+							components={{ Scroller: ScrollableContentWrapper }}
+							itemContent={(index, data) => <Row discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />}
+						/>
 					)}
 				</Box>
 			</VerticalBar.Content>

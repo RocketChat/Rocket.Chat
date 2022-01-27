@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
+import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:facebook'(options) {
@@ -26,13 +28,13 @@ Meteor.methods({
 						return result;
 					}
 
-					return settings.updateById('Livechat_Facebook_Enabled', true);
+					return Settings.updateValueById('Livechat_Facebook_Enabled', true);
 				}
 
 				case 'disable': {
 					OmniChannel.disable();
 
-					return settings.updateById('Livechat_Facebook_Enabled', false);
+					return Settings.updateValueById('Livechat_Facebook_Enabled', false);
 				}
 
 				case 'list-pages': {
@@ -59,7 +61,7 @@ Meteor.methods({
 					throw new Meteor.Error('integration-error', e.response.data.error.message);
 				}
 			}
-			console.error('Error contacting omni.rocket.chat:', e);
+			SystemLogger.error('Error contacting omni.rocket.chat:', e);
 			throw new Meteor.Error('integration-error', e.error);
 		}
 	},

@@ -7,7 +7,6 @@ import { Rooms } from '../../models';
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
 Meteor.methods({
-
 	async livestreamStreamStatus({ streamId }) {
 		if (!streamId) {
 			// TODO: change error

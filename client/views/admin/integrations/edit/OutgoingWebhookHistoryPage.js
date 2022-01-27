@@ -93,8 +93,7 @@ function OutgoingWebhookHistoryPage(props) {
 	}, [handleDataChange, id, mounted]);
 
 	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
+		({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
 		[t],
 	);
 

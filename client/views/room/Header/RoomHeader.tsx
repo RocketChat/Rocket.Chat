@@ -21,6 +21,11 @@ export type RoomHeaderProps = {
 		insideContent?: unknown;
 		posContent?: unknown;
 		end?: unknown;
+		toolbox?: {
+			pre?: unknown;
+			content?: unknown;
+			pos?: unknown;
+		};
 	};
 };
 
@@ -43,15 +48,15 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 			</Header.Content.Row>
 			<Header.Content.Row>
 				<Header.Subtitle>
-					{topic && (
-						<MarkdownText variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-					)}
+					{topic && <MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />}
 				</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		{slots?.posContent}
 		<Header.ToolBox>
-			<ToolBox room={room} />
+			{slots?.toolbox?.pre}
+			{slots?.toolbox?.content || <ToolBox room={room} />}
+			{slots?.toolbox?.pos}
 		</Header.ToolBox>
 		{slots?.end}
 	</Header>

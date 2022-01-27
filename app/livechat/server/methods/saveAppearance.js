@@ -1,12 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { settings as rcSettings } from '../../../settings';
+import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'livechat:saveAppearance',
+			});
 		}
 
 		const validSettings = [
@@ -38,7 +40,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			rcSettings.updateById(setting._id, setting.value);
+			Settings.updateValueById(setting._id, setting.value);
 		});
 	},
 });

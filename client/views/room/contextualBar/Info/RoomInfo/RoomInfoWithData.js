@@ -4,7 +4,6 @@ import React from 'react';
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
 import { roomTypes, UiTextContext } from '../../../../../../app/utils/client';
 import GenericModal from '../../../../../components/GenericModal';
-import MarkdownText from '../../../../../components/MarkdownText';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useRoute } from '../../../../../contexts/RouterContext';
@@ -13,11 +12,10 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../ConvertToTeamModal';
 import RoomInfo from './RoomInfo';
 
 const retentionPolicyMaxAge = {
@@ -39,7 +37,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
+
+	const { type, fname, prid, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -68,8 +67,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 	const canEdit = usePermission('edit-room', rid);
 	const canConvertRoomToTeam = usePermission('create-team');
-	const canLeave =
-		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
+	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
@@ -85,12 +83,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onConfirm}
-				onCancel={closeModal}
-				confirmText={t('Yes_delete_it')}
-			>
+			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={closeModal} confirmText={t('Yes_delete_it')}>
 				{t('Delete_Room_Warning')}
 			</GenericModal>,
 		);
@@ -158,14 +151,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 		};
 
-		setModal(
-			<ChannelToTeamModal
-				rid={rid}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={onConfirm}
-			/>,
-		);
+		setModal(<ChannelToTeamModal rid={rid} onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm} />);
 	});
 
 	const onConvertToTeam = useMutableCallback(async () => {
@@ -180,15 +166,26 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 		};
 
-		setModal(<ConvertToTeamModal onClose={closeModal} onConfirm={onConfirm} />);
+		setModal(
+			<GenericModal
+				title={t('Confirmation')}
+				variant='warning'
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={onConfirm}
+				confirmText={t('Convert')}
+			>
+				{t('Converting_channel_to_a_team')}
+			</GenericModal>,
+		);
 	});
 
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+	const allowConvertToTeam = !room.teamId && !prid && canConvertRoomToTeam && canEdit;
 
 	return (
 		<RoomInfo
-			archived={archived}
-			broadcast={broadcast}
+			room={room}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickBack={onClickBack}
@@ -197,15 +194,9 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && canEdit && onMoveToTeam}
-			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && canEdit && onConvertToTeam}
+			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
+			onClickConvertToTeam={allowConvertToTeam && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
-			{...room}
-			announcement={
-				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
-			}
-			description={room.description && <MarkdownText variant='inline' content={room.description} />}
-			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
 };

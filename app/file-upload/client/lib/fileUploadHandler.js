@@ -25,11 +25,11 @@ export const fileUploadHandler = (directive, meta, file) => {
 	console.error('Invalid file store', directive);
 };
 
-Tracker.autorun(function() {
+Tracker.autorun(function () {
 	if (Meteor.userId()) {
 		const secure = location.protocol === 'https:' ? '; secure' : '';
 
-		document.cookie = `rc_uid=${ escape(Meteor.userId()) }; path=/${ secure }`;
-		document.cookie = `rc_token=${ escape(Accounts._storedLoginToken()) }; path=/${ secure }`;
+		document.cookie = `rc_uid=${escape(Meteor.userId())}; path=/${secure}`;
+		document.cookie = `rc_token=${escape(Accounts._storedLoginToken())}; path=/${secure}`;
 	}
 });

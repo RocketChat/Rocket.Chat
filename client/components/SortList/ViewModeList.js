@@ -1,13 +1,18 @@
-import { ToggleSwitch, RadioButton, Box, Margins } from '@rocket.chat/fuselage';
+import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference } from '../../contexts/UserContext';
-import SortListItem from './SortListItem';
+import ListItem from '../Sidebar/ListItem';
 
 const style = {
 	textTransform: 'uppercase',
+};
+
+const checkBoxStyle = {
+	paddingLeft: '24px',
+	paddingInlineStart: '24px',
 };
 
 function ViewModeList() {
@@ -15,8 +20,7 @@ function ViewModeList() {
 
 	const saveUserPreferences = useMethod('saveUserPreferences');
 
-	const useHandleChange = (value) =>
-		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
+	const useHandleChange = (value) => useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
@@ -32,61 +36,59 @@ function ViewModeList() {
 
 	return (
 		<>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='micro'>
-					{t('Display')}
-				</Box>
-			</Margins>
+			<OptionTitle style={style}>{t('Display')}</OptionTitle>
 			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					<SortListItem
-						icon={'extended-view'}
-						text={t('Extended')}
-						input={
-							<RadioButton
-								onChange={setToExtended}
-								name='sidebarViewMode'
-								value='extended'
-								checked={sidebarViewMode === 'extended'}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'medium-view'}
-						text={t('Medium')}
-						input={
-							<RadioButton
-								onChange={setToMedium}
-								name='sidebarViewMode'
-								value='medium'
-								checked={sidebarViewMode === 'medium'}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'condensed-view'}
-						text={t('Condensed')}
-						input={
-							<RadioButton
-								onChange={setToCondensed}
-								name='sidebarViewMode'
-								value='condensed'
-								checked={sidebarViewMode === 'condensed'}
-							/>
-						}
-					/>
-					<SortListItem
-						icon={'user-rounded'}
-						text={t('Avatars')}
-						input={
-							<ToggleSwitch
-								onChange={handleChangeSidebarDisplayAvatar}
-								name='sidebarDisplayAvatar'
-								checked={sidebarDisplayAvatar}
-							/>
-						}
-					/>
-				</Margins>
+				<ListItem
+					icon={'extended-view'}
+					text={t('Extended')}
+					input={
+						<RadioButton
+							style={checkBoxStyle}
+							onChange={setToExtended}
+							name='sidebarViewMode'
+							value='extended'
+							checked={sidebarViewMode === 'extended'}
+						/>
+					}
+				/>
+				<ListItem
+					icon={'medium-view'}
+					text={t('Medium')}
+					input={
+						<RadioButton
+							style={checkBoxStyle}
+							onChange={setToMedium}
+							name='sidebarViewMode'
+							value='medium'
+							checked={sidebarViewMode === 'medium'}
+						/>
+					}
+				/>
+				<ListItem
+					icon={'condensed-view'}
+					text={t('Condensed')}
+					input={
+						<RadioButton
+							style={checkBoxStyle}
+							onChange={setToCondensed}
+							name='sidebarViewMode'
+							value='condensed'
+							checked={sidebarViewMode === 'condensed'}
+						/>
+					}
+				/>
+				<ListItem
+					icon={'user-rounded'}
+					text={t('Avatars')}
+					input={
+						<ToggleSwitch
+							style={checkBoxStyle}
+							onChange={handleChangeSidebarDisplayAvatar}
+							name='sidebarDisplayAvatar'
+							checked={sidebarDisplayAvatar}
+						/>
+					}
+				/>
 			</ul>
 		</>
 	);

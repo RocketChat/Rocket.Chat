@@ -1,18 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-import {
-	renderSVGLetters,
-	serveAvatar,
-	wasFallbackModified,
-	setCacheAndDispositionHeaders,
-} from './utils';
+import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload';
 import { settings } from '../../../app/settings/server';
-import { Users, Avatars } from '../../../app/models/server';
-
+import { Users } from '../../../app/models/server';
+import { Avatars } from '../../../app/models/server/raw';
 
 // request /avatar/@name forces returning the svg
-export const userAvatar = Meteor.bindEnvironment(function(req, res) {
+export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
 	const requestUsername = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	if (!requestUsername) {
@@ -34,9 +29,9 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 
-	const file = Avatars.findOneByName(requestUsername);
+	const file = await Avatars.findOneByName(requestUsername);
 	if (file) {
-		res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+		res.setHeader('Content-Security-Policy', "default-src 'none'");
 
 		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
 			res.setHeader('Last-Modified', reqModifiedHeader);

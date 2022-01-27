@@ -12,11 +12,7 @@ const MaxChatsPerAgent = ({ values, handlers }) => {
 		<Field>
 			<Field.Label>{t('Max_number_of_chats_per_agent')}</Field.Label>
 			<Field.Row>
-				<NumberInput
-					value={maxNumberSimultaneousChat}
-					onChange={handleMaxNumberSimultaneousChat}
-					flexGrow={1}
-				/>
+				<NumberInput value={maxNumberSimultaneousChat} onChange={handleMaxNumberSimultaneousChat} flexGrow={1} />
 			</Field.Row>
 		</Field>
 	);

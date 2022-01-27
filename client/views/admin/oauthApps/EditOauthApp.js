@@ -1,13 +1,4 @@
-import {
-	Button,
-	ButtonGroup,
-	TextInput,
-	Field,
-	Icon,
-	TextAreaInput,
-	ToggleSwitch,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -71,18 +62,15 @@ function EditOauthApp({ onChange, data, ...props }) {
 
 	const openConfirmDelete = () =>
 		setModal(() => (
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteConfirm}
-				onCancel={() => setModal(undefined)}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={onDeleteConfirm} onCancel={() => setModal(undefined)} confirmText={t('Delete')}>
 				{t('Application_delete_warning')}
 			</GenericModal>
 		));
 
-	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) =>
-		setNewData({ ...newData, [field]: getValue(e) });
+	const handleChange =
+		(field, getValue = (e) => e.currentTarget.value) =>
+		(e) =>
+			setNewData({ ...newData, [field]: getValue(e) });
 
 	const { active, name, redirectUri } = newData;
 
@@ -100,18 +88,14 @@ function EditOauthApp({ onChange, data, ...props }) {
 					<Field.Row>
 						<TextInput value={name} onChange={handleChange('name')} />
 					</Field.Row>
-					<Field.Hint>
-						{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}
-					</Field.Hint>
+					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
 				</Field>
 				<Field>
 					<Field.Label>{t('Redirect_URI')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput rows={5} value={redirectUri} onChange={handleChange('redirectUri')} />
 					</Field.Row>
-					<Field.Hint>
-						{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}
-					</Field.Hint>
+					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
 				</Field>
 				<Field>
 					<Field.Label>{t('Client_ID')}</Field.Label>

@@ -1,14 +1,4 @@
-import {
-	Box,
-	Icon,
-	TextInput,
-	Margins,
-	Select,
-	Throbber,
-	ButtonGroup,
-	Button,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -34,6 +24,8 @@ const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	isTeam,
+	isDirect,
 	reload,
 }) => {
 	const t = useTranslation();
@@ -54,7 +46,7 @@ const RoomMembers = ({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
+				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
@@ -69,13 +61,7 @@ const RoomMembers = ({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -100,11 +86,11 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<Box pi='x18' pb='x12'>
-						<Box is='span' color='info' fontScale='p1'>
+						<Box is='span' color='info' fontScale='p2'>
 							{t('Showing')}: {members.length}
 						</Box>
 
-						<Box is='span' color='info' fontScale='p1' mis='x8'>
+						<Box is='span' color='info' fontScale='p2' mis='x8'>
 							{t('Total')}: {total}
 						</Box>
 					</Box>
@@ -122,30 +108,29 @@ const RoomMembers = ({
 							overscan={50}
 							data={members}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => (
-								<Row data={itemData} user={data} index={index} reload={reload} />
-							)}
+							itemContent={(index, data) => <Row data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
 				</Box>
 			</VerticalBar.Content>
-
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{onClickInvite && (
-						<Button onClick={onClickInvite} width='50%'>
-							<Icon name='link' size='x20' mie='x4' />
-							{t('Invite_Link')}
-						</Button>
-					)}
-					{onClickAdd && (
-						<Button onClick={onClickAdd} width='50%' primary>
-							<Icon name='user-plus' size='x20' mie='x4' />
-							{t('Add')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{!isDirect && (onClickInvite || onClickAdd) && (
+				<VerticalBar.Footer>
+					<ButtonGroup stretch>
+						{onClickInvite && (
+							<Button onClick={onClickInvite} width='50%'>
+								<Icon name='link' size='x20' mie='x4' />
+								{t('Invite_Link')}
+							</Button>
+						)}
+						{onClickAdd && (
+							<Button onClick={onClickAdd} width='50%' primary>
+								<Icon name='user-plus' size='x20' mie='x4' />
+								{t('Add')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };

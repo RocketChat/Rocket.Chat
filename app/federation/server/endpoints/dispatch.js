@@ -1,16 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
-import {
-	FederationRoomEvents, FederationServers,
-	Messages,
-	Rooms,
-	Subscriptions,
-	Users,
-} from '../../../models/server';
+import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { Notifications } from '../../../notifications/server';
@@ -43,7 +37,9 @@ const eventHandlers = {
 
 				// If the event was successfully added, handle the event locally
 				if (eventResult.success) {
-					const { data: { room } } = event;
+					const {
+						data: { room },
+					} = event;
 
 					// Check if room exists
 					const persistedRoom = Rooms.findOne({ _id: room._id });
@@ -67,7 +63,9 @@ const eventHandlers = {
 	// ROOM_DELETE
 	//
 	async [eventTypes.ROOM_DELETE](event) {
-		const { data: { roomId } } = event;
+		const {
+			data: { roomId },
+		} = event;
 
 		// Check if room exists
 		const persistedRoom = Rooms.findOne({ _id: roomId });
@@ -96,7 +94,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, user, subscription, domainsAfterAdd } } = event;
+			const {
+				data: { roomId, user, subscription, domainsAfterAdd },
+			} = event;
 
 			// Check if user exists
 			const persistedUser = Users.findOne({ _id: user._id });
@@ -135,12 +135,12 @@ const eventHandlers = {
 					federationAltered = true;
 				}
 			} catch (ex) {
-				logger.server.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
+				serverLogger.debug(`unable to create subscription for user ( ${user._id} ) in room (${roomId})`);
 			}
 
 			// Refresh the servers list
 			if (federationAltered) {
-				FederationServers.refreshServers();
+				await FederationServers.refreshServers();
 
 				// Update the room's federation property
 				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
@@ -158,13 +158,15 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, user, domainsAfterRemoval } } = event;
+			const {
+				data: { roomId, user, domainsAfterRemoval },
+			} = event;
 
 			// Remove the user's subscription
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -181,13 +183,15 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, user, domainsAfterRemoval } } = event;
+			const {
+				data: { roomId, user, domainsAfterRemoval },
+			} = event;
 
 			// Remove the user's subscription
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -204,7 +208,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { message } } = event;
+			const {
+				data: { message },
+			} = event;
 
 			// Check if message exists
 			const persistedMessage = Messages.findOne({ _id: message._id });
@@ -225,9 +231,11 @@ const eventHandlers = {
 				if (denormalizedMessage.file) {
 					const fileStore = FileUpload.getStore('Uploads');
 
-					const { federation: { origin } } = denormalizedMessage;
+					const {
+						federation: { origin },
+					} = denormalizedMessage;
 
-					const { upload, buffer } = getUpload(origin, denormalizedMessage.file._id);
+					const { upload, buffer } = await getUpload(origin, denormalizedMessage.file._id);
 
 					const oldUploadId = upload._id;
 
@@ -240,7 +248,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+					fileStore.insertSync(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
@@ -268,7 +276,7 @@ const eventHandlers = {
 					notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
 				} catch (err) {
-					logger.server.debug(`Error on creating message: ${ message._id }`);
+					serverLogger.debug(`Error on creating message: ${message._id}`);
 				}
 			}
 		}
@@ -284,7 +292,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { message } } = event;
+			const {
+				data: { message },
+			} = event;
 
 			// Check if message exists
 			const persistedMessage = Messages.findOne({ _id: message._id });
@@ -309,7 +319,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, messageId } } = event;
+			const {
+				data: { roomId, messageId },
+			} = event;
 
 			// Remove the message
 			Messages.removeById(messageId);
@@ -329,7 +341,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { messageId, username, reaction } } = event;
+			const {
+				data: { messageId, username, reaction },
+			} = event;
 
 			// Get persisted message
 			const persistedMessage = Messages.findOne({ _id: messageId });
@@ -351,7 +365,7 @@ const eventHandlers = {
 			}
 
 			// Update the property
-			Messages.update({ _id: messageId }, { $set: { [`reactions.${ reaction }`]: reactionObj } });
+			Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 		}
 
 		return eventResult;
@@ -365,7 +379,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { messageId, username, reaction } } = event;
+			const {
+				data: { messageId, username, reaction },
+			} = event;
 
 			// Get persisted message
 			const persistedMessage = Messages.findOne({ _id: messageId });
@@ -393,10 +409,10 @@ const eventHandlers = {
 
 			// If there are no more users for that reaction, remove the property
 			if (reactionObj.usernames.length === 0) {
-				Messages.update({ _id: messageId }, { $unset: { [`reactions.${ reaction }`]: 1 } });
+				Messages.update({ _id: messageId }, { $unset: { [`reactions.${reaction}`]: 1 } });
 			} else {
 				// Otherwise, update the property
-				Messages.update({ _id: messageId }, { $set: { [`reactions.${ reaction }`]: reactionObj } });
+				Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
 		}
 
@@ -411,7 +427,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, user } } = event;
+			const {
+				data: { roomId, user },
+			} = event;
 
 			// Denormalize user
 			const denormalizedUser = normalizers.denormalizeUser(user);
@@ -431,7 +449,9 @@ const eventHandlers = {
 
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
-			const { data: { roomId, user } } = event;
+			const {
+				data: { roomId, user },
+			} = event;
 
 			// Denormalize user
 			const denormalizedUser = normalizers.denormalizeUser(user);
@@ -444,58 +464,73 @@ const eventHandlers = {
 	},
 };
 
-API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } }, {
-	async post() {
-		if (!isFederationEnabled()) {
-			return API.v1.failure('Federation not enabled');
-		}
-
-		//
-		// Decrypt the payload if needed
-		let payload;
-
-		try {
-			payload = decryptIfNeeded(this.request, this.bodyParams);
-		} catch (err) {
-			return API.v1.failure('Could not decrypt payload');
-		}
-
-		//
-		// Convert from EJSON
-		const { events } = EJSON.fromJSONValue(payload);
-
-		logger.server.debug(`federation.events.dispatch => events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
-
-		// Loop over received events
-		for (const event of events) {
-			/* eslint-disable no-await-in-loop */
-
-			let eventResult;
-
-			if (eventHandlers[event.type]) {
-				eventResult = await eventHandlers[event.type](event);
+API.v1.addRoute(
+	'federation.events.dispatch',
+	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
+	{
+		post() {
+			if (!isFederationEnabled()) {
+				return API.v1.failure('Federation not enabled');
 			}
 
-			// If there was an error handling the event, take action
-			if (!eventResult || !eventResult.success) {
-				try {
-					logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
+			//
+			// Decrypt the payload if needed
+			let payload;
 
-					requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
+			try {
+				payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
+			} catch (err) {
+				return API.v1.failure('Could not decrypt payload');
+			}
 
-					// And stop handling the events
-					break;
-				} catch (err) {
-					logger.server.error(() => `dispatch => event=${ JSON.stringify(event, null, 2) } eventResult=${ JSON.stringify(eventResult, null, 2) } error=${ err.toString() } ${ err.stack }`);
+			//
+			// Convert from EJSON
+			const { events } = EJSON.fromJSONValue(payload);
 
-					throw err;
+			serverLogger.debug({ msg: 'federation.events.dispatch', events });
+
+			// Loop over received events
+			for (const event of events) {
+				/* eslint-disable no-await-in-loop */
+
+				let eventResult;
+
+				if (eventHandlers[event.type]) {
+					eventResult = Promise.await(eventHandlers[event.type](event));
 				}
+
+				// If there was an error handling the event, take action
+				if (!eventResult || !eventResult.success) {
+					try {
+						serverLogger.debug({
+							msg: 'federation.events.dispatch => Event has missing parents',
+							event,
+						});
+
+						Promise.await(
+							requestEventsFromLatest(
+								event.origin,
+								getFederationDomain(),
+								contextDefinitions.defineType(event),
+								event.context,
+								eventResult.latestEventIds,
+							),
+						);
+
+						// And stop handling the events
+						break;
+					} catch (err) {
+						serverLogger.error({ msg: 'dispatch', event, eventResult, err });
+
+						throw err;
+					}
+				}
+
+				/* eslint-enable no-await-in-loop */
 			}
 
-			/* eslint-enable no-await-in-loop */
-		}
-
-		// Respond
-		return API.v1.success();
+			// Respond
+			return API.v1.success();
+		},
 	},
-});
+);

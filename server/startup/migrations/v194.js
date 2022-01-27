@@ -1,12 +1,10 @@
-import {
-	Settings,
-	Users,
-} from '../../../app/models/server';
-import { Migrations } from '../../../app/migrations/server';
+import { Users } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
 
-function updateFieldMap() {
+async function updateFieldMap() {
 	const _id = 'SAML_Custom_Default_user_data_fieldmap';
-	const setting = Settings.findOne({ _id });
+	const setting = await Settings.findOne({ _id });
 	if (!setting || !setting.value) {
 		return;
 	}
@@ -18,12 +16,15 @@ function updateFieldMap() {
 	// if it's using the old default value, simply switch to the new default
 	if (setting.value === '{"username":"username", "email":"email", "cn": "name"}') {
 		// include de eppn identifier if it was used
-		const value = `{"username":"username", "email":"email", "name": "cn"${ usedEppn ? ', "__identifier__": "eppn"' : '' }}`;
-		Settings.update({ _id }, {
-			$set: {
-				value,
+		const value = `{"username":"username", "email":"email", "name": "cn"${usedEppn ? ', "__identifier__": "eppn"' : ''}}`;
+		await Settings.update(
+			{ _id },
+			{
+				$set: {
+					value,
+				},
 			},
-		});
+		);
 		return;
 	}
 
@@ -51,7 +52,7 @@ function updateFieldMap() {
 
 			// If it didn't have a 'field' attribute, it was ignored by SAML, but let's keep it on the JSON anyway
 			if (!field) {
-				newMap[`_${ key }`] = {
+				newMap[`_${key}`] = {
 					attribute: key,
 					regex,
 				};
@@ -73,40 +74,45 @@ function updateFieldMap() {
 
 	const value = JSON.stringify(newMap);
 
-	Settings.update({ _id }, {
-		$set: {
-			value,
+	Settings.update(
+		{ _id },
+		{
+			$set: {
+				value,
+			},
 		},
-	});
+	);
 }
 
 function updateIdentifierLocation() {
-	Users.update(
-		{ eppn: { $exists: 1 } },
-		{ $rename: { eppn: 'services.saml.eppn' } },
-		{ multi: true },
-	);
+	Users.update({ eppn: { $exists: 1 } }, { $rename: { eppn: 'services.saml.eppn' } }, { multi: true });
 }
 
 function setOldLogoutResponseTemplate() {
 	// For existing users, use a template compatible with the old SAML implementation instead of the default
-	Settings.upsert({
-		_id: 'SAML_Custom_Default_LogoutResponse_template',
-	}, {
-		$set: {
-			value: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
+	return Settings.update(
+		{
+			_id: 'SAML_Custom_Default_LogoutResponse_template',
+		},
+		{
+			$set: {
+				value: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
   <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
   <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
 </samlp:LogoutResponse>`,
+			},
 		},
-	});
+		{
+			upsert: true,
+		},
+	);
 }
 
-Migrations.add({
+addMigration({
 	version: 194,
-	up() {
-		updateFieldMap();
-		updateIdentifierLocation();
-		setOldLogoutResponseTemplate();
+	async up() {
+		await updateFieldMap();
+		await updateIdentifierLocation();
+		await setOldLogoutResponseTemplate();
 	},
 });

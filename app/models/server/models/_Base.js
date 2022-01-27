@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import objectPath from 'object-path';
 import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
@@ -23,9 +22,7 @@ export class Base {
 		return '_db';
 	}
 
-	roleBaseQuery() {
-
-	}
+	roleBaseQuery() {}
 
 	findRolesByUserId(userId) {
 		const query = this.roleBaseQuery(userId);
@@ -97,7 +94,7 @@ export class Base {
 		};
 	}
 
-	setUpdatedAt(...args/* record, checkQuery, query*/) {
+	setUpdatedAt(...args /* record, checkQuery, query*/) {
 		return this._db.setUpdatedAt(...args);
 	}
 
@@ -143,19 +140,19 @@ export class Base {
 		}
 	}
 
-	insert(...args/* record*/) {
+	insert(...args /* record*/) {
 		return this._db.insert(...args);
 	}
 
-	update(...args/* query, update, options*/) {
+	update(...args /* query, update, options*/) {
 		return this._db.update(...args);
 	}
 
-	upsert(...args/* query, update*/) {
+	upsert(...args /* query, update*/) {
 		return this._db.upsert(...args);
 	}
 
-	remove(...args/* query*/) {
+	remove(...args /* query*/) {
 		return this._db.remove(...args);
 	}
 
@@ -187,167 +184,19 @@ export class Base {
 		return this._db.tryDropIndex(...args);
 	}
 
-	trashFind(...args/* query, options*/) {
+	trashFind(...args /* query, options*/) {
 		return this._db.trashFind(...args);
 	}
 
-	trashFindOneById(...args/* _id, options*/) {
+	trashFindOneById(...args /* _id, options*/) {
 		return this._db.trashFindOneById(...args);
 	}
 
-	trashFindDeletedAfter(...args/* deletedAt, query, options*/) {
+	trashFindDeletedAfter(...args /* deletedAt, query, options*/) {
 		return this._db.trashFindDeletedAfter(...args);
 	}
 
 	trashFindDeleted(...args) {
 		return this._db.trashFindDeleted(...args);
 	}
-
-	processQueryOptionsOnResult(result, options = {}) {
-		if (result === undefined || result === null) {
-			return undefined;
-		}
-
-		if (Array.isArray(result)) {
-			if (options.sort) {
-				result = result.sort((a, b) => {
-					let r = 0;
-					for (const field in options.sort) {
-						if (options.sort.hasOwnProperty(field)) {
-							const direction = options.sort[field];
-							let valueA;
-							let valueB;
-							if (field.indexOf('.') > -1) {
-								valueA = objectPath.get(a, field);
-								valueB = objectPath.get(b, field);
-							} else {
-								valueA = a[field];
-								valueB = b[field];
-							}
-							if (valueA > valueB) {
-								r = direction;
-								break;
-							}
-							if (valueA < valueB) {
-								r = -direction;
-								break;
-							}
-						}
-					}
-					return r;
-				});
-			}
-
-			if (typeof options.skip === 'number') {
-				result.splice(0, options.skip);
-			}
-
-			if (typeof options.limit === 'number' && options.limit !== 0) {
-				result.splice(options.limit);
-			}
-		}
-
-		if (!options.fields) {
-			options.fields = {};
-		}
-
-		const fieldsToRemove = [];
-		const fieldsToGet = [];
-
-		for (const field in options.fields) {
-			if (options.fields.hasOwnProperty(field)) {
-				if (options.fields[field] === 0) {
-					fieldsToRemove.push(field);
-				} else if (options.fields[field] === 1) {
-					fieldsToGet.push(field);
-				}
-			}
-		}
-
-		if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
-			console.warn('Can\'t mix remove and get fields');
-			fieldsToRemove.splice(0, fieldsToRemove.length);
-		}
-
-		if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
-			fieldsToGet.push('_id');
-		}
-
-		const pickFields = (obj, fields) => {
-			const picked = {};
-			fields.forEach((field) => {
-				if (field.indexOf('.') !== -1) {
-					objectPath.set(picked, field, objectPath.get(obj, field));
-				} else {
-					picked[field] = obj[field];
-				}
-			});
-			return picked;
-		};
-
-		if (fieldsToRemove.length > 0 || fieldsToGet.length > 0) {
-			if (Array.isArray(result)) {
-				result = result.map((record) => {
-					if (fieldsToRemove.length > 0) {
-						return _.omit(record, ...fieldsToRemove);
-					}
-
-					if (fieldsToGet.length > 0) {
-						return pickFields(record, fieldsToGet);
-					}
-
-					return null;
-				});
-			} else {
-				if (fieldsToRemove.length > 0) {
-					return _.omit(result, ...fieldsToRemove);
-				}
-
-				if (fieldsToGet.length > 0) {
-					return pickFields(result, fieldsToGet);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	// dinamicTrashFindAfter(method, deletedAt, ...args) {
-	// 	const scope = {
-	// 		find: (query={}) => {
-	// 			return this.trashFindDeletedAfter(deletedAt, query, { fields: {_id: 1, _deletedAt: 1} });
-	// 		}
-	// 	};
-
-	// 	scope.model = {
-	// 		find: scope.find
-	// 	};
-
-	// 	return this[method].apply(scope, args);
-	// }
-
-	// dinamicFindAfter(method, updatedAt, ...args) {
-	// 	const scope = {
-	// 		find: (query={}, options) => {
-	// 			query._updatedAt = {
-	// 				$gt: updatedAt
-	// 			};
-
-	// 			return this.find(query, options);
-	// 		}
-	// 	};
-
-	// 	scope.model = {
-	// 		find: scope.find
-	// 	};
-
-	// 	return this[method].apply(scope, args);
-	// }
-
-	// dinamicFindChangesAfter(method, updatedAt, ...args) {
-	// 	return {
-	// 		update: this.dinamicFindAfter(method, updatedAt, ...args).fetch(),
-	// 		remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
-	// 	};
-	// }
 }

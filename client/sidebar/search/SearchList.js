@@ -1,12 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import {
-	useMutableCallback,
-	useDebouncedValue,
-	useStableArray,
-	useAutoFocus,
-	useUniqueId,
-} from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
@@ -51,10 +45,7 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData(
-		'spotlight',
-		args,
-	);
+	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
@@ -89,27 +80,19 @@ const useSearchItems = (filterText) => {
 
 	const localRooms = useUserSubscriptions(query, options);
 
-	const usernamesFromClient = useStableArray(
-		[...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean),
-	);
+	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
 
 	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
 		const resultsFromServer = [];
 
-		const filterUsersUnique = ({ _id }, index, arr) =>
-			index === arr.findIndex((user) => _id === user._id);
+		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
 		const roomFilter = (room) =>
 			!localRooms.find(
-				(item) =>
-					(room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) ||
-					[item.rid, item._id].includes(room._id),
+				(item) => (room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id),
 			);
-		const usersfilter = (user) =>
-			!localRooms.find(
-				(room) => room.t === 'd' && room.uids?.length === 2 && room.uids.includes(user._id),
-			);
+		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && room.uids?.length === 2 && room.uids.includes(user._id));
 
 		const userMap = (user) => ({
 			_id: user._id,
@@ -119,13 +102,9 @@ const useSearchItems = (filterText) => {
 			avatarETag: user.avatarETag,
 		});
 
-		const exact = resultsFromServer.filter((item) =>
-			[item.usernamame, item.name, item.fname].includes(name),
-		);
+		const exact = resultsFromServer.filter((item) => [item.usernamame, item.name, item.fname].includes(name));
 
-		resultsFromServer.push(
-			...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap),
-		);
+		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
 		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
@@ -151,6 +130,9 @@ const toggleSelectionState = (next, current, input) => {
 	}
 };
 
+/**
+ * @type import('react').ForwardRefExoticComponent<{ onClose: unknown } & import('react').RefAttributes<HTMLElement>>
+ */
 const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
 	const t = useTranslation();
@@ -195,9 +177,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector(
-				'a',
-			);
+			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector('a');
 		} else {
 			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
 		}

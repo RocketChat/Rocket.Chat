@@ -1,8 +1,5 @@
-import s from 'underscore.string';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-
 import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
@@ -38,7 +35,7 @@ const fullFields = {
 let publicCustomFields = {};
 let customFields = {};
 
-settings.get('Accounts_CustomFields', (key, value) => {
+settings.watch('Accounts_CustomFields', (value) => {
 	publicCustomFields = {};
 	customFields = {};
 
@@ -51,12 +48,12 @@ settings.get('Accounts_CustomFields', (key, value) => {
 		Object.keys(customFieldsOnServer).forEach((key) => {
 			const element = customFieldsOnServer[key];
 			if (element.public) {
-				publicCustomFields[`customFields.${ key }`] = 1;
+				publicCustomFields[`customFields.${key}`] = 1;
 			}
-			customFields[`customFields.${ key }`] = 1;
+			customFields[`customFields.${key}`] = 1;
 		});
 	} catch (e) {
-		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
+		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${e}`);
 	}
 });
 
@@ -64,7 +61,7 @@ const getCustomFields = (canViewAllInfo) => (canViewAllInfo ? customFields : pub
 
 const getFields = (canViewAllInfo) => ({
 	...defaultFields,
-	...canViewAllInfo && fullFields,
+	...(canViewAllInfo && fullFields),
 	...getCustomFields(canViewAllInfo),
 });
 
@@ -78,59 +75,27 @@ const removePasswordInfo = (user) => {
 		delete user.services.email2fa;
 		delete user.services.totp;
 	}
+
 	return user;
 };
 
 export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername }) {
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
-	const myself = userId === filterId || filterUsername === caller.username;
-	const canViewAllInfo = myself || hasPermission(userId, 'view-full-other-user-info');
+	const targetUser = filterId || filterUsername;
+	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
+	const canViewAllInfo = !!myself || hasPermission(userId, 'view-full-other-user-info');
 
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
 		fields,
 	};
-	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	const user = Users.findOneByIdOrUsername(targetUser, options);
+	if (!user) {
+		return null;
+	}
+
 	user.canViewAllInfo = canViewAllInfo;
 
 	return myself ? user : removePasswordInfo(user);
 }
-
-export const getFullUserData = function({ userId, filter, limit: l }) {
-	const username = s.trim(filter);
-	const userToRetrieveFullUserData = username && Users.findOneByUsername(username, { fields: { username: 1 } });
-	if (!userToRetrieveFullUserData) {
-		return;
-	}
-
-	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
-	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
-
-	const canViewAllInfo = isMyOwnInfo || viewFullOtherUserInfo;
-
-	const limit = !viewFullOtherUserInfo ? 1 : l;
-
-	if (!username && limit <= 1) {
-		return undefined;
-	}
-
-	const fields = getFields(canViewAllInfo);
-
-	const options = {
-		fields,
-		limit,
-		sort: { username: 1 },
-	};
-
-	if (!username) {
-		return Users.find({}, options);
-	}
-
-	if (limit === 1) {
-		return Users.findByUsername(userToRetrieveFullUserData.username, options);
-	}
-
-	const usernameReg = new RegExp(escapeRegExp(username), 'i');
-	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
-};

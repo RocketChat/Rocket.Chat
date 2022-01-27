@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';
+import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -11,7 +12,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import BackupCodesModal from './BackupCodesModal';
-import VerifyCodeModal from './VerifyCodeModal';
 
 const TwoFactorTOTP = (props) => {
 	const t = useTranslation();
@@ -79,7 +79,7 @@ const TwoFactorTOTP = (props) => {
 			closeModal();
 		};
 
-		setModal(<VerifyCodeModal onVerify={onDisable} onCancel={closeModal} />);
+		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
 	}, [closeModal, disableTotpFn, dispatchToastMessage, setModal, t]);
 
 	const handleVerifyCode = useCallback(async () => {
@@ -109,13 +109,13 @@ const TwoFactorTOTP = (props) => {
 			}
 		};
 
-		setModal(<VerifyCodeModal onVerify={onRegenerate} onCancel={closeModal} />);
+		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
 	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd='x8'>
-				<Box fontScale='s2'>{t('Two-factor_authentication')}</Box>
+				<Box fontScale='h4'>{t('Two-factor_authentication')}</Box>
 				{!totpEnabled && !registeringTotp && (
 					<>
 						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>
@@ -131,11 +131,7 @@ const TwoFactorTOTP = (props) => {
 						<TextCopy text={totpSecret} />
 						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Box display='flex' flexDirection='row' w='full'>
-							<TextInput
-								placeholder={t('Enter_authentication_code')}
-								value={authCode}
-								onChange={handleAuthCode}
-							/>
+							<TextInput placeholder={t('Enter_authentication_code')} value={authCode} onChange={handleAuthCode} />
 							<Button primary onClick={handleVerifyCode}>
 								{t('Verify')}
 							</Button>
@@ -147,7 +143,7 @@ const TwoFactorTOTP = (props) => {
 						<Button primary danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
 						</Button>
-						<Box fontScale='p2' mbs='x8'>
+						<Box fontScale='p2m' mbs='x8'>
 							{t('Backup_codes')}
 						</Box>
 						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>

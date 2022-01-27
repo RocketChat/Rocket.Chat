@@ -4,18 +4,21 @@ import React from 'react';
 import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
 import ConnectionStatusBar from './ConnectionStatusBar';
 
-const stateDecorator = ({ status = 'connected' } = {}) => (storyFn) => (
-	<ConnectionStatusContext.Provider
-		value={{
-			connected: status === 'connected',
-			status,
-			retryTime: status === 'waiting' && Date.now() + 300000,
-			reconnect: action('reconnect'),
-		}}
-	>
-		{storyFn()}
-	</ConnectionStatusContext.Provider>
-);
+const stateDecorator =
+	({ status = 'connected' } = {}) =>
+	(storyFn) =>
+		(
+			<ConnectionStatusContext.Provider
+				value={{
+					connected: status === 'connected',
+					status,
+					retryTime: status === 'waiting' && Date.now() + 300000,
+					reconnect: action('reconnect'),
+				}}
+			>
+				{storyFn()}
+			</ConnectionStatusContext.Provider>
+		);
 
 export default {
 	title: 'components/connectionStatus/ConnectionStatusBar',

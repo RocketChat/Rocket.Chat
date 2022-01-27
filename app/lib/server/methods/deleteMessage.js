@@ -6,10 +6,13 @@ import { Messages } from '../../../models';
 import { deleteMessage } from '../functions';
 
 Meteor.methods({
-	deleteMessage(message) {
-		check(message, Match.ObjectIncluding({
-			_id: String,
-		}));
+	async deleteMessage(message) {
+		check(
+			message,
+			Match.ObjectIncluding({
+				_id: String,
+			}),
+		);
 
 		const uid = Meteor.userId();
 

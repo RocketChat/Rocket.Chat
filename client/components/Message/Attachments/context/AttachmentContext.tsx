@@ -30,7 +30,5 @@ export const useAttachmentDimensions = (): {
 	height: number;
 } => useContext(AttachmentContext).dimensions;
 
-export const useAttachmentIsCollapsedByDefault = (): boolean =>
-	useContext(AttachmentContext).collapsedByDefault;
-export const useAttachmentAutoLoadEmbedMedia = (): boolean =>
-	useContext(AttachmentContext).autoLoadEmbedMedias;
+export const useAttachmentIsCollapsedByDefault = (): boolean => useContext(AttachmentContext).collapsedByDefault;
+export const useAttachmentAutoLoadEmbedMedia = (): boolean => useContext(AttachmentContext).autoLoadEmbedMedias;

@@ -8,16 +8,18 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
+	children?: ReactNode;
 	cancelText?: string;
 	confirmText?: string;
 	title?: string | ReactElement;
-	icon?: string | ReactElement | null;
+	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
+	confirmDisabled?: boolean;
 	onCancel?: () => void;
 	onClose: () => void;
 	onConfirm: () => void;
 };
 
-const iconMap = {
+const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	danger: 'modal-warning',
 	warning: 'modal-warning',
 	info: 'info',
@@ -62,6 +64,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	onClose = onCancel,
 	onConfirm,
 	dontAskAgain,
+	confirmDisabled,
 	...props
 }) => {
 	const t = useTranslation();
@@ -73,17 +76,17 @@ const GenericModal: FC<GenericModalProps> = ({
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>{children}</Modal.Content>
+			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 					{dontAskAgain}
-					<ButtonGroup align='end' flexGrow={1}>
+					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
 						{onCancel && (
 							<Button ghost onClick={onCancel}>
 								{cancelText ?? t('Cancel')}
 							</Button>
 						)}
-						<Button {...getButtonProps(variant)} onClick={onConfirm}>
+						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					</ButtonGroup>

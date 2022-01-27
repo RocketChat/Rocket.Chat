@@ -1,12 +1,4 @@
-import {
-	Box,
-	FieldGroup,
-	Field,
-	TextInput,
-	MultiSelect,
-	Button,
-	ButtonGroup,
-} from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
@@ -25,7 +17,7 @@ const reduceSendOptions = (options) =>
 		return acc;
 	}, []);
 
-const integrationsUrl = 'https://rocket.chat/docs/administrator-guides/livechat/#integrations';
+const integrationsUrl = 'https://docs.rocket.chat/guides/omnichannel/webhooks-managers-guide';
 
 const getInitialValues = ({
 	Livechat_webhookUrl,
@@ -63,9 +55,7 @@ const WebhooksPage = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(
-		getInitialValues(settings),
-	);
+	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(getInitialValues(settings));
 
 	const save = useMethod('livechat:saveIntegration');
 	const test = useMethod('livechat:webhookTest');
@@ -130,8 +120,7 @@ const WebhooksPage = ({ settings }) => {
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<p>{t('You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM')}</p>
 					<p>
-						<ExternalLink to={integrationsUrl}>{t('Click_here')}</ExternalLink>{' '}
-						{t('to_see_more_details_on_how_to_integrate')}
+						<ExternalLink to={integrationsUrl}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
 					</p>
 					<FieldGroup style={{ marginTop: '1.5rem' }}>
 						<Field>
@@ -147,24 +136,14 @@ const WebhooksPage = ({ settings }) => {
 						<Field>
 							<Field.Label>{t('Secret_token')}</Field.Label>
 							<Field.Row>
-								<TextInput
-									value={Livechat_secret_token}
-									onChange={handleLivechat_secret_token}
-									placeholder={t('Secret_token')}
-								/>
+								<TextInput value={Livechat_secret_token} onChange={handleLivechat_secret_token} placeholder={t('Secret_token')} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Send_request_on')}</Field.Label>
 							<Field.Row>
 								<Box w='full' display='flex' alignItems='stretch' justifyContent='stretch'>
-									<MultiSelect
-										w='full'
-										value={sendOn}
-										onChange={handleSendOn}
-										options={sendOptions}
-										placeholder={t('Select_an_option')}
-									/>
+									<MultiSelect w='full' value={sendOn} onChange={handleSendOn} options={sendOptions} placeholder={t('Select_an_option')} />
 								</Box>
 							</Field.Row>
 						</Field>

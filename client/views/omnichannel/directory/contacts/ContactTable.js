@@ -47,12 +47,13 @@ function ContactTable({ setContactReload }) {
 		}),
 	);
 
-	const onRowClick = useMutableCallback((id) => () =>
-		directoryRoute.push({
-			page: 'contacts',
-			id,
-			bar: 'info',
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			directoryRoute.push({
+				page: 'contacts',
+				id,
+				bar: 'info',
+			}),
 	);
 
 	const { value: data, reload } = useEndpointData('livechat/visitors.search', query);
@@ -73,22 +74,10 @@ function ContactTable({ setContactReload }) {
 				>
 					{t('Username')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'phone'}
-					direction={sort[1]}
-					active={sort[0] === 'phone'}
-					onClick={onHeaderClick}
-					sort='phone'
-				>
+				<GenericTable.HeaderCell key={'phone'} direction={sort[1]} active={sort[0] === 'phone'} onClick={onHeaderClick} sort='phone'>
 					{t('Phone')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -115,20 +104,11 @@ function ContactTable({ setContactReload }) {
 
 	const renderRow = useCallback(
 		({ _id, username, name, visitorEmails, phone, lastChat }) => (
-			<Table.Row
-				key={_id}
-				tabIndex={0}
-				role='link'
-				onClick={onRowClick(_id)}
-				action
-				qa-user-id={_id}
-			>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{username}</Table.Cell>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{phone && phone.length && phone[0].phoneNumber}</Table.Cell>
-				<Table.Cell withTruncatedText>
-					{visitorEmails && visitorEmails.length && visitorEmails[0].address}
-				</Table.Cell>
+				<Table.Cell withTruncatedText>{visitorEmails && visitorEmails.length && visitorEmails[0].address}</Table.Cell>
 				<Table.Cell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</Table.Cell>
 			</Table.Row>
 		),
@@ -144,13 +124,7 @@ function ContactTable({ setContactReload }) {
 			setParams={setParams}
 			params={params}
 			renderFilter={({ onChange, ...props }) => (
-				<FilterByText
-					displayButton={true}
-					textButton={t('New_Contact')}
-					onButtonClick={onButtonNewClick}
-					onChange={onChange}
-					{...props}
-				/>
+				<FilterByText displayButton={true} textButton={t('New_Contact')} onButtonClick={onButtonNewClick} onChange={onChange} {...props} />
 			)}
 		/>
 	);

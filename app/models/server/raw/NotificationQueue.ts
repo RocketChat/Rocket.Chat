@@ -1,53 +1,60 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {
-	Collection,
-	ObjectId,
-} from 'mongodb';
+import { UpdateWriteOpResult } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { INotification } from '../../../../definition/INotification';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> {
-	public readonly col!: Collection<INotification>;
+	protected indexes: IndexSpecification[] = [
+		{ key: { uid: 1 } },
+		{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },
+		{ key: { schedule: 1 }, sparse: true },
+		{ key: { sending: 1 }, sparse: true },
+		{ key: { error: 1 }, sparse: true },
+	];
 
-	unsetSendingById(_id: string) {
-		return this.col.updateOne({ _id }, {
-			$unset: {
-				sending: 1,
+	unsetSendingById(_id: string): Promise<UpdateWriteOpResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$unset: {
+					sending: 1,
+				},
 			},
-		});
+		);
 	}
 
-	setErrorById(_id: string, error: any) {
-		return this.col.updateOne({
-			_id,
-		}, {
-			$set: {
-				error,
+	setErrorById(_id: string, error: any): Promise<UpdateWriteOpResult> {
+		return this.updateOne(
+			{
+				_id,
 			},
-			$unset: {
-				sending: 1,
+			{
+				$set: {
+					error,
+				},
+				$unset: {
+					sending: 1,
+				},
 			},
-		});
+		);
 	}
 
-	removeById(_id: string) {
-		return this.col.deleteOne({ _id });
-	}
-
-	clearScheduleByUserId(uid: string) {
-		return this.col.updateMany({
-			uid,
-			schedule: { $exists: true },
-		}, {
-			$unset: {
-				schedule: 1,
+	clearScheduleByUserId(uid: string): Promise<UpdateWriteOpResult> {
+		return this.updateMany(
+			{
+				uid,
+				schedule: { $exists: true },
 			},
-		});
+			{
+				$unset: {
+					schedule: 1,
+				},
+			},
+		);
 	}
 
 	async clearQueueByUserId(uid: string): Promise<number | undefined> {
-		const op = await this.col.deleteMany({
+		const op = await this.deleteMany({
 			uid,
 		});
 
@@ -57,37 +64,32 @@ export class NotificationQueueRaw extends BaseRaw<INotification> {
 	async findNextInQueueOrExpired(expired: Date): Promise<INotification | undefined> {
 		const now = new Date();
 
-		const result = await this.col.findOneAndUpdate({
-			$and: [{
-				$or: [
-					{ sending: { $exists: false } },
-					{ sending: { $lte: expired } },
+		const result = await this.col.findOneAndUpdate(
+			{
+				$and: [
+					{
+						$or: [{ sending: { $exists: false } }, { sending: { $lte: expired } }],
+					},
+					{
+						$or: [{ schedule: { $exists: false } }, { schedule: { $lte: now } }],
+					},
+					{
+						error: { $exists: false },
+					},
 				],
-			}, {
-				$or: [
-					{ schedule: { $exists: false } },
-					{ schedule: { $lte: now } },
-				],
-			}, {
-				error: { $exists: false },
-			}],
-		}, {
-			$set: {
-				sending: now,
 			},
-		}, {
-			sort: {
-				ts: 1,
+			{
+				$set: {
+					sending: now,
+				},
 			},
-		});
+			{
+				sort: {
+					ts: 1,
+				},
+			},
+		);
 
 		return result.value;
-	}
-
-	insertOne(data: Omit<INotification, '_id'>) {
-		return this.col.insertOne({
-			_id: new ObjectId().toHexString(),
-			...data,
-		});
 	}
 }

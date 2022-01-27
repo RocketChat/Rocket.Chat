@@ -1,8 +1,10 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { OptionTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
+import CreateDiscussion from '../../../components/CreateDiscussion';
+import ListItem from '../../../components/Sidebar/ListItem';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -10,8 +12,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateDirectMessage from '../CreateDirectMessage';
-import CreateDiscussion from '../CreateDiscussion';
-import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
@@ -38,7 +38,7 @@ const useReactModal = (Component) => {
 	});
 };
 
-function CreateRoomList() {
+function CreateRoomList({ closeList }) {
 	const t = useTranslation();
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
@@ -54,35 +54,53 @@ function CreateRoomList() {
 	const discussionEnabled = useSetting('Discussion_enabled');
 
 	return (
-		<div className='rc-popover__column'>
-			<Margins block='x8'>
-				<Box is='p' style={style} fontScale='micro'>
-					{t('Create_new')}
-				</Box>
-			</Margins>
+		<>
+			<OptionTitle pb='x8' style={style}>
+				{t('Create_new')}
+			</OptionTitle>
 			<ul className='rc-popover__list'>
-				<Margins block='x8'>
-					{canCreateChannel && (
-						<CreateRoomListItem icon='hashtag' text={t('Channel')} action={createChannel} />
-					)}
-					{canCreateTeam && <CreateRoomListItem icon='team' text={t('Team')} action={createTeam} />}
-					{canCreateDirectMessages && (
-						<CreateRoomListItem
-							icon='balloon'
-							text={t('Direct_Messages')}
-							action={createDirectMessage}
-						/>
-					)}
-					{discussionEnabled && canCreateDiscussion && (
-						<CreateRoomListItem
-							icon='discussion'
-							text={t('Discussion')}
-							action={createDiscussion}
-						/>
-					)}
-				</Margins>
+				{canCreateChannel && (
+					<ListItem
+						icon='hashtag'
+						text={t('Channel')}
+						action={(e) => {
+							createChannel(e);
+							closeList();
+						}}
+					/>
+				)}
+				{canCreateTeam && (
+					<ListItem
+						icon='team'
+						text={t('Team')}
+						action={(e) => {
+							createTeam(e);
+							closeList();
+						}}
+					/>
+				)}
+				{canCreateDirectMessages && (
+					<ListItem
+						icon='balloon'
+						text={t('Direct_Messages')}
+						action={(e) => {
+							createDirectMessage(e);
+							closeList();
+						}}
+					/>
+				)}
+				{discussionEnabled && canCreateDiscussion && (
+					<ListItem
+						icon='discussion'
+						text={t('Discussion')}
+						action={(e) => {
+							createDiscussion(e);
+							closeList();
+						}}
+					/>
+				)}
 			</ul>
-		</div>
+		</>
 	);
 }
 

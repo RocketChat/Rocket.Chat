@@ -9,8 +9,8 @@ const CallJitsi = ({ handleClose, openNewWindow, refContent, children }) => {
 
 	const content = openNewWindow ? (
 		<>
-			<Box fontScale='p2'>{t('Video_Conference')}</Box>
-			<Box fontScale='p1' color='neutral-700'>
+			<Box fontScale='p2m'>{t('Video_Conference')}</Box>
+			<Box fontScale='p2' color='neutral-700'>
 				{t('Opened_in_a_new_window')}
 			</Box>
 		</>

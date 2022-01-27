@@ -25,12 +25,14 @@ Meteor.methods({
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
 		const userId = Meteor.userId();
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+			fields: { _id: 1 },
+		});
 		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
 		if (room.t === 'd') {
-			throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
+			throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 				method: 'addUsersToRoom',
 			});
 		}
@@ -73,10 +75,14 @@ Meteor.methods({
 				addUserToRoom(data.rid, newUser, user);
 			} else {
 				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: TAPi18n.__('Username_is_already_in_here', {
-						postProcess: 'sprintf',
-						sprintf: [newUser.username],
-					}, user.language),
+					msg: TAPi18n.__(
+						'Username_is_already_in_here',
+						{
+							postProcess: 'sprintf',
+							sprintf: [newUser.username],
+						},
+						user.language,
+					),
 				});
 			}
 		});

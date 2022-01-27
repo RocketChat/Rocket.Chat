@@ -9,8 +9,9 @@ import s from 'underscore.string';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentInfo.html';
 import { modal } from '../../../../../ui-utils';
-import { t, handleError, APIClient } from '../../../../../utils/client';
+import { t, APIClient } from '../../../../../utils/client';
 import { hasPermission } from '../../../../../authorization';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const customFieldsTemplate = () => getCustomFormTemplate('livechatAgentInfoForm');
 
@@ -35,7 +36,7 @@ Template.agentInfo.helpers({
 
 	agentStatus() {
 		const agent = Template.instance().agent.get();
-		const userStatus = Session.get(`user_${ agent.username }_status`);
+		const userStatus = Session.get(`user_${agent.username}_status`);
 		return userStatus || TAPi18n.__('offline');
 	},
 
@@ -45,7 +46,7 @@ Template.agentInfo.helpers({
 			return agent.statusText;
 		}
 
-		const agentStatus = Session.get(`user_${ agent.username }_status`);
+		const agentStatus = Session.get(`user_${agent.username}_status`);
 		return agentStatus || TAPi18n.__('offline');
 	},
 
@@ -141,7 +142,7 @@ Template.agentInfo.events({
 	},
 });
 
-Template.agentInfo.onCreated(async function() {
+Template.agentInfo.onCreated(async function () {
 	this.agent = new ReactiveVar();
 	this.ready = new ReactiveVar(false);
 	this.agentEdited = new ReactiveVar();
@@ -158,8 +159,8 @@ Template.agentInfo.onCreated(async function() {
 
 	const loadAgentData = async (agentId) => {
 		this.ready.set(false);
-		const { user } = await APIClient.v1.get(`livechat/users/agent/${ agentId }`);
-		const { departments } = await APIClient.v1.get(`livechat/agents/${ agentId }/departments`);
+		const { user } = await APIClient.v1.get(`livechat/users/agent/${agentId}`);
+		const { departments } = await APIClient.v1.get(`livechat/agents/${agentId}/departments`);
 		this.agent.set(user);
 		this.agentDepartments.set((departments || []).map((department) => department.departmentId));
 		this.ready.set(true);

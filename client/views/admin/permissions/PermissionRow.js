@@ -48,22 +48,15 @@ const PermissionRow = ({ permission, t, roleList, onGrant, onRemove, ...props })
 
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId: _id });
 	return (
-		<Table.Row
-			key={_id}
-			role='link'
-			action
-			tabIndex={0}
-			onMouseEnter={onMouseEnter}
-			onMouseLeave={onMouseLeave}
-			{...props}
-		>
+		<Table.Row key={_id} role='link' action tabIndex={0} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} {...props}>
 			<Table.Cell maxWidth='x300' withTruncatedText title={t(`${_id}_description`)}>
 				{getName(t, permission)}
 			</Table.Cell>
-			{roleList.map(({ _id, description }) => (
+			{roleList.map(({ _id, name, description }) => (
 				<RoleCell
 					key={_id}
 					_id={_id}
+					name={name}
 					description={description}
 					grantedRoles={roles}
 					onChange={changeRole}

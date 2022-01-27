@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
 
@@ -30,10 +30,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.22.1
+    - name: Use Node.js 14.18.2
       uses: actions/setup-node@v2
       with:
-        node-version: "12.22.1"
+        node-version: "14.18.2"
 
     - uses: actions/checkout@v2
 
@@ -56,14 +56,14 @@ jobs:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-2-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -106,7 +106,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         meteor npm install
         cd ./ee/server/services
@@ -116,13 +116,6 @@ jobs:
     - run: meteor npm run lint
 
     - run: meteor npm run translation-check
-
-    - name: Launch MongoDB
-      uses: wbari/start-mongoDB@v0.2
-      with:
-        mongoDBVersion: "4.0"
-
-    - run: meteor npm run testunit
 
     - run: meteor npm run typecheck
 
@@ -134,11 +127,11 @@ jobs:
     # - name: Build a Meteor cache
     #   run: |
     #     # to do this we can clear the main files and it build the rest
-    #     echo "" > server/main.js
-    #     echo "" > client/main.js
+    #     echo "" > server/main.ts
+    #     echo "" > client/main.ts
     #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
     #     meteor build --server-only --debug --directory /tmp/build-temp
-    #     git checkout -- server/main.js client/main.js .meteor/packages
+    #     git checkout -- server/main.ts client/main.ts .meteor/packages
 
     - name: Reset Meteor
       if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -149,6 +142,8 @@ jobs:
       run: |
         cd ./ee/server/services
         npm run build
+        # check if build succeeded
+        [ ! -d ./dist/ee/server/services ] && exit 1
         rm -rf dist/
 
     - name: Build Rocket.Chat From Pull Request
@@ -186,13 +181,13 @@ jobs:
         path: /tmp/build
 
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     needs: build
 
     strategy:
       matrix:
-        node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
+        node-version: ["14.18.2"]
+        mongodb-version: ["3.6", "4.0", "4.2", "4.4","5.0"]
 
     steps:
     - name: Launch MongoDB
@@ -235,21 +230,30 @@ jobs:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-2-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         npm install
 
-    - name: Test
+    - name: Unit Test (definitions)
+      run: npm run testunit-definition
+
+    - name: Unit Test
+      run: npm run testunit
+
+    - name: Unit Test (client)
+      run: npm run testunit-client
+
+    - name: E2E Test
       env:
         TEST_MODE: "true"
         MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -260,7 +264,7 @@ jobs:
         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
-#     runs-on: ubuntu-latest
+#     runs-on: ubuntu-20.04
 #     needs: test
 
 #     steps:
@@ -274,7 +278,7 @@ jobs:
 #         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-image-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
@@ -299,14 +303,14 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-2-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -320,10 +324,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.22.1
+    - name: Use Node.js 14.18.2
       uses: actions/setup-node@v2
       with:
-        node-version: "12.22.1"
+        node-version: "14.18.2"
 
     - name: Install Meteor
       run: |
@@ -354,7 +358,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
         meteor npm install
 
@@ -362,11 +366,11 @@ jobs:
     # - name: Build a Meteor cache
     #   run: |
     #     # to do this we can clear the main files and it build the rest
-    #     echo "" > server/main.js
-    #     echo "" > client/main.js
+    #     echo "" > server/main.ts
+    #     echo "" > client/main.ts
     #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
     #     meteor build --server-only --debug --directory /tmp/build-temp
-    #     git checkout -- server/main.js client/main.js .meteor/packages
+    #     git checkout -- server/main.ts client/main.ts .meteor/packages
 
     - name: Build Rocket.Chat
       run: |
@@ -401,7 +405,7 @@ jobs:
         docker push $IMAGE_NAME
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: test
 
@@ -463,7 +467,7 @@ jobs:
         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
         curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-            "{\"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\" }" \
+            "{\"nodeVersion\": \"14.18.2\", \"compatibleMongoVersions\": [\"3.6\", \"4.0\", \"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
             https://releases.rocket.chat/update
 
         # Makes build fail if the release isn't there
@@ -479,15 +483,16 @@ jobs:
         fi
 
   image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
       matrix:
-        release: ["official", "preview"]
+        # this is current a mix of variants and different images
+        release: ["official", "preview", "alpine"]
 
     env:
-      IMAGE: "rocketchat/rocket.chat"
+      IMAGE_NAME: "rocketchat/rocket.chat"
 
     steps:
     - uses: actions/checkout@v2
@@ -504,7 +509,7 @@ jobs:
         name: build
         path: /tmp/build
 
-    - name: Unpack build
+    - name: Unpack build and prepare Docker files
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
@@ -515,8 +520,13 @@ jobs:
           DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
-        echo "Build ${{ matrix.release }} Docker image"
-        cp ${DOCKER_PATH}/Dockerfile .
+        DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ matrix.release }}"
+        fi;
+
+        echo "Copy Dockerfile for release: ${{ matrix.release }}"
+        cp $DOCKERFILE_PATH ./Dockerfile
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
@@ -525,38 +535,60 @@ jobs:
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        GIT_TAG="${GITHUB_REF#*tags/}"
+
+        DOCKER_TAG=$GITHUB_REF_NAME
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          IMAGE="${IMAGE}.preview"
+          IMAGE_NAME="${IMAGE_NAME}.preview"
         fi;
 
-        docker build -t ${IMAGE}:$GIT_TAG .
-        docker push ${IMAGE}:$GIT_TAG
+        # append the variant name to docker tag
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+        fi;
 
-        if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+        if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           RELEASE="latest"
-        elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+        elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
           RELEASE="release-candidate"
         fi
 
-        docker tag ${IMAGE}:$GIT_TAG ${IMAGE}:${RELEASE}
-        docker push ${IMAGE}:${RELEASE}
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          RELEASE="${RELEASE}-${{ matrix.release }}"
+        fi;
+
+        echo "IMAGE_NAME: $IMAGE_NAME"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "RELEASE: $RELEASE"
+
+        # build and push the specific tag version
+        docker build -t $IMAGE_NAME:$DOCKER_TAG .
+        docker push $IMAGE_NAME:$DOCKER_TAG
+
+        # build and push the broader alias tag
+        docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+        docker push $IMAGE_NAME:$RELEASE
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
 
+        DOCKER_TAG=develop
+
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          IMAGE="${IMAGE}.preview"
+          IMAGE_NAME="${IMAGE_NAME}.preview"
         fi;
 
-        docker build -t ${IMAGE}:develop .
-        docker push ${IMAGE}:develop
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+        fi;
+
+        docker build -t $IMAGE_NAME:$DOCKER_TAG .
+        docker push $IMAGE_NAME:$DOCKER_TAG
 
   services-image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
@@ -566,10 +598,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js 12.22.1
+    - name: Use Node.js 14.18.2
       uses: actions/setup-node@v2
       with:
-        node-version: "12.22.1"
+        node-version: "14.18.2"
 
     - name: Login to DockerHub
       uses: docker/login-action@v1

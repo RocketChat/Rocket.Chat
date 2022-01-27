@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-import { IRoom, IOmnichannelRoom, IDirectMessageRoom } from '../../definition/IRoom';
+import { IRoom, isDirectMessageRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
@@ -19,31 +19,21 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		return { name: room.t === 'p' ? 'team-lock' : 'team' };
 	}
 
+	if (isDirectMessageRoom(room)) {
+		if (room.uids && room.uids.length > 2) {
+			return { name: 'balloon' };
+		}
+		if (room.uids && room.uids.length > 0) {
+			return <ReactiveUserStatus uid={room.uids.find((uid) => uid !== room.u._id) || room.u._id} />;
+		}
+		return { name: 'at' };
+	}
+
 	switch (room.t) {
 		case 'p':
 			return { name: 'hashtag-lock' };
 		case 'c':
 			return { name: 'hash' };
-		case 'l':
-			return {
-				name: 'headset',
-				color: colors[((room as unknown) as IOmnichannelRoom)?.v.status || 'offline'],
-			};
-		case 'd':
-			const direct = (room as unknown) as IDirectMessageRoom;
-			if (direct.uids && direct.uids.length > 2) {
-				return { name: 'balloon' };
-			}
-			if (direct.uids && direct.uids.length > 0) {
-				return (
-					<ReactiveUserStatus
-						{...({
-							uid: direct.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id,
-						} as any)}
-					/>
-				);
-			}
-			return { name: 'at' };
 		default:
 			return null;
 	}

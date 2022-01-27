@@ -34,12 +34,7 @@ function EditSound({ close, onChange, data, ...props }) {
 		setSound(soundFile);
 	}, []);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [
-		name,
-		previousName,
-		previousSound,
-		sound,
-	]);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
 		async (sound) => {
@@ -79,16 +74,7 @@ function EditSound({ close, onChange, data, ...props }) {
 				}),
 			);
 		},
-		[
-			_id,
-			dispatchToastMessage,
-			insertOrUpdateSound,
-			name,
-			previousName,
-			previousSound,
-			t,
-			uploadCustomSound,
-		],
+		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
 	);
 
 	const handleSave = useCallback(async () => {
@@ -122,12 +108,7 @@ function EditSound({ close, onChange, data, ...props }) {
 		};
 
 		setModal(() => (
-			<GenericModal
-				variant='danger'
-				onConfirm={handleDelete}
-				onCancel={handleCancel}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
 			</GenericModal>
 		));
@@ -140,11 +121,7 @@ function EditSound({ close, onChange, data, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 

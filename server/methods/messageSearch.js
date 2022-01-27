@@ -2,16 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { canAccessRoom } from '../../app/authorization/server';
 import { Subscriptions } from '../../app/models/server';
 import { Messages } from '../../app/models/server/raw';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
-	messageSearch(text, rid, limit) {
+	messageSearch(text, rid, limit, offset) {
 		check(text, String);
 		check(rid, Match.Maybe(String));
 		check(limit, Match.Optional(Number));
+		check(offset, Match.Optional(Number));
 
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
@@ -29,8 +31,8 @@ Meteor.methods({
 
 		// Don't process anything else if the user can't access the room
 		if (rid) {
-			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
-				return result;
+			if (!canAccessRoom({ _id: rid }, { _id: currentUserId })) {
+				return false;
 			}
 		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
 			return result;
@@ -46,6 +48,7 @@ Meteor.methods({
 			sort: {
 				ts: -1,
 			},
+			skip: offset || 0,
 			limit: limit || 20,
 		};
 
@@ -145,7 +148,7 @@ Meteor.methods({
 
 		// Query for senders
 		const from = [];
-		text = text.replace(/from:([a-z0-9.-_]+)/ig, function(match, username) {
+		text = text.replace(/from:([a-z0-9.-_]+)/gi, function (match, username) {
 			if (username === 'me' && !from.includes(currentUserName)) {
 				username = currentUserName;
 			}
@@ -162,7 +165,7 @@ Meteor.methods({
 
 		// Query for senders
 		const mention = [];
-		text = text.replace(/mention:([a-z0-9.-_]+)/ig, function(match, username) {
+		text = text.replace(/mention:([a-z0-9.-_]+)/gi, function (match, username) {
 			mention.push(username);
 			return '';
 		});
@@ -248,10 +251,12 @@ Meteor.methods({
 				};
 			}
 
-			result.message.docs = Promise.await(Messages.find(query, {
-				readPreference: readSecondaryPreferred(Messages.col.s.db),
-				...options,
-			}).toArray());
+			result.message.docs = Promise.await(
+				Messages.find(query, {
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			);
 		}
 
 		return result;

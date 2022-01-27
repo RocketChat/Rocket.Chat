@@ -19,9 +19,7 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 	users: string[];
 };
 
-const createDeleteCriteria = (
-	params: NotifyRoomRidDeleteMessageBulkEvent,
-): ((message: IMessage) => boolean) => {
+const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
 	const query: Query<IMessage> = { ts: params.ts };
 
 	if (params.excludePinned) {
@@ -38,11 +36,7 @@ const createDeleteCriteria = (
 	return createFilterFromQuery<IMessage>(query);
 };
 
-export const useStreamUpdatesForMessageList = (
-	messageList: MessageList,
-	uid: IUser['_id'] | null,
-	rid: IRoom['_id'] | null,
-): void => {
+export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
@@ -52,19 +46,13 @@ export const useStreamUpdatesForMessageList = (
 			return;
 		}
 
-		const unsubscribeFromRoomMessages = subscribeToRoomMessages<RoomMessagesRidEvent>(
-			rid,
-			(message) => {
-				messageList.handle(message);
-			},
-		);
+		const unsubscribeFromRoomMessages = subscribeToRoomMessages<RoomMessagesRidEvent>(rid, (message) => {
+			messageList.handle(message);
+		});
 
-		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
-			`${rid}/deleteMessage`,
-			({ _id: mid }) => {
-				messageList.remove(mid);
-			},
-		);
+		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(`${rid}/deleteMessage`, ({ _id: mid }) => {
+			messageList.remove(mid);
+		});
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
 			`${rid}/deleteMessageBulk`,

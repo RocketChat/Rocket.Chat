@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
@@ -10,7 +10,7 @@ import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData'
 
 let maxFileSize;
 
-settings.get('FileUpload_MaxFileSize', function(key, value) {
+settings.watch('FileUpload_MaxFileSize', function (value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -36,9 +36,11 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(getUploadFormData({
-			request: this.request,
-		}));
+		const { file, ...fields } = Promise.await(
+			getUploadFormData({
+				request: this.request,
+			}),
+		);
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
@@ -72,6 +74,6 @@ API.v1.addRoute('livechat/upload/:rid', {
 		uploadedFile.description = fields.description;
 
 		delete fields.description;
-		API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
+		return API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
 	},
 });

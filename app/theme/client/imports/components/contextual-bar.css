@@ -99,7 +99,6 @@
 		}
 
 		&-icon {
-
 			flex: 0 0 auto;
 
 			margin: 0 0.25rem;
@@ -124,7 +123,6 @@
 		}
 
 		&-title {
-
 			overflow: hidden;
 			flex: 1;
 
@@ -138,7 +136,6 @@
 		}
 
 		&-description {
-
 			display: block;
 			flex: 1;
 
@@ -222,7 +219,6 @@
 	background: var(--rc-color-alert-message-primary-background);
 
 	&--selected {
-
 		cursor: pointer;
 
 		color: var(--rc-color-alert-message-secondary);

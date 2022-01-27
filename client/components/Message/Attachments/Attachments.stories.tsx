@@ -100,9 +100,7 @@ export const Default = () => <Attachments attachments={message.attachments} />;
 
 export const Fields = () => <Attachments attachments={[field]} />;
 
-export const FailingImage = () => (
-	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
-);
+export const FailingImage = () => <Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />;
 
 export const Image = () => <Attachments attachments={[image]} />;
 

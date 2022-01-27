@@ -6,12 +6,14 @@ import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw'
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';
+import { logger } from './logger';
+import { settings } from '../../../app/settings/server';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
 	smtp: Mail;
 	config: IEmailInbox;
-}
+};
 
 export const inboxes = new Map<string, Inbox>();
 
@@ -20,6 +22,7 @@ export async function configureEmailInboxes(): Promise<void> {
 		active: true,
 	});
 
+	logger.info('Clearing old email inbox registrations');
 	for (const { imap } of inboxes.values()) {
 		imap.stop();
 	}
@@ -27,37 +30,44 @@ export async function configureEmailInboxes(): Promise<void> {
 	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
-		console.log('Setting up email interceptor for', emailInboxRecord.email);
+		logger.info(`Setting up email interceptor for ${emailInboxRecord.email}`);
 
-		const imap = new IMAPInterceptor({
-			password: emailInboxRecord.imap.password,
-			user: emailInboxRecord.imap.username,
-			host: emailInboxRecord.imap.server,
-			port: emailInboxRecord.imap.port,
-			tls: emailInboxRecord.imap.secure,
-			tlsOptions: {
-				rejectUnauthorized: false,
+		const imap = new IMAPInterceptor(
+			{
+				password: emailInboxRecord.imap.password,
+				user: emailInboxRecord.imap.username,
+				host: emailInboxRecord.imap.server,
+				port: emailInboxRecord.imap.port,
+				tls: emailInboxRecord.imap.secure,
+				tlsOptions: {
+					rejectUnauthorized: false,
+				},
+				// debug: (...args: any[]): void => logger.debug(args),
 			},
-			// debug: (...args: any[]): void => console.log(...args),
-		}, {
-			deleteAfterRead: false,
-			filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
-			rejectBeforeTS: emailInboxRecord._updatedAt,
-			markSeen: true,
-		});
+			{
+				deleteAfterRead: false,
+				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
+				rejectBeforeTS: emailInboxRecord._updatedAt,
+				markSeen: true,
+			},
+		);
 
-		imap.on('email', Meteor.bindEnvironment(async (email) => {
-			if (!email.messageId) {
-				return;
-			}
+		imap.on(
+			'email',
+			Meteor.bindEnvironment(async (email) => {
+				if (!email.messageId) {
+					return;
+				}
 
-			try {
-				await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
-				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-			} catch (e) {
-				// In case the email message history has been received by other instance..
-			}
-		}));
+				try {
+					await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
+					onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+				} catch (e: any) {
+					// In case the email message history has been received by other instance..
+					logger.error(e);
+				}
+			}),
+		);
 
 		imap.start();
 
@@ -73,8 +83,12 @@ export async function configureEmailInboxes(): Promise<void> {
 
 		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 	}
+
+	logger.info(`Configured a total of ${inboxes.size} inboxes`);
 }
 
 Meteor.startup(() => {
-	configureEmailInboxes();
+	settings.watchOnce('Livechat_Routing_Method', (_) => {
+		configureEmailInboxes();
+	});
 });
