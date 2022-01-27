@@ -2,37 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
-
-export const setStatusTextPromise = async function (userId: string, statusText: string): Promise<boolean> {
-	if (!userId) {
-		return false;
-	}
-
-	statusText = s.trim(statusText).substr(0, 120);
-
-	const user = await UsersRaw.findOneById(userId);
-
-	if (!user) {
-		return false;
-	}
-
-	if (user.statusText === statusText) {
-		return true;
-	}
-
-	await UsersRaw.updateStatusText(user._id, statusText);
-
-	const { _id, username, status } = user;
-	api.broadcast('presence.status', {
-		user: { _id, username, status, statusText },
-	});
-
-	return true;
-};
 
 export const _setStatusText = function (userId: string, statusText: string): boolean {
 	statusText = s.trim(statusText);
