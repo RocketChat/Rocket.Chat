@@ -1,5 +1,3 @@
-import { Match, check } from 'meteor/check';
-
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
 import {
@@ -162,7 +160,7 @@ API.v1.addRoute(
 	'livechat/analytics/dashboards/charts/chats-per-agent',
 	{ authRequired: true },
 	{
-		asyncget() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}

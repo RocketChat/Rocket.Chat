@@ -10,7 +10,7 @@ import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
-import { SuccessResult, FailureResult, UnauthorizedResult } from './../../../app/api/server/api.d';
+import { ILivechatInquiryRecord } from "../../IInquiry";
 
 type booleanString = 'true' | 'false';
 
@@ -193,49 +193,65 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
+
 	'livechat/agents/:agentId/departments': {
 		GET: (params: { agentId: string; enabledDepartmentsOnly?: string }) => { departments: ILivechatDepartmentAgents[] };
 	};
+
 	'livechat/analytics/dashboards/conversation-totalizers': {
 		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
 	};
+
 	'livechat/analytics/dashboards/agents-productivity-totalizers': {
 		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
 	};
+
 	'livechat/analytics/dashboards/chats-totalizers': {
 		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
 	};
+
 	'livechat/analytics/dashboards/productivity-totalizers': {
 		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => { totalizers: any[] };
 	};
+
 	'livechat/analytics/dashboards/charts/chats': {
 		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {};
 	};
-	// 'livechat/analytics/dashboards/charts/chats-per-agent': {
-	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
-	// 		open: number;
-	// 		closed: number;
-	// 		queued: number;
-	// 		onhold: number;
-	// 	};
-	// };
+
+	'livechat/analytics/dashboards/charts/chats-per-agent': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {};
+	};
+
 	'livechat/analytics/dashboards/charts/agents-status': {
 		GET: (params: { departmentId: undefined }) => {};
 	};
-	// 'livechat/analytics/dashboards/charts/chats-per-department': {
-	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
-	// 		open: number;
-	// 		closed: number;
-	// 		queued: number;
-	// 		onhold: number;
-	// 	};
-	// };
-	// 'livechat/analytics/dashboards/charts/timings': {
-	// 	GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {
-	// 		open: number;
-	// 		closed: number;
-	// 		queued: number;
-	// 		onhold: number;
-	// 	};
-	// };
+
+	'livechat/analytics/dashboards/charts/chats-per-department': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {};
+	};
+
+	'livechat/analytics/dashboards/charts/timings': {
+		GET: (params: { start: string | Date; end: string | Date; departmentId: undefined }) => {};
+	};
+
+	'livechat/inquiries.list': {
+		GET: (params: { department: number }) => {
+			inquiries: any;
+			offset: number;
+			count: any;
+			total: Promise<number>;
+		};
+	};
+
+	'livechat/inquiries.take': {
+		POST: (params: { userId: string }) => { inquiry: any };
+	};
+
+	'livechat/inquiries.queued': {
+		GET: (params: { department: number }) => { inquiries: ILivechatInquiryRecord[] };
+	};
+
+	'livechat/inquiries.getOne': {
+		GET: (params: { roomId: string }) => { inquiry: ILivechatInquiryRecord | null };
+	};
 };

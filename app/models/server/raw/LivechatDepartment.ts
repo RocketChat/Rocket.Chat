@@ -5,6 +5,10 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
+	findOneByIdOrName(department: number): Error {
+		throw new Error('Method not implemented.');
+	}
+
 	findInIds(departmentsIds: string[], options: FindOneOptions<ILivechatDepartmentRecord>): Cursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);
