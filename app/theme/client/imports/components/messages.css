@@ -118,6 +118,18 @@
 		}
 	}
 
+	&.e2e {
+		.info::before {
+			display: inline-block;
+
+			visibility: visible;
+
+			content: "\e952";
+
+			font-family: 'fontello';
+		}
+	}
+
 	& .rc-popover-anchor {
 		display: block;
 
