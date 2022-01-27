@@ -488,10 +488,11 @@ jobs:
 
     strategy:
       matrix:
-        release: ["official", "preview"]
+        # this is current a mix of variants and different images
+        release: ["official", "preview", "alpine"]
 
     env:
-      IMAGE: "rocketchat/rocket.chat"
+      IMAGE_NAME: "rocketchat/rocket.chat"
 
     steps:
     - uses: actions/checkout@v2
@@ -508,7 +509,7 @@ jobs:
         name: build
         path: /tmp/build
 
-    - name: Unpack build
+    - name: Unpack build and prepare Docker files
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
@@ -519,8 +520,13 @@ jobs:
           DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
-        echo "Build ${{ matrix.release }} Docker image"
-        cp ${DOCKER_PATH}/Dockerfile .
+        DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ matrix.release }}"
+        fi;
+
+        echo "Copy Dockerfile for release: ${{ matrix.release }}"
+        cp $DOCKERFILE_PATH ./Dockerfile
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
@@ -529,35 +535,57 @@ jobs:
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        GIT_TAG="${GITHUB_REF#*tags/}"
+
+        DOCKER_TAG=$GITHUB_REF_NAME
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          IMAGE="${IMAGE}.preview"
+          IMAGE_NAME="${IMAGE_NAME}.preview"
         fi;
 
-        docker build -t ${IMAGE}:$GIT_TAG .
-        docker push ${IMAGE}:$GIT_TAG
+        # append the variant name to docker tag
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+        fi;
 
-        if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+        if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           RELEASE="latest"
-        elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+        elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
           RELEASE="release-candidate"
         fi
 
-        docker tag ${IMAGE}:$GIT_TAG ${IMAGE}:${RELEASE}
-        docker push ${IMAGE}:${RELEASE}
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          RELEASE="${RELEASE}-${{ matrix.release }}"
+        fi;
+
+        echo "IMAGE_NAME: $IMAGE_NAME"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "RELEASE: $RELEASE"
+
+        # build and push the specific tag version
+        docker build -t $IMAGE_NAME:$DOCKER_TAG .
+        docker push $IMAGE_NAME:$DOCKER_TAG
+
+        # build and push the broader alias tag
+        docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+        docker push $IMAGE_NAME:$RELEASE
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
       run: |
         cd /tmp/build
 
+        DOCKER_TAG=develop
+
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          IMAGE="${IMAGE}.preview"
+          IMAGE_NAME="${IMAGE_NAME}.preview"
         fi;
 
-        docker build -t ${IMAGE}:develop .
-        docker push ${IMAGE}:develop
+        if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+          DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
+        fi;
+
+        docker build -t $IMAGE_NAME:$DOCKER_TAG .
+        docker push $IMAGE_NAME:$DOCKER_TAG
 
   services-image-build:
     runs-on: ubuntu-20.04

@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import dompurify from 'dompurify';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -32,9 +33,8 @@ const renderBody = (msg, settings) => {
 		// render template
 	} else if (messageType.message) {
 		msg.msg = escapeHTML(msg.msg);
-		msg = TAPi18n.__(messageType.message, {
-			...(typeof messageType.data === 'function' && messageType.data(msg)),
-		});
+		msg = TAPi18n.__(messageType.message, { ...(typeof messageType.data === 'function' && messageType.data(msg)) });
+		msg = dompurify.sanitize(msg);
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
 		msg = renderMentions(msg);
