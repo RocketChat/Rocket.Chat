@@ -143,7 +143,7 @@ export class E2EEManager extends Emitter {
 	async transformReceivedMessage(message: IMessage): Promise<IMessage> {
 		try {
 			const roomClient = this.roomClients?.track(message.rid);
-			return roomClient?.decryptMessage(message) ?? message;
+			return (await roomClient?.decryptMessage(message)) ?? message;
 		} catch (error) {
 			console.error(error);
 			return message;
@@ -152,7 +152,7 @@ export class E2EEManager extends Emitter {
 
 	async transformSendingMessage(message: IMessage): Promise<IMessage> {
 		const roomClient = this.roomClients?.track(message.rid);
-		return roomClient?.encryptMessage(message) ?? message;
+		return (await roomClient?.encryptMessage(message)) ?? message;
 	}
 
 	use(keyPair: CryptoKeyPair): void {
