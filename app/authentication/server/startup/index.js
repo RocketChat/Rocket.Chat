@@ -229,7 +229,6 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	}
 
 	const roles = getNewUserRoles(globalRoles);
-	console.error('ROLES HERE: ', roles);
 
 	if (!user.type) {
 		user.type = 'user';
