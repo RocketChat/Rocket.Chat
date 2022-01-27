@@ -290,11 +290,8 @@ const {
 } = process.env;
 
 class CustomRegenerator extends Errors.Regenerator {
-	restoreCustomError(plainError: any, payload: any): Error | undefined {
+	restoreCustomError(plainError: any): Error | undefined {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
-
-		console.log('plainError ->', plainError);
-		console.log('payload ->', payload);
 
 		if (errorType === 'Meteor.Error') {
 			return new MethodError(message, reason, details);
@@ -313,7 +310,7 @@ class CustomRegenerator extends Errors.Regenerator {
 			...super.extractPlainError(err),
 			...(isClientSafeError(err) && {
 				isClientSafe: err.isClientSafe,
-				errorType: err.getErrorType(),
+				errorType: err.errorType,
 				reason: err.reason,
 				details: err.details,
 			}),
