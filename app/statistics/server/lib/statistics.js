@@ -24,11 +24,12 @@ import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
+import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
-const getUserLanguages = (totalUsers) => {
-	const result = Promise.await(UsersRaw.getUserLanguages());
+const getUserLanguages = async (totalUsers) => {
+	const result = await UsersRaw.getUserLanguages();
 
 	const languages = {
 		none: totalUsers,
@@ -48,7 +49,7 @@ const getUserLanguages = (totalUsers) => {
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const statistics = {
-	get: function _getStatistics() {
+	get: async () => {
 		const readPreference = readSecondaryPreferred(db);
 
 		const statistics = {};
@@ -86,7 +87,7 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
-		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
+		statistics.userLanguages = await getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
@@ -98,7 +99,7 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// Teams statistics
-		statistics.teams = Promise.await(Team.getStatistics());
+		statistics.teams = await Team.getStatistics();
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -110,7 +111,7 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
+		statistics.omnichannelSources = (await RoomsRaw.allRoomSourcesCount().toArray()).map(({ _id: { id, alias, type }, count }) => ({
 			id,
 			alias,
 			type,
@@ -190,19 +191,17 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 
-		statistics.uploadsTotal = Promise.await(Uploads.find().count());
-		const [result] = Promise.await(
-			Uploads.col
-				.aggregate(
-					[
-						{
-							$group: { _id: 'total', total: { $sum: '$size' } },
-						},
-					],
-					{ readPreference },
-				)
-				.toArray(),
-		);
+		statistics.uploadsTotal = await Uploads.find().count();
+		const [result] = await Uploads.col
+			.aggregate(
+				[
+					{
+						$group: { _id: 'total', total: { $sum: '$size' } },
+					},
+				],
+				{ readPreference },
+			)
+			.toArray();
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = getControl();
@@ -215,33 +214,35 @@ export const statistics = {
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = Promise.await(Sessions.getUniqueUsersOfYesterday());
-		statistics.uniqueUsersOfLastWeek = Promise.await(Sessions.getUniqueUsersOfLastWeek());
-		statistics.uniqueUsersOfLastMonth = Promise.await(Sessions.getUniqueUsersOfLastMonth());
-		statistics.uniqueDevicesOfYesterday = Promise.await(Sessions.getUniqueDevicesOfYesterday());
-		statistics.uniqueDevicesOfLastWeek = Promise.await(Sessions.getUniqueDevicesOfLastWeek());
-		statistics.uniqueDevicesOfLastMonth = Promise.await(Sessions.getUniqueDevicesOfLastMonth());
-		statistics.uniqueOSOfYesterday = Promise.await(Sessions.getUniqueOSOfYesterday());
-		statistics.uniqueOSOfLastWeek = Promise.await(Sessions.getUniqueOSOfLastWeek());
-		statistics.uniqueOSOfLastMonth = Promise.await(Sessions.getUniqueOSOfLastMonth());
+		statistics.uniqueUsersOfYesterday = await Sessions.getUniqueUsersOfYesterday();
+		statistics.uniqueUsersOfLastWeek = await Sessions.getUniqueUsersOfLastWeek();
+		statistics.uniqueUsersOfLastMonth = await Sessions.getUniqueUsersOfLastMonth();
+		statistics.uniqueDevicesOfYesterday = await Sessions.getUniqueDevicesOfYesterday();
+		statistics.uniqueDevicesOfLastWeek = await Sessions.getUniqueDevicesOfLastWeek();
+		statistics.uniqueDevicesOfLastMonth = await Sessions.getUniqueDevicesOfLastMonth();
+		statistics.uniqueOSOfYesterday = await Sessions.getUniqueOSOfYesterday();
+		statistics.uniqueOSOfLastWeek = await Sessions.getUniqueOSOfLastWeek();
+		statistics.uniqueOSOfLastMonth = await Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const integrations = Promise.await(
-			Integrations.find(
-				{},
-				{
-					projection: {
-						_id: 0,
-						type: 1,
-						enabled: 1,
-						scriptEnabled: 1,
-					},
-					readPreference,
+		// If getSettingsStatistics() returns an error, save as empty object.
+		const settingsStatisticsObject = (await getSettingsStatistics()) || {};
+		statistics.settings = settingsStatisticsObject;
+
+		const integrations = await Integrations.find(
+			{},
+			{
+				projection: {
+					_id: 0,
+					type: 1,
+					enabled: 1,
+					scriptEnabled: 1,
 				},
-			).toArray(),
-		);
+				readPreference,
+			},
+		).toArray();
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
@@ -254,15 +255,15 @@ export const statistics = {
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
 
-		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+		statistics.pushQueue = await NotificationQueue.col.estimatedDocumentCount();
 
 		statistics.enterprise = getEnterpriseStatistics();
-		Promise.await(Analytics.resetSeatRequestCount());
+		await Analytics.resetSeatRequestCount();
 
 		return statistics;
 	},
 	async save() {
-		const rcStatistics = statistics.get();
+		const rcStatistics = await statistics.get();
 		rcStatistics.createdAt = new Date();
 		await Statistics.insertOne(rcStatistics);
 		return rcStatistics;
