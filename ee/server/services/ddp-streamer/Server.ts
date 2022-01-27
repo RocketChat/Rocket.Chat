@@ -9,6 +9,9 @@ import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
 import { ClientSafeError } from '../../../../server/sdk/errors';
+import { Logger } from '../../../../server/lib/logger/Logger';
+
+const logger = new Logger('DDP-Streamer');
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
@@ -51,12 +54,21 @@ export class Server extends EventEmitter {
 
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
-		} catch (error) {
-			console.log('error', error);
+		} catch (error: any) {
 			if (error instanceof ClientSafeError) {
 				return this.result(client, packet, null, error.toJSON());
 			}
-			return this.result(client, packet, null, error.toString());
+
+			// default errors are logged to the console and redacted from the client
+			logger.error(error);
+
+			return this.result(client, packet, null, {
+				isClientSafe: true,
+				error: 500,
+				reason: 'Internal server error',
+				message: 'Internal server error [500]',
+				errorType: 'Meteor.Error', // TODO should we use Meteor.Error?
+			});
 		}
 	}
 
@@ -98,7 +110,7 @@ export class Server extends EventEmitter {
 		return this.publish(`stream-${stream}`, fn);
 	}
 
-	result(client: Client, { id }: IPacket, result?: any, error?: string): void {
+	result(client: Client, { id }: IPacket, result?: any, error?: string | Record<string, any>): void {
 		client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
