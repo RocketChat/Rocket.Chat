@@ -1,3 +1,4 @@
+import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
@@ -10,7 +11,6 @@ import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
-import { ILivechatInquiryRecord } from "../../IInquiry";
 
 type booleanString = 'true' | 'false';
 
@@ -235,16 +235,11 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.list': {
-		GET: (params: { department: number }) => {
-			inquiries: any;
-			offset: number;
-			count: any;
-			total: Promise<number>;
-		};
+		GET: (params: { department: number }) => {};
 	};
 
 	'livechat/inquiries.take': {
-		POST: (params: { userId: string }) => { inquiry: any };
+		POST: (params: { userId: string; inquiryId: string }) => { inquiry: any };
 	};
 
 	'livechat/inquiries.queued': {
@@ -253,5 +248,13 @@ export type OmnichannelEndpoints = {
 
 	'livechat/inquiries.getOne': {
 		GET: (params: { roomId: string }) => { inquiry: ILivechatInquiryRecord | null };
+	};
+
+	'livechat/integrations.settings': {
+		GET: () => { settings: ISetting[] };
+	};
+
+	'livechat/messages.external/:roomId': {
+		GET: (params: { roomId: string }) => {};
 	};
 };

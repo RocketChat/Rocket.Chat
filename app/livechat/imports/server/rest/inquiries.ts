@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 
+import { ILivechatInquiryRecord } from '../../../../../definition/IInquiry';
 import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/client/hasPermission';
 import { API } from '../../../../api/server';
@@ -17,7 +17,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
-			const ourQuery = Object.assign({}, { status: 'queued' });
+			const ourQuery: ILivechatInquiryRecord = Object.assign({}, { status: 'queued', department: 0 });
 
 			if (department) {
 				const departmentFromDB: Error = LivechatDepartment.findOneByIdOrName(department);

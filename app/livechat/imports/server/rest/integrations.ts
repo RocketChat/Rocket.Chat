@@ -5,12 +5,10 @@ API.v1.addRoute(
 	'livechat/integrations.settings',
 	{ authRequired: true },
 	{
-		get() {
-			const settings = Promise.await(
-				findIntegrationSettings({
-					userId: this.userId,
-				}),
-			);
+		async get() {
+			const settings = await findIntegrationSettings({
+				userId: this.userId,
+			});
 
 			return API.v1.success(settings);
 		},
