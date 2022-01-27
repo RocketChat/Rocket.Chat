@@ -3274,6 +3274,7 @@
   "others": "others",
   "Others": "Others",
   "OTR": "OTR",
+  "OTR_Enable_Description": "Enable option to use off-the-record (OTR) messages in direct messages between 2 users. OTR messages are not recorded on the server and exchanged directly and encrypted between the 2 users.",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
   "Out_of_seats": "Out of Seats",
   "Outgoing_WebHook": "Outgoing WebHook",
