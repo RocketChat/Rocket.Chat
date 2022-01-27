@@ -12,6 +12,7 @@ import { MediaService } from './image/service';
 import { AnalyticsService } from './analytics/service';
 import { LDAPService } from './ldap/service';
 import { E2EEService } from './e2ee/service';
+import { SAUMonitorService } from './sauMonitor/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -26,3 +27,4 @@ api.registerService(new MediaService());
 api.registerService(new AnalyticsService(db));
 api.registerService(new LDAPService());
 api.registerService(new E2EEService(db));
+api.registerService(new SAUMonitorService());
