@@ -521,6 +521,10 @@ settingsRegistry.addGroup('Accounts', function () {
 		this.add('Accounts_AvatarResize', true, {
 			type: 'boolean',
 		});
+		this.add('Accounts_AvatarRotate', true, {
+			type: 'boolean',
+			i18nDescription: 'Accounts_AvatarRotate_Description',
+		});
 		this.add('Accounts_AvatarSize', 200, {
 			type: 'int',
 			enableQuery: {

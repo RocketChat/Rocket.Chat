@@ -229,7 +229,9 @@ export const FileUpload = {
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
-		s.rotate();
+		if (settings.get('Accounts_AvatarRotate') === true) {
+			s.rotate();
+		}
 
 		s.metadata(
 			Meteor.bindEnvironment((err, metadata) => {
