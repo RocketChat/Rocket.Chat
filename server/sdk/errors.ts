@@ -1,14 +1,10 @@
 export class ClientSafeError extends Error {
 	public readonly isClientSafe = true;
 
-	protected errorType: string | undefined;
+	public readonly errorType: string | undefined;
 
 	public constructor(public readonly error: string | number, public readonly reason?: string, public readonly details?: any) {
 		super(String(error));
-	}
-
-	getErrorType(): string | undefined {
-		return this.errorType;
 	}
 
 	public toJSON(): any {
