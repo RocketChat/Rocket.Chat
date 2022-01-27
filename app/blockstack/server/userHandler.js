@@ -45,6 +45,7 @@ export const updateOrCreateUser = (serviceData, options) => {
 			active: true,
 			emails,
 			services: { blockstack: serviceData },
+			globalRoles: ['user'],
 		};
 
 		// Set username same as in blockstack, or suggest if none
