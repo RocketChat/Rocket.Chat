@@ -12,7 +12,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-const convertBoxSizeToNumber = (boxSize: string): number => {
+const convertBoxSizeToNumber = (boxSize: ComponentProps<typeof Icon>['size']): number => {
 	switch (boxSize) {
 		case 'x20': {
 			return 20;
@@ -39,7 +39,7 @@ export const OmnichannelAppSourceRoomIcon = ({
 	const color = colors[room.v.status || 'offline'];
 	const icon = (placement === 'sidebar' && room.source.sidebarIcon) || room.source.defaultIcon;
 	const { phase, value } = useOmnichannelRoomIcon(room.source.id, icon || '');
-	const fontSize = convertBoxSizeToNumber(size as never);
+	const fontSize = convertBoxSizeToNumber(size);
 	if ([AsyncStatePhase.REJECTED, AsyncStatePhase.LOADING].includes(phase)) {
 		return <Icon name='headset' size={size} color={color} />;
 	}
