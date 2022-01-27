@@ -7,7 +7,7 @@ import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
-export const _setStatusTextPromise = async function (userId: string, statusText: string) {
+export const setStatusTextPromise = async function (userId: string, statusText: string): Promise<boolean> {
 	if (!userId) {
 		return false;
 	}
@@ -34,7 +34,7 @@ export const _setStatusTextPromise = async function (userId: string, statusText:
 	return true;
 };
 
-export const _setStatusText = function (userId: string, statusText: string) {
+export const _setStatusText = function (userId: string, statusText: string): boolean {
 	statusText = s.trim(statusText);
 	if (statusText.length > 120) {
 		statusText = statusText.substr(0, 120);

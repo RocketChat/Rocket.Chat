@@ -348,9 +348,9 @@ export class ImportDataConverter {
 
 				// Deleted users are 'inactive' users in Rocket.Chat
 				if (data.deleted && existingUser?.active) {
-					setUserActiveStatus(data._id, false, true);
+					Promise.await(setUserActiveStatus(data._id, false, true));
 				} else if (data.deleted === false && existingUser?.active === false) {
-					setUserActiveStatus(data._id, true);
+					Promise.await(setUserActiveStatus(data._id, true));
 				}
 
 				if (afterImportFn) {

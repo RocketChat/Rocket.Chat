@@ -3,27 +3,23 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import * as Mailer from '../../../mailer';
-//import { Users, Subscriptions, Rooms } from '../../../models';
-//import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { settings } from '../../../settings/server/functions/settings';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { IUser, IUserEmail } from '../../../../definition/IUser';
+import { IRoom } from '../../../../definition/IRoom';
 
-
-import { settings } from '/app/settings/server/functions/settings';
-import { Rooms, Subscriptions, Users } from '/app/models/server';
-import { IUser, IUserEmail } from '/definition/IUser';
-import { IRoom } from '/definition/IRoom';
-
-function reactivateDirectConversations(userId: string) {
+function reactivateDirectConversations(userId: string): void {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
-	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
+	const directConversations: IRoom[] = Rooms.getDirectConversationsByUserId(userId, {
 		projection: { _id: 1, uids: 1 },
 	}).fetch();
-	const userIds = directConversations.reduce((acc: string[], r: IRoom) => acc.push(...r.uids) && acc, []);
+	const userIds = directConversations.flatMap((r) => r.uids);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).fetch();
 	const activeUserIds = activeUsers.map((u: IUser) => u._id);
@@ -33,12 +29,12 @@ function reactivateDirectConversations(userId: string) {
 			acc.push(room._id);
 		}
 		return acc;
-	}, []);
+	}, [] as string[]);
 
 	Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
 }
 
-export function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false) {
+export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean> {
 	check(userId, String);
 	check(active, Boolean);
 
@@ -70,7 +66,7 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);
-		Promise.await(relinquishRoomOwnerships(user, chatSubscribedRooms, false));
+		await relinquishRoomOwnerships(user, chatSubscribedRooms, false);
 	}
 
 	if (active && !user.active) {
@@ -105,13 +101,22 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 		return true;
 	}
 
-	const destinations = Array.isArray(user.emails) && user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
+	const destinations =
+		Array.isArray(user.emails) && user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
+
+	const { userActivated } = Accounts.emailTemplates as unknown as {
+		userActivated: {
+			subject({ active, username }: { active: boolean; username?: string }): string;
+
+			html({ active, name, username }: { active: boolean; name: string; username: string }): string;
+		};
+	};
 
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: Accounts.emailTemplates.userActivated.subject({ active }),
-		html: Accounts.emailTemplates.userActivated.html({
+		subject: userActivated.subject({ active }),
+		html: userActivated.html({
 			active,
 			name: user.name,
 			username: user.username,
@@ -119,4 +124,5 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 	};
 
 	Mailer.sendNoWrap(email);
+	return false;
 }

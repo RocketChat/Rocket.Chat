@@ -257,8 +257,8 @@ const settingSavers = {
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
-	async roomAvatar({ value, rid, user }) {
-		await setRoomAvatar(rid, value, user);
+	roomAvatar({ value, rid, user }) {
+		return setRoomAvatar(rid, value, user);
 	},
 };
 

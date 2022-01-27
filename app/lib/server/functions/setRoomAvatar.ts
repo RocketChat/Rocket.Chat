@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file';
-//import { FileUpload } from '../../../file-upload';
+// import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
 import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
+import { IUser } from '../../../../definition/IUser';
+import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 
-import { IUser } from '/definition/IUser';
-import { FileUpload } from '/app/file-upload/server/lib/FileUpload';
-
-export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser) {
+export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
