@@ -58,6 +58,56 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'userConvertToTeam',
+		system: true,
+		message: 'Converted__roomName__to_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'userRemoveRoomFromTeam',
+		system: true,
+		message: 'Removed__roomName__from_this_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'userRemoveRoomFromTeam',
+		system: true,
+		message: 'Removed__roomName__from_this_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'userDeleteRoomFromTeam',
+		system: true,
+		message: 'Deleted__roomName__',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'userAddRoomToTeam',
+		system: true,
+		message: 'added__roomName__to_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',

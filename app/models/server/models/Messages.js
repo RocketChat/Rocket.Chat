@@ -911,6 +911,22 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
 	}
 
+	createUserConvertChannelInTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('userConvertToTeam', roomId, roomName, user, extraData);
+	}
+
+	createUserRemoveRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('userRemoveRoomFromTeam', roomId, roomName, user, extraData);
+	}
+
+	createUserDeleteRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('userDeleteRoomFromTeam', roomId, roomName, user, extraData);
+	}
+
+	createUserAddRoomToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('userAddRoomToTeam', roomId, roomName, user, extraData);
+	}
+
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);

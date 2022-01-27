@@ -165,6 +165,11 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 			case 'ult':
 				messageObject.msg = TAPi18n.__('User_left_team');
 				break;
+			case 'userConvertToTeam':
+				messageObject.msg = TAPi18n.__('Converted__roomName__to_team', {
+					roomName: msg.msg,
+				});
+				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', {
 					user_added: hideUserName(msg.msg, userData, usersMap),
