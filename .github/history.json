@@ -69813,6 +69813,57 @@
           ]
         }
       ]
+    },
+    "4.4.0-rc.2": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0-alpha.5836",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24324",
+          "title": "Regression: Standalone register path failing when saving data",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.0",
+          "contributors": [
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24316",
+          "title": "[FIX] Discussions not loading message history if not joined",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24289",
+          "title": "Regression: Create migration to fix index issue at boot",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24272",
+          "title": "Regression: Discussion room crashing",
+          "userLogin": "gabriellsh",
+          "milestone": "4.4.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
