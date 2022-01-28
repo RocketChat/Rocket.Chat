@@ -19,12 +19,14 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		return { name: room.t === 'p' ? 'team-lock' : 'team' };
 	}
 
+	const {_id: userId} = Meteor.user();
+
 	if (isDirectMessageRoom(room)) {
 		if (room.uids && room.uids.length > 2) {
 			return { name: 'balloon' };
 		}
 		if (room.uids && room.uids.length > 0) {
-			return <ReactiveUserStatus uid={room.uids.find((uid) => uid !== room.u._id) || room.u._id} />;
+			return <ReactiveUserStatus uid={room.uids.find((uid) => uid !== (room.u ? room.u._id : userId)) || room.u._id} />;
 		}
 		return { name: 'at' };
 	}
