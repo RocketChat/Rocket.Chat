@@ -6,7 +6,7 @@ import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
-import { isClientSafeError, ClientSafeError, MethodError } from '../../server/sdk/errors';
+import { isMeteorError, MeteorError } from '../../server/sdk/errors';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
 const events: { [k: string]: string } = {
@@ -291,24 +291,19 @@ const {
 
 class CustomRegenerator extends Errors.Regenerator {
 	restoreCustomError(plainError: any): Error | undefined {
-		const { message, reason, details, errorType, isClientSafe } = plainError;
+		const { message, reason, details, errorType } = plainError;
 
 		if (errorType === 'Meteor.Error') {
-			return new MethodError(message, reason, details);
-		}
-
-		if (isClientSafe) {
-			return new ClientSafeError(message, reason, details);
+			return new MeteorError(message, reason, details);
 		}
 
 		return undefined;
 	}
 
-	extractPlainError(err: Error | ClientSafeError): Errors.PlainMoleculerError {
-		console.log('extractPlainError ->', err);
+	extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
 		return {
 			...super.extractPlainError(err),
-			...(isClientSafeError(err) && {
+			...(isMeteorError(err) && {
 				isClientSafe: err.isClientSafe,
 				errorType: err.errorType,
 				reason: err.reason,

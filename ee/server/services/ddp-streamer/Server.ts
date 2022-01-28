@@ -8,7 +8,7 @@ import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
-import { ClientSafeError, MethodError } from '../../../../server/sdk/errors';
+import { MeteorError } from '../../../../server/sdk/errors';
 import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('DDP-Streamer');
@@ -45,18 +45,18 @@ export class Server extends EventEmitter {
 					return this.result(client, packet, result.result);
 				}
 
-				throw new MethodError(404, `Method '${packet.method}' not found`);
+				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
 
 			const fn = this._methods.get(packet.method);
 			if (!fn) {
-				throw new MethodError(404, `Method '${packet.method}' not found`);
+				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
 
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
 		} catch (error: any) {
-			if (error instanceof ClientSafeError) {
+			if (error instanceof MeteorError) {
 				return this.result(client, packet, null, error.toJSON());
 			}
 
@@ -68,7 +68,7 @@ export class Server extends EventEmitter {
 				error: 500,
 				reason: 'Internal server error',
 				message: 'Internal server error [500]',
-				errorType: 'Meteor.Error', // TODO should we use Meteor.Error?
+				errorType: 'Meteor.Error', // TODO should we use Meteor.Error for internal as well?
 			});
 		}
 	}
@@ -85,12 +85,11 @@ export class Server extends EventEmitter {
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
 		try {
 			if (!this._subscriptions.has(packet.name)) {
-				// TODO should not be MethorError
-				throw new MethodError(404, `Subscription '${packet.name}' not found`);
+				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 			const fn = this._subscriptions.get(packet.name);
 			if (!fn) {
-				throw new MethodError(404, `Subscription '${packet.name}' not found`);
+				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
 			}
 
 			const publication = new Publication(client, packet, this);
@@ -99,7 +98,7 @@ export class Server extends EventEmitter {
 		} catch (error: any) {
 			this.nosub(client, packet, error.toString());
 
-			if (error instanceof ClientSafeError) {
+			if (error instanceof MeteorError) {
 				return this.nosub(client, packet, error.toJSON());
 			}
 
@@ -111,7 +110,7 @@ export class Server extends EventEmitter {
 				error: 500,
 				reason: 'Internal server error',
 				message: 'Internal server error [500]',
-				errorType: 'Meteor.Error', // TODO should we use Meteor.Error?
+				errorType: 'Meteor.Error', // TODO should we use Meteor.Error for internal as well?
 			});
 		}
 	}

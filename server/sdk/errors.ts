@@ -1,7 +1,7 @@
-export class ClientSafeError extends Error {
+export class MeteorError extends Error {
 	public readonly isClientSafe = true;
 
-	public readonly errorType: string | undefined;
+	public readonly errorType = 'Meteor.Error';
 
 	public constructor(public readonly error: string | number, public readonly reason?: string, public readonly details?: any) {
 		super(String(error));
@@ -19,12 +19,4 @@ export class ClientSafeError extends Error {
 	}
 }
 
-export class MethodError extends ClientSafeError {
-	errorType = 'Meteor.Error';
-
-	public constructor(public readonly error: string | number, public readonly reason?: string, public readonly details?: any) {
-		super(error, reason, details);
-	}
-}
-
-export const isClientSafeError = (error: any): error is ClientSafeError => error?.isClientSafe;
+export const isMeteorError = (error: any): error is MeteorError => error?.errorType === 'Meteor.Error';
