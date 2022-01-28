@@ -1,4 +1,22 @@
 
+# 4.3.3
+`2022-01-28  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.29.2`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@gronke](https://github.com/gronke)
+
 # 4.3.2
 `2022-01-19  ·  5 🐛  ·  1 🔍  ·  10 👩‍💻👨‍💻`
 
