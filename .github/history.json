@@ -68754,6 +68754,162 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.3.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24107",
+          "title": "[FIX][APPS] Action buttons not removed when app is disabled or uninstalled",
+          "userLogin": "d-gubert",
+          "description": "Fixes a problem where action buttons registered by any app would not be removed if the app was disabled or uninstalled",
+          "milestone": "4.3.1",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24105",
+          "title": "[FIX][APPS] Prevents emails from being sent when apps framework is disabled",
+          "userLogin": "d-gubert",
+          "description": "Introduction of new event `IPreEmailSent` was breaking the email function when the Apps-Engine framework was disabled in the administration",
+          "milestone": "4.3.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24096",
+          "title": "[FIX] Ensure Firefox 91 ESR support",
+          "userLogin": "tassoevan",
+          "description": "It:\r\n- Adds `Firefox ESR` to `browserslist`;\r\n- Upgrades `@rocket.chat/fuselage-hooks` to overcome a bug related to Firefox implementation of `ResizeObserver` API.",
+          "milestone": "4.3.1",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24091",
+          "title": "Chore: Update Livechat to 1.11.1",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.3.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24067",
+          "title": "[FIX] Omnichannel enabled setting not working when creating rooms",
+          "userLogin": "murtaza98",
+          "milestone": "4.3.1",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23981",
+          "title": "[FIX] Enter not working on modal's multi-line input",
+          "userLogin": "murtaza98",
+          "description": "Right now, if we try to press enter for a new line on multi-line modal input... it auto triggers the submit event. This PR fixes this behaviour by not submitting the modal in case the enter was pressed within an input text with multiline expected",
+          "milestone": "4.3.1",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "24039",
+          "title": "[FIX] Omnichannel Current chats pagination not working",
+          "userLogin": "murtaza98",
+          "milestone": "4.3.1",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.3.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.29.2",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24068",
+          "title": "[FIX] Integration section crashing opening in My Account",
+          "userLogin": "dougfabris",
+          "milestone": "4.3.2",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24171",
+          "title": "Chore: Update Apps-Engine to 1.29.2",
+          "userLogin": "d-gubert",
+          "milestone": "4.3.2",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24158",
+          "title": "[FIX] App Framework Enable hanging indefinitely",
+          "userLogin": "geekgonecrazy",
+          "milestone": "4.3.2",
+          "contributors": [
+            "geekgonecrazy",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24090",
+          "title": "[FIX] CSV Importer failing to import users",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "- Update use of `setRealName` function to `_setRealName`.",
+          "milestone": "4.3.2",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24142",
+          "title": "[FIX][ENTERPRISE] Leading slashes in Engagement Dashboard API requests",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove trailing slashes from Engagement Dashboard API requests;",
+          "milestone": "4.3.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        }
+      ]
     }
   }
 }

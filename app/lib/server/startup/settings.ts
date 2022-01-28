@@ -3210,7 +3210,7 @@ settingsRegistry.addGroup('VoIP', function () {
 			},
 		});
 
-		this.add('VoIP_Management_Server_Username', 'amol', {
+		this.add('VoIP_Management_Server_Username', 'manager.rocket.chat', {
 			type: 'string',
 			public: true,
 			enableQuery: {

@@ -1,7 +1,6 @@
 import { hasLicense } from '../../license/client';
 import { AccountBox } from '../../../../app/ui-utils/client';
 import { hasAllPermission } from '../../../../app/authorization/client';
-import './routes';
 
 hasLicense('auditing')
 	.then((enabled) => {

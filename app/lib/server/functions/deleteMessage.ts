@@ -5,7 +5,7 @@ import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { Uploads } from '../../../models/server/raw';
 import { Notifications } from '../../../notifications/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';

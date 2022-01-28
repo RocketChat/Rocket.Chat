@@ -297,11 +297,11 @@ export class ListenersModule {
 		});
 		service.onEvent('queue.agentcalled', (userId, queuename): void => {
 			logger.error({ msg: 'queue.agentcalled', userId, queuename });
-			notifications.notifyUserInThisInstance(userId, 'customerCalling', { queuename });
+			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename });
 		});
 		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
 			logger.error({ msg: 'queue.callerjoined', callerid, queuename, queuedcalls });
-			notifications.notifyUserInThisInstance(userId, 'queueJoined', { queuename, callerid, queuedcalls });
+			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
 		});
 	}
 }

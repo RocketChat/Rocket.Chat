@@ -375,7 +375,7 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = import('../../../utils/lib/getValidRoomName');
+			const { getValidRoomName } = Promise.await(import('../../../utils/lib/getValidRoomName'));
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);

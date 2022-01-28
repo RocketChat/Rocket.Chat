@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 

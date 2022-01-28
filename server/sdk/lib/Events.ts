@@ -16,10 +16,15 @@ import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartme
 import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IVoipEvent } from '../../../definition/voip/IVoipEvent';
+import { ISocketConnection } from '../../../definition/ISocketConnection';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
+	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
+	'accounts.logout': (info: { userId: string; connection: ISocketConnection }) => void;
+	'socket.connected': (connection: ISocketConnection) => void;
+	'socket.disconnected': (connection: ISocketConnection) => void;
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
