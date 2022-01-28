@@ -100,8 +100,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		setForceLogin(false);
 
 		await defineUsername(username);
+		await dispatchSettings([{ _id: 'Organization_Email', value: companyEmail }]);
 		callbacks.run('usernameSet', {});
-	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, setupWizardData, t]);
+	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, dispatchSettings, setupWizardData, t]);
 
 	const saveWorkspaceData = useCallback(async (): Promise<void> => {
 		const {

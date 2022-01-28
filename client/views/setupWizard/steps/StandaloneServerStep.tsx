@@ -14,7 +14,8 @@ const CloudAccountStep = (): ReactElement => {
 
 	const handleConfirmStandalone: ComponentProps<typeof StandaloneServerPage>['onSubmit'] = async ({ registerType }) => {
 		if (registerType !== 'registered') {
-			Promise.all([registerAdminUser(), saveOrganizationData()]);
+			await registerAdminUser();
+			await saveOrganizationData();
 			dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 			return setShowSetupWizard('completed');
 		}
