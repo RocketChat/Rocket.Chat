@@ -68,6 +68,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should create the encrypted room by default', async () => {
+			await updateSetting('E2E_Enable', true);
 			await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
 			try {
 				await request
@@ -86,6 +87,7 @@ describe('[Groups]', function () {
 						expect(res.body).to.have.nested.property('group.encrypted', true);
 					});
 			} finally {
+				await updateSetting('E2E_Enable', false);
 				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
 			}
 		});
@@ -1378,17 +1380,19 @@ describe('[Groups]', function () {
 
 	describe('/groups.setEncrypted', () => {
 		let testGroup;
-		it('/groups.create', (done) => {
-			request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `group.encrypted.test.${Date.now()}`,
-				})
-				.end((err, res) => {
-					testGroup = res.body.group;
-					done();
-				});
+		it('/groups.create', async () => {
+			try {
+				await updateSetting('E2E_Enable', true);
+				const res = await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `group.encrypted.test.${Date.now()}`,
+					});
+				testGroup = res.body.group;
+			} finally {
+				await updateSetting('E2E_Enable', false);
+			}
 		});
 
 		it('should return an error when passing no boolean param', (done) => {
@@ -1407,54 +1411,69 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 
-		it('should set group as encrypted correctly and return the new data', (done) => {
-			request
-				.post(api('groups.setEncrypted'))
-				.set(credentials)
-				.send({
-					roomId: testGroup._id,
-					encrypted: true,
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('group');
-					expect(res.body.group).to.have.property('_id', testGroup._id);
-					expect(res.body.group).to.have.property('encrypted', true);
-				})
-				.end(done);
+		it('should set group as encrypted correctly and return the new data', async () => {
+			try {
+				await updateSetting('E2E_Enable', true);
+				await request
+					.post(api('groups.setEncrypted'))
+					.set(credentials)
+					.send({
+						roomId: testGroup._id,
+						encrypted: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('group');
+						expect(res.body.group).to.have.property('_id', testGroup._id);
+						expect(res.body.group).to.have.property('encrypted', true);
+					});
+			} finally {
+				await updateSetting('E2E_Enable', false);
+			}
 		});
 
 		it('should return the updated room encrypted', async () => {
-			const roomInfo = await getRoomInfo(testGroup._id);
-			expect(roomInfo).to.have.a.property('success', true);
-			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
-			expect(roomInfo.group).to.have.a.property('encrypted', true);
-		});
-
-		it('should set group as unencrypted correctly and return the new data', (done) => {
-			request
-				.post(api('groups.setEncrypted'))
+			await request
+				.get(api('groups.info'))
 				.set(credentials)
-				.send({
+				.query({
 					roomId: testGroup._id,
-					encrypted: false,
 				})
-				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('group');
-					expect(res.body.group).to.have.property('_id', testGroup._id);
-					expect(res.body.group).to.have.property('encrypted', false);
-				})
-				.end(done);
+					expect(res.body.group).to.have.a.property('_id', testGroup._id);
+					expect(res.body.group).to.have.a.property('encrypted', true);
+				});
+		});
+
+		it('should set group as unencrypted correctly and return the new data', async () => {
+			try {
+				await updateSetting('E2E_Enable', true);
+				await request
+					.post(api('groups.setEncrypted'))
+					.set(credentials)
+					.send({
+						roomId: testGroup._id,
+						encrypted: false,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('group');
+						expect(res.body.group).to.have.property('_id', testGroup._id);
+						expect(res.body.group).to.have.property('encrypted', false);
+					});
+			} finally {
+				await updateSetting('E2E_Enable', false);
+			}
 		});
 
 		it('should return the updated room unencrypted', async () => {
 			const roomInfo = await getRoomInfo(testGroup._id);
 			expect(roomInfo).to.have.a.property('success', true);
-			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
-			expect(roomInfo.group).to.have.a.property('encrypted', false);
+			expect(roomInfo).to.have.a.nested.property('group._id', testGroup._id);
+			expect(roomInfo).to.have.a.nested.property('group.encrypted', false);
 		});
 	});
 
