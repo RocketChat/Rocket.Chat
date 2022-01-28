@@ -1,6 +1,32 @@
 
 # 4.4.0 (Under Release Candidate Process)
 
+## 4.4.0-rc.2
+`2022-01-28  ·  1 🐛  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Discussions not loading message history if not joined ([#24316](https://github.com/RocketChat/Rocket.Chat/pull/24316))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Create migration to fix index issue at boot ([#24289](https://github.com/RocketChat/Rocket.Chat/pull/24289))
+
+- Regression: Discussion room crashing ([#24272](https://github.com/RocketChat/Rocket.Chat/pull/24272))
+
+- Regression: Standalone register path failing when saving data ([#24324](https://github.com/RocketChat/Rocket.Chat/pull/24324))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+
 ## 4.4.0-rc.1
 `2022-01-26  ·  2 🚀  ·  2 🐛  ·  9 🔍  ·  13 👩‍💻👨‍💻`
 
