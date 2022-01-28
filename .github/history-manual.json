@@ -140,5 +140,12 @@
 			"pierre-lehnen-rc",
 			"gronke"
 		]
+	}],
+	"4.1.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"gronke"
+		]
 	}]
 }
