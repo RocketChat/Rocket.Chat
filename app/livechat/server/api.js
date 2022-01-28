@@ -1,6 +1,6 @@
 import '../imports/server/rest/agent.ts';
 import '../imports/server/rest/departments';
-import '../imports/server/rest/facebook.ts';
+import '../imports/server/rest/facebook';
 import '../imports/server/rest/sms.js';
 import '../imports/server/rest/users.js';
 import '../imports/server/rest/upload.js';
