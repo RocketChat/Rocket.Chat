@@ -57,13 +57,10 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 	}
 
 	const { when } = user.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken) || {};
-	if (!when) {
-		throw new ClientSafeError(403, 'Your session has expired. Please log in again.');
-	}
 
-	const tokenExpires = _tokenExpiration(when);
+	const tokenExpires = when && _tokenExpiration(when);
 
-	if (new Date() >= tokenExpires) {
+	if (tokenExpires && new Date() >= tokenExpires) {
 		throw new ClientSafeError(403, 'Your session has expired. Please log in again.');
 	}
 
@@ -71,8 +68,8 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 		uid: user._id,
 		token: resume,
 		hashedToken, // TODO should we return the hashed token? Meteor does not.
-		tokenExpires,
 		type: 'resume',
+		...(tokenExpires && { tokenExpires }),
 	};
 };
 
