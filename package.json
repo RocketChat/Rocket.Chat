@@ -179,7 +179,7 @@
 		"@rocket.chat/apps-engine": "^1.30.0-alpha.5836",
 		"@rocket.chat/css-in-js": "^0.31.1",
 		"@rocket.chat/emitter": "^0.31.1",
-		"@rocket.chat/fuselage": "^0.6.3-dev.392",
+		"@rocket.chat/fuselage": "^0.6.3-dev.412",
 		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.402",
 		"@rocket.chat/fuselage-polyfills": "^0.31.1",
 		"@rocket.chat/fuselage-tokens": "^0.31.1",
