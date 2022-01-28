@@ -78,6 +78,14 @@ describe('[Groups]', function () {
 		});
 
 		describe('with E2EE', () => {
+			before('set E2EE', async () => {
+				await updateSetting('E2E_Enable', true);
+			});
+
+			after('unset E2EE', async () => {
+				await updateSetting('E2E_Enable', false);
+			});
+
 			it('should create a new encrypted group', async () => {
 				await request
 					.post(api('groups.create'))
@@ -100,13 +108,11 @@ describe('[Groups]', function () {
 			});
 
 			describe('when E2E_Enabled_Default_PrivateRooms is set', () => {
-				before('set E2EE settings', async () => {
-					await updateSetting('E2E_Enable', true);
+				before('set E2EE by default on groups', async () => {
 					await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
 				});
 
-				after('unset E2EE settings', async () => {
-					await updateSetting('E2E_Enable', false);
+				after('unset E2EE by default on groups', async () => {
 					await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
 				});
 
