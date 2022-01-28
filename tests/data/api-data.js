@@ -25,7 +25,6 @@ export const reservedWords = ['admin', 'administrator', 'system', 'user'];
 
 export const targetUser = {};
 export const channel = {};
-export const group = {};
 export const message = {};
 export const directMessage = {};
 export const integration = {};
