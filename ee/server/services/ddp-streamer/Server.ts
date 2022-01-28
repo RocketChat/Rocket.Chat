@@ -8,7 +8,7 @@ import { Publication } from './Publication';
 import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
-import { MeteorError } from '../../../../server/sdk/errors';
+import { isMeteorError, MeteorError } from '../../../../server/sdk/errors';
 import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('DDP-Streamer');
@@ -55,21 +55,15 @@ export class Server extends EventEmitter {
 
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
-		} catch (error: any) {
-			if (error instanceof MeteorError) {
-				return this.result(client, packet, null, error.toJSON());
+		} catch (err: unknown) {
+			if (err instanceof MeteorError) {
+				return this.result(client, packet, null, err);
 			}
 
 			// default errors are logged to the console and redacted from the client
-			logger.error({ msg: 'Method call error', error });
+			logger.error({ msg: 'Method call error', err });
 
-			return this.result(client, packet, null, {
-				isClientSafe: true,
-				error: 500,
-				reason: 'Internal server error',
-				message: 'Internal server error [500]',
-				errorType: 'Meteor.Error', // TODO should we use Meteor.Error for internal as well?
-			});
+			return this.result(client, packet, null, new MeteorError(500, 'Internal server error'));
 		}
 	}
 
@@ -95,23 +89,15 @@ export class Server extends EventEmitter {
 			const publication = new Publication(client, packet, this);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
-		} catch (error: any) {
-			this.nosub(client, packet, error.toString());
-
-			if (error instanceof MeteorError) {
-				return this.nosub(client, packet, error.toJSON());
+		} catch (err: unknown) {
+			if (err instanceof MeteorError) {
+				return this.nosub(client, packet, err);
 			}
 
 			// default errors are logged to the console and redacted from the client
-			logger.error({ msg: 'Subscribe error', error });
+			logger.error({ msg: 'Subscribe error', err });
 
-			return this.nosub(client, packet, {
-				isClientSafe: true,
-				error: 500,
-				reason: 'Internal server error',
-				message: 'Internal server error [500]',
-				errorType: 'Meteor.Error', // TODO should we use Meteor.Error for internal as well?
-			});
+			return this.nosub(client, packet, new MeteorError(500, 'Internal server error'));
 		}
 	}
 
@@ -126,13 +112,13 @@ export class Server extends EventEmitter {
 		return this.publish(`stream-${stream}`, fn);
 	}
 
-	result(client: Client, { id }: IPacket, result?: any, error?: string | Record<string, any>): void {
+	result(client: Client, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
 		client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.RESULT,
 				id,
 				...(result && { result }),
-				...(error && { error }),
+				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
 			}),
 		);
 		return client.send(
@@ -143,12 +129,12 @@ export class Server extends EventEmitter {
 		);
 	}
 
-	nosub(client: Client, { id }: IPacket, error?: string | Record<string, any>): void {
+	nosub(client: Client, { id }: IPacket, error?: Error | MeteorError): void {
 		return client.send(
 			this.serialize({
 				[DDP_EVENTS.MSG]: DDP_EVENTS.NO_SUBSCRIBE,
 				id,
-				...(error && { error }),
+				...(error && { error: isMeteorError(error) ? error.toJSON() : error }),
 			}),
 		);
 	}
