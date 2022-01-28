@@ -3,7 +3,7 @@ import type { IUser } from '../../../definition/IUser';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
-export type SuccessResult<T> = {
+type SuccessResult<T> = {
 	statusCode: 200;
 	body: T extends object ? { success: true } & T : T;
 };

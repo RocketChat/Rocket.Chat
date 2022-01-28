@@ -1,3 +1,5 @@
+import { Match, check } from 'meteor/check';
+
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
 import {
@@ -24,12 +26,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -53,12 +59,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -82,12 +92,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -109,12 +123,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -139,12 +157,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -167,12 +189,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -194,6 +220,7 @@ API.v1.addRoute(
 			}
 
 			const { departmentId } = this.requestParams();
+			check(departmentId, Match.Maybe(String));
 
 			const result = findAllAgentsStatus({ departmentId });
 
@@ -213,12 +240,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);
@@ -241,12 +272,16 @@ API.v1.addRoute(
 			let { start, end } = this.requestParams();
 			const { departmentId } = this.requestParams();
 
-			if (!start) {
+			check(start, String);
+			check(end, String);
+			check(departmentId, Match.Maybe(String));
+
+			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
 			start = new Date(start);
 
-			if (!end) {
+			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			end = new Date(end);

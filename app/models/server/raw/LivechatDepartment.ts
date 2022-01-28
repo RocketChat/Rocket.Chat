@@ -5,8 +5,7 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	findOneByIdOrName(department: number): Error {
+	findOneByIdOrName(_department: number): Error {
 		throw new Error('Method not implemented.');
 	}
 
