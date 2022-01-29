@@ -15,6 +15,7 @@ function Mute(_command: 'mute', params: string, item: Record<string, string>): v
 	if (username === '') {
 		return;
 	}
+
 	const userId = Meteor.userId() as string;
 	const mutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (mutedUser == null) {
