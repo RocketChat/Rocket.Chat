@@ -8,6 +8,7 @@ import { settings } from '../../settings/server';
 
 function Archive(_command: 'archive', params: string, item: Record<string, string>): void | Function {
 	let channel = params.trim();
+
 	let room;
 
 	if (channel === '') {
@@ -19,6 +20,7 @@ function Archive(_command: 'archive', params: string, item: Record<string, strin
 	}
 
 	const userId = Meteor.userId();
+
 	if (!userId) {
 		return;
 	}
