@@ -42,12 +42,7 @@ function NotFoundPage() {
 								{t('Oops_page_not_found')}
 							</Box>
 
-							<Box
-								role='status'
-								aria-label='Sorry_page_you_requested_does_not_exist_or_was_deleted'
-								fontScale='p2'
-								color='alternative'
-							>
+							<Box role='status' aria-label='Sorry_page_you_requested_does_not_exist_or_was_deleted' fontScale='p2' color='alternative'>
 								{t('Sorry_page_you_requested_does_not_exist_or_was_deleted')}
 							</Box>
 						</Margins>

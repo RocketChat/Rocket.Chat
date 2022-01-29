@@ -7,11 +7,7 @@ type SectionProps = {
 	filter?: ReactNode;
 };
 
-const Section = ({
-	children,
-	title = undefined,
-	filter = <InputBox.Skeleton />,
-}: SectionProps): ReactElement => (
+const Section = ({ children, title = undefined, filter = <InputBox.Skeleton /> }: SectionProps): ReactElement => (
 	<Box>
 		<Margins block='x24'>
 			<Box display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap'>

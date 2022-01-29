@@ -9,13 +9,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import {
-	appButtonProps,
-	appStatusSpanProps,
-	handleAPIError,
-	warnStatusChange,
-	handleInstallError,
-} from './helpers';
+import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -78,13 +72,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
-		return setModal(
-			<AppPermissionsReviewModal
-				appPermissions={app.permissions}
-				cancel={cancelAction}
-				confirm={confirmAction}
-			/>,
-		);
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
 	};
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
@@ -106,13 +94,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(
-					<IframeModal
-						url={data.url}
-						cancel={cancelAction}
-						confirm={showAppPermissionsReviewModal}
-					/>,
-				);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -125,13 +107,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 	return (
 		<Box {...props}>
 			{button && (
-				<Button
-					primary
-					disabled={loading}
-					invisible={!showStatus && !loading}
-					minHeight='x40'
-					onClick={handleClick}
-				>
+				<Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>
 					{loading ? (
 						<Throbber inheritColor />
 					) : (
@@ -143,11 +119,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 				</Button>
 			)}
 			{status && (
-				<Box
-					color={status.label === 'Disabled' ? 'warning' : 'hint'}
-					display='flex'
-					alignItems='center'
-				>
+				<Box color={status.label === 'Disabled' ? 'warning' : 'hint'} display='flex' alignItems='center'>
 					<Icon size='x20' name={status.icon} mie='x4' />
 					{t(status.label)}
 				</Box>

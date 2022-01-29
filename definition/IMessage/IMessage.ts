@@ -9,29 +9,27 @@ import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
-
 type MessageTypesValues =
-| 'e2e'
-| 'uj'
-| 'ul'
-| 'ru'
-| 'au'
-| 'mute_unmute'
-| 'r'
-| 'ut'
-| 'wm'
-| 'rm'
-| 'subscription-role-added'
-| 'subscription-role-removed'
-| 'room_archived'
-| 'room_unarchived'
-| 'room_changed_privacy'
-| 'room_changed_avatar'
-| 'room_changed_topic'
-| 'room_e2e_enabled'
-| 'room_e2e_disabled'
-| 'livechat-close'
-
+	| 'e2e'
+	| 'uj'
+	| 'ul'
+	| 'ru'
+	| 'au'
+	| 'mute_unmute'
+	| 'r'
+	| 'ut'
+	| 'wm'
+	| 'rm'
+	| 'subscription-role-added'
+	| 'subscription-role-removed'
+	| 'room_archived'
+	| 'room_unarchived'
+	| 'room_changed_privacy'
+	| 'room_changed_avatar'
+	| 'room_changed_topic'
+	| 'room_e2e_enabled'
+	| 'room_e2e_disabled'
+	| 'livechat-close';
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -58,7 +56,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
-	starred?: {_id: IUser['_id']}[];
+	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
@@ -81,6 +79,6 @@ export type IMessageInbox = IMessage & {
 		references?: string[];
 		messageId?: string;
 	};
-}
+};
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;

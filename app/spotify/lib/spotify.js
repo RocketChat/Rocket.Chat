@@ -24,8 +24,8 @@ export const createSpotifyBeforeSaveMessageHandler = () => (message) => {
 		while ((match = re.exec(part)) != null) {
 			const data = match.slice(1).filter(Boolean);
 			const path = data.map((value) => encodeURI(value)).join('/');
-			const url = `https://open.spotify.com/${ path }`;
-			urls.push({ url, source: `spotify:${ data.join(':') }` });
+			const url = `https://open.spotify.com/${path}`;
+			urls.push({ url, source: `spotify:${data.join(':')}` });
 			changed = true;
 		}
 	});

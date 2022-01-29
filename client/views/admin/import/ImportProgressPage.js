@@ -4,10 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 
-import {
-	ProgressStep,
-	ImportingStartedStates,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep, ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -56,16 +53,7 @@ function ImportProgressPage() {
 		};
 
 		loadCurrentOperation();
-	}, [
-		getCurrentImportOperation,
-		handleError,
-		importHistoryRoute,
-		prepareImportRoute,
-		setCompleted,
-		setImporterKey,
-		setTotal,
-		t,
-	]);
+	}, [getCurrentImportOperation, handleError, importHistoryRoute, prepareImportRoute, setCompleted, setImporterKey, setTotal, t]);
 
 	useEffect(() => {
 		if (!importerKey) {

@@ -3,12 +3,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 
-import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import { IUser } from '../../../definition/IUser';
 import { UserStatus as UserStatusEnum } from '../../../definition/UserStatus';
 import { ValueOf } from '../../../definition/utils';
+import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
@@ -41,11 +41,9 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 ];
 
-const isDefaultStatus = (id: string): boolean =>
-	(Object.values(UserStatusEnum) as string[]).includes(id);
+const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
 
-const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum =>
-	isDefaultStatus(id);
+const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
 const setStatus = (status: typeof userStatus.list['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
@@ -54,10 +52,7 @@ const setStatus = (status: typeof userStatus.list['']): void => {
 
 const getItems = (): ReturnType<typeof AccountBox.getItems> => AccountBox.getItems();
 
-const translateStatusName = (
-	t: ReturnType<typeof useTranslation>,
-	status: typeof userStatus.list[''],
-): string => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
 		return t(status.name);
 	}
@@ -142,6 +137,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					<Box color='hint'>
 						<MarkdownText
 							withTruncatedText
+							parseEmoji={true}
 							content={statusText || t(status || 'offline')}
 							variant='inlineWithoutBreaks'
 						/>
@@ -169,7 +165,9 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							<Option.Column>
 								<UserStatus status={modifier} />
 							</Option.Column>
-							<Option.Content>{name}</Option.Content>
+							<Option.Content>
+								<MarkdownText content={name} parseEmoji={true} variant='inline' />
+							</Option.Content>
 						</Option>
 					);
 				})}
@@ -178,9 +176,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			{(accountBoxItems.length || showAdmin) && (
 				<>
 					<Option.Divider />
-					{showAdmin && (
-						<Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>
-					)}
+					{showAdmin && <Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}></Option>}
 					{accountBoxItems.map((item, i) => {
 						const action = (): void => {
 							if (item.href) {
@@ -194,14 +190,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 							}
 						};
 
-						return (
-							<Option
-								icon={item.icon}
-								label={t(item.name)}
-								onClick={item.href || item.sideNav ? action : undefined}
-								key={i}
-							></Option>
-						);
+						return <Option icon={item.icon} label={t(item.name)} onClick={item.href || item.sideNav ? action : undefined} key={i}></Option>;
 					})}
 				</>
 			)}

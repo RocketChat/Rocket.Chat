@@ -32,14 +32,7 @@ function RemoveManagerButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteManager}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteManager} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (

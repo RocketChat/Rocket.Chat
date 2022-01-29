@@ -3,11 +3,14 @@ declare module 'meteor/rocketchat:tap-i18n' {
 	import i18next from 'i18next';
 
 	namespace TAPi18n {
-		function __(s: string | undefined, options?: {
-			lng?: string;
-		} & {
-			[replacements: string]: boolean | number | string;
-		}): string;
+		function __(
+			s: string | undefined,
+			options?: {
+				lng?: string;
+			} & {
+				[replacements: string]: boolean | number | string | string[];
+			},
+		): string;
 		function getLanguages(): {
 			[language: string]: {
 				name: string;

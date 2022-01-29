@@ -15,11 +15,7 @@ export type RemoveCannedResponseButtonProps = {
 	totalDataReload: () => void;
 };
 
-const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({
-	_id,
-	reload,
-	totalDataReload,
-}) => {
+const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload, totalDataReload }) => {
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 	const removeCannedResponse = useMethod('removeCannedResponse');
 	const setModal = useSetModal();

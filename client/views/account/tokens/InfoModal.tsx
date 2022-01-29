@@ -11,16 +11,7 @@ type InfoModalProps = {
 	onClose: () => void;
 };
 
-const InfoModal: FC<InfoModalProps> = ({
-	title,
-	content,
-	icon,
-	confirmText,
-	cancelText,
-	onConfirm,
-	onClose,
-	...props
-}) => (
+const InfoModal: FC<InfoModalProps> = ({ title, content, icon, confirmText, cancelText, onConfirm, onClose, ...props }) => (
 	<Modal {...props}>
 		<Modal.Header>
 			{icon}

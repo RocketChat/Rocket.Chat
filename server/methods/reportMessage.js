@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		if ((description == null) || description.trim() === '') {
+		if (description == null || description.trim() === '') {
 			throw new Meteor.Error('error-invalid-description', 'Invalid description', {
 				method: 'reportMessage',
 			});
@@ -33,7 +33,7 @@ Meteor.methods({
 		const { rid } = message;
 		// If the user can't access the room where the message is, report that the message id is invalid
 		const room = await Rooms.findOneById(rid);
-		if (!room || !await canAccessRoomAsync(room, { _id: uid })) {
+		if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
 				method: 'reportMessage',
 			});

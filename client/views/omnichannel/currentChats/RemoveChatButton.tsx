@@ -40,13 +40,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 		};
 
 		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteAgent}
-				onClose={handleClose}
-				onCancel={handleClose}
-				confirmText={t('Delete')}
-			/>,
+			<GenericModal variant='danger' onConfirm={onDeleteAgent} onClose={handleClose} onCancel={handleClose} confirmText={t('Delete')} />,
 		);
 	});
 

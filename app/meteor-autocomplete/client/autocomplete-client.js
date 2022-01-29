@@ -8,11 +8,11 @@ import { getCaretCoordinates } from 'meteor/dandv:caret-position';
 import AutoCompleteRecords from './collection';
 import { APIClient } from '../../utils/client';
 
-const isServerSearch = function(rule) {
+const isServerSearch = function (rule) {
 	return _.isString(rule.collection);
 };
 
-const validateRule = function(rule) {
+const validateRule = function (rule) {
 	if (rule.subscription != null && !Match.test(rule.collection, String)) {
 		throw new Error('Collection name must be specified as string for server-side search');
 	}
@@ -22,21 +22,21 @@ const validateRule = function(rule) {
 	}
 };
 
-const isWholeField = function(rule) {
+const isWholeField = function (rule) {
 	// either '' or null both count as whole field.
 	return !rule.token;
 };
 
-const getRegExp = function(rule) {
+const getRegExp = function (rule) {
 	if (!isWholeField(rule)) {
 		// Expressions for the range from the last word break to the current cursor position
-		return new RegExp(`(^|\\b|\\s)${ rule.token }([\\w.]*)$`);
+		return new RegExp(`(^|\\b|\\s)${rule.token}([\\w.]*)$`);
 	}
 	// Whole-field behavior - word characters or spaces
 	return new RegExp('(^)(.*)$');
 };
 
-const getFindParams = function(rule, filter, limit) {
+const getFindParams = function (rule, filter, limit) {
 	// This is a different 'filter' - the selector from the settings
 	// We need to extend so that we don't copy over rule.filter
 	const selector = _.extend({}, rule.filter || {});
@@ -58,7 +58,7 @@ const getFindParams = function(rule, filter, limit) {
 		_.extend(selector, rule.selector(filter));
 	} else {
 		selector[rule.field] = {
-			$regex: rule.matchAll ? filter : `^${ filter }`,
+			$regex: rule.matchAll ? filter : `^${filter}`,
 			// default is case insensitive search - empty string is not the same as undefined!
 			$options: typeof rule.options === 'undefined' ? 'i' : rule.options,
 		};
@@ -66,7 +66,7 @@ const getFindParams = function(rule, filter, limit) {
 	return [selector, options];
 };
 
-const getField = function(obj, str) {
+const getField = function (obj, str) {
 	const string = str.split('.');
 	string.forEach((key) => {
 		obj = obj[key];
@@ -94,10 +94,11 @@ export default class AutoComplete {
 
 		this.onSelect = settings.onSelect;
 
-		this.expressions = (() => Object.keys(rules).map((key) => {
-			const rule = rules[key];
-			return getRegExp(rule);
-		}))();
+		this.expressions = (() =>
+			Object.keys(rules).map((key) => {
+				const rule = rules[key];
+				return getRegExp(rule);
+			}))();
 		this.matched = -1;
 		this.loaded = true;
 
@@ -130,7 +131,7 @@ export default class AutoComplete {
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
 			const endpointName = rule.endpoint || 'users.autocomplete';
-			const { items } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
+			const { items } = await APIClient.v1.get(`${endpointName}?selector=${JSON.stringify(selector)}`);
 			AutoCompleteRecords.remove({});
 			items.forEach((item) => AutoCompleteRecords.insert(item));
 			this.setLoaded(true);
@@ -192,7 +193,6 @@ export default class AutoComplete {
 		this._timeoutHandler = setTimeout(() => {
 			this._timeoutHandler = 0;
 
-
 			const startpos = this.element.selectionStart;
 			const val = this.getText().substring(0, startpos);
 
@@ -232,18 +232,19 @@ export default class AutoComplete {
 	}
 
 	onKeyDown(e) {
-		if (this.matched === -1 || (this.KEYS.indexOf(e.keyCode) < 0)) {
+		if (this.matched === -1 || this.KEYS.indexOf(e.keyCode) < 0) {
 			return;
 		}
 		switch (e.keyCode) {
 			case 9: // TAB
 			case 13: // ENTER
-				if (this.select()) { // Don't jump fields or submit if select successful
+				if (this.select()) {
+					// Don't jump fields or submit if select successful
 					e.preventDefault();
 					e.stopPropagation();
 				}
 				break;
-				// preventDefault needed below to avoid moving cursor when selecting
+			// preventDefault needed below to avoid moving cursor when selecting
 			case 40: // DOWN
 				e.preventDefault();
 				this.next();
@@ -324,7 +325,7 @@ export default class AutoComplete {
 
 	// Replace text with currently selected item
 	select() {
-		const node = this.tmplInst.find(`${ this.selector.item }.selected`);
+		const node = this.tmplInst.find(`${this.selector.item}.selected`);
 		if (node == null) {
 			return false;
 		}
@@ -355,13 +356,12 @@ export default class AutoComplete {
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
-
 	// Replace the appropriate region
 	replace(replacement) {
 		const startpos = this.element.selectionStart;
 		const fullStuff = this.getText();
 		let val = fullStuff.substring(0, startpos);
-		val = val.replace(this.expressions[this.matched], `$1${ this.rules[this.matched].token }${ replacement }`);
+		val = val.replace(this.expressions[this.matched], `$1${this.rules[this.matched].token}${replacement}`);
 		const posfix = fullStuff.substring(startpos, fullStuff.length);
 		const separator = posfix.match(/^\s/) ? '' : ' ';
 		const finalFight = val + separator + posfix;
@@ -385,7 +385,6 @@ export default class AutoComplete {
 		}
 		this.$element.html(text);
 	}
-
 
 	/*
 		Rendering functions
@@ -416,7 +415,8 @@ export default class AutoComplete {
 			if (rule.doNotChangeWidth !== false) {
 				pos.width = element.outerWidth(); // position.offsetWidth
 			}
-		} else { // Normal positioning, at token word
+		} else {
+			// Normal positioning, at token word
 			pos = { left: position.left + offset.left };
 		}
 
@@ -432,31 +432,32 @@ export default class AutoComplete {
 
 	ensureSelection() {
 		// Re-render; make sure selected item is something in the list or none if list empty
-		const selectedItem = this.tmplInst.$(`${ this.selector.item }.selected`);
+		const selectedItem = this.tmplInst.$(`${this.selector.item}.selected`);
 		if (!selectedItem.length) {
 			// Select anything
-			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+			this.tmplInst.$(`${this.selector.item}:first-child`).addClass('selected');
 		}
 	}
 
 	// Select next item in list
 	next() {
-		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
+		const currentItem = this.tmplInst.$(`${this.selector.item}.selected`);
 		if (!currentItem.length) {
-			return this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+			return this.tmplInst.$(`${this.selector.item}:first-child`).addClass('selected');
 		}
 		currentItem.removeClass('selected');
 		const next = currentItem.next();
 		if (next.length) {
 			next.addClass('selected');
-		} else { // End of list or lost selection; Go back to first item
-			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
+		} else {
+			// End of list or lost selection; Go back to first item
+			this.tmplInst.$(`${this.selector.item}:first-child`).addClass('selected');
 		}
 	}
 
 	// Select previous item in list
 	prev() {
-		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
+		const currentItem = this.tmplInst.$(`${this.selector.item}.selected`);
 		if (!currentItem.length) {
 			return; // Don't try to iterate an empty list
 		}
@@ -464,8 +465,9 @@ export default class AutoComplete {
 		const prev = currentItem.prev();
 		if (prev.length) {
 			prev.addClass('selected');
-		} else { // Beginning of list or lost selection; Go to end of list
-			this.tmplInst.$(`${ this.selector.item }:last-child`).addClass('selected');
+		} else {
+			// Beginning of list or lost selection; Go to end of list
+			this.tmplInst.$(`${this.selector.item}:last-child`).addClass('selected');
 		}
 	}
 

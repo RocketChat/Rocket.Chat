@@ -16,12 +16,6 @@ export const Default = () => (
 
 export const Error = () => (
 	<VerticalBar>
-		<AddUsers
-			onClickBack={alert}
-			onClickClose={alert}
-			onClickSave={alert}
-			value={[]}
-			errors={{ users: 'With Test Error' }}
-		/>
+		<AddUsers onClickBack={alert} onClickClose={alert} onClickSave={alert} value={[]} errors={{ users: 'With Test Error' }} />
 	</VerticalBar>
 );

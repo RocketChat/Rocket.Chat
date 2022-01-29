@@ -25,13 +25,9 @@ settings.watch<string>('Language', (value) => {
 });
 
 export const replacekey = (str: string, key: string, value = ''): string =>
-	str.replace(
-		new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
-		value,
-	);
+	str.replace(new RegExp(`(\\[${key}\\]|__${key}__)`, 'igm'), value);
 
-export const translate = (str: string): string =>
-	replaceVariables(str, (_match, key) => TAPi18n.__(key, { lng }));
+export const translate = (str: string): string => replaceVariables(str, (_match, key) => TAPi18n.__(key, { lng }));
 
 export const replace = (str: string, data: { [key: string]: unknown } = {}): string => {
 	if (!str) {
@@ -45,15 +41,16 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 		Site_URL: settings.get<string>('Site_Url'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
-		...data.name ? {
-			fname: s.strLeft(String(data.name), ' '),
-			lname: s.strRightBack(String(data.name), ' '),
-		} : {},
+		...(data.name
+			? {
+					fname: s.strLeft(String(data.name), ' '),
+					lname: s.strRightBack(String(data.name), ' '),
+			  }
+			: {}),
 		...data,
 	};
 
-	return Object.entries(options)
-		.reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
+	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
 };
 
 const nonEscapeKeys = ['room_path'];
@@ -67,7 +64,7 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
-		...Object.entries(data).reduce<{[key: string]: string}>((ret, [key, value]) => {
+		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
 			if (value !== undefined && value !== null) {
 				ret[key] = nonEscapeKeys.includes(key) ? String(value) : escapeHTML(String(value));
 			}
@@ -119,20 +116,29 @@ export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string)
 };
 
 settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
-	getTemplate('Email_Header', (value) => {
-		contentHeader = replace(value || '');
-		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	}, false);
+	getTemplate(
+		'Email_Header',
+		(value) => {
+			contentHeader = replace(value || '');
+			body = inlinecss(`${contentHeader} {{body}} ${contentFooter}`);
+		},
+		false,
+	);
 
-	getTemplate('Email_Footer', (value) => {
-		contentFooter = replace(value || '');
-		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	}, false);
+	getTemplate(
+		'Email_Footer',
+		(value) => {
+			contentFooter = replace(value || '');
+			body = inlinecss(`${contentHeader} {{body}} ${contentFooter}`);
+		},
+		false,
+	);
 
-	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
+	body = inlinecss(`${contentHeader} {{body}} ${contentFooter}`);
 });
 
-export const checkAddressFormat = (adresses: string | string[]): boolean => ([] as string[]).concat(adresses).every((address) => validateEmail(address));
+export const checkAddressFormat = (adresses: string | string[]): boolean =>
+	([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
 export const sendNoWrap = ({
 	to,
@@ -194,9 +200,7 @@ export const send = ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data))
-			|| (html && stripHtml(replace(html, data)).result)
-			|| undefined,
+		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});

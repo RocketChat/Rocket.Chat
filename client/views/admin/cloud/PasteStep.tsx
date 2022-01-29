@@ -43,14 +43,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_finish_helper')}</p>
 				</Box>
-				<Box
-					display='flex'
-					flexDirection='column'
-					alignItems='stretch'
-					padding='x16'
-					flexGrow={1}
-					backgroundColor='neutral-800'
-				>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='neutral-800'>
 					<Scrollable vertical>
 						<Box
 							is='textarea'
@@ -76,12 +69,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 					<Button disabled={isLoading} onClick={onBackButtonClick}>
 						{t('Back')}
 					</Button>
-					<Button
-						primary
-						disabled={isLoading || !cloudKey.trim()}
-						marginInlineStart='auto'
-						onClick={handleFinishButtonClick}
-					>
+					<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
 						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
 					</Button>
 				</ButtonGroup>

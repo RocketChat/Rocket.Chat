@@ -41,9 +41,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		});
 
 		const createPoints = (): { x: Date; y: number }[] =>
-			Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) =>
-				createPoint(i),
-			);
+			Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => createPoint(i));
 
 		const dauValues = createPoints();
 		const prevDauValue = createPoint(-1);
@@ -54,9 +52,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 
 		const usersListsMap = data.month.reduce<{ [x: number]: string[] }>((map, dayData) => {
 			const date = utc
-				? moment
-						.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day })
-						.endOf('day')
+				? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
 				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
 			const dateOffset = date.diff(data.start, 'days');
 			if (dateOffset >= 0) {
@@ -117,12 +113,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						const values = [];
 
 						for (let i = 0; i < 30; i++) {
-							values.push([
-								dauValues[i].x.toISOString(),
-								dauValues[i].y,
-								wauValues[i].y,
-								mauValues[i].y,
-							]);
+							values.push([dauValues[i].x.toISOString(), dauValues[i].y, wauValues[i].y, mauValues[i].y]);
 						}
 
 						return values;
@@ -227,8 +218,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (date): string =>
-												moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
+											format: (date): string => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
 										}}
 										animate={true}
 										motionStiffness={90}
@@ -252,8 +242,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											tooltip: {
 												container: {
 													backgroundColor: '#1F2329',
-													boxShadow:
-														'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+													boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 													borderRadius: 2,
 												},
 											},

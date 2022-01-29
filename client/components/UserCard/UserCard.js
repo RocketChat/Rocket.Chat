@@ -69,13 +69,7 @@ const UserCard = forwardRef(function UserCard(
 					)}
 				</Box>
 				{customStatus && (
-					<Info>
-						{typeof customStatus === 'string' ? (
-							<MarkdownText content={customStatus} />
-						) : (
-							customStatus
-						)}
-					</Info>
+					<Info>{typeof customStatus === 'string' ? <MarkdownText content={customStatus} parseEmoji={true} /> : customStatus}</Info>
 				)}
 				<Roles>{roles}</Roles>
 				<Info>{localTime}</Info>

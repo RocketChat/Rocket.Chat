@@ -6,7 +6,7 @@ import _ from 'underscore';
 
 const AccessTokenServices = {};
 
-export const registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
+export const registerAccessTokenService = function (serviceName, handleAccessTokenRequest) {
 	AccessTokenServices[serviceName] = {
 		serviceName,
 		handleAccessTokenRequest,
@@ -15,20 +15,23 @@ export const registerAccessTokenService = function(serviceName, handleAccessToke
 
 // Listen to calls to `login` with an oauth option set. This is where
 // users actually get logged in to meteor via oauth.
-Accounts.registerLoginHandler(function(options) {
+Accounts.registerLoginHandler(function (options) {
 	if (!options.accessToken) {
 		return undefined; // don't handle
 	}
 
-	check(options, Match.ObjectIncluding({
-		serviceName: String,
-	}));
+	check(
+		options,
+		Match.ObjectIncluding({
+			serviceName: String,
+		}),
+	);
 
 	const service = AccessTokenServices[options.serviceName];
 
 	// Skip everything if there's no service set by the oauth middleware
 	if (!service) {
-		throw new Error(`Unexpected AccessToken service ${ options.serviceName }`);
+		throw new Error(`Unexpected AccessToken service ${options.serviceName}`);
 	}
 
 	// Make sure we're configured
@@ -42,10 +45,7 @@ Accounts.registerLoginHandler(function(options) {
 		// unregisterService was called on it.
 		return {
 			type: 'oauth',
-			error: new Meteor.Error(
-				Accounts.LoginCancelledError.numericError,
-				`No registered oauth service found for: ${ service.serviceName }`,
-			),
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, `No registered oauth service found for: ${service.serviceName}`),
 		};
 	}
 

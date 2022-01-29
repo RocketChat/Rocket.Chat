@@ -94,14 +94,7 @@ const AnalyticsPage = () => {
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
-						<Box
-							display='flex'
-							w='33%'
-							flexDirection='row'
-							justifyContent='stretch'
-							p='x10'
-							mis='x4'
-						>
+						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
 							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department} />
 						</Box>
 					</Box>

@@ -8,11 +8,7 @@ type ReturnChatQueueModalProps = {
 	onCancel: () => void;
 };
 
-const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
-	onCancel,
-	onMoveChat,
-	...props
-}) => {
+const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({ onCancel, onMoveChat, ...props }) => {
 	const t = useTranslation();
 
 	return (

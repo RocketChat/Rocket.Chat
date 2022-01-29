@@ -11,10 +11,10 @@ import PriceDisplay from './PriceDisplay';
 import { App } from './types';
 
 type AppDetailsPageContentProps = {
-	data: App;
+	app: App;
 };
 
-const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
+const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 	const t = useTranslation();
 
 	const {
@@ -30,17 +30,12 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 		iconFileContent,
 		installed,
 		bundledIn,
-	} = data;
+	} = app;
 
 	return (
 		<>
 			<Box display='flex' flexDirection='row' mbe='x20' w='full'>
-				<AppAvatar
-					size='x124'
-					mie='x20'
-					iconFileContent={iconFileContent}
-					iconFileData={iconFileData}
-				/>
+				<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 					<Box fontScale='h2'>{name}</Box>
 					<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
@@ -49,45 +44,28 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 						</Box>
 						|<Box mis='x4'>{t('Version_version', { version })}</Box>
 					</Box>
-					<Box
-						display='flex'
-						flexDirection='row'
-						alignItems='center'
-						justifyContent='space-between'
-					>
-						<Box
-							flexGrow={1}
-							display='flex'
-							flexDirection='row'
-							alignItems='center'
-							marginInline='neg-x8'
-						>
-							<AppStatus app={data} marginInline='x8' />
+					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
+							<AppStatus app={app} marginInline='x8' />
 							{!installed && (
-								<PriceDisplay
-									purchaseType={purchaseType}
-									pricingPlans={pricingPlans}
-									price={price}
-									showType={false}
-									marginInline='x8'
-								/>
+								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 							)}
 						</Box>
-						{installed && <AppMenu app={data} />}
+						{installed && <AppMenu app={app} />}
 					</Box>
 				</Box>
 			</Box>
 			<Divider />
 
-			{data.licenseValidation && (
+			{app.licenseValidation && (
 				<>
-					{Object.entries(data.licenseValidation.warnings).map(([key]) => (
+					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
 						<Callout key={key} type='warning'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
-					{Object.entries(data.licenseValidation.errors).map(([key]) => (
+					{Object.entries(app.licenseValidation.errors).map(([key]) => (
 						<Callout key={key} type='danger'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
@@ -107,13 +85,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 					</Box>
 
 					<Box fontScale='h4'>{t('Contact')}</Box>
-					<Box
-						display='flex'
-						flexDirection='row'
-						flexGrow={1}
-						justifyContent='space-around'
-						flexWrap='wrap'
-					>
+					<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>
 						<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
 							<Box fontScale='h4' color='hint'>
 								{t('Author_Site')}

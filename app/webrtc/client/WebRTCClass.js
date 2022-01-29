@@ -179,7 +179,6 @@ class WebRTCClass {
 		this.transport.onRemoteDescription(this.onRemoteDescription.bind(this));
 		this.transport.onRemoteStatus(this.onRemoteStatus.bind(this));
 
-
 		Meteor.setInterval(this.checkPeerConnections.bind(this), 1000);
 
 		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
@@ -251,7 +250,7 @@ class WebRTCClass {
 
 	resetCallInProgress = () => {
 		this.callInProgress.set(false);
-	}
+	};
 
 	broadcastStatus() {
 		if (this.active !== true || this.monitor === true || this.remoteMonitoring === true) {
@@ -272,7 +271,6 @@ class WebRTCClass {
 		});
 	}
 
-
 	/*
   		@param data {Object}
   			from {String}
@@ -290,14 +288,16 @@ class WebRTCClass {
 		if (this.active !== true) {
 			return;
 		}
-		const remoteConnections = [{
-			id: data.from,
-			media: data.media,
-		},
-		...data.remoteConnections];
+		const remoteConnections = [
+			{
+				id: data.from,
+				media: data.media,
+			},
+			...data.remoteConnections,
+		];
 
 		remoteConnections.forEach((remoteConnection) => {
-			if (remoteConnection.id !== this.selfId && (this.peerConnections[remoteConnection.id] == null)) {
+			if (remoteConnection.id !== this.selfId && this.peerConnections[remoteConnection.id] == null) {
 				this.log('reconnecting with', remoteConnection.id);
 				this.onRemoteJoin({
 					from: remoteConnection.id,
@@ -306,7 +306,6 @@ class WebRTCClass {
 			}
 		});
 	}
-
 
 	/*
   		@param id {String}
@@ -321,7 +320,19 @@ class WebRTCClass {
 		peerConnection.createdAt = Date.now();
 		peerConnection.remoteMedia = {};
 		this.peerConnections[id] = peerConnection;
-		const eventNames = ['icecandidate', 'addstream', 'removestream', 'iceconnectionstatechange', 'datachannel', 'identityresult', 'idpassertionerror', 'idpvalidationerror', 'negotiationneeded', 'peeridentity', 'signalingstatechange'];
+		const eventNames = [
+			'icecandidate',
+			'addstream',
+			'removestream',
+			'iceconnectionstatechange',
+			'datachannel',
+			'identityresult',
+			'idpassertionerror',
+			'idpvalidationerror',
+			'negotiationneeded',
+			'peeridentity',
+			'signalingstatechange',
+		];
 
 		eventNames.forEach((eventName) => {
 			peerConnection.addEventListener(eventName, (e) => {
@@ -349,7 +360,10 @@ class WebRTCClass {
 			this.updateRemoteItems();
 		});
 		peerConnection.addEventListener('iceconnectionstatechange', () => {
-			if ((peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'closed') && peerConnection === this.peerConnections[id]) {
+			if (
+				(peerConnection.iceConnectionState === 'disconnected' || peerConnection.iceConnectionState === 'closed') &&
+				peerConnection === this.peerConnections[id]
+			) {
 				this.stopPeerConnection(id);
 				Meteor.setTimeout(() => {
 					if (Object.keys(this.peerConnections).length === 0) {
@@ -396,7 +410,7 @@ class WebRTCClass {
 			return;
 		}
 		const getScreen = (audioStream) => {
-			const refresh = function() {
+			const refresh = function () {
 				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing'),
@@ -407,34 +421,37 @@ class WebRTCClass {
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
-				modal.open({
-					type: 'warning',
-					title: TAPi18n.__('Screen_Share'),
-					text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
-					html: true,
-					showCancelButton: true,
-					confirmButtonText: TAPi18n.__('Install_Extension'),
-					cancelButtonText: TAPi18n.__('Cancel'),
-				}, (isConfirm) => {
-					if (isConfirm) {
-						if (this.navigator === 'chrome') {
-							const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
-							try {
-								chrome.webstore.install(url, refresh, function() {
+				modal.open(
+					{
+						type: 'warning',
+						title: TAPi18n.__('Screen_Share'),
+						text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
+						html: true,
+						showCancelButton: true,
+						confirmButtonText: TAPi18n.__('Install_Extension'),
+						cancelButtonText: TAPi18n.__('Cancel'),
+					},
+					(isConfirm) => {
+						if (isConfirm) {
+							if (this.navigator === 'chrome') {
+								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
+								try {
+									chrome.webstore.install(url, refresh, function () {
+										window.open(url);
+										refresh();
+									});
+								} catch (_error) {
+									console.log(_error);
 									window.open(url);
 									refresh();
-								});
-							} catch (_error) {
-								console.log(_error);
-								window.open(url);
+								}
+							} else if (this.navigator === 'firefox') {
+								window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
 								refresh();
 							}
-						} else if (this.navigator === 'firefox') {
-							window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
-							refresh();
 						}
-					}
-				});
+					},
+				);
 				return onError(false);
 			}
 
@@ -470,7 +487,7 @@ class WebRTCClass {
 				});
 			}
 		};
-		if (this.navigator === 'firefox' || (media.audio == null) || media.audio === false) {
+		if (this.navigator === 'firefox' || media.audio == null || media.audio === false) {
 			getScreen();
 		} else {
 			const getAudioSuccess = (audioStream) => {
@@ -480,12 +497,15 @@ class WebRTCClass {
 				getScreen();
 			};
 
-			this._getUserMedia({
-				audio: media.audio,
-			}, getAudioSuccess, getAudioError);
+			this._getUserMedia(
+				{
+					audio: media.audio,
+				},
+				getAudioSuccess,
+				getAudioError,
+			);
 		}
 	}
-
 
 	/*
   		@param callback {Function}
@@ -513,7 +533,6 @@ class WebRTCClass {
 		this.getUserMedia(this.media, onSuccess, onError);
 	}
 
-
 	/*
   		@param id {String}
    */
@@ -526,7 +545,7 @@ class WebRTCClass {
 		delete this.peerConnections[id];
 		peerConnection.close();
 		this.updateRemoteItems();
-	}
+	};
 
 	stopAllPeerConnections() {
 		const { peerConnections } = this;
@@ -538,7 +557,7 @@ class WebRTCClass {
 
 	setAudioEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getAudioTracks().forEach(function(audio) {
+			this.localStream.getAudioTracks().forEach(function (audio) {
 				audio.enabled = enabled;
 			});
 			this.audioEnabled.set(enabled);
@@ -562,7 +581,7 @@ class WebRTCClass {
 
 	setVideoEnabled(enabled = true) {
 		if (this.localStream != null) {
-			this.localStream.getVideoTracks().forEach(function(video) {
+			this.localStream.getVideoTracks().forEach(function (video) {
 				video.enabled = enabled;
 			});
 			this.videoEnabled.set(enabled);
@@ -619,7 +638,6 @@ class WebRTCClass {
 		this.stopAllPeerConnections();
 	}
 
-
 	/*
   		@param media {Object}
   			audio {Boolean}
@@ -647,7 +665,6 @@ class WebRTCClass {
 			monitor: true,
 		});
 	}
-
 
 	/*
   		@param data {Object}
@@ -699,26 +716,28 @@ class WebRTCClass {
 			icon = 'phone';
 			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
 		}
-		modal.open({
-			title: `<i class='icon-${ icon } alert-icon success-color'></i>${ title }`,
-			text: t('Do_you_want_to_accept'),
-			html: true,
-			showCancelButton: true,
-			confirmButtonText: t('Yes'),
-			cancelButtonText: t('No'),
-		}, (isConfirm) => {
-			if (isConfirm) {
-				goToRoomById(data.room);
-				return this.joinCall({
-					to: data.from,
-					monitor: data.monitor,
-					media: data.media,
-				});
-			}
-			this.stop();
-		});
+		modal.open(
+			{
+				title: `<i class='icon-${icon} alert-icon success-color'></i>${title}`,
+				text: t('Do_you_want_to_accept'),
+				html: true,
+				showCancelButton: true,
+				confirmButtonText: t('Yes'),
+				cancelButtonText: t('No'),
+			},
+			(isConfirm) => {
+				if (isConfirm) {
+					goToRoomById(data.room);
+					return this.joinCall({
+						to: data.from,
+						monitor: data.monitor,
+						media: data.media,
+					});
+				}
+				this.stop();
+			},
+		);
 	}
-
 
 	/*
   		@param data {Object}
@@ -739,7 +758,6 @@ class WebRTCClass {
 			this.transport.joinCall(data);
 		});
 	}
-
 
 	onRemoteJoin(data, ...args) {
 		if (this.active !== true) {
@@ -796,7 +814,6 @@ class WebRTCClass {
 		}
 	}
 
-
 	onRemoteOffer(data, ...args) {
 		if (this.active !== true) {
 			return;
@@ -805,7 +822,7 @@ class WebRTCClass {
 		this.log('onRemoteOffer', [data, ...args]);
 		let peerConnection = this.getPeerConnection(data.from);
 
-		if (['have-local-offer', 'stable'].includes(peerConnection.signalingState) && (peerConnection.createdAt < data.ts)) {
+		if (['have-local-offer', 'stable'].includes(peerConnection.signalingState) && peerConnection.createdAt < data.ts) {
 			this.stopPeerConnection(data.from);
 			peerConnection = this.getPeerConnection(data.from);
 		}
@@ -843,7 +860,6 @@ class WebRTCClass {
 		peerConnection.createAnswer(onAnswer, this.onError);
 	}
 
-
 	/*
   		@param data {Object}
   			to {String}
@@ -860,12 +876,16 @@ class WebRTCClass {
 		}
 		this.log('onRemoteCandidate', [data, ...args]);
 		const peerConnection = this.getPeerConnection(data.from);
-		if (peerConnection.iceConnectionState !== 'closed' && peerConnection.iceConnectionState !== 'failed' && peerConnection.iceConnectionState !== 'disconnected' && peerConnection.iceConnectionState !== 'completed') {
+		if (
+			peerConnection.iceConnectionState !== 'closed' &&
+			peerConnection.iceConnectionState !== 'failed' &&
+			peerConnection.iceConnectionState !== 'disconnected' &&
+			peerConnection.iceConnectionState !== 'completed'
+		) {
 			peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
 		}
 		document.querySelector('video#remoteVideo').srcObject = this.remoteItems.get()[0]?.url;
 	}
-
 
 	/*
   		@param data {Object}
@@ -902,7 +922,7 @@ class WebRTCClass {
 	}
 }
 
-const WebRTC = new class {
+const WebRTC = new (class {
 	constructor() {
 		this.instancesByRoomId = {};
 	}
@@ -945,10 +965,10 @@ const WebRTC = new class {
 		}
 		return this.instancesByRoomId[rid];
 	}
-}();
+})();
 
-Meteor.startup(function() {
-	Tracker.autorun(function() {
+Meteor.startup(function () {
+	Tracker.autorun(function () {
 		if (Meteor.userId()) {
 			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
 				if (data.room == null) {

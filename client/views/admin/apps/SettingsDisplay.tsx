@@ -1,34 +1,27 @@
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Box, Divider } from '@rocket.chat/fuselage';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 
-import { ISetting } from '../../../../definition/ISetting';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 
 type SettingsDisplayProps = {
 	settings: {
-		[id: string]: ISetting & { id: ISetting['_id'] };
+		[id: string]: ISetting;
 	};
 	setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
 	settingsRef: MutableRefObject<Record<string, ISetting['value']>>;
 };
 
-const SettingsDisplay: FC<SettingsDisplayProps> = ({
-	settings,
-	setHasUnsavedChanges,
-	settingsRef,
-}) => {
+const SettingsDisplay: FC<SettingsDisplayProps> = ({ settings, setHasUnsavedChanges, settingsRef }) => {
 	const t = useTranslation();
 
 	const stringifiedSettings = JSON.stringify(settings);
 
 	const reducedSettings = useMemo(() => {
 		const settings: SettingsDisplayProps['settings'] = JSON.parse(stringifiedSettings);
-		return Object.values(settings).reduce(
-			(ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }),
-			{},
-		);
+		return Object.values(settings).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
 	}, [stringifiedSettings]);
 
 	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings);

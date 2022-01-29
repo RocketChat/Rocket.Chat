@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 
 import { VideoRecorder } from '../../ui';
 
-export const VRecDialog = new class {
+export const VRecDialog = new (class {
 	opened = false;
 
 	dialogView = null;
@@ -47,4 +47,4 @@ export const VRecDialog = new class {
 		}
 		return VideoRecorder.start(this.video);
 	}
-}();
+})();

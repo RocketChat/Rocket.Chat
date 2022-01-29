@@ -11,7 +11,9 @@ Template.visitorEditCustomField.helpers({
 		return this.options.split(',');
 	},
 	selectedField(current) {
-		const { fieldData: { value } } = Template.currentData();
+		const {
+			fieldData: { value },
+		} = Template.currentData();
 		return value.trim() === current.trim();
 	},
 });

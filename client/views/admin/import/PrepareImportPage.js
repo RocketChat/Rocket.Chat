@@ -1,13 +1,4 @@
-import {
-	Badge,
-	Box,
-	Button,
-	ButtonGroup,
-	Icon,
-	Margins,
-	Throbber,
-	Tabs,
-} from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
@@ -58,10 +49,7 @@ function PrepareImportPage() {
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
-	const channelsCount = useMemo(
-		() => channels.filter(({ do_import }) => do_import).length,
-		[channels],
-	);
+	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
 
 	const importHistoryRoute = useRoute('admin-import');
 	const newImportRoute = useRoute('admin-import-new');
@@ -215,11 +203,7 @@ function PrepareImportPage() {
 					</Box>
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
-							<Tabs.Item
-								disabled={usersCount === 0}
-								selected={tab === 'users'}
-								onClick={handleTabClick('users')}
-							>
+							<Tabs.Item disabled={usersCount === 0} selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
 							</Tabs.Item>
 							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
@@ -236,12 +220,7 @@ function PrepareImportPage() {
 							<>
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<Box
-											is='progress'
-											value={(progressRate * 10).toFixed(0)}
-											max='1000'
-											marginInlineEnd='x24'
-										/>
+										<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
 										<Box is='span'>{s.numberFormat(progressRate, 0)}%</Box>
 									</Box>
 								) : (
@@ -249,15 +228,9 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && (
-							<PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />
-						)}
+						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels
-								channels={channels}
-								channelsCount={channelsCount}
-								setChannels={setChannels}
-							/>
+							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}
 					</Margins>
 				</Box>

@@ -61,7 +61,9 @@ Meteor.methods({
 					channels = channels.concat(Rooms.findByType('c', options).fetch());
 				}
 			} else if (hasPermission(userId, 'view-joined-room')) {
-				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })
+					.fetch()
+					.map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
 				} else {
@@ -73,7 +75,7 @@ Meteor.methods({
 		if (channelType !== 'public' && hasPermission(userId, 'view-p-room')) {
 			const user = Users.findOne(userId, {
 				fields: {
-					username: 1,
+					'username': 1,
 					'settings.preferences.sidebarGroupByType': 1,
 				},
 			});
@@ -82,7 +84,9 @@ Meteor.methods({
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } })
+					.fetch()
+					.map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
 				} else {

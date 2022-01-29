@@ -100,9 +100,7 @@ function CodeMirror({
 		}
 	}, [textAreaRef, value]);
 
-	return (
-		<textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />
-	);
+	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }
 
 export default CodeMirror;

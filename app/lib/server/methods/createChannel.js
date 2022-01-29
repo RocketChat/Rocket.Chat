@@ -16,6 +16,9 @@ Meteor.methods({
 		if (!hasPermission(Meteor.userId(), 'create-c')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
-		return createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		return createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, {
+			customFields,
+			...extraData,
+		});
 	},
 });

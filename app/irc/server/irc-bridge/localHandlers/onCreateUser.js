@@ -15,14 +15,17 @@ export default function handleOnCreateUser(newUser) {
 
 	this.loggedInUsers.push(newUser._id);
 
-	Meteor.users.update({ _id: newUser._id }, {
-		$set: {
-			'profile.irc.fromIRC': false,
-			'profile.irc.username': `${ newUser.username }-rkt`,
-			'profile.irc.nick': `${ newUser.username }-rkt`,
-			'profile.irc.hostname': 'rocket.chat',
+	Meteor.users.update(
+		{ _id: newUser._id },
+		{
+			$set: {
+				'profile.irc.fromIRC': false,
+				'profile.irc.username': `${newUser.username}-rkt`,
+				'profile.irc.nick': `${newUser.username}-rkt`,
+				'profile.irc.hostname': 'rocket.chat',
+			},
 		},
-	});
+	);
 
 	const user = Users.findOne({
 		_id: newUser._id,

@@ -57,9 +57,7 @@ const CannedResponseEdit: FC<{
 	const { values, handlers, hasUnsavedChanges } = form;
 
 	const [errors, setErrors] = useState<any>({});
-	const [radioDescription, setRadioDescription] = useState<string>(
-		t('Canned_Response_Sharing_Private_Description'),
-	);
+	const [radioDescription, setRadioDescription] = useState<string>(t('Canned_Response_Sharing_Private_Description'));
 	const [preview, setPreview] = useState(false);
 
 	const listErrors = useMemo(() => {
@@ -109,9 +107,7 @@ const CannedResponseEdit: FC<{
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
-			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
-				typeof tag === 'object' ? tag?.value : tag,
-			);
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) => (typeof tag === 'object' ? tag?.value : tag));
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
@@ -151,13 +147,7 @@ const CannedResponseEdit: FC<{
 					<Button onClick={handleReturn}>
 						<Icon name='back' /> {t('Back')}
 					</Button>
-					<Button
-						primary
-						mie='none'
-						flexGrow={1}
-						disabled={!hasUnsavedChanges || !canSave}
-						onClick={onSave}
-					>
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

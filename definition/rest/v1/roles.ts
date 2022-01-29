@@ -5,8 +5,7 @@ import { IRole, IUser } from '../../IUser';
 
 const ajv = new Ajv();
 
-type RoleCreateProps = Pick<IRole, 'name'> &
-	Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
+type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
 const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
 	type: 'object',
