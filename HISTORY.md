@@ -1,152 +1,12 @@
 
-# 4.4.0 (Under Release Candidate Process)
+# 4.4.0
+`2022-01-28  ·  4 🎉  ·  13 🚀  ·  29 🐛  ·  44 🔍  ·  34 👩‍💻👨‍💻`
 
-## 4.4.0-rc.4
-`2022-01-28  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Chore: Update Apps-Engine version ([#24335](https://github.com/RocketChat/Rocket.Chat/pull/24335))
-
-- Release 4.3.3 ([#24340](https://github.com/RocketChat/Rocket.Chat/pull/24340))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 4.4.0-rc.3
-`2022-01-28  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix OmnichannelAppSourceRoomIcon sizes ([#24322](https://github.com/RocketChat/Rocket.Chat/pull/24322))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 4.4.0-rc.2
-`2022-01-28  ·  1 🐛  ·  3 🔍  ·  3 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Discussions not loading message history if not joined ([#24316](https://github.com/RocketChat/Rocket.Chat/pull/24316))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Create migration to fix index issue at boot ([#24289](https://github.com/RocketChat/Rocket.Chat/pull/24289))
-
-- Regression: Discussion room crashing ([#24272](https://github.com/RocketChat/Rocket.Chat/pull/24272))
-
-- Regression: Standalone register path failing when saving data ([#24324](https://github.com/RocketChat/Rocket.Chat/pull/24324))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-
-## 4.4.0-rc.1
-`2022-01-26  ·  2 🚀  ·  2 🐛  ·  9 🔍  ·  13 👩‍💻👨‍💻`
-
-### 🚀 Improvements
-
-
-- lib/Statistics improved and metrics collector ([#24177](https://github.com/RocketChat/Rocket.Chat/pull/24177))
-
-  - On `statistics` object the property `get`  is an async function now.  
-  - We need to collect additional data of feature activation through the statistics collector.
-    - Some codes were splitted into another file just to organize.
-
-- Setup Wizard Registration Flow ([#23676](https://github.com/RocketChat/Rocket.Chat/pull/23676))
-
-  This pull request brings a few improvements in our setup wizard flow, the very first contact with a Rocket.Chat. Some of them:   
-  - A brand new visual design;  
-  - Form validation improves;  
-  - Allow users to navigate back to all steps;  
-  - Optimized steps to register your workspace or keep standalone. And many more!
-
-
-  ![Kapture 2022-01-20 at 11 19 47](https://user-images.githubusercontent.com/27704687/150356868-425666b4-511f-4690-9ce5-e61b839b1d19.gif)
-
-### 🐛 Bug fixes
-
-
-- Fixing the changing custom status behavior ([#24218](https://github.com/RocketChat/Rocket.Chat/pull/24218))
-
-- Solved Report Message Blank  ([#24262](https://github.com/RocketChat/Rocket.Chat/pull/24262) by [@nishant23122000](https://github.com/nishant23122000))
-
-  After resolving issue #24261  :
-
-  https://user-images.githubusercontent.com/53515714/150629459-5f0a9cf6-9b0e-417f-8fc1-44c810bd5428.mp4
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Chore: Slash Commands Join to Typescript ([#24254](https://github.com/RocketChat/Rocket.Chat/pull/24254))
-
-  Convert the slash commands .js files to .ts files.
-
-- i18n: Language update from LingoHub 🤖 on 2022-01-24Z ([#24268](https://github.com/RocketChat/Rocket.Chat/pull/24268))
-
-- Regression: Align Omni-Source icon sizes with designs ([#24269](https://github.com/RocketChat/Rocket.Chat/pull/24269))
-
-- Regression: Fix Alpine release tag ([#24259](https://github.com/RocketChat/Rocket.Chat/pull/24259))
-
-- Regression: Fix Default Business hour overriding other Business Hours ([#24288](https://github.com/RocketChat/Rocket.Chat/pull/24288))
-
-- Regression: Fix Inactive Departments still visible on Livechat ([#24267](https://github.com/RocketChat/Rocket.Chat/pull/24267))
-
-- Regression: Fix incompatibility of apps http requests ([#24276](https://github.com/RocketChat/Rocket.Chat/pull/24276))
-
-  HTTP GET and HEAD requests made with an empty object as `data` were breaking, as the bridge converted this to the request's body as `'{}'` but meteor's new lib doesn't allow for body content on either of this request methods.
-
-  To maintain compatibility, we forced an empty body whenever we have a GET or HEAD request. This was probably the case previously, with the body of requests made with this methods being ignored either before being sent or in the third party server receiving the request
-
-- Regression: Fix pino child log levels ([#24302](https://github.com/RocketChat/Rocket.Chat/pull/24302))
-
-- Regression: Update tap-i18n package ([#24298](https://github.com/RocketChat/Rocket.Chat/pull/24298))
-
-  Fix the issue breaking IE11.
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@nishant23122000](https://github.com/nishant23122000)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
-- [@KevLehman](https://github.com/KevLehman)
-- [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@d-gubert](https://github.com/d-gubert)
-- [@debdutdeb](https://github.com/debdutdeb)
-- [@dougfabris](https://github.com/dougfabris)
-- [@eduardofcabrera](https://github.com/eduardofcabrera)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@murtaza98](https://github.com/murtaza98)
-- [@ostjen](https://github.com/ostjen)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.4.0-rc.0
-`2022-01-21  ·  4 🎉  ·  11 🚀  ·  26 🐛  ·  29 🔍  ·  32 👩‍💻👨‍💻`
+### Engine versions
+- Node: `14.18.2`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.30.0`
 
 ### 🎉 New features
 
@@ -197,6 +57,12 @@
 
 - Importer text for CSV upload file format ([#23817](https://github.com/RocketChat/Rocket.Chat/pull/23817))
 
+- lib/Statistics improved and metrics collector ([#24177](https://github.com/RocketChat/Rocket.Chat/pull/24177))
+
+  - On `statistics` object the property `get`  is an async function now.  
+  - We need to collect additional data of feature activation through the statistics collector.
+    - Some codes were splitted into another file just to organize.
+
 - Limit recent emojis to 27 ([#24210](https://github.com/RocketChat/Rocket.Chat/pull/24210))
 
   Limits the recent emoji list to a maximum of 3 rows instead of listing every emoji you've used so far.
@@ -224,6 +90,17 @@
   ### after
   ![image](https://user-images.githubusercontent.com/27704687/149158027-e39bc0a0-4c33-465b-83e0-873e558a037b.png)
   ![image](https://user-images.githubusercontent.com/27704687/149157692-3e73c0b4-1759-430c-b1c4-b521e47d774d.png)
+
+- Setup Wizard Registration Flow ([#23676](https://github.com/RocketChat/Rocket.Chat/pull/23676))
+
+  This pull request brings a few improvements in our setup wizard flow, the very first contact with a Rocket.Chat. Some of them:   
+  - A brand new visual design;  
+  - Form validation improves;  
+  - Allow users to navigate back to all steps;  
+  - Optimized steps to register your workspace or keep standalone. And many more!
+
+
+  ![Kapture 2022-01-20 at 11 19 47](https://user-images.githubusercontent.com/27704687/150356868-425666b4-511f-4690-9ce5-e61b839b1d19.gif)
 
 - Show Channel Icons on Room Header & Info panels ([#24239](https://github.com/RocketChat/Rocket.Chat/pull/24239))
 
@@ -288,6 +165,8 @@
 
   ![custom-img-preview-rc2](https://user-images.githubusercontent.com/73601258/148431998-64bc1fbb-9958-495c-89c1-61df06adec75.png)
 
+- Discussions not loading message history if not joined ([#24316](https://github.com/RocketChat/Rocket.Chat/pull/24316))
+
 - Ensure Firefox 91 ESR support ([#24096](https://github.com/RocketChat/Rocket.Chat/pull/24096))
 
   It:  
@@ -312,6 +191,8 @@
 
 - Fixed broken links in setup wizard ([#24248](https://github.com/RocketChat/Rocket.Chat/pull/24248) by [@Himanshu664](https://github.com/Himanshu664))
 
+- Fixing the changing custom status behavior ([#24218](https://github.com/RocketChat/Rocket.Chat/pull/24218))
+
 - Integration section crashing opening in My Account ([#24068](https://github.com/RocketChat/Rocket.Chat/pull/24068))
 
 - Make canned responses popup dependent on Canned_responses_enabled setting ([#23804](https://github.com/RocketChat/Rocket.Chat/pull/23804))
@@ -331,6 +212,12 @@
 - Password error should not be shown when selecting set random password ([#21181](https://github.com/RocketChat/Rocket.Chat/pull/21181))
 
   We should not keep `password` as required field when we check set random password field. In this password should not be required
+
+- Solved Report Message Blank  ([#24262](https://github.com/RocketChat/Rocket.Chat/pull/24262) by [@nishant23122000](https://github.com/nishant23122000))
+
+  After resolving issue #24261  :
+
+  https://user-images.githubusercontent.com/53515714/150629459-5f0a9cf6-9b0e-417f-8fc1-44c810bd5428.mp4
 
 - Wrong german translation for 2FA-Promt ([#24126](https://github.com/RocketChat/Rocket.Chat/pull/24126) by [@mbreslein-thd](https://github.com/mbreslein-thd))
 
@@ -380,7 +267,13 @@
 
   It replaces some templates used by login and invitation flows with React components. It also drops `main` template, allowing `appLayout` to just handle components now.
 
+- Chore: Slash Commands Join to Typescript ([#24254](https://github.com/RocketChat/Rocket.Chat/pull/24254))
+
+  Convert the slash commands .js files to .ts files.
+
 - Chore: Update Apps-Engine to 1.29.2 ([#24171](https://github.com/RocketChat/Rocket.Chat/pull/24171))
+
+- Chore: Update Apps-Engine version ([#24335](https://github.com/RocketChat/Rocket.Chat/pull/24335))
 
 - Chore: Update copyright notices ([#24022](https://github.com/RocketChat/Rocket.Chat/pull/24022))
 
@@ -400,19 +293,51 @@
 
 - i18n: Language update from LingoHub 🤖 on 2022-01-17Z ([#24193](https://github.com/RocketChat/Rocket.Chat/pull/24193))
 
+- i18n: Language update from LingoHub 🤖 on 2022-01-24Z ([#24268](https://github.com/RocketChat/Rocket.Chat/pull/24268))
+
 - Merge master into develop & Set version to 4.4.0-develop ([#24049](https://github.com/RocketChat/Rocket.Chat/pull/24049))
 
+- Regression: Align Omni-Source icon sizes with designs ([#24269](https://github.com/RocketChat/Rocket.Chat/pull/24269))
+
+- Regression: Create migration to fix index issue at boot ([#24289](https://github.com/RocketChat/Rocket.Chat/pull/24289))
+
+- Regression: Discussion room crashing ([#24272](https://github.com/RocketChat/Rocket.Chat/pull/24272))
+
 - Regression: Enable custom emoji on admin custom status page ([#24186](https://github.com/RocketChat/Rocket.Chat/pull/24186))
+
+- Regression: Fix Alpine release tag ([#24259](https://github.com/RocketChat/Rocket.Chat/pull/24259))
+
+- Regression: Fix Default Business hour overriding other Business Hours ([#24288](https://github.com/RocketChat/Rocket.Chat/pull/24288))
 
 - Regression: Fix handling of http requests in apps bridge ([#24211](https://github.com/RocketChat/Rocket.Chat/pull/24211))
 
   Changes made during Meteor upgrade broke HTTP requests made in Rocket.Chat Apps
+
+- Regression: Fix Inactive Departments still visible on Livechat ([#24267](https://github.com/RocketChat/Rocket.Chat/pull/24267))
+
+- Regression: Fix incompatibility of apps http requests ([#24276](https://github.com/RocketChat/Rocket.Chat/pull/24276))
+
+  HTTP GET and HEAD requests made with an empty object as `data` were breaking, as the bridge converted this to the request's body as `'{}'` but meteor's new lib doesn't allow for body content on either of this request methods.
+
+  To maintain compatibility, we forced an empty body whenever we have a GET or HEAD request. This was probably the case previously, with the body of requests made with this methods being ignored either before being sent or in the third party server receiving the request
+
+- Regression: Fix OmnichannelAppSourceRoomIcon sizes ([#24322](https://github.com/RocketChat/Rocket.Chat/pull/24322))
+
+- Regression: Fix pino child log levels ([#24302](https://github.com/RocketChat/Rocket.Chat/pull/24302))
 
 - Regression: Remove extra call to `useOutsideClick` hook not following the function signature ([#24243](https://github.com/RocketChat/Rocket.Chat/pull/24243))
 
   It migrates `client/sidebar/header/actions/Search` component to TypeScript and mitigates a invalid call to `Array.prototype.every`:
 
   ![image](https://user-images.githubusercontent.com/2263066/150441397-3ff403b2-10c1-4a29-b37f-892d7d4a9252.png)
+
+- Regression: Standalone register path failing when saving data ([#24324](https://github.com/RocketChat/Rocket.Chat/pull/24324))
+
+- Regression: Update tap-i18n package ([#24298](https://github.com/RocketChat/Rocket.Chat/pull/24298))
+
+  Fix the issue breaking IE11.
+
+- Release 4.3.3 ([#24340](https://github.com/RocketChat/Rocket.Chat/pull/24340))
 
 </details>
 
@@ -425,6 +350,7 @@
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@grahhnt](https://github.com/grahhnt)
 - [@mbreslein-thd](https://github.com/mbreslein-thd)
+- [@nishant23122000](https://github.com/nishant23122000)
 - [@sidmohanty11](https://github.com/sidmohanty11)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -437,6 +363,7 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
+- [@eduardofcabrera](https://github.com/eduardofcabrera)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
