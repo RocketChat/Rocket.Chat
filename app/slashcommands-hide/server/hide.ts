@@ -22,6 +22,7 @@ function Hide(_command: 'hide', param: string, item: Record<string, string>): vo
 	let { rid } = item;
 	if (room !== '') {
 		const [strippedRoom] = room.replace(/#|@/, '').split(' ');
+
 		const [type] = room;
 
 		const roomObject =
