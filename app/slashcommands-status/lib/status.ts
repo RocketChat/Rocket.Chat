@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
-import { handleError } from '../../../client/lib/utils/handleError';
+import * as handler from '../../../client/lib/utils/handleError';
 
 function Status(_command: 'status', params: string, item: Record<string, string>): void | string | JQuery<HTMLElement> | undefined {
 	const userId = Meteor.userId() as string;
@@ -12,7 +12,8 @@ function Status(_command: 'status', params: string, item: Record<string, string>
 	Meteor.call('setUserStatus', null, params, (err: Meteor.Error) => {
 		if (err) {
 			if (Meteor.isClient) {
-				return handleError(err);
+				console.log(handler);
+				return;
 			}
 
 			if (err.error === 'error-not-allowed') {
