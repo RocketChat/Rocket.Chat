@@ -5,9 +5,9 @@ import { slashCommands } from '../../utils';
 import { api } from '../../../server/sdk/api';
 
 /*
-* Leave is a named function that will replace /leave commands
-* @param {Object} message - The message object
-*/
+ * Leave is a named function that will replace /leave commands
+ * @param {Object} message - The message object
+ */
 function Leave(command, params, item) {
 	if (command !== 'leave' && command !== 'part') {
 		return;

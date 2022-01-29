@@ -10,7 +10,7 @@ import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData'
 
 let maxFileSize;
 
-settings.watch('FileUpload_MaxFileSize', function(value) {
+settings.watch('FileUpload_MaxFileSize', function (value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -36,9 +36,11 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const { file, ...fields } = Promise.await(getUploadFormData({
-			request: this.request,
-		}));
+		const { file, ...fields } = Promise.await(
+			getUploadFormData({
+				request: this.request,
+			}),
+		);
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({

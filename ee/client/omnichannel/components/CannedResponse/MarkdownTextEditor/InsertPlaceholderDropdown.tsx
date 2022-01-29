@@ -24,10 +24,7 @@ const InsertPlaceholderDropdown: FC<{
 			textAreaRef.current.value = text.slice(0, startPos) + placeholder + text.slice(startPos);
 
 			textAreaRef.current.focus();
-			textAreaRef.current.setSelectionRange(
-				startPos + placeholder.length,
-				startPos + placeholder.length,
-			);
+			textAreaRef.current.setSelectionRange(startPos + placeholder.length, startPos + placeholder.length);
 
 			setVisible(false);
 			onChange(textAreaRef.current.value);

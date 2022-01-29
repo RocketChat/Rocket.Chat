@@ -24,13 +24,15 @@ class Setting {
 	 * @returns {string}
 	 */
 	get id() {
-		return `Search.${ this._basekey }.${ this.key }`;
+		return `Search.${this._basekey}.${this.key}`;
 	}
 
 	load() {
 		this._value = settings.get(this.id);
 
-		if (this._value === undefined) { this._value = this.defaultValue; }
+		if (this._value === undefined) {
+			this._value = this.defaultValue;
+		}
 	}
 }
 
@@ -60,7 +62,9 @@ class Settings {
 	 * @param key
 	 */
 	get(key) {
-		if (!this.settings[key]) { throw new Error('Setting is not set'); }
+		if (!this.settings[key]) {
+			throw new Error('Setting is not set');
+		}
 		return this.settings[key].value;
 	}
 
@@ -80,9 +84,11 @@ export default class SearchProvider {
 	 * @param key
 	 */
 	constructor(key) {
-		if (!key.match(/^[A-z0-9]+$/)) { throw new Error(`cannot instantiate provider: ${ key } does not match key-pattern`); }
+		if (!key.match(/^[A-z0-9]+$/)) {
+			throw new Error(`cannot instantiate provider: ${key} does not match key-pattern`);
+		}
 
-		SearchLogger.info(`create search provider ${ key }`);
+		SearchLogger.info(`create search provider ${key}`);
 
 		this._key = key;
 		this._settings = new Settings(key);

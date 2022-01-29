@@ -4,15 +4,7 @@ import React from 'react';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const OTR = ({
-	isEstablishing,
-	isEstablished,
-	isOnline,
-	onClickClose,
-	onClickStart,
-	onClickEnd,
-	onClickRefresh,
-}) => {
+const OTR = ({ isEstablishing, isEstablished, isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh }) => {
 	const t = useTranslation();
 
 	return (
@@ -34,8 +26,7 @@ const OTR = ({
 				{isEstablishing && !isEstablished && isOnline && (
 					<>
 						{' '}
-						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box>{' '}
-						<Throbber inheritColor />{' '}
+						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box> <Throbber inheritColor />{' '}
 					</>
 				)}
 				{isEstablished && isOnline && (
@@ -53,9 +44,7 @@ const OTR = ({
 					</ButtonGroup>
 				)}
 
-				{!isOnline && (
-					<Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>
-				)}
+				{!isOnline && <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
 			</VerticalBar.ScrollableContent>
 		</>
 	);

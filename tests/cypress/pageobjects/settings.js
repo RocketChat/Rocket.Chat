@@ -14,7 +14,6 @@ function api(path) {
 	return prefix + path;
 }
 
-
 export async function getSettingValue(name) {
 	let credentials = {
 		'X-Auth-Token': undefined,
@@ -22,25 +21,20 @@ export async function getSettingValue(name) {
 	};
 
 	// login
-	const reponseLogin = await request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200);
+	const reponseLogin = await request.post(api('login')).send(login).expect('Content-Type', 'application/json').expect(200);
 
 	credentials = {
 		'X-Auth-Token': reponseLogin.body.data.authToken,
 		'X-User-Id': reponseLogin.body.data.userId,
 	};
 
-	const responseGetSetting = await request.get(api(`settings/${ name }`))
+	const responseGetSetting = await request
+		.get(api(`settings/${name}`))
 		.set(credentials)
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 
-	await request.post(api('logout'))
-		.set(credentials)
-		.expect('Content-Type', 'application/json')
-		.expect(200);
+	await request.post(api('logout')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
 	return responseGetSetting.body.value;
 }

@@ -19,11 +19,7 @@ const notifyNewRoom = (sub: ISubscription): void => {
 		return;
 	}
 
-	if (
-		(!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) &&
-		!sub.ls &&
-		sub.alert === true
-	) {
+	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
 		KonchatNotification.newRoom(sub.rid);
 	}
 };
@@ -100,20 +96,14 @@ Meteor.startup(() => {
 			notifyNewMessageAudio(notification.payload.rid);
 		});
 
-		CachedChatSubscription.onSyncData = ((
-			action: 'changed' | 'removed',
-			sub: ISubscription,
-		): void => {
+		CachedChatSubscription.onSyncData = ((action: 'changed' | 'removed', sub: ISubscription): void => {
 			if (action !== 'removed') {
 				notifyNewRoom(sub);
 			}
 		}) as () => void;
 
-		Notifications.onUser(
-			'subscriptions-changed',
-			(_action: 'changed' | 'removed', sub: ISubscription) => {
-				notifyNewRoom(sub);
-			},
-		);
+		Notifications.onUser('subscriptions-changed', (_action: 'changed' | 'removed', sub: ISubscription) => {
+			notifyNewRoom(sub);
+		});
 	});
 });

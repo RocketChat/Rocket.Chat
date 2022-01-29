@@ -101,7 +101,7 @@ class MsAutoTranslate extends AutoTranslate {
 			}
 			return language;
 		});
-		const url = `${ this.apiEndPointUrl }&to=${ targetLanguages.join('&to=') }`;
+		const url = `${this.apiEndPointUrl}&to=${targetLanguages.join('&to=')}`;
 		const result = HTTP.post(url, {
 			headers: {
 				'Ocp-Apim-Subscription-Key': this.apiKey,
@@ -112,11 +112,12 @@ class MsAutoTranslate extends AutoTranslate {
 
 		if (result.statusCode === 200 && result.data && result.data.length > 0) {
 			// store translation only when the source and target language are different.
-			translations = Object.assign({}, ...targetLanguages.map((language) =>
-				({
+			translations = Object.assign(
+				{},
+				...targetLanguages.map((language) => ({
 					[language]: result.data.map((line) => line.translations.find((translation) => translation.to === language).text).join('\n'),
-				}),
-			));
+				})),
+			);
 		}
 
 		return translations;
@@ -151,9 +152,14 @@ class MsAutoTranslate extends AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		try {
-			return this._translate([{
-				Text: attachment.description || attachment.text,
-			}], targetLanguages);
+			return this._translate(
+				[
+					{
+						Text: attachment.description || attachment.text,
+					},
+				],
+				targetLanguages,
+			);
 		} catch (e) {
 			msLogger.error({ err: e, msg: 'Error translating message attachment' });
 		}

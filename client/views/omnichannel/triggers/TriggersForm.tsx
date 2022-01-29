@@ -1,12 +1,4 @@
-import {
-	Box,
-	Field,
-	TextInput,
-	ToggleSwitch,
-	Select,
-	TextAreaInput,
-	SelectOptions,
-} from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput, SelectOptions } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ComponentProps, FC, FormEvent, useMemo, useState } from 'react';
 
@@ -55,14 +47,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 	const t = useTranslation();
 	const { name, description, enabled, runOnce, conditions, actions } = values;
 
-	const {
-		handleName,
-		handleDescription,
-		handleEnabled,
-		handleRunOnce,
-		handleConditions,
-		handleActions,
-	} = handlers;
+	const { handleName, handleDescription, handleEnabled, handleRunOnce, handleConditions, handleActions } = handlers;
 
 	const { name: conditionName, value: conditionValue } = conditions;
 
@@ -174,11 +159,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={description}
-						onChange={handleDescription}
-						placeholder={t('Description')}
-					/>
+					<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} />
 				</Field.Row>
 			</Field>
 			<Field className={className}>
@@ -188,11 +169,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
-						<TextInput
-							value={conditionValue}
-							onChange={handleConditionValue}
-							placeholder={conditionValuePlaceholder}
-						/>
+						<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder} />
 					</Field.Row>
 				)}
 			</Field>
@@ -202,29 +179,15 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 					<TextInput value={t('Send_a_message')} disabled />
 				</Field.Row>
 				<Field.Row>
-					<Select
-						options={senderOptions}
-						value={actionSender}
-						onChange={handleActionSender}
-						placeholder={t('Select_an_option')}
-					/>
+					<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>
-						<TextInput
-							value={actionAgentName}
-							onChange={handleActionAgentName}
-							placeholder={t('Name_of_agent')}
-						/>
+						<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')} />
 					</Field.Row>
 				)}
 				<Field.Row>
-					<TextAreaInput
-						rows={3}
-						value={actionMsg}
-						onChange={handleActionMessage}
-						placeholder={`${t('Message')}*`}
-					/>
+					<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${t('Message')}*`} />
 				</Field.Row>
 				<Field.Error>{msgError}</Field.Error>
 			</Field>

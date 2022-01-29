@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import type { IncomingMessage } from 'http';
 
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
@@ -7,11 +8,51 @@ import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants'
 import { SERVER_ID } from './Server';
 import { server } from './configureServer';
 import { IPacket } from './types/IPacket';
+import { ISocketConnection } from '../../../../definition/ISocketConnection';
 
-interface IConnection {
-	livechatToken?: string;
-	onClose(fn: (...args: any[]) => void): void;
-}
+// TODO why localhost not as 127.0.0.1?
+// based on Meteor's implementation (link)
+const getClientAddress = (req: IncomingMessage): string | undefined => {
+	// For the reported client address for a connection to be correct,
+	// the developer must set the HTTP_FORWARDED_COUNT environment
+	// variable to an integer representing the number of hops they
+	// expect in the `x-forwarded-for` header. E.g., set to "1" if the
+	// server is behind one proxy.
+	//
+	// This could be computed once at startup instead of every time.
+	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT || '') || 0;
+
+	if (httpForwardedCount === 0) {
+		return req.socket.remoteAddress;
+	}
+
+	const forwardedFor =
+		(req.headers['x-forwarded-for'] && Array.isArray(req.headers['x-forwarded-for'])
+			? req.headers['x-forwarded-for'][0]
+			: req.headers['x-forwarded-for']) || '';
+	if (!forwardedFor) {
+		return;
+	}
+	const forwardedForClean = forwardedFor
+		.trim()
+		.split(',')
+		.map((ip) => ip.trim());
+
+	// Typically the first value in the `x-forwarded-for` header is
+	// the original IP address of the client connecting to the first
+	// proxy.  However, the end user can easily spoof the header, in
+	// which case the first value(s) will be the fake IP address from
+	// the user pretending to be a proxy reporting the original IP
+	// address value.  By counting HTTP_FORWARDED_COUNT back from the
+	// end of the list, we ensure that we get the IP address being
+	// reported by *our* first proxy.
+
+	if (httpForwardedCount < 0 || httpForwardedCount > forwardedForClean.length) {
+		return;
+	}
+
+	return forwardedForClean[forwardedForClean.length - httpForwardedCount];
+};
 
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
@@ -22,7 +63,7 @@ export class Client extends EventEmitter {
 
 	public subscriptions = new Map();
 
-	public connection: IConnection;
+	public connection: ISocketConnection;
 
 	public wait = false;
 
@@ -30,16 +71,17 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	constructor(
-		public ws: WebSocket,
-		public meteorClient = false,
-	) {
+	constructor(public ws: WebSocket, public meteorClient = false, req: IncomingMessage) {
 		super();
 
 		this.connection = {
+			id: this.session,
+			instanceId: server.id,
 			onClose: (fn): void => {
 				this.on('close', fn);
 			},
+			clientAddress: getClientAddress(req),
+			httpHeaders: req.headers,
 		};
 
 		this.renewTimeout(TIMEOUT / 1000);
@@ -63,9 +105,7 @@ export class Client extends EventEmitter {
 			if (msg !== DDP_EVENTS.CONNECT) {
 				return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 			}
-			return this.send(
-				server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }),
-			);
+			return this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.CONNECTED, session: this.session }));
 		});
 
 		this.send(SERVER_ID);
@@ -127,11 +167,11 @@ export class Client extends EventEmitter {
 	};
 
 	ping(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
 
 	pong(id?: string): void {
-		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...id && { [DDP_EVENTS.ID]: id } }));
+		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PONG, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
 
 	handleIdle = (): void => {
@@ -154,16 +194,13 @@ export class Client extends EventEmitter {
 			this.process(packet.msg, packet);
 		} catch (err) {
 			console.error(err);
-			return this.ws.close(
-				WS_ERRORS.UNSUPPORTED_DATA,
-				WS_ERRORS_MESSAGES.UNSUPPORTED_DATA,
-			);
+			return this.ws.close(WS_ERRORS.UNSUPPORTED_DATA, WS_ERRORS_MESSAGES.UNSUPPORTED_DATA);
 		}
 	};
 
 	encodePayload(payload: string): string {
 		if (this.meteorClient) {
-			return `a${ JSON.stringify([payload]) }`;
+			return `a${JSON.stringify([payload])}`;
 		}
 		return payload;
 	}

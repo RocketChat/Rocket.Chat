@@ -9,10 +9,7 @@ export class EmojiCustom extends Base {
 	// find
 	findByNameOrAlias(name, options) {
 		const query = {
-			$or: [
-				{ name },
-				{ aliases: name },
-			],
+			$or: [{ name }, { aliases: name }],
 		};
 
 		return this.find(query, options);

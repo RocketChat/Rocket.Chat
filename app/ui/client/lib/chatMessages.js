@@ -11,13 +11,9 @@ import { KonchatNotification } from './notification';
 import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
 import { t, slashCommands } from '../../../utils/client';
-import {
-	messageProperties,
-	MessageTypes,
-	readMessage,
-} from '../../../ui-utils/client';
+import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../callbacks/client';
+import { callbacks } from '../../../../lib/callbacks';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
@@ -30,7 +26,6 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
-
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -73,9 +68,9 @@ export class ChatMessages {
 		this.collection = collection;
 	}
 
-	editing = {}
+	editing = {};
 
-	records = {}
+	records = {};
 
 	initializeWrapper(wrapper) {
 		this.wrapper = wrapper;
@@ -100,7 +95,7 @@ export class ChatMessages {
 			return;
 		}
 
-		const message = Messages.findOne(mid) || await callWithErrorHandling('getSingleMessage', mid);
+		const message = Messages.findOne(mid) || (await callWithErrorHandling('getSingleMessage', mid));
 		if (!message) {
 			return;
 		}
@@ -151,11 +146,7 @@ export class ChatMessages {
 			return message && this.edit(message, false);
 		}
 
-		for (
-			let previous = element.previousElementSibling;
-			previous;
-			previous = previous.previousElementSibling
-		) {
+		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
 			if (previous.matches('.own:not(.system)')) {
 				return this.edit(previous, false);
 			}
@@ -374,8 +365,11 @@ export class ChatMessages {
 		const onConfirm = () => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
-			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+			const fileName = `${Meteor.user().username} - ${new Date()}.txt`;
+			const file = new File([messageBlob], fileName, {
+				type: contentType,
+				lastModified: Date.now(),
+			});
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
 			imperativeModal.close();
 		};
@@ -430,7 +424,12 @@ export class ChatMessages {
 						} else {
 							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
 							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err, result) => {
-								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
+								typeof commandOptions.result === 'function' &&
+									commandOptions.result(err, result, {
+										cmd: command,
+										params: param,
+										msg: msgObject,
+									});
 							});
 						}
 
@@ -464,10 +463,12 @@ export class ChatMessages {
 			return done();
 		}
 
-		const room = message.drid && Rooms.findOne({
-			_id: message.drid,
-			prid: { $exists: true },
-		});
+		const room =
+			message.drid &&
+			Rooms.findOne({
+				_id: message.drid,
+				prid: { $exists: true },
+			});
 
 		const onConfirm = () => {
 			if (this.editing.id === message._id) {
@@ -523,7 +524,6 @@ export class ChatMessages {
 				return;
 			}
 		}
-
 
 		await callWithErrorHandling('deleteMessage', { _id });
 	}

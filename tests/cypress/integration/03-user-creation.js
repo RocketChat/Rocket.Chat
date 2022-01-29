@@ -1,9 +1,8 @@
 import loginPage from '../pageobjects/login.page';
 import { username, email, password } from '../../data/user.js';
 
-
 // Basic usage test start
-describe('[User Creation]', function() {
+describe('[User Creation]', function () {
 	before(() => {
 		loginPage.open();
 	});

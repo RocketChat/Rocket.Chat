@@ -27,13 +27,7 @@ export const _default = () => (
 );
 
 export const disabled = () => (
-	<MultiSelectSettingInput
-		_id='setting_id'
-		label='Label'
-		placeholder='Placeholder'
-		values={options}
-		disabled
-	/>
+	<MultiSelectSettingInput _id='setting_id' label='Label' placeholder='Placeholder' values={options} disabled />
 );
 
 export const withValue = () => (

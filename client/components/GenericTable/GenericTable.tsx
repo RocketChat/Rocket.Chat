@@ -1,15 +1,6 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, {
-	useState,
-	useEffect,
-	forwardRef,
-	ReactNode,
-	ReactElement,
-	Key,
-	useMemo,
-	Ref,
-} from 'react';
+import React, { useState, useEffect, forwardRef, ReactNode, ReactElement, Key, useMemo, Ref } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -22,12 +13,13 @@ import { usePagination } from './hooks/usePagination';
 const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
 
-type GenericTableParams = { text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 };
+type GenericTableParams = {
+	text?: string;
+	current?: number;
+	itemsPerPage?: 25 | 50 | 100;
+};
 
-type GenericTableProps<
-	FilterProps extends { onChange?: (params: GenericTableParams) => void },
-	ResultProps extends { _id?: Key },
-> = {
+type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps extends { _id?: Key }> = {
 	fixed?: boolean;
 	header?: ReactNode;
 	params?: GenericTableParams;
@@ -63,14 +55,7 @@ const GenericTable = forwardRef(function GenericTable<
 
 	const [filter, setFilter] = useState(paramsDefault);
 
-	const {
-		itemsPerPage,
-		setItemsPerPage,
-		current,
-		setCurrent,
-		itemsPerPageLabel,
-		showingResultsLabel,
-	} = usePagination();
+	const { itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel } = usePagination();
 
 	const params = useDebouncedValue(filter, 500);
 
@@ -98,10 +83,7 @@ const GenericTable = forwardRef(function GenericTable<
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
 							{!isLoading &&
-								((RenderRow &&
-									results?.map((props, index: number) => (
-										<RenderRow key={props._id || index} {...props} />
-									))) ||
+								((RenderRow && results?.map((props, index: number) => <RenderRow key={props._id || index} {...props} />)) ||
 									(children && results?.map(children)))}
 						</GenericTableBody>
 					</GenericTableV2>

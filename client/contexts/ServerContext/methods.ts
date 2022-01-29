@@ -2,6 +2,7 @@ import type { DeleteWriteOpResultObject } from 'mongodb';
 
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
 import { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
@@ -20,6 +21,7 @@ export type ServerMethods = {
 	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
+	'addWebdavAccount': AddWebdavAccountMethod;
 	'apps/go-enable': (...args: any[]) => any;
 	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
@@ -98,7 +100,6 @@ export type ServerMethods = {
 	'livechat:saveTrigger': (...args: any[]) => any;
 	'livechat:saveUnit': (...args: any[]) => any;
 	'livechat:webhookTest': (...args: any[]) => any;
-	'logoutOtherClients': (...args: any[]) => any;
 	'Mailer.sendMail': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
@@ -141,17 +142,14 @@ export type ServerMethods = {
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
+	'checkRegistrationSecretURL': (hash: string) => boolean;
 };
 
 export type ServerMethodName = keyof ServerMethods;
 
-export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<
-	ServerMethods[MethodName]
->;
+export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<
-	ServerMethods[MethodName]
->;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
 
 export type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>

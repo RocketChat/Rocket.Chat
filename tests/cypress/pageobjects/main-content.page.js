@@ -1,124 +1,236 @@
 import Page from './Page';
 
 class MainContent extends Page {
-	get mainContent() { return browser.element('.main-content'); }
+	get mainContent() {
+		return browser.element('.main-content');
+	}
 
 	// Main Content Header (Channel Title Area)
-	get emptyFavoriteStar() { return browser.element('.js-favorite .rc-header__icon--star'); }
+	get emptyFavoriteStar() {
+		return browser.element('.js-favorite .rc-header__icon--star');
+	}
 
-	get favoriteStar() { return browser.element('.js-favorite .rc-header__icon--star-filled'); }
+	get favoriteStar() {
+		return browser.element('.js-favorite .rc-header__icon--star-filled');
+	}
 
-	get channelTitle() { return browser.element('.rc-header__name'); }
+	get channelTitle() {
+		return browser.element('.rc-header__name');
+	}
 
 	// Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.js-input-message'); }
+	get messageInput() {
+		return browser.element('.js-input-message');
+	}
 
-	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
+	get sendBtn() {
+		return browser.element('.rc-message-box__icon.js-send');
+	}
 
-	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
+	get messageBoxActions() {
+		return browser.element('.rc-message-box__icon');
+	}
 
-	get recordBtn() { return browser.element('.js-audio-message-record'); }
+	get recordBtn() {
+		return browser.element('.js-audio-message-record');
+	}
 
-	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
+	get emojiBtn() {
+		return browser.element('.rc-message-box__icon.emoji-picker-icon');
+	}
 
-	get messagePopUp() { return browser.element('.message-popup'); }
+	get messagePopUp() {
+		return browser.element('.message-popup');
+	}
 
-	get messagePopUpTitle() { return browser.element('.message-popup-title'); }
+	get messagePopUpTitle() {
+		return browser.element('.message-popup-title');
+	}
 
-	get messagePopUpItems() { return browser.element('.message-popup-items'); }
+	get messagePopUpItems() {
+		return browser.element('.message-popup-items');
+	}
 
-	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
+	get messagePopUpFirstItem() {
+		return browser.element('.popup-item.selected');
+	}
 
-	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
+	get mentionAllPopUp() {
+		return browser.element('.popup-item[data-id="all"]');
+	}
 
-	get joinChannelBtn() { return browser.element('.button.join'); }
+	get joinChannelBtn() {
+		return browser.element('.button.join');
+	}
 
 	// Messages
-	get lastMessageUser() { return browser.element('.message:last-child .title .user-card-message'); }
+	get lastMessageUser() {
+		return browser.element('.message:last-child .title .user-card-message');
+	}
 
-	get lastMessage() { return browser.element('.message:last-child'); }
+	get lastMessage() {
+		return browser.element('.message:last-child');
+	}
 
-	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
+	get lastMessageDesc() {
+		return browser.element('.message:last-child .body .attachment-description');
+	}
 
-	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
+	get lastMessageRoleAdded() {
+		return browser.element('.message:last-child.subscription-role-added .body');
+	}
 
-	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
+	get beforeLastMessage() {
+		return browser.element('.message:nth-last-child(2) .body');
+	}
 
-	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
+	get lastMessageUserTag() {
+		return browser.element('.message:last-child .role-tag');
+	}
 
-	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
+	get lastMessageImg() {
+		return browser.element('.message:last-child .attachment-image img');
+	}
 
-	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
+	get lastMessageTextAttachment() {
+		return browser.element('.message:last-child .attachment-text');
+	}
 
-	get beforeLastMessageQuote() { return browser.element('.message:nth-last-child(2)'); }
+	get beforeLastMessageQuote() {
+		return browser.element('.message:nth-last-child(2)');
+	}
 
-	get lastMessageQuote() { return browser.element('.message:last-child'); }
+	get lastMessageQuote() {
+		return browser.element('.message:last-child');
+	}
 
-	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
+	get messageOptionsBtn() {
+		return browser.element('.message:last-child .message-actions__menu');
+	}
 
-	get messageOptionsBtns() { return browser.element('.message:last-child .message-actions'); }
+	get messageOptionsBtns() {
+		return browser.element('.message:last-child .message-actions');
+	}
 
-	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
+	get messageActionMenu() {
+		return browser.element('.rc-popover .rc-popover__content');
+	}
 
-	get messageReply() { return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]'); }
+	get messageReply() {
+		return browser.element('.message:last-child .message-actions__button[data-message-action="reply-in-thread"]');
+	}
 
-	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
+	get messageEdit() {
+		return browser.element('[data-id="edit-message"][data-type="message-action"]');
+	}
 
-	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
+	get messageDelete() {
+		return browser.element('[data-id="delete-message"][data-type="message-action"]');
+	}
 
-	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }
+	get messagePermalink() {
+		return browser.element('[data-id="permalink"][data-type="message-action"]');
+	}
 
-	get messageCopy() { return browser.element('[data-id="copy"][data-type="message-action"]'); }
+	get messageCopy() {
+		return browser.element('[data-id="copy"][data-type="message-action"]');
+	}
 
-	get messageQuote() { return browser.element('[data-id="quote-message"][data-type="message-action"]'); }
+	get messageQuote() {
+		return browser.element('[data-id="quote-message"][data-type="message-action"]');
+	}
 
-	get messageStar() { return browser.element('[data-id="star-message"][data-type="message-action"]'); }
+	get messageStar() {
+		return browser.element('[data-id="star-message"][data-type="message-action"]');
+	}
 
-	get messageUnread() { return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]'); }
+	get messageUnread() {
+		return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]');
+	}
 
-	get messageReplyInDM() { return browser.element('[data-id="reply-directly"][data-type="message-action"]'); }
+	get messageReplyInDM() {
+		return browser.element('[data-id="reply-directly"][data-type="message-action"]');
+	}
 
 	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
-	get messagePin() { return browser.element('[data-id="pin-message"][data-type="message-action"]'); }
+	get messagePin() {
+		return browser.element('[data-id="pin-message"][data-type="message-action"]');
+	}
 	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
 	// Emojis
-	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
+	get emojiPickerMainScreen() {
+		return browser.element('.emoji-picker');
+	}
 
-	get emojiPickerPeopleIcon() { return browser.element('.emoji-picker .icon-people'); }
+	get emojiPickerPeopleIcon() {
+		return browser.element('.emoji-picker .icon-people');
+	}
 
-	get emojiPickerNatureIcon() { return browser.element('.emoji-picker .icon-nature'); }
+	get emojiPickerNatureIcon() {
+		return browser.element('.emoji-picker .icon-nature');
+	}
 
-	get emojiPickerFoodIcon() { return browser.element('.emoji-picker .icon-food'); }
+	get emojiPickerFoodIcon() {
+		return browser.element('.emoji-picker .icon-food');
+	}
 
-	get emojiPickerActivityIcon() { return browser.element('.emoji-picker .icon-activity'); }
+	get emojiPickerActivityIcon() {
+		return browser.element('.emoji-picker .icon-activity');
+	}
 
-	get emojiPickerTravelIcon() { return browser.element('.emoji-picker .icon-travel'); }
+	get emojiPickerTravelIcon() {
+		return browser.element('.emoji-picker .icon-travel');
+	}
 
-	get emojiPickerObjectsIcon() { return browser.element('.emoji-picker .icon-objects'); }
+	get emojiPickerObjectsIcon() {
+		return browser.element('.emoji-picker .icon-objects');
+	}
 
-	get emojiPickerSymbolsIcon() { return browser.element('.emoji-picker .icon-symbols'); }
+	get emojiPickerSymbolsIcon() {
+		return browser.element('.emoji-picker .icon-symbols');
+	}
 
-	get emojiPickerFlagsIcon() { return browser.element('.emoji-picker .icon-flags'); }
+	get emojiPickerFlagsIcon() {
+		return browser.element('.emoji-picker .icon-flags');
+	}
 
-	get emojiPickerModifierIcon() { return browser.element('.emoji-picker .icon-symbols'); }
+	get emojiPickerModifierIcon() {
+		return browser.element('.emoji-picker .icon-symbols');
+	}
 
-	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
+	get emojiPickerChangeTone() {
+		return browser.element('.emoji-picker .change-tone');
+	}
 
-	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
+	get emojiPickerCustomIcon() {
+		return browser.element('.emoji-picker .icon-rocket');
+	}
 
-	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
+	get emojiPickerRecentIcon() {
+		return browser.element('.emoji-picker .icon-recent');
+	}
 
-	get emojiPickerFilter() { return browser.element('.emoji-picker .js-emojipicker-search'); }
+	get emojiPickerFilter() {
+		return browser.element('.emoji-picker .js-emojipicker-search');
+	}
 
-	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
+	get emojiPickerEmojiContainer() {
+		return browser.element('.emoji-picker .emojis');
+	}
 
-	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
+	get emojiGrinning() {
+		return browser.element('.emoji-picker .emoji-grinning');
+	}
 
-	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
+	get emojiSmile() {
+		return browser.element('.emoji-picker .emoji-smile');
+	}
 
 	// Popover
-	get popoverWrapper() { return browser.element('.rc-popover'); }
+	get popoverWrapper() {
+		return browser.element('.rc-popover');
+	}
 
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
@@ -165,7 +277,7 @@ class MainContent extends Page {
 
 	// Wait for the last message author username to equal the provided text
 	waitForLastMessageUserEqualsText(text) {
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
 			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
 		}, 5000);

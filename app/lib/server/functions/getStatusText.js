@@ -1,6 +1,6 @@
 import { Users } from '../../../models/server';
 
-export const getStatusText = function(userId) {
+export const getStatusText = function (userId) {
 	if (!userId) {
 		return undefined;
 	}

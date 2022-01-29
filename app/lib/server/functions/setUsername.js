@@ -2,24 +2,25 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
-import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
+import { checkUsernameAvailability, setUserAvatar } from '.';
+import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const _setUsername = function(userId, u, fullUser) {
+export const _setUsername = function (userId, u, fullUser) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
 	}
 	let nameValidation;
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -52,7 +53,7 @@ export const _setUsername = function(userId, u, fullUser) {
 	Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = getAvatarSuggestionForUser(user);
+		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[service];

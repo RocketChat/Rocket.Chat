@@ -14,11 +14,7 @@ type WebdavAccountIntegration = Omit<IWebdavAccount, 'userId' | 'password' | '_u
 
 const getWebdavAccounts = (): Array<WebdavAccountIntegration> => WebdavAccounts.find().fetch();
 
-const getServerName = ({
-	name,
-	serverURL,
-	username,
-}: Omit<WebdavAccountIntegration, '_id'>): string =>
+const getServerName = ({ name, serverURL, username }: Omit<WebdavAccountIntegration, '_id'>): string =>
 	name || `${username}@${serverURL?.replace(/^https?\:\/\//i, '')}`;
 
 const AccountIntegrationsPage = (): ReactElement => {
@@ -32,10 +28,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 		handlers: { handleSelected },
 	} = useForm({ selected: [] });
 
-	const options: SelectOptions = useMemo(
-		() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]),
-		[accounts],
-	);
+	const options: SelectOptions = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
 
 	const handleClickRemove = useCallback(() => {
 		try {
@@ -54,12 +47,7 @@ const AccountIntegrationsPage = (): ReactElement => {
 					<Field>
 						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
 						<Field.Row>
-							<Select
-								options={options}
-								onChange={handleSelected}
-								value={selected as string}
-								placeholder={t('Select_an_option')}
-							/>
+							<Select options={options} onChange={handleSelected} value={selected as string} placeholder={t('Select_an_option')} />
 							<Button primary danger onClick={handleClickRemove}>
 								{t('Remove')}
 							</Button>

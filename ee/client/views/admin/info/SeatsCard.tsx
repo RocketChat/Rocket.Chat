@@ -30,12 +30,7 @@ const SeatsCard = (): ReactElement | null => {
 			<Card.Body>
 				<Card.Col>
 					<Card.Col.Section>
-						<Box
-							display='flex'
-							flexDirection='row'
-							justifyContent='center'
-							fontScale={isNearLimit ? 'p2m' : 'p2'}
-						>
+						<Box display='flex' flexDirection='row' justifyContent='center' fontScale={isNearLimit ? 'p2m' : 'p2'}>
 							{!seatsCap ? (
 								<Skeleton variant='rect' width='x112' height='x112' />
 							) : (

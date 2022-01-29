@@ -9,16 +9,18 @@ addAction('game-center', () => {
 
 	const hasExternalComponents = value && value.externalComponents.length > 0;
 	const hasError = !!error;
-	return useMemo(() =>
-		(state === AsyncStatePhase.RESOLVED
-		&& !hasError
-		&& hasExternalComponents
-			? {
-				groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
-				id: 'game-center',
-				title: 'Apps_Game_Center',
-				icon: 'game',
-				template: 'GameCenter',
-				order: -1,
-			} : null), [hasError, hasExternalComponents, state]);
+	return useMemo(
+		() =>
+			state === AsyncStatePhase.RESOLVED && !hasError && hasExternalComponents
+				? {
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+						id: 'game-center',
+						title: 'Apps_Game_Center',
+						icon: 'game',
+						template: 'GameCenter',
+						order: -1,
+				  }
+				: null,
+		[hasError, hasExternalComponents, state],
+	);
 });

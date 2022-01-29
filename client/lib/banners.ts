@@ -20,8 +20,7 @@ export type LegacyBannerPayload = {
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 
-export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload =>
-	!('blocks' in payload);
+export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
 const queue: BannerPayload[] = [];
 const emitter = new Emitter<{

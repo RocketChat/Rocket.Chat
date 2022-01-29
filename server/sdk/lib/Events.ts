@@ -15,10 +15,15 @@ import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
 import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
+import { ISocketConnection } from '../../../definition/ISocketConnection';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
+	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
+	'accounts.logout': (info: { userId: string; connection: ISocketConnection }) => void;
+	'socket.connected': (connection: ISocketConnection) => void;
+	'socket.disconnected': (connection: ISocketConnection) => void;
 	'banner.new'(bannerId: string): void;
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
@@ -27,7 +32,7 @@ export type EventSignatures = {
 	'license.module'(data: { module: string; valid: boolean }): void;
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
-	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord }): void;
+	'meteor.autoUpdateClientVersionChanged'(data: { record: AutoUpdateRecord }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'permission.changed'(data: { clientAction: ClientAction; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
@@ -49,11 +54,32 @@ export type EventSignatures = {
 	'watch.userSessions'(data: { clientAction: ClientAction; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
-	'watch.users'(data: { clientAction: ClientAction; data?: undefined | Partial<IUser>; diff?: undefined | Record<string, any>; unset?: undefined | Record<string, number>; id: string }): void;
+	'watch.users'(data: {
+		clientAction: ClientAction;
+		data?: undefined | Partial<IUser>;
+		diff?: undefined | Record<string, any>;
+		unset?: undefined | Record<string, number>;
+		id: string;
+	}): void;
 	'watch.loginServiceConfiguration'(data: { clientAction: ClientAction; data: Partial<ILoginServiceConfiguration>; id: string }): void;
-	'watch.instanceStatus'(data: { clientAction: ClientAction; data?: undefined | Partial<IInstanceStatus>; diff?: undefined | Record<string, any>; id: string }): void;
-	'watch.integrationHistory'(data: { clientAction: ClientAction; data: Partial<IIntegrationHistory>; diff?: undefined | Record<string, any>; id: string }): void;
+	'watch.instanceStatus'(data: {
+		clientAction: ClientAction;
+		data?: undefined | Partial<IInstanceStatus>;
+		diff?: undefined | Record<string, any>;
+		id: string;
+	}): void;
+	'watch.integrationHistory'(data: {
+		clientAction: ClientAction;
+		data: Partial<IIntegrationHistory>;
+		diff?: undefined | Record<string, any>;
+		id: string;
+	}): void;
 	'watch.integrations'(data: { clientAction: ClientAction; data: Partial<IIntegration>; id: string }): void;
 	'watch.emailInbox'(data: { clientAction: ClientAction; data: Partial<IEmailInbox>; id: string }): void;
-	'watch.livechatDepartmentAgents'(data: { clientAction: ClientAction; data: Partial<ILivechatDepartmentAgents>; diff?: undefined | Record<string, any>; id: string }): void;
-}
+	'watch.livechatDepartmentAgents'(data: {
+		clientAction: ClientAction;
+		data: Partial<ILivechatDepartmentAgents>;
+		diff?: undefined | Record<string, any>;
+		id: string;
+	}): void;
+};

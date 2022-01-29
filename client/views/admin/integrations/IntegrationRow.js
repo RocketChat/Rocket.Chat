@@ -5,17 +5,7 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-function IntegrationRow({
-	name,
-	_id,
-	type,
-	username,
-	_createdAt,
-	_createdBy: { username: createdBy },
-	channel = [],
-	onClick,
-	isBig,
-}) {
+function IntegrationRow({ name, _id, type, username, _createdAt, _createdBy: { username: createdBy }, channel = [], onClick, isBig }) {
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const handler = useMemo(() => onClick(_id, type), [onClick, _id, type]);

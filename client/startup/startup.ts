@@ -78,26 +78,23 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Meteor.call(
-			'cloud:checkRegisterStatus',
-			(err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
-				if (err) {
-					console.log(err);
-					return;
-				}
+		Meteor.call('cloud:checkRegisterStatus', (err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
 
-				c.stop();
-				const { connectToCloud = false, workspaceRegistered = false } = data;
-				if (connectToCloud === true && workspaceRegistered !== true) {
-					banners.open({
-						id: 'cloud-registration',
-						title: t('Cloud_registration_pending_title'),
-						html: t('Cloud_registration_pending_html'),
-						modifiers: ['large', 'danger'],
-					});
-				}
-			},
-		);
+			c.stop();
+			const { connectToCloud = false, workspaceRegistered = false } = data;
+			if (connectToCloud === true && workspaceRegistered !== true) {
+				banners.open({
+					id: 'cloud-registration',
+					title: t('Cloud_registration_pending_title'),
+					html: t('Cloud_registration_pending_html'),
+					modifiers: ['large', 'danger'],
+				});
+			}
+		});
 	});
 });
 Meteor.startup(() => {

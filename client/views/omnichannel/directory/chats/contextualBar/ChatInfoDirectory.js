@@ -27,26 +27,12 @@ function ChatInfoDirectory({ id, route, room }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } =
-		useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const {
-		ts,
-		tags,
-		closedAt,
-		departmentId,
-		v,
-		servedBy,
-		metrics,
-		topic,
-		waitingResponse,
-		responseBy,
-		priorityId,
-		livechatData,
-		queuedAt,
-	} = room || { room: { v: {} } };
+	const { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData, queuedAt } =
+		room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
@@ -73,8 +59,7 @@ function ChatInfoDirectory({ id, route, room }) {
 	};
 
 	const onEditClick = useMutableCallback(() => {
-		const hasEditAccess =
-			!!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
+		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
 		if (!hasEditAccess) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
@@ -171,9 +156,7 @@ function ChatInfoDirectory({ id, route, room }) {
 					{canViewCustomFields() &&
 						livechatData &&
 						Object.keys(livechatData).map(
-							(key) =>
-								checkIsVisibleAndScopeRoom(key) &&
-								livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
+							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>

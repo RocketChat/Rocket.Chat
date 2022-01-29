@@ -5,8 +5,7 @@ import { UserDataFiles } from '../../models/server/raw';
 import { DataExport } from './DataExport';
 import { settings } from '../../settings/server';
 
-
-WebApp.connectHandlers.use(DataExport.getPath(), async function(req, res, next) {
+WebApp.connectHandlers.use(DataExport.getPath(), async function (req, res, next) {
 	const match = /^\/([^\/]+)/.exec(req.url);
 
 	if (!settings.get('UserData_EnableDownload')) {
@@ -24,7 +23,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), async function(req, res, next) 
 				return res.end(DataExport.getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')));
 			}
 
-			res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+			res.setHeader('Content-Security-Policy', "default-src 'none'");
 			res.setHeader('Cache-Control', 'max-age=31536000');
 			return DataExport.get(file, req, res, next);
 		}
