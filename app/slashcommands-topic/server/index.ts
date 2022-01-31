@@ -1,1 +1,1 @@
-import '../lib/topic';
+import './topic';
