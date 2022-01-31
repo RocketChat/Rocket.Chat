@@ -3,29 +3,40 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
+import { typedJsonParse } from '../../../../../lib/typedJsonParse';
 
-const validateDateParams = (property: string, date: any) => {
-	if (date) {
-		date = JSON.parse(date);
-	}
-	if (date?.start && isNaN(Date.parse(date.start))) {
+type DateParam = { start?: string; end?: string };
+
+const validateDateParams = (property: string, date: DateParam | string): DateParam => {
+	const parsedDate = date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
+
+	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (date?.end && isNaN(Date.parse(date.end))) {
+	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
-	return date;
+	return parsedDate;
 };
 
 API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
-			let { createdAt, customFields, closedAt } = this.requestParams();
+			const {
+				agents,
+				departmentId,
+				open,
+				tags,
+				roomName,
+				onhold,
+				createdAt: createdAtParam,
+				closedAt: closedAtParam,
+			} = this.requestParams();
+			let { customFields } = this.requestParams();
 
 			check(agents, Match.Maybe([String]));
 			check(roomName, Match.Maybe(String));
@@ -40,28 +51,26 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			createdAt = validateDateParams('createdAt', createdAt);
-			closedAt = validateDateParams('closedAt', closedAt);
+			const createdAt = validateDateParams('createdAt', createdAtParam);
+			const closedAt = validateDateParams('closedAt', closedAtParam);
 
 			if (customFields) {
 				customFields = JSON.parse(customFields);
 			}
 
 			return API.v1.success(
-				Promise.await(
-					findRooms({
-						agents,
-						roomName,
-						departmentId,
-						open: open && open === 'true',
-						createdAt,
-						closedAt,
-						tags,
-						customFields,
-						onhold,
-						options: { offset, count, sort, fields },
-					}),
-				),
+				await findRooms({
+					agents,
+					roomName,
+					departmentId,
+					open: open && open === 'true',
+					createdAt,
+					closedAt,
+					tags,
+					customFields,
+					onhold,
+					options: { offset, count, sort, fields },
+				}),
 			);
 		},
 	},
