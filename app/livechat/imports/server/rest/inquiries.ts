@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ILivechatInquiryRecord } from '../../../../../definition/IInquiry';
-import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw/index';
+import { ILivechatInquiryRecord, LivechatInquiryStatus } from '../../../../../definition/IInquiry';
+import { Users, LivechatInquiry } from '../../../../models/server/raw/index';
+import LivechatDepartment from '../../../../models/server/models/LivechatDepartment';
 import { hasPermission } from '../../../../authorization/client/hasPermission';
 import { API } from '../../../../api/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
@@ -17,11 +18,11 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { department } = this.requestParams();
-			const ourQuery: ILivechatInquiryRecord = Object.assign({}, { status: 'queued', department: 0 });
+			const ourQuery: Partial<ILivechatInquiryRecord> = { status: LivechatInquiryStatus.QUEUED };
 
 			if (department) {
-				const departmentFromDB: Error = LivechatDepartment.findOneByIdOrName(department);
-				if (departmentFromDB instanceof Error) {
+				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department, {});
+				if (departmentFromDB) {
 					ourQuery.department = department;
 				}
 			}
@@ -29,7 +30,7 @@ API.v1.addRoute(
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields: {
+				projection: {
 					rid: 1,
 					name: 1,
 					ts: 1,
@@ -37,8 +38,8 @@ API.v1.addRoute(
 					department: 1,
 				},
 			});
-			const totalCount = cursor.count();
-			const inquiries = cursor.fetch();
+			const totalCount = await cursor.count();
+			const inquiries = await cursor.toArray();
 
 			return API.v1.success({
 				inquiries,
