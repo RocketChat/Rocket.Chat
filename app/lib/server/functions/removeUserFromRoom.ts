@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Messages, Subscriptions } from '../../../models';
+import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Team } from '../../../../server/sdk';
+import { IUser } from '../../../../definition/IUser';
 
-export const removeUserFromRoom = function (rid, user, options = {}) {
+export const removeUserFromRoom = function (rid: string, user: IUser, options?: { byUser: string }) {
 	const room = Rooms.findOneById(rid);
 
 	if (room) {
@@ -28,7 +30,7 @@ export const removeUserFromRoom = function (rid, user, options = {}) {
 
 		if (subscription) {
 			const removedUser = user;
-			if (options.byUser) {
+			if (options?.byUser) {
 				Messages.createUserRemovedWithRoomIdAndUser(rid, user, {
 					u: options.byUser,
 				});

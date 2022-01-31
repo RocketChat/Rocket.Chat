@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Users } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { checkEmailAvailability } from '.';
 
 let html = '';
@@ -16,11 +17,11 @@ Meteor.startup(() => {
 	});
 });
 
-const _sendEmailChangeNotification = function (to, newEmail) {
-	const subject = settings.get('Email_Changed_Email_Subject');
+const _sendEmailChangeNotification = function (to: string, newEmail: string) {
+	const subject = String(settings.get('Email_Changed_Email_Subject'));
 	const email = {
 		to,
-		from: settings.get('From_Email'),
+		from: String(settings.get('From_Email')),
 		subject,
 		html,
 		data: {
@@ -30,7 +31,7 @@ const _sendEmailChangeNotification = function (to, newEmail) {
 
 	try {
 		Mailer.send(email);
-	} catch (error) {
+	} catch (error: any) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'setEmail',
 			message: error.message,
@@ -38,7 +39,7 @@ const _sendEmailChangeNotification = function (to, newEmail) {
 	}
 };
 
-const _setEmail = function (userId, email, shouldSendVerificationEmail = true) {
+const _setEmail = function (userId: string, email: string, shouldSendVerificationEmail = true) {
 	email = s.trim(email);
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
