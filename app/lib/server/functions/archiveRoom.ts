@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Subscriptions } from '../../../models';
+import { Rooms, Subscriptions } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 
-export const archiveRoom = function (rid) {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const archiveRoom = function (rid: string) {
 	Rooms.archiveById(rid);
 	Subscriptions.archiveByRoomId(rid);
 

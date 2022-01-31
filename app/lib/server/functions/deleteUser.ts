@@ -10,8 +10,9 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
+import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
 
-export async function deleteUser(userId, confirmRelinquish = false) {
+export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
@@ -43,7 +44,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function ({ file }) {
+				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
 					store.deleteById(file._id);
 				});
 				Messages.removeByUserId(userId);

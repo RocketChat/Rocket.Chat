@@ -7,18 +7,18 @@ import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { validateName } from './validateName';
 
-let usernameBlackList = [];
+let usernameBlackList: RegExp[] = [];
 
-const toRegExp = (username) => new RegExp(`^${escapeRegExp(username).trim()}$`, 'i');
+const toRegExp = (username: string): RegExp => new RegExp(`^${escapeRegExp(username).trim()}$`, 'i');
 
-settings.watch('Accounts_BlockedUsernameList', (value) => {
+settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 	usernameBlackList = ['all', 'here'].concat(value.split(',')).map(toRegExp);
 });
 
-const usernameIsBlocked = (username, usernameBlackList) =>
+const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
 	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(escapeRegExp(username))));
 
-export const checkUsernameAvailability = function (username) {
+export const checkUsernameAvailability = function (username: string): boolean {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
