@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { fetch } from 'meteor/fetch';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -8,8 +9,27 @@ import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
+import { FileAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
 
-const getUploadFile = async (details: { name: string; type: any; rid: any; visitorToken: any; }, fileUrl: RequestInfo) => {
+type UploadedFile = {
+	_id: string;
+	name: string;
+	type: string;
+	description: string;
+	size: number;
+	identify?: { size: { width: number; height: number } };
+};
+
+type ICoordinatePoint = {
+	type: 'Point';
+	coordinates: [number, number];
+};
+
+const getUploadFile = async (
+	details: { name: string; type: any; rid: any; visitorToken: any },
+	fileUrl: RequestInfo,
+): Promise<UploadedFile> => {
 	const response = await fetch(fileUrl);
 
 	const content = Buffer.from(await response.arrayBuffer());
@@ -25,19 +45,20 @@ const getUploadFile = async (details: { name: string; type: any; rid: any; visit
 	return fileStore.insertSync({ ...details, size: contentSize }, content);
 };
 
-const defineDepartment = (idOrName: string | null) => {
+const defineDepartment = (idOrName: string | null): string | undefined => {
 	if (!idOrName || idOrName === '') {
 		return;
 	}
 
 	const department = LivechatDepartment.findOneByIdOrName(idOrName);
-	return department && department._id;
+	return department?._id;
 };
 
-const defineVisitor = (smsNumber: string, targetDepartment: any) => {
-	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
+const defineVisitor = (smsNumber: string, targetDepartment: any): ILivechatVisitor | null => {
+	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber) as ILivechatVisitor;
 	let data = {
-		token: (visitor && visitor.token) || Random.id(),
+		token: visitor?.token || Random.id(),
+		...(targetDepartment && { department: targetDepartment }),
 	};
 
 	if (!visitor) {
@@ -49,15 +70,11 @@ const defineVisitor = (smsNumber: string, targetDepartment: any) => {
 		});
 	}
 
-	if (targetDepartment) {
-		data.department = targetDepartment;
-	}
-
 	const id = Livechat.registerGuest(data);
 	return LivechatVisitors.findOneById(id);
 };
 
-const normalizeLocationSharing = (payload: { extra?: { fromLatitude: any; fromLongitude: any } | undefined }) => {
+const normalizeLocationSharing = (payload: { extra?: { fromLatitude?: string; fromLongitude?: string } }): ICoordinatePoint | undefined => {
 	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = {} } = payload;
 	if (!latitude || !longitude) {
 		return;
@@ -80,13 +97,18 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		}
 
 		const visitor = defineVisitor(sms.from, targetDepartment);
+		if (!visitor) {
+			throw new Error('Cannot fetch/create visitor with provided params');
+		}
+
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
-		const rid = (room && room._id) || Random.id();
+		const rid = room?._id || Random.id();
 
-		const sendMessage = {
+		// TODO: proper type here :)
+		const sendMessage: any = {
 			guest: visitor,
 			roomInfo: {
 				sms: {
@@ -107,6 +129,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		let file;
 		let attachments;
 
+		// TODO: refactor all this into a better function, probably reusing code from "sendFileMessage"
 		const [media] = sms.media;
 		if (media) {
 			const { url: smsUrl, contentType } = media;
@@ -117,51 +140,81 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			let attachment;
+			let attachment: FileAttachmentProps;
 			try {
 				const uploadedFile = await getUploadFile(details, smsUrl);
-				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+				file = {
+					_id: uploadedFile._id,
+					name: uploadedFile.name,
+					type: uploadedFile.type,
+					description: uploadedFile.description,
+					size: uploadedFile.size,
+					identify: uploadedFile.identify,
+				};
 				const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
-				attachment = {
-					title: file.name,
-					type: 'file',
-					description: file.description,
-					title_link: fileUrl,
-				};
-
 				if (/^image\/.+/.test(file.type)) {
-					attachment.image_url = fileUrl;
-					attachment.image_type = file.type;
-					attachment.image_size = file.size;
-					attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+					attachment = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						image_url: fileUrl,
+						image_type: file.type,
+						image_size: file.size,
+						image_dimensions: file.identify != null ? file.identify.size : undefined,
+					};
+					attachments = [attachment];
 				} else if (/^audio\/.+/.test(file.type)) {
-					attachment.audio_url = fileUrl;
-					attachment.audio_type = file.type;
-					attachment.audio_size = file.size;
-					attachment.title_link_download = true;
+					attachment = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						audio_url: fileUrl,
+						audio_type: file.type,
+						audio_size: file.size,
+						title_link_download: true,
+					};
+					attachments = [attachment];
 				} else if (/^video\/.+/.test(file.type)) {
-					attachment.video_url = fileUrl;
-					attachment.video_type = file.type;
-					attachment.video_size = file.size;
-					attachment.title_link_download = true;
+					attachment = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						video_url: fileUrl,
+						video_type: file.type,
+						video_size: file.size,
+						title_link_download: true,
+					};
+					attachments = [attachment];
 				} else {
-					attachment.title_link_download = true;
+					// @ts-expect-error
+					attachment = {
+						title: file.name,
+						type: 'file',
+						description: file.description,
+						title_link: fileUrl,
+						title_link_download: true,
+					};
+					attachments = [attachment];
 				}
 			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
-				attachment = {
-					fields: [
-						{
-							title: 'User upload failed',
-							value: 'An attachment was received, but upload to server failed',
-							short: true,
-						},
-					],
-					color: 'yellow',
-				};
+				Livechat.logger.error(`Attachment upload failed: ${(e as Error).message}`);
+				attachments = [
+					{
+						fields: [
+							{
+								title: 'User upload failed',
+								value: 'An attachment was received, but upload to server failed',
+								short: true,
+							},
+						],
+						color: 'yellow',
+					},
+				];
 			}
-			attachments = [attachment];
 		}
 
 		sendMessage.message = {
