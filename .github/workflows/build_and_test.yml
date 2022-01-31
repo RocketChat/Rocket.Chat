@@ -466,6 +466,22 @@ jobs:
 
         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
+        # before updating release store, save the current latest stable release
+        CURRENT_LATEST=$(
+          curl https://releases.rocket.chat/stable/info --silent |
+            awk -F'[,:]' '{
+              gsub(/[{}]/, "", $0);
+              for (i=0; i<NF; i++)
+                if ($i ~ /^"tag"$/) {
+                  i++;
+                  print gensub(/"/, "", "g", $i);
+                  break;
+                }
+            }'
+        )
+
+        echo "CURRENT_LATEST=$CURRENT_LATEST" >> $GITHUB_ENV
+
         curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
             "{\"nodeVersion\": \"14.18.2\", \"compatibleMongoVersions\": [\"3.6\", \"4.0\", \"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
             https://releases.rocket.chat/update
@@ -565,9 +581,25 @@ jobs:
         docker build -t $IMAGE_NAME:$DOCKER_TAG .
         docker push $IMAGE_NAME:$DOCKER_TAG
 
-        # build and push the broader alias tag
-        docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
-        docker push $IMAGE_NAME:$RELEASE
+        is_gt() {
+          local v1=(${1//./ })
+          local v2=(${2//./ })
+
+          for i in $(seq 0 2); do
+            (( ${v1[$i]} < ${v2[$i]} )) && return 1
+            (( ${v1[$i]} > ${v2[$i]} )) && return 0
+          done
+        }
+
+        CURRENT_LATEST=${{ env.CURRENT_LATEST }}
+        echo "CURRENT_LATEST: $CURRENT_LATEST"
+
+        if is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
+          echo "Pushing latest tag [new release ($DOCKER_TAG) > current latest ($CURRENT_LATEST)]"
+          # build and push the broader alias tag
+          docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+          docker push $IMAGE_NAME:$RELEASE
+        fi
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
