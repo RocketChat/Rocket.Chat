@@ -581,32 +581,24 @@ jobs:
         docker build -t $IMAGE_NAME:$DOCKER_TAG .
         docker push $IMAGE_NAME:$DOCKER_TAG
 
-        is_gt() {
-          local v1=(${1//./ })
-          local v2=(${2//./ })
+        # is_gt() {
+        #   local v1=(${1//./ })
+        #   local v2=(${2//./ })
 
-          for i in $(seq 0 2); do
-            (( ${v1[$i]} < ${v2[$i]} )) && return 1
-            (( ${v1[$i]} > ${v2[$i]} )) && return 0
-          done
-        }
+        #   for i in $(seq 0 2); do
+        #     (( ${v1[$i]} < ${v2[$i]} )) && return 1
+        #     (( ${v1[$i]} > ${v2[$i]} )) && return 0
+        #   done
+        # }
 
         if [[ $RELEASE == 'latest' ]]; then
           # https://gist.github.com/sampaiodiego/3992a07fdc4e43fd776acd7f36821ea1
           CURRENT_LATEST="$(
             git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname https://github.com/RocketChat/Rocket.Chat '*' |
-              awk -F/ 'BEGIN { IGNORECASE = 1 } !/rc|beta/ {
-                  f = f ? f : NR;
-                  if (NR > f) {
-                    print $NF;
-                    exit(0);
-                  }
-                }
-              '
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
           )"
           echo "CURRENT_LATEST: $CURRENT_LATEST"
-          if [[ -n $CURRENT_LATEST ]] && is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
-            echo "Pushing latest tag [new release ($DOCKER_TAG) > current latest ($CURRENT_LATEST)]"
+          if [[ $CURRENT_LATEST == $GITHUB_REF_NAME ]]; then
             docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
             docker push $IMAGE_NAME:$RELEASE
           fi
