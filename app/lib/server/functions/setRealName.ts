@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { Users } from '../../../models/server';
-//import { settings } from '../../../settings';
-//import { hasPermission } from '../../../authorization';
+// import { settings } from '../../../settings';
+// import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
-
-import { hasPermission } from '/app/authorization/server';
 import { IUser } from '../../../../definition/IUser';
-import { settings } from '/app/settings/server/functions/settings';
+import { settings } from '../../../settings/server';
+import { hasPermission } from '../../../authorization/server';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const _setRealName = function (userId: string, name: string, fullUser: IUser) {
 	name = s.trim(name);
 
@@ -21,9 +21,10 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	const user = fullUser || Users.findOneById(userId);
 
 	// User already has desired name, return
-	// Assert that 'user' is non-null and access 'name' 		 using the 'Non-null assertion operator' (!)
-	if (s.trim(user.name!) === name) {
-		return user;
+	if (user.name) {
+		if (s.trim(user.name) === name) {
+			return user;
+		}
 	}
 
 	// Set new name

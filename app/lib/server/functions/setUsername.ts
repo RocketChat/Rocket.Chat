@@ -5,17 +5,17 @@ import { Accounts } from 'meteor/accounts-base';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
-//import { hasPermission } from '../../../authorization';
+// import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-
 import { IUser } from '../../../../definition/IUser';
-import { hasPermission } from '/app/authorization/server';
+import { hasPermission } from '../../../authorization/server';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const _setUsername = function (userId: string, u: string, fullUser: IUser) {
 	const username = s.trim(u);
 	if (!userId || !username) {
@@ -52,7 +52,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	} catch (e) {
 		SystemLogger.info(`Could not send enrollment email.`);
 		throw new Meteor.Error('error-cannot-send-enrollment-email', `ICould not send enrollment email.`, {
-			function: 'setUsername'
+			function: 'setUsername',
 		});
 	}
 	// Set new username*
@@ -60,7 +60,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
-		let gravatar: null | Record<string,unknown> = null;
+		let gravatar: null | Record<string, unknown> = null;
 		Object.entries(avatarSuggestions).some(([service, avatarData]) => {
 			if (service !== 'gravatar') {
 				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
@@ -69,9 +69,10 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 			}
 			gravatar = avatarData;
 			return false;
-		})
+		});
 
 		if (gravatar !== null) {
+			// eslint-disable-next-line dot-notation
 			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
@@ -79,7 +80,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	// If it's the first username and the user has an invite Token, then join the invite room
 	if (!previousUsername && user.inviteToken) {
 		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
-		if (inviteData && inviteData.rid) {
+		if (inviteData?.rid) {
 			addUserToRoom(inviteData.rid, user);
 		}
 	}

@@ -32,7 +32,7 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		uid: user._id,
 	};
 
-	fileStore.insert(file, buffer, (err: Error, result) => {
+	fileStore.insert(file, buffer, (err: Error, result: any) => {
 		if (err) {
 			throw err;
 		}
