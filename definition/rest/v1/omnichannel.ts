@@ -1,4 +1,3 @@
-import { ILivechatTrigger } from './../../ILivechatTrigger';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
@@ -6,6 +5,7 @@ import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
+import { ILivechatTrigger } from '../../ILivechatTrigger';
 import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
@@ -275,5 +275,9 @@ export type OmnichannelEndpoints = {
 
 	'livechat/triggers': {
 		GET: (params: { _id: string }) => { triggers: ILivechatTrigger[] };
+	};
+
+	'livechat/triggers:_id': {
+		GET: (params: { _id: string }) => { trigger: ILivechatTrigger };
 	};
 };

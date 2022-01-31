@@ -28,7 +28,7 @@ export async function findTriggers(userId: string, offset: any, count: any, sort
 	};
 }
 
-export async function findTriggerById(userId: string, triggerId: string): Promise<ILivechatTrigger | null> {
+export async function findTriggerById({userId: string, triggerId: string}): Promise<ILivechatTrigger | null> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}

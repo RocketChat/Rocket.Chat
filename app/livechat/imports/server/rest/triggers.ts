@@ -27,17 +27,15 @@ API.v1.addRoute(
 	'livechat/triggers/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				_id: String,
 			});
 
-			const trigger = Promise.await(
-				findTriggerById({
-					userId: this.userId,
-					triggerId: this.urlParams._id,
-				}),
-			);
+			const trigger = await findTriggerById({
+				userId: this.userId,
+				triggerId: this.urlParams._id,
+			});
 
 			return API.v1.success({
 				trigger,
