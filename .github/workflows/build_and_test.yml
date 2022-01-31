@@ -594,10 +594,10 @@ jobs:
         if [[ $RELEASE == 'latest' ]]; then
           echo "Pulling current latest image .."
           docker image pull -q $IMAGE_NAME:$RELEASE
-          CURRENT_LATEST="$(docker image inspect -f '{{ .Config.Labels.version }}')"
+          CURRENT_LATEST="$(docker image inspect -f '{{ with .Config.Labels.version }}{{.}}{{ end }}')"
           echo "CURRENT_LATEST: $CURRENT_LATEST"
           docker rmi $IMAGE_NAME:$RELEASE
-          if is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
+          if [[ -n $CURRENT_LATEST ]] && is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
             echo "Pushing latest tag [new release ($DOCKER_TAG) > current latest ($CURRENT_LATEST)]"
             docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
             docker push $IMAGE_NAME:$RELEASE
