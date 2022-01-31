@@ -7,20 +7,16 @@ API.v1.addRoute(
 	'livechat/triggers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const triggers = Promise.await(
-				findTriggers({
-					userId: this.userId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+			const triggers = await findTriggers({
+				userId: this.userId,
+				offset,
+				count,
+				sort,
+			});
 
 			return API.v1.success(triggers);
 		},

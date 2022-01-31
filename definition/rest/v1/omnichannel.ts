@@ -1,3 +1,4 @@
+import { ILivechatTrigger } from './../../ILivechatTrigger';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
@@ -111,6 +112,13 @@ export type OmnichannelEndpoints = {
 	};
 	'livechat/rooms': {
 		GET: (params: {
+			agents: string[];
+			departmentId: string;
+			open: string;
+			roomName: string;
+			onhold: string;
+			createdAt: Date;
+			closedAt: Date;
 			guest: string;
 			fname: string;
 			servedBy: string[];
@@ -256,5 +264,16 @@ export type OmnichannelEndpoints = {
 
 	'livechat/messages.external/:roomId': {
 		GET: (params: { roomId: string }) => {};
+	};
+
+	'livechat/office-hours': {
+		GET: (params: {}) => {};
+	};
+	'livechat/sms-incoming/:service': {
+		POST: (params: { service: any; sms: any; department: string }) => {};
+	};
+
+	'livechat/triggers': {
+		GET: (params: { _id: string }) => { triggers: ILivechatTrigger[] };
 	};
 };

@@ -9,7 +9,7 @@ import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
-const getUploadFile = async (details, fileUrl) => {
+const getUploadFile = async (details: { name: string; type: any; rid: any; visitorToken: any; }, fileUrl: RequestInfo) => {
 	const response = await fetch(fileUrl);
 
 	const content = Buffer.from(await response.arrayBuffer());
@@ -25,7 +25,7 @@ const getUploadFile = async (details, fileUrl) => {
 	return fileStore.insertSync({ ...details, size: contentSize }, content);
 };
 
-const defineDepartment = (idOrName) => {
+const defineDepartment = (idOrName: string | null) => {
 	if (!idOrName || idOrName === '') {
 		return;
 	}
@@ -34,7 +34,7 @@ const defineDepartment = (idOrName) => {
 	return department && department._id;
 };
 
-const defineVisitor = (smsNumber, targetDepartment) => {
+const defineVisitor = (smsNumber: string, targetDepartment: any) => {
 	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
@@ -57,7 +57,7 @@ const defineVisitor = (smsNumber, targetDepartment) => {
 	return LivechatVisitors.findOneById(id);
 };
 
-const normalizeLocationSharing = (payload) => {
+const normalizeLocationSharing = (payload: { extra?: { fromLatitude: any; fromLongitude: any } | undefined }) => {
 	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = {} } = payload;
 	if (!latitude || !longitude) {
 		return;

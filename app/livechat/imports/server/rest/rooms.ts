@@ -4,14 +4,14 @@ import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 
-const validateDateParams = (property, date) => {
+const validateDateParams = (property: string, date: any) => {
 	if (date) {
 		date = JSON.parse(date);
 	}
-	if (date && date.start && isNaN(Date.parse(date.start))) {
+	if (date?.start && isNaN(Date.parse(date.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (date && date.end && isNaN(Date.parse(date.end))) {
+	if (date?.end && isNaN(Date.parse(date.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
 	return date;
@@ -26,6 +26,7 @@ API.v1.addRoute(
 			const { sort, fields } = this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
 			let { createdAt, customFields, closedAt } = this.requestParams();
+
 			check(agents, Match.Maybe([String]));
 			check(roomName, Match.Maybe(String));
 			check(departmentId, Match.Maybe(String));
