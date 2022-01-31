@@ -23,6 +23,7 @@ OTR.Room = class {
 		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
+		this.declined = new ReactiveVar(false);
 
 		this.userOnlineComputation = null;
 
@@ -53,11 +54,13 @@ OTR.Room = class {
 	}
 
 	deny() {
+		console.log("Denying")
 		this.reset();
 		Notifications.notifyUser(this.peerId, 'otr', 'deny', {
 			roomId: this.roomId,
 			userId: this.userId,
 		});
+		this.declined.set(true);
 	}
 
 	end() {
@@ -310,6 +313,7 @@ OTR.Room = class {
 
 			case 'deny':
 				(async () => {
+					this.declined.set(true);
 					const { username } = await Presence.get(this.peerId);
 					if (this.establishing.get()) {
 						this.reset();

@@ -19,6 +19,14 @@ const OTRWithData = ({ rid, tabBar }) => {
 		useCallback(() => (otr ? [otr.established.get(), otr.establishing.get()] : [false, false]), [otr]),
 	);
 
+	const declined = useReactiveValue(
+		useCallback(() => (otr ? otr.declined.get() : false), [otr]),
+	);
+
+	useEffect(() => {
+		console.log("toggle decline = ", declined);
+	}, [declined]);
+
 	const userStatus = usePresence(otr.peerId)?.status;
 
 	const isOnline = !['offline', 'loading'].includes(userStatus);
