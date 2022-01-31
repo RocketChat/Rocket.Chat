@@ -9,7 +9,7 @@ const SoundRow = ({ onClick, sound }) => {
 	const [isPlay, setPlayAudio] = useState(false);
 	const t = useTranslation();
 	const customSound = useCustomSound();
-	const handlePlay = useCallback(
+	const handleToggle = useCallback(
 		(sound) => {
 			setPlayAudio(!isPlay);
 			if (!isPlay) customSound.play(sound);
@@ -24,11 +24,11 @@ const SoundRow = ({ onClick, sound }) => {
 			</Table.Cell>
 			<Table.Cell alignItems={'end'}>
 				{!isPlay ? (
-					<Button ghost small square aria-label={t('Play')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}>
+					<Button ghost small square aria-label={t('Play')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handleToggle(_id)}>
 						<Icon name='play' size='x20' />
 					</Button>
 				) : (
-					<Button ghost small square aria-label={t('Pause')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}>
+					<Button ghost small square aria-label={t('Pause')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handleToggle(_id)}>
 						<Icon name='pause' size='x20' />
 					</Button>
 				)}
