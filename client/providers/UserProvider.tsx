@@ -43,7 +43,7 @@ const logout = (): Promise<void> =>
 
 const UserProvider: FC = ({ children }) => {
 	const userId = useReactiveValue(getUserId);
-	const user = useReactiveValue(getUser);
+	const user = useReactiveValue(getUser) ?? undefined;
 	const contextValue = useMemo(
 		() => ({
 			userId,

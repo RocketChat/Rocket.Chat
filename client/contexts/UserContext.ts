@@ -35,7 +35,7 @@ type FindOptions = {
 
 type UserContextValue = {
 	userId: string | null;
-	user: IUser | null;
+	user: IUser | undefined;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
@@ -46,7 +46,7 @@ type UserContextValue = {
 
 export const UserContext = createContext<UserContextValue>({
 	userId: null,
-	user: null,
+	user: undefined,
 	loginWithPassword: async () => undefined,
 	logout: () => Promise.resolve(),
 	queryPreference: () => ({
@@ -70,7 +70,7 @@ export const UserContext = createContext<UserContextValue>({
 export const useUserId = (): string | null => useContext(UserContext).userId;
 
 // TODO: Use IUser instead
-export const useUser = (): IUser | null => useContext(UserContext).user;
+export const useUser = (): IUser | undefined => useContext(UserContext).user;
 
 export const useLoginWithPassword = (): ((user: string | object, password: string) => Promise<void>) =>
 	useContext(UserContext).loginWithPassword;

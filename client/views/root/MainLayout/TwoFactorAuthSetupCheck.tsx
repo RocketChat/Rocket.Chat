@@ -1,7 +1,6 @@
 import React, { lazy, ReactElement, ReactNode, useCallback } from 'react';
 
 import { Roles } from '../../../../app/models/client';
-import { IUser } from '../../../../definition/IUser';
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -12,7 +11,7 @@ const AccountSecurityPage = lazy(() => import('../../account/security/AccountSec
 
 const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const user = useUser() as IUser | null;
+	const user = useUser();
 	const tfaEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
 	const require2faSetup = useReactiveValue(
 		useCallback(() => {
