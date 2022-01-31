@@ -752,6 +752,7 @@
   "CAS_version": "CAS Version",
   "CAS_version_Description": "Only use a supported CAS version supported by your CAS SSO service.",
   "Categories": "Categories",
+  "Categories*": "Categories*",
   "CDN_JSCSS_PREFIX": "CDN Prefix for JS/CSS",
   "CDN_PREFIX": "CDN Prefix",
   "CDN_PREFIX_ALL": "Use CDN Prefix for all assets",

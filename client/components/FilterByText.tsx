@@ -49,7 +49,7 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 					{props.textButton}
 				</Button>
 			) : (
-				children && <Box mis='x8'>{children} </Box>
+				children && <Box mis='x8'>{children}</Box>
 			)}
 		</Box>
 	);

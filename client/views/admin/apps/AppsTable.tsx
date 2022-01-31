@@ -77,7 +77,7 @@ const AppsTable: FC<{
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
-				<CategoryDropDown data={categories} onSelected={onSelected} />
+				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
