@@ -339,8 +339,6 @@
 			".snapcraft/snap/snapcraft.yaml",
 			".snapcraft/resources/prepareRocketChat",
 			".docker/Dockerfile.rhel",
-			".docker/Dockerfile",
-			".docker/Dockerfile.alpine",
 			"app/utils/rocketchat.info"
 		]
 	},

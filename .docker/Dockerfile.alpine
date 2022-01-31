@@ -5,7 +5,6 @@ RUN apk add --no-cache python3 make g++ libc6-compat ttf-dejavu
 ADD . /app
 
 LABEL maintainer="buildmaster@rocket.chat"
-LABEL version="4.5.0-develop"
 
 RUN set -x \
     && cd /app/bundle/programs/server \
