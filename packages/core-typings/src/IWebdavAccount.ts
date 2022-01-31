@@ -8,4 +8,6 @@ export interface IWebdavAccount extends IRocketChatRecord {
 	name: string;
 }
 
+export type WebdavAccountIntegration = Pick<IWebdavAccount, '_id' | 'username' | 'serverURL' | 'name'>;
+
 export type IWebdavAccountPayload = Pick<IWebdavAccount, 'serverURL' | 'username' | 'password' | 'name'>;
