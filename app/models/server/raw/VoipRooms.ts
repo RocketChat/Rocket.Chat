@@ -8,10 +8,59 @@ import { IRoomClosingInfo } from '../../../../definition/IRoomClosingInfo';
 export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 	logger = new Logger('VoipRoomsRaw');
 
-	findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
+	async findOneOpenByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			'open': true,
+			'v.token': visitorToken,
+		};
+		return this.findOne(query, options);
+	}
+
+	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
+		const query: FilterQuery<IVoipRoom> = {
+			t: 'v',
+			_id: id,
+		};
+		return this.findOne(query, options);
+	}
+
+	async findOneOpenByRoomIdAndVisitorToken(
+		roomId: string,
+		visitorToken: string,
+		options: FindOneOptions<IVoipRoom> = {},
+	): Promise<IVoipRoom | null> {
+		const query: FilterQuery<IVoipRoom> = {
+			't': 'v',
+			'_id': roomId,
+			'open': true,
+			'v.token': visitorToken,
+		};
+		return this.findOne(query, options);
+	}
+
+	async findOneByVisitorToken(visitorToken: string, fields?: Record<string, number>): Promise<IVoipRoom | null> {
+		const options = {
+			...(fields && { projection: fields }),
+		};
+		const query: FilterQuery<IVoipRoom> = {
+			't': 'v',
+			'v.token': visitorToken,
+		};
+		return this.findOne(query, options);
+	}
+
+	async findOneByIdAndVisitorToken(
+		_id: IVoipRoom['_id'],
+		visitorToken: string,
+		fields?: Record<string, number>,
+	): Promise<IVoipRoom | null> {
+		const options = {
+			...(fields && { projection: fields }),
+		};
+		const query: FilterQuery<IVoipRoom> = {
+			't': 'v',
+			_id,
 			'v.token': visitorToken,
 		};
 		return this.findOne(query, options);
@@ -24,31 +73,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 			'v.token': visitorToken,
 		};
 		return this.find(query, options);
-	}
-
-	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
-			t: 'v',
-			_id: id,
-		};
-		if (options === undefined) {
-			return this.findOne(query);
-		}
-		return this.findOne(query, options);
-	}
-
-	findOneOpenByRoomIdAndVisitorToken(
-		roomId: string,
-		visitorToken: string,
-		options: FindOneOptions<IVoipRoom> = {},
-	): Promise<IVoipRoom | null> {
-		const query: FilterQuery<IVoipRoom> = {
-			't': 'v',
-			'_id': roomId,
-			'open': true,
-			'v.token': visitorToken,
-		};
-		return this.findOne(query, options);
 	}
 
 	setFnameById(_id: IVoipRoom['_id'], fname: string): Promise<WriteOpResult> {
@@ -75,29 +99,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 			},
 		};
 		return this.update(query, update);
-	}
-
-	findOneByVisitorToken(visitorToken: string, fields: any): Promise<IVoipRoom | null> {
-		const options = {
-			...(fields && { fields }),
-		};
-		const query: FilterQuery<IVoipRoom> = {
-			't': 'v',
-			'v.token': visitorToken,
-		};
-		return this.findOne(query, options);
-	}
-
-	findOneByIdAndVisitorToken(_id: IVoipRoom['_id'], visitorToken: string, fields: any): Promise<IVoipRoom | null> {
-		const options = {
-			...(fields && { fields }),
-		};
-		const query: FilterQuery<IVoipRoom> = {
-			't': 'v',
-			_id,
-			'v.token': visitorToken,
-		};
-		return this.findOne(query, options);
 	}
 
 	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<WriteOpResult> {

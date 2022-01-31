@@ -33,7 +33,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		this.logger = new Logger('OmnichannelVoipService');
 	}
 
-	private normalizeAgent(agentId: string): any {
+	private normalizeAgent(agentId: string): Record<string, unknown> | undefined {
 		if (!agentId) {
 			return;
 		}

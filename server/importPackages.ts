@@ -109,4 +109,3 @@ import '../app/reactions/server';
 import '../app/livechat/server';
 import '../app/custom/server';
 import '../app/authentication/server';
-import '../app/voip/server';

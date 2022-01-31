@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { API } from '../../../../api/server';
+import { API } from '../../api';
 import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
@@ -12,7 +12,8 @@ import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoo
  *  /voip/server/api/v1/voip/room <AMOL Verify during code review>
  *    get:
  *      description: Creates a new room if rid is not passed, else gets an existing room
- * 		based on rid and token
+ * 		based on rid
+ * and token
  *      security:
  *      parameters:
  *        - name: token
