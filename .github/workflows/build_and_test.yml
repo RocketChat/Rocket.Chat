@@ -471,7 +471,7 @@ jobs:
           curl https://releases.rocket.chat/stable/info --silent |
             awk -F'[,:]' '{
               gsub(/[{}]/, "", $0);
-              for (i=0; i<NF; i++)
+              for (i = 1; i <= NF; i++)
                 if ($i ~ /^"tag"$/) {
                   i++;
                   print gensub(/"/, "", "g", $i);
