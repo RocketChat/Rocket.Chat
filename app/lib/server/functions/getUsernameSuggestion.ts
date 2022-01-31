@@ -1,13 +1,14 @@
 import limax from 'limax';
 
-import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { IUser } from '../../../../definition/IUser';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
-function slug(text) {
+function slug(text: string): string {
 	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');
 }
 
-function usernameIsAvaliable(username) {
+function usernameIsAvaliable(username: string): boolean {
 	if (username.length === 0) {
 		return false;
 	}
@@ -19,9 +20,9 @@ function usernameIsAvaliable(username) {
 	return !Users.findOneByUsernameIgnoringCase(username);
 }
 
-const name = (username) => (settings.get('UTF8_Names_Slugify') ? slug(username) : username);
+const name = (username: string): string => (settings.get('UTF8_Names_Slugify') ? slug(username) : username);
 
-export function generateUsernameSuggestion(user) {
+export function generateUsernameSuggestion(user: IUser): unknown {
 	let usernames = [];
 
 	if (user.name) {
@@ -37,8 +38,8 @@ export function generateUsernameSuggestion(user) {
 		}
 	}
 
-	if (user.profile && user.profile.name) {
-		usernames.push(name(user.profile.name));
+	if (user?.name) {
+		usernames.push(name(user.name));
 	}
 
 	if (Array.isArray(user.services)) {
