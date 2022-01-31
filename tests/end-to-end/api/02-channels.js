@@ -296,6 +296,23 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 
+		it('should fail for room type v', (done) => {
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					t: 'v',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+
 		it('should succeed when searching by roomId', (done) => {
 			request
 				.get(api('channels.files'))
