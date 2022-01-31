@@ -69,6 +69,9 @@ Meteor.startup(function () {
 	});
 
 	onClientMessageReceived.use(function (message) {
+		const { msg } = message;
+		// console.log('onClientMessageReceived ', JSON.stringify(msg));
+
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
@@ -93,7 +96,9 @@ Meteor.startup(function () {
 					});
 				}
 				if (data.userId !== Meteor.userId()) {
-					return otrRoom.encryptText(ack).then(() => {
+					return otrRoom.encryptText(ack).then((ack) => {
+						message.msg = message.msg !== msg ? msg : message.msg;
+						Meteor.call('updateOTRAck', { message, ack });
 						return message;
 					});
 				}

@@ -232,12 +232,6 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	parseUrlsInMessage(message);
 
-	const otrStreamer = notifications.streamRoomMessage;
-	if (message.t === 'otr') {
-		otrStreamer.emit(message.rid, message, user, room);
-		return message;
-	}
-
 	message = callbacks.run('beforeSaveMessage', message, room);
 	try {
 		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
@@ -247,7 +241,11 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		SystemLogger.error(e); // errors logged while the parser is at experimental stage
 	}
 	if (message) {
-		if (message._id && upsert) {
+		if (message.t === 'otr') {
+			const otrStreamer = notifications.streamRoomMessage;
+			otrStreamer.emit(message.rid, message, user, room);
+			// return message;
+		} else if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
 			Messages.upsert(

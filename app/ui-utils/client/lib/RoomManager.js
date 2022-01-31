@@ -102,7 +102,14 @@ export const RoomManager = new (function () {
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							if (record.streamActive !== true) {
 								record.streamActive = true;
-								msgStream.on(record.rid, async (msg, user, room) => {
+								msgStream.on(record.rid, async (msg) => {
+									console.log(
+										msg,
+										ChatMessage.find({ rid: record.rid }).map((el) => el),
+									);
+									if (msg?.otrAck) {
+										ChatMessage.update({ rid: record.rid, t: 'otr' }, { $set: { otrAck: msg.otrAck } });
+									}
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
