@@ -595,7 +595,14 @@ jobs:
           # https://gist.github.com/sampaiodiego/3992a07fdc4e43fd776acd7f36821ea1
           CURRENT_LATEST="$(
             git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname https://github.com/RocketChat/Rocket.Chat '*' |
-              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+              awk -F/ 'BEGIN { IGNORECASE = 1 } !/rc|beta/ {
+                  f = f ? f : NR;
+                  if (NR > f) {
+                    print $NF;
+                    exit(0);
+                  }
+                }
+              '
           )"
           echo "CURRENT_LATEST: $CURRENT_LATEST"
           if [[ -n $CURRENT_LATEST ]] && is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
