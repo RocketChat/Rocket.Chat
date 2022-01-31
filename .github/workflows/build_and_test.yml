@@ -569,7 +569,7 @@ jobs:
 
         if [[ $RELEASE == 'latest' ]]; then
           CURRENT_LATEST="$(
-            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname https://github.com/RocketChat/Rocket.Chat '*' |
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
               sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
           )"
           echo "CURRENT_LATEST: $CURRENT_LATEST"
