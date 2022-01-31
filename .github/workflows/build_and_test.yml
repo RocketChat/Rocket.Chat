@@ -592,11 +592,12 @@ jobs:
         }
 
         if [[ $RELEASE == 'latest' ]]; then
-          echo "Pulling current latest image .."
-          docker image pull -q $IMAGE_NAME:$RELEASE
-          CURRENT_LATEST="$(docker image inspect -f '{{ with .Config.Labels.version }}{{.}}{{ end }}')"
+          # https://gist.github.com/sampaiodiego/3992a07fdc4e43fd776acd7f36821ea1
+          CURRENT_LATEST="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname https://github.com/RocketChat/Rocket.Chat '*' |
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+          )"
           echo "CURRENT_LATEST: $CURRENT_LATEST"
-          docker rmi $IMAGE_NAME:$RELEASE
           if [[ -n $CURRENT_LATEST ]] && is_gt "$DOCKER_TAG" "$CURRENT_LATEST"; then
             echo "Pushing latest tag [new release ($DOCKER_TAG) > current latest ($CURRENT_LATEST)]"
             docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
