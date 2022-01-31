@@ -1,1 +1,1 @@
-import '../lib/status';
+import './status';

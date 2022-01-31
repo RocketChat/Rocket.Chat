@@ -10,10 +10,6 @@ function Status(_command: 'status', params: string, item: Record<string, string>
 
 	Meteor.call('setUserStatus', null, params, (err: Meteor.Error) => {
 		if (err) {
-			if (Meteor.isClient) {
-				return;
-			}
-
 			if (err.error === 'error-not-allowed') {
 				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng: settings.get('Language') || 'en' }),
