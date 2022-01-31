@@ -1,6 +1,7 @@
 FROM node:14.18.2-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
+LABEL version="4.5.0-develop"
 
 # dependencies
 RUN groupadd -g 65533 -r rocketchat \
