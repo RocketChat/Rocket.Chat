@@ -142,7 +142,7 @@
 		"eslint-plugin-testing-library": "^5.0.0",
 		"fast-glob": "^3.2.5",
 		"husky": "^7.0.1",
-		"i18next": "^20.3.2",
+		"i18next": "^21.6.10",
 		"jsdom-global": "^3.0.2",
 		"mocha": "^9.1.3",
 		"mock-require": "^3.0.3",
