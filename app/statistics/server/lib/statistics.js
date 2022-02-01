@@ -18,6 +18,9 @@ import {
 	Sessions,
 	Integrations,
 	Uploads,
+	LivechatDepartment,
+	EmailInbox,
+	LivechatBusinessHours,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -25,6 +28,7 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { CannedResponseRaw, LivechatPriorityRaw, LivechatTagRaw, LivechatUnitRaw } from '../../../../ee/app/models/server';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -117,6 +121,37 @@ export const statistics = {
 			type,
 			count,
 		}));
+
+		// Number of departments
+		statistics.departments = await LivechatDepartment.col.count();
+
+		// Number of business units
+		statistics.businessUnits = await LivechatUnitRaw.col.count();
+
+		// Number of Priorities
+		statistics.priorities = await LivechatPriorityRaw.col.count();
+
+		// Type of routing algorithm used on omnichannel
+		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
+
+		// Number of livechat tags
+		statistics.livechatTags = await LivechatTagRaw.col.count();
+
+		// Number of canned responses
+		statistics.cannedResponses = await CannedResponseRaw.col.count();
+
+		// is on-hold active
+		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
+
+		// Number of Email Inboxes
+		statistics.emailInboxes = await EmailInbox.col.count();
+
+		statistics.BusinessHours = {
+			// Number of Business Hours
+			total: await LivechatBusinessHours.col.count(),
+			// Business Hours strategy
+			strategy: settings.get('Livechat_enable_business_hours')||"",
+		};
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
