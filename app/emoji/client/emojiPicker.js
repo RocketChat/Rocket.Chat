@@ -152,7 +152,7 @@ Template.emojiPicker.events({
 	'click .add-custom'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		FlowRouter.go('/admin/emoji-custom');
+		FlowRouter.go('/admin/emoji-custom/new');
 		EmojiPicker.close();
 	},
 	'click .category-link'(event) {
