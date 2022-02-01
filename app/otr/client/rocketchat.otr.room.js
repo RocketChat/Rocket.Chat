@@ -24,6 +24,7 @@ OTR.Room = class {
 		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
+		this.isFirstOTR = true;
 
 		this.userOnlineComputation = null;
 
@@ -45,6 +46,7 @@ OTR.Room = class {
 		});
 		if(refresh) {
 			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH)
+			this.isFirstOTR = false;
 		}
 	}
 
@@ -65,6 +67,7 @@ OTR.Room = class {
 	}
 
 	end() {
+		this.isFirstOTR = true;
 		this.reset();
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {
 			roomId: this.roomId,
@@ -310,7 +313,9 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
 				});
-				Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+				if(this.isFirstOTR) {
+					Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+				}
 				break;
 
 			case 'deny':
