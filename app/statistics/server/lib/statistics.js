@@ -150,7 +150,7 @@ export const statistics = {
 			// Number of Business Hours
 			total: await LivechatBusinessHours.col.count(),
 			// Business Hours strategy
-			strategy: settings.get('Livechat_enable_business_hours')||"",
+			strategy: settings.get('Livechat_enable_business_hours') || '',
 		};
 
 		// Message statistics
