@@ -1,12 +1,14 @@
-import { Rooms, Subscriptions, Messages } from '../../../models';
+import { Rooms, Subscriptions, Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
 
-export const addUserToDefaultChannels = function (user, silenced) {
+export const addUserToDefaultChannels = function (user: IUser, silenced: boolean): void {
 	callbacks.run('beforeJoinDefaultChannels', user);
 	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
 		fields: { usernames: 0 },
 	}).fetch();
-	defaultRooms.forEach((room) => {
+	defaultRooms.forEach((room: IRoom) => {
 		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
 			// Add a subscription to this user
 			Subscriptions.createWithRoomAndUser(room, user, {

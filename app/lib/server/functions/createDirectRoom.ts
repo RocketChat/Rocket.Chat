@@ -8,8 +8,10 @@ import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 import { Users, Subscriptions } from '../../../models/server/raw';
+import { IUser } from '../../../../definition/IUser';
+import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
 
-const generateSubscription = (fname, name, user, extra) => ({
+const generateSubscription = (fname: string, name: string, user: IUser, extra: {}): any => ({
 	_id: Random.id(),
 	alert: false,
 	unread: 0,
@@ -27,15 +29,16 @@ const generateSubscription = (fname, name, user, extra) => ({
 	},
 });
 
-const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members) => members.map(({ username }) => username).join(', ');
+const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
+const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
 
-export const createDirectRoom = function (members, roomExtraData = {}, options = {}) {
+export const createDirectRoom = function (members: IUser[], roomExtraData = {}, options: ICreateRoomParams['options']): unknown {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 
-	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const sortedMembers = members.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
 	const usernames = sortedMembers.map(({ username }) => username);
 	const uids = members.map(({ _id }) => _id).sort();
@@ -60,7 +63,8 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 	};
 
 	if (isNewRoom) {
-		roomInfo._USERNAMES = usernames;
+		// roomInfo._USERNAMES = usernames;
+		roomInfo.usernames = usernames;
 
 		const prevent = Promise.await(
 			Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo).catch((error) => {
@@ -83,7 +87,8 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 			Object.assign(roomInfo, result);
 		}
 
-		delete roomInfo._USERNAMES;
+		// delete roomInfo._USERNAMES;
+		// delete roomInfo.usernames;
 	}
 
 	const rid = room?._id || Rooms.insert(roomInfo);
@@ -94,8 +99,9 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 			{ rid, 'u._id': members[0]._id },
 			{
 				$set: { open: true },
-				$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], {
-					...options.subscriptionExtra,
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				$setOnInsert: generateSubscription(members[0].name! || members[0].username!, members[0].username!, members[0], {
+					...options?.subscriptionExtra,
 				}),
 			},
 			{ upsert: true },
@@ -109,10 +115,10 @@ export const createDirectRoom = function (members, roomExtraData = {}, options =
 			Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
-					...(options.creator === member._id && { $set: { open: true } }),
+					...(options?.creator === member._id && { $set: { open: true } }),
 					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
-						...options.subscriptionExtra,
-						...(options.creator !== member._id && { open: members.length > 2 }),
+						...options?.subscriptionExtra,
+						...(options?.creator !== member._id && { open: members.length > 2 }),
 					}),
 				},
 				{ upsert: true },

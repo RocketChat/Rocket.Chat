@@ -3,12 +3,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions } from '../../../models';
+import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Team } from '../../../../server/sdk';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { IUser } from '../../../../definition/IUser';
 
-export const addUserToRoom = function (rid, user, inviter, silenced) {
+export const addUserToRoom = function (rid: string, user: IUser, inviter: IUser, silenced: boolean): boolean | unknown {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
@@ -100,7 +101,7 @@ export const addUserToRoom = function (rid, user, inviter, silenced) {
 
 	if (room.teamMain && room.teamId) {
 		// if user is joining to main team channel, create a membership
-		Promise.await(Team.addMember(inviter, user._id, room.teamId));
+		Promise.await(Team.addMembers(inviter._id, user._id, room.teamId));
 	}
 
 	return true;

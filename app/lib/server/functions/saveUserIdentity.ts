@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { IMessage } from '../../../../definition/IMessage';
 
 /**
  *
  * @param {object} changes changes to the user
  */
-export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) {
+
+export function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name: string; username: string }) {
 	if (!_id) {
 		return false;
 	}
@@ -46,7 +49,7 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
-			Messages.findByMention(previousUsername).forEach(function (msg) {
+			Messages.findByMention(previousUsername).forEach(function (msg: IMessage) {
 				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 			});

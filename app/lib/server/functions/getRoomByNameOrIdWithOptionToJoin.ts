@@ -1,17 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Rooms, Users, Subscriptions } from '../../../models';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
+import { Rooms, Users, Subscriptions } from '../../../models/server';
 
 export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({
-	currentUserId,
-	nameOrId,
+	currentUserId = '',
+	nameOrId = '',
 	type = '',
 	tryDirectByUserIdOnly = false,
 	joinChannel = true,
 	errorOnEmpty = true,
-}) {
-	let room;
+}): any {
+	let room: IRoom;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
 	if (nameOrId.startsWith('#')) {
@@ -21,7 +23,7 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 		// If the nameOrId starts with @ OR type is 'd', then let's try just a direct message
 		nameOrId = nameOrId.replace('@', '');
 
-		let roomUser;
+		let roomUser: IUser;
 		if (tryDirectByUserIdOnly) {
 			roomUser = Users.findOneById(nameOrId);
 		} else {
