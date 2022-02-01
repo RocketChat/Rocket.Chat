@@ -87,12 +87,11 @@ export class LivechatVisitors extends Base {
 		const user = this.findOne(query, { fields: { livechatData: 1 } });
 		const updates = {};
 
-		fields.map((f) => {
+		fields.forEach((f) => {
 			if (!f.overwrite && user.livechatData && typeof user.livechatData[f.key] !== 'undefined') {
-				return null;
+				return;
 			}
 			updates[`livechatData.${f.key}`] = f.value;
-			return null;
 		});
 
 		return this.update(query, { $set: updates });

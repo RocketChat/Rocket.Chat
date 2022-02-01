@@ -22,7 +22,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
 		this.tryEnsureIndex({ source: 1 }, { sparse: true });
-		this.tryEnsureIndex({ 'open': 1, 'v.token': 1 });
+		this.tryEnsureIndex({ 'open': 1, 'v.token': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -87,12 +87,11 @@ export class LivechatRooms extends Base {
 		const room = this.findOne(query, { fields: { livechatData: 1 } });
 		const updates = {};
 
-		fields.map((f) => {
+		fields.forEach((f) => {
 			if (!f.overwrite && room.livechatData && typeof room.livechatData[f.key] !== 'undefined') {
-				return null;
+				return;
 			}
 			updates[`livechatData.${f.key}`] = f.value;
-			return null;
 		});
 
 		return this.update(query, { $set: updates });

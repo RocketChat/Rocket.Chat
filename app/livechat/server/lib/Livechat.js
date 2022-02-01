@@ -524,8 +524,8 @@ export const Livechat = {
 
 	setMultipleCustomFields(token, fields = []) {
 		check(token, String);
-		const customfieldKeys = fields.map((f) => f.key);
-		const customFields = LivechatCustomField.findByIds(customfieldKeys, { fields: { _id: 1, scope: 1 } }).fetch();
+		const customFieldKeys = fields.map((f) => f.key);
+		const customFields = LivechatCustomField.findByIds(customFieldKeys, { fields: { _id: 1, scope: 1 } }).fetch();
 		const visitorFields = [];
 		const roomFields = [];
 

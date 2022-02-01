@@ -6,6 +6,7 @@ export class LivechatAgentActivity extends Base {
 
 		this.tryEnsureIndex({ agentId: 1, date: 1 }, { unique: true });
 		this.tryEnsureIndex({ lastStoppedAt: 1 });
+		this.tryEnsureIndex({ date: 1 });
 	}
 
 	createOrUpdate(data = {}) {
