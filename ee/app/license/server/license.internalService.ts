@@ -6,7 +6,7 @@ import { resetEnterprisePermissions } from '../../authorization/server/resetEnte
 import { Authorization } from '../../../../server/sdk';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 
-class LicenseService extends ServiceClass implements ILicense {
+export class LicenseService extends ServiceClass implements ILicense {
 	protected name = 'license';
 
 	protected internal = true;
@@ -25,6 +25,44 @@ class LicenseService extends ServiceClass implements ILicense {
 
 		onModule((licenseModule) => {
 			api.broadcast('license.module', licenseModule);
+		});
+
+		this.onEvent('$services.changed', async () => {
+			// if (hasModule('scalability')) {
+			// 	return;
+			// }
+
+			const services: {
+				name: string;
+				nodes: string[];
+			}[] = await api.call('$node.services');
+
+			/* The main idea is if there is no scalability module enabled,
+			 * then we should not allow more than one service per environment.
+			 * So we list the services and the nodes, and if there is more than
+			 * one, we inform the service that it should be disabled.
+			 */
+
+			// Filter only the services are duplicated
+			const duplicated = services.filter((service) => {
+				return service.name !== '$node' && service.nodes.length > 1;
+			});
+
+			if (!duplicated.length) {
+				return;
+			}
+
+			const brokers: Record<string, string[]> = Object.fromEntries(
+				duplicated.map((service) => {
+					const [, ...nodes] = service.nodes;
+					return [service.name, nodes];
+				}),
+			);
+
+			// Just inform the service that it should be disabled
+
+			const duplicatedServicesNames = duplicated.map((service) => service.name);
+			api.broadcastToServices(duplicatedServicesNames, 'shutdown', brokers);
 		});
 	}
 
@@ -49,5 +87,3 @@ class LicenseService extends ServiceClass implements ILicense {
 		return getModules();
 	}
 }
-
-api.registerService(new LicenseService());
