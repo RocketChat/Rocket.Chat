@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { resolveSRV, resolveTXT } from '../../../federation/server/functions/resolveDNS';
+import { isErrnoException } from '../../../../server/lib/isErrnoException';
 
 /**
  * @openapi
@@ -68,10 +69,12 @@ API.v1.addRoute(
 				const resolved = await resolveSRV(url);
 
 				return API.v1.success({ resolved });
-			} catch (error: any) {
-				const { code, syscall, hostname } = error;
+			} catch (error: unknown) {
+				if (isErrnoException(error)) {
+					return API.v1.failure(error.message);
+				}
 
-				return API.v1.failure(`${syscall} ${code} ${hostname}`);
+				return API.v1.failure(String(error));
 			}
 		},
 	},
@@ -138,10 +141,12 @@ API.v1.addRoute(
 				const resolved = await resolveTXT(url.trim());
 
 				return API.v1.success({ resolved });
-			} catch (error: any) {
-				const { code, syscall, hostname } = error;
+			} catch (error: unknown) {
+				if (isErrnoException(error)) {
+					return API.v1.failure(error.message);
+				}
 
-				return API.v1.failure(`${syscall} ${code} ${hostname}`);
+				return API.v1.failure(String(error));
 			}
 		},
 	},
