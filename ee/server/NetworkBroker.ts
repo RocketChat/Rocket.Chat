@@ -86,9 +86,11 @@ export class NetworkBroker implements IBroker {
 	async waitAndCall(method: string, data: any): Promise<any> {
 		await this.started;
 
+		const service = method.split('.')[0];
+
 		try {
 			await this.broker.waitForServices(
-				method.split('.')[0],
+				service,
 				this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout,
 			);
 		} catch (err) {
@@ -119,14 +121,21 @@ export class NetworkBroker implements IBroker {
 			});
 		}
 
+		const dependencies = [name !== 'license' && 'license', ...(instance.dependencies ? instance.dependencies : [])].filter(
+			Boolean,
+		) as string[];
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			...(name !== 'license'
-				? {
-						dependencies: ['license'],
-				  }
-				: {}),
+			dependencies,
+
+			...(instance.deferredDependencies &&
+				instance.deferredDependencies.length > 0 && {
+					async started(): Promise<void> {
+						await this.broker.waitForServices(instance.deferredDependencies);
+					},
+				}),
+
 			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (data: Parameters<EventSignatures[typeof eventName]>): void => {

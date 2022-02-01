@@ -134,6 +134,8 @@ settings.set = use(settings.set, (context, next) => {
 });
 
 export class MeteorService extends ServiceClass implements IMeteor {
+	public dependencies = ['analytics', 'banner'];
+
 	protected name = 'meteor';
 
 	protected internal = true;

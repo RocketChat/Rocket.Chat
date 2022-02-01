@@ -23,13 +23,13 @@ export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');
 export const MeteorService = proxifyWithWait<IMeteor>('meteor');
-export const Banner = proxifyWithWait<IBannerService>('banner');
+export const Banner = proxify<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
-export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
+export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 

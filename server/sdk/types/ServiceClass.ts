@@ -38,6 +38,10 @@ export interface IServiceClass {
 }
 
 export abstract class ServiceClass implements IServiceClass {
+	public readonly dependencies?: Array<string>;
+
+	public readonly deferredDependencies?: Array<string>;
+
 	protected name: string;
 
 	protected events = new EventEmitter();

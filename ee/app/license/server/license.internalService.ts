@@ -7,6 +7,8 @@ import { Authorization } from '../../../../server/sdk';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 
 export class LicenseService extends ServiceClass implements ILicense {
+	deferredDependencies: ['banner', 'authorization', 'settings'];
+
 	protected name = 'license';
 
 	protected internal = true;

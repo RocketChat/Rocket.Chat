@@ -13,6 +13,8 @@ import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 
 export class NPSService extends ServiceClass implements INPSService {
+	dependencies: ['banner'];
+
 	protected name = 'nps';
 
 	private Nps: NpsRaw;
