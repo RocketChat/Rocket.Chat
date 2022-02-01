@@ -4,7 +4,14 @@ import React, { ReactElement, ComponentProps } from 'react';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const RegisterServerStep = (): ReactElement => {
-	const { goToPreviousStep, goToNextStep, currentStep, setSetupWizardData, registerServer } = useSetupWizardContext();
+	const {
+		goToPreviousStep,
+		goToNextStep,
+		currentStep,
+		setSetupWizardData,
+		setupWizardData: { adminData },
+		registerServer,
+	} = useSetupWizardContext();
 
 	const handleSubmit: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
 		if (data.registerType !== 'standalone') {
@@ -20,6 +27,7 @@ const RegisterServerStep = (): ReactElement => {
 			stepCount={4}
 			onSubmit={handleSubmit}
 			currentStep={currentStep}
+			initialValues={{ email: adminData.companyEmail }}
 		/>
 	);
 };
