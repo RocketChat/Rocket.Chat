@@ -4,6 +4,7 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
+import { otrSystemMessages } from '/app/otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
@@ -105,7 +106,7 @@ export class Messages extends Base {
 	}
 
 	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: { $in : ['otr', 'user_joined_otr'] }, ts: { $lte: ts } };
+		const query = { rid: roomId, t: { $in : ['otr', otrSystemMessages.USER_JOINED_OTR, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH] }, ts: { $lte: ts } };
 		return this.remove(query);
 	}
 
@@ -975,10 +976,9 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
-	createOtrChatJoinedWithRoomIdAndUser(roomId, user, extraData) {
-		console.log("user = ", user);
+	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user_joined_otr', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);
 	}
 
 	// REMOVE

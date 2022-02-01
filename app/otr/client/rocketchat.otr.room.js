@@ -15,6 +15,7 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { otrSystemMessages } from '../lib/constants';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -42,6 +43,9 @@ OTR.Room = class {
 				refresh,
 			});
 		});
+		if(refresh) {
+			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH)
+		}
 	}
 
 	acknowledge() {
@@ -306,7 +310,7 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
 				});
-				Meteor.call('sendSystemMessages', this.roomId, Meteor.user());
+				Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
 				break;
 
 			case 'deny':
