@@ -13,9 +13,11 @@ API.v1.addRoute(
 
 			const triggers = await findTriggers({
 				userId: this.userId,
-				offset,
-				count,
-				sort,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
 			});
 
 			return API.v1.success(triggers);

@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../../authorization';
+import { Users } from '../../../../models/server/raw/index';
+import { hasPermission } from '../../../../authorization/client/hasPermission';
 import { API } from '../../../../api/server';
-import { Users } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 
@@ -11,7 +11,7 @@ API.v1.addRoute(
 	'livechat/users/:type',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -21,37 +21,33 @@ API.v1.addRoute(
 
 			if (this.urlParams.type === 'agent') {
 				return API.v1.success(
-					Promise.await(
-						findAgents({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					await findAgents({
+						userId: this.userId,
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			if (this.urlParams.type === 'manager') {
 				return API.v1.success(
-					Promise.await(
-						findManagers({
-							userId: this.userId,
-							text,
-							pagination: {
-								offset,
-								count,
-								sort,
-							},
-						}),
-					),
+					await findManagers({
+						userId: this.userId,
+						text,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				);
 			}
 			throw new Error('Invalid type');
 		},
-		post() {
+		async post() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -79,8 +75,8 @@ API.v1.addRoute(
 				}
 
 				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e.error);
+			} catch (e: any) {
+				return API.v1.failure(e.message);
 			}
 		},
 	},
@@ -90,7 +86,7 @@ API.v1.addRoute(
 	'livechat/users/:type/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -126,11 +122,15 @@ API.v1.addRoute(
 				return API.v1.success({
 					user: null,
 				});
-			} catch (e) {
-				return API.v1.failure(e.error);
+			} catch (error: unknown) {
+				let errorMessage = 'Unknown Error';
+				if (error instanceof Error) {
+					errorMessage = error.message;
+				}
+				return API.v1.failure(errorMessage);
 			}
 		},
-		delete() {
+		async delete() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -160,8 +160,12 @@ API.v1.addRoute(
 				}
 
 				return API.v1.failure();
-			} catch (e) {
-				return API.v1.failure(e.error);
+			} catch (error: unknown) {
+				let errorMessage = 'Unknown Error';
+				if (error instanceof Error) {
+					errorMessage = error.message;
+				}
+				return API.v1.failure(errorMessage);
 			}
 		},
 	},

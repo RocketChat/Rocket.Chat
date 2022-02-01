@@ -1,18 +1,27 @@
+import { IPagination } from '../../../../../ee/app/livechat-enterprise/server/api/lib/definition';
 import { ILivechatTrigger } from '../../../../../definition/ILivechatTrigger';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatTrigger } from '../../../../models/server/raw';
 
-export async function findTriggers(userId: string, offset: any, count: any, sort: any): Promise<ILivechatTrigger[] | number | any> {
+export async function findTriggers({
+	userId,
+	pagination,
+}: {
+	userId: string;
+	pagination: IPagination;
+}): Promise<ILivechatTrigger[] | number | any> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}
 
+	const { offset } = pagination;
+
 	const cursor = await LivechatTrigger.find(
 		{},
 		{
-			sort: sort || { name: 1 },
-			skip: offset,
-			limit: count,
+			sort: pagination.sort || { name: 1 },
+			skip: pagination.offset,
+			limit: pagination.count,
 		},
 	);
 
@@ -28,7 +37,7 @@ export async function findTriggers(userId: string, offset: any, count: any, sort
 	};
 }
 
-export async function findTriggerById({userId: string, triggerId: string}): Promise<ILivechatTrigger | null> {
+export async function findTriggerById({ userId, triggerId }: { userId: string; triggerId: string }): Promise<ILivechatTrigger | null> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}
