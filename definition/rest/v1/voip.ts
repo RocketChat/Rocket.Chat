@@ -1,4 +1,5 @@
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
+import { VoipClientEvents } from '../../voip/VoipClientEvents';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
@@ -6,6 +7,6 @@ export type VoipEndpoints = {
 	};
 
 	'voip/events': {
-		POST: (params: { event: string; rid: string; comment?: string }) => void;
+		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};
 };

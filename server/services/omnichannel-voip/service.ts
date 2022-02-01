@@ -14,8 +14,7 @@ import { settings } from '../../../app/settings/server';
 import { Users } from '../../../app/models/server';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
 // import { VoipRoom } from '../../../app/models/server/raw';
-import { IVoipRoom } from '../../../definition/IRoom';
-import { IRoomClosingInfo } from '../../../definition/IRoomClosingInfo';
+import { IVoipRoom, IRoomClosingInfo } from '../../../definition/IRoom';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -197,11 +196,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 		const now = new Date();
 		const { _id: rid } = room;
-
+		const closer = visitor ? ('visitor' as const) : ('user' as const);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			// TODO: calculate actual call duration
 			callDuration: now.getTime() / 1000,
+			closer,
 			// ...extraData,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
@@ -219,7 +219,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		*/
 		if (visitor) {
 			this.logger.debug(`Closing by visitor ${visitor._id}`);
-			closeData.closer = 'visitor';
 			closeData.closedBy = {
 				_id: visitor._id,
 				username: visitor.username,

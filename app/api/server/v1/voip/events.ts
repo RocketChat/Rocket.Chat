@@ -12,7 +12,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			check(this.requestParams(), {
-				event: Match.OneOf(['VOIP-CALL-STARTED']),
+				event: Match.Where((v: string) => {
+					return v in VoipClientEvents;
+				}),
 				rid: String,
 				comment: Match.Maybe(String),
 			});
@@ -27,7 +29,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			return API.v1.success(await Voip.handleEvent(event as VoipClientEvents, room, this.user, comment));
+			return API.v1.success(await Voip.handleEvent(event, room, this.user, comment));
 		},
 	},
 );

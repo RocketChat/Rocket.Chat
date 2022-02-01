@@ -116,11 +116,6 @@ export class VoipService extends ServiceClass implements IVoipService {
 		};
 	}
 
-	// this is a dummy function to avoid having an empty IVoipService interface
-	getConfiguration(): any {
-		return {};
-	}
-
 	getConnector(): Promise<CommandHandler> {
 		return Promise.resolve(this.commandHandler);
 	}
