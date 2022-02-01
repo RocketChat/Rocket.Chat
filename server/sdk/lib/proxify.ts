@@ -25,6 +25,11 @@ function handler<T extends object>(namespace: string, waitService: boolean): Pro
 	};
 }
 
+/*
+ * @deprecated
+ *
+ * instead, declare the service dependencies in the constructor
+ */
 export function proxifyWithWait<T>(namespace: string): Prom<T> {
 	return new Proxy({}, handler(namespace, true)) as unknown as Prom<T>;
 }
