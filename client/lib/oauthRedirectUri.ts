@@ -2,7 +2,7 @@ import { OAuth } from 'meteor/oauth';
 
 const { _redirectUri } = OAuth;
 
-OAuth._redirectUri = (serviceName: string, config: any, params: any, absoluteUrlOptions: any): string => {
+OAuth._redirectUri = (serviceName: string, config: any, params: unknown, absoluteUrlOptions: unknown): string => {
 	const ret = _redirectUri(serviceName, config, params, absoluteUrlOptions);
 
 	// DEPRECATED: Remove in v5.0.0
