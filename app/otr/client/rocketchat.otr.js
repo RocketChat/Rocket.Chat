@@ -69,6 +69,10 @@ Meteor.startup(function () {
 	});
 
 	onClientMessageReceived.use(function (message) {
+		if(message.t !== 'otr' || message.t !== 'otr-ack' || !message.notification) {
+			return message;
+		}
+
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');

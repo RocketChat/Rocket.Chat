@@ -105,7 +105,7 @@ export class Messages extends Base {
 	}
 
 	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		const query = { rid: roomId, t: { $in : ['otr', 'user_joined_otr'] }, ts: { $lte: ts } };
 		return this.remove(query);
 	}
 
@@ -973,6 +973,12 @@ export class Messages extends Base {
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
+	}
+
+	createOtrChatJoinedWithRoomIdAndUser(roomId, user, extraData) {
+		console.log("user = ", user);
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('user_joined_otr', roomId, message, user, extraData);
 	}
 
 	// REMOVE

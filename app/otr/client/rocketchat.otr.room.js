@@ -306,6 +306,7 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
 				});
+				Meteor.call('sendSystemMessages', this.roomId, Meteor.user());
 				break;
 
 			case 'deny':
