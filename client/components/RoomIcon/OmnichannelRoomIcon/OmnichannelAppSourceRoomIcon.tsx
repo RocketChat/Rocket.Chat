@@ -12,9 +12,24 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
+const convertBoxSizeToNumber = (boxSize: ComponentProps<typeof Icon>['size']): number => {
+	switch (boxSize) {
+		case 'x20': {
+			return 20;
+		}
+		case 'x24': {
+			return 24;
+		}
+		case 'x16':
+		default: {
+			return 16;
+		}
+	}
+};
+
 export const OmnichannelAppSourceRoomIcon = ({
 	room,
-	size = 'x16',
+	size = 16,
 	placement = 'default',
 }: {
 	room: IOmnichannelRoomFromAppSource;
@@ -24,14 +39,15 @@ export const OmnichannelAppSourceRoomIcon = ({
 	const color = colors[room.v.status || 'offline'];
 	const icon = (placement === 'sidebar' && room.source.sidebarIcon) || room.source.defaultIcon;
 	const { phase, value } = useOmnichannelRoomIcon(room.source.id, icon || '');
+	const fontSize = convertBoxSizeToNumber(size);
 	if ([AsyncStatePhase.REJECTED, AsyncStatePhase.LOADING].includes(phase)) {
 		return <Icon name='headset' size={size} color={color} />;
 	}
 	return (
-		<Box color={color}>
-			<svg className='rc-icon rc-input__icon-svg rc-input__icon-svg--plus' aria-hidden='true'>
-				<use href={`#${value}`} />
-			</svg>
+		<Box size={fontSize} color={color}>
+			<Box is='svg' size={fontSize} aria-hidden='true'>
+				<Box is='use' href={`#${value}`} />
+			</Box>
 		</Box>
 	);
 };

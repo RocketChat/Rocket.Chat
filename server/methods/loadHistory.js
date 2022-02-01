@@ -18,16 +18,12 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		const room = Rooms.findOneById(rid, { fields: { t: 1 } });
+		const room = Rooms.findOneById(rid);
 		if (!room) {
 			return false;
 		}
 
 		if (!canAccessRoom(room, { _id: fromId })) {
-			return false;
-		}
-
-		if (!room) {
 			return false;
 		}
 

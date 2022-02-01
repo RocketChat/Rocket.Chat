@@ -139,6 +139,19 @@ export class LivechatDepartment extends Base {
 		return this.find(query, options);
 	}
 
+	findActiveByUnitIds(unitIds, options) {
+		const query = {
+			enabled: true,
+			numAgents: { $gt: 0 },
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	unsetFallbackDepartmentByDepartmentId(_id) {
 		return this.update(
 			{ fallbackForwardDepartment: _id },
