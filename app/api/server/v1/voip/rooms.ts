@@ -1,19 +1,22 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
+
 /**
  * @openapi
- *  /voip/server/api/v1/voip/room <AMOL Verify during code review>
+ *  /voip/server/api/v1/voip/room
  *    get:
  *      description: Creates a new room if rid is not passed, else gets an existing room
- * 		based on rid
- * and token
+ * 		based on rid and token . This configures the rate limit. An average call volume in a contact
+ * 		center is 600 calls a day
+ * 		considering 8 hour shift. Which comes to 1.25 calls per minute.
+ * 		we will keep the safe limit which is 5 calls a minute.
  *      security:
  *      parameters:
  *        - name: token
@@ -60,60 +63,67 @@ import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoo
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('voip/room', {
-	async get() {
-		const defaultCheckParams = {
-			token: String,
-			rid: Match.Maybe(String),
-			agentId: Match.Maybe(String),
-		};
-		check(this.queryParams, defaultCheckParams);
 
-		const { token, rid, agentId } = this.queryParams;
-		const guest = await LivechatVisitors.getVisitorByToken(token, {});
-		if (!guest) {
-			throw new Meteor.Error('invalid-token');
-		}
-
-		let room;
-		if (!rid) {
-			room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
-			if (room) {
-				return API.v1.success({ room, newRoom: false });
-			}
-			let agent;
-
-			let agentObj = null;
-			if (agentId) {
-				agentObj = await LivechatVoip.findAgent(agentId);
-			}
-			if (agentObj) {
-				const { username } = agentObj;
-				agent = { agentId, username };
-			}
-			const rid = Random.id();
-			const roomInfo = {
-				source: {
-					type: OmnichannelSourceType.API,
-				},
+API.v1.addRoute(
+	'voip/room',
+	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		async get() {
+			const defaultCheckParams = {
+				token: String,
+				rid: Match.Maybe(String),
+				agentId: Match.Maybe(String),
 			};
-			room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo, { projection: API.v1.defaultFieldsToExclude });
-			return API.v1.success(room);
-		}
-		room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
-		}
-		return API.v1.success({ room, newRoom: false });
+			check(this.queryParams, defaultCheckParams);
+
+			const { token, rid, agentId } = this.queryParams;
+			const guest = await LivechatVisitors.getVisitorByToken(token, {});
+			if (!guest) {
+				return API.v1.failure('invalid-token');
+			}
+
+			let room;
+			if (!rid) {
+				room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
+				if (room) {
+					return API.v1.success({ room, newRoom: false });
+				}
+				let agent;
+
+				let agentObj = null;
+				if (agentId) {
+					agentObj = await LivechatVoip.findAgent(agentId);
+				}
+				if (agentObj) {
+					const { username } = agentObj;
+					agent = { agentId, username };
+				}
+				const rid = Random.id();
+				const roomInfo = {
+					source: {
+						type: OmnichannelSourceType.API,
+					},
+				};
+				room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo, { projection: API.v1.defaultFieldsToExclude });
+				return API.v1.success(room);
+			}
+			room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
+			if (!room) {
+				return API.v1.failure('invalid-room');
+			}
+			return API.v1.success({ room, newRoom: false });
+		},
 	},
-});
+);
 
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room.close <AMOL Verify during code review>
  *    post:
  *      description: Closes an open room
- * 		based on rid and token
+ * 		based on rid and token. Setting rate limit for this too
+ * 		Because room creation happens 5/minute, rate limit for this api
+ * 		is also set to 5/minute.
  *      security:
  *		requestBody:
  *      required: true
@@ -147,36 +157,40 @@ API.v1.addRoute('voip/room', {
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('voip/room.close', {
-	async post() {
-		try {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-			});
-			const { rid, token } = this.bodyParams;
+API.v1.addRoute(
+	'voip/room.close',
+	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		async post() {
+			try {
+				check(this.bodyParams, {
+					rid: String,
+					token: String,
+				});
+				const { rid, token } = this.bodyParams;
 
-			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
-			if (!visitor) {
-				throw new Meteor.Error('invalid-token');
+				const visitor = await LivechatVisitors.getVisitorByToken(token, {});
+				if (!visitor) {
+					return API.v1.failure('invalid-token');
+				}
+				const roomResult = await LivechatVoip.findRoom(token, rid);
+				if (!roomResult) {
+					return API.v1.failure('invalid-room');
+				}
+				const room: IVoipRoom = roomResult;
+				if (!room.open) {
+					return API.v1.failure('room-closed');
+				}
+				const language: string = rcSettings.get('Language') || 'en';
+				const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+				const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
+				if (!closeResult) {
+					return API.v1.failure();
+				}
+				return API.v1.success({ rid, comment });
+			} catch (e) {
+				return API.v1.failure(e);
 			}
-			const roomResult = await LivechatVoip.findRoom(token, rid);
-			if (!roomResult) {
-				throw new Meteor.Error('invalid-room');
-			}
-			const room: IVoipRoom = roomResult;
-			if (!room.open) {
-				throw new Meteor.Error('room-closed');
-			}
-			const language = 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
-			if (!closeResult) {
-				return API.v1.failure();
-			}
-			return API.v1.success({ rid, comment });
-		} catch (e) {
-			return API.v1.failure(e);
-		}
+		},
 	},
-});
+);
