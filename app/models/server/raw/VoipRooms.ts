@@ -38,25 +38,25 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		return this.findOne(query, options);
 	}
 
-	async findOneByVisitorToken(visitorToken: string, projection?: Record<string, number>): Promise<IVoipRoom | null> {
+	async findOneByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			'v.token': visitorToken,
 		};
-		return this.findOne(query, { projection });
+		return this.findOne(query, options);
 	}
 
 	async findOneByIdAndVisitorToken(
 		_id: IVoipRoom['_id'],
 		visitorToken: string,
-		projection?: Record<string, number>,
+		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			_id,
 			'v.token': visitorToken,
 		};
-		return this.findOne(query, { projection });
+		return this.findOne(query, options);
 	}
 
 	findOpenByVisitorToken(visitorToken: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Cursor<IVoipRoom> {

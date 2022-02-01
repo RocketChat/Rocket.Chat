@@ -171,7 +171,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	}
 
 	async findRoom(token: string, rid: string): Promise<IVoipRoom | null> {
-		const fields = {
+		const projection = {
 			t: 1,
 			departmentId: 1,
 			servedBy: 1,
@@ -180,9 +180,9 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			ts: 1,
 		};
 		if (!rid) {
-			return this.voipRoom.findOneByVisitorToken(token, fields);
+			return this.voipRoom.findOneByVisitorToken(token, { projection });
 		}
-		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, fields);
+		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
 	}
 
 	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom /* , comment: any, options = {}*/): Promise<boolean> {
