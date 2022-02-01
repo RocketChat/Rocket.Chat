@@ -150,7 +150,7 @@ function fraction() {
 }
 
 export function generateMnemonicPhrase(n, sep = ' ') {
-	const result = new Array(n);
+	let result = new Array(n);
 	let len = words.length;
 	const taken = new Array(len);
 
@@ -159,6 +159,8 @@ export function generateMnemonicPhrase(n, sep = ' ') {
 		result[n] = words[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
+	result = result.join(sep);
+	result = result.substring(0, 10);
 	return result.join(sep);
 }
 
