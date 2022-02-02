@@ -4,14 +4,25 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { Apps } from '../../../apps/server';
-import { addUserRoles } from '../../../authorization';
+import { addUserRoles } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
+import { IUser } from '../../../../definition/IUser';
+import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
+import { IRoom } from '../../../../definition/IRoom';
 
-export const createRoom = function (type, name, owner, members = [], readOnly, { teamId, ...extraData } = {}, options = {}) {
+export const createRoom = function (
+	type: string,
+	name: string,
+	owner: IUser,
+	members: IUser[],
+	readOnly: boolean,
+	{ teamId, ...extraData }: IRoom,
+	options: ICreateRoomParams['options'],
+): unknown {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -19,8 +30,8 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 	}
 
 	name = s.trim(name);
-	owner = s.trim(owner);
-	members = [].concat(members);
+	if (owner.username !== undefined) owner.username = s.trim(owner.username);
+	members = [].concat(members as []);
 
 	if (!name) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', {
@@ -36,8 +47,8 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 		});
 	}
 
-	if (!_.contains(members, owner.username)) {
-		members.push(owner.username);
+	if (!_.contains(members, owner)) {
+		members.push(owner);
 	}
 
 	if (extraData.broadcast) {
@@ -47,16 +58,17 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 
 	const now = new Date();
 
-	const validRoomNameOptions = {};
+	// const validRoomNameOptions = {};
+	let validRoomNameOptions: ICreateRoomParams['options'];
 
-	if (options.nameValidationRegex) {
+	if (validRoomNameOptions && options?.nameValidationRegex) {
 		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
 	}
 
-	let room = {
-		fname: name,
+	let room: IRoom = {
+		// fname: name,
 		...extraData,
-		name: getValidRoomName(name, null, validRoomNameOptions),
+		name: getValidRoomName(name, undefined, validRoomNameOptions),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
@@ -75,7 +87,12 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 		}
 	}
 
-	room._USERNAMES = members;
+	function getUsername(item: IUser): string | undefined {
+		if (item.username) return item.username;
+	}
+
+	// room._USERNAMES = members;
+	room.usernames = members.map(getUsername) as string[];
 
 	const prevent = Promise.await(
 		Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
@@ -99,7 +116,8 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 		Object.assign(room, result);
 	}
 
-	delete room._USERNAMES;
+	// delete room._USERNAMES;
+	delete room.usernames;
 
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
@@ -114,16 +132,19 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 			continue;
 		}
 
-		const extra = options.subscriptionExtra || {};
+		const extra = options?.subscriptionExtra;
 
-		extra.open = true;
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		extra!.open = true;
 
 		if (room.prid) {
-			extra.prid = room.prid;
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			extra!.prid = room.prid;
 		}
 
-		if (username === owner.username) {
-			extra.ls = now;
+		if (username.username === owner.username) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			extra!.ls = now;
 		}
 
 		Subscriptions.createWithRoomAndUser(room, member, extra);
