@@ -1,9 +1,8 @@
 import { Cursor, FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IVoipRoom } from '../../../../definition/IRoom';
+import { IVoipRoom, IRoomClosingInfo } from '../../../../definition/IRoom';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { IRoomClosingInfo } from '../../../../definition/IRoomClosingInfo';
 
 export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 	logger = new Logger('VoipRoomsRaw');
@@ -39,10 +38,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		return this.findOne(query, options);
 	}
 
-	async findOneByVisitorToken(visitorToken: string, fields?: Record<string, number>): Promise<IVoipRoom | null> {
-		const options = {
-			...(fields && { projection: fields }),
-		};
+	async findOneByVisitorToken(visitorToken: string, options: FindOneOptions<IVoipRoom> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			'v.token': visitorToken,
@@ -53,11 +49,8 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 	async findOneByIdAndVisitorToken(
 		_id: IVoipRoom['_id'],
 		visitorToken: string,
-		fields?: Record<string, number>,
+		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IVoipRoom | null> {
-		const options = {
-			...(fields && { projection: fields }),
-		};
 		const query: FilterQuery<IVoipRoom> = {
 			't': 'v',
 			_id,

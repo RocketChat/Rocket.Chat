@@ -1,1 +1,3 @@
-export type VoipClientEvents = 'VOIP-CALL-STARTED';
+export enum VoipClientEvents {
+	'VOIP-CALL-STARTED' = 'VOIP-CALL-STARTED',
+}
