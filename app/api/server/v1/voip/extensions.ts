@@ -87,18 +87,19 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 			const { id } = this.requestParams();
-			const extension = await Users.getVoipExtensionByUserId(id, {
-				projection: {
-					_id: 1,
-					username: 1,
-					extension: 1,
-				},
-			});
+			const { extension } =
+				(await Users.getVoipExtensionByUserId(id, {
+					projection: {
+						_id: 1,
+						username: 1,
+						extension: 1,
+					},
+				})) || {};
 
-			if (!extension?.extension) {
+			if (!extension) {
 				return API.v1.notFound('Extension not found');
 			}
-			const endpointDetails = await Voip.getRegistrationInfo({ extension: extension.extension });
+			const endpointDetails = await Voip.getRegistrationInfo({ extension });
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},
