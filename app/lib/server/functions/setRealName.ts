@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { Users } from '../../../models/server';
-import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings/server';
+import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
+import { IUser } from '../../../../definition/IUser';
 
-export const _setRealName = function (userId, name, fullUser) {
+export const _setRealName = function (userId: string, name: string, fullUser: IUser): unknown {
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -17,7 +18,7 @@ export const _setRealName = function (userId, name, fullUser) {
 	const user = fullUser || Users.findOneById(userId);
 
 	// User already has desired name, return
-	if (s.trim(user.name) === name) {
+	if (user.name && s.trim(user.name) === name) {
 		return user;
 	}
 

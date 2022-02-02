@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file';
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 import { Avatars } from '../../../models/server/raw';
 import { api } from '../../../../server/sdk/api';
+import { IUser } from '../../../../definition/IUser';
 
-export const setRoomAvatar = async function (rid, dataURI, user) {
+export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<unknown> {
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
@@ -30,7 +31,7 @@ export const setRoomAvatar = async function (rid, dataURI, user) {
 		uid: user._id,
 	};
 
-	fileStore.insert(file, buffer, (err, result) => {
+	fileStore.insert(file, buffer, (err: unknown, result: { etag: string }) => {
 		if (err) {
 			throw err;
 		}

@@ -5,15 +5,16 @@ import { Accounts } from 'meteor/accounts-base';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { IUser } from '../../../../definition/IUser';
 
-export const _setUsername = function (userId, u, fullUser) {
+export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
@@ -46,19 +47,20 @@ export const _setUsername = function (userId, u, fullUser) {
 				Accounts.sendEnrollmentEmail(user._id);
 			});
 		}
-	} catch (e) {
+	} catch (e: any) {
 		SystemLogger.error(e);
 	}
 	// Set new username*
 	Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
+		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as [];
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
-			const avatarData = avatarSuggestions[service];
+			const avatarData = avatarSuggestions[+service];
 			if (service !== 'gravatar') {
-				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
+				// eslint-disable-next-line dot-notation
+				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
 				gravatar = null;
 				return true;
 			}
@@ -66,14 +68,15 @@ export const _setUsername = function (userId, u, fullUser) {
 			return false;
 		});
 		if (gravatar != null) {
-			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
+			// eslint-disable-next-line dot-notation
+			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
 
 	// If it's the first username and the user has an invite Token, then join the invite room
 	if (!previousUsername && user.inviteToken) {
 		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
-		if (inviteData && inviteData.rid) {
+		if (inviteData?.rid) {
 			addUserToRoom(inviteData.rid, user);
 		}
 	}
