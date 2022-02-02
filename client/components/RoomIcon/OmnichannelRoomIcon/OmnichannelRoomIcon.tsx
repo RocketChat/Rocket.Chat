@@ -7,7 +7,7 @@ import { OmnichannelCoreSourceRoomIcon } from './OmnichannelCoreSourceRoomIcon';
 
 export const OmnichannelRoomIcon = ({
 	room,
-	size = 'x16',
+	size,
 	placement = 'default',
 }: {
 	room: IOmnichannelRoom;
