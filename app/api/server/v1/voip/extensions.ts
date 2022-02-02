@@ -95,7 +95,7 @@ API.v1.addRoute(
 				},
 			});
 
-			if (!extension.extension) {
+			if (!extension?.extension) {
 				return API.v1.notFound('Extension not found');
 			}
 			const endpointDetails = await Voip.getRegistrationInfo({ extension: extension.extension });

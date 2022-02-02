@@ -27,7 +27,7 @@ export class CallbackContext implements ICallbackContext {
 	 */
 	call(event: any): boolean {
 		const pattern = new RegExp(this.ref.actionid);
-		this.logger.error({ msg: 'ROCKETCHAT_DEBUG Trying', data1: this.ref.actionid, data2: event.actionid });
+		// this.logger.error({ msg: 'ROCKETCHAT_DEBUG Trying', data1: this.ref.actionid, data2: event.actionid });
 		/**
 		 *
 		 * Though actionid remains unique with every action and for some

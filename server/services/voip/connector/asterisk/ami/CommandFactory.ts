@@ -19,7 +19,7 @@ export class CommandFactory {
 	static logger: Logger = new Logger('CommandFactory');
 
 	static getCommandObject(command: Commands, db: Db): Command {
-		this.logger.debug({ msg: ' Creating command object for ${ Commands[command] }' });
+		this.logger.debug({ msg: `Creating command object for ${Commands[command]}` });
 		switch (command) {
 			case Commands.ping:
 				return new Command(Commands.ping.toString(), false, db);

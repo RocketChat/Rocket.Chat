@@ -1,4 +1,4 @@
-import React, { useMemo, FC, useRef } from 'react';
+import React, { useMemo, FC, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
@@ -18,48 +18,48 @@ export const CallProvider: FC = ({ children }) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgentCalled = (queue: any): void => {
-		dispatchToastMessage({
-			type: 'success',
-			message: `Received call in ${queue.queuename} `,
-			options: {
-				showDuration: '6000',
-				hideDuration: '6000',
-				timeOut: '50000',
-				preventDuplicates: true,
-			},
-		});
-		console.log(`Received call from ${JSON.stringify(queue)}`);
-	};
-	const handleQueueJoined = async (joiningDetails: any): Promise<void> => {
-		console.log(`Queue Joined ${JSON.stringify(joiningDetails)}`);
-		dispatchToastMessage({
-			type: 'success',
-			message: `Received call in ${joiningDetails.queuename} from customerid ${joiningDetails.callerid.id}`,
-			options: {
-				showDuration: '6000',
-				hideDuration: '6000',
-				timeOut: '50000',
-				preventDuplicates: true,
-			},
-		});
-		const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
-			extension: '80000',
-		});
-		dispatchToastMessage({
-			type: 'success',
-			message: `Calls waiting in ${joiningDetails.queuename} are ${list.callWaitingCount}`,
-			options: {
-				showDuration: '6000',
-				hideDuration: '6000',
-				timeOut: '50000',
-				preventDuplicates: true,
-			},
-		});
-		console.log(`Call waiting for 80000 ${JSON.stringify(list)}`);
-	};
-	Notifications.onUser('agentcalled', handleAgentCalled);
-	Notifications.onUser('callerjoined', handleQueueJoined);
+	useEffect(() => {
+		const handleAgentCalled = (queue: any): void => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Received call in ${queue.queuename} `,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+					preventDuplicates: false,
+				},
+			});
+		};
+		const handleQueueJoined = async (joiningDetails: any): Promise<void> => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Received call in ${joiningDetails.queuename} from customerid ${joiningDetails.callerid.id}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+					preventDuplicates: false,
+				},
+			});
+			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
+				extension: '80000',
+			});
+			dispatchToastMessage({
+				type: 'success',
+				message: `Calls waiting in ${joiningDetails.queuename} are ${list.callWaitingCount}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+					preventDuplicates: true,
+				},
+			});
+		};
+
+		Notifications.onUser('agentcalled', handleAgentCalled);
+		Notifications.onUser('callerjoined', handleQueueJoined);
+	}, [dispatchToastMessage]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {

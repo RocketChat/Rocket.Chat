@@ -375,6 +375,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
 			logConfiguration: false,
+			logLevel: 'error',
 		};
 
 		this.userAgent = new UserAgent(this.userAgentOptions);

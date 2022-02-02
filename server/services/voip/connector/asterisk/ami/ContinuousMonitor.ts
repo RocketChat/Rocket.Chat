@@ -24,8 +24,15 @@ import { RoomsRaw } from '../../../../../../app/models/server/raw/Rooms';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
-import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnectorResult';
 import { IQueueDetails } from '../../../../../../definition/ACDQueues';
+import {
+	IAgentCalledEvent,
+	IEventBase,
+	IQueueCallerJoinEvent,
+	isIAgentCalledEvent,
+	isIAgentConnectEvent,
+	isIQueueCallerJoinEvent,
+} from '../IEvents';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
@@ -46,95 +53,79 @@ export class ContinuousMonitor extends Command {
 		this.rooms = new RoomsRaw(db.collection('rocketchat_room'));
 		this.events = new VoipEventsRaw(db.collection('rocketchat_voip_events'));
 	}
-	/*
-	async processQueueCallerJoinOld(event: any): Promise<void> {
-		this.events.addVoipEvent(event.event.toLowerCase(), event.queue, {
-			callwaitingcount: event.count,
-		});
-		const cursor = await this.events.findLatest(event.event.toLowerCase(), event.queue);
-		cursor.forEach((event: IVoipEvent | null) => {
-			this.logger.error({ msg: 'ROCKETCHAT_DEBUG4', event });
-		});
-
-	}
-	*/
 
 	// Todo : Move this out of connector. This class is a busy class.
 	// Not sure if we should do it here.
 	private async findMemberUsers(queueName: string): Promise<string[]> {
 		const queue = new ACDQueue(Commands.queue_details.toString(), true);
 		queue.connection = this.connection;
-		const userIds: string[] = [];
-		const queueDetails = Promise.await(queue.executeCommand({ queueName })) as IVoipConnectorResult;
+		const queueDetails = await queue.executeCommand({ queueName });
 		const { members } = queueDetails.result as unknown as IQueueDetails;
 		if (!members) {
 			return [];
 		}
-		for (let i = 0; i < members.length; i++) {
-			const extension = members[i].name.toLowerCase().replace('pjsip/', '');
-			const user = Promise.await(this.users.findOneByExtension(extension));
-			if (user) {
-				userIds.push(user._id);
-			}
-		}
-		this.logger.error({ msg: 'ROCKETCHAT_DEBUG members = ', userIds });
-		return userIds;
+
+		const extensionList = members.map((m) => {
+			return m.name.toLowerCase().replace('pjsip/', '');
+		});
+
+		this.logger.debug(`Finding members of queue ${queueName} between users`);
+		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
 
-	async processQueueCallerJoin(event: any): Promise<void> {
-		const members = Promise.await(this.findMemberUsers(event.queue));
+	async processQueueCallerJoin(event: IQueueCallerJoinEvent): Promise<void> {
+		this.logger.debug(`Got new event queue.callerjoined at ${event.queue}`);
+		const members = await this.findMemberUsers(event.queue);
 		const callerId = {
 			id: event.calleridnum,
 			name: event.calleridname,
 		};
-		// Broadcast for all the members in the queue.
-		for (let i = 0; i < members.length; i++) {
-			api.broadcast('queue.callerjoined', members[i], event.queue, callerId, event.count);
-		}
+
+		this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
+		members.forEach((m) => {
+			api.broadcast('queue.callerjoined', m, event.queue, callerId, event.count);
+		});
 	}
 
-	async processAgentCalled(event: any): Promise<void> {
-		/*
-		const message = {
-			t: 'test',
-			msg: `Got call from ${event.queue}`,
-			groupable: false,
-		};
-		const room = await this.rooms.findOneById('GENERAL');
-		*/
-		this.logger.error({ msg: 'ROCKETCHAT_DEBUG2', no: event.destcalleridnum });
-		const user = await this.users.findOneByExtension(event.destcalleridnum, {
+	async processAgentCalled(event: IAgentCalledEvent): Promise<void> {
+		this.logger.debug(`Got new event queue.agentcalled at ${event.queue}`);
+		const extension = event.interface.toLowerCase().replace('pjsip/', '');
+		const user = await this.users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
 				username: 1,
 				extension: 1,
 			},
 		});
-		/*
-		if (user) {
-			// this.logger.error({ msg: 'ROCKETCHAT_DEBUG3' });
-			await sendMessage(user, message, room);
-			// this.logger.error({ msg: 'onEvent', event, user });
+
+		if (!user) {
+			this.logger.debug(`Cannot broadcast queue.agentcalled. No agent found at extension ${extension}`);
+			return;
 		}
-		*/
-		if (user) {
-			this.logger.error({ msg: 'ROCKETCHAT_DEBUG ', no: event.queue });
-			api.broadcast('queue.agentcalled', user._id, event.queue);
-		}
+
+		this.logger.debug(`Broadcasting event queue.agentcalled to ${user._id}@${event.queue} on extension ${extension}`);
+		api.broadcast('queue.agentcalled', user._id, event.queue);
 	}
 
-	async onEvent(event: any): Promise<void> {
-		// this.logger.error({ msg: 'onEvent', event });
-		switch (event.event.toLowerCase()) {
-			case 'queuecallerjoin': {
-				await this.processQueueCallerJoin(event);
-				break;
-			}
-			case 'agentcalled': {
-				await this.processAgentCalled(event);
-				break;
-			}
+	async onEvent(event: IEventBase): Promise<void> {
+		this.logger.debug(`Received event ${event.event}`);
+		if (isIQueueCallerJoinEvent(event)) {
+			return this.processQueueCallerJoin(event);
 		}
+
+		if (isIAgentCalledEvent(event)) {
+			return this.processAgentCalled(event);
+		}
+
+		if (isIAgentConnectEvent(event)) {
+			this.logger.debug(`Cannot handle event ${event.event}`);
+			// return;
+		}
+
+		// Asterisk sends a metric ton of events, some may be useful but others doesn't
+		// We need to check which ones we want to use in future, but until that moment, this log
+		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
+		// this.logger.debug(`Cannot handle event ${event.event}`);
 	}
 
 	setupEventHandlers(): void {
