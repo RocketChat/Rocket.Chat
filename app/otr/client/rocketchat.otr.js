@@ -69,10 +69,9 @@ Meteor.startup(function () {
 	});
 
 	onClientMessageReceived.use(function (message) {
-		const { msg } = message;
-		// console.log('onClientMessageReceived ', JSON.stringify(msg));
-
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
+			const { msg } = message;
+
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
