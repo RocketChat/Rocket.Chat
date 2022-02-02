@@ -13,7 +13,7 @@ API.v1.addRoute(
 		async post() {
 			check(this.requestParams(), {
 				event: Match.Where((v: string) => {
-					return v in VoipClientEvents;
+					return Object.values<string>(VoipClientEvents).includes(v);
 				}),
 				rid: String,
 				comment: Match.Maybe(String),
