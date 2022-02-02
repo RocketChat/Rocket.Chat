@@ -1,14 +1,16 @@
+import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { ChatRoom } from '../../models';
-import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
-import { openRoom } from '../../ui-utils';
-import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { ChatRoom } from '../../models/client/models/ChatRoom';
+import { settings } from '../../settings/server/index';
+import { hasPermission } from '../../authorization/client/index';
+import { openRoom } from '../../ui-utils/client/index';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils/server';
 
-let LivechatInquiry;
+let LivechatInquiry: any;
 if (Meteor.isClient) {
 	({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
 }
@@ -21,11 +23,11 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 		});
 	}
 
-	action(params) {
+	action(params: { id: any }) {
 		openRoom('l', params.id);
 	}
 
-	link(sub) {
+	link(sub: { rid: any }) {
 		return {
 			id: sub.rid,
 		};
@@ -54,29 +56,29 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return ChatRoom.findOne({ _id: identifier });
 	}
 
-	roomName(roomData) {
+	roomName(roomData: IRoom): string {
 		return roomData.name || roomData.fname || roomData.label;
 	}
 
-	condition() {
+	condition(): ISetting {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
-	canSendMessage(rid) {
+	canSendMessage(rid: string): boolean {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1 } });
 		return room && room.open === true;
 	}
 
-	getUserStatus(rid) {
+	getUserStatus(rid: string): any {
 		const room = Session.get(`roomData${rid}`);
 		if (room) {
 			return room.v && room.v.status;
 		}
 		const inquiry = LivechatInquiry.findOne({ rid });
-		return inquiry && inquiry.v && inquiry.v.status;
+		return inquiry?.v?.status;
 	}
 
-	allowRoomSettingChange(room, setting) {
+	allowRoomSettingChange(_room: any, setting: number | string): boolean {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -85,11 +87,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(room, action) {
+	allowMemberAction(_room: any, action: any): any {
 		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
-	getUiText(context) {
+	getUiText(context: any): string {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Livechat_Warning';
@@ -100,7 +102,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid) {
+	readOnly(rid: string): boolean {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
@@ -114,11 +116,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return !room.servedBy;
 	}
 
-	getAvatarPath(roomData) {
+	getAvatarPath(roomData: string): string {
 		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
-	openCustomProfileTab(instance, room, username) {
+	openCustomProfileTab(instance: any, room: any, username: string): boolean {
 		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
@@ -127,11 +129,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return true;
 	}
 
-	showQuickActionButtons() {
+	showQuickActionButtons(): boolean {
 		return true;
 	}
 
-	isLivechatRoom() {
+	isLivechatRoom(): boolean {
 		return true;
 	}
 }

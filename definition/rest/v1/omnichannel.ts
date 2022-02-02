@@ -1,4 +1,3 @@
-import { IUser } from './../../../imports/client/@rocket.chat/apps-engine/definition/users/IUser.d';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
@@ -278,8 +277,8 @@ export type OmnichannelEndpoints = {
 		GET: (params: { _id: string }) => { triggers: ILivechatTrigger[] };
 	};
 
-	'livechat/triggers:_id': {
-		GET: (params: { _id: string }) => { trigger: ILivechatTrigger };
+	'livechat/triggers/:_id': {
+		GET: (params: { _id: string }) => { trigger: ILivechatTrigger | null };
 	};
 
 	'livechat/upload/:rid': {
