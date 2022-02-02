@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
-import { otrSystemMessages } from '/app/otr/lib/constants';
+import { otrSystemMessages } from '../../../otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
@@ -106,7 +106,18 @@ export class Messages extends Base {
 	}
 
 	deleteOldOTRMessages(roomId, ts) {
-		const query = { rid: roomId, t: { $in : ['otr', otrSystemMessages.USER_JOINED_OTR, otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH] }, ts: { $lte: ts } };
+		const query = {
+			rid: roomId,
+			t: {
+				$in: [
+					'otr',
+					otrSystemMessages.USER_JOINED_OTR,
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+				],
+			},
+			ts: { $lte: ts },
+		};
 		return this.remove(query);
 	}
 

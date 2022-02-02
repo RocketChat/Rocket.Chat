@@ -69,7 +69,7 @@ Meteor.startup(function () {
 	});
 
 	onClientMessageReceived.use(function (message) {
-		if(message.t !== 'otr' || message.t !== 'otr-ack' || !message.notification) {
+		if (message.t !== 'otr' || message.t !== 'otr-ack' || !message.notification) {
 			return message;
 		}
 

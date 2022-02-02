@@ -4478,6 +4478,7 @@
   "User_joined_channel_male": "Has joined the channel.",
   "User_joined_conversation": "Has joined the conversation",
   "user_joined_otr": "Has joined OTR chat.",
+  "user_key_refreshed_successfully": "key refreshed successfully",
   "user_requested_otr_key_refresh": "Has requested key refresh.",
   "User_joined_team": "Has joined the team.",
   "User_joined_team_female": "Has joined the team.",

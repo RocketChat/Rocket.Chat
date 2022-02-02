@@ -44,8 +44,8 @@ OTR.Room = class {
 				refresh,
 			});
 		});
-		if(refresh) {
-			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH)
+		if (refresh) {
+			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 			this.isFirstOTR = false;
 		}
 	}
@@ -252,7 +252,6 @@ OTR.Room = class {
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
-
 				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
@@ -263,6 +262,9 @@ OTR.Room = class {
 							Meteor.defer(() => {
 								this.established.set(true);
 								this.acknowledge();
+								if (data.refresh) {
+									Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								}
 							});
 						});
 					});
@@ -313,9 +315,10 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
 				});
-				if(this.isFirstOTR) {
+				if (this.isFirstOTR) {
 					Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
 				}
+				this.isFirstOTR = false;
 				break;
 
 			case 'deny':
