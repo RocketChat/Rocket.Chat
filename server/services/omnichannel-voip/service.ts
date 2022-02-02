@@ -33,7 +33,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		this.logger = new Logger('OmnichannelVoipService');
 	}
 
-	private normalizeAgent(agentId: string): Record<string, unknown> | undefined {
+	private normalizeAgent(agentId: string): Record<string, string> | Record<string, boolean> | undefined {
 		if (!agentId) {
 			return;
 		}
@@ -48,7 +48,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return Object.assign(extraData);
 	}
 
-	private async createVoipRoom(rid: string, name: string, agent: any, guest: ILivechatVisitor): Promise<string> {
+	private async createVoipRoom(
+		rid: string,
+		name: string,
+		agent: { agentId: string; username: string },
+		guest: ILivechatVisitor,
+	): Promise<string> {
 		const status = 'online';
 		const { _id, username, department: departmentId } = guest;
 		const newRoomAt = new Date();
@@ -142,7 +147,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 	async getNewRoom(
 		guest: ILivechatVisitor,
-		agent: any,
+		agent: { agentId: string; username: string },
 		rid: string,
 		roomInfo: any,
 		options: FindOneOptions<IVoipRoom> = {},

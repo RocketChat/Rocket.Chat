@@ -88,16 +88,16 @@ API.v1.addRoute(
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
 				}
-				let agent;
-
 				let agentObj = null;
 				if (agentId) {
 					agentObj = await LivechatVoip.findAgent(agentId);
 				}
-				if (agentObj) {
-					const { username } = agentObj;
-					agent = { agentId, username };
+				if (!agentObj) {
+					return API.v1.failure('agent-not-found');
 				}
+
+				const { username } = agentObj;
+				const agent = { agentId, username };
 				const rid = Random.id();
 				const roomInfo = {
 					source: {
