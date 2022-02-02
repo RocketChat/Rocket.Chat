@@ -110,30 +110,6 @@ export const RoomManager = new (function () {
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
 									}
-									if (msg.t === 'otr') {
-										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-										const { _id, username, name } = user;
-										msg.u = {
-											_id,
-											username,
-											name,
-										};
-										msg.rid = room._id;
-										msg.room = {
-											type,
-											name,
-										};
-
-										upsertMessage({ msg, subscription });
-
-										if (isNew) {
-											menu.updateUnreadBars();
-											callbacks.run('streamNewMessage', msg);
-										}
-
-										return;
-									}
 
 									// Do not load command messages into channel
 									if (msg.t !== 'command') {
