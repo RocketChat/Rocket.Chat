@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
@@ -10,7 +9,6 @@ Meteor.methods({
 		}
 		const otrStreamer = notifications.streamRoomMessage;
 		message.otrAck = ack;
-		console.log(message);
 		otrStreamer.emit(message.rid, message);
 	},
 });

@@ -103,10 +103,6 @@ export const RoomManager = new (function () {
 							if (record.streamActive !== true) {
 								record.streamActive = true;
 								msgStream.on(record.rid, async (msg) => {
-									console.log(
-										msg,
-										ChatMessage.find({ rid: record.rid }).map((el) => el),
-									);
 									if (msg?.otrAck) {
 										ChatMessage.update({ rid: record.rid, t: 'otr' }, { $set: { otrAck: msg.otrAck } });
 									}
