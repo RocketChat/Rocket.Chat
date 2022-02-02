@@ -12,10 +12,6 @@ type AutoCompleteTagsMultiplePropsType = {
 	onChange: () => {};
 };
 
-function empty(): void {
-	// another solution would be to have the { "allow": ["arrowFunctions"] } option in no-empty-function rule.
-}
-
 const AutoCompleteTagMultiple = ({ value, onChange }: AutoCompleteTagsMultiplePropsType): ReactElement => {
 	const onlyMyTags = false;
 
@@ -54,11 +50,7 @@ const AutoCompleteTagMultiple = ({ value, onChange }: AutoCompleteTagsMultiplePr
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			endReached={
-				tagsPhase === AsyncStatePhase.LOADING
-					? (): void => {
-							empty();
-					  }
-					: (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
+				tagsPhase === AsyncStatePhase.LOADING ? (): {} => ({}) : (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
 			}
 		/>
 	);
