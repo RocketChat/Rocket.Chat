@@ -34,8 +34,8 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 		webRTCEnableDirect,
 	} = settings;
 
-	// If Canned Response does not exist add blank object to the statistic else add canned response object
-	const cannedRes = !cannedResponsesEnabled ? {} : { cannedResponses: { cannedResponsesEnabled } };
+	// If Canned Response does not exist add blank object to the statistic
+	const cannedRes = cannedResponsesEnabled !== undefined ? { cannedResponses: { cannedResponsesEnabled } } : {};
 
 	const statisticObject = {
 		accounts: {
@@ -135,7 +135,7 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 			{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },
 			{ key: 'WebRTC_Enable_Private', alias: 'webRTCEnablePrivate' },
 			{ key: 'WebRTC_Enable_Direct', alias: 'webRTCEnableDirect' },
-			{ key: 'Canned_Responses_Enable', alias: 'cannedResponses' },
+			{ key: 'Canned_Responses_Enable', alias: 'cannedResponsesEnabled' },
 		];
 
 		// Mapping only _id values
