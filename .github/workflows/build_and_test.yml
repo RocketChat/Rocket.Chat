@@ -565,9 +565,20 @@ jobs:
         docker build -t $IMAGE_NAME:$DOCKER_TAG .
         docker push $IMAGE_NAME:$DOCKER_TAG
 
-        # build and push the broader alias tag
-        docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
-        docker push $IMAGE_NAME:$RELEASE
+        if [[ $RELEASE == 'latest' ]]; then
+          CURRENT_LATEST="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+          )"
+          echo "CURRENT_LATEST: $CURRENT_LATEST"
+          if [[ $CURRENT_LATEST == $GITHUB_REF_NAME ]]; then
+            docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+            docker push $IMAGE_NAME:$RELEASE
+          fi
+        else
+          docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+          docker push $IMAGE_NAME:$RELEASE
+        fi
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
