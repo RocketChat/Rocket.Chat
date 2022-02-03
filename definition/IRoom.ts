@@ -26,6 +26,8 @@ export interface IRoom extends IRocketChatRecord {
 	encrypted?: boolean;
 	topic?: any;
 
+	favorite?: boolean;
+
 	ro?: boolean;
 	reactWhenReadOnly?: boolean;
 

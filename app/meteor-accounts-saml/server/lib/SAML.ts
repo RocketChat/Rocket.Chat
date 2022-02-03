@@ -493,7 +493,7 @@ export class SAML {
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						createRoom('c', roomName, user.username);
+						createRoom('c', roomName, user);
 					}
 				}
 			}

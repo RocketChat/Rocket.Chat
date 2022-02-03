@@ -6,7 +6,7 @@ import { IUser } from '../../definition/IUser';
 
 Meteor.startup(() => {
 	Meteor.users
-		.find(
+		.find<IUser>(
 			{},
 			{
 				fields: {

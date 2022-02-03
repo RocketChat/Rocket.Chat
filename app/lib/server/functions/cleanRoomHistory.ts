@@ -1,10 +1,11 @@
+import { Cursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
-import { IMessage } from '../../../../definition/IMessage';
+import { IMessage, IMessageDiscussion } from '../../../../definition/IMessage';
 
 export const cleanRoomHistory = function ({
 	rid = '',
@@ -42,16 +43,14 @@ export const cleanRoomHistory = function ({
 	}
 
 	if (!ignoreDiscussion) {
-		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(
-			rid,
-			excludePinned,
-			ts,
-			fromUsers,
-			{ fields: { drid: 1 }, ...(limit && { limit }) },
-			ignoreThreads,
-		)
-			.fetch()
-			.forEach(({ drid }: { drid: string }) => deleteRoom(drid));
+		Promise.await(
+			(
+				Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+					fields: { drid: 1 },
+					...(limit && { limit }),
+				}) as Cursor<IMessageDiscussion>
+			).forEach(({ drid }) => deleteRoom(drid)),
+		);
 	}
 
 	if (!ignoreThreads) {

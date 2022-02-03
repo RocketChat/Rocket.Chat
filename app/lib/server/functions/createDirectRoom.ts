@@ -63,11 +63,13 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 	};
 
 	if (isNewRoom) {
-		// roomInfo._USERNAMES = usernames;
-		roomInfo.usernames = usernames;
+		const tmpRoom = {
+			...roomInfo,
+			_USERNAMES: usernames,
+		};
 
 		const prevent = Promise.await(
-			Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo).catch((error) => {
+			Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
 				if (error instanceof AppsEngineException) {
 					throw new Meteor.Error('error-app-prevented', error.message);
 				}
@@ -79,16 +81,13 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
-		let result;
-		result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', roomInfo));
-		result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+		const result = Promise.await(
+			Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmpRoom))),
+		);
 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);
 		}
-
-		// delete roomInfo._USERNAMES;
-		// delete roomInfo.usernames;
 	}
 
 	const rid = room?._id || Rooms.insert(roomInfo);
@@ -108,7 +107,7 @@ export const createDirectRoom = function (members: IUser[], roomExtraData = {}, 
 		);
 	} else {
 		const memberIds = members.map((member) => member._id);
-		const membersWithPreferences = Users.find({ _id: { $in: memberIds } }, { 'username': 1, 'settings.preferences': 1 });
+		const membersWithPreferences = Users.find({ _id: { $in: memberIds } }, { fields: { 'username': 1, 'settings.preferences': 1 } });
 
 		membersWithPreferences.forEach((member) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);

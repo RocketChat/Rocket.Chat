@@ -98,6 +98,13 @@ export type IVoipMessage = IMessage & {
 		callWaitingTime?: string;
 	};
 };
+export interface IMessageDiscussion extends IMessage {
+	drid: RoomID;
+}
+
+export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
+	return 'drid' in message;
+};
 
 export type IMessageEdited = IMessage & {
 	editedAt: Date;

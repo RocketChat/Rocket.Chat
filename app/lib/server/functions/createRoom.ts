@@ -14,9 +14,13 @@ import { IUser } from '../../../../definition/IUser';
 import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
 import { IRoom, RoomType } from '../../../../definition/IRoom';
 
-export const createRoom = function (
-	type: RoomType,
-	name: string,
+const isValidName = (name: unknown): name is string => {
+	return typeof name === 'string' && s.trim(name).length > 0;
+};
+
+export const createRoom = function <T extends RoomType>(
+	type: T,
+	name: T extends 'd' ? undefined : string,
 	owner: IUser,
 	members: IUser[] = [],
 	readOnly?: boolean,
@@ -30,14 +34,13 @@ export const createRoom = function (
 		return createDirectRoom(members, extraData, options);
 	}
 
-	name = s.trim(name);
-	if (owner.username !== undefined) owner.username = s.trim(owner.username);
-
-	if (!name) {
+	if (!isValidName(name)) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', {
 			function: 'RocketChat.createRoom',
 		});
 	}
+
+	if (owner.username !== undefined) owner.username = s.trim(owner.username);
 
 	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 
@@ -68,7 +71,7 @@ export const createRoom = function (
 	let room: IRoom = {
 		// fname: name,
 		...extraData,
-		name: getValidRoomName(name, undefined, validRoomNameOptions),
+		name: getValidRoomName(name.trim(), undefined, validRoomNameOptions),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
@@ -91,11 +94,15 @@ export const createRoom = function (
 		if (item.username) return item.username;
 	}
 
-	// room._USERNAMES = members;
+	const tmp = {
+		...room,
+		_USERNAMES: members,
+	};
+
 	room.usernames = members.map(getUsername) as string[];
 
 	const prevent = Promise.await(
-		Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
+		Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
 			if (error instanceof AppsEngineException) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
@@ -108,14 +115,11 @@ export const createRoom = function (
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', room))));
+	const result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmp))));
 
 	if (typeof result === 'object') {
 		Object.assign(room, result);
 	}
-
-	// delete room._USERNAMES;
-	delete room.usernames;
 
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
