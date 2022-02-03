@@ -19,6 +19,17 @@ type Methods = {
 	[k: string]: MethodFn;
 };
 
+const handleInternalException = (err: unknown, msg: string): MeteorError => {
+	if (err instanceof MeteorError) {
+		return err;
+	}
+
+	// default errors are logged to the console and redacted from the client
+	logger.error({ msg, err });
+
+	return new MeteorError(500, 'Internal server error');
+};
+
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const SERVER_ID = ejson.stringify({ server_id: '0' });
 
@@ -56,14 +67,7 @@ export class Server extends EventEmitter {
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
 		} catch (err: unknown) {
-			if (err instanceof MeteorError) {
-				return this.result(client, packet, null, err);
-			}
-
-			// default errors are logged to the console and redacted from the client
-			logger.error({ msg: 'Method call error', err });
-
-			return this.result(client, packet, null, new MeteorError(500, 'Internal server error'));
+			return this.result(client, packet, null, handleInternalException(err, 'Method call error'));
 		}
 	}
 
@@ -90,14 +94,7 @@ export class Server extends EventEmitter {
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 		} catch (err: unknown) {
-			if (err instanceof MeteorError) {
-				return this.nosub(client, packet, err);
-			}
-
-			// default errors are logged to the console and redacted from the client
-			logger.error({ msg: 'Subscribe error', err });
-
-			return this.nosub(client, packet, new MeteorError(500, 'Internal server error'));
+			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
 		}
 	}
 
