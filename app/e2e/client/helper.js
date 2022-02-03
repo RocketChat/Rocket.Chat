@@ -1,6 +1,6 @@
 /* eslint-disable new-cap, no-proto */
 
-import crypto from 'crypto';
+import * as crypto_module from 'crypto';
 
 import ByteBuffer from 'bytebuffer';
 
@@ -132,10 +132,10 @@ function hexString(digits) {
 	// Try to get cryptographically strong randomness. Fall back to
 	// non-cryptographically strong if not available.
 	try {
-		bytes = crypto.randomBytes(numBytes);
+		bytes = crypto_module.randomBytes(numBytes);
 	} catch (e) {
 		// XXX should re-throw any error except insufficient entropy
-		bytes = crypto.pseudoRandomBytes(numBytes);
+		bytes = crypto_module.pseudoRandomBytes(numBytes);
 	}
 	const result = bytes.toString('hex');
 	// If the number of digits is odd, we'll have generated an extra 4 bits
@@ -150,7 +150,7 @@ function fraction() {
 }
 
 export function generateMnemonicPhrase(n, sep = ' ') {
-	let result = new Array(n);
+	const result = new Array(n);
 	let len = words.length;
 	const taken = new Array(len);
 
@@ -159,8 +159,6 @@ export function generateMnemonicPhrase(n, sep = ' ') {
 		result[n] = words[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
-	result = result.join(sep);
-	result = result.substring(0, 10);
 	return result.join(sep);
 }
 
