@@ -11,7 +11,7 @@ import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 import { IUser } from '../../../../definition/IUser';
-import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
+import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
 import { IRoom, RoomType } from '../../../../definition/IRoom';
 
 const isValidName = (name: unknown): name is string => {
@@ -59,7 +59,7 @@ export const createRoom = function <T extends RoomType>(
 
 	const now = new Date();
 
-	let room: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'jitsiTimeout' | 'autoTranslateLanguage'> = {
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'jitsiTimeout' | 'autoTranslateLanguage'> = {
 		fname: name,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {
@@ -79,20 +79,14 @@ export const createRoom = function <T extends RoomType>(
 	if (teamId) {
 		const team = Promise.await(Team.getOneById(teamId, { projection: { _id: 1 } }));
 		if (team) {
-			room.teamId = team._id;
+			roomProps.teamId = team._id;
 		}
 	}
 
-	function getUsername(item: IUser): string | undefined {
-		if (item.username) return item.username;
-	}
-
 	const tmp = {
-		...room,
+		...roomProps,
 		_USERNAMES: members,
 	};
-
-	room.usernames = members.map(getUsername) as string[];
 
 	const prevent = Promise.await(
 		Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
@@ -111,15 +105,15 @@ export const createRoom = function <T extends RoomType>(
 	const result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmp))));
 
 	if (typeof result === 'object') {
-		Object.assign(room, result);
+		Object.assign(roomProps, result);
 	}
 
 	if (type === 'c') {
-		callbacks.run('beforeCreateChannel', owner, room);
+		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
-	room = Rooms.createWithFullRoomData(room);
+	const room = Rooms.createWithFullRoomData(roomProps);
 
-	for (const username of members) {
+	for (const username of members as string[]) {
 		const member = Users.findOneByUsername(username, {
 			fields: { 'username': 1, 'settings.preferences': 1 },
 		});
@@ -127,19 +121,16 @@ export const createRoom = function <T extends RoomType>(
 			continue;
 		}
 
-		const extra = options?.subscriptionExtra;
+		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		extra!.open = true;
+		extra.open = true;
 
 		if (room.prid) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			extra!.prid = room.prid;
+			extra.prid = room.prid;
 		}
 
-		if (username.username === owner.username) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			extra!.ls = now;
+		if (username === owner.username) {
+			extra.ls = now;
 		}
 
 		Subscriptions.createWithRoomAndUser(room, member, extra);
@@ -152,17 +143,11 @@ export const createRoom = function <T extends RoomType>(
 			const team = Promise.await(Team.getOneById(room.teamId));
 			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
 		}
-		Meteor.defer(() => {
-			callbacks.run('afterCreateChannel', owner, room);
-		});
+		callbacks.run('afterCreateChannel', owner, room);
 	} else if (type === 'p') {
-		Meteor.defer(() => {
-			callbacks.run('afterCreatePrivateGroup', owner, room);
-		});
+		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
-	Meteor.defer(() => {
-		callbacks.run('afterCreateRoom', owner, room);
-	});
+	callbacks.runAsync('afterCreateRoom', owner, room);
 
 	Apps.triggerEvent('IPostRoomCreate', room);
 
