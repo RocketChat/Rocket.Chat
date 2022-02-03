@@ -104,15 +104,20 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 	const destinations =
 		Array.isArray(user.emails) && user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
 
+	type UserActivated = {
+		subject: (params: { active: boolean }) => string;
+		html: (params: { active: boolean; name: string; username: string }) => string;
+	};
+	const { subject, html } = (Accounts.emailTemplates as unknown as { userActivated: UserActivated }).userActivated;
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: Accounts.emailTemplates.userActivated.subject?({ active }),
-		html: Accounts.emailTemplates.userActivated.html?({
+		subject: subject({ active } as any),
+		html: html({
 			active,
 			name: user.name,
 			username: user.username,
-		}),
+		} as any),
 	};
 
 	Mailer.sendNoWrap(email);
