@@ -8,11 +8,11 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 type AutoCompleteTagsMultiplePropsType = {
-	value: Array<string>;
+	readonly value: Array<string>;
 	onChange: () => {};
 };
 
-const AutoCompleteTagMultiple = ({ value, onChange }: AutoCompleteTagsMultiplePropsType): ReactElement => {
+const AutoCompleteTagsMultiple = ({ value, onChange }: AutoCompleteTagsMultiplePropsType): ReactElement => {
 	const onlyMyTags = false;
 
 	const t = useTranslation();
@@ -56,4 +56,4 @@ const AutoCompleteTagMultiple = ({ value, onChange }: AutoCompleteTagsMultiplePr
 	);
 };
 
-export default memo(AutoCompleteTagMultiple);
+export default memo(AutoCompleteTagsMultiple);
