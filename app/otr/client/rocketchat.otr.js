@@ -68,13 +68,13 @@ Meteor.startup(function () {
 		return Promise.resolve(message);
 	});
 
-	onClientMessageReceived.use(function (message) {	
+	onClientMessageReceived.use(function (message) {
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			}
-			if(message.t !== 'otr') {
+			if (message.t !== 'otr') {
 				return message;
 			}
 			const otrRoom = OTR.getInstanceByRoomId(message.rid);
