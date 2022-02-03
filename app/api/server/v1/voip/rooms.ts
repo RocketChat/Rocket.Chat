@@ -120,7 +120,7 @@ API.v1.addRoute(
 
 /**
  * @openapi
- *  /voip/server/api/v1/voip/room.close <AMOL Verify during code review>
+ *  /voip/server/api/v1/voip/room.close
  *    post:
  *      description: Closes an open room
  * 		based on rid and token. Setting rate limit for this too
