@@ -1,12 +1,10 @@
 import { BaseRaw, IndexSpecification } from './BaseRaw';
 import { IStatistic } from '../../../../definition/IStatistic';
 
-type T = IStatistic;
-
-export class StatisticsRaw extends BaseRaw<T> {
+export class StatisticsRaw extends BaseRaw<IStatistic> {
 	protected indexes: IndexSpecification[] = [{ key: { createdAt: -1 } }];
 
-	async findLast(): Promise<T> {
+	async findLast(): Promise<IStatistic> {
 		const options = {
 			sort: {
 				createdAt: -1,
