@@ -7,16 +7,16 @@ Meteor.startup(() => {
 	MessageTypes.registerType({
 		id: otrSystemMessages.USER_JOINED_OTR,
 		system: true,
-		message: 'user_joined_otr',
+		message: otrSystemMessages.USER_JOINED_OTR,
 	});
 	MessageTypes.registerType({
 		id: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
 		system: true,
-		message: 'user_requested_otr_key_refresh',
+		message: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
 	});
 	MessageTypes.registerType({
 		id: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 		system: true,
-		message: 'user_key_refreshed_successfully',
+		message: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
 	});
 });

@@ -68,15 +68,14 @@ Meteor.startup(function () {
 		return Promise.resolve(message);
 	});
 
-	onClientMessageReceived.use(function (message) {
-		if (message.t !== 'otr' || message.t !== 'otr-ack' || !message.notification) {
-			return message;
-		}
-
+	onClientMessageReceived.use(function (message) {	
 		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
 			if (message.notification) {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
+			}
+			if(message.t !== 'otr') {
+				return message;
 			}
 			const otrRoom = OTR.getInstanceByRoomId(message.rid);
 			return otrRoom.decrypt(message.msg).then((data) => {
