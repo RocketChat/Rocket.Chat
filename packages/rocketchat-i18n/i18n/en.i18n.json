@@ -2039,6 +2039,7 @@
   "Forgot_Password_Email": "Click <a href=\"[Forgot_Password_Url]\">here</a> to reset your password.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Password Recovery",
   "Forgot_password_section": "Forgot password",
+  "Format-must-be-mp3":"Format needs to be mp3",
   "Forward": "Forward",
   "Forward_chat": "Forward chat",
   "Forward_to_department": "Forward to department",

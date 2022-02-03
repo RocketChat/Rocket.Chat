@@ -78,6 +78,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit, invalidContentType
 								<TextInput value={name} onChange={handleName} />
 							</Field.Row>
 							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+							{name && !name.includes('.mp3') && <Field.Error>{t('Format-must-be-mp3', { field: t('Name') })}</Field.Error>}
 						</Field>
 						<Field>
 							<Field.Label>{t('Upload_file_description')}</Field.Label>
@@ -92,7 +93,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit, invalidContentType
 						<Button ghost onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!name}>
+						<Button primary type='submit' disabled={!name || !name.includes('.mp3')}>
 							{t('Send')}
 						</Button>
 					</ButtonGroup>
