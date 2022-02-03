@@ -1,8 +1,7 @@
-import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
+import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { settings } from '../../settings/server/index';
 import { hasPermission } from '../../authorization/client/index';
@@ -23,11 +22,11 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 		});
 	}
 
-	action(params: { id: any }) {
+	action(params: { id: string }): void {
 		openRoom('l', params.id);
 	}
 
-	link(sub: { rid: any }) {
+	link(sub: { rid: string }): { id: string } {
 		return {
 			id: sub.rid,
 		};
@@ -35,6 +34,10 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 }
 
 export default class LivechatRoomType extends RoomTypeConfig {
+	public notSubscribedTpl = 'livechatNotSubscribed';
+
+	public readOnlyTpl = 'livechatReadOnly';
+
 	constructor() {
 		super({
 			identifier: 'l',
@@ -42,26 +45,24 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			icon: 'omnichannel',
 			label: 'Omnichannel',
 			route: new LivechatRoomRoute(),
+			header: 'omnichannel',
 		});
-
-		this.notSubscribedTpl = 'livechatNotSubscribed';
-		this.readOnlyTpl = 'livechatReadOnly';
 	}
 
-	enableMembersListProfile() {
+	enableMembersListProfile(): boolean {
 		return true;
 	}
 
-	findRoom(identifier) {
+	findRoom(identifier: string): any {
 		return ChatRoom.findOne({ _id: identifier });
 	}
 
-	roomName(roomData: IRoom): string {
-		return roomData.name || roomData.fname || roomData.label;
+	roomName(roomData: IOmnichannelRoom): string {
+		return roomData.name || roomData.fname || roomData.label || '';
 	}
 
-	condition(): ISetting {
-		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
+	condition(): boolean {
+		return settings.get<boolean>('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
 	canSendMessage(rid: string): boolean {
@@ -87,7 +88,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(_room: any, action: any): any {
+	allowMemberAction(_room: IOmnichannelRoom, action: string): any {
 		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
@@ -116,12 +117,12 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return !room.servedBy;
 	}
 
-	getAvatarPath(roomData: string): string {
+	getAvatarPath(roomData: IOmnichannelRoom): string {
 		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
-	openCustomProfileTab(instance: any, room: any, username: string): boolean {
-		if (!room || !room.v || room.v.username !== username) {
+	openCustomProfileTab(instance: any, room: IOmnichannelRoom, username: string): boolean {
+		if (room?.v?.username !== username) {
 			return false;
 		}
 

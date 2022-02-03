@@ -6,6 +6,7 @@ import { hasPermission } from '../../../../authorization/client/hasPermission';
 import { API } from '../../../../api/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
+import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 
 API.v1.addRoute(
 	'livechat/users/:type',
@@ -97,7 +98,7 @@ API.v1.addRoute(
 					_id: String,
 				});
 
-				const user = Users.findOneById(this.urlParams._id);
+				const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
 
 				if (!user) {
 					return API.v1.failure('User not found');
@@ -141,10 +142,10 @@ API.v1.addRoute(
 					_id: String,
 				});
 
-				const user = Users.findOneById(this.urlParams._id);
+				const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
 
 				if (!user) {
-					return API.v1.failure();
+					return API.v1.failure('User not found');
 				}
 
 				if (this.urlParams.type === 'agent') {

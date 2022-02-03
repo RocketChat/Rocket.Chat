@@ -6,6 +6,7 @@ import type { IUser } from '../IUser';
 import type { ChannelName, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
+import { ILivechatVisitor } from '../ILivechatVisitor';
 
 type MentionType = 'user' | 'team';
 
@@ -71,6 +72,40 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
+}
+
+export interface IOmnichannelSystemMessage extends IMessage {
+	navigation?: {
+		page: {
+			title: string;
+			location: {
+				href: string;
+			};
+		};
+	};
+	transferData?: {
+		comment: string;
+		transferredBy: {
+			name?: string;
+			username: string;
+		};
+		transferredTo: {
+			name?: string;
+			username: string;
+		};
+		nextDepartment?: {
+			_id: string;
+			name?: string;
+		};
+		scope: 'department' | 'agent' | 'queue';
+	};
+	requestData?: {
+		type: 'visitor' | 'user';
+		visitor?: ILivechatVisitor;
+		user?: IUser;
+	};
+	webRtcCallEndTs?: Date;
+	comment?: string;
 }
 
 export type IMessageInbox = IMessage & {
