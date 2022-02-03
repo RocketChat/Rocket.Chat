@@ -95,8 +95,10 @@ API.v1.addRoute(
 				if (!agentObj) {
 					return API.v1.failure('agent-not-found');
 				}
-
-				const { username } = agentObj;
+				let username = undefined;
+				if ('username' in agentObj) {
+					username = agentObj.username;
+				}
 				const agent = { agentId, username };
 				const rid = Random.id();
 				const roomInfo = {

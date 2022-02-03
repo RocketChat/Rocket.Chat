@@ -15,6 +15,7 @@ import { Users } from '../../../app/models/server';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
 // import { VoipRoom } from '../../../app/models/server/raw';
 import { IVoipRoom, IRoomClosingInfo } from '../../../definition/IRoom';
+import { ILivechatAgent } from '../../../definition/ILivechatAgent';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -32,11 +33,10 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		this.logger = new Logger('OmnichannelVoipService');
 	}
 
-	private normalizeAgent(agentId: string): Record<string, string> | Record<string, boolean> | undefined {
+	private normalizeAgent(agentId: string): ILivechatAgent | { hiddenInfo: true } | undefined {
 		if (!agentId) {
 			return;
 		}
-
 		if (!settings.get('Livechat_show_agent_info')) {
 			return { hiddenInfo: true };
 		}
@@ -50,7 +50,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	private async createVoipRoom(
 		rid: string,
 		name: string,
-		agent: { agentId: string; username: string },
+		agent: { agentId: string; username?: string },
 		guest: ILivechatVisitor,
 	): Promise<string> {
 		const status = 'online';
@@ -140,13 +140,13 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	}
 
 	/* Voip calls */
-	async findAgent(agentId: string): Promise<any> {
+	async findAgent(agentId: string): Promise<ILivechatAgent | { hiddenInfo: true } | undefined> {
 		return this.normalizeAgent(agentId);
 	}
 
 	async getNewRoom(
 		guest: ILivechatVisitor,
-		agent: { agentId: string; username: string },
+		agent: { agentId: string; username?: string },
 		rid: string,
 		roomInfo: any,
 		options: FindOneOptions<IVoipRoom> = {},
