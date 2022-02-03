@@ -32,6 +32,8 @@ type SetupWizarContextValue = {
 	registerServer: (params: { email: string; resend?: boolean }) => Promise<void>;
 	saveWorkspaceData: () => Promise<void>;
 	saveOrganizationData: () => Promise<void>;
+	completeSetupWizard: () => Promise<void>;
+	maxSteps: number;
 };
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
@@ -66,6 +68,8 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	saveOrganizationData: async () => undefined,
 	validateEmail: () => true,
 	currentStep: 1,
+	completeSetupWizard: async () => undefined,
+	maxSteps: 4,
 });
 
 export const useSetupWizardContext = (): SetupWizarContextValue => useContext(SetupWizardContext);

@@ -17,7 +17,7 @@ export const useParameters = (): {
 		let mounted = true;
 		const requestParameters = async (): Promise<void> => {
 			try {
-				const { settings = [], allowStandaloneServer = false } = (await getSetupWizardParameters()) || {};
+				const { settings = [], canSkipRegistration = false } = (await getSetupWizardParameters()) || {};
 
 				if (!mounted) {
 					return;
@@ -25,7 +25,7 @@ export const useParameters = (): {
 
 				setLoaded(true);
 				setSettings(settings);
-				setCapableOfDeclineServerRegistration(allowStandaloneServer);
+				setCapableOfDeclineServerRegistration(canSkipRegistration);
 			} catch (error) {
 				setLoaded(false);
 				setSettings([]);
