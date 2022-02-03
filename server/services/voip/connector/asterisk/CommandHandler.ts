@@ -68,9 +68,9 @@ export class CommandHandler {
 				(config.configData as IManagementConfigData).username,
 				(config.configData as IManagementConfigData).password,
 			);
-		} catch (error) {
-			this.logger.warn('Management server connection error');
-			throw Error('Management server error in connection');
+		} catch (error: any) {
+			this.logger.warn({ msg: 'Management server connection error', error });
+			throw Error(`Management server error in connection ${error.message}`);
 		}
 		this.connections.set(commandType, connection);
 	}
