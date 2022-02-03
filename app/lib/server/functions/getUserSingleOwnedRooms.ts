@@ -1,13 +1,12 @@
 import { IRoom } from '../../../../definition/IRoom';
 import { Rooms } from '../../../models/server';
+import { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
-export const getUserSingleOwnedRooms = function (subscribedRooms: []): unknown {
+export const getUserSingleOwnedRooms = function (subscribedRooms: SubscribedRoomsForUserWithDetails[]): unknown {
 	const roomsThatWillChangeOwner = subscribedRooms
-		.filter(({ shouldChangeOwner }: { shouldChangeOwner: string[] }) => shouldChangeOwner)
+		.filter(({ shouldChangeOwner }) => shouldChangeOwner)
 		.map(({ rid }: { rid: string }) => rid);
-	const roomsThatWillBeRemoved = subscribedRooms
-		.filter(({ shouldBeRemoved }: { shouldBeRemoved: string[] }) => shouldBeRemoved)
-		.map(({ rid }: { rid: string }) => rid);
+	const roomsThatWillBeRemoved = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }: { rid: string }) => rid);
 
 	const roomIds = roomsThatWillBeRemoved.concat(roomsThatWillChangeOwner);
 	const rooms = Rooms.findByIds(roomIds, { fields: { _id: 1, name: 1, fname: 1 } });

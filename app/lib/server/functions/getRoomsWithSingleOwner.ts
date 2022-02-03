@@ -1,19 +1,36 @@
+import { Cursor } from 'mongodb';
+
 import { subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions } from '../../../models/server';
+import { IUser } from '../../../../definition/IUser';
+import { ISubscription } from '../../../../definition/ISubscription';
 
-export function shouldRemoveOrChangeOwner(subscribedRooms) {
+export type SubscribedRoomsForUserWithDetails = {
+	rid: string;
+	t: string;
+	shouldBeRemoved: boolean;
+	shouldChangeOwner: boolean;
+	userIsLastOwner: boolean;
+	newOwner: IUser['_id'] | null;
+};
+
+export function shouldRemoveOrChangeOwner(subscribedRooms: SubscribedRoomsForUserWithDetails[]): boolean {
 	return subscribedRooms.some(({ shouldBeRemoved, shouldChangeOwner }) => shouldBeRemoved || shouldChangeOwner);
 }
 
-export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = true, roomIds = []) {
-	const subscribedRooms = [];
+export function getSubscribedRoomsForUserWithDetails(
+	userId: string,
+	assignNewOwner = true,
+	roomIds = [],
+): SubscribedRoomsForUserWithDetails[] {
+	const subscribedRooms: SubscribedRoomsForUserWithDetails[] = [];
 
-	const cursor =
+	const cursor: Cursor<ISubscription> =
 		roomIds.length > 0 ? Subscriptions.findByUserIdAndRoomIds(userId, roomIds) : Subscriptions.findByUserIdExceptType(userId, 'd');
 
 	// Iterate through all the rooms the user is subscribed to, to check if he is the last owner of any of them.
 	cursor.forEach((subscription) => {
-		const roomData = {
+		const roomData: SubscribedRoomsForUserWithDetails = {
 			rid: subscription.rid,
 			t: subscription.t,
 			shouldBeRemoved: false,
@@ -29,8 +46,8 @@ export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = tr
 			roomData.userIsLastOwner = numOwners === 1;
 			if (numOwners === 1 && assignNewOwner) {
 				// Let's check how many subscribers the room has.
-				const options = { fields: { 'u._id': 1 }, sort: { ts: 1 } };
-				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
+				const options = { projection: { 'u._id': 1 }, sort: { ts: 1 } };
+				const subscribersCursor: Cursor<ISubscription> = Subscriptions.findByRoomId(subscription.rid, options);
 
 				subscribersCursor.forEach(({ u: { _id: uid } }) => {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership

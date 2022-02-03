@@ -12,7 +12,7 @@ import { IUser } from '../../../../definition/IUser';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
-export const updateMessage = function (message: IMessage, user: IUser, originalMessage: undefined): void {
+export const updateMessage = function (message: IMessage, user: IUser, originalMessage?: IMessage): void {
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}

@@ -259,7 +259,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			Meteor.runAsUser(_id, () => saveUserIdentity({ _id, name: userData.name, username: userData.username }));
+			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
