@@ -77,8 +77,7 @@ API.v1.addRoute(
 				}),
 			);
 			const { host, port, username, password } = this.requestParams();
-			const status = await Voip.checkManagementConnection(host, port, username, password);
-			return API.v1.success({ ...status });
+			return API.v1.success(await Voip.checkManagementConnection(host, port, username, password));
 		},
 	},
 );
