@@ -536,7 +536,7 @@ jobs:
       run: |
         cd /tmp/build
 
-        DOCKER_TAG="${GITHUB_REF#*tags/}"
+        DOCKER_TAG=$GITHUB_REF_NAME
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
           IMAGE_NAME="${IMAGE_NAME}.preview"
@@ -547,12 +547,9 @@ jobs:
           DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
         fi;
 
-        docker build -t $IMAGE_NAME:$DOCKER_TAG .
-        docker push $IMAGE_NAME:$DOCKER_TAG
-
-        if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+        if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           RELEASE="latest"
-        elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+        elif echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
           RELEASE="release-candidate"
         fi
 
@@ -560,8 +557,28 @@ jobs:
           RELEASE="${RELEASE}-${{ matrix.release }}"
         fi;
 
-        docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
-        docker push $IMAGE_NAME:$RELEASE
+        echo "IMAGE_NAME: $IMAGE_NAME"
+        echo "DOCKER_TAG: $DOCKER_TAG"
+        echo "RELEASE: $RELEASE"
+
+        # build and push the specific tag version
+        docker build -t $IMAGE_NAME:$DOCKER_TAG .
+        docker push $IMAGE_NAME:$DOCKER_TAG
+
+        if [[ $RELEASE == 'latest' ]]; then
+          CURRENT_LATEST="$(
+            git -c 'versionsort.suffix=-' ls-remote -t --exit-code --refs --sort=-v:refname "https://github.com/$GITHUB_REPOSITORY" '*' |
+              sed -En '1!q;s/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/gp'
+          )"
+          echo "CURRENT_LATEST: $CURRENT_LATEST"
+          if [[ $CURRENT_LATEST == $GITHUB_REF_NAME ]]; then
+            docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+            docker push $IMAGE_NAME:$RELEASE
+          fi
+        else
+          docker tag $IMAGE_NAME:$DOCKER_TAG $IMAGE_NAME:$RELEASE
+          docker push $IMAGE_NAME:$RELEASE
+        fi
 
     - name: Build Docker image for develop
       if: github.ref == 'refs/heads/develop'
