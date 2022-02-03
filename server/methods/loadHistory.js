@@ -27,10 +27,6 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!room) {
-			return false;
-		}
-
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = hasPermission(fromId, 'preview-c-room');
 

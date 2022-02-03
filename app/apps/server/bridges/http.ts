@@ -6,6 +6,8 @@ import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges'
 import { AppServerOrchestrator } from '../orchestrator';
 import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
+const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
+
 export class AppHttpBridge extends HttpBridge {
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -38,7 +40,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		let paramsForBody;
 
-		if (content || method === 'get' || method === 'head') {
+		if (content || isGetOrHead(method)) {
 			if (request.params) {
 				Object.keys(request.params).forEach((key) => {
 					if (request.params?.[key]) {
@@ -57,6 +59,10 @@ export class AppHttpBridge extends HttpBridge {
 			});
 			content = data.toString();
 			headers['Content-Type'] = 'application/x-www-form-urlencoded';
+		}
+
+		if (isGetOrHead(method)) {
+			content = undefined;
 		}
 
 		// end comptability with old HTTP.call API
@@ -78,16 +84,33 @@ export class AppHttpBridge extends HttpBridge {
 				url: info.url,
 				method: info.method,
 				statusCode: response.status,
-				data: await response.json(),
 				headers: Object.fromEntries(response.headers as unknown as any),
 			};
 
-			if (request.hasOwnProperty('encoding')) {
-				if (request.encoding === null) {
-					result.content = Buffer.from(await response.arrayBuffer()).toString();
-				} else {
-					result.content = await response.text();
-				}
+			const body = Buffer.from(await response.arrayBuffer());
+
+			if (request.encoding === null) {
+				/**
+				 * The property `content` is not appropriately typed in the
+				 * Apps-engine definition, and we can't simply change it there
+				 * as it would be a breaking change. Thus, we're left with this
+				 * type assertion.
+				 */
+				result.content = body as any;
+			} else {
+				result.content = body.toString(request.encoding);
+				result.data = ((): any => {
+					const contentType = (response.headers.get('content-type') || '').split(';')[0];
+					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+						return null;
+					}
+
+					try {
+						return JSON.parse(result.content);
+					} catch {
+						return null;
+					}
+				})();
 			}
 
 			return result;
