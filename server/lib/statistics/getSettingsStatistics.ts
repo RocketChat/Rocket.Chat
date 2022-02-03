@@ -11,6 +11,7 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 		smtpHost,
 		smtpPort,
 		fromEmail,
+		fileUploadEnable,
 		frameworkDevMode,
 		frameworkEnable,
 		surveyEnabled,
@@ -53,6 +54,9 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 				smtpPort,
 				fromEmail,
 			},
+		},
+		fileUpload: {
+			fileUploadEnable,
 		},
 		general: {
 			apps: {
@@ -114,6 +118,7 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 			{ key: 'SMTP_Host', alias: 'smtpHost' },
 			{ key: 'SMTP_Port', alias: 'smtpPort' },
 			{ key: 'From_Email', alias: 'fromEmail' },
+			{ key: 'FileUpload_Enabled', alias: 'fileUploadEnable' },
 			{ key: 'Apps_Framework_Development_Mode', alias: 'frameworkDevMode' },
 			{ key: 'Apps_Framework_enabled', alias: 'frameworkEnable' },
 			{ key: 'NPS_survey_enabled', alias: 'surveyEnabled' },
