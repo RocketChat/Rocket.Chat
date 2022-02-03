@@ -32,12 +32,9 @@ export async function startRegisterWorkspace(resend = false) {
 		} else {
 			SystemLogger.error(e);
 		}
-
 		return false;
 	}
-
 	const { data } = result;
-
 	if (!data) {
 		return false;
 	}
