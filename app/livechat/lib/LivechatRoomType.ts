@@ -2,7 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ILivechatRoom } from '@rocket.chat/apps-engine/definition/livechat';
 
+<<<<<<< HEAD
 import { SettingValue } from '../../../definition/ISetting';
+=======
+import { IOmnichannelRoom } from '../../../definition/IRoom';
+>>>>>>> d3f11e8810b844b08ebe5daa924644efbc854a68
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { settings } from '../../settings/server/index';
 import { hasPermission } from '../../authorization/client/index';
@@ -24,12 +28,20 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 		});
 	}
 
+<<<<<<< HEAD
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	action(params: { id: any }) {
 		openRoom('l', params.id);
 	}
 
 	link(sub: { rid: any }): any {
+=======
+	action(params: { id: string }): void {
+		openRoom('l', params.id);
+	}
+
+	link(sub: { rid: string }): { id: string } {
+>>>>>>> d3f11e8810b844b08ebe5daa924644efbc854a68
 		return {
 			id: sub.rid,
 		};
@@ -37,9 +49,15 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 }
 
 export default class LivechatRoomType extends RoomTypeConfig {
+<<<<<<< HEAD
 	notSubscribedTpl: any;
 
 	readOnlyTpl: any;
+=======
+	public notSubscribedTpl = 'livechatNotSubscribed';
+
+	public readOnlyTpl = 'livechatReadOnly';
+>>>>>>> d3f11e8810b844b08ebe5daa924644efbc854a68
 
 	constructor() {
 		super({
@@ -49,16 +67,15 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			header: undefined,
 			label: 'Omnichannel',
 			route: new LivechatRoomRoute(),
+			header: 'omnichannel',
 		});
-
-		this.notSubscribedTpl = 'livechatNotSubscribed';
-		this.readOnlyTpl = 'livechatReadOnly';
 	}
 
 	enableMembersListProfile(): boolean {
 		return true;
 	}
 
+<<<<<<< HEAD
 	findRoom(identifier: any): ILivechatRoom {
 		return ChatRoom.findOne({ _id: identifier });
 	}
@@ -69,6 +86,18 @@ export default class LivechatRoomType extends RoomTypeConfig {
 
 	condition(): SettingValue {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
+=======
+	findRoom(identifier: string): any {
+		return ChatRoom.findOne({ _id: identifier });
+	}
+
+	roomName(roomData: IOmnichannelRoom): string {
+		return roomData.name || roomData.fname || roomData.label || '';
+	}
+
+	condition(): boolean {
+		return settings.get<boolean>('Livechat_enabled') && hasPermission('view-l-room');
+>>>>>>> d3f11e8810b844b08ebe5daa924644efbc854a68
 	}
 
 	canSendMessage(rid: string): boolean {
@@ -94,7 +123,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(_room: any, action: any): any {
+	allowMemberAction(_room: IOmnichannelRoom, action: string): any {
 		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
@@ -123,12 +152,12 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return !room.servedBy;
 	}
 
-	getAvatarPath(roomData: string): string {
+	getAvatarPath(roomData: IOmnichannelRoom): string {
 		return getAvatarURL({ username: `@${this.roomName(roomData)}` });
 	}
 
-	openCustomProfileTab(instance: any, room: any, username: string): boolean {
-		if (!room || !room.v || room.v.username !== username) {
+	openCustomProfileTab(instance: any, room: IOmnichannelRoom, username: string): boolean {
+		if (room?.v?.username !== username) {
 			return false;
 		}
 

@@ -1,38 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
-import { FileUpload } from '/app/file-upload/server/index.js';
-
+import { FileUpload } from '../../../../file-upload/server/index.js';
 import { settings } from '../../../../settings/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
-import { LivechatRooms, LivechatVisitors, Settings } from '../../../../models/server/raw/index';
+import { LivechatRooms, LivechatVisitors } from '../../../../models/server/raw/index';
 import { API } from '../../../../api/server';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
-let maxFileSize: number;
-
-settings.watch('FileUpload_MaxFileSize', function (value: any) {
-	try {
-		maxFileSize = parseInt(value);
-	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
-	}
-});
-
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize');
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {});
 
 		if (!visitor) {
 			return API.v1.unauthorized();
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken, {});
 		if (!room) {
 			return API.v1.unauthorized();
 		}

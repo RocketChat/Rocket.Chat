@@ -114,6 +114,7 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		_id?: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
+		username?: string;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.

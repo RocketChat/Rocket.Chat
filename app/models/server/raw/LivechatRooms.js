@@ -1170,4 +1170,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 	setDepartmentByRoomId(roomId, departmentId) {
 		return this.update({ _id: roomId }, { $set: { departmentId } });
 	}
+
+	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
+		const query = {
+			't': 'l',
+			'_id': roomId,
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
 }

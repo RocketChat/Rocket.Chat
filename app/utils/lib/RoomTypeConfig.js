@@ -158,11 +158,13 @@ export class RoomTypeConfig {
 		return this._route;
 	}
 
-	allowRoomSettingChange(/* room, setting */) {
+	// eslint-disable-next-line no-unused-vars
+	allowRoomSettingChange(room, setting) {
 		return true;
 	}
 
-	allowMemberAction(/* room, action */) {
+	// eslint-disable-next-line no-unused-vars
+	allowMemberAction(room, action) {
 		return false;
 	}
 
@@ -172,7 +174,8 @@ export class RoomTypeConfig {
 	 * @abstract
 	 * @return {string} Room's name according to it's type
 	 */
-	roomName(/* room */) {
+	// eslint-disable-next-line no-unused-vars
+	roomName(_room) {
 		return '';
 	}
 
@@ -228,7 +231,8 @@ export class RoomTypeConfig {
 	 * @return {string} A text or a translation key - the consumers of this method will pass the
 	 * returned value to an internationalization library
 	 */
-	getUiText(/* context */) {
+	// eslint-disable-next-line no-unused-vars
+	getUiText(context) {
 		return '';
 	}
 
@@ -277,11 +281,13 @@ export class RoomTypeConfig {
 		return {};
 	}
 
-	getAvatarPath(/* roomData */) {
+	// eslint-disable-next-line no-unused-vars
+	getAvatarPath(roomData) {
 		return '';
 	}
 
-	openCustomProfileTab() {
+	// eslint-disable-next-line no-unused-vars
+	openCustomProfileTab(instance, room, username) {
 		return false;
 	}
 
