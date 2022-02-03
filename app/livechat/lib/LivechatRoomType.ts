@@ -1,8 +1,8 @@
-import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { ILivechatRoom } from '@rocket.chat/apps-engine/definition/livechat';
 
+import { SettingValue } from '../../../definition/ISetting';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { settings } from '../../settings/server/index';
 import { hasPermission } from '../../authorization/client/index';
@@ -11,6 +11,7 @@ import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils/server';
 
 let LivechatInquiry: any;
+
 if (Meteor.isClient) {
 	({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
 }
@@ -23,11 +24,12 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 		});
 	}
 
+	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	action(params: { id: any }) {
 		openRoom('l', params.id);
 	}
 
-	link(sub: { rid: any }) {
+	link(sub: { rid: any }): any {
 		return {
 			id: sub.rid,
 		};
@@ -35,11 +37,16 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 }
 
 export default class LivechatRoomType extends RoomTypeConfig {
+	notSubscribedTpl: any;
+
+	readOnlyTpl: any;
+
 	constructor() {
 		super({
 			identifier: 'l',
 			order: 5,
 			icon: 'omnichannel',
+			header: undefined,
 			label: 'Omnichannel',
 			route: new LivechatRoomRoute(),
 		});
@@ -48,19 +55,19 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		this.readOnlyTpl = 'livechatReadOnly';
 	}
 
-	enableMembersListProfile() {
+	enableMembersListProfile(): boolean {
 		return true;
 	}
 
-	findRoom(identifier) {
+	findRoom(identifier: any): ILivechatRoom {
 		return ChatRoom.findOne({ _id: identifier });
 	}
 
-	roomName(roomData: IRoom): string {
+	roomName(roomData: any): string {
 		return roomData.name || roomData.fname || roomData.label;
 	}
 
-	condition(): ISetting {
+	condition(): SettingValue {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 

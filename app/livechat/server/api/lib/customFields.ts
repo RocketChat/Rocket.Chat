@@ -1,9 +1,10 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { LivechatCustomFieldRaw } from '../../../../models/server/raw/LivechatCustomField';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatCustomField } from '../../../../models/server/raw';
 
-export async function findLivechatCustomFields({ userId, text, pagination: { offset, count, sort } }) {
+export async function findLivechatCustomFields({ userId: any, text: string, pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -32,7 +33,13 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 	};
 }
 
-export async function findCustomFieldById({ userId, customFieldId }) {
+export async function findCustomFieldById({
+	userId,
+	customFieldId,
+}: {
+	userId: any;
+	customFieldId: any;
+}): Promise<LivechatCustomFieldRaw | undefined> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
