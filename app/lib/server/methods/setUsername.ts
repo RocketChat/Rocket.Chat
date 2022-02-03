@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
@@ -20,11 +20,11 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
+		if (user?.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
+		if (user?.username === username || (user?.username && user.username.toLowerCase() === username.toLowerCase())) {
 			return username;
 		}
 
@@ -49,16 +49,17 @@ Meteor.methods({
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user._id, username })) {
+		if (!saveUserIdentity({ _id: user?._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});
 		}
 
-		if (!user.username) {
-			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+		if (!user?.username) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			Meteor.runAsUser(user!._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
-				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
+				return callbacks.run('afterCreateUser', Users.findOneById(user?._id));
 			});
 		}
 

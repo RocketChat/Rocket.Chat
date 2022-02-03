@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission, canAccessRoom } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { hasPermission, canAccessRoom } from '../../../authorization/server';
+import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
@@ -34,7 +34,8 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {
-			if (!canAccessRoom(room, Meteor.user())) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			if (!canAccessRoom(room, Meteor.user()!)) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 			}
 			if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(Meteor.userId(), 'join-without-join-code')) {

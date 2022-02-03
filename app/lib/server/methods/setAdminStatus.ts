@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	setAdminStatus(userId, admin) {
@@ -19,8 +19,8 @@ Meteor.methods({
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { username: 1 } });
 
 		if (admin) {
-			return Meteor.call('authorization:addUserToRole', 'admin', user.username);
+			return Meteor.call('authorization:addUserToRole', 'admin', user?.username);
 		}
-		return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
+		return Meteor.call('authorization:removeUserFromRole', 'admin', user?.username);
 	},
 });

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { setEmail } from '../functions';
 import { RateLimiter } from '../lib';
 
@@ -22,11 +22,11 @@ Meteor.methods({
 			});
 		}
 
-		if (user.emails && user.emails[0] && user.emails[0].address === email) {
+		if (user?.emails && user.emails[0] && user.emails[0].address === email) {
 			return email;
 		}
 
-		if (!setEmail(user._id, email)) {
+		if (!setEmail(user?._id, email)) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', {
 				method: 'setEmail',
 			});
