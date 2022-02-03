@@ -729,7 +729,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const usersToRemove = await this.Users.findByIds(membersIds, {
 			projection: { _id: 1, username: 1 },
 		}).toArray();
-		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		const byUser = (await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -751,9 +751,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			this.TeamMembersModel.removeById(existingMember._id);
 			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
-			removeUserFromRoom(team.roomId, removedUser, {
-				byUser: uid !== member.userId ? byUser : undefined,
-			});
+			await removeUserFromRoom(
+				team.roomId,
+				removedUser,
+				uid !== member.userId
+					? {
+							byUser,
+					  }
+					: undefined,
+			);
 		}
 
 		return true;

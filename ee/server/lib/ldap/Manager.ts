@@ -308,7 +308,7 @@ export class LDAPEEManager extends LDAPManager {
 					} else if (syncUserChannelsRemove && !room.teamMain) {
 						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 						if (subscription) {
-							removeUserFromRoom(room._id, user);
+							await removeUserFromRoom(room._id, user);
 						}
 					}
 				} catch (e) {

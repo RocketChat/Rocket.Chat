@@ -955,7 +955,7 @@ export default class SlackAdapter {
 				imported: 'slackbridge',
 			});
 		} else {
-			removeUserFromRoom(rocketChannel._id, rocketUser);
+			Promise.await(removeUserFromRoom(rocketChannel._id, rocketUser));
 		}
 	}
 
