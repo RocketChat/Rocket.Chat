@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { ILivechatAgentRecord } from '../../../../definition/ILivechatAgentRecord';
+import { ILivechatAgent } from '../../../../definition/ILivechatAgent';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
@@ -15,14 +15,14 @@ type AgentsListOptions = {
 export const useAgentsList = (
 	options: AgentsListOptions,
 ): {
-	itemsList: RecordList<ILivechatAgentRecord>;
+	itemsList: RecordList<ILivechatAgent>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgentRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgentRecord>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
+	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
 	const endpoint = 'livechat/users/agent';
 
 	const getAgents = useEndpoint('GET', endpoint);
