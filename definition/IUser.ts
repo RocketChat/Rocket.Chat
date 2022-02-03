@@ -81,7 +81,7 @@ export interface IUserServices {
 
 export interface IUserEmail {
 	address: string;
-	verified: boolean;
+	verified?: boolean;
 }
 
 export interface IUserSettings {

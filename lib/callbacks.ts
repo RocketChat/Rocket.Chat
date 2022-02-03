@@ -45,6 +45,10 @@ type EventLikeCallbackSignatures = {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
+	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[] }) => void;
+	'beforeDeleteRoom': (params: IRoom) => void;
 };
 
 /**

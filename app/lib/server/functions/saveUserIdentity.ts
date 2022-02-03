@@ -12,7 +12,11 @@ import { IMessage } from '../../../../definition/IMessage';
  * @param {object} changes changes to the user
  */
 
-export function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name: string; username: string }) {
+export function saveUserIdentity({
+	_id,
+	name: rawName,
+	username: rawUsername,
+}: { _id: string } & ({ name: string; username: string } | { name: string; username: undefined } | { name: undefined; username: string })) {
 	if (!_id) {
 		return false;
 	}

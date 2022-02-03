@@ -9,7 +9,12 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { IUser } from '../../../../definition/IUser';
 
-export const addUserToRoom = function (rid: string, user: IUser, inviter: IUser, silenced: boolean): boolean | unknown {
+export const addUserToRoom = function (
+	rid: string,
+	user: Pick<IUser, '_id' | 'username'>,
+	inviter?: Pick<IUser, '_id' | 'username'>,
+	silenced?: boolean,
+): boolean | unknown {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
@@ -99,7 +104,7 @@ export const addUserToRoom = function (rid: string, user: IUser, inviter: IUser,
 		});
 	}
 
-	if (room.teamMain && room.teamId) {
+	if (room.teamMain && room.teamId && inviter) {
 		// if user is joining to main team channel, create a membership
 		Promise.await(Team.addMembers(inviter._id, user._id, room.teamId));
 	}

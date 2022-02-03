@@ -679,7 +679,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
+		const createdBy = (await this.Users.findOneById(uid, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 		if (!createdBy) {
 			throw new Error('invalid-user');
 		}
@@ -692,7 +692,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		for await (const member of members) {
-			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			const user = (await this.Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 			await addUserToRoom(team.roomId, user, createdBy, false);
 
 			if (member.roles) {
