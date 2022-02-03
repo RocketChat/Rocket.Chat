@@ -61,17 +61,12 @@ export const createRoom = function <T extends RoomType>(
 
 	const now = new Date();
 
-	// const validRoomNameOptions = {};
-	let validRoomNameOptions: ICreateRoomParams['options'];
-
-	if (validRoomNameOptions && options?.nameValidationRegex) {
-		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
-	}
-
 	let room: IRoom = {
 		// fname: name,
 		...extraData,
-		name: getValidRoomName(name.trim(), undefined, validRoomNameOptions),
+		name: getValidRoomName(name.trim(), undefined, {
+			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
+		}),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
