@@ -4,7 +4,7 @@ import React, { useRef, FC, useCallback } from 'react';
 import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
-import CategoryDropDownListWrapper from './CategoryDropDownListWrapper';
+import DropDownListWrapper from './DropDownListWrapper';
 
 const CategoryDropDown: FC<{
 	data: CategoryDropDownListProps['groups'];
@@ -37,9 +37,9 @@ const CategoryDropDown: FC<{
 				{...props}
 			/>
 			{collapsed && (
-				<CategoryDropDownListWrapper ref={reference} onClose={onClose}>
+				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<CategoryDropDownList groups={data} onSelected={onSelected} />
-				</CategoryDropDownListWrapper>
+				</DropDownListWrapper>
 			)}
 		</>
 	);
