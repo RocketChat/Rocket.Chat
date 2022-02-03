@@ -21,17 +21,17 @@ const isValidName = (name: unknown): name is string => {
 export const createRoom = function <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
-	owner: IUser,
-	members: IUser[] = [],
+	ownerUsername: string,
+	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
-	r?: IRoom,
+	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
 ): unknown {
-	const { teamId, ...extraData } = r || ({} as IRoom);
-	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
+	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members, extraData, options);
+		return createDirectRoom(members as IUser[], extraData, options);
 	}
 
 	if (!isValidName(name)) {
@@ -40,9 +40,7 @@ export const createRoom = function <T extends RoomType>(
 		});
 	}
 
-	if (owner.username !== undefined) owner.username = s.trim(owner.username);
-
-	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
+	const owner = Users.findOneByUsernameIgnoringCase(ownerUsername, { fields: { username: 1 } });
 
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -61,8 +59,8 @@ export const createRoom = function <T extends RoomType>(
 
 	const now = new Date();
 
-	let room: IRoom = {
-		// fname: name,
+	let room: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'jitsiTimeout' | 'autoTranslateLanguage'> = {
+		fname: name,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),

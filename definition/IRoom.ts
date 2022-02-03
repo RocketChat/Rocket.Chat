@@ -24,7 +24,7 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic?: any;
+	topic?: unknown;
 
 	favorite?: boolean;
 

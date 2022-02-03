@@ -243,7 +243,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static createRoomForSync(channel: string): IRoom | undefined {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
+		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
