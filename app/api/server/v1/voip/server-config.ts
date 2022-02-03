@@ -59,6 +59,30 @@ API.v1.addRoute(
 	},
 );
 
+API.v1.addRoute(
+	'voipServerConfig.management.checkconnection',
+	{ authRequired: true },
+	{
+		async get() {
+			if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
+				return API.v1.unauthorized(TAPi18n.__('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
+			}
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					host: String,
+					port: String,
+					username: String,
+					password: String,
+				}),
+			);
+			const { host, port, username, password } = this.requestParams();
+			const status = await Voip.checkManagementConnection(host, port, username, password);
+			return API.v1.success({ ...status });
+		},
+	},
+);
+
 // call-server api(s)
 API.v1.addRoute(
 	'voipServerConfig.callServer',

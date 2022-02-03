@@ -23,6 +23,7 @@ import { CommandFactory } from './ami/CommandFactory';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 import { IVoipService } from '../../../../sdk/types/IVoipService';
 import { IManagementConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
+import { IManagementServerConnectionStatus } from '../../../../../definition/IVoipServerConnectivityStatus';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -60,12 +61,17 @@ export class CommandHandler {
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
 		}
-		connection.connect(
-			config.host,
-			(config.configData as IManagementConfigData).port.toString(),
-			(config.configData as IManagementConfigData).username,
-			(config.configData as IManagementConfigData).password,
-		);
+		try {
+			await connection.connect(
+				config.host,
+				(config.configData as IManagementConfigData).port.toString(),
+				(config.configData as IManagementConfigData).username,
+				(config.configData as IManagementConfigData).password,
+			);
+		} catch (error) {
+			this.logger.warn('Management server connection error');
+			throw Error('Management server error in connection');
+		}
 		this.connections.set(commandType, connection);
 	}
 
@@ -87,5 +93,33 @@ export class CommandHandler {
 	// Get the version string
 	getVersion(): string {
 		return version;
+	}
+
+	async checkManagementConnection(
+		host: string,
+		port: string,
+		userName: string,
+		password: string,
+	): Promise<IManagementServerConnectionStatus> {
+		this.logger.debug({ msg: 'checkManagementConnection()', host, port, userName });
+		const connection = new AMIConnection();
+		let connectionState = '';
+		let errorReason;
+		try {
+			connectionState = await connection.connect(host, port, userName, password);
+			if (connection.isConnected()) {
+				// Just a second level of check to ensure that we are actually
+				// connected and authenticated.
+				connection.closeConnection();
+			}
+			this.logger.debug({ msg: 'checkManagementConnection() Connected ' });
+		} catch (error: any) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
+			errorReason = error.message;
+		}
+		return {
+			status: connectionState === 'connected' ? 'connected' : 'connection-error',
+			error: errorReason,
+		};
 	}
 }
