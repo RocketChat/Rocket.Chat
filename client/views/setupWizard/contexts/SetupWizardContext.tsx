@@ -24,7 +24,7 @@ type SetupWizarContextValue = {
 	settings: Array<ISetting>;
 	currentStep: number;
 	validateEmail: (email: string) => string | true;
-	canDeclineServerRegistration: boolean;
+	skipCloudRegistration: boolean;
 	goToPreviousStep: () => void;
 	goToNextStep: () => void;
 	goToStep: (step: number) => void;
@@ -58,7 +58,7 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	setSetupWizardData: (data: {}) => data,
 	loaded: false,
 	settings: [],
-	canDeclineServerRegistration: false,
+	skipCloudRegistration: false,
 	goToPreviousStep: () => undefined,
 	goToNextStep: () => undefined,
 	goToStep: () => undefined,

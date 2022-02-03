@@ -40,7 +40,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const userId = useUserId();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
-	const { loaded, settings, canDeclineServerRegistration } = useParameters();
+	const { loaded, settings, skipCloudRegistration } = useParameters();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
 	const [maxSteps, setMaxSteps] = useState(4);
@@ -57,10 +57,10 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
 
 	useEffect(() => {
-		if (canDeclineServerRegistration) {
+		if (skipCloudRegistration) {
 			return setMaxSteps(2);
 		}
-	}, [canDeclineServerRegistration]);
+	}, [skipCloudRegistration]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -201,7 +201,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			currentStep,
 			loaded,
 			settings,
-			canDeclineServerRegistration,
+			skipCloudRegistration,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
@@ -220,7 +220,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			loaded,
 			registerAdminUser,
 			settings,
-			canDeclineServerRegistration,
+			skipCloudRegistration,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
