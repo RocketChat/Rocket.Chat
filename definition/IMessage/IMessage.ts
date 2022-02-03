@@ -99,6 +99,15 @@ export type IVoipMessage = IMessage & {
 	};
 };
 
+export type IMessageEdited = IMessage & {
+	editedAt: Date;
+	editedBy: Pick<IUser, '_id' | 'username'>;
+};
+
+export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
+	return 'editedAt' in message && 'editedBy' in message;
+};
+
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {

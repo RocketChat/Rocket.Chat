@@ -7,7 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { IMessage } from '../../../../definition/IMessage';
+import { IMessage, IMessageEdited } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
@@ -40,8 +40,8 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		Messages.cloneAndSaveAsHistoryById(message._id, user);
 	}
 
-	message.editedAt = new Date();
-	message.editedBy = {
+	(message as IMessageEdited).editedAt = new Date();
+	(message as IMessageEdited).editedBy = {
 		_id: user._id,
 		username: user.username,
 	};
@@ -58,10 +58,9 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		SystemLogger.error(String(e)); // errors logged while the parser is at experimental stage
 	}
 
-	const tempid = message._id;
-	delete message._id;
+	const { _id, ...editedMessage } = message;
 
-	Messages.update({ _id: tempid }, { $set: message });
+	Messages.update({ _id }, { $set: editedMessage });
 
 	const room = Rooms.findOneById(message.rid);
 
@@ -72,6 +71,6 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	}
 
 	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
+		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
 	});
 };

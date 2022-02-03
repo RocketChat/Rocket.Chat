@@ -107,8 +107,8 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: Accounts.emailTemplates.userActivated.subject({ active }),
-		html: Accounts.emailTemplates.userActivated.html({
+		subject: Accounts.emailTemplates.userActivated.subject?({ active }),
+		html: Accounts.emailTemplates.userActivated.html?({
 			active,
 			name: user.name,
 			username: user.username,

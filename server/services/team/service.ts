@@ -570,10 +570,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, {
+		const teamRooms: (IRoom & {
+			userCanDelete?: boolean;
+		})[] = await this.RoomsModel.findByTeamId(teamId, {
 			projection: { _id: 1, t: 1 },
 		}).toArray();
-		let teamRoomIds: any[];
+
+		let teamRoomIds: string[];
+
 		if (showCanDeleteOnly) {
 			for await (const room of teamRooms) {
 				const roomType = room.t;
@@ -598,6 +602,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for (const room of rooms) {
 			const roomInfo = roomData.find((data) => data.rid === room._id);
+			if (!roomInfo) {
+				continue;
+			}
 			room.isLastOwner = roomInfo.userIsLastOwner;
 			records.push(room);
 		}

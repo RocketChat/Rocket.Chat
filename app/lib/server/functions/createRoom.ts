@@ -12,17 +12,18 @@ import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 import { IUser } from '../../../../definition/IUser';
 import { ICreateRoomParams } from '../../../../server/sdk/types/IRoomService';
-import { IRoom } from '../../../../definition/IRoom';
+import { IRoom, RoomType } from '../../../../definition/IRoom';
 
 export const createRoom = function (
-	type: string,
+	type: RoomType,
 	name: string,
 	owner: IUser,
-	members: IUser[],
-	readOnly: boolean,
-	{ teamId, ...extraData }: IRoom,
-	options: ICreateRoomParams['options'],
+	members: IUser[] = [],
+	readOnly?: boolean,
+	r?: IRoom,
+	options?: ICreateRoomParams['options'],
 ): unknown {
+	const { teamId, ...extraData } = r || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -31,7 +32,6 @@ export const createRoom = function (
 
 	name = s.trim(name);
 	if (owner.username !== undefined) owner.username = s.trim(owner.username);
-	members = [].concat(members as []);
 
 	if (!name) {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', {
@@ -108,9 +108,7 @@ export const createRoom = function (
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	let result;
-	result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', room));
-	result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+	const result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', room))));
 
 	if (typeof result === 'object') {
 		Object.assign(room, result);

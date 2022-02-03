@@ -14,7 +14,7 @@ export const relinquishRoomOwnerships = async function (
 	userId: string,
 	subscribedRooms: SubscribedRoomsForUserWithDetails[],
 	removeDirectMessages = true,
-): Promise<unknown> {
+): Promise<SubscribedRoomsForUserWithDetails[]> {
 	// change owners
 	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
 

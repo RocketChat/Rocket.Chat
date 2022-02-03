@@ -21,7 +21,7 @@ export function shouldRemoveOrChangeOwner(subscribedRooms: SubscribedRoomsForUse
 export function getSubscribedRoomsForUserWithDetails(
 	userId: string,
 	assignNewOwner = true,
-	roomIds = [],
+	roomIds: string[] = [],
 ): SubscribedRoomsForUserWithDetails[] {
 	const subscribedRooms: SubscribedRoomsForUserWithDetails[] = [];
 
