@@ -2,7 +2,7 @@ import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
-import { MessageTypes } from '../../ui-utils/server';
+import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 import { IOmnichannelSystemMessage } from '../../../definition/IMessage';
 
 MessageTypes.registerType({

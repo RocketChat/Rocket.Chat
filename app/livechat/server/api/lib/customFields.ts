@@ -4,7 +4,7 @@ import { LivechatCustomFieldRaw } from '../../../../models/server/raw/LivechatCu
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatCustomField } from '../../../../models/server/raw';
 
-export async function findLivechatCustomFields({ userId: any, text: string, pagination: { offset, count, sort } }) {
+export async function findLivechatCustomFields({ pagination: { offset, count, sort } }) {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -39,7 +39,7 @@ export async function findCustomFieldById({
 }: {
 	userId: any;
 	customFieldId: any;
-}): Promise<LivechatCustomFieldRaw | undefined> {
+}): Promise<LivechatCustomFieldRaw> | undefined {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
