@@ -4,9 +4,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../api';
-import { VoipRoom, LivechatVisitors } from '../../../../models/server/raw';
+import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { IUser } from '../../../../../definition/IUser';
 
 /**
  * @openapi
@@ -88,17 +89,21 @@ API.v1.addRoute(
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
 				}
-				let agentObj = null;
+				let agentObj: IUser | null = null;
 				if (agentId) {
-					agentObj = await LivechatVoip.findAgent(agentId);
+					agentObj = await Users.findOne(
+						{
+							_id: agentId,
+						},
+						{
+							projection: { username: 1 },
+						},
+					);
 				}
 				if (!agentObj) {
 					return API.v1.failure('agent-not-found');
 				}
-				let username = undefined;
-				if ('username' in agentObj) {
-					username = agentObj.username;
-				}
+				const { username } = agentObj;
 				const agent = { agentId, username };
 				const rid = Random.id();
 				const roomInfo = {
