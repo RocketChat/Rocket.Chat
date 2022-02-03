@@ -1,6 +1,6 @@
-// export type AddWebdavAccountMethod = (data: IWebdavAccountPayload) => void;
-import { TranslationKey } from '@rocket.chat/ui-contexts';
-import { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+
+import type { TranslationKey } from '../../TranslationContext';
 
 export type UploadFileToWebdav = (
 	accountId: IWebdavAccount['_id'],

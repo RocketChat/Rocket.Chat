@@ -1,4 +1,4 @@
-import type { WebdavAccountIntegration } from '@rocket.chat/core-typings';
+import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import { Box, Select, SelectOption, Field, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
@@ -9,7 +9,7 @@ import { useForm } from '../../../hooks/useForm';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
-const getWebdavAccounts = (): WebdavAccountIntegration[] => WebdavAccounts.find().fetch();
+const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
 
 const AccountIntegrationsPage = (): ReactElement => {
 	const t = useTranslation();

@@ -1,10 +1,11 @@
 import { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
 import { Modal, Box, ButtonGroup, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useToastMessageDispatch, useTranslation, useEndpointData } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
 type SaveToWebdavModalProps = {
@@ -28,7 +29,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		formState: { errors },
 	} = useForm<{ accountId: string }>();
 
-	const { value } = useEndpointData('webdav.getMyAccounts');
+	const { value } = useEndpointData('/v1/webdav.getMyAccounts');
 
 	const accountsOptions: SelectOption[] = useMemo(() => {
 		if (value?.accounts) {
@@ -62,7 +63,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
-					return dispatchToastMessage({ type: 'error', message: error });
+					return dispatchToastMessage({ type: 'error', message: String(error) });
 				} finally {
 					setIsLoading(false);
 					onClose();

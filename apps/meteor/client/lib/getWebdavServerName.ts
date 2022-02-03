@@ -1,4 +1,4 @@
-import { WebdavAccountIntegration } from '../../definition/IWebdavAccount';
+import { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 
-export const getWebdavServerName = ({ name, serverURL, username }: Omit<WebdavAccountIntegration, '_id'>): string =>
+export const getWebdavServerName = ({ name, serverURL, username }: Omit<IWebdavAccountIntegration, '_id'>): string =>
 	name || `${username}@${serverURL?.replace(/^https?\:\/\//i, '')}`;
