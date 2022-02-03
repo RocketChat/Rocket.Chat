@@ -62,12 +62,14 @@ const OTRWithData = ({ rid, tabBar }) => {
 	return (
 		<OTR
 			isOnline={isOnline}
+			isDeclined={declined}
 			isEstablishing={isEstablishing}
 			isEstablished={isEstablished}
 			onClickClose={onClickClose}
 			onClickStart={handleStart}
 			onClickEnd={handleEnd}
 			onClickRefresh={handleReset}
+			OTR={otr}
 		/>
 	);
 };

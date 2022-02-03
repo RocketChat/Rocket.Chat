@@ -1,0 +1,8 @@
+.icon-tile{
+    height: 60px,
+    width: 60px,
+    borderRadius:100px,
+    backgroundColor: #EEEFF1,
+    display="flex" justifyContent: center,
+    alignItems='center' alignSelf: center
+}
