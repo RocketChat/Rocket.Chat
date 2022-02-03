@@ -49,7 +49,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 
 	if (!_.contains(members, owner)) {
-		members.push(owner);
+		members.push(owner.username);
 	}
 
 	if (extraData.broadcast) {
@@ -102,7 +102,9 @@ export const createRoom = function <T extends RoomType>(
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmp))));
+	const { _USERNAMES, ...result } = Promise.await(
+		Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmp))),
+	);
 
 	if (typeof result === 'object') {
 		Object.assign(roomProps, result);
