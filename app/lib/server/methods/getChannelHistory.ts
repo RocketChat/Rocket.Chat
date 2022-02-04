@@ -47,7 +47,7 @@ Meteor.methods({
 
 		const hiddenMessageTypes = getHiddenSystemMessages(room);
 
-		const options = {
+		const options: Record<string, unknown> = {
 			sort: {
 				ts: -1,
 			},
