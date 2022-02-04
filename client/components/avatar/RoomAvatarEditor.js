@@ -50,7 +50,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 						{t('Upload')}
 					</Button>
 
-					<Button primary small danger title={t('Accounts_SetDefaultAvatar')} disabled={roomAvatar === null} onClick={clickReset}>
+					<Button primary small danger title={t('Accounts_SetDefaultAvatar')} disabled={roomAvatar === undefined || roomAvatar === null} onClick={clickReset}>
 						<Icon name='trash' size='x16' />
 					</Button>
 				</ButtonGroup>
