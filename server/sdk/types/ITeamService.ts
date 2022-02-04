@@ -86,6 +86,7 @@ export interface ITeamService {
 		options?: IPaginationOptions,
 		queryOptions?: FilterQuery<IUser>,
 	): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
 	removeMember(teamId: string, userId: string): Promise<void>;

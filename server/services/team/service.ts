@@ -814,7 +814,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		await this.TeamMembersModel.deleteByTeamId(team._id);
 	}
 
-	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {
+	async addMember(inviter: Pick<IUser, '_id' | 'username'>, userId: string, teamId: string): Promise<boolean> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, {
 			projection: { _id: 1 },
 		});
@@ -933,7 +933,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		);
 	}
 
-	async addMembersToDefaultRooms(inviter: IUser, teamId: string, members: Array<Partial<ITeamMember>>): Promise<void> {
+	async addMembersToDefaultRooms(
+		inviter: Pick<IUser, '_id' | 'username'>,
+		teamId: string,
+		members: Array<Partial<ITeamMember>>,
+	): Promise<void> {
 		const defaultRooms = await this.RoomsModel.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await this.Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 

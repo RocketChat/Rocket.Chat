@@ -8,6 +8,7 @@ import { Team } from '../../../../server/sdk';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { IUser } from '../../../../definition/IUser';
+import { IRoom } from '../../../../definition/IRoom';
 
 export const addUserToRoom = function (
 	rid: string,
@@ -16,7 +17,7 @@ export const addUserToRoom = function (
 	silenced?: boolean,
 ): boolean | unknown {
 	const now = new Date();
-	const room = Rooms.findOneById(rid);
+	const room: IRoom = Rooms.findOneById(rid);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
@@ -106,7 +107,7 @@ export const addUserToRoom = function (
 
 	if (room.teamMain && room.teamId && inviter) {
 		// if user is joining to main team channel, create a membership
-		Promise.await(Team.addMembers(inviter._id, user._id, room.teamId));
+		Promise.await(Team.addMember(inviter, user._id, room.teamId));
 	}
 
 	return true;
