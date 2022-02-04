@@ -92,6 +92,11 @@ export type OmnichannelEndpoints = {
 			departments: ILivechatDepartment[];
 		}>;
 	};
+
+	'livechat/department.listByIds': {
+		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => { departments: ILivechatDepartment[] };
+	};
+
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			customFields: [
