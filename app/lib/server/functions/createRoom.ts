@@ -115,7 +115,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
 
-	for (const username of [...(new Set(members) as string[])]) {
+	for (const username of [...new Set(members as string[])]) {
 		const member = Users.findOneByUsername(username, {
 			fields: { 'username': 1, 'settings.preferences': 1 },
 		});
