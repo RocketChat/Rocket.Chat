@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../../../callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../settings';
 
 /**

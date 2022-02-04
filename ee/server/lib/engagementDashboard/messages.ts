@@ -6,11 +6,12 @@ import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalO
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 import { IMessage } from '../../../../definition/IMessage';
 
-export const handleMessagesSent = (message: IMessage, room: IRoom): IMessage => {
+export const handleMessagesSent = (message: IMessage, room?: IRoom): IMessage => {
 	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
-	if (!roomTypesToShow.includes(room.t)) {
+	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
+
 	Promise.await(
 		Analytics.saveMessageSent({
 			date: convertDateToInt(message.ts),
@@ -20,11 +21,12 @@ export const handleMessagesSent = (message: IMessage, room: IRoom): IMessage => 
 	return message;
 };
 
-export const handleMessagesDeleted = (message: IMessage, room: IRoom): IMessage => {
+export const handleMessagesDeleted = (message: IMessage, room?: IRoom): IMessage => {
 	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
-	if (!roomTypesToShow.includes(room.t)) {
+	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
+
 	Promise.await(
 		Analytics.saveMessageDeleted({
 			date: convertDateToInt(message.ts),

@@ -1,3 +1,4 @@
+import { ILivechatAgent } from '../../ILivechatAgent';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
@@ -164,5 +165,25 @@ export type OmnichannelEndpoints = {
 
 	'livechat/visitor.status': {
 		POST: (params: { token: string; status: string }) => { token: string; status: string };
+	};
+
+	'livechat/queue': {
+		GET: (params: {
+			agentId?: ILivechatAgent['_id'];
+			includeOfflineAgents?: boolean;
+			departmentId?: ILivechatAgent['_id'];
+			offset: number;
+			count: number;
+			sort: string;
+		}) => {
+			queue: {
+				chats: number;
+				department: { _id: string; name: string };
+				user: { _id: string; username: string; status: string };
+			}[];
+			count: number;
+			offset: number;
+			total: number;
+		};
 	};
 };

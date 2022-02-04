@@ -3,6 +3,7 @@ import type { CpuInfo } from 'os';
 import type { ITeamStats } from './ITeam';
 
 export interface IStats {
+	_id: string;
 	wizard: Record<string, unknown>;
 	uniqueId: string;
 	installedAt?: string;
@@ -75,4 +76,5 @@ export interface IStats {
 	oplogEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine: string;
+	pushQueue: number;
 }

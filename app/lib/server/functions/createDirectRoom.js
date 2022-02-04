@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { Apps } from '../../../apps/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
