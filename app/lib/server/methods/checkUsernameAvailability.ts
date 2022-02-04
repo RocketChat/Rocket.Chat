@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 
@@ -15,11 +15,11 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
+		if (user?.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (user.username === username) {
+		if (user?.username === username) {
 			return true;
 		}
 		return checkUsernameAvailability(username);

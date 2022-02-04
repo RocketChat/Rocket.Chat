@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { setRealName } from '../functions';
 import { RateLimiter } from '../lib';
 
