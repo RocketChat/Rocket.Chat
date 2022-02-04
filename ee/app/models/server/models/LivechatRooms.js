@@ -56,8 +56,9 @@ LivechatRooms.prototype.unsetOnHold = function (roomId) {
 LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function () {
 	return this.update(
 		{
-			open: true,
-			t: 'l',
+			'open': true,
+			't': 'l',
+			'omnichannel.predictedVisitorAbandonmentAt': { $exists: true },
 		},
 		{
 			$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
