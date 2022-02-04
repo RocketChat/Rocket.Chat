@@ -8,13 +8,18 @@ import { IMessage } from '../../../../definition/IMessage';
 Meteor.methods({
 	getMessages(messages) {
 		check(messages, [String]);
+		const uid = Meteor.userId();
 
-		const msgs = Messages.findVisibleByIds(messages).fetch();
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getMessages' });
+		}
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const user = { _id: Meteor.userId()! || undefined };
+		const msgs = Messages.findVisibleByIds(messages).fetch() as IMessage[];
 
-		const rids = [...new Set(msgs.map((m: IMessage) => m.rid))] as undefined[];
+		const user = { _id: uid };
+
+		const rids = [...new Set(msgs.map((m) => m.rid))];
+
 		if (!rids.every((_id) => canAccessRoom({ _id }, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}

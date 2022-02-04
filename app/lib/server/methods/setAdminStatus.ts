@@ -8,11 +8,13 @@ Meteor.methods({
 		check(userId, String);
 		check(admin, Match.Optional(Boolean));
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setAdminStatus' });
 		}
 
-		if (hasPermission(Meteor.userId(), 'assign-admin-role') !== true) {
+		if (hasPermission(uid, 'assign-admin-role') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setAdminStatus' });
 		}
 

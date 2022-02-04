@@ -5,12 +5,13 @@ import { hasRole } from '../../../authorization/server';
 Meteor.methods({
 	// eslint-disable-next-line @typescript-eslint/camelcase
 	restart_server() {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'restart_server' });
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		if (hasRole(Meteor.userId()!, 'admin') !== true) {
+		if (hasRole(uid, 'admin') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 

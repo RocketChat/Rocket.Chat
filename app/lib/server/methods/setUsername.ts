@@ -14,17 +14,17 @@ Meteor.methods({
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 		}
 
-		const user = Meteor.user();
-
-		if (user?.username && !settings.get('Accounts_AllowUsernameChange')) {
+		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (user?.username === username || (user?.username && user.username.toLowerCase() === username.toLowerCase())) {
+		if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
 			return username;
 		}
 
@@ -55,11 +55,10 @@ Meteor.methods({
 			});
 		}
 
-		if (!user?.username) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			Meteor.runAsUser(user!._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+		if (!user.username) {
+			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
-				return callbacks.run('afterCreateUser', Users.findOneById(user?._id));
+				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});
 		}
 

@@ -9,11 +9,11 @@ Meteor.methods({
 	setEmail(email) {
 		check(email, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
 		}
-
-		const user = Meteor.user();
 
 		if (!settings.get('Accounts_AllowEmailChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing email is not allowed', {
@@ -22,11 +22,11 @@ Meteor.methods({
 			});
 		}
 
-		if (user?.emails && user.emails[0] && user.emails[0].address === email) {
+		if (user.emails && user.emails[0] && user.emails[0].address === email) {
 			return email;
 		}
 
-		if (!setEmail(user?._id, email)) {
+		if (!setEmail(user._id, email)) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', {
 				method: 'setEmail',
 			});
