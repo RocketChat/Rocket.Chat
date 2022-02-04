@@ -2,8 +2,19 @@ import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
+import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
 
-export const attachMessage = function (message: IMessage, room: IRoom): {} {
+export const attachMessage = function (
+	message: IMessage,
+	room: IRoom,
+): {
+	text: string;
+	authorName?: string;
+	authorIcon: string;
+	messageLink: string;
+	attachments?: MessageAttachment[];
+	ts: Date;
+} {
 	const {
 		msg,
 		u: { username },
