@@ -29,9 +29,14 @@ import {
 	IAgentCalledEvent,
 	IEventBase,
 	IQueueCallerJoinEvent,
+	IQueueMemberAdded,
+	IQueueMemberRemoved,
 	isIAgentCalledEvent,
 	isIAgentConnectEvent,
+	isIQueueCallerAbandonEvent,
 	isIQueueCallerJoinEvent,
+	isIQueueMemberAddedEvent,
+	isIQueueMemberRemovedEvent,
 } from '../IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -87,6 +92,29 @@ export class ContinuousMonitor extends Command {
 		});
 	}
 
+	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
+		const extension = event.interface.toLowerCase().replace('pjsip/', '');
+		const queueName = event.queue;
+		const queue = new ACDQueue(Commands.queue_details.toString(), true);
+		queue.connection = this.connection;
+		const queueDetails = Promise.await(queue.executeCommand({ queueName }));
+		const { calls } = queueDetails.result as unknown as IQueueDetails;
+		const user = await this.users.findOneByExtension(extension, {
+			projection: {
+				_id: 1,
+				username: 1,
+				extension: 1,
+			},
+		});
+		if (user) {
+			if (isIQueueMemberAddedEvent(event)) {
+				api.broadcast(`queue.queuememberadded`, user._id, queueName, calls);
+			} else if (isIQueueMemberRemovedEvent(event)) {
+				api.broadcast(`queue.queuememberremoved`, user._id, queueName, calls);
+			}
+		}
+	}
+
 	async processAgentCalled(event: IAgentCalledEvent): Promise<void> {
 		this.logger.debug(`Got new event queue.agentcalled at ${event.queue}`);
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
@@ -104,7 +132,11 @@ export class ContinuousMonitor extends Command {
 		}
 
 		this.logger.debug(`Broadcasting event queue.agentcalled to ${user._id}@${event.queue} on extension ${extension}`);
-		api.broadcast('queue.agentcalled', user._id, event.queue);
+		const callerId = {
+			id: event.calleridnum,
+			name: event.calleridname,
+		};
+		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
 	async onEvent(event: IEventBase): Promise<void> {
@@ -122,6 +154,15 @@ export class ContinuousMonitor extends Command {
 			// return;
 		}
 
+		if (isIQueueMemberAddedEvent(event) || isIQueueMemberRemovedEvent(event)) {
+			return this.processQueueMembershipChange(event);
+		}
+
+		if (isIQueueCallerAbandonEvent(event)) {
+			this.logger.debug(`Cannot handle event ${event.event}`);
+			// return;
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
@@ -133,6 +174,9 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('queuecallerjoin', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('agentcalled', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('agentconnect', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('queuememberadded', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('queuememberremoved', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('queuecallerabandon', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {

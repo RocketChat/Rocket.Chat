@@ -84,6 +84,8 @@ export type EventSignatures = {
 		id: string;
 	}): void;
 	'watch.voipevents'(data: { clientAction: ClientAction; event: IVoipEvent }): void;
-	'queue.agentcalled'(userid: string, queuename: string): void;
-	'queue.callerjoined'(userid: string, queuename: string, callerid: Record<string, any>, queuedcalls: string): void;
+	'queue.agentcalled'(userid: string, queuename: string, callerid: Record<string, string>): void;
+	'queue.callerjoined'(userid: string, queuename: string, callerid: Record<string, string>, queuedcalls: string): void;
+	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
+	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
 };
