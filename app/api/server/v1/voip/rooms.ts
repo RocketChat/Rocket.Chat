@@ -100,7 +100,7 @@ API.v1.addRoute(
 						},
 					);
 				}
-				if (!agentObj) {
+				if (!agentObj?.username) {
 					return API.v1.failure('agent-not-found');
 				}
 				const { username } = agentObj;
