@@ -10,7 +10,7 @@ export interface IOmnichannelVoipService {
 	getExtensionAllocationDetails(): Promise<IAgentExtensionMap[]>;
 	getNewRoom(
 		guest: ILivechatVisitor,
-		agent: { agentId: string; username?: string },
+		agent: { agentId: string; username: string },
 		rid: string,
 		roomInfo: any,
 		options: FindOneOptions<IVoipRoom>,
