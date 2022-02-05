@@ -12,7 +12,6 @@ export interface IOmnichannelVoipService {
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username: string },
 		rid: string,
-		roomInfo: any,
 		options: FindOneOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;

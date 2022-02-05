@@ -6,7 +6,7 @@ import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
-import { IVoipRoom, OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { IVoipRoom } from '../../../../../definition/IRoom';
 import { IUser } from '../../../../../definition/IUser';
 
 /**
@@ -106,12 +106,7 @@ API.v1.addRoute(
 				const { username } = agentObj;
 				const agent = { agentId, username };
 				const rid = Random.id();
-				const roomInfo = {
-					source: {
-						type: OmnichannelSourceType.API,
-					},
-				};
-				room = await LivechatVoip.getNewRoom(guest, agent, rid, roomInfo, { projection: API.v1.defaultFieldsToExclude });
+				room = await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude });
 				return API.v1.success(room);
 			}
 			room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });

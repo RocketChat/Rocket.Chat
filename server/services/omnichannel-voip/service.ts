@@ -126,7 +126,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		guest: ILivechatVisitor,
 		agent: { agentId: string; username?: string },
 		rid: string,
-		roomInfo: any,
 		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {
 		this.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
@@ -137,7 +136,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			room = null;
 		}
 		if (room == null) {
-			const name = roomInfo?.fname || guest.name || guest.username;
+			const name = guest.name || guest.username;
 			const roomId = await this.createVoipRoom(rid, name, agent, guest);
 			room = await this.voipRoom.findOneVoipRoomById(roomId);
 			newRoom = true;
