@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
@@ -14,11 +14,11 @@ Meteor.methods({
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 		}
-
-		const user = Meteor.user();
 
 		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
@@ -49,7 +49,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user._id, username })) {
+		if (!saveUserIdentity({ _id: user?._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});
