@@ -1,10 +1,13 @@
-import { ServerType } from '../../../definition/IVoipServerConfig';
+import { IVoipServerConfig, ServerType } from '../../../definition/IVoipServerConfig';
 import { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IRegistrationInfo } from '../../../definition/voip/IRegistrationInfo';
 
 export interface IVoipService {
 	getConfiguration(): any;
+	getServerConfigData(serverType: ServerType): Promise<IVoipServerConfig | null>;
+	addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
+	updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
 	deactivateServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
 	getConnector(): Promise<CommandHandler>;
 	getConnectorVersion(): Promise<string>;
