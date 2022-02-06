@@ -18,6 +18,13 @@ const callActions = {
 	reject: () => ({}),
 };
 
+const popover = {
+	mute: 'Mute',
+	holdCall: 'Hold Call',
+	acceptCall: 'Accept Call',
+	endCall: 'End Call',
+};
+
 export const Default = (): ReactElement => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
@@ -34,6 +41,7 @@ export const Default = (): ReactElement => {
 				paused={paused}
 				toggleMic={toggleMic}
 				togglePause={togglePause}
+				popover={popover}
 			/>
 		</Box>
 	);
