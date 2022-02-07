@@ -10,7 +10,15 @@ import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationCo
 import { useUser } from '../../../contexts/UserContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
-function GroupPage({ children = undefined, headerButtons = undefined, _id, i18nLabel, i18nDescription = undefined, tabs = undefined }) {
+function GroupPage({
+	children = undefined,
+	headerButtons = undefined,
+	_id,
+	i18nLabel,
+	i18nDescription = undefined,
+	tabs = undefined,
+	customPage = undefined,
+}) {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -134,16 +142,20 @@ function GroupPage({ children = undefined, headerButtons = undefined, _id, i18nL
 
 			{tabs}
 
-			<Page.ScrollableContentWithShadow>
-				<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-					{t.has(i18nDescription) && (
-						<Box is='p' color='hint' fontScale='p2'>
-							{t(i18nDescription)}
-						</Box>
-					)}
+			{customPage}
 
-					<Accordion className='page-settings'>{children}</Accordion>
-				</Box>
+			<Page.ScrollableContentWithShadow>
+				{children && (
+					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+						{t.has(i18nDescription) && (
+							<Box is='p' color='hint' fontScale='p2'>
+								{t(i18nDescription)}
+							</Box>
+						)}
+
+						<Accordion className='page-settings'>{children}</Accordion>
+					</Box>
+				)}
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
