@@ -128,7 +128,9 @@ export class AppSchedulerBridge extends SchedulerBridge {
 			const job = await this.scheduler.schedule(when, id, this.decorateJobData(data, appId));
 			return job.attrs._id.toString();
 		} catch (e) {
-			this.orch.getRocketChatLogger().error(e);
+			if (e instanceof Error) {
+				this.orch.getRocketChatLogger().error(e);
+			}
 		}
 	}
 
@@ -162,8 +164,10 @@ export class AppSchedulerBridge extends SchedulerBridge {
 				skipImmediate,
 			});
 			return job.attrs._id.toString();
-		} catch (e) {
-			this.orch.getRocketChatLogger().error(e);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				this.orch.getRocketChatLogger().error(e);
+			}
 		}
 	}
 
@@ -190,7 +194,9 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.scheduler.cancel(cancelQuery);
 		} catch (e) {
-			this.orch.getRocketChatLogger().error(e);
+			if (e instanceof Error) {
+				this.orch.getRocketChatLogger().error(e);
+			}
 		}
 	}
 
@@ -208,7 +214,9 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.scheduler.cancel({ name: { $regex: matcher } });
 		} catch (e) {
-			this.orch.getRocketChatLogger().error(e);
+			if (e instanceof Error) {
+				this.orch.getRocketChatLogger().error(e);
+			}
 		}
 	}
 

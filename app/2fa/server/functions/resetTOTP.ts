@@ -44,11 +44,13 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 					text,
 					html,
 				} as any);
-			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
-					function: 'resetUserTOTP',
-					message: error.message,
-				});
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+						function: 'resetUserTOTP',
+						message: error.message,
+					});
+				}
 			}
 		});
 	}
