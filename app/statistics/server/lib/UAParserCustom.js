@@ -59,6 +59,11 @@ export const UAParserMobile = {
 		return splitUA && splitUA[0] && splitUA[0].trim() === this.appName;
 	},
 
+	/**
+	 *
+	 * @param {string} uaString
+	 * @returns { device: { type: '' }, app: { name: '', version: '' } }
+	 */
 	uaObject(uaString) {
 		if (!this.isMobileApp(uaString)) {
 			return {};
@@ -120,6 +125,11 @@ export const UAParserDesktop = {
 		return uaString.includes(' Electron/');
 	},
 
+	/**
+	 *
+	 * @param {string} uaString
+	 * @returns { device: { type: '' }, os: '' || {}, app: { name: '', version: '' } }
+	 */
 	uaObject(uaString) {
 		if (!this.isDesktopApp(uaString)) {
 			return {};

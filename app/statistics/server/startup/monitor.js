@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import { SAUMonitorClass } from '../lib/SAUMonitor';
 import { settings } from '../../../settings/server';
@@ -18,6 +17,6 @@ Meteor.startup(() => {
 			return SAUMonitor.stop();
 		}
 
-		SAUMonitor.start(InstanceStatus.id());
+		SAUMonitor.start();
 	});
 });
