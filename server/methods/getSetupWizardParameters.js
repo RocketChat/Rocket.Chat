@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Settings } from '../../app/models';
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	getSetupWizardParameters() {
-		const settings = Settings.findSetupWizardSettings().fetch();
-		const allowStandaloneServer = process.env.DEPLOY_PLATFORM !== 'rocket-cloud';
+		const setupWizardSettings = Settings.findSetupWizardSettings().fetch();
+		const serverAlreadyRegistered = !!settings.get('Cloud_Workspace_Client_Id') || process.env.DEPLOY_PLATFORM === 'rocket-cloud';
 
 		return {
-			settings,
-			allowStandaloneServer,
+			setupWizardSettings,
+			serverAlreadyRegistered,
 		};
 	},
 });
