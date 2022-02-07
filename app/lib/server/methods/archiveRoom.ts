@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { archiveRoom } from '../functions';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
