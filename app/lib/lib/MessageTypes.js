@@ -27,6 +27,16 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'aut',
+		system: true,
+		message: 'Added__username__to_team',
+		data(message) {
+			return {
+				user_added: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'ru',
 		system: true,
 		message: 'User_removed_by',
@@ -34,6 +44,16 @@ Meteor.startup(function () {
 			return {
 				user_removed: message.msg,
 				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'rut',
+		system: true,
+		message: 'Removed__username__from_team',
+		data(message) {
+			return {
+				user_removed: message.msg,
 			};
 		},
 	});
@@ -68,9 +88,9 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userRemoveRoomFromTeam',
+		id: 'userConvertToChannel',
 		system: true,
-		message: 'Removed__roomName__from_this_team',
+		message: 'Converted__roomName__to_channel',
 		data(message) {
 			return {
 				roomName: message.msg,
@@ -297,16 +317,32 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_uj',
 	},
 	{
+		key: 'ujt',
+		i18nLabel: 'Message_HideType_ujt',
+	},
+	{
 		key: 'ul',
 		i18nLabel: 'Message_HideType_ul',
+	},
+	{
+		key: 'ult',
+		i18nLabel: 'Message_HideType_ult',
 	},
 	{
 		key: 'ru',
 		i18nLabel: 'Message_HideType_ru',
 	},
 	{
+		key: 'rut',
+		i18nLabel: 'Message_HideType_rut',
+	},
+	{
 		key: 'au',
 		i18nLabel: 'Message_HideType_au',
+	},
+	{
+		key: 'aut',
+		i18nLabel: 'Message_HideType_aut',
 	},
 	{
 		key: 'mute_unmute',
@@ -379,5 +415,25 @@ export const MessageTypesValues = [
 	{
 		key: 'room-allowed-reacting',
 		i18nLabel: 'Message_HideType_room_allowed_reacting',
+	},
+	{
+		key: 'userAddRoomToTeam',
+		i18nLabel: 'Message_HideType_userAddRoomToTeam',
+	},
+	{
+		key: 'userConvertToChannel',
+		i18nLabel: 'Message_HideType_userConvertToChannel',
+	},
+	{
+		key: 'userConvertToTeam',
+		i18nLabel: 'Message_HideType_userConvertToTeam',
+	},
+	{
+		key: 'userDeleteRoomFromTeam',
+		i18nLabel: 'Message_HideType_userDeleteRoomFromTeam',
+	},
+	{
+		key: 'userRemoveRoomFromTeam',
+		i18nLabel: 'Message_HideType_userRemoveRoomFromTeam',
 	},
 ];

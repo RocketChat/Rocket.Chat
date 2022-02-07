@@ -911,8 +911,12 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
 	}
 
-	createUserConvertChannelInTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
+	createUserConvertChannelToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser('userConvertToTeam', roomId, roomName, user, extraData);
+	}
+
+	createUserConvertTeamToChannelWithRoomIdAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('userConvertToChannel', roomId, roomName, user, extraData);
 	}
 
 	createUserRemoveRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
@@ -932,9 +936,19 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
 	}
 
+	createUserRemovedFromTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('rut', roomId, message, user, extraData);
+	}
+
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
+	}
+
+	createUserAddedToTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('aut', roomId, message, user, extraData);
 	}
 
 	createCommandWithRoomIdAndUser(command, roomId, user, extraData) {

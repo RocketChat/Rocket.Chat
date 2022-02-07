@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Users, Messages } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
 import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
@@ -140,7 +140,11 @@ API.v1.addRoute(
 				});
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(team._id), Team.removeAllMembersFromTeam(team._id), Team.deleteById(team._id)]);
+			await Promise.all([
+				Team.unsetTeamIdOfRooms(this.userId, team._id),
+				Team.removeAllMembersFromTeam(team._id),
+				Team.deleteById(team._id),
+			]);
 
 			return API.v1.success();
 		},
@@ -183,9 +187,6 @@ API.v1.addRoute(
 			const { rooms } = this.bodyParams;
 
 			const validRooms = await Team.addRooms(this.userId, rooms, team._id);
-			const user = Meteor.users.findOne(this.userId);
-
-			validRooms?.length > 0 && validRooms.map((room) => Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user));
 
 			return API.v1.success({ rooms: validRooms });
 		},
@@ -215,9 +216,6 @@ API.v1.addRoute(
 			const { roomId } = this.bodyParams;
 
 			const room = await Team.removeRoom(this.userId, roomId, team._id, canRemoveAny);
-
-			const user = Meteor.users.findOne(this.userId);
-			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 
 			return API.v1.success({ room });
 		},
@@ -623,7 +621,7 @@ API.v1.addRoute(
 			}
 
 			// Move every other room back to the workspace
-			await Team.unsetTeamIdOfRooms(team._id);
+			await Team.unsetTeamIdOfRooms(this.userId, team._id);
 
 			// Delete all team memberships
 			Team.removeAllMembersFromTeam(team._id);

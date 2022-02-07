@@ -170,10 +170,20 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 					roomName: msg.msg,
 				});
 				break;
+			case 'userConvertToChannel':
+				messageObject.msg = TAPi18n.__('Converted__roomName__to_channel', {
+					roomName: msg.msg,
+				});
+				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', {
 					user_added: hideUserName(msg.msg, userData, usersMap),
 					user_by: username,
+				});
+				break;
+			case 'aut':
+				messageObject.msg = TAPi18n.__('Added__username__to_team', {
+					user_added: msg.msg,
 				});
 				break;
 			case 'r':
@@ -186,6 +196,11 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 				messageObject.msg = TAPi18n.__('User_removed_by', {
 					user_removed: hideUserName(msg.msg, userData, usersMap),
 					user_by: username,
+				});
+				break;
+			case 'rut':
+				messageObject.msg = TAPi18n.__('Removed__username__from_team', {
+					user_removed: hideUserName(msg.msg, userData, usersMap),
 				});
 				break;
 			case 'wm':

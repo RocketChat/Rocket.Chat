@@ -15,6 +15,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRoom } from '../../../definition/IRoom';
 import { IPaginationOptions, IQueryOptions, IRecordsWithTotal, ITeam, ITeamMember, ITeamStats, TEAM_TYPE } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
+import { Messages } from '../../../app/models/server';
 import { Room, Authorization } from '../../sdk';
 import {
 	IListRoomsFilter,
@@ -146,6 +147,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamModel.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
 
 			return {
 				_id: teamId,
@@ -342,7 +345,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('missing-userId');
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -373,6 +376,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 				throw new Error('error-no-owner-channel');
 			}
 
+			Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
+
 			room.teamId = teamId;
 		}
 
@@ -396,15 +401,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById(uid);
 		if (!canRemoveAnyRoom) {
-			const user = await this.Users.findOneById(uid);
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -416,15 +421,32 @@ export class TeamService extends ServiceClass implements ITeamService {
 		delete room.teamId;
 		delete room.teamDefault;
 		this.RoomsModel.unsetTeamById(room._id);
+
+		Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+
 		return {
 			...room,
 		};
 	}
 
-	async unsetTeamIdOfRooms(teamId: string): Promise<void> {
+	async unsetTeamIdOfRooms(uid: string, teamId: string): Promise<void> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
+
+		const team = await this.TeamModel.findOneById<Pick<ITeam, 'roomId'>>(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+
+		const room = await this.RoomsModel.findOneById(team.roomId, { projection: { name: 1 } });
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		const user = await this.Users.findOneById(uid);
+
+		Messages.createUserConvertTeamToChannelWithRoomIdAndUser(team.roomId, room.name, user);
 
 		await this.RoomsModel.unsetTeamId(teamId);
 	}

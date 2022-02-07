@@ -298,12 +298,6 @@ API.v1.addRoute(
 
 			const { channel } = API.channels.create.execute(userId, bodyParams);
 
-			if (bodyParams.extraData.teamId) {
-				const user = Meteor.users.findOne(this.userId);
-				const team = Promise.await(Team.getOneById(bodyParams.extraData.teamId));
-				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, channel.name, user);
-			}
-
 			return API.v1.success({ channel });
 		},
 	},
@@ -318,12 +312,6 @@ API.v1.addRoute(
 				params: this.requestParams(),
 				checkedArchived: false,
 			});
-
-			if (room.teamId) {
-				const team = Promise.await(Team.getOneById(room.teamId));
-				const user = Meteor.users.findOne(this.userId);
-				Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
-			}
 
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('eraseRoom', room._id);
@@ -1401,9 +1389,6 @@ API.v1.addRoute(
 			};
 
 			const team = Promise.await(Team.create(this.userId, teamData));
-
-			const user = Meteor.users.findOne(this.userId);
-			Messages.createUserConvertChannelInTeamWithRoomIdAndUser(room._id, room.name, user);
 
 			return API.v1.success({ team });
 		},
