@@ -39,5 +39,5 @@ const mainPino = pino({
 export type MainLogger = typeof mainPino;
 
 export function getPino(name: string, level = 'warn'): MainLogger {
-	return mainPino.child({ name, level }) as MainLogger;
+	return mainPino.child({ name }, { level }) as MainLogger;
 }

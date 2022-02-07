@@ -147,6 +147,10 @@ slashCommands.add(
 		description: 'Send attachment as email',
 		params: 'msg_id',
 	},
+	undefined,
+	false,
+	undefined,
+	undefined,
 );
 
 callbacks.add(
