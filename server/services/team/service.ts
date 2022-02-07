@@ -439,7 +439,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		const room = await this.RoomsModel.findOneById(team.roomId, { projection: { name: 1 } });
+		const room = await this.RoomsModel.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
 		if (!room) {
 			throw new Error('invalid-room');
 		}
