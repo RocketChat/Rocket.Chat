@@ -3618,7 +3618,7 @@
   "Role_Mapping": "Mapowanie ról",
   "Role_removed": "Rola usunięta",
   "Room": "Pokój",
-  "room_allowed_reacting": "Room pozwala na reakcje <em>__user_by_</em>",
+  "room_allowed_reacting": "Room pozwala na reakcje <em>__user_by__</em>",
   "Room_announcement_changed_successfully": "Zapowiedź pokoju została zmieniona",
   "Room_archivation_state": "Stan",
   "Room_archivation_state_false": "Aktywny",
