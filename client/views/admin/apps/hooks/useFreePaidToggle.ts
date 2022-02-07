@@ -7,13 +7,7 @@ export const useFreePaidToggle = (setData: FreePaidDropDownSetData): FreePaidDro
 		(item: FreePaidDropDownItem) =>
 			setData((prevState) => {
 				prevState.items.forEach((currentItem) => {
-					if (currentItem !== item) {
-						currentItem.checked = false;
-					}
-
-					if (currentItem === item) {
-						currentItem.checked = true;
-					}
+					currentItem.checked = currentItem === item;
 				});
 				return { ...prevState };
 			}),
