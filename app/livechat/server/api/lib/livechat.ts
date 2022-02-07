@@ -1,28 +1,35 @@
+import { IRoom } from './../../../../../imports/client/@rocket.chat/apps-engine/definition/rooms/IRoom.d';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { ILivechatTrigger } from '../../../../../definition/ILivechatTrigger';
 import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
-async function findTriggers() {
+async function findTriggers(): Promise<ILivechatTrigger[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
+	return triggers.map(({ _id, actions, conditions, runOnce, name, description, enabled, _updatedAt }) => ({
 		_id,
 		actions,
 		conditions,
 		runOnce,
+		name,
+		description,
+		enabled,
+		_updatedAt,
 	}));
 }
 
-export function findDepartments(businessUnit) {
+export function findDepartments(businessUnits) {
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
 		_id: 1,
 		name: 1,
@@ -38,7 +45,7 @@ export function findDepartments(businessUnit) {
 		}));
 }
 
-export function findGuest(token) {
+export function findGuest(token: string): ILivechatVisitor {
 	return LivechatVisitors.getVisitorByToken(token, {
 		fields: {
 			name: 1,
@@ -50,7 +57,7 @@ export function findGuest(token) {
 	});
 }
 
-export function findRoom(token, rid) {
+export function findRoom(token: string, rid: string): IRoom {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -86,7 +93,7 @@ export function findOpenRoom(token, departmentId) {
 }
 
 export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
-	const token = guest && guest.token;
+	const token = guest?.token;
 
 	const message = {
 		_id: Random.id(),

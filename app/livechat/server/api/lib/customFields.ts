@@ -1,10 +1,21 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { LivechatCustomFieldRaw } from '../../../../models/server/raw/LivechatCustomField';
+import { LivechatCustomField } from '../../../../models/server/raw/index';
+import { ILivechatCustomField } from '../../../../../definition/ILivechatCustomField';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatCustomField } from '../../../../models/server/raw';
 
-export async function findLivechatCustomFields({ pagination: { offset, count, sort } }) {
+export interface IFindLIveChatCustomFields {
+	customFields: ILivechatCustomField[];
+	count: number;
+	offset: number;
+	total: number;
+}
+
+export async function findLivechatCustomFields(
+	userId: string,
+	text: string,
+	{ offset, count, sort }: { offset: number; count: number; sort: string },
+): Promise<{ customFields: ILivechatCustomField[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -15,7 +26,7 @@ export async function findLivechatCustomFields({ pagination: { offset, count, so
 		}),
 	};
 
-	const cursor = await LivechatCustomField.find(query, {
+	const cursor = LivechatCustomField.find(query, {
 		sort: sort || { label: 1 },
 		skip: offset,
 		limit: count,
@@ -39,7 +50,7 @@ export async function findCustomFieldById({
 }: {
 	userId: any;
 	customFieldId: any;
-}): Promise<LivechatCustomFieldRaw> | undefined {
+}): Promise<{ customField: ILivechatCustomField | null }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
