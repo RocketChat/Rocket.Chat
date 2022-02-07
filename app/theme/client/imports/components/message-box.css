@@ -357,6 +357,10 @@
 			order: 5;
 		}
 	}
+
+	.js-message-action {
+		cursor: pointer;
+	}
 }
 
 .rc-popover--message-box {
