@@ -4,8 +4,9 @@ import React from 'react';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import OTRDeclinedBox from './OTRDeclinedBox';
+import OTRTimeout from './OTRTimeout';
 
-const OTR = ({ isEstablishing, isEstablished, isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, isDeclined }) => {
+const OTR = ({ isEstablishing, isEstablished, isOnline, isTimedOut, onClickClose, onClickStart, onClickEnd, onClickRefresh, isDeclined }) => {
 	const t = useTranslation();
 
 	return (
@@ -16,13 +17,16 @@ const OTR = ({ isEstablishing, isEstablished, isOnline, onClickClose, onClickSta
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
+            {isTimedOut && isOnline && (
+                <OTRTimeout />
+            )}
 			{isDeclined && isOnline && (
 					<OTRDeclinedBox />
 			)}
-					{!isDeclined && isOnline && (
+					{!isDeclined && isOnline && !isTimedOut && (
 					<VerticalBar.ScrollableContent p='x24'>
 					<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
-	
+
 					{!isEstablishing && !isEstablished && isOnline && (
 						<Button onClick={onClickStart} primary>
 							{t('Start_OTR')}

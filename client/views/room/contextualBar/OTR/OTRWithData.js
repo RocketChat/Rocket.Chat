@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -14,6 +14,8 @@ const OTRWithData = ({ rid, tabBar }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
+    
+    const [timedOut, setTimedOut] = useState(false);
 
 	const [isEstablished, isEstablishing] = useReactiveValue(
 		useCallback(() => (otr ? [otr.established.get(), otr.establishing.get()] : [false, false]), [otr]),
@@ -52,12 +54,14 @@ const OTRWithData = ({ rid, tabBar }) => {
 		}
 
 		const timeout = setTimeout(() => {
+            setTimedOut(true);
 			otr.establishing.set(false);
+            console.log(isTimedOut)
 			setModal(<OTRModal onConfirm={closeModal} onCancel={closeModal} />);
 		}, 10000);
 
 		return () => clearTimeout(timeout);
-	}, [closeModal, isEstablished, isEstablishing, setModal, otr]);
+	}, [closeModal, isEstablished, isEstablishing, setModal, otr, setTimedOut]);
 
 	return (
 		<OTR
@@ -65,6 +69,7 @@ const OTRWithData = ({ rid, tabBar }) => {
 			isDeclined={declined}
 			isEstablishing={isEstablishing}
 			isEstablished={isEstablished}
+            isTimedOut={timedOut}
 			onClickClose={onClickClose}
 			onClickStart={handleStart}
 			onClickEnd={handleEnd}
