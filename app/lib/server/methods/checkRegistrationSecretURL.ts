@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 Meteor.methods({
 	checkRegistrationSecretURL(hash) {
