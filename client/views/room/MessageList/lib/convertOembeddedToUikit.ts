@@ -83,47 +83,49 @@ export const convertOembedToUiKit = (urls: OembedUrlLegacy[]): PreviewBlock[] =>
 	urls
 		.filter(({ meta }) => Boolean(meta))
 		.map(normalizeMeta)
-		.map(({ title, description, url, image, authorName, authorUrl, siteName, siteUrl }) => ({
-			type: 'preview',
-			title: title
-				? [
-						{
-							type: 'plain_text',
-							text: title,
+		.map(({ title, description, url, image, authorName, authorUrl, siteName, siteUrl }) => {
+			const showSiteName = siteName && siteUrl;
+			const showAuthorName = authorName && authorUrl;
+			const showFooterSeparator = showSiteName && showAuthorName;
+
+			return {
+				type: 'preview',
+				title: title
+					? [
+							{
+								type: 'plain_text',
+								text: title,
+							},
+					  ]
+					: [],
+				description: description
+					? [
+							{
+								type: 'plain_text',
+								text: description,
+							},
+					  ]
+					: [],
+				...(url && { externalUrl: url }),
+				...(image && {
+					[image.dimensions.height && image.dimensions ? 'preview' : 'thumb']: image,
+				}),
+				footer: {
+					type: 'context',
+					elements: [
+						showSiteName && {
+							type: 'mrkdwn',
+							text: `[${siteName}](${siteUrl})`,
 						},
-				  ]
-				: [],
-			description: description
-				? [
-						{
+						showFooterSeparator && {
 							type: 'plain_text',
-							text: description,
+							text: `|`,
 						},
-				  ]
-				: [],
-			...(url && { externalUrl: url }),
-			...(image && {
-				[image.dimensions.height && image.dimensions ? 'preview' : 'thumb']: image,
-			}),
-			footer: {
-				type: 'context',
-				elements: [
-					{
-						type: 'mrkdwn',
-						text: `[${siteName}](${siteUrl})`,
-					},
-					...(authorName && authorUrl
-						? [
-								{
-									type: 'plain_text',
-									text: `|`,
-								},
-								{
-									type: 'mrkdwn',
-									text: `[${authorName}](${authorUrl})`,
-								},
-						  ]
-						: []),
-				].filter(Boolean) as Required<PreviewBlock>['footer']['elements'],
-			},
-		}));
+						showAuthorName && {
+							type: 'mrkdwn',
+							text: `[${authorName}](${authorUrl})`,
+						},
+					].filter(Boolean) as Required<PreviewBlock>['footer']['elements'],
+				},
+			};
+		});
