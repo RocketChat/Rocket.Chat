@@ -111,13 +111,9 @@ function GroupPage({
 	};
 
 	if (!_id) {
-		return (
-			<Page>
-				<Page.Header />
-				<Page.Content />
-			</Page>
-		);
+		return <Page>{children}</Page>;
 	}
+	console.log('CHILDREN', children);
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>

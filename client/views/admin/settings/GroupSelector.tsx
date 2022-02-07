@@ -7,13 +7,17 @@ import AssetsGroupPage from './groups/AssetsGroupPage';
 import LDAPGroupPage from './groups/LDAPGroupPage';
 import OAuthGroupPage from './groups/OAuthGroupPage';
 import TabbedGroupPage from './groups/TabbedGroupPage';
+import VoipGroupPage from './groups/VoipGroupPage';
 
 type GroupSelectorProps = {
 	groupId: GroupId;
 };
 
 const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
+	console.log('GroupSelector', groupId);
 	const group = useSettingStructure(groupId);
+	console.log('group', groupId);
+
 
 	if (!group) {
 		return <GroupPage.Skeleton />;
@@ -29,6 +33,10 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} />;
+	}
+
+	if (groupId === 'VoIP') {
+		return <VoipGroupPage {...group} />;
 	}
 
 	return <TabbedGroupPage {...group} />;
