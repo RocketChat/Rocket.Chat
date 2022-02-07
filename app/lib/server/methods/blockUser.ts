@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
-import { Rooms } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server';
 
 Meteor.methods({
 	blockUser({ rid, blocked }) {
