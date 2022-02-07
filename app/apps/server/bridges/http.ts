@@ -8,6 +8,10 @@ import { getUnsafeAgent } from '../../../../server/lib/getUnsafeAgent';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
+function isResponse(item: IHttpResponse | Error): item is IHttpResponse {
+	return (item as IHttpResponse) !== undefined;
+}
+
 export class AppHttpBridge extends HttpBridge {
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -114,8 +118,10 @@ export class AppHttpBridge extends HttpBridge {
 			}
 
 			return result;
-		} catch (e) {
-			return e.response;
+		} catch (e: unknown) {
+			if (e instanceof Error && isResponse(e)) {
+				return e as IHttpResponse;
+			}
 		}
 	}
 }
