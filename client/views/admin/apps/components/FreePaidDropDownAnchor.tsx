@@ -7,7 +7,7 @@ const FreePaidDropDownAnchor = forwardRef<HTMLElement, Partial<ComponentProps<ty
 	function FreePaidDropDownAnchor(props, ref) {
 		const selectedFilter = props.group && props.group.items.find((item) => item.checked)?.label;
 
-		return <Select ref={ref} placeholder={selectedFilter} options={[]} onChange={(): number => 0} {...props} />;
+		return <Select ref={ref} placeholder={selectedFilter} options={[]} onChange={(): number => 0} {...props} mie='x8' />;
 	},
 );
 
