@@ -1,6 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from '../index';
@@ -118,6 +119,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 		tmid = replies[0]._id;
 	}
 
+	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+	const messageBoxText = Meteor._localStorage.getItem(key);
+
 	const uploadNextFile = () => {
 		const file = files.pop();
 		if (!file) {
@@ -129,6 +133,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			props: {
 				file: file.file,
 				fileName: file.name,
+				fileDescription: messageBoxText,
 				onClose: () => {
 					imperativeModal.close();
 					uploadNextFile();
