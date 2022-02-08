@@ -25,8 +25,7 @@ const LicenseCard = () => {
 	const { value, phase, error } = useEndpointData('licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
-	const { modules = [] } =
-		endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
+	const { modules = [] } = endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');

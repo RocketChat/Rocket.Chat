@@ -26,7 +26,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	token: string;
 	department?: string;
 	name?: string;
-	phone?: (IVisitorPhone)[] | null;
+	phone?: IVisitorPhone[] | null;
 	lastChat?: IVisitorLastChat;
 	userAgent?: string;
 	ip?: string;

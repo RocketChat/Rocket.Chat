@@ -5,14 +5,18 @@ addMigration({
 	version: 205,
 	up() {
 		// Disable this new enforcement setting for existent installations.
-		Settings.update({
-			_id: 'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
-		}, {
-			$set: {
-				value: false,
+		Settings.update(
+			{
+				_id: 'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
 			},
-		}, {
-			upsert: true,
-		});
+			{
+				$set: {
+					value: false,
+				},
+			},
+			{
+				upsert: true,
+			},
+		);
 	},
 });

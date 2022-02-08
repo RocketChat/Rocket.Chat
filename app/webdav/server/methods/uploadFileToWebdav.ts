@@ -11,16 +11,22 @@ const logger = new Logger('WebDAV_Upload');
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
 		const account = await WebdavAccounts.findOneById(accountId);
 		if (!account) {
-			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
+			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', {
+				method: 'uploadFileToWebdav',
+			});
 		}
 
 		const uploadFolder = 'Rocket.Chat Uploads/';
@@ -31,7 +37,7 @@ Meteor.methods({
 			const client = new WebdavClientAdapter(account.serverURL, cred);
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			await client.createDirectory(uploadFolder).catch(() => {});
-			await client.putFileContents(`${ uploadFolder }/${ name }`, buffer, { overwrite: false });
+			await client.putFileContents(`${uploadFolder}/${name}`, buffer, { overwrite: false });
 			return { success: true };
 		} catch (error) {
 			// @ts-ignore

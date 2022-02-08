@@ -50,7 +50,11 @@ export class FederationEventsModel extends Base {
 	}
 
 	getEventHash(contextQuery, event) {
-		return SHA256(`${ event.origin }${ JSON.stringify(contextQuery) }${ event.parentIds.join(',') }${ event.type }${ event.timestamp }${ JSON.stringify(event.data) }`);
+		return SHA256(
+			`${event.origin}${JSON.stringify(contextQuery)}${event.parentIds.join(',')}${event.type}${event.timestamp}${JSON.stringify(
+				event.data,
+			)}`,
+		);
 	}
 
 	async createEvent(origin, contextQuery, type, data) {
@@ -58,10 +62,7 @@ export class FederationEventsModel extends Base {
 
 		// If it is not a GENESIS event, we need to get the previous events
 		if (type !== eventTypes.GENESIS) {
-			const previousEvents = await this.model
-				.rawCollection()
-				.find({ context: contextQuery, hasChildren: false })
-				.toArray();
+			const previousEvents = await this.model.rawCollection().find({ context: contextQuery, hasChildren: false }).toArray();
 
 			// if (!previousEvents.length) {
 			// 	throw new Error('Could not create event, the context does not exist');
@@ -92,12 +93,10 @@ export class FederationEventsModel extends Base {
 
 	async createGenesisEvent(origin, contextQuery, data) {
 		// Check if genesis event already exists, if so, do not create
-		const genesisEvent = await this.model
-			.rawCollection()
-			.findOne({ context: contextQuery, type: eventTypes.GENESIS });
+		const genesisEvent = await this.model.rawCollection().findOne({ context: contextQuery, type: eventTypes.GENESIS });
 
 		if (genesisEvent) {
-			throw new Error(`A GENESIS event for this context query already exists: ${ JSON.stringify(contextQuery, null, 2) }`);
+			throw new Error(`A GENESIS event for this context query already exists: ${JSON.stringify(contextQuery, null, 2)}`);
 		}
 
 		return this.createEvent(origin, contextQuery, eventTypes.GENESIS, data);
@@ -110,7 +109,10 @@ export class FederationEventsModel extends Base {
 		// If it does not, we insert it, checking for the parents
 		if (!existingEvent) {
 			// Check if we have the parents
-			const parents = await this.model.rawCollection().find({ context: contextQuery, _id: { $in: event.parentIds } }, { _id: 1 }).toArray();
+			const parents = await this.model
+				.rawCollection()
+				.find({ context: contextQuery, _id: { $in: event.parentIds } }, { _id: 1 })
+				.toArray();
 			const parentIds = parents.map(({ _id }) => _id);
 
 			// This means that we do not have the parents of the event we are adding
@@ -141,9 +143,7 @@ export class FederationEventsModel extends Base {
 	}
 
 	async getEventById(contextQuery, eventId) {
-		const event = await this.model
-			.rawCollection()
-			.findOne({ context: contextQuery, _id: eventId });
+		const event = await this.model.rawCollection().findOne({ context: contextQuery, _id: eventId });
 
 		return {
 			success: !!event,
@@ -152,7 +152,10 @@ export class FederationEventsModel extends Base {
 	}
 
 	async getLatestEvents(contextQuery, fromTimestamp) {
-		return this.model.rawCollection().find({ context: contextQuery, timestamp: { $gt: new Date(fromTimestamp) } }).toArray();
+		return this.model
+			.rawCollection()
+			.find({ context: contextQuery, timestamp: { $gt: new Date(fromTimestamp) } })
+			.toArray();
 	}
 
 	async removeContextEvents(contextQuery) {

@@ -8,5 +8,6 @@ declare module 'meteor/konecty:user-presence' {
 		function removeConnectionsByInstanceId(id: string): void;
 		function start(): void;
 		function stopTimer(): void;
+		function setDefaultStatus(userId: string, status: string): void;
 	}
 }

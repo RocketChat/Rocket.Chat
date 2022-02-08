@@ -33,11 +33,13 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
-export type ILoginUsername = {
-	username: string;
-} | {
-	email: string;
-}
+export type ILoginUsername =
+	| {
+			username: string;
+	  }
+	| {
+			email: string;
+	  };
 export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
@@ -144,17 +146,16 @@ export const isRegisterUser = (user: IUser): user is IRegisterUser => user.usern
 
 export type IUserDataEvent = {
 	id: unknown;
-}
-& (
-	({
-		type: 'inserted';
-	} & IUser)
+} & (
 	| ({
-		type: 'removed';
-	})
-	| ({
-		type: 'updated';
-		diff: Partial<IUser>;
-		unset: Record<keyof IUser, boolean | 0 | 1>;
-	})
-)
+			type: 'inserted';
+	  } & IUser)
+	| {
+			type: 'removed';
+	  }
+	| {
+			type: 'updated';
+			diff: Partial<IUser>;
+			unset: Record<keyof IUser, boolean | 0 | 1>;
+	  }
+);

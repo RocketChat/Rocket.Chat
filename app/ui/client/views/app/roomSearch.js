@@ -13,7 +13,7 @@ Template.roomSearch.helpers({
 	},
 	userStatus() {
 		if (this.type === 'u') {
-			return `status-${ this.status }`;
+			return `status-${this.status}`;
 		}
 	},
 });

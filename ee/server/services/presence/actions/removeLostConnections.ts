@@ -4,7 +4,7 @@ import { getCollection, Collections } from '../../mongo';
 import { IServiceContext } from '../../../../../server/sdk/types/ServiceClass';
 
 async function getAffectedUsers(model: Collection, query: object): Promise<string[]> {
-	const list = await model.find<{_id: string}>(query, { projection: { _id: 1 } }).toArray();
+	const list = await model.find<{ _id: string }>(query, { projection: { _id: 1 } }).toArray();
 	return list.map(({ _id }) => _id);
 }
 

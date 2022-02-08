@@ -26,9 +26,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+			fields: { _id: 1 },
+		});
 		if (!subscription) {
-			throw new Meteor.Error('error-user-not-in-room', 'You are not in this room', { method: 'leaveRoom' });
+			throw new Meteor.Error('error-user-not-in-room', 'You are not in this room', {
+				method: 'leaveRoom',
+			});
 		}
 
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
@@ -36,7 +40,9 @@ Meteor.methods({
 			const cursor = await Roles.findUsersInRole('owner', room._id);
 			const numOwners = Promise.await(cursor.count());
 			if (numOwners === 1) {
-				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
+				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
+					method: 'leaveRoom',
+				});
 			}
 		}
 

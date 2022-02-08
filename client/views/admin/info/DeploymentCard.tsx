@@ -55,9 +55,7 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('DB_Migration')}</Card.Col.Title>
-						{`${statistics.migration.version} (${formatDateAndTime(
-							statistics.migration.lockedAt,
-						)})`}
+						{`${statistics.migration.version} (${formatDateAndTime(statistics.migration.lockedAt)})`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>

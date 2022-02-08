@@ -12,9 +12,7 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 		async () => {
 			const { start, end } = getPeriodRange(period, utc);
 
-			const response = await getFromRestApi(
-				'/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week',
-			)({
+			const response = await getFromRestApi('/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week')({
 				start: start.toISOString(),
 				end: end.toISOString(),
 			});

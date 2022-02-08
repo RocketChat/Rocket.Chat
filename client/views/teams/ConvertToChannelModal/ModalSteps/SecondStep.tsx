@@ -16,14 +16,7 @@ type SecondStepsProps = {
 	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 };
 
-const SecondStep: FC<SecondStepsProps> = ({
-	onClose,
-	onCancel,
-	onConfirm,
-	deletedRooms = {},
-	rooms = [],
-	...props
-}) => {
+const SecondStep: FC<SecondStepsProps> = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }) => {
 	const t = useTranslation();
 
 	return (

@@ -63,8 +63,7 @@ const shouldHandleErrorAsWarning = (message) => {
 };
 
 export const handleAPIError = (error) => {
-	const message =
-		(error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 
 	if (shouldHandleErrorAsWarning(message)) {
 		dispatchToastMessage({ type: 'warning', message });
@@ -94,8 +93,7 @@ export const appButtonProps = ({
 	pricingPlans,
 	isEnterpriseOnly,
 }) => {
-	const canUpdate =
-		installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
+	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
 			action: 'update',
@@ -118,9 +116,7 @@ export const appButtonProps = ({
 
 	const canSubscribe = purchaseType === 'subscription' && !subscriptionInfo.status;
 	if (canSubscribe) {
-		const cannotTry = pricingPlans.every(
-			(currentPricingPlan) => currentPricingPlan.trialDays === 0,
-		);
+		const cannotTry = pricingPlans.every((currentPricingPlan) => currentPricingPlan.trialDays === 0);
 
 		if (cannotTry || isEnterpriseOnly) {
 			return {
@@ -189,8 +185,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 export const formatPrice = (price) => `\$${Number.parseFloat(price).toFixed(2)}`;
 
 export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
-	const { perUnit = false } =
-		(Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
+	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',

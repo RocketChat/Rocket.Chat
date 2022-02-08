@@ -1,8 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+
 import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
+import { LivechatDepartment as LivechatDepartmentModel } from '../../../../../app/models/server';
+import { LivechatUnit } from '../index';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;
-
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 	unfilteredFind(originalFn, ...args) {
@@ -39,9 +42,20 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 
 		return this.update(query, update, { multi: true });
 	},
+	findEnabledWithAgentsAndBusinessUnit(originalFn, businessUnit, fields = undefined) {
+		if (!businessUnit) {
+			return LivechatDepartmentModel.findEnabledWithAgents(fields);
+		}
+		const unit = LivechatUnit.findOneById(businessUnit, { fields: { _id: 1 } });
+		if (!unit) {
+			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
+		}
+
+		return LivechatDepartmentModel.findActiveByUnitIds([businessUnit], { fields });
+	},
 });
 
-LivechatDepartment.prototype.removeDepartmentFromForwardListById = function(_id) {
+LivechatDepartment.prototype.removeDepartmentFromForwardListById = function (_id) {
 	return this.update({ departmentsAllowedToForward: _id }, { $pull: { departmentsAllowedToForward: _id } }, { multi: true });
 };
 

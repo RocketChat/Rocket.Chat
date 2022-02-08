@@ -1,8 +1,5 @@
 import { SAMLUtils } from '../Utils';
-import {
-	defaultIdentifierFormat,
-	defaultLogoutRequestTemplate,
-} from '../constants';
+import { defaultIdentifierFormat, defaultLogoutRequestTemplate } from '../constants';
 import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { ISAMLRequest } from '../../definition/ISAMLRequest';
 import { ILogoutRequestVariables } from '../../definition/ILogoutRequestVariables';
@@ -24,12 +21,16 @@ export class LogoutRequest {
 		};
 	}
 
-	static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions, nameID: string, sessionIndex: string): ILogoutRequestVariables {
+	static getDataForNewRequest(
+		serviceProviderOptions: IServiceProviderOptions,
+		nameID: string,
+		sessionIndex: string,
+	): ILogoutRequestVariables {
 		// nameId: <nameId as submitted during SAML SSO>
 		// sessionIndex: sessionIndex
 		// --- NO SAMLsettings: <Meteor.setting.saml  entry for the provider you want to SLO from
 
-		const id = `_${ SAMLUtils.generateUniqueID() }`;
+		const id = `_${SAMLUtils.generateUniqueID()}`;
 		const instant = SAMLUtils.generateInstant();
 
 		return {

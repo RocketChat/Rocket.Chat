@@ -9,8 +9,7 @@ import EditBusinessHoursPage from './EditBusinessHoursPage';
 import NewBusinessHoursPage from './NewBusinessHoursPage';
 
 export const useIsSingleBusinessHours = () =>
-	useReactiveValue(useMutableCallback(() => businessHourManager.getTemplate())) ===
-	'livechatBusinessHoursForm';
+	useReactiveValue(useMutableCallback(() => businessHourManager.getTemplate())) === 'livechatBusinessHoursForm';
 
 const BusinessHoursRouter = () => {
 	const context = useRouteParameter('context');

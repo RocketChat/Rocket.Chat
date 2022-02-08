@@ -13,16 +13,15 @@ type hljsResult = {
 const isHljsResult = (result: any): result is hljsResult => result?.value;
 
 const Code: FC<ASTCode> = ({ value = [], language }) => {
-	const [code, setCode] = useState<(JSX.Element | null)[] | { language: string; code: string }>(
-		() =>
-			value.map((block, index) => {
-				switch (block.type) {
-					case 'CODE_LINE':
-						return <CodeLine key={index} value={block.value} />;
-					default:
-						return null;
-				}
-			}),
+	const [code, setCode] = useState<(JSX.Element | null)[] | { language: string; code: string }>(() =>
+		value.map((block, index) => {
+			switch (block.type) {
+				case 'CODE_LINE':
+					return <CodeLine key={index} value={block.value} />;
+				default:
+					return null;
+			}
+		}),
 	);
 	useEffect(() => {
 		!language || language === 'none'
@@ -38,11 +37,7 @@ const Code: FC<ASTCode> = ({ value = [], language }) => {
 				\`\`\`
 				<br />
 			</span>
-			{isHljsResult(code) ? (
-				<div dangerouslySetInnerHTML={{ __html: code.code || code.value }} />
-			) : (
-				code
-			)}
+			{isHljsResult(code) ? <div dangerouslySetInnerHTML={{ __html: code.code || code.value }} /> : code}
 			<span className='copyonly'>
 				<br />
 				\`\`\`

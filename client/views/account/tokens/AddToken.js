@@ -1,12 +1,4 @@
-import {
-	Box,
-	TextInput,
-	Button,
-	Field,
-	FieldGroup,
-	Margins,
-	CheckBox,
-} from '@rocket.chat/fuselage';
+import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 
@@ -64,18 +56,7 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [
-		bypassTwoFactor,
-		closeModal,
-		createTokenFn,
-		dispatchToastMessage,
-		name,
-		onDidAddToken,
-		reset,
-		setModal,
-		t,
-		userId,
-	]);
+	}, [bypassTwoFactor, closeModal, createTokenFn, dispatchToastMessage, name, onDidAddToken, reset, setModal, t, userId]);
 
 	const bypassTwoFactorCheckboxId = useUniqueId();
 
@@ -84,22 +65,14 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 			<Field>
 				<Field.Row>
 					<Margins inlineEnd='x4'>
-						<TextInput
-							value={name}
-							onChange={handleName}
-							placeholder={t('API_Add_Personal_Access_Token')}
-						/>
+						<TextInput value={name} onChange={handleName} placeholder={t('API_Add_Personal_Access_Token')} />
 					</Margins>
 					<Button primary disabled={name.length === 0} onClick={handleAdd}>
 						{t('Add')}
 					</Button>
 				</Field.Row>
 				<Field.Row>
-					<CheckBox
-						id={bypassTwoFactorCheckboxId}
-						checked={bypassTwoFactor}
-						onChange={handleBypassTwoFactor}
-					/>
+					<CheckBox id={bypassTwoFactorCheckboxId} checked={bypassTwoFactor} onChange={handleBypassTwoFactor} />
 					<Field.Label htmlFor={bypassTwoFactorCheckboxId}>
 						{t('Ignore')} {t('Two Factor Authentication')}
 					</Field.Label>

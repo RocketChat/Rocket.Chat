@@ -71,13 +71,7 @@ const RealTimeMonitoringPage = () => {
 			<Page.Header title={t('Real_Time_Monitoring')}></Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Margins block='x4'>
-					<Box
-						flexDirection='row'
-						display='flex'
-						justifyContent='space-between'
-						alignSelf='center'
-						w='full'
-					>
+					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' w='full'>
 						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
 							<AutoCompleteDepartment
@@ -90,95 +84,34 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Update_every')}</Label>
-							<Select
-								options={reloadOptions}
-								onChange={useMutableCallback((val) => setReloadFrequency(val))}
-								value={reloadFrequency}
-							/>
+							<Select options={reloadOptions} onChange={useMutableCallback((val) => setReloadFrequency(val))} value={reloadFrequency} />
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ConversationOverview
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mie='x2'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
-						<ChatsPerAgentChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mis='x2'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie='x2' reloadRef={reloadRef} params={allParams} />
+						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis='x2' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsOverview
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mie='x2'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
-						<ChatsPerDepartmentChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mis='x2'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie='x2' reloadRef={reloadRef} params={allParams} />
+						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis='x2' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<AgentsOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart
-							flexGrow={1}
-							flexShrink={1}
-							w='100%'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ChatDurationChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ProductivityOverview
-							flexGrow={1}
-							flexShrink={1}
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ProductivityOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart
-							flexGrow={1}
-							flexShrink={1}
-							w='100%'
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
 			</Page.ScrollableContentWithShadow>

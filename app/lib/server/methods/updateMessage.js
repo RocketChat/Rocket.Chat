@@ -25,7 +25,9 @@ Meteor.methods({
 		}
 
 		if (!!message.tmid && originalMessage._id === message.tmid) {
-			throw new Meteor.Error('error-message-same-as-tmid', 'Cannot set tmid the same as the _id', { method: 'updateMessage' });
+			throw new Meteor.Error('error-message-same-as-tmid', 'Cannot set tmid the same as the _id', {
+				method: 'updateMessage',
+			});
 		}
 
 		if (!originalMessage.tmid && !!message.tmid) {
@@ -37,7 +39,10 @@ Meteor.methods({
 		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
+			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
+				method: 'updateMessage',
+				action: 'Message_editing',
+			});
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
@@ -52,7 +57,9 @@ Meteor.methods({
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockEditInMinutes) {
-				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
+				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', {
+					method: 'updateMessage',
+				});
 			}
 		}
 
