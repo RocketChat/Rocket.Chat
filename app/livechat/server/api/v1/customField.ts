@@ -96,11 +96,11 @@ API.v1.addRoute(
 	'livechat/custom-fields/:_id',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			check(this.urlParams, {
-				_id: String,
+				id: String,
 			});
-			const { customField } = Promise.await(findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams._id }));
+			const { customField } = await findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams.id });
 
 			return API.v1.success({
 				customField,
