@@ -15,7 +15,7 @@ type VoipFooterPropsType = {
 	paused: boolean;
 	toggleMic: (state: boolean) => void;
 	togglePause: (state: boolean) => void;
-	popover: {
+	tooltips: {
 		mute: string;
 		holdCall: string;
 		acceptCall: string;
@@ -33,7 +33,7 @@ export const VoipFooter = ({
 	paused,
 	toggleMic,
 	togglePause,
-	popover,
+	tooltips,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
 		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
@@ -42,10 +42,10 @@ export const VoipFooter = ({
 			</Box>
 			{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
 				<ButtonGroup medium>
-					<Button disabled={paused} title={popover.mute} small square nude onClick={(): void => toggleMic(!muted)}>
+					<Button disabled={paused} title={tooltips.mute} small square nude onClick={(): void => toggleMic(!muted)}>
 						{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
 					</Button>
-					<Button title={popover.holdCall} small square nude onClick={(): void => togglePause(!paused)}>
+					<Button title={tooltips.holdCall} small square nude onClick={(): void => togglePause(!paused)}>
 						{paused ? (
 							<Icon name='pause-unfilled' color='neutral-500' size='x24' />
 						) : (
@@ -68,7 +68,7 @@ export const VoipFooter = ({
 			<ButtonGroup medium>
 				{callerState === 'IN_CALL' && (
 					<Button
-						title={popover.endCall}
+						title={tooltips.endCall}
 						disabled={paused}
 						small
 						square
@@ -84,12 +84,12 @@ export const VoipFooter = ({
 					</Button>
 				)}
 				{callerState === 'OFFER_RECEIVED' && (
-					<Button title={popover.endCall} small square danger primary onClick={callActions.reject}>
+					<Button title={tooltips.endCall} small square danger primary onClick={callActions.reject}>
 						<Icon name='phone-off' size='x16' />
 					</Button>
 				)}
 				{callerState === 'OFFER_RECEIVED' && (
-					<Button title={popover.acceptCall} small square success primary onClick={callActions.pickUp}>
+					<Button title={tooltips.acceptCall} small square success primary onClick={callActions.pickUp}>
 						<Icon name='phone' size='x16' />
 					</Button>
 				)}

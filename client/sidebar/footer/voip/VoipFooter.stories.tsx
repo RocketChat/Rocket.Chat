@@ -18,7 +18,7 @@ const callActions = {
 	reject: () => ({}),
 };
 
-const popover = {
+const tooltips = {
 	mute: 'Mute',
 	holdCall: 'Hold Call',
 	acceptCall: 'Accept Call',
@@ -41,7 +41,7 @@ export const Default = (): ReactElement => {
 				paused={paused}
 				toggleMic={toggleMic}
 				togglePause={togglePause}
-				popover={popover}
+				tooltips={tooltips}
 			/>
 		</Box>
 	);

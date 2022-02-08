@@ -42,7 +42,7 @@ export const VoipFooter = (): ReactElement | null => {
 		return '';
 	};
 
-	const popover = {
+	const tooltips = {
 		mute: t('Mute'),
 		holdCall: t('Hold_Call'),
 		acceptCall: t('Accept_Call'),
@@ -64,7 +64,7 @@ export const VoipFooter = (): ReactElement | null => {
 			paused={paused}
 			toggleMic={toggleMic}
 			togglePause={togglePause}
-			popover={popover}
+			tooltips={tooltips}
 		/>
 	);
 };
