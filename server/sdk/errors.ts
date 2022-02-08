@@ -1,5 +1,5 @@
 export class MeteorError extends Error {
-	public readonly isClientSafe = true;
+	public isClientSafe = true;
 
 	public readonly errorType = 'Meteor.Error';
 
@@ -9,7 +9,7 @@ export class MeteorError extends Error {
 
 	public toJSON(): any {
 		return {
-			isClientSafe: true,
+			isClientSafe: this.isClientSafe,
 			errorType: this.errorType,
 			error: this.error,
 			reason: this.reason,

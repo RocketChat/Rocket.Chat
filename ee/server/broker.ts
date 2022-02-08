@@ -291,10 +291,14 @@ const {
 
 class CustomRegenerator extends Errors.Regenerator {
 	restoreCustomError(plainError: any): Error | undefined {
-		const { message, reason, details, errorType } = plainError;
+		const { message, reason, details, errorType, isClientSafe } = plainError;
 
 		if (errorType === 'Meteor.Error') {
-			return new MeteorError(message, reason, details);
+			const error = new MeteorError(message, reason, details);
+			if (typeof isClientSafe !== 'undefined') {
+				error.isClientSafe = isClientSafe;
+			}
+			return error;
 		}
 
 		return undefined;
