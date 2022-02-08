@@ -1,4 +1,4 @@
-import { IQueueSummary, ISourceQueueDetails } from '../../ACDQueues';
+import { IQueueSummary } from '../../ACDQueues';
 import { IQueueMembershipDetails } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 
@@ -11,8 +11,5 @@ export type VoipEndpoints = {
 	};
 	'voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: { extension: string }) => IQueueMembershipDetails;
-	};
-	'voip/queues.getSourceQueueDetails': {
-		GET: (params: { extension: string }) => { details: ISourceQueueDetails };
 	};
 };

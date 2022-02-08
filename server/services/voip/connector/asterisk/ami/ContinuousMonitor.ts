@@ -73,6 +73,7 @@ export class ContinuousMonitor extends Command {
 		return queueDetails.result as unknown as IQueueDetails;
 	}
 
+	/*
 	private async findMemberUsers(queueName: string): Promise<string[]> {
 		const queue = new ACDQueue(Commands.queue_details.toString(), true);
 		queue.connection = this.connection;
@@ -89,7 +90,7 @@ export class ContinuousMonitor extends Command {
 		this.logger.debug(`Finding members of queue ${queueName} between users`);
 		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
-
+	*/
 	async processQueueCallerJoin(event: IQueueCallerJoinEvent): Promise<void> {
 		this.logger.debug(`Got new event queue.callerjoined at ${event.queue}`);
 		const queueDetails = await this.getQueueDetails(event.queue);

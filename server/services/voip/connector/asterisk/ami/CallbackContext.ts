@@ -4,17 +4,13 @@
 
 import { Command } from '../Command';
 import { ICallbackContext } from '../ICallbackContext';
-import { Logger } from '../../../../../lib/logger/Logger';
 
 export class CallbackContext implements ICallbackContext {
 	private callback: (event: any) => void;
 
 	private ref: Command;
 
-	private logger: Logger;
-
 	constructor(callback: (event: any) => void, command: Command) {
-		this.logger = new Logger('CallbackContext');
 		this.callback = callback;
 		this.ref = command;
 	}
