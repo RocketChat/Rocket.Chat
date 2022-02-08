@@ -141,9 +141,15 @@ Template.thread.onRendered(function () {
 	observer.observe(this.firstNode.querySelector('.js-scroll-thread ul'));
 
 	this.onFile = (filesToUpload) => {
+		const rid = this.state.get('rid');
+		const tmid = this.state.get('tmid');
+		const key = [rid, tmid].filter(Boolean).join('-');
+		const { input } = chatMessages[key];
+		input.value = null;
+		$(input).change().trigger('input');
 		fileUpload(filesToUpload, this.chatMessages.input, {
-			rid: this.state.get('rid'),
-			tmid: this.state.get('tmid'),
+			rid,
+			tmid,
 		});
 	};
 

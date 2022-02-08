@@ -120,7 +120,11 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 	}
 
 	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-	const messageBoxText = Meteor._localStorage.getItem(key);
+	let messageBoxText = Meteor._localStorage.getItem(key);
+
+	if (!messageBoxText) {
+		messageBoxText = '';
+	}
 
 	const uploadNextFile = () => {
 		const file = files.pop();
