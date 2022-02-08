@@ -10,7 +10,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roleNames: IRole['
 		return false;
 	}
 
-	const user = await Users.findOneById<IUser>(userId);
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.authz.addUserRoles',
