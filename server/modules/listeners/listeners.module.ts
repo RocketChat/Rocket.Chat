@@ -4,7 +4,6 @@ import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { UserStatus } from '../../../definition/UserStatus';
 import { isSettingColor } from '../../../definition/ISetting';
-import { Logger } from '../../lib/logger/Logger';
 
 const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.OFFLINE]: 0,
@@ -18,7 +17,6 @@ export const minimongoChangeMap: Record<string, string> = {
 	updated: 'changed',
 	removed: 'removed',
 };
-const logger: Logger = new Logger('ListenersModule');
 
 export class ListenersModule {
 	constructor(service: IServiceClass, notifications: NotificationsModule) {
@@ -292,14 +290,20 @@ export class ListenersModule {
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
-		service.onEvent('watch.voipevents', ({ clientAction, event }): void => {
-			logger.debug({ msg: 'watch.voipevents', clientAction, event });
-		});
 		service.onEvent('queue.agentcalled', (userId, queuename): void => {
 			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename });
 		});
 		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
 			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
+		});
+		service.onEvent('queue.queuememberadded', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberadded', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.queuememberremoved', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'queuememberremoved', { queuename, queuedcalls });
+		});
+		service.onEvent('queue.callabandoned', (userId, queuename: string, queuedcallafterabandon: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'callabandoned', { queuename, queuedcallafterabandon });
 		});
 	}
 }

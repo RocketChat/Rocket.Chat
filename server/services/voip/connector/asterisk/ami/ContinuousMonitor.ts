@@ -19,8 +19,6 @@ import { Logger } from '../../../../../lib/logger/Logger';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
-import { VoipEventsRaw } from '../../../../../../app/models/server/raw/VoipEvents';
-import { RoomsRaw } from '../../../../../../app/models/server/raw/Rooms';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
@@ -28,6 +26,7 @@ import { IQueueDetails } from '../../../../../../definition/ACDQueues';
 import {
 	IAgentCalledEvent,
 	IEventBase,
+	IQueueCallerAbandon,
 	IQueueCallerJoinEvent,
 	IQueueMemberAdded,
 	IQueueMemberRemoved,
@@ -42,25 +41,38 @@ import {
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
 
-	private filterData: any = undefined;
-
 	private users: UsersRaw;
-
-	private rooms: RoomsRaw;
-
-	private events: VoipEventsRaw;
 
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
 		this.users = new UsersRaw(db.collection('users'));
-		this.rooms = new RoomsRaw(db.collection('rocketchat_room'));
-		this.events = new VoipEventsRaw(db.collection('rocketchat_voip_events'));
+	}
+
+	private async getMembersFromQueueDetails(queueDetails: IQueueDetails): Promise<string[]> {
+		const { members } = queueDetails;
+		if (!members) {
+			return [];
+		}
+
+		const extensionList = members.map((m) => {
+			return m.name.toLowerCase().replace('pjsip/', '');
+		});
+
+		this.logger.debug(`Finding members of queue ${queueDetails.name} between users`);
+		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
 
 	// Todo : Move this out of connector. This class is a busy class.
 	// Not sure if we should do it here.
+	private async getQueueDetails(queueName: string): Promise<IQueueDetails> {
+		const queue = new ACDQueue(Commands.queue_details.toString(), true);
+		queue.connection = this.connection;
+		const queueDetails = await queue.executeCommand({ queueName });
+		return queueDetails.result as unknown as IQueueDetails;
+	}
+
 	private async findMemberUsers(queueName: string): Promise<string[]> {
 		const queue = new ACDQueue(Commands.queue_details.toString(), true);
 		queue.connection = this.connection;
@@ -80,7 +92,8 @@ export class ContinuousMonitor extends Command {
 
 	async processQueueCallerJoin(event: IQueueCallerJoinEvent): Promise<void> {
 		this.logger.debug(`Got new event queue.callerjoined at ${event.queue}`);
-		const members = await this.findMemberUsers(event.queue);
+		const queueDetails = await this.getQueueDetails(event.queue);
+		const members = await this.getMembersFromQueueDetails(queueDetails);
 		const callerId = {
 			id: event.calleridnum,
 			name: event.calleridname,
@@ -95,10 +108,8 @@ export class ContinuousMonitor extends Command {
 	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
 		const queueName = event.queue;
-		const queue = new ACDQueue(Commands.queue_details.toString(), true);
-		queue.connection = this.connection;
-		const queueDetails = Promise.await(queue.executeCommand({ queueName }));
-		const { calls } = queueDetails.result as unknown as IQueueDetails;
+		const queueDetails = await this.getQueueDetails(queueName);
+		const { calls } = queueDetails;
 		const user = await this.users.findOneByExtension(extension, {
 			projection: {
 				_id: 1,
@@ -139,6 +150,17 @@ export class ContinuousMonitor extends Command {
 		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
+	async processQueueAbandoned(event: IQueueCallerAbandon): Promise<void> {
+		const queueName = event.queue;
+		const queueDetails = await this.getQueueDetails(queueName);
+		const members = await this.getMembersFromQueueDetails(queueDetails);
+		const { calls } = queueDetails;
+
+		members.forEach((m) => {
+			api.broadcast('queue.callabandoned', m, queueName, calls);
+		});
+	}
+
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
 		if (isIQueueCallerJoinEvent(event)) {
@@ -160,7 +182,7 @@ export class ContinuousMonitor extends Command {
 
 		if (isIQueueCallerAbandonEvent(event)) {
 			this.logger.debug(`Cannot handle event ${event.event}`);
-			// return;
+			return this.processQueueAbandoned(event);
 		}
 
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't

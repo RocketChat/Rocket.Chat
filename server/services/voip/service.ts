@@ -10,7 +10,7 @@ import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
-import { IQueueDetails, IQueueSummary, ISourceQueueDetails } from '../../../definition/ACDQueues';
+import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
 import { settings } from '../../../app/settings/server';
 
@@ -204,48 +204,6 @@ export class VoipService extends ServiceClass implements IVoipService {
 		// this.logger.error({ msg: 'extensionRegistrationInfo', extensionRegistrationInfo });
 		return {
 			result: extensionRegistrationInfo,
-		};
-	}
-
-	// if an extension is in call with a customer, this function finds out
-	// the details of the queue from where the call has originated.
-	async getSourceQueueDetails(requestParams: any): Promise<IVoipConnectorResult> {
-		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
-		for (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetailsResult = Promise.await(
-				this.commandHandler.executeCommand(Commands.queue_details, { queueName: queue.name }),
-			) as IVoipConnectorResult;
-			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetailsResult });
-			if (!(queueDetailsResult.result as unknown as IQueueDetails).members) {
-				// Go to the next queue if queue does not have any
-				// memmbers.
-				continue;
-			}
-			/**
-			 * When the extension is a part of more than one queue, we can decide
-			 * by looking at the queue details whether this call is originating
-			 * from this particular queue.
-			 *
-			 * the member.incall = 1, for the queue from where current call has arrived and
-			 * member.incall = 0, for all the other queues where the current extension is a member.
-			 */
-			this.logger.error({ msg: 'QueueDetails', details: queueDetailsResult.result });
-			const isCallOriginator = (queueDetailsResult.result as unknown as IQueueDetails).members.some(
-				(member) => member.name.endsWith(requestParams.extension) && member.incall === '1',
-			);
-			if (!isCallOriginator) {
-				// Current extension is not a member of queue in question.
-				// continue with next queue.
-				continue;
-			}
-			const queueDetails = queueDetailsResult.result as unknown as IQueueDetails;
-			const sourceQueueDetails: ISourceQueueDetails = queueDetails;
-			return {
-				result: sourceQueueDetails,
-			};
-		}
-		return {
-			result: undefined,
 		};
 	}
 }

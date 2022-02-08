@@ -36,6 +36,51 @@ export const CallProvider: FC = ({ children }) => {
 		[dispatchToastMessage],
 	);
 
+	const handleMemberAdded = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Member added to ${queue.queuename} queue count = ${queue.queuedcalls}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+				},
+			});
+		},
+		[dispatchToastMessage],
+	);
+
+	const handleMemberRemoved = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Member removed from ${queue.queuename} queue count = ${queue.queuedcalls}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+				},
+			});
+		},
+		[dispatchToastMessage],
+	);
+
+	const handleCallAbandon = useCallback(
+		(queue: { queuename: string; queuedcallafterabandon: string }): void => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Customer ababdoned queue ${queue.queuename} queue count = ${queue.queuedcallafterabandon}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+				},
+			});
+		},
+		[dispatchToastMessage],
+	);
+
 	const handleQueueJoined = useCallback(
 		async (joiningDetails: { queuename: string; callerid: { id: string } }): Promise<void> => {
 			dispatchToastMessage({
@@ -73,7 +118,10 @@ export const CallProvider: FC = ({ children }) => {
 
 		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('callerjoined', handleQueueJoined);
-	}, [user, handleAgentCalled, handleQueueJoined]);
+		Notifications.onUser('queuememberadded', handleMemberAdded);
+		Notifications.onUser('queuememberremoved', handleMemberRemoved);
+		Notifications.onUser('callabandoned', handleCallAbandon);
+	}, [user, handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {

@@ -52,7 +52,6 @@ import { UsersSessionsRaw } from './UsersSessions';
 import { UserDataFilesRaw } from './UserDataFiles';
 import { UploadsRaw } from './Uploads';
 import { WebdavAccountsRaw } from './WebdavAccounts';
-import { VoipEventsRaw } from './VoipEvents';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
@@ -144,7 +143,6 @@ export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions')
 export const UserDataFiles = new UserDataFilesRaw(db.collection(`${prefix}user_data_files`), trashCollection);
 export const Uploads = new UploadsRaw(db.collection(`${prefix}uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webdav_accounts`), trashCollection);
-export const VoipEvents = new VoipEventsRaw(db.collection(`${prefix}voip_events`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -173,7 +171,6 @@ if (!process.env.DISABLE_DB_WATCH) {
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
-		VoipEvents,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

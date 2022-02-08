@@ -4,7 +4,7 @@ import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 // import { logger } from './logger';
-import { IQueueSummary, ISourceQueueDetails } from '../../../../../definition/ACDQueues';
+import { IQueueSummary } from '../../../../../definition/ACDQueues';
 import { IQueueMembershipDetails } from '../../../../../definition/IVoipExtension';
 
 API.v1.addRoute(
@@ -31,23 +31,6 @@ API.v1.addRoute(
 			);
 			const membershipDetails: IVoipConnectorResult = await Voip.getQueuedCallsForThisExtension(this.requestParams());
 			return API.v1.success(membershipDetails.result as IQueueMembershipDetails);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'voip/queues.getSourceQueueDetails',
-	{ authRequired: true },
-	{
-		async get() {
-			check(
-				this.requestParams(),
-				Match.ObjectIncluding({
-					extension: String,
-				}),
-			);
-			const queueDetails = await Voip.getSourceQueueDetails(this.requestParams());
-			return API.v1.success({ details: queueDetails.result as ISourceQueueDetails });
 		},
 	},
 );

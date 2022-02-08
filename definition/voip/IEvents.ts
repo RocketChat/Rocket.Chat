@@ -76,7 +76,7 @@ export interface IQueueMemberRemoved extends IEventBase {
 
 export interface IQueueCallerAbandon extends IEventBase {
 	event: 'QueueCallerAbandon';
-	queuename: string;
+	queue: string;
 }
 
 export const isIAgentConnectEvent = (v: any): v is IAgentConnectEvent => v?.event === 'AgentConnect';
@@ -84,4 +84,4 @@ export const isIAgentCalledEvent = (v: any): v is IAgentCalledEvent => v?.event 
 export const isIQueueCallerJoinEvent = (v: any): v is IQueueCallerJoinEvent => v?.event === 'QueueCallerJoin';
 export const isIQueueMemberAddedEvent = (v: any): v is IQueueMemberAdded => v?.event === 'QueueMemberAdded';
 export const isIQueueMemberRemovedEvent = (v: any): v is IQueueMemberRemoved => v?.event === 'QueueMemberRemoved';
-export const isIQueueCallerAbandonEvent = (v: any): v is IQueueMemberRemoved => v?.event === 'QueueCallerAbandon';
+export const isIQueueCallerAbandonEvent = (v: any): v is IQueueCallerAbandon => v?.event === 'QueueCallerAbandon';

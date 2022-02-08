@@ -15,7 +15,6 @@ import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
 import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
-import { IVoipEvent } from '../../../definition/voip/IVoipEvent';
 import { ISocketConnection } from '../../../definition/ISocketConnection';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -83,9 +82,9 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
-	'watch.voipevents'(data: { clientAction: ClientAction; event: IVoipEvent }): void;
 	'queue.agentcalled'(userid: string, queuename: string, callerid: Record<string, string>): void;
 	'queue.callerjoined'(userid: string, queuename: string, callerid: Record<string, string>, queuedcalls: string): void;
 	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
+	'queue.callabandoned'(userid: string, queuename: string, queuedcallafterabandon: string): void;
 };
