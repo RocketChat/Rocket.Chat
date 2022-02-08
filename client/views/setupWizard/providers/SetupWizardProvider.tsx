@@ -6,7 +6,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
-import { useSettingSetValue, useSetting, useSettingsDispatch } from '../../../contexts/SettingsContext';
+import { useSettingSetValue, useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useLoginWithPassword, useUserId } from '../../../contexts/UserContext';
@@ -36,35 +36,31 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
+	const t = useTranslation();
+	const userId = useUserId();
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
-	const { loaded, settings, canDeclineServerRegistration } = useParameters();
-
+	const { loaded, settings, skipCloudRegistration } = useParameters();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
-	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
-	const cloudEmail = useSetting('Organization_mail') as string;
-	const t = useTranslation();
+	const [maxSteps, setMaxSteps] = useState(4);
 
+	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
-
-	const userId = useUserId();
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-
 	const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
-
-	useEffect(() => {
-		setSetupWizardData((prev) => ({
-			...prev,
-			registrationData: { ...prev.registrationData, cloudEmail },
-		}));
-	}, [cloudEmail]);
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
 	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+
+	useEffect(() => {
+		if (skipCloudRegistration) {
+			return setMaxSteps(2);
+		}
+	}, [skipCloudRegistration]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -191,6 +187,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}
 	});
 
+	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
+		await registerAdminUser();
+		await saveOrganizationData();
+		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
+		return setShowSetupWizard('completed');
+	});
+
 	const value = useMemo(
 		() => ({
 			setupWizardData,
@@ -198,7 +201,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			currentStep,
 			loaded,
 			settings,
-			canDeclineServerRegistration,
+			skipCloudRegistration,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
@@ -207,6 +210,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerServer,
 			saveWorkspaceData,
 			saveOrganizationData,
+			completeSetupWizard,
+			maxSteps,
 		}),
 		[
 			setupWizardData,
@@ -215,7 +220,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			loaded,
 			registerAdminUser,
 			settings,
-			canDeclineServerRegistration,
+			skipCloudRegistration,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
@@ -223,6 +228,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			registerServer,
 			saveWorkspaceData,
 			saveOrganizationData,
+			completeSetupWizard,
+			maxSteps,
 		],
 	);
 
