@@ -13,9 +13,13 @@ type setUserRolesOptions = {
 	skipRemovingRoles?: boolean;
 	// the scope value (eg: room id) to assign the roles to
 	scope?: string;
-}
+};
 
-function filterRoleList(roleList: Array<IRole['name']>, rolesToFilterOut: Array<IRole['name']>, rolesToFilterIn?: Array<IRole['name']>): Array<IRole['name']> {
+function filterRoleList(
+	roleList: Array<IRole['name']>,
+	rolesToFilterOut: Array<IRole['name']>,
+	rolesToFilterIn?: Array<IRole['name']>,
+): Array<IRole['name']> {
 	const filteredRoles = roleList.filter((roleName) => !rolesToFilterOut.includes(roleName));
 
 	if (!rolesToFilterIn) {
@@ -44,7 +48,11 @@ function broadcastRoleChange(type: string, roleList: Array<IRole['name']>, user:
 	}
 }
 
-export async function syncUserRoles(uid: IUser['_id'], newRoleList: Array<IRole['name']>, { allowedRoles, skipRemovingRoles, scope }: setUserRolesOptions): Promise<void> {
+export async function syncUserRoles(
+	uid: IUser['_id'],
+	newRoleList: Array<IRole['name']>,
+	{ allowedRoles, skipRemovingRoles, scope }: setUserRolesOptions,
+): Promise<void> {
 	const user = await Users.findOneById(uid);
 	if (!user) {
 		throw new Error('error-user-not-found');

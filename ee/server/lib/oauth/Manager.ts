@@ -49,9 +49,11 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			Promise.await(syncUserRoles(user._id, rolesFromSSO, {
-				allowedRoles: rolesToSync,
-			}));
+			Promise.await(
+				syncUserRoles(user._id, rolesFromSSO, {
+					allowedRoles: rolesToSync,
+				}),
+			);
 		}
 	}
 
