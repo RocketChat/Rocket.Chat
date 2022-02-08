@@ -67,7 +67,7 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 	return {
 		uid: user._id,
 		token: resume,
-		hashedToken, // TODO should we return the hashed token? Meteor does not.
+		hashedToken,
 		type: 'resume',
 		...(tokenExpires && { tokenExpires }),
 	};
