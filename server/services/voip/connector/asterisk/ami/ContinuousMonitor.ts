@@ -25,6 +25,7 @@ import { Commands } from '../Commands';
 import { IQueueDetails } from '../../../../../../definition/ACDQueues';
 import {
 	IAgentCalledEvent,
+	IAgentConnectEvent,
 	IEventBase,
 	IQueueCallerAbandon,
 	IQueueCallerJoinEvent,
@@ -91,21 +92,6 @@ export class ContinuousMonitor extends Command {
 		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
 	}
 	*/
-	async processQueueCallerJoin(event: IQueueCallerJoinEvent): Promise<void> {
-		this.logger.debug(`Got new event queue.callerjoined at ${event.queue}`);
-		const queueDetails = await this.getQueueDetails(event.queue);
-		const members = await this.getMembersFromQueueDetails(queueDetails);
-		const callerId = {
-			id: event.calleridnum,
-			name: event.calleridname,
-		};
-
-		this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
-		members.forEach((m) => {
-			api.broadcast('queue.callerjoined', m, event.queue, callerId, event.count);
-		});
-	}
-
 	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
 		const queueName = event.queue;
@@ -151,39 +137,62 @@ export class ContinuousMonitor extends Command {
 		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
-	async processQueueAbandoned(event: IQueueCallerAbandon): Promise<void> {
-		const queueName = event.queue;
-		const queueDetails = await this.getQueueDetails(queueName);
+	async processAndBroadcastEventToAllQueueMembers(event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent): Promise<void> {
+		this.logger.debug(`Broadcasting to memebers, event =  ${event.event}`);
+		const queueDetails = await this.getQueueDetails(event.queue);
 		const members = await this.getMembersFromQueueDetails(queueDetails);
-		const { calls } = queueDetails;
+		switch (event.event) {
+			case 'QueueCallerJoin': {
+				const callerId = {
+					id: event.calleridnum,
+					name: event.calleridname,
+				};
 
-		members.forEach((m) => {
-			api.broadcast('queue.callabandoned', m, queueName, calls);
-		});
+				this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
+				members.forEach((m) => {
+					api.broadcast('queue.callerjoined', m, event.queue, callerId, event.count);
+				});
+				break;
+			}
+			case 'QueueCallerAbandon': {
+				const { calls } = queueDetails;
+				members.forEach((m) => {
+					api.broadcast('queue.callabandoned', m, event.queue, calls);
+				});
+				break;
+			}
+			case 'AgentConnect': {
+				const { calls } = queueDetails;
+				members.forEach((m) => {
+					api.broadcast('queue.agentconnected', m, event.queue, calls);
+				});
+				break;
+			}
+			default:
+				this.logger.error(`Cant process ${event} `);
+		}
 	}
 
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
-		if (isIQueueCallerJoinEvent(event)) {
-			return this.processQueueCallerJoin(event);
-		}
-
 		if (isIAgentCalledEvent(event)) {
 			return this.processAgentCalled(event);
 		}
 
+		if (isIQueueCallerJoinEvent(event)) {
+			return this.processAndBroadcastEventToAllQueueMembers(event);
+		}
+
 		if (isIAgentConnectEvent(event)) {
-			this.logger.debug(`Cannot handle event ${event.event}`);
-			// return;
+			return this.processAndBroadcastEventToAllQueueMembers(event);
+		}
+
+		if (isIQueueCallerAbandonEvent(event)) {
+			return this.processAndBroadcastEventToAllQueueMembers(event);
 		}
 
 		if (isIQueueMemberAddedEvent(event) || isIQueueMemberRemovedEvent(event)) {
 			return this.processQueueMembershipChange(event);
-		}
-
-		if (isIQueueCallerAbandonEvent(event)) {
-			this.logger.debug(`Cannot handle event ${event.event}`);
-			return this.processQueueAbandoned(event);
 		}
 
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't

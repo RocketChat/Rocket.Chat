@@ -293,6 +293,9 @@ export class ListenersModule {
 		service.onEvent('queue.agentcalled', (userId, queuename): void => {
 			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename });
 		});
+		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls });
+		});
 		service.onEvent('queue.callerjoined', (userId, queuename, callerid, queuedcalls): void => {
 			notifications.notifyUserInThisInstance(userId, 'callerjoined', { queuename, callerid, queuedcalls });
 		});

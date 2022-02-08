@@ -36,6 +36,21 @@ export const CallProvider: FC = ({ children }) => {
 		[dispatchToastMessage],
 	);
 
+	const handleAgentConnected = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+				},
+			});
+		},
+		[dispatchToastMessage],
+	);
+
 	const handleMemberAdded = useCallback(
 		(queue: { queuename: string; queuedcalls: string }): void => {
 			dispatchToastMessage({
@@ -116,12 +131,13 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('callerjoined', handleQueueJoined);
+		Notifications.onUser('agentcalled', handleAgentCalled);
+		Notifications.onUser('agentconnected', handleAgentConnected);
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
-	}, [user, handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon]);
+	}, [user, handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {
