@@ -85,8 +85,10 @@ Meteor.methods({
 						type: thumbnail.type,
 					});
 				}
-			} catch (e) {
-				SystemLogger.error(e);
+			} catch (e: unknown) {
+				if (e instanceof Error) {
+					SystemLogger.error(e);
+				}
 			}
 			attachments.push(attachment);
 		} else if (/^audio\/.+/.test(file.type)) {
@@ -127,10 +129,10 @@ Meteor.methods({
 		const msg = Meteor.call('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
-			msg: '',
+			// msg: '',
 			file: files[0],
 			files,
-			groupable: false,
+			// groupable: false,
 			attachments,
 			...msgData,
 		});
