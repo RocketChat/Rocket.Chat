@@ -633,9 +633,6 @@ Meteor.startup(() => {
 		this.tabBar = this.data.tabBar;
 
 		this.onFile = (filesToUpload) => {
-			const { input } = chatMessages[RoomManager.openedRoom];
-			input.value = null;
-			$(input).change().trigger('input');
 			fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 		};
 

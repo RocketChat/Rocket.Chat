@@ -9,6 +9,7 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
+import { chatMessages } from '../views/app/room';
 
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
 	const data = new FormData();
@@ -120,11 +121,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 	}
 
 	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-	let messageBoxText = Meteor._localStorage.getItem(key);
-
-	if (!messageBoxText) {
-		messageBoxText = '';
-	}
+	const messageBoxText = Meteor._localStorage.getItem(key) || '';
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -149,6 +146,12 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 						msg: msg || undefined,
 						file,
 					});
+					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
+					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
+					const { input } = chatMessages[chatMessageKey];
+					input.value = null;
+					$(input).change().trigger('input');
+					Meteor._localStorage.removeItem(localStorageKey);
 					imperativeModal.close();
 					uploadNextFile();
 				},
