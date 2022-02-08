@@ -18,4 +18,5 @@ export interface IVoipService {
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
 	getRegistrationInfo(requestParams: any): Promise<{ result: IRegistrationInfo }>; // TODO: Check the reason behind IVoipConnectorResult
 	checkManagementConnection(host: string, port: string, userName: string, password: string): Promise<IManagementServerConnectionStatus>;
+	checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus>;
 }

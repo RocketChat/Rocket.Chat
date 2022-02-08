@@ -215,4 +215,9 @@ export class VoipService extends ServiceClass implements IVoipService {
 		const connectionCheckCommandHandler = new CommandHandler(this);
 		return connectionCheckCommandHandler.checkManagementConnection(host, port, userName, password);
 	}
+
+	async checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus> {
+		const connectionCheckCommandHandler = new CommandHandler(this);
+		return connectionCheckCommandHandler.checkCallserverConnection(websocketUrl, protocol);
+	}
 }

@@ -82,6 +82,47 @@ API.v1.addRoute(
 	},
 );
 
+API.v1.addRoute(
+	'voipServerConfig.callserver.checkconnection',
+	{ authRequired: true },
+	{
+		async get() {
+			if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
+				return API.v1.unauthorized(TAPi18n.__('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
+			}
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					websocketUrl: Match.Maybe(String),
+					host: Match.Maybe(String),
+					port: Match.Maybe(String),
+					path: Match.Maybe(String),
+				}),
+			);
+			const { websocketUrl, host, port, path } = this.requestParams();
+			if (!websocketUrl && !(host && port && path)) {
+				return API.v1.failure('Incorrect / Insufficient Parameters');
+			}
+			let socketUrl = websocketUrl as string;
+			if (!socketUrl) {
+				// We will assume that it is always secure.
+				// This is because you can not have webRTC working with non-secure server.
+				// It works on non-secure server if it is tested on localhost.
+				if (parseInt(port as string) !== 443) {
+					socketUrl = `wss://${host}:${port}/${(path as string).replace('/', '')}`;
+				} else {
+					socketUrl = `wss://${host}/${(path as string).replace('/', '')}`;
+				}
+			}
+			try {
+				return API.v1.success(await Voip.checkCallserverConnection(socketUrl));
+			} catch (error: any) {
+				return API.v1.failure(error.message);
+			}
+		},
+	},
+);
+
 // call-server api(s)
 API.v1.addRoute(
 	'voipServerConfig.callServer',

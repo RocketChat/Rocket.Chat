@@ -13,6 +13,7 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
+import WebSocket from 'ws';
 
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
@@ -121,5 +122,32 @@ export class CommandHandler {
 			status: connectionState === 'connected' ? 'connected' : 'connection-error',
 			error: errorReason,
 		};
+	}
+
+	async checkCallserverConnection(websocketUrl: string, protocol = 'sip'): Promise<IManagementServerConnectionStatus> {
+		this.logger.debug({ msg: 'checkManagementConnection()', websocketUrl });
+		let socket: WebSocket;
+		const returnPromise = new Promise<string>((_resolve, _reject) => {
+			const onError = (error: any): void => {
+				_reject(error);
+				this.logger.error({ msg: 'checkCallserverConnection () Connection Error', error });
+			};
+			const onConnect = (): void => {
+				_resolve('connected');
+				socket.close();
+			};
+			socket = new WebSocket(websocketUrl, protocol);
+			socket.on('open', onConnect);
+			socket.on('error', onError);
+		});
+		try {
+			await returnPromise;
+			return {
+				status: 'connected',
+			};
+		} catch (error: any) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
+			throw error;
+		}
 	}
 }
