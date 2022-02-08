@@ -32,12 +32,17 @@ const applyDepartmentRestrictions = async (
 	return { $exists: false };
 };
 
-export async function findInquiries(
-	userId: string,
-	filterDepartment: string,
-	status: string,
-	{ offset, count, sort }: { offset: number; count: number; sort: any }, // pagination
-): Promise<ILivechatInquiryRecord | { inquiries: ILivechatInquiryRecord[]; count: number; offset: number; total: number }> {
+export async function findInquiries({
+	userId,
+	filterDepartment,
+	status,
+	pagination,
+}: {
+	userId: string;
+	filterDepartment: string;
+	status: boolean;
+	pagination: { offset: number; count: number; sort: any };
+}): Promise<ILivechatInquiryRecord | { inquiries: ILivechatInquiryRecord[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -45,9 +50,9 @@ export async function findInquiries(
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
 
 	const options = {
-		limit: count,
-		sort: sort || { ts: -1 },
-		skip: offset,
+		limit: pagination.count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
 	};
 
 	const filter = {
@@ -67,7 +72,7 @@ export async function findInquiries(
 	return {
 		inquiries,
 		count: inquiries.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }

@@ -4,18 +4,15 @@ import { LivechatCustomField } from '../../../../models/server/raw/index';
 import { ILivechatCustomField } from '../../../../../definition/ILivechatCustomField';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
-export interface IFindLIveChatCustomFields {
-	customFields: ILivechatCustomField[];
-	count: number;
-	offset: number;
-	total: number;
-}
-
-export async function findLivechatCustomFields(
-	userId: string,
-	text: string,
-	{ offset, count, sort }: { offset: number; count: number; sort: string },
-): Promise<{ customFields: ILivechatCustomField[]; count: number; offset: number; total: number }> {
+export async function findLivechatCustomFields({
+	userId,
+	text,
+	pagination,
+}: {
+	userId: string;
+	text: string;
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<{ customFields: ILivechatCustomField[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -27,9 +24,9 @@ export async function findLivechatCustomFields(
 	};
 
 	const cursor = LivechatCustomField.find(query, {
-		sort: sort || { label: 1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { label: 1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 	});
 
 	const total = await cursor.count();
@@ -39,7 +36,7 @@ export async function findLivechatCustomFields(
 	return {
 		customFields,
 		count: customFields.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }

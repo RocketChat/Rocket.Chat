@@ -1,3 +1,5 @@
+import { ILivechatRoom } from './../../../../../imports/client/@rocket.chat/apps-engine/definition/livechat/ILivechatRoom.d';
+import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
 
 export async function findRooms({
@@ -10,8 +12,19 @@ export async function findRooms({
 	tags,
 	customFields,
 	onhold,
-	options: { offset, count, fields, sort },
-}) {
+	options,
+}: {
+	agents: ILivechatAgent[];
+	roomName: string;
+	departmentId: string;
+	open: boolean;
+	createdAt: string;
+	closedAt: string;
+	tags: string[];
+	customFields: any[];
+	onhold: string;
+	options: { offset: number; count: number; fields: any[]; sort: string };
+}): Promise<{ rooms: ILivechatRoom[]; count: number; offset: number; total: number }> {
 	const cursor = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
@@ -23,10 +36,10 @@ export async function findRooms({
 		customFields,
 		onhold: ['t', 'true', '1'].includes(onhold),
 		options: {
-			sort: sort || { ts: -1 },
-			offset,
-			count,
-			fields,
+			sort: options.sort || { ts: -1 },
+			offset: options.offset,
+			count: options.count,
+			fields: options.fields,
 		},
 	});
 
@@ -53,7 +66,7 @@ export async function findRooms({
 	return {
 		rooms,
 		count: rooms.length,
-		offset,
+		offset: options.offset,
 		total,
 	};
 }

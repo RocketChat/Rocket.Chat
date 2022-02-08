@@ -1,13 +1,21 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
+import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
+import { SortOptionObject } from 'meteor/node_modules/@types/mongodb';
 
-export async function findVisitorInfo({ userId, visitorId }) {
+export async function findVisitorInfo({
+	userId,
+	visitorId,
+}: {
+	userId: string;
+	visitorId: string;
+}): Promise<{ visitor: ILivechatVisitor }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
-	const visitor = await LivechatVisitors.findOneById(visitorId);
+	const visitor = await LivechatVisitors.findOneById(visitorId, {});
 	if (!visitor) {
 		throw new Error('visitor-not-found');
 	}
@@ -17,7 +25,15 @@ export async function findVisitorInfo({ userId, visitorId }) {
 	};
 }
 
-export async function findVisitedPages({ userId, roomId, pagination: { offset, count, sort } }) {
+export async function findVisitedPages({
+	userId,
+	roomId,
+	pagination,
+}: {
+	userId: string;
+	roomId: string;
+	pagination: { offset: number; count: number; sort: string };
+}): Promise<{ pages: any[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -26,9 +42,9 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 		throw new Error('invalid-room');
 	}
 	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 	});
 
 	const total = await cursor.count();
@@ -38,12 +54,22 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	return {
 		pages,
 		count: pages.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }
 
-export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
+export async function findChatHistory({
+	userId,
+	roomId,
+	visitorId,
+	pagination,
+}: {
+	userId: string;
+	roomId: string;
+	visitorId: string;
+	pagination: { offset: number; count: number; sort: string };
+}): Promise<{ history: string[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -56,9 +82,9 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 	}
 
 	const cursor = LivechatRooms.findByVisitorId(visitorId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 	});
 
 	const total = await cursor.count();
@@ -68,7 +94,7 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 	return {
 		history,
 		count: history.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }
@@ -79,9 +105,17 @@ export async function searchChats({
 	visitorId,
 	searchText,
 	closedChatsOnly,
-	servedChatsOnly: served,
-	pagination: { offset, count, sort },
-}) {
+	servedChatsOnly,
+	pagination,
+}: {
+	userId: string;
+	roomId: string;
+	visitorId: string;
+	searchText: string;
+	closedChatsOnly: boolean;
+	servedChatsOnly: boolean;
+	pagination: { offset: number; count: number; sort: string };
+}): Promise<{ history: string[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -95,22 +129,22 @@ export async function searchChats({
 	}
 
 	const options = {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 	};
 
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: !closedChatsOnly,
-		served,
+		served: servedChatsOnly,
 		searchText,
 		onlyCount: true,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: !closedChatsOnly,
-		served,
+		served: servedChatsOnly,
 		searchText,
 		options,
 	});
@@ -120,12 +154,18 @@ export async function searchChats({
 	return {
 		history,
 		count: history.length,
-		offset,
-		total: (total && total.count) || 0,
+		offset: pagination.offset,
+		total: total?.count || 0,
 	};
 }
 
-export async function findVisitorsToAutocomplete({ userId, selector }) {
+export async function findVisitorsToAutocomplete({
+	userId,
+	selector,
+}: {
+	userId: string;
+	selector: any | string;
+}): Promise<{ items: ILivechatVisitor[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };
 	}
@@ -149,15 +189,23 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	};
 }
 
-export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
+export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
+	userId,
+	term,
+	pagination,
+}: {
+	userId: string;
+	term: string;
+	pagination: { offset: number; count: number; sort: [string, number][] | SortOptionObject<ILivechatVisitor> | undefined };
+}): Promise<{ visitors: ILivechatVisitor[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
 	const cursor = LivechatVisitors.findVisitorsByEmailOrPhoneOrNameOrUsername(term, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 		fields: {
 			_id: 1,
 			username: 1,
@@ -176,7 +224,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term,
 	return {
 		visitors,
 		count: visitors.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }

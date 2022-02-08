@@ -1,8 +1,10 @@
-import { IRoom } from './../../../../../imports/client/@rocket.chat/apps-engine/definition/rooms/IRoom.d';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
+import { ILivechatRoom } from '../../../../../imports/client/@rocket.chat/apps-engine/definition/livechat/ILivechatRoom.d';
+import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
 import { ILivechatTrigger } from '../../../../../definition/ILivechatTrigger';
@@ -29,7 +31,7 @@ async function findTriggers(): Promise<ILivechatTrigger[]> {
 	}));
 }
 
-export function findDepartments(businessUnits) {
+export function findDepartments(businessUnit: string): ILivechatDepartment[] {
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
 		_id: 1,
 		name: 1,
@@ -57,7 +59,7 @@ export function findGuest(token: string): ILivechatVisitor {
 	});
 }
 
-export function findRoom(token: string, rid: string): IRoom {
+export function findRoom(token: string, rid: string): ILivechatRoom {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -74,7 +76,7 @@ export function findRoom(token: string, rid: string): IRoom {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token, departmentId) {
+export function findOpenRoom(token: string, departmentId: string): ILivechatRoom | null {
 	const options = {
 		fields: {
 			departmentId: 1,
@@ -90,9 +92,26 @@ export function findOpenRoom(token, departmentId) {
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
+
+	return null;
 }
 
-export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
+export function getRoom({
+	guest,
+	rid,
+	roomInfo,
+	agent,
+	extraParams,
+}: {
+	guest: ILivechatVisitor;
+	rid: string;
+	roomInfo: string;
+	agent: ILivechatAgent;
+	extraParams: any[];
+}): Promise<{
+	room: any;
+	newRoom: boolean;
+}> {
 	const token = guest?.token;
 
 	const message = {
@@ -106,14 +125,15 @@ export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId) {
+export function findAgent(agentId: string): any {
 	return normalizeAgent(agentId);
 }
 
-export function normalizeHttpHeaderData(headers = {}) {
+export function normalizeHttpHeaderData(headers = {}): { httpHeaders: { [k: string]: string } } {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
+
 export async function settings({ businessUnit = '' }) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = await findTriggers();
@@ -190,10 +210,10 @@ export async function settings({ businessUnit = '' }) {
 	};
 }
 
-export async function getExtraConfigInfo(room) {
+export async function getExtraConfigInfo(room: ILivechatRoom): Promise<any> {
 	return callbacks.run('livechat.onLoadConfigApi', { room });
 }
 
-export function onCheckRoomParams(params) {
+export function onCheckRoomParams(params: any[]): Promise<any>  {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

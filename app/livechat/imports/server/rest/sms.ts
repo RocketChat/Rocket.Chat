@@ -107,7 +107,6 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const location = normalizeLocationSharing(sms);
 		const rid = room?._id || Random.id();
 
-		// TODO: proper type here :)
 		const sendMessage: any = {
 			guest: visitor,
 			roomInfo: {
