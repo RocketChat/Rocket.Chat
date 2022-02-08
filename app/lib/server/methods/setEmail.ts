@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { setEmail } from '../functions';
 import { RateLimiter } from '../lib';
 
@@ -9,11 +9,11 @@ Meteor.methods({
 	setEmail(email) {
 		check(email, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });
 		}
-
-		const user = Meteor.user();
 
 		if (!settings.get('Accounts_AllowEmailChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing email is not allowed', {
