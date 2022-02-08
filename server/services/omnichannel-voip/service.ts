@@ -32,7 +32,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	private async createVoipRoom(
 		rid: string,
 		name: string,
-		agent: { agentId: string; username?: string },
+		agent: { agentId: string; username: string },
 		guest: ILivechatVisitor,
 	): Promise<string> {
 		const status = 'online';
@@ -124,7 +124,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 	/* Voip calls */
 	async getNewRoom(
 		guest: ILivechatVisitor,
-		agent: { agentId: string; username?: string },
+		agent: { agentId: string; username: string },
 		rid: string,
 		options: FindOneOptions<IVoipRoom> = {},
 	): Promise<IRoomCreationResponse> {
