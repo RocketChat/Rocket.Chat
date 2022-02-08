@@ -1,4 +1,4 @@
-import React, { useMemo, FC, useRef, useEffect } from 'react';
+import React, { useMemo, FC, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
@@ -6,11 +6,14 @@ import { Notifications } from '../../../app/notifications/client';
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useUser } from '../../contexts/UserContext';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
 export const CallProvider: FC = ({ children }) => {
 	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
+
+	const user = useUser();
 
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -18,8 +21,8 @@ export const CallProvider: FC = ({ children }) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	useEffect(() => {
-		const handleAgentCalled = (queue: any): void => {
+	const handleAgentCalled = useCallback(
+		(queue: { queuename: string }): void => {
 			dispatchToastMessage({
 				type: 'success',
 				message: `Received call in ${queue.queuename} `,
@@ -27,11 +30,14 @@ export const CallProvider: FC = ({ children }) => {
 					showDuration: '6000',
 					hideDuration: '6000',
 					timeOut: '50000',
-					preventDuplicates: false,
 				},
 			});
-		};
-		const handleQueueJoined = async (joiningDetails: any): Promise<void> => {
+		},
+		[dispatchToastMessage],
+	);
+
+	const handleQueueJoined = useCallback(
+		async (joiningDetails: { queuename: string; callerid: { id: string } }): Promise<void> => {
 			dispatchToastMessage({
 				type: 'success',
 				message: `Received call in ${joiningDetails.queuename} from customerid ${joiningDetails.callerid.id}`,
@@ -39,12 +45,14 @@ export const CallProvider: FC = ({ children }) => {
 					showDuration: '6000',
 					hideDuration: '6000',
 					timeOut: '50000',
-					preventDuplicates: false,
 				},
 			});
+
+			// TODO: can we change this to use a hook instead of the APIClient directly?
 			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
-				extension: '80000',
+				extension: user?.extension,
 			});
+
 			dispatchToastMessage({
 				type: 'success',
 				message: `Calls waiting in ${joiningDetails.queuename} are ${list.callWaitingCount}`,
@@ -52,14 +60,20 @@ export const CallProvider: FC = ({ children }) => {
 					showDuration: '6000',
 					hideDuration: '6000',
 					timeOut: '50000',
-					preventDuplicates: true,
 				},
 			});
-		};
+		},
+		[dispatchToastMessage, user?.extension],
+	);
+
+	useEffect(() => {
+		if (!user) {
+			return;
+		}
 
 		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('callerjoined', handleQueueJoined);
-	}, [dispatchToastMessage]);
+	}, [user, handleAgentCalled, handleQueueJoined]);
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {

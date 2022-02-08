@@ -54,6 +54,7 @@ export interface IAgentConnectEvent extends IQueueEvent {
 
 export interface IAgentCalledEvent extends IQueueEvent {
 	event: 'AgentCalled';
+	queuename: string;
 }
 
 export interface IQueueCallerJoinEvent extends IQueueEvent {

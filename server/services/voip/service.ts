@@ -127,39 +127,39 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}
 
-	async getQueuedCallsForThisExtension(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
+	async getQueuedCallsForThisExtension({ extension }: { extension: string }): Promise<IVoipConnectorResult> {
 		const membershipDetails: IQueueMembershipDetails = {
 			queueCount: 0,
 			callWaitingCount: 0,
-			extension: '',
+			extension,
 		};
-		membershipDetails.extension = requestParams.extension;
-		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
-		for (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = Promise.await(
-				this.commandHandler.executeCommand(Commands.queue_details, { queueName: queue.name }),
-			) as IVoipConnectorResult;
-			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetails });
-			if (!(queueDetails.result as unknown as IQueueDetails).members) {
+		const queueSummary = (await this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+
+		for await (const queue of queueSummary.result as IQueueSummary[]) {
+			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+				queueName: queue.name,
+			})) as IVoipConnectorResult;
+
+			const details = queueDetails.result as IQueueDetails;
+
+			if (!details.members.length) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
 			}
-			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some((element) =>
-				element.name.endsWith(requestParams.extension),
-			);
+
+			const isAMember = details.members.some((element) => element.name.endsWith(extension));
 			if (!isAMember) {
 				// Current extension is not a member of queue in question.
 				// continue with next queue.
 				continue;
 			}
-			membershipDetails.callWaitingCount += Number((queueDetails.result as unknown as IQueueDetails).calls);
+
+			membershipDetails.callWaitingCount += Number(details.calls);
 			membershipDetails.queueCount++;
 		}
-		const result: IVoipConnectorResult = {
-			result: membershipDetails,
-		};
-		return Promise.resolve(result);
+
+		return Promise.resolve({ result: membershipDetails });
 	}
 
 	async getConnectorVersion(): Promise<string> {

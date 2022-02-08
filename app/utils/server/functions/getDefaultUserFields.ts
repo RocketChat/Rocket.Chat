@@ -1,4 +1,8 @@
-export const getDefaultUserFields = () => ({
+type DefaultUserFields = {
+	[k: string]: number;
+};
+
+export const getDefaultUserFields = (): DefaultUserFields => ({
 	'name': 1,
 	'username': 1,
 	'nickname': 1,
@@ -32,4 +36,5 @@ export const getDefaultUserFields = () => ({
 	'oauth.authorizedClients': 1,
 	'_updatedAt': 1,
 	'avatarETag': 1,
+	'extension': 1,
 });

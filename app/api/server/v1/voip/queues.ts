@@ -3,7 +3,9 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-import { logger } from './logger';
+// import { logger } from './logger';
+import { IQueueSummary, ISourceQueueDetails } from '../../../../../definition/ACDQueues';
+import { IQueueMembershipDetails } from '../../../../../definition/IVoipExtension';
 
 API.v1.addRoute(
 	'voip/queues.getSummary',
@@ -11,8 +13,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const queueSummary = await Voip.getQueueSummary();
-			logger.debug({ msg: 'API = voip/queues.getSummary ', result: queueSummary });
-			return API.v1.success({ summary: queueSummary.result });
+			return API.v1.success({ summary: queueSummary.result as IQueueSummary[] });
 		},
 	},
 );
@@ -29,8 +30,7 @@ API.v1.addRoute(
 				}),
 			);
 			const membershipDetails: IVoipConnectorResult = await Voip.getQueuedCallsForThisExtension(this.requestParams());
-			logger.debug({ msg: 'API = queues.getCallWaitingInQueuesForThisExtension', result: membershipDetails });
-			return API.v1.success({ ...membershipDetails.result });
+			return API.v1.success(membershipDetails.result as IQueueMembershipDetails);
 		},
 	},
 );
@@ -47,8 +47,7 @@ API.v1.addRoute(
 				}),
 			);
 			const queueDetails = await Voip.getSourceQueueDetails(this.requestParams());
-			logger.debug({ msg: 'API = voip/queues.getDetails ', result: queueDetails });
-			return API.v1.success({ details: queueDetails.result });
+			return API.v1.success({ details: queueDetails.result as ISourceQueueDetails });
 		},
 	},
 );

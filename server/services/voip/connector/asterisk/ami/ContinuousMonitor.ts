@@ -37,7 +37,7 @@ import {
 	isIQueueCallerJoinEvent,
 	isIQueueMemberAddedEvent,
 	isIQueueMemberRemovedEvent,
-} from '../IEvents';
+} from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
