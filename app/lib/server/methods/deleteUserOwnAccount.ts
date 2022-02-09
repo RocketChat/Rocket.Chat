@@ -4,8 +4,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from 'meteor/sha';
 import s from 'underscore.string';
 
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
 
 Meteor.methods({

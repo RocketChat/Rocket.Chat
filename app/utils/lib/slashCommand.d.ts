@@ -10,6 +10,6 @@ export declare const slashCommands: {
 		previewCallback: Function | undefined,
 	): void;
 	run(command: string, params: string, message: object, triggerId: string | undefined): Function | void;
-	getPreviews(command: string, params: string, message: object, preview: unknown, triggerId: string | undefined): Function | void;
+	getPreviews(command: string, params: string, message: object, preview?: unknown, triggerId?: string | undefined): Function | void;
 	executePreview(command: string, params: string, message: object, preview: unknown, triggerId: string | undefined): Function | void;
 };

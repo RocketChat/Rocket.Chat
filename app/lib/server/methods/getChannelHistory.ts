@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
 		}
 
-		const fromUserId = Meteor.userId();
+		const fromUserId = Meteor.userId() || undefined;
 		const room = Rooms.findOneById(rid);
 		if (!room) {
 			return false;
@@ -47,7 +47,7 @@ Meteor.methods({
 
 		const hiddenMessageTypes = getHiddenSystemMessages(room);
 
-		const options = {
+		const options: Record<string, unknown> = {
 			sort: {
 				ts: -1,
 			},
