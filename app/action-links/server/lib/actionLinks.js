@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { getMessageForUser } from '../../../../server/lib/messages/getMessageForUser';
 
-function getMessage(messageId) {
+function getMessageById(messageId) {
 	try {
 		return Promise.await(getMessageForUser(messageId, Meteor.userId()));
 	} catch (e) {
@@ -19,7 +19,7 @@ export const actionLinks = {
 		actionLinks.actions[name] = funct;
 	},
 	getMessage(name, messageId) {
-		const message = getMessage(messageId);
+		const message = getMessageById(messageId);
 
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
