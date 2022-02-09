@@ -4,7 +4,13 @@ import { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { VoipServerConfigurationRaw } from '../../../app/models/server/raw/VoipServerConfiguration';
-import { ServerType, IVoipServerConfig, isICallServerConfigData } from '../../../definition/IVoipServerConfig';
+import {
+	ServerType,
+	isICallServerConfigData,
+	IVoipServerConfigBase,
+	IVoipCallServerConfig,
+	IVoipManagementServerConfig,
+} from '../../../definition/IVoipServerConfig';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
@@ -12,7 +18,6 @@ import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
-import { settings } from '../../../app/settings/server';
 
 export class VoipService extends ServiceClass implements IVoipService {
 	protected name = 'voip';
@@ -45,10 +50,13 @@ export class VoipService extends ServiceClass implements IVoipService {
 		await this.commandHandler.initConnection(CommandType.AMI);
 	}
 
-	async addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+	/**
+	 * @deprecated The method should not be used
+	 */
+	async addServerConfigData(config: Omit<IVoipServerConfigBase, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
 
-		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
+		await this.deactivateServerConfigDataIfAvailable(type);
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
@@ -63,10 +71,13 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return returnValue;
 	}
 
-	async updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+	/**
+	 * @deprecated The method should not be used
+	 */
+	async updateServerConfigData(config: Omit<IVoipServerConfigBase, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
 
-		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
+		await this.deactivateServerConfigDataIfAvailable(type);
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
@@ -80,38 +91,16 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 	// in-future, if we want to keep a track of duration during which a server config was active, then we'd need to modify the
 	// IVoipServerConfig interface and add columns like "valid_from_ts" and "valid_to_ts"
+	/**
+	 * @deprecated The method should not be used
+	 */
 	async deactivateServerConfigDataIfAvailable(type: ServerType): Promise<boolean> {
 		await this.VoipServerConfiguration.updateMany({ type, active: true }, { $set: { active: false } });
 		return true;
 	}
 
-	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
-		// TODO: Decide the approach we will take regarding settings after the MVP,
-		// For now this work around should be enough.
-
-		// const config = this.VoipServerConfiguration.findOne({ type, active: true });
-
-		const management = type === ServerType.MANAGEMENT;
-		return {
-			type,
-			host: settings.get(management ? 'VoIP_Management_Server_Host' : 'VoIP_Server_Host'),
-			name: settings.get(management ? 'VoIP_Management_Server_Name' : 'VoIP_Server_Name'),
-			active: true,
-			...(management
-				? {
-						configData: {
-							port: parseInt(settings.get('VoIP_Management_Server_Port')),
-							username: settings.get('VoIP_Management_Server_Username'),
-							password: settings.get('VoIP_Management_Server_Password'),
-						},
-				  }
-				: {
-						configData: {
-							websocketPort: parseInt(settings.get('VoIP_Server_Websocket_Port')),
-							websocketPath: settings.get('VoIP_Server_Websocket_Path'),
-						},
-				  }),
-		};
+	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
+		return getServerConfigDataFromSettings(type);
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface
@@ -119,8 +108,8 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return {};
 	}
 
-	getConnector(): Promise<CommandHandler> {
-		return Promise.resolve(this.commandHandler);
+	getConnector(): CommandHandler {
+		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
@@ -159,12 +148,11 @@ export class VoipService extends ServiceClass implements IVoipService {
 			membershipDetails.queueCount++;
 		}
 
-		return Promise.resolve({ result: membershipDetails });
+		return { result: membershipDetails };
 	}
 
-	async getConnectorVersion(): Promise<string> {
-		const version = this.commandHandler.getVersion();
-		return Promise.resolve(version);
+	getConnectorVersion(): string {
+		return this.commandHandler.getVersion();
 	}
 
 	async getExtensionList(): Promise<IVoipConnectorResult> {
@@ -176,7 +164,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 	}
 
 	async getRegistrationInfo(requestParams: { extension: string }): Promise<{ result: IRegistrationInfo }> {
-		const config = getServerConfigDataFromSettings(ServerType.CALL_SERVER);
+		const config = this.getServerConfigData(ServerType.CALL_SERVER);
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			throw new Error('Not found');
@@ -192,18 +180,14 @@ export class VoipService extends ServiceClass implements IVoipService {
 			throw new Error('getRegistrationInfo Invalid configData response');
 		}
 
-		const callServerConfig = config.configData;
-
-		const extensionDetails = endpointDetails.result;
-
-		const extensionRegistrationInfo: IRegistrationInfo = {
+		const result = {
 			host: config.host,
-			callServerConfig,
-			extensionDetails,
+			callServerConfig: config.configData,
+			extensionDetails: endpointDetails.result,
 		};
-		// this.logger.error({ msg: 'extensionRegistrationInfo', extensionRegistrationInfo });
+
 		return {
-			result: extensionRegistrationInfo,
+			result,
 		};
 	}
 }

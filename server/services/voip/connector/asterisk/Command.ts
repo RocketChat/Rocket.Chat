@@ -114,7 +114,7 @@ export class Command {
 		return returnPromise;
 	}
 
-	async executeCommand(_data: any): Promise<IVoipConnectorResult> {
+	executeCommand(_data: any): Promise<IVoipConnectorResult> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});

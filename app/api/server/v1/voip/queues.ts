@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../api';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-// import { logger } from './logger';
 import { IQueueSummary } from '../../../../../definition/ACDQueues';
 import { IQueueMembershipDetails } from '../../../../../definition/IVoipExtension';
 

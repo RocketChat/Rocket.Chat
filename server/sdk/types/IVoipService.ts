@@ -5,12 +5,12 @@ import { IRegistrationInfo } from '../../../definition/voip/IRegistrationInfo';
 
 export interface IVoipService {
 	getConfiguration(): any;
-	getServerConfigData(serverType: ServerType): Promise<IVoipServerConfig | null>;
+	getServerConfigData(serverType: ServerType): IVoipServerConfig | null;
 	addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
 	updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
 	deactivateServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
-	getConnector(): Promise<CommandHandler>;
-	getConnectorVersion(): Promise<string>;
+	getConnector(): CommandHandler;
+	getConnectorVersion(): string;
 	getQueueSummary(): Promise<IVoipConnectorResult>;
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
 	getExtensionList(): Promise<IVoipConnectorResult>;

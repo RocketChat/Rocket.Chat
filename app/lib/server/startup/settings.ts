@@ -3156,8 +3156,8 @@ settingsRegistry.addGroup('VoIP', function () {
 				value: true,
 			},
 		});
-		this.add('VoIP_Server_Websocket_Port', '443', {
-			type: 'string',
+		this.add('VoIP_Server_Websocket_Port', 443, {
+			type: 'int',
 			public: true,
 			enableQuery: {
 				_id: 'VoIP_Enabled',
@@ -3192,8 +3192,8 @@ settingsRegistry.addGroup('VoIP', function () {
 			},
 		});
 
-		this.add('VoIP_Management_Server_Port', '5038', {
-			type: 'string',
+		this.add('VoIP_Management_Server_Port', 5038, {
+			type: 'int',
 			public: true,
 			enableQuery: {
 				_id: 'VoIP_Enabled',
