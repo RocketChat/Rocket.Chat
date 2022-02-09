@@ -181,24 +181,10 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		const closer = visitor ? ('visitor' as const) : ('user' as const);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
-			// TODO: calculate actual call duration
 			callDuration: now.getTime() / 1000,
 			closer,
-			// ...extraData,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
-
-		/*
-		// We should be able to handle nearend and farend call end.
-		if (user) {
-			this.logger.debug(`Closing by user ${ user._id }`);
-			closeData.closer = 'user';
-			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
-		} else
-		*/
 		if (visitor) {
 			this.logger.debug(`Closing by visitor ${visitor._id}`);
 			closeData.closedBy = {

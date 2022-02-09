@@ -14,6 +14,7 @@ import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { IUser } from '../../../definition/IUser';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { IRoom } from '../../../definition/IRoom';
+import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { settings } from '../../../app/settings/server';
 
 export class VoipService extends ServiceClass implements IVoipService {
@@ -38,7 +39,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
-			this.logger.error({ mst: `Error while initialising the connector. error = ${error}` });
+			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
 		}
 	}
 
@@ -209,10 +210,11 @@ export class VoipService extends ServiceClass implements IVoipService {
 			msg: comment,
 			groupable: false,
 		};
-
-		// TODO: Check room is voip
-		// TODO: Check event is valid voip event
 		// TODO: Add events (messageTypes) to IMessage interface
-		await sendMessage(user, message, room);
+		if (room.t === 'v' && event in VoipClientEvents) {
+			await sendMessage(user, message, room);
+		} else {
+			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
+		}
 	}
 }
