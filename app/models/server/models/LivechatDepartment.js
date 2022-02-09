@@ -104,6 +104,14 @@ export class LivechatDepartment extends Base {
 		return this.find(query, fields && { fields });
 	}
 
+	findEnabledWithAgentsAndBusinessUnit(_, fields = undefined) {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+		};
+		return this.find(query, fields && { fields });
+	}
+
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [
@@ -121,6 +129,19 @@ export class LivechatDepartment extends Base {
 
 	findByUnitIds(unitIds, options) {
 		const query = {
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByUnitIds(unitIds, options) {
+		const query = {
+			enabled: true,
+			numAgents: { $gt: 0 },
 			parentId: {
 				$exists: true,
 				$in: unitIds,
