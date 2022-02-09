@@ -311,10 +311,6 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export const hasModule = (module: string): boolean => {
-	return License.hasModule(module);
-};
-
 export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
