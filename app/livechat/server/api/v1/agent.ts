@@ -23,7 +23,8 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const agent = room && room.servedBy && findAgent(room.servedBy._id);
+			const agent = room?.servedBy && findAgent(room.servedBy.id);
+
 			if (!agent) {
 				throw new Meteor.Error('invalid-agent');
 			}
@@ -36,7 +37,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 });
 
 API.v1.addRoute('livechat/agent.next/:token', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				token: String,
@@ -47,7 +48,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 			});
 
 			const { token } = this.urlParams;
-			const room = findOpenRoom(token);
+			const room = findOpenRoom(token, '');
 			if (room) {
 				return API.v1.success();
 			}
@@ -60,7 +61,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 				}
 			}
 
-			const agentData = Promise.await(Livechat.getNextAgent(department));
+			const agentData = await Livechat.getNextAgent(department);
 			if (!agentData) {
 				throw new Meteor.Error('agent-not-found');
 			}

@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/client/hasPermission';
+import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models/server/raw/index';
 import { API } from '../../../../api/server';
-import { loadMessageHistory } from '../../../../lib';
+import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
@@ -13,7 +13,7 @@ import { settings } from '../../../../settings/server';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/message', {
-	post() {
+	async post() {
 		try {
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
@@ -38,7 +38,7 @@ API.v1.addRoute('livechat/message', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			if (!room.open) {
+			if (!room.isOpen) {
 				throw new Meteor.Error('room-closed');
 			}
 
@@ -67,9 +67,9 @@ API.v1.addRoute('livechat/message', {
 				},
 			};
 
-			const result = Promise.await(Livechat.sendMessage(sendMessage));
+			const result = await Livechat.sendMessage(sendMessage);
 			if (result) {
-				const message = Messages.findOneById(_id);
+				const message = Messages.finPdOneById(_id);
 				return API.v1.success({ message });
 			}
 
@@ -81,7 +81,7 @@ API.v1.addRoute('livechat/message', {
 });
 
 API.v1.addRoute('livechat/message/:_id', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -111,7 +111,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			if (message.file) {
-				message = Promise.await(normalizeMessageFileUpload(message));
+				message = await normalizeMessageFileUpload(message);
 			}
 
 			return API.v1.success({ message });
@@ -120,7 +120,7 @@ API.v1.addRoute('livechat/message/:_id', {
 		}
 	},
 
-	put() {
+	async put() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -157,7 +157,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			if (result) {
 				let message = Messages.findOneById(_id);
 				if (message.file) {
-					message = Promise.await(normalizeMessageFileUpload(message));
+					message = await normalizeMessageFileUpload(message);
 				}
 
 				return API.v1.success({ message });
@@ -168,7 +168,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			return API.v1.failure(e);
 		}
 	},
-	delete() {
+	async delete() {
 		try {
 			check(this.urlParams, {
 				_id: String,
@@ -197,7 +197,7 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			const result = Promise.await(Livechat.deleteMessage({ guest, message }));
+			const result = await Livechat.deleteMessage({ guest, message });
 			if (result) {
 				return API.v1.success({
 					message: {
@@ -206,7 +206,6 @@ API.v1.addRoute('livechat/message/:_id', {
 					},
 				});
 			}
-
 			return API.v1.failure();
 		} catch (e) {
 			return API.v1.failure(e);
@@ -215,7 +214,7 @@ API.v1.addRoute('livechat/message/:_id', {
 });
 
 API.v1.addRoute('livechat/messages.history/:rid', {
-	get() {
+	async get() {
 		try {
 			check(this.urlParams, {
 				rid: String,
@@ -264,7 +263,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				sort,
 				offset,
 				text,
-			}).messages.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
+			}).messages.map((...args) => normalizeMessageFileUpload(...args));
 			return API.v1.success({ messages });
 		} catch (e) {
 			return API.v1.failure(e);
@@ -276,7 +275,7 @@ API.v1.addRoute(
 	'livechat/messages',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
@@ -290,7 +289,7 @@ API.v1.addRoute(
 			if (!this.bodyParams.messages) {
 				return API.v1.failure('Body param "messages" is required');
 			}
-			if (!(this.bodyParams.messages instanceof Array)) {
+			if (!this.bodyParams.messages) {
 				return API.v1.failure('Body param "messages" is not an array');
 			}
 			if (this.bodyParams.messages.length === 0) {
@@ -299,10 +298,11 @@ API.v1.addRoute(
 
 			const visitorToken = this.bodyParams.visitor.token;
 
-			let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-			let rid;
-			if (visitor) {
-				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
+			let visitor = LivechatVisitors.getVisitorByToken(visitorToken, {});
+			let rid: string;
+
+			if (await visitor) {
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {
@@ -315,10 +315,10 @@ API.v1.addRoute(
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
 				const visitorId = Livechat.registerGuest(guest);
-				visitor = LivechatVisitors.findOneById(visitorId);
+				visitor = LivechatVisitors.findOneById(visitorId, {});
 			}
 
-			const sentMessages = this.bodyParams.messages.map((message) => {
+			const sentMessages = this.bodyParams.messages.map(async (message) => {
 				const sendMessage = {
 					guest: visitor,
 					message: {
@@ -333,7 +333,7 @@ API.v1.addRoute(
 						},
 					},
 				};
-				const sentMessage = Promise.await(Livechat.sendMessage(sendMessage));
+				const sentMessage = await Livechat.sendMessage(sendMessage);
 				return {
 					username: sentMessage.u.username,
 					msg: sentMessage.msg,

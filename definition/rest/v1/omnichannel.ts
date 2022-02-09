@@ -1,6 +1,11 @@
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+
+import { FailureResult } from '../../../app/api/server/api.d';
+import { ILivechatMessage } from '../../../imports/client/@rocket.chat/apps-engine/definition/livechat/ILivechatMessage.d';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IBusinessHourWorkHour, ILivechatBusinessHour } from '../../ILivechatBusinessHour';
+import { ILivechatCustomField } from '../../ILivechatCustomField';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
@@ -9,7 +14,6 @@ import { ILivechatTrigger } from '../../ILivechatTrigger';
 import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
-import { ISetting } from '../../ISetting';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -298,5 +302,109 @@ export type OmnichannelEndpoints = {
 	'livechat/users/:type/:_id': {
 		GET: (params: { type: string; _id: string }) => { user: any };
 		DELETE: (params: { type: string; _id: string; username: string }) => void;
+	};
+
+	'livechat/agent.info/:rid/:token': {
+		GET: (params: { rid: string; token: string }) => { agent: ILivechatAgent };
+	};
+
+	'livechat/agent.next/:token': {
+		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent };
+	};
+
+	'livechat/config': {
+		GET: (params: { token: string; department?: string; businessUnit: string }) => { config: any };
+	};
+
+	'omnichannel/contact': {
+		POST: (params: {
+			_id?: string;
+			token: string;
+			name: string;
+			username: string;
+			email?: string;
+			phone?: string;
+			customFields?: any[];
+			contactManager?: any;
+		}) => { contact: string };
+
+		GET: (params: { contactId: string }) => { contact: ILivechatVisitor };
+	};
+
+	'omnichannel/contact.search': {
+		GET: (params: { email?: string; phone?: string }) => { contact: ILivechatVisitor };
+	};
+
+	'livechat/custom.field': {
+		POST: (params: { token: string; key: string; value: string; overwrite: boolean }) => {
+			field: { key: string; value: string; overwrite: boolean };
+		};
+	};
+
+	'livechat/custom.fields': {
+		POST: (params: { token: string; customFields: { key: string; value: string; overwrite: boolean } }) => {
+			fields: (
+				| FailureResult<void, undefined, undefined, undefined>
+				| {
+						Key: string;
+						value: string;
+						overwrite: boolean;
+				  }
+			)[];
+		};
+	};
+
+	'livechat/custom-fields/:_id': {
+		GET: (params: { id: string }) => { customField: ILivechatCustomField | null };
+	};
+
+	'livechat/message': {
+		POST: (params: { _id?: string; token: string; rid: string; msg: string; agent: { agentId: string; username: string } }) => {
+			message: ILivechatMessage;
+		};
+	};
+
+	'livechat/message/:_id': {
+		GET: (params: { _id: string; token: string; rid: string }) => { message: ILivechatMessage };
+		PUT: (params: { _id: string; token: string; rid: string; msg: string }) => { message: ILivechatMessage };
+		DELETE: (params: { _id: string; token: string; rid: string }) => {
+			message: {
+				_id: string;
+				ts: string;
+			};
+		};
+	};
+
+	'livechat/messages.history/:rid': {
+		GET: (params: { rid: string; searchText: { text: string; token: string }; ls: string; end: string; limit: string }) => {
+			messages: ILivechatMessage[];
+		};
+	};
+
+	'livechat/messages': {
+		POST: (params: { visitor: ILivechatVisitor; messages: ILivechatMessage[] }) => { messages: ILivechatMessage[] };
+	};
+
+	'livechat/offline.message': {
+		POST: (params: { name: string; email: string; message: string; department?: string; host?: string }) => { message: string };
+	};
+
+	'livechat/page.visited': {
+		POST: (params: { token: string; rid?: string; pageInfo: { change: string; title: string; location: { href: string } } }) => {
+			page: Pick<
+				{
+					t: string;
+					rid: any;
+					ts: Date;
+					msg: any;
+					u: {
+						_id: any;
+						username: any;
+					};
+					groupable: boolean;
+				},
+				'rid' | 'msg' | 't' | 'ts' | 'u' | 'groupable'
+			>;
+		};
 	};
 };
