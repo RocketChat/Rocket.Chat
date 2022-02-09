@@ -71,15 +71,14 @@ const AppsTable: FC<{
 		label: t('Filter_By_Price'),
 		items: [
 			{ id: 'all', label: t('All_Apps'), checked: true },
-			{ id: 'free', label: 'Free Apps', checked: false },
-			{ id: 'paid', label: 'Paid Apps', checked: false },
+			{ id: 'free', label: t('Free_Apps'), checked: false },
+			{ id: 'paid', label: t('Paid_Apps'), checked: false },
 		],
 	};
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState(FreePaidFilterStructure);
 
 	const freePaidFilterOnSelected = useFreePaidToggle(setFreePaidFilterStructure);
-
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
