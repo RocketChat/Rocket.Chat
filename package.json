@@ -203,7 +203,7 @@
 		"archiver": "^3.1.1",
 		"atlassian-crowd-patched": "^0.5.1",
 		"autolinker": "^3.14.3",
-		"aws-sdk": "^2.735.0",
+		"aws-sdk": "^2.814.0",
 		"bad-words": "^3.0.4",
 		"bcrypt": "^5.0.1",
 		"blockstack": "19.3.0",
