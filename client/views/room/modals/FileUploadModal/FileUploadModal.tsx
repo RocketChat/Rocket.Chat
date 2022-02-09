@@ -28,7 +28,7 @@ const FileUploadModal = ({
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const ref = useAutoFocus();
+	const ref = useAutoFocus<HTMLInputElement>();
 
 	const handleName = (e: ChangeEvent<HTMLInputElement>): void => {
 		setName(e.currentTarget.value);
