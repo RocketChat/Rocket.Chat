@@ -39,6 +39,10 @@ export const useFilteredApps = ({
 
 		if (purchaseType && purchaseType !== 'all') {
 			filtered = filterAppByPurchaseType(filtered, purchaseType);
+
+			if (!filtered.length) {
+				shouldShowSearchText = false;
+			}
 		}
 
 		if (Boolean(categories.length) && Boolean(text)) {
