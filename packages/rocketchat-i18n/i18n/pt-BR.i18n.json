@@ -58,8 +58,6 @@
   "Accounts_AvatarExternalProviderUrl": "URL do provedor externo do Avatar",
   "Accounts_AvatarExternalProviderUrl_Description": "Exemplo: `https://acme.com/api/v1/ {username}`",
   "Accounts_AvatarResize": "Redimensionar Avatares",
-  "Accounts_AvatarRotate": "Rotacionar Avatares",
-  "Accounts_AvatarRotate_Description": "Rotacionar Avatares automaticamente com base nos dados de cada imagem",
   "Accounts_AvatarSize": "Tamanho do Avatar",
   "Accounts_BlockedDomainsList": "Lista de Domínios Bloqueados",
   "Accounts_BlockedDomainsList_Description": "Lista de domínios bloqueados, separados por vírgulas",

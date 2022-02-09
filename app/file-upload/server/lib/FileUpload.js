@@ -229,7 +229,7 @@ export const FileUpload = {
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
-		if (settings.get('Accounts_AvatarRotate') === true) {
+		if (settings.get('FileUpload_RotateImages') === true) {
 			s.rotate();
 		}
 
