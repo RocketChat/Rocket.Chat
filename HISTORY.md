@@ -1,6 +1,33 @@
 
+# 4.4.2
+`2022-02-09  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.2`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.30.0`
+
+### 🐛 Bug fixes
+
+
+- OAuth mismatch redirect_uri error ([#24450](https://github.com/RocketChat/Rocket.Chat/pull/24450))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: bump fuselage version ([#24453](https://github.com/RocketChat/Rocket.Chat/pull/24453))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 4.4.1
-`2022-02-07  ·  6 🐛  ·  5 👩‍💻👨‍💻`
+`2022-02-07  ·  6 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.18.2`
@@ -25,11 +52,20 @@
 
   Fix `bio` and `prid` startup index creation errors.
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.4.1 ([#24432](https://github.com/RocketChat/Rocket.Chat/pull/24432))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@dougfabris](https://github.com/dougfabris)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ostjen](https://github.com/ostjen)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
