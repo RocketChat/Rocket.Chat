@@ -6,17 +6,13 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 
 function Open(_command: 'open', params: string, _item: Record<string, string>): void {
-	let room = params.trim();
-	const typeStr = room[0];
-	let type: string[] | null;
-	if (typeStr === '#') {
-		type = ['c', 'p'];
-	} else if (typeStr === '@') {
-		type = ['d'];
-	} else {
-		type = null;
-	}
+	const dict: Record<string, string[]> = {
+		'#': ['c', 'p'],
+		'@': ['d'],
+	};
 
+	let room = params.trim();
+	const type = dict[room[0]];
 	room = room.replace(/#|@/, '');
 	const query = {
 		name: room,
