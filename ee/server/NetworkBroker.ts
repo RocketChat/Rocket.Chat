@@ -19,8 +19,6 @@ const lifecycle: { [k: string]: string } = {
 };
 
 const {
-	INTERNAL_SERVICES_ONLY = 'false',
-	// SERVICES_ALLOWED = '',
 	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
 	WAIT_FOR_SERVICES_WHITELIST_TIMEOUT = '600000', // 10 minutes
 } = process.env;
@@ -37,9 +35,6 @@ export class NetworkBroker implements IBroker {
 		events: ['license.module', 'watch.settings'],
 		actions: ['license.hasLicense'],
 	};
-
-	// whether only internal services are allowed to be registered
-	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
 
 	metrics: IServiceMetrics;
 
@@ -103,18 +98,15 @@ export class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: ServiceClass): void {
-		if (!this.isServiceAllowed(instance)) {
-			return;
-		}
-
 		const name = instance.getName();
 
-		if (!this.isServiceInternal(instance)) {
+		if (!instance.isInternal()) {
 			instance.onEvent('shutdown', async (services) => {
-				const service = services[name];
-				if (!service) {
+				if (!services[name]?.includes(this.broker.nodeID)) {
+					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
 					return;
 				}
+				this.broker.logger.info({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
 				this.destroyService(instance);
 			});
 		}
@@ -208,18 +200,5 @@ export class NetworkBroker implements IBroker {
 
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
-	}
-
-	private isServiceInternal(instance: ServiceClass): boolean {
-		return !(this.internalOnly && !instance.isInternal());
-	}
-
-	private isServiceAllowed(instance: ServiceClass): boolean {
-		// allow only internal services if internalOnly is true
-		if (this.internalOnly && !instance.isInternal()) {
-			return false;
-		}
-
-		return true;
 	}
 }

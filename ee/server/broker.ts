@@ -20,7 +20,7 @@ const {
 	MS_METRICS = 'false',
 	MS_METRICS_PORT = '9458',
 	TRACING_ENABLED = 'false',
-	SKIP_PROCESS_EVENT_REGISTRATION = 'true',
+	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
 } = process.env;
 
 // only starts network broker if transporter properly configured
@@ -44,7 +44,6 @@ if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 		}
 
 		const network = new ServiceBroker({
-			// TODO: Reevaluate, without this setting it was preventing the process to stop
 			skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 			transporter: TRANSPORTER,
 			metrics: {
