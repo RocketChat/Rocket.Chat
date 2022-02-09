@@ -58,7 +58,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			},
 			servedBy: {
 				_id: agent.agentId,
-				ts: new Date(),
+				ts: newRoomAt,
 				username: agent.username,
 			},
 			cl: false,
@@ -68,9 +68,11 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			// in case it's not provided, we'll use this "default" type
 			source: {
 				type: 'voip',
-				alias: 'unknown',
 			},
 			queuedAt: newRoomAt,
+
+			// We assume room is created when call is started (there could be small delay)
+			callStarted: newRoomAt,
 		});
 		return (await this.voipRoom.insertOne(room)).insertedId;
 	}

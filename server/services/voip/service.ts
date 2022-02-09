@@ -13,7 +13,7 @@ import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from 
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { IUser } from '../../../definition/IUser';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { IRoom } from '../../../definition/IRoom';
+import { isOmnichannelVoipRoom, IVoipRoom } from '../../../definition/IRoom';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { settings } from '../../../app/settings/server';
 
@@ -204,14 +204,20 @@ export class VoipService extends ServiceClass implements IVoipService {
 		};
 	}
 
-	async handleEvent(event: string, room: IRoom, user: IUser, comment?: string): Promise<void> {
+	async handleEvent(event: string, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
 		const message = {
 			t: event,
 			msg: comment,
 			groupable: false,
+			voipData: {
+				callDuration: room.callDuration,
+				callStarted: room.callStarted,
+			},
 		};
-		// TODO: Add events (messageTypes) to IMessage interface
-		if (room.t === 'v' && event in VoipClientEvents) {
+
+		// In the future, we need to check if the room to which we're sending events is on an active call
+		// to prevent sending messages to rooms after call has ended/call never happened
+		if (isOmnichannelVoipRoom(room) && Object.values<string>(VoipClientEvents).includes(event) && room.open) {
 			await sendMessage(user, message, room);
 		} else {
 			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });

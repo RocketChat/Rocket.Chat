@@ -11,11 +11,11 @@ type MentionType = 'user' | 'team';
 
 type VoipMessageTypesValues =
 	| 'voip-call-started'
-	| 'voip-call-answered'
 	| 'voip-call-declined'
-	| 'voip-call-put-on-hold'
+	| 'voip-call-on-hold'
 	| 'voip-call-unhold'
-	| 'voip-call-ended';
+	| 'voip-call-ended'
+	| 'voip-call-duration';
 
 type MessageTypesValues =
 	| 'e2e'
@@ -81,6 +81,13 @@ export interface IMessage extends IRocketChatRecord {
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 }
+
+export type IVoipMessage = IMessage & {
+	voipData?: {
+		callDuration?: number;
+		callStarted?: string;
+	};
+};
 
 export type IMessageInbox = IMessage & {
 	// email inbox fields

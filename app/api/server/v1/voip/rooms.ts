@@ -7,7 +7,7 @@ import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { IVoipRoom } from '../../../../../definition/IRoom';
-import { IUser } from '../../../../../definition/IUser';
+import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 
 /**
  * @openapi
@@ -72,8 +72,8 @@ API.v1.addRoute(
 		async get() {
 			const defaultCheckParams = {
 				token: String,
+				agentId: String,
 				rid: Match.Maybe(String),
-				agentId: Match.Maybe(String),
 			};
 			check(this.queryParams, defaultCheckParams);
 
@@ -83,33 +83,27 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-token');
 			}
 
-			let room;
 			if (!rid) {
-				room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
+				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
 				}
-				let agentObj: IUser | null = null;
-				if (agentId) {
-					agentObj = await Users.findOne(
-						{
-							_id: agentId,
-						},
-						{
-							projection: { username: 1 },
-						},
-					);
-				}
+
+				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
+					projection: { username: 1 },
+				});
 				if (!agentObj?.username) {
 					return API.v1.failure('agent-not-found');
 				}
+
 				const { username } = agentObj;
 				const agent = { agentId, username };
 				const rid = Random.id();
-				room = await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude });
-				return API.v1.success(room);
+
+				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
 			}
-			room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
+
+			const room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
 			if (!room) {
 				return API.v1.failure('invalid-room');
 			}

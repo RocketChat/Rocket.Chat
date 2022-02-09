@@ -8,12 +8,16 @@ export const AuthorizationLivechat = proxifyWithWait<IAuthorizationLivechat>('au
 export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// room can be sent as `null` but in that case a `rid` is also sent on extraData
 	// this is the case for file uploads
-	const livechatRoom = room || (extraData?.rid && (await Rooms.findOneById(extraData?.rid)));
+	const foundRoom = room || (extraData?.rid && (await Rooms.findOneById(extraData?.rid)));
 
-	if (livechatRoom?.t !== 'l') {
+	if (!foundRoom || !foundRoom.t) {
+		return false;
+	}
+
+	if (!['v', 't'].includes(foundRoom.t)) {
 		return false;
 	}
 
 	// Call back core temporarily
-	return AuthorizationLivechat.canAccessRoom(livechatRoom, user, extraData);
+	return AuthorizationLivechat.canAccessRoom(room, user, extraData);
 };
