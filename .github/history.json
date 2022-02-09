@@ -70006,6 +70006,17 @@
       ],
       "pull_requests": [
         {
+          "pr": "24432",
+          "title": "Release 4.4.1",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "sampaiodiego",
+            "pierre-lehnen-rc",
+            "dougfabris",
+            "ostjen"
+          ]
+        },
+        {
           "pr": "24387",
           "title": "[FIX] Slash commands previews not working",
           "userLogin": "ostjen",
@@ -70062,6 +70073,38 @@
           "contributors": [
             "sampaiodiego",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.4.2": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24450",
+          "title": "[FIX] OAuth mismatch redirect_uri error",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24453",
+          "title": "Chore: bump fuselage version",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.2",
+          "contributors": [
+            "dougfabris"
           ]
         }
       ]
