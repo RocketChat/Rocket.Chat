@@ -13,8 +13,6 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
-import WebSocket from 'ws';
-
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
@@ -25,6 +23,7 @@ import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorRe
 import { IVoipService } from '../../../../sdk/types/IVoipService';
 import { IManagementConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
 import { IManagementServerConnectionStatus } from '../../../../../definition/IVoipServerConnectivityStatus';
+import { WebsocketConnection } from '../websocket/WebsocketConnection';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -104,44 +103,34 @@ export class CommandHandler {
 	): Promise<IManagementServerConnectionStatus> {
 		this.logger.debug({ msg: 'checkManagementConnection()', host, port, userName });
 		const connection = new AMIConnection();
-		let connectionState = '';
-		let errorReason;
 		try {
-			connectionState = await connection.connect(host, port, userName, password);
+			await connection.connect(host, port, userName, password);
 			if (connection.isConnected()) {
 				// Just a second level of check to ensure that we are actually
 				// connected and authenticated.
 				connection.closeConnection();
 			}
 			this.logger.debug({ msg: 'checkManagementConnection() Connected ' });
+			return {
+				status: 'connected',
+			};
 		} catch (error: any) {
 			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
-			errorReason = error.message;
+			throw error;
 		}
-		return {
-			status: connectionState === 'connected' ? 'connected' : 'connection-error',
-			error: errorReason,
-		};
 	}
 
-	async checkCallserverConnection(websocketUrl: string, protocol = 'sip'): Promise<IManagementServerConnectionStatus> {
-		this.logger.debug({ msg: 'checkManagementConnection()', websocketUrl });
-		let socket: WebSocket;
-		const returnPromise = new Promise<string>((_resolve, _reject) => {
-			const onError = (error: any): void => {
-				_reject(error);
-				this.logger.error({ msg: 'checkCallserverConnection () Connection Error', error });
-			};
-			const onConnect = (): void => {
-				_resolve('connected');
-				socket.close();
-			};
-			socket = new WebSocket(websocketUrl, protocol);
-			socket.on('open', onConnect);
-			socket.on('error', onError);
-		});
+	async checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus> {
+		this.logger.debug({ msg: 'checkCallserverConnection()', websocketUrl });
+		const connection = new WebsocketConnection();
 		try {
-			await returnPromise;
+			await connection.connectWithUrl(websocketUrl, protocol);
+			if (connection.isConnected()) {
+				// Just a second level of check to ensure that we are actually
+				// connected and authenticated.
+				connection.closeConnection();
+			}
+			this.logger.debug({ msg: 'checkManagementConnection() Connected ' });
 			return {
 				status: 'connected',
 			};

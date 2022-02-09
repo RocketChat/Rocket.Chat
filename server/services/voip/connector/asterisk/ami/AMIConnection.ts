@@ -63,10 +63,10 @@ export class AMIConnection implements IConnection {
 		userName: string,
 		password: string,
 		connectivityCheck = false,
-	): Promise<string> {
+	): Promise<void> {
 		this.logger.log({ msg: 'connect()' });
 		this.connection = new Manager(undefined, connectionIpOrHostname, userName, password, true);
-		const returnPromise = new Promise<string>((_resolve, _reject) => {
+		const returnPromise = new Promise<void>((_resolve, _reject) => {
 			const onError = (error: any): void => {
 				_reject(error);
 				this.logger.error({ msg: 'connect () Connection Error', error });
@@ -99,7 +99,7 @@ export class AMIConnection implements IConnection {
 						this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
 					}
 					this.logger.debug({ msg: 'connect () Authentication Success, Connected' });
-					_resolve('connected');
+					_resolve();
 				}
 			};
 			this.connection.on('connect', onConnect);
