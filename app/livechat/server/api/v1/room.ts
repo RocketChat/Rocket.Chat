@@ -3,8 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings as rcSettings } from '../../../../settings';
-import { Messages, LivechatRooms } from '../../../../models';
+import { settings as rcSettings } from '../../../../settings/server/index';
+import { Messages, LivechatRooms } from '../../../../models/server/index';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -13,14 +13,14 @@ import { findVisitorInfo } from '../lib/visitors';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/room', {
-	get() {
+	async get() {
 		const defaultCheckParams = {
 			token: String,
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
 		};
 
-		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
+		const extraCheckParams = await onCheckRoomParams(defaultCheckParams);
 
 		check(this.queryParams, extraCheckParams);
 
@@ -52,7 +52,7 @@ API.v1.addRoute('livechat/room', {
 				},
 			};
 
-			room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
+			room = await getRoom({ guest, rid, agent, roomInfo, extraParams });
 			return API.v1.success(room);
 		}
 
