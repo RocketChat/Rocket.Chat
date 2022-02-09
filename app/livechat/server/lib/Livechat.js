@@ -270,7 +270,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ id, token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
 
@@ -280,6 +280,7 @@ export const Livechat = {
 		const updateUser = {
 			$set: {
 				token,
+				status,
 				...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
 				...(name ? { name } : {}),
 			},
@@ -321,6 +322,7 @@ export const Livechat = {
 
 			const userData = {
 				username,
+				status,
 				ts: new Date(),
 				...(id && { _id: id }),
 			};
