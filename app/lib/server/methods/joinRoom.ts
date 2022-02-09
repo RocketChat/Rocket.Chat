@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission, canAccessRoom } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { hasPermission, canAccessRoom } from '../../../authorization/server';
+import { Rooms } from '../../../models/server';
 import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
@@ -11,7 +11,9 @@ Meteor.methods({
 	joinRoom(rid, code) {
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
@@ -26,7 +28,7 @@ Meteor.methods({
 		}
 
 		// TODO we should have a 'beforeJoinRoom' call back so external services can do their own validations
-		const user = Meteor.user();
+
 		if (room.tokenpass && user && user.services && user.services.tokenpass) {
 			const balances = updateUserTokenpassBalances(user);
 
@@ -34,10 +36,10 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {
-			if (!canAccessRoom(room, Meteor.user())) {
+			if (!canAccessRoom(room, user)) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 			}
-			if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(Meteor.userId(), 'join-without-join-code')) {
+			if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(user._id, 'join-without-join-code')) {
 				throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', {
 					method: 'joinRoom',
 				});

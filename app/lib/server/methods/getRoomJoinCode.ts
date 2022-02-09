@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { Rooms } from '../../../models/server';
 
 Meteor.methods({
 	getRoomJoinCode(rid) {
@@ -18,6 +18,6 @@ Meteor.methods({
 
 		const [room] = Rooms.findById(rid).fetch();
 
-		return room && room.joinCode;
+		return room?.joinCode;
 	},
 });

@@ -39,4 +39,6 @@ const Result = memo(({ setDataRef }) => {
 	return <Box ref={ref} />;
 });
 
+Result.displayName = 'Result';
+
 export default Result;
