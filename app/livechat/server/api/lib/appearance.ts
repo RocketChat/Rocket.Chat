@@ -1,8 +1,8 @@
-import { ISettingBase, ISetting } from '../../../../../definition/ISetting';
+import { ISetting } from '../../../../../definition/ISetting';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Settings } from '../../../../models/server/raw';
 
-export async function findAppearance({ userId }: { userId: any }): Promise<{ appearance: ISetting[] | ISetting | ISettingBase }> {
+export async function findAppearance({ userId }: { userId: any }): Promise<{ appearance: ISetting[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}

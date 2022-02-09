@@ -14,8 +14,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const departments = await findExternalMessages({
-				roomId: this.urlParams.roomId,
+			const departments = await findExternalMessages(this.urlParams.roomId, {
 				pagination: {
 					offset,
 					count,

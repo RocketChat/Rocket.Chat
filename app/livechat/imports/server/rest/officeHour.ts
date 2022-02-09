@@ -11,7 +11,7 @@ API.v1.addRoute(
 			return API.v1.success(
 				deprecationWarning({
 					endpoint: 'livechat/office-hours',
-					versionWillBeRemoved: '4.0.0',
+					versionWillBeRemoved: '5.0.0',
 					response: {
 						officeHours,
 					},

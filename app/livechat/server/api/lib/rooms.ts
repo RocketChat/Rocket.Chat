@@ -1,5 +1,4 @@
-import { ILivechatRoom } from './../../../../../imports/client/@rocket.chat/apps-engine/definition/livechat/ILivechatRoom.d';
-import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
+import { IOmnichannelRoom } from '../../../../../definition/IRoom';
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
 
 export async function findRooms({
@@ -14,17 +13,17 @@ export async function findRooms({
 	onhold,
 	options,
 }: {
-	agents: ILivechatAgent[];
+	agents: string[];
 	roomName: string;
 	departmentId: string;
 	open: boolean;
-	createdAt: string;
-	closedAt: string;
+	createdAt: { start?: string; end?: string };
+	closedAt: { start?: string; end?: string };
 	tags: string[];
 	customFields: any[];
 	onhold: string;
-	options: { offset: number; count: number; fields: any[]; sort: string };
-}): Promise<{ rooms: ILivechatRoom[]; count: number; offset: number; total: number }> {
+	options: { offset: number; count: number; fields: Record<string, unknown>; sort: Record<string, unknown> };
+}): Promise<{ rooms: IOmnichannelRoom[]; count: number; offset: number; total: number }> {
 	const cursor = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
@@ -35,6 +34,9 @@ export async function findRooms({
 		tags,
 		customFields,
 		onhold: ['t', 'true', '1'].includes(onhold),
+		served: undefined,
+		visitorId: undefined,
+		roomIds: undefined,
 		options: {
 			sort: options.sort || { ts: -1 },
 			offset: options.offset,
@@ -50,7 +52,7 @@ export async function findRooms({
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
 	if (departmentsIds.length) {
 		const departments = await LivechatDepartment.findInIds(departmentsIds, {
-			fields: { name: 1 },
+			projection: { name: 1 },
 		}).toArray();
 
 		rooms.forEach((room) => {

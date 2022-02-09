@@ -1,6 +1,6 @@
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
-import { ILivechatBusinessHour } from '../../ILivechatBusinessHour';
+import { IBusinessHourWorkHour, ILivechatBusinessHour } from '../../ILivechatBusinessHour';
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatDepartmentAgents } from '../../ILivechatDepartmentAgents';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
@@ -122,8 +122,8 @@ export type OmnichannelEndpoints = {
 			open: string;
 			roomName: string;
 			onhold: string;
-			createdAt: string;
-			closedAt: string;
+			createdAt: { start?: string; end?: string } | string;
+			closedAt: { start?: string; end?: string } | string;
 			guest: string;
 			fname: string;
 			servedBy: string[];
@@ -256,7 +256,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.queued': {
-		GET: (params: { department: number }) => { inquiries: ILivechatInquiryRecord[] };
+		GET: (params: { department: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 
 	'livechat/inquiries.getOne': {
@@ -272,7 +272,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/office-hours': {
-		GET: (params: {}) => {};
+		GET: (params: {}) => { officeHours: IBusinessHourWorkHour[] | undefined };
 	};
 	'livechat/sms-incoming/:service': {
 		POST: (params: { service: any; sms: any; department: string }) => {};

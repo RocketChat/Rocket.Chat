@@ -9,10 +9,10 @@ export async function findQueueMetrics({
 	pagination,
 }: {
 	userId: string;
-	agentId: string;
-	includeOfflineAgents: boolean;
-	departmentId: string;
-	pagination: { offset: number; count: number; sort: number };
+	agentId?: string;
+	includeOfflineAgents?: boolean;
+	departmentId?: string;
+	pagination: { offset: number; count: number; sort: Record<string, unknown> };
 }): Promise<{ queue: any[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');

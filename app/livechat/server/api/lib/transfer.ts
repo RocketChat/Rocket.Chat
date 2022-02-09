@@ -1,7 +1,8 @@
+import { SortOptionObject } from 'mongodb';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Messages } from '../../../../models/server/raw';
-
-import { MessagesRaw } from '/app/models/server/raw/Messages';
+import { IMessage } from '../../../../../definition/IMessage';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const normalizeTransferHistory = ({ transferData }: { transferData: number }) => transferData;
@@ -13,7 +14,7 @@ export async function findLivechatTransferHistory({
 }: {
 	userId: string;
 	rid: string;
-	pagination: { offset: number; count: number; sort: string };
+	pagination: { offset: number; count: number; sort: SortOptionObject<IMessage> };
 }): Promise<{ history: number[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-rooms'))) {
 		throw new Error('error-not-authorized');

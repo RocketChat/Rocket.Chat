@@ -1,20 +1,19 @@
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server/raw';
+import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 
 async function findUsers({
-	_userId,
 	role,
 	text,
 	pagination,
 }: {
-	_userId: string;
+	userId: string;
 	role: string;
-	text: string;
-	pagination: { offset: number; count: number; sort: string };
-}): Promise<{ users: IUser[]; count: number; offset: number; total: number }> {
+	text?: string;
+	pagination: { offset: number; count: number; sort: Record<string, unknown> };
+}): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query = {};
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -54,10 +53,10 @@ export async function findAgents({
 	pagination,
 }: {
 	userId: string;
-	text: string;
-	pagination: { offset: number; count: number; sort: string };
+	text?: string;
+	pagination: { offset: number; count: number; sort: Record<string, unknown> };
 }): Promise<{
-	users: IUser[];
+	users: ILivechatAgent[];
 	count: number;
 	offset: number;
 	total: number;
@@ -68,7 +67,7 @@ export async function findAgents({
 
 	return findUsers({
 		role: 'livechat-agent',
-		_userId: userId,
+		userId,
 		text,
 		pagination: {
 			offset: pagination.offset,
@@ -84,10 +83,10 @@ export async function findManagers({
 	pagination,
 }: {
 	userId: string;
-	text: string;
-	pagination: { offset: number; count: number; sort: string };
+	text?: string;
+	pagination: { offset: number; count: number; sort: Record<string, unknown> };
 }): Promise<{
-	users: IUser[];
+	users: ILivechatAgent[];
 	count: number;
 	offset: number;
 	total: number;
@@ -98,7 +97,7 @@ export async function findManagers({
 
 	return findUsers({
 		role: 'livechat-manager',
-		_userId: userId,
+		userId,
 		text,
 		pagination: {
 			offset: pagination.offset,

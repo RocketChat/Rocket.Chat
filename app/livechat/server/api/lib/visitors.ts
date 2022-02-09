@@ -1,8 +1,9 @@
+import { SortOptionObject } from 'mongodb';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 import { ILivechatVisitor } from '../../../../../definition/ILivechatVisitor';
-import { SortOptionObject } from 'meteor/node_modules/@types/mongodb';
 
 export async function findVisitorInfo({
 	userId,
@@ -206,7 +207,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({
 		sort: pagination.sort || { ts: -1 },
 		skip: pagination.offset,
 		limit: pagination.count,
-		fields: {
+		projection: {
 			_id: 1,
 			username: 1,
 			name: 1,

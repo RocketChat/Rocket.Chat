@@ -1,4 +1,4 @@
-import { ILivechatInquiryRecord } from '../../../../../definition/IInquiry';
+import { ILivechatInquiryRecord, LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
 import { hasAnyRoleAsync } from '../../../../authorization/server/functions/hasRole';
@@ -40,9 +40,9 @@ export async function findInquiries({
 }: {
 	userId: string;
 	filterDepartment: string;
-	status: boolean;
+	status: LivechatInquiryStatus;
 	pagination: { offset: number; count: number; sort: any };
-}): Promise<ILivechatInquiryRecord | { inquiries: ILivechatInquiryRecord[]; count: number; offset: number; total: number }> {
+}): Promise<{ inquiries: ILivechatInquiryRecord[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -55,6 +55,7 @@ export async function findInquiries({
 		skip: pagination.offset,
 	};
 
+	// TODO: this query should be on model
 	const filter = {
 		...(status && { status }),
 		$or: [
@@ -77,7 +78,13 @@ export async function findInquiries({
 	};
 }
 
-export async function findOneInquiryByRoomId({ userId, roomId }: { userId: string; roomId: string }): Promise<{ inquiry: string | null }> {
+export async function findOneInquiryByRoomId({
+	userId,
+	roomId,
+}: {
+	userId: string;
+	roomId: string;
+}): Promise<{ inquiry: ILivechatInquiryRecord | null }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}

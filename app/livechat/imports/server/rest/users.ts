@@ -52,33 +52,29 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
-			try {
-				check(this.urlParams, {
-					type: String,
-				});
+			check(this.urlParams, {
+				type: String,
+			});
 
-				check(this.bodyParams, {
-					username: String,
-				});
+			check(this.bodyParams, {
+				username: String,
+			});
 
-				if (this.urlParams.type === 'agent') {
-					const user = Livechat.addAgent(this.bodyParams.username);
-					if (user) {
-						return API.v1.success({ user });
-					}
-				} else if (this.urlParams.type === 'manager') {
-					const user = Livechat.addManager(this.bodyParams.username);
-					if (user) {
-						return API.v1.success({ user });
-					}
-				} else {
-					throw new Error('Invalid type');
+			if (this.urlParams.type === 'agent') {
+				const user = Livechat.addAgent(this.bodyParams.username);
+				if (user) {
+					return API.v1.success({ user });
 				}
-
-				return API.v1.failure();
-			} catch (e: any) {
-				return API.v1.failure(e.message);
+			} else if (this.urlParams.type === 'manager') {
+				const user = Livechat.addManager(this.bodyParams.username);
+				if (user) {
+					return API.v1.success({ user });
+				}
+			} else {
+				throw new Error('Invalid type');
 			}
+
+			return API.v1.failure();
 		},
 	},
 );

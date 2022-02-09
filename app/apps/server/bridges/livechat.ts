@@ -102,7 +102,6 @@ export class AppLivechatBridge extends LivechatBridge {
 					defaultIcon,
 				},
 			},
-			extraParams: undefined,
 		});
 
 		return this.orch.getConverters()?.get('rooms').convertRoom(result.room);

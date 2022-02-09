@@ -56,18 +56,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			try {
-				if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
-					return API.v1.failure('The user is invalid');
-				}
-				return API.v1.success({
-					inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
-						Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
-					),
-				});
-			} catch (e) {
-				return API.v1.failure(e);
+			if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
+				return API.v1.failure('The user is invalid');
 			}
+			return API.v1.success({
+				inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
+					Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
+				),
+			});
 		},
 	},
 );
@@ -84,8 +80,8 @@ API.v1.addRoute(
 			return API.v1.success(
 				await findInquiries({
 					userId: this.userId,
-					department,
-					status: 'queued',
+					filterDepartment: department,
+					status: LivechatInquiryStatus.QUEUED,
 					pagination: {
 						offset,
 						count,
