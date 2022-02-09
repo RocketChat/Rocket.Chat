@@ -7,7 +7,7 @@ import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
 import FreePaidDropDownList from './FreePaidDropDownList';
 
 const FreePaidDropDown: FC<FreePaidDropDownProps> = ({ group, onSelected, ...props }) => {
-	const reference = useRef<HTMLElement>(null);
+	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(

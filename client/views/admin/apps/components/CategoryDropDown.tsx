@@ -11,7 +11,7 @@ const CategoryDropDown: FC<{
 	onSelected: CategoryDropDownListProps['onSelected'];
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];
 }> = ({ data, onSelected, selectedCategories, ...props }) => {
-	const reference = useRef<HTMLElement>(null);
+	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
