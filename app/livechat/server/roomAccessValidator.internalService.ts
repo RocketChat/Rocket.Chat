@@ -1,11 +1,10 @@
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../../server/sdk/types/ServiceClass';
 import { IAuthorizationLivechat } from '../../../server/sdk/types/IAuthorizationLivechat';
 import { validators } from './roomAccessValidator.compatibility';
-import { api } from '../../../server/sdk/api';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 
-class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivechat {
+export class AuthorizationLivechat extends ServiceClassInternal implements IAuthorizationLivechat {
 	protected name = 'authorization-livechat';
 
 	protected internal = true;
@@ -20,5 +19,3 @@ class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivech
 		return false;
 	}
 }
-
-api.registerService(new AuthorizationLivechat());

@@ -1,4 +1,4 @@
-import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 import { api } from '../../../../server/sdk/api';
 import { ILicense } from '../../../../server/sdk/types/ILicense';
 import { hasLicense, isEnterprise, getModules, onValidateLicenses, onModule } from './license';
@@ -6,10 +6,8 @@ import { resetEnterprisePermissions } from '../../authorization/server/resetEnte
 import { Authorization } from '../../../../server/sdk';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 
-export class LicenseService extends ServiceClass implements ILicense {
+export class LicenseService extends ServiceClassInternal implements ILicense {
 	protected name = 'license';
-
-	protected internal = true;
 
 	constructor() {
 		super();
@@ -37,6 +35,8 @@ export class LicenseService extends ServiceClass implements ILicense {
 				nodes: string[];
 			}[] = await api.call('$node.services');
 
+			// console.log('services ->', services);
+
 			/* The main idea is if there is no scalability module enabled,
 			 * then we should not allow more than one service per environment.
 			 * So we list the services and the nodes, and if there is more than
@@ -48,6 +48,8 @@ export class LicenseService extends ServiceClass implements ILicense {
 				return service.name !== '$node' && service.nodes.length > 1;
 			});
 
+			console.log('duplicated ->', duplicated);
+
 			if (!duplicated.length) {
 				return;
 			}
@@ -58,6 +60,8 @@ export class LicenseService extends ServiceClass implements ILicense {
 					return [service.name, nodes];
 				}),
 			);
+
+			console.log('brokers ->', brokers);
 
 			// Just inform the service that it should be disabled
 
