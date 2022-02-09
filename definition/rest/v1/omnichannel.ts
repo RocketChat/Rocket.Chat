@@ -409,7 +409,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/room': {
-		GET: (params: { token: string; rid?: string; agentId?: string }) => { room: ILivechatRoom; newRoom?: boolean };
+		GET: (params: { token: string; rid?: string; agentId?: string }) => { room: IOmnichannelRoom; newRoom?: boolean };
 	};
 
 	'livechat/room.close': {
@@ -417,10 +417,13 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/room.transfer': {
-		POST: (params: { rid: string; token: string; department: string }) => { room: ILivechatRoom };
+		POST: (params: { rid: string; token: string; department: string }) => { room: IOmnichannelRoom };
 	};
 
 	'livechat/room.survey': {
-		POST: (params: { rid: string; token: string; data: [name: string, value: string] }) => { rid: string; data: [name: string, value: string] };
+		POST: (params: { rid: string; token: string; data: [name: string, value: string] }) => {
+			rid: string;
+			data: [name: string, value: string];
+		};
 	};
 };
