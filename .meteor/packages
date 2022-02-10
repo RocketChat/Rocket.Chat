@@ -61,7 +61,7 @@ pauli:accounts-linkedin
 raix:handlebar-helpers
 raix:ui-dropped-event
 
-rocketchat:tap-i18n@2.0.0
+rocketchat:tap-i18n@3.0.0
 underscore@1.0.10
 littledata:synced-cron
 
