@@ -99,7 +99,7 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 
 	const url = URL.format(data.urlObj);
 
-	const chunks = [];
+	const sizeLimit = 250000;
 
 	const response = await fetch(url, {
 		compress: true,
@@ -108,17 +108,26 @@ const getUrlContent = async function (urlObj, redirectCount = 5) {
 			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 			'Accept-Language': settings.get('Language') || 'en',
 		},
-		size: 250000, // max size of the response body
+		size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 		...(settings.get('Allow_Invalid_SelfSigned_Certs') && {
 			agent: getUnsafeAgent(parsedUrl.protocol),
 		}),
 	});
 
+	let totalSize = 0;
+	const chunks = [];
 	for await (const chunk of response.body) {
+		totalSize += chunk.length;
 		chunks.push(chunk);
+
+		if (totalSize > sizeLimit) {
+			SystemLogger.info({ msg: 'OEmbed request size exceeded', url });
+			break;
+		}
 	}
 
 	const buffer = Buffer.concat(chunks);
+
 	return {
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type'), buffer),
@@ -209,7 +218,7 @@ OEmbed.getUrlMetaWithCache = async function (url, withFragment) {
 		try {
 			await OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			SystemLogger.error('OEmbed duplicated record', url);
+			SystemLogger.error({ msg: 'OEmbed duplicated record', url });
 		}
 		return data;
 	}
