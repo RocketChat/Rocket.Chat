@@ -68,45 +68,34 @@ Meteor.startup(function () {
 		return Promise.resolve(message);
 	});
 
-	onClientMessageReceived.use(function (message) {
-		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
-			const { msg } = message;
-
-			if (message.notification) {
-				message.msg = t('Encrypted_message');
-				return Promise.resolve(message);
-			}
-			const otrRoom = OTR.getInstanceByRoomId(message.rid);
-			return otrRoom.decrypt(message.msg).then((data) => {
-				const { _id, text, ack } = data;
-				message._id = _id;
-				message.msg = text;
-
-				if (data.ts) {
-					message.ts = data.ts;
+	onClientMessageReceived.use(async (message) => {
+		try {
+			if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
+				if (message.notification) {
+					message.msg = t('Encrypted_message');
+					return message;
 				}
+				const otrRoom = OTR.getInstanceByRoomId(message.rid);
+				const { _id, text: msg, ack, ts, userId } = await otrRoom.decrypt(message.msg);
+
+				if (ts) message.ts = ts;
 
 				if (message.otrAck) {
-					return otrRoom.decrypt(message.otrAck).then((data) => {
-						if (ack === data.text) {
-							message.t = 'otr-ack';
-						}
-						return message;
-					});
+					const { text: otrAckText } = await otrRoom.decrypt(message.otrAck);
+					if (ack === otrAckText) message.t = 'otr-ack';
+				} else if (userId !== Meteor.userId()) {
+					const encryptedAck = await otrRoom.encryptText(ack);
+
+					Meteor.call('updateOTRAck', { message, ack: encryptedAck });
 				}
-				if (data.userId !== Meteor.userId()) {
-					return otrRoom.encryptText(ack).then((ack) => {
-						message.msg = message.msg !== msg ? msg : message.msg;
-						Meteor.call('updateOTRAck', { message, ack });
-						return message;
-					});
-				}
-				return message;
-			});
+
+				return { ...message, _id, msg };
+			}
+			if (message.t === 'otr') message.msg = '';
+
+			return message;
+		} catch (error) {
+			console.error(error);
 		}
-		if (message.t === 'otr') {
-			message.msg = '';
-		}
-		return Promise.resolve(message);
 	});
 });
