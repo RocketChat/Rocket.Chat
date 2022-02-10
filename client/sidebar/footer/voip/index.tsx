@@ -1,3 +1,4 @@
+import { Random } from 'meteor/random';
 import React, { ReactElement, useCallback, useState } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
@@ -16,14 +17,24 @@ export const VoipFooter = (): ReactElement | null => {
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
 
+	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
 
 	const openRoom = useCallback(async () => {
 		if (user) {
-			const { room } = await voipEndpoint({ token: 'r8a47l0ed3dcwgw0hcwjfr', agentId: user._id });
-			roomTypes.openRouteLink(room.t, room);
+			if ('caller' in callerInfo) {
+				const { visitor } = await visitorEndpoint({
+					visitor: {
+						token: Random.id(),
+						phone: callerInfo?.caller.callerId,
+						name: callerInfo.caller.callerName || callerInfo.caller.callerId,
+					},
+				});
+				const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
+				voipRoom.room && roomTypes.openRouteLink(voipRoom.room.t, voipRoom.room);
+			}
 		}
-	}, [user, voipEndpoint]);
+	}, [callerInfo, user, visitorEndpoint, voipEndpoint]);
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
