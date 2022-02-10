@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
 
 Meteor.methods({
@@ -20,7 +20,7 @@ Meteor.methods({
 			return undefined;
 		}
 
-		if (!canAccessRoom({ _id: msg.rid }, { _id: uid })) {
+		if (!canAccessRoomId(msg.rid, uid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 
