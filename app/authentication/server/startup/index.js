@@ -283,15 +283,12 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	 * create this user admin.
 	 * count this as the completion of setup wizard step 1.
 	 */
-	if (settings.get('Show_Setup_Wizard') === 'pending') {
-		// prettier-ignore
-		if (
-			!roles.includes('admin')
-			&&
-			Users.findOne({ roles: 'admin', type: 'user' }, { fields: { _id: 1 } }) === undefined
-		)
-			roles.push('admin');
-		Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
+	if (!roles.includes('admin') && !hasAdmin) {
+		roles.push('admin');
+		if (settings.get('Show_Setup_Wizard') === 'pending') {
+			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+		}
 	}
 
 	addUserRoles(_id, roles);
