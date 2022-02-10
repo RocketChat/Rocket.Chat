@@ -63,7 +63,7 @@ Meteor.startup(function () {
 			}
 			return message;
 		} catch (error) {
-			console.error(error);
+			return String(error);
 		}
 	});
 
@@ -94,7 +94,7 @@ Meteor.startup(function () {
 
 			return message;
 		} catch (error) {
-			console.error(error);
+			return String(error);
 		}
 	});
 });
