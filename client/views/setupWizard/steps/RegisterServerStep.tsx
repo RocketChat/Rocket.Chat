@@ -11,6 +11,7 @@ const RegisterServerStep = (): ReactElement => {
 		setSetupWizardData,
 		setupWizardData: { adminData },
 		registerServer,
+		maxSteps,
 	} = useSetupWizardContext();
 
 	const handleSubmit: ComponentProps<typeof RegisteredServerPage>['onSubmit'] = async (data) => {
@@ -24,7 +25,7 @@ const RegisterServerStep = (): ReactElement => {
 		<RegisteredServerPage
 			onClickContinue={goToNextStep}
 			onBackButtonClick={goToPreviousStep}
-			stepCount={4}
+			stepCount={maxSteps}
 			onSubmit={handleSubmit}
 			currentStep={currentStep}
 			initialValues={{ email: adminData.companyEmail }}
