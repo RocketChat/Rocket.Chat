@@ -61,8 +61,10 @@ export class ResponseParser {
 			assertion = assertionData.assertion;
 
 			this.verifySignatures(response, assertionData, xml);
-		} catch (e) {
-			return callback(e, null, false);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				return callback(e, null, false);
+			}
 		}
 
 		const profile: Record<string, any> = {};
@@ -73,8 +75,10 @@ export class ResponseParser {
 
 		try {
 			issuer = this.getIssuer(assertion);
-		} catch (e) {
-			return callback(e, null, false);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				return callback(e, null, false);
+			}
 		}
 
 		if (issuer) {
@@ -94,15 +98,19 @@ export class ResponseParser {
 
 			try {
 				this.validateSubjectConditions(subject);
-			} catch (e) {
-				return callback(e, null, false);
+			} catch (e: unknown) {
+				if (e instanceof Error) {
+					return callback(e, null, false);
+				}
 			}
 		}
 
 		try {
 			this.validateAssertionConditions(assertion);
-		} catch (e) {
-			return callback(e, null, false);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				return callback(e, null, false);
+			}
 		}
 
 		const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
