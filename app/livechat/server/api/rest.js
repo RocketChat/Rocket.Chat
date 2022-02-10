@@ -6,7 +6,7 @@ import './v1/pageVisited';
 import './v1/agent';
 import './v1/message';
 import './v1/customField';
-import './v1/room.js';
+import './v1/room';
 import './v1/videoCall.js';
 import './v1/transfer.js';
 import './v1/contact';

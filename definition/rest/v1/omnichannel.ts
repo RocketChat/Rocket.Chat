@@ -407,4 +407,23 @@ export type OmnichannelEndpoints = {
 			>;
 		};
 	};
+
+	'livechat/room': {
+		GET: (params: { token: string; rid?: string; agentId?: string }) => { room: IOmnichannelRoom; newRoom?: boolean };
+	};
+
+	'livechat/room.close': {
+		POST: (params: { rid: string; token: string }) => { rid: string; comment: string };
+	};
+
+	'livechat/room.transfer': {
+		POST: (params: { rid: string; token: string; department: string }) => { room: IOmnichannelRoom };
+	};
+
+	'livechat/room.survey': {
+		POST: (params: { rid: string; token: string; data: [name: string, value: string] }) => {
+			rid: string;
+			data: [name: string, value: string];
+		};
+	};
 };
