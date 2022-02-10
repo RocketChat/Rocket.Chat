@@ -150,7 +150,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
 					const { input } = chatMessages[chatMessageKey];
 					input.value = null;
-					$(input).change().trigger('input');
+					$(input).trigger('input');
 					Meteor._localStorage.removeItem(localStorageKey);
 					imperativeModal.close();
 					uploadNextFile();
