@@ -21,6 +21,7 @@ type VoipFooterPropsType = {
 		acceptCall: string;
 		endCall: string;
 	};
+	openRoom: () => void;
 };
 
 export const VoipFooter = ({
@@ -34,6 +35,7 @@ export const VoipFooter = ({
 	toggleMic,
 	togglePause,
 	tooltips,
+	openRoom,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
 		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
@@ -89,7 +91,17 @@ export const VoipFooter = ({
 					</Button>
 				)}
 				{callerState === 'OFFER_RECEIVED' && (
-					<Button title={tooltips.acceptCall} small square success primary onClick={callActions.pickUp}>
+					<Button
+						title={tooltips.acceptCall}
+						small
+						square
+						success
+						primary
+						onClick={(): void => {
+							callActions.pickUp();
+							openRoom();
+						}}
+					>
 						<Icon name='phone' size='x16' />
 					</Button>
 				)}
