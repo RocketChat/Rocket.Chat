@@ -4,8 +4,8 @@ import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import React, { ReactElement } from 'react';
 
 import { settings } from '../../../app/settings/client';
-import { useIsCallEnabled } from '../../contexts/CallContext';
-import VoiceFooter from './VoiceFooter';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { VoipFooter } from './voip';
 
 const SidebarFooter = (): ReactElement => {
 	const sidebarFooterStyle = css`
@@ -20,10 +20,11 @@ const SidebarFooter = (): ReactElement => {
 		}
 	`;
 
-	const state = useIsCallEnabled();
+	const isCallEnabled = useIsCallEnabled();
+	const ready = useIsCallReady();
 
-	if (state) {
-		return <VoiceFooter />;
+	if (isCallEnabled && ready) {
+		return <VoipFooter />;
 	}
 
 	return (

@@ -36,8 +36,8 @@ export const CallProvider: FC = ({ children }) => {
 			registrationInfo,
 			voipClient,
 			actions: {
-				mute: (): void => undefined, // voipClient.mute(),
-				unmute: (): void => undefined, // voipClient.unmute()
+				mute: (): Promise<void> => voipClient.muteCall(true), // voipClient.mute(),
+				unmute: (): Promise<void> => voipClient.muteCall(false), // voipClient.unmute()
 				pause: (): Promise<void> => voipClient.holdCall(true), // voipClient.pause()
 				resume: (): Promise<void> => voipClient.holdCall(false), // voipClient.resume()
 				end: (): Promise<OutgoingByeRequest | void> => voipClient.endCall(),
