@@ -1,6 +1,5 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-// import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import React, { useMemo, useCallback, useState, FC } from 'react';
 
@@ -130,8 +129,6 @@ const CurrentChatsRoute: FC = () => {
 	});
 
 	const onRowClick = useMutableCallback((_id) => {
-		// FlowRouter.go('live', { id: _id });
-		// routing this way causes a 404 that only goes away with a refresh, need to fix in review
 		directoryRoute.push({ id: _id });
 	});
 
