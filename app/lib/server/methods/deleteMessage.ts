@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
+import { IUser } from '../../../../definition/IUser';
 
 Meteor.methods({
 	async deleteMessage(message) {
@@ -38,6 +39,6 @@ Meteor.methods({
 			});
 		}
 
-		return deleteMessage(originalMessage, Meteor.user());
+		return deleteMessage(originalMessage, Meteor.user() as IUser);
 	},
 });

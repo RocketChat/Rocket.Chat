@@ -6,6 +6,7 @@ import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
 import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
 import { api } from '../../../../server/sdk/api';
+import { MeteorError } from '../../../../server/sdk/errors';
 
 export const server = new Server();
 
@@ -70,7 +71,7 @@ server.methods({
 	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
 		const result = await Account.login({ resume, user, password });
 		if (!result) {
-			throw new Error('login error');
+			throw new MeteorError(403, "You've been logged out by the server. Please log in again");
 		}
 
 		this.userId = result.uid;
