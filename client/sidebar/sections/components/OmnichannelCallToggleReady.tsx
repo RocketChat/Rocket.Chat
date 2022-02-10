@@ -13,7 +13,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
 		color: registered ? 'success' : undefined,
-		icon: registered ? 'phone' : 'phone-disabled',
+		icon: registered ? ('phone' as const) : ('phone-disabled' as const),
 	};
 	const voipClient = useCallClient();
 
