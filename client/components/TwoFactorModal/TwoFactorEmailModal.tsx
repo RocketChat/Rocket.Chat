@@ -18,7 +18,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
-	const ref = useAutoFocus();
+	const ref = useAutoFocus<HTMLInputElement>();
 
 	const sendEmailCode = useEndpoint('POST', 'users.2fa.sendEmailCode');
 
