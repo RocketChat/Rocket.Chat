@@ -1,7 +1,7 @@
 import type { IUser } from '../../../definition/IUser';
 import type { IMessage } from '../../../definition/IMessage/IMessage';
-import { Messages, Rooms } from '../../../app/models/server/raw';
-import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import { Messages } from '../../../app/models/server/raw';
+import { canAccessRoomId } from '../../../app/authorization/server';
 
 export async function getMessageForUser(messageId: IMessage['_id'], uid: IUser['_id']): Promise<IMessage | undefined> {
 	if (!uid) {
@@ -13,13 +13,7 @@ export async function getMessageForUser(messageId: IMessage['_id'], uid: IUser['
 		return;
 	}
 
-	// #ToDo: Remove this find and call canAccessRoomId once that is merged.
-	const room = await Rooms.findOne(message.rid);
-	if (!room) {
-		throw new Error('error-not-allowed');
-	}
-
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!canAccessRoomId(message.rid, uid)) {
 		throw new Error('error-not-allowed');
 	}
 
