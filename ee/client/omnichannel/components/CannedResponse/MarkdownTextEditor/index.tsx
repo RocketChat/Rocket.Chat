@@ -84,11 +84,11 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 		<TextEditor>
 			<TextEditor.Toolbox>
 				<Box display='flex' flexDirection='row'>
-					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} />
-					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} />
-					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} />
-					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} />
-					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} />
+					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} title='bold' />
+					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title='italic' />
+					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title='strike' />
+					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title='link' />
+					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} title='emoji' />
 				</Box>
 				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />
 				<Backdrop

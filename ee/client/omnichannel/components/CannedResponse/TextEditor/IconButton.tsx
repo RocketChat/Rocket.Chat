@@ -1,13 +1,14 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { ActionButton, Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC, memo } from 'react';
 
 type IconButtonProps = {
 	name: ComponentProps<typeof Icon>['name'];
 	action: () => void;
+	title?: string;
 };
 
-const IconButton: FC<IconButtonProps> = ({ name, action }) => (
-	<Button
+const IconButton: FC<IconButtonProps> = ({ name, action, title }) => (
+	<ActionButton
 		nude
 		small
 		square
@@ -16,6 +17,7 @@ const IconButton: FC<IconButtonProps> = ({ name, action }) => (
 		alignItems='center'
 		overflow='hidden'
 		mie='12px'
+		title={title}
 		onClick={(e): void => {
 			e.stopPropagation();
 			e.preventDefault();
@@ -23,6 +25,6 @@ const IconButton: FC<IconButtonProps> = ({ name, action }) => (
 		}}
 	>
 		<Icon name={name} size='24px' color='neutral-700' />
-	</Button>
+	</ActionButton>
 );
 export default memo(IconButton);
