@@ -116,7 +116,7 @@ Meteor.startup(() => {
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
-			if (!(await e2eRoom.shouldConvertSentMessages())) {
+			if (!(await e2eRoom.shouldConvertSentMessages(message))) {
 				return message;
 			}
 

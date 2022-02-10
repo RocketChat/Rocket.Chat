@@ -145,7 +145,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.KEYS_RECEIVED);
 	}
 
-	async shouldConvertSentMessages() {
+	async shouldConvertSentMessages(message) {
 		if (!this.isReady() || this[PAUSED]) {
 			return false;
 		}
@@ -154,6 +154,10 @@ export class E2ERoom extends Emitter {
 			return new Promise((resolve) => {
 				this.once('PAUSED', resolve);
 			});
+		}
+
+		if (message.msg[0] === '/') {
+			return false;
 		}
 
 		return true;
