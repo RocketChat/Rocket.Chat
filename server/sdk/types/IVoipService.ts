@@ -16,4 +16,5 @@ export interface IVoipService {
 	getExtensionList(): Promise<IVoipConnectorResult>;
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
 	getRegistrationInfo(requestParams: any): Promise<{ result: IRegistrationInfo }>; // TODO: Check the reason behind IVoipConnectorResult
+	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]>;
 }

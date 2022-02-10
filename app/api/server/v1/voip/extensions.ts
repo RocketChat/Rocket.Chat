@@ -25,7 +25,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const list = await Voip.getExtensionList();
-			const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
+			const result = list.result as IVoipExtensionBase[];
 			return API.v1.success({ extensions: result });
 		},
 	},

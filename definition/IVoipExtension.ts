@@ -1,3 +1,4 @@
+import { IUser } from './IUser';
 import { ICallServerConfigData } from './IVoipServerConfig';
 
 export enum EndpointState {
@@ -10,6 +11,12 @@ export enum EndpointState {
 export interface IVoipExtensionBase {
 	extension: string;
 	state: EndpointState;
+}
+
+export interface IVoipExtensionWithAgentInfo extends IVoipExtensionBase {
+	queues?: string[];
+	userId?: IUser['_id'];
+	username?: IUser['username'];
 }
 
 export const isIVoipExtensionBase = (obj: any): obj is IVoipExtensionBase =>

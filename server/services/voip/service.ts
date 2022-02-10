@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import mem from 'mem';
 
 import { IVoipService } from '../../sdk/types/IVoipService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -114,6 +115,34 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
+	}
+
+	private cachedQueueSummary(): () => Promise<IVoipConnectorResult> {
+		// arbitrary 5 secs cache to prevent fetching this from asterisk too often
+		return mem(this.getQueueSummary.bind(this), { maxAge: 5000 });
+	}
+
+	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]> {
+		return mem(this.getQueueDetails.bind(this), { maxAge: 5000 });
+	}
+
+	private async getQueueDetails(): Promise<{ name: string; members: string[] }[]> {
+		const summary = await this.cachedQueueSummary()();
+		const queues = (summary.result as unknown as IQueueSummary[]).map((q) => q.name);
+
+		const queueInfo: { name: string; members: string[] }[] = [];
+		for await (const queue of queues) {
+			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+				queue,
+			})) as IVoipConnectorResult;
+
+			queueInfo.push({
+				name: queue,
+				members: (queueDetails.result as IQueueDetails).members.map((member) => member.name.replace('PJSIP/', '')),
+			});
+		}
+
+		return queueInfo;
 	}
 
 	async getQueuedCallsForThisExtension({ extension }: { extension: string }): Promise<IVoipConnectorResult> {

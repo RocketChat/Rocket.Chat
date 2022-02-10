@@ -1,6 +1,7 @@
 import { IQueueSummary } from '../../ACDQueues';
-import { IQueueMembershipDetails } from '../../IVoipExtension';
+import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
+import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
@@ -11,5 +12,8 @@ export type VoipEndpoints = {
 	};
 	'voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: { extension: string }) => IQueueMembershipDetails;
+	};
+	'omnichannel/extensions': {
+		GET: () => PaginatedResult<{ extensions: IVoipExtensionWithAgentInfo[] }>;
 	};
 };
