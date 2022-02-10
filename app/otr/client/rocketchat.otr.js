@@ -55,17 +55,16 @@ Meteor.startup(function () {
 		}
 	});
 
-	onClientBeforeSendMessage.use(function (message) {
-		if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
-			return OTR.getInstanceByRoomId(message.rid)
-				.encrypt(message)
-				.then((msg) => {
-					message.msg = msg;
-					message.t = 'otr';
-					return message;
-				});
+	onClientBeforeSendMessage.use(async (message) => {
+		try {
+			if (message.rid && OTR.getInstanceByRoomId(message.rid) && OTR.getInstanceByRoomId(message.rid).established.get()) {
+				const msg = await OTR.getInstanceByRoomId(message.rid).encrypt(message);
+				return { ...message, msg, t: 'otr' };
+			}
+			return message;
+		} catch (error) {
+			console.error(error);
 		}
-		return Promise.resolve(message);
 	});
 
 	onClientMessageReceived.use(async (message) => {
