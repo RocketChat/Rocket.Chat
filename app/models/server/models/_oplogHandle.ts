@@ -33,14 +33,13 @@ class CustomOplogHandle {
 
 			await mongo.db.admin().command({ replSetGetStatus: 1 });
 		} catch (e: unknown) {
-			if (e instanceof Error) {
-				if (e.message.startsWith('not authorized')) {
-					console.info(
-						'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
-					);
-				}
-				return false;
+			const message = e instanceof Error || e instanceof Meteor.Error ? e.message : '';
+			if (message.startsWith('not authorized')) {
+				console.info(
+					'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
+				);
 			}
+			return false;
 		}
 
 		return true;

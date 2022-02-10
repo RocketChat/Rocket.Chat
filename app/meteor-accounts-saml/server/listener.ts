@@ -62,15 +62,14 @@ const middleware = function (req: IIncomingMessage, res: ServerResponse, next: (
 		SAML.processRequest(req, res, service, samlObject);
 	} catch (err: unknown) {
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
-		if (err instanceof Error) {
-			SystemLogger.error(err);
 
-			const url = Meteor.absoluteUrl('home');
-			res.writeHead(302, {
-				Location: url,
-			});
-			res.end();
-		}
+		SystemLogger.error(err);
+
+		const url = Meteor.absoluteUrl('home');
+		res.writeHead(302, {
+			Location: url,
+		});
+		res.end();
 	}
 };
 
