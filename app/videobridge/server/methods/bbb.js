@@ -8,7 +8,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { Rooms, Users } from '../../../models/server';
 import { saveStreamingOptions } from '../../../channel-settings/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId } from '../../../authorization/server';
 import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({
@@ -115,7 +115,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'bbbEnd' });
 		}
 
-		if (!canAccessRoom({ _id: rid }, { _id: this.userId })) {
+		if (!canAccessRoomId(rid, this.userId)) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
