@@ -20,21 +20,14 @@ const lifecycle: { [k: string]: string } = {
 
 const {
 	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
-	WAIT_FOR_SERVICES_WHITELIST_TIMEOUT = '600000', // 10 minutes
 } = process.env;
 
 const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
-const waitForServicesWhitelistTimeout = parseInt(WAIT_FOR_SERVICES_WHITELIST_TIMEOUT, 10) || 600000;
 
 export class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
 	private started: Promise<void>;
-
-	private whitelist = {
-		events: ['license.module', 'watch.settings'],
-		actions: ['license.hasLicense'],
-	};
 
 	metrics: IServiceMetrics;
 
@@ -46,18 +39,6 @@ export class NetworkBroker implements IBroker {
 		this.metrics = broker.metrics;
 
 		this.started = this.broker.start();
-	}
-
-	isWhitelisted(list: string[], item: string): boolean {
-		return list.includes(item);
-	}
-
-	isActionWhitelisted(method: string): boolean {
-		return this.isWhitelisted(this.whitelist.actions, method);
-	}
-
-	isEventWhitelisted(event: string): boolean {
-		return this.isWhitelisted(this.whitelist.events, event);
 	}
 
 	async call(method: string, data: any): Promise<any> {
@@ -82,10 +63,7 @@ export class NetworkBroker implements IBroker {
 		await this.started;
 
 		try {
-			await this.broker.waitForServices(
-				method.split('.')[0],
-				this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout,
-			);
+			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
 		} catch (err) {
 			console.error(err);
 		}
@@ -103,6 +81,18 @@ export class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: ServiceClass): void {
+		const methods = (
+			instance.constructor?.name === 'Object'
+				? Object.getOwnPropertyNames(instance)
+				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
+		).filter((name) => name !== 'constructor');
+
+		if (!instance.getEvents() || !methods.length) {
+			return;
+		}
+
+		const serviceInstance = instance as any;
+
 		const name = instance.getName();
 
 		if (!instance.isInternal()) {
@@ -139,19 +129,9 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-
-			const i = instance as any;
-
 			if (method.match(/^on[A-Z]/)) {
-				service.events[events[method]] = i[method].bind(i);
+				service.events[events[method]] = serviceInstance[method].bind(serviceInstance);
 				continue;
 			}
 
@@ -164,7 +144,7 @@ export class NetworkBroker implements IBroker {
 							requestID: null,
 							broker: this,
 						},
-						i[method].bind(i),
+						serviceInstance[method].bind(serviceInstance),
 					);
 				continue;
 			}
@@ -178,7 +158,7 @@ export class NetworkBroker implements IBroker {
 						broker: this,
 						ctx,
 					},
-					() => i[method](...ctx.params),
+					() => serviceInstance[method](...ctx.params),
 				);
 			};
 		}
