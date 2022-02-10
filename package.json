@@ -233,7 +233,7 @@
 		"express": "^4.17.1",
 		"express-rate-limit": "^5.2.6",
 		"fflate": "^0.7.1",
-		"fibers": "^5.0.0",
+		"fibers": "^5.0.1",
 		"file-type": "^10.11.0",
 		"filenamify": "^4.3.0",
 		"filesize": "^3.6.1",
