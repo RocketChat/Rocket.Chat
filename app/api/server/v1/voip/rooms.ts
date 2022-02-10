@@ -158,35 +158,31 @@ API.v1.addRoute(
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
 	{
 		async post() {
-			try {
-				check(this.bodyParams, {
-					rid: String,
-					token: String,
-				});
-				const { rid, token } = this.bodyParams;
+			check(this.bodyParams, {
+				rid: String,
+				token: String,
+			});
+			const { rid, token } = this.bodyParams;
 
-				const visitor = await LivechatVisitors.getVisitorByToken(token, {});
-				if (!visitor) {
-					return API.v1.failure('invalid-token');
-				}
-				const roomResult = await LivechatVoip.findRoom(token, rid);
-				if (!roomResult) {
-					return API.v1.failure('invalid-room');
-				}
-				const room: IVoipRoom = roomResult;
-				if (!room.open) {
-					return API.v1.failure('room-closed');
-				}
-				const language: string = rcSettings.get('Language') || 'en';
-				const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-				const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
-				if (!closeResult) {
-					return API.v1.failure();
-				}
-				return API.v1.success({ rid, comment });
-			} catch (e) {
-				return API.v1.failure(e);
+			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
+			if (!visitor) {
+				return API.v1.failure('invalid-token');
 			}
+			const roomResult = await LivechatVoip.findRoom(token, rid);
+			if (!roomResult) {
+				return API.v1.failure('invalid-room');
+			}
+			const room: IVoipRoom = roomResult;
+			if (!room.open) {
+				return API.v1.failure('room-closed');
+			}
+			const language: string = rcSettings.get('Language') || 'en';
+			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
+			if (!closeResult) {
+				return API.v1.failure();
+			}
+			return API.v1.success({ rid, comment });
 		},
 	},
 );

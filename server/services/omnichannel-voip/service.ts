@@ -169,14 +169,11 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom /* , comment: any, options = {}*/): Promise<boolean> {
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, _options = {}): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
 		}
-
-		// const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
-		// const { extraData } = params;
 
 		const now = new Date();
 		const { _id: rid } = room;
