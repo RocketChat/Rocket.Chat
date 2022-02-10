@@ -1,16 +1,29 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 
+import { roomTypes } from '../../../../app/utils/client';
 import { useCallActions, useCallerInfo } from '../../../contexts/CallContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useUser } from '../../../contexts/UserContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
+	const user = useUser();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
+
+	const voipEndpoint = useEndpoint('GET', 'voip/room');
+
+	const openRoom = useCallback(async () => {
+		if (user) {
+			const { room } = await voipEndpoint({ token: 'r8a47l0ed3dcwgw0hcwjfr', agentId: user._id });
+			roomTypes.openRouteLink(room.t, room);
+		}
+	}, [user, voipEndpoint]);
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -65,6 +78,7 @@ export const VoipFooter = (): ReactElement | null => {
 			toggleMic={toggleMic}
 			togglePause={togglePause}
 			tooltips={tooltips}
+			openRoom={openRoom}
 		/>
 	);
 };

@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('room-info', {
-	groups: ['live'],
+	groups: ['live', 'voip'],
 	id: 'room-info',
 	title: 'Room_Info',
 	icon: 'info-circled',
@@ -12,7 +12,7 @@ addAction('room-info', {
 });
 
 addAction('contact-chat-history', {
-	groups: ['live'],
+	groups: ['live', 'voip'],
 	id: 'contact-chat-history',
 	title: 'Contact_Chat_History',
 	icon: 'clock',

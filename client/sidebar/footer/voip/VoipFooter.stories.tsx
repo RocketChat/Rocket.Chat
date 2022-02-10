@@ -42,6 +42,7 @@ export const Default = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
+				openRoom={() => ({})}
 			/>
 		</Box>
 	);
