@@ -1,14 +1,26 @@
 import moment from 'moment';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
 import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';
+import { IOmnichannelRoom } from '../../../../definition/IRoom';
+import { IMessage } from '../../../../definition/IMessage';
+import { IBusinessHourWorkHour } from '../../../../definition/ILivechatBusinessHour';
 
-const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) =>
+type ParsedDays = {
+	[k: string]: {
+		start: { day: string; time: string };
+		finish: { day: string; time: string };
+		open: boolean;
+	};
+};
+
+const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage): number =>
 	moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
-const parseDays = (acc, day) => {
+
+const parseDays = (acc: ParsedDays, day: IBusinessHourWorkHour): ParsedDays => {
 	acc[day.day] = {
 		start: { day: day.start.utc.dayOfWeek, time: day.start.utc.time },
 		finish: { day: day.finish.utc.dayOfWeek, time: day.finish.utc.time },
@@ -17,18 +29,23 @@ const parseDays = (acc, day) => {
 	return acc;
 };
 
-const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
+const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLastMessage: IMessage): Promise<number> => {
 	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
-	let officeDays;
-	const department = room.departmentId && (await LivechatDepartment.findOneById(room.departmentId));
-	if (department && department.businessHourId) {
+	let officeDays: ParsedDays;
+	const department = room.departmentId ? await LivechatDepartment.findOneById(room.departmentId) : undefined;
+	if (department?.businessHourId) {
 		const businessHour = await LivechatBusinessHours.findOneById(department.businessHourId);
-		officeDays = (await businessHourManager.getBusinessHour(businessHour._id, businessHour.type)).workHours.reduce(parseDays, {});
+		if (!businessHour) {
+			return 0;
+		}
+
+		officeDays = (await businessHourManager.getBusinessHour(businessHour._id, businessHour.type))?.workHours.reduce(parseDays, {}) || {};
 	} else {
-		officeDays = (await businessHourManager.getBusinessHour()).workHours.reduce(parseDays, {});
+		officeDays = (await businessHourManager.getBusinessHour())?.workHours.reduce(parseDays, {}) || {};
 	}
+
 	let totalSeconds = 0;
 	const endOfConversation = moment(new Date(room.closedAt));
 	const startOfInactivity = moment(new Date(agentLastMessage.ts));

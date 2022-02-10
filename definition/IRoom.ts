@@ -115,6 +115,7 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 		username?: string;
+		lastMessageTs?: Date;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
@@ -161,6 +162,7 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
+	closer?: 'visitor' | 'user';
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {

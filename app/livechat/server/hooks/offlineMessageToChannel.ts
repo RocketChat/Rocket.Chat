@@ -1,18 +1,20 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { sendMessage } from '../../../lib';
-import { LivechatDepartment, Rooms, Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { sendMessage } from '../../../lib/server';
+import { LivechatDepartment, Rooms, Users } from '../../../models/server';
+
+type OfflineMessageData = { name: string; email: string; department: string; message: string; host: string };
 
 callbacks.add(
 	'livechat.offlineMessage',
-	(data) => {
+	(data: OfflineMessageData): OfflineMessageData | undefined => {
 		if (!settings.get('Livechat_OfflineMessageToChannel_enabled')) {
 			return data;
 		}
 
-		let channelName = settings.get('Livechat_OfflineMessageToChannel_channel_name');
+		let channelName = settings.get<string>('Livechat_OfflineMessageToChannel_channel_name');
 		let departmentName;
 		const { name, email, department, message: text, host } = data;
 		if (department && department !== '') {
@@ -39,7 +41,7 @@ callbacks.add(
 			return data;
 		}
 
-		const lng = settings.get('Language') || 'en';
+		const lng = settings.get<string>('Language') || 'en';
 
 		let msg = `${TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng })}: \n`;
 		if (host && host !== '') {
