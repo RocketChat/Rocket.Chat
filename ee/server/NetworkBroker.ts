@@ -90,7 +90,12 @@ export class NetworkBroker implements IBroker {
 			console.error(err);
 		}
 
-		return this.call(method, data);
+		const context = asyncLocalStorage.getStore();
+		if (context?.ctx?.call) {
+			return context.ctx.call(method, data);
+		}
+
+		return this.broker.call(method, data);
 	}
 
 	destroyService(instance: ServiceClass): void {
@@ -111,21 +116,20 @@ export class NetworkBroker implements IBroker {
 			});
 		}
 
+		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
+
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			...(name !== 'license'
-				? {
-						dependencies: ['license'],
-				  }
-				: {}),
+			...dependencies,
 			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
-					? (data: Parameters<EventSignatures[typeof eventName]>): void => {
-							instance.emit(eventName, data);
+					? (ctx: Context): void => {
+							// internal events params are not an array
+							instance.emit(eventName, ctx.params as Parameters<EventSignatures[typeof eventName]>);
 					  }
-					: (data: Parameters<EventSignatures[typeof eventName]>): void => {
-							instance.emit(eventName, ...data);
+					: (ctx: Context): void => {
+							instance.emit(eventName, ...(ctx.params as Parameters<EventSignatures[typeof eventName]>));
 					  };
 				return map;
 			}, {}),
