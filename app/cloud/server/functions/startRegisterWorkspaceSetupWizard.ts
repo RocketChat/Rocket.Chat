@@ -16,8 +16,9 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 		});
 	} catch (e: unknown) {
 		if (e instanceof Error) {
-			if (e.response?.data?.error) {
-				SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.response.data.error}`);
+			// e.response?.data?.error
+			if (e.message) {
+				SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.message}`);
 			} else {
 				SystemLogger.error(e);
 			}
@@ -26,7 +27,8 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 		}
 	}
 
-	const { data } = result;
+	// const { data } = result;
+	const { data } = result?.data;
 
 	if (!data) {
 		throw new Error('Failed to fetch registration intent endpoint');

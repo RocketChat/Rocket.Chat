@@ -115,12 +115,12 @@ export class AppHttpBridge extends HttpBridge {
 
 			return result;
 		} catch (e: unknown) {
+			// return e.response;
 			if (e instanceof Error) {
-				// return e.response;
 				console.error(e);
-				const errorBody = e.message;
-				console.error(`Error body: ${errorBody}`);
+				console.error(`Error: ${e.message}`);
 			}
+			throw e;
 		}
 	}
 }

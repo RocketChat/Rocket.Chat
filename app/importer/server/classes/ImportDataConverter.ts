@@ -359,8 +359,10 @@ export class ImportDataConverter {
 					afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
-				this._logger.error(e);
-				this.saveError(_id, e);
+				if (e instanceof Error) {
+					this._logger.error(e);
+					this.saveError(_id, e);
+				}
 			}
 		});
 	}
@@ -581,15 +583,19 @@ export class ImportDataConverter {
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
-					this._logger.error(e);
+					if (e instanceof Error) {
+						this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
+						this._logger.error(e);
+					}
 				}
 
 				if (afterImportFn) {
 					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
-				this.saveError(_id, e);
+				if (e instanceof Error) {
+					this.saveError(_id, e);
+				}
 			}
 		});
 
@@ -597,8 +603,10 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				this._logger.warn(`Failed to update last message of room ${rid}`);
-				this._logger.error(e);
+				if (e instanceof Error) {
+					this._logger.warn(`Failed to update last message of room ${rid}`);
+					this._logger.error(e);
+				}
 			}
 		}
 	}
@@ -798,9 +806,11 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
-			this._logger.error(e);
-			throw e;
+			if (e instanceof Error) {
+				this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
+				this._logger.error(e);
+				throw e;
+			}
 		}
 
 		this.updateRoomId(roomData._id as 'string', roomData);
@@ -899,7 +909,9 @@ export class ImportDataConverter {
 					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
-				this.saveError(_id, e);
+				if (e instanceof Error) {
+					this.saveError(_id, e);
+				}
 			}
 		});
 	}
