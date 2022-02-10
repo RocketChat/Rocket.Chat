@@ -1,21 +1,19 @@
-import { Modal } from '@rocket.chat/fuselage';
-import React, { useState, useMemo, memo, FC, ComponentProps, ReactNode, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, memo, ReactNode, useCallback, ReactElement } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
-import ModalPortal from '../components/ModalPortal';
+import ModalBackdrop from '../components/modal/ModalBackdrop';
+import ModalPortal from '../components/modal/ModalPortal';
 import { ModalContext } from '../contexts/ModalContext';
 import { useImperativeModal } from '../views/hooks/useImperativeModal';
 
-const BACKDROP_ID = 'rc-modal-backdrop';
+type ModalProviderProps = {
+	children?: ReactNode;
+};
 
-const getBackdrop = (): HTMLElement | null => document.getElementById(BACKDROP_ID);
-
-const ModalProvider: FC = ({ children }) => {
+const ModalProvider = ({ children }: ModalProviderProps): ReactElement => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
 
-	const hasClicked = useRef<boolean>(false);
-
-	const contextValue = useMemo<ComponentProps<typeof ModalContext.Provider>['value']>(
+	const contextValue = useMemo(
 		() =>
 			Object.assign(modal, {
 				setModal: setCurrentModal,
@@ -23,53 +21,16 @@ const ModalProvider: FC = ({ children }) => {
 		[],
 	);
 
-	const closeModalOnBackdropClick = useCallback((e) => {
-		const backdrop = getBackdrop();
-
-		// checking for parent since myNode.contains(myNode) is true
-		if (!backdrop || backdrop.contains(e.target.parentElement)) {
-			hasClicked.current = false;
-			return;
-		}
-
-		if (e.type === 'mousedown') {
-			hasClicked.current = true;
-			return;
-		}
-
-		if (e.type === 'mouseup' && hasClicked.current) {
-			hasClicked.current = false;
-			e.stopPropagation();
-			setCurrentModal(null);
-		}
-	}, []);
-
-	useEffect(() => {
-		const closeOnEsc = (e: KeyboardEvent): void => {
-			if (e.key !== 'Escape' || !currentModal) {
-				return;
-			}
-			e.stopPropagation();
-			setCurrentModal(null);
-		};
-
-		window.addEventListener('keyup', closeOnEsc);
-
-		return (): void => {
-			window.removeEventListener('keyup', closeOnEsc);
-		};
-	}, [currentModal]);
-
 	useImperativeModal(setCurrentModal);
+
+	const handleDismiss = useCallback(() => setCurrentModal(null), [setCurrentModal]);
 
 	return (
 		<ModalContext.Provider value={contextValue}>
 			{children}
 			{currentModal && (
 				<ModalPortal>
-					<Modal.Backdrop zIndex={9999} id={BACKDROP_ID} onMouseDown={closeModalOnBackdropClick} onMouseUp={closeModalOnBackdropClick}>
-						{currentModal}
-					</Modal.Backdrop>
+					<ModalBackdrop onDismiss={handleDismiss}>{currentModal}</ModalBackdrop>
 				</ModalPortal>
 			)}
 		</ModalContext.Provider>
