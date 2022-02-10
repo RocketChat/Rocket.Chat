@@ -28,7 +28,13 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { CannedResponseRaw, LivechatPriorityRaw, LivechatTagRaw, LivechatUnitRaw } from '../../../../ee/app/models/server';
+import {
+	CannedResponseRaw,
+	LivechatPriorityRaw,
+	LivechatTagRaw,
+	LivechatUnitMonitorsRaw,
+	LivechatUnitRaw,
+} from '../../../../ee/app/models/server';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -176,6 +182,22 @@ export const statistics = {
 		statsPms.push(
 			CannedResponseRaw.col.count().then((count) => {
 				statistics.cannedResponses = count;
+				return true;
+			}),
+		);
+
+		statsPms.push(
+			UsersRaw.findUsersInRoles('livechat-manager')
+				.count()
+				.then((count) => {
+					statistics.totalLivechatManagers = count;
+					return true;
+				}),
+		);
+
+		statsPms.push(
+			LivechatUnitMonitorsRaw.col.count().then((count) => {
+				statistics.totalLivechatMonitors = count;
 				return true;
 			}),
 		);
