@@ -32,13 +32,15 @@ class CustomOplogHandle {
 			}
 
 			await mongo.db.admin().command({ replSetGetStatus: 1 });
-		} catch (e) {
-			if (e.message.startsWith('not authorized')) {
-				console.info(
-					'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
-				);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				if (e.message.startsWith('not authorized')) {
+					console.info(
+						'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
+					);
+				}
+				return false;
 			}
-			return false;
 		}
 
 		return true;
@@ -212,8 +214,10 @@ if (!process.env.DISABLE_DB_WATCH) {
 	if (disableOplog) {
 		try {
 			oplogHandle = Promise.await(new CustomOplogHandle().start());
-		} catch (e) {
-			console.error(e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+			}
 		}
 	}
 }
