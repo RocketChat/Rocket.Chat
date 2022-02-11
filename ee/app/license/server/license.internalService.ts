@@ -1,6 +1,5 @@
 import { debounce } from 'underscore';
 
-import { Authorization } from '../../../../server/sdk';
 import { api } from '../../../../server/sdk/api';
 import { ILicense } from '../../../../server/sdk/types/ILicense';
 import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
@@ -14,12 +13,14 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 	constructor() {
 		super();
 
+		console.log('[ee] LicenseService', new Error().stack);
+
 		onValidateLicenses((): void => {
 			if (!isEnterprise()) {
 				return;
 			}
 
-			Authorization.addRoleRestrictions('guest', guestPermissions);
+			api.broadcast('authorization.guestPermissions', guestPermissions);
 			resetEnterprisePermissions();
 		});
 
@@ -75,7 +76,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 			return;
 		}
 
-		Authorization.addRoleRestrictions('guest', guestPermissions);
+		api.broadcast('authorization.guestPermissions', guestPermissions);
 		resetEnterprisePermissions();
 	}
 
@@ -89,5 +90,9 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 
 	getModules(): string[] {
 		return getModules();
+	}
+
+	getGuestPermissions(): string[] {
+		return guestPermissions;
 	}
 }

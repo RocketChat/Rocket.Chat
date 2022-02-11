@@ -13,7 +13,6 @@ import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { TeamService } from './team/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
-import { Authorization } from './authorization/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -29,15 +28,13 @@ api.registerService(new RoomService(db));
 api.registerService(new SAUMonitorService());
 api.registerService(new TeamService(db));
 api.registerService(new UiKitCoreApp());
-api.registerService(new Authorization(db));
 
-// TODO need to implement something to make this work
 // if TRANSPORTER env var it means the process is running in micro services mode
 // in that case we don't need to register services that will run separately
-// if (!process.env.TRANSPORTER?.match(/^(?:nats|TCP)/)) {
-// 	(async (): Promise<void> => {
-// 		const { Authorization } = await import('./authorization/service');
+if (!process.env.TRANSPORTER?.match(/^(?:nats|TCP)/)) {
+	(async (): Promise<void> => {
+		const { Authorization } = await import('./authorization/service');
 
-// 		api.registerService(new Authorization(db));
-// 	})();
-// }
+		api.registerService(new Authorization(db));
+	})();
+}

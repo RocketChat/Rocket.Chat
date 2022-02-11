@@ -136,7 +136,7 @@ export class NetworkBroker implements IBroker {
 			}
 
 			if (lifecycle[method]) {
-				service[method] = (): void =>
+				service[method] = (): void => {
 					asyncLocalStorage.run(
 						{
 							id: '',
@@ -146,6 +146,7 @@ export class NetworkBroker implements IBroker {
 						},
 						serviceInstance[method].bind(serviceInstance),
 					);
+				};
 				continue;
 			}
 
