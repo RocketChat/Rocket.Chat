@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
-import { canAccessRoom } from '../../authorization/server';
+import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
 
 Meteor.methods({
@@ -30,7 +30,8 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
+		const room = Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+
 		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
 		}

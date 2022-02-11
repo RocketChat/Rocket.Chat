@@ -3,6 +3,7 @@ import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { clear } from '@rocket.chat/memo';
 import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
+import { Subscriptions } from '../../../../../../app/models/client';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
@@ -44,6 +45,7 @@ const CallJitsiWithData = ({ rid }) => {
 	const closeModal = useMutableCallback(() => setModal(null));
 	const generateAccessToken = useMethod('jitsi:generateAccessToken');
 	const updateTimeout = useMethod('jitsi:updateTimeout');
+	const joinRoom = useMethod('joinRoom');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -187,6 +189,10 @@ const CallJitsiWithData = ({ rid }) => {
 		}
 
 		setAccepted(true);
+		const sub = Subscriptions.findOne({ rid, 'u._id': user._id });
+		if (!sub) {
+			joinRoom(rid);
+		}
 
 		if (openNewWindow) {
 			handleClose();
