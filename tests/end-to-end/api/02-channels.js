@@ -282,9 +282,8 @@ describe('[Channels]', function () {
 
 	describe('[/channels.files]', () => {
 		const createVoipRoom = async () => {
-			const testUser = await createUser();
+			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
 			const visitor = await createVisitor();
-
 			const roomResponse = await createRoom({
 				token: visitor.token,
 				type: 'v',
