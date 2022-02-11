@@ -1004,7 +1004,7 @@
   "Conversations_per_day": "Conversations per Day",
   "Convert": "Convert",
   "Convert_Ascii_Emojis": "Convert ASCII to Emoji",
-  "Converting_channel_to_a_team": "This can't be undone. Once you convert a Channel to a Team, you can not turn it back to a Channel.",
+  "Converting_channel_to_a_team": "You are converting this Channel to a Team. All members will be kept.",
   "Converting_team_to_channel": "Converting Team to Channel",
   "Convert_to_channel": "Convert to Channel",
   "Converted__roomName__to_team": "<strong>converted</strong> #__roomName__ to a Team",
