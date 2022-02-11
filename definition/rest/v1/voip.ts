@@ -1,8 +1,8 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
-import { PaginatedResult } from '../helpers/PaginatedResult';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
+import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
