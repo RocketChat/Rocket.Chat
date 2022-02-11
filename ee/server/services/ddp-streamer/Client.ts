@@ -209,6 +209,3 @@ export class Client extends EventEmitter {
 		return this.ws.send(this.encodePayload(payload));
 	}
 }
-
-// TODO implement meteor errors
-// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]
