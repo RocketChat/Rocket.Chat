@@ -45,8 +45,8 @@ export async function findCustomFieldById({
 	userId,
 	customFieldId,
 }: {
-	userId: any;
-	customFieldId: any;
+	userId: string;
+	customFieldId: string;
 }): Promise<{ customField: ILivechatCustomField | null }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');

@@ -88,82 +88,66 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			try {
-				check(this.urlParams, {
-					type: String,
-					_id: String,
-				});
+			check(this.urlParams, {
+				type: String,
+				_id: String,
+			});
 
-				const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
+			const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
 
-				if (!user) {
-					return API.v1.failure('User not found');
-				}
-
-				let role;
-
-				if (this.urlParams.type === 'agent') {
-					role = 'livechat-agent';
-				} else if (this.urlParams.type === 'manager') {
-					role = 'livechat-manager';
-				} else {
-					throw new Error('Invalid type');
-				}
-
-				if (user.roles.indexOf(role) !== -1) {
-					return API.v1.success({
-						user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
-					});
-				}
-
-				return API.v1.success({
-					user: null,
-				});
-			} catch (error: unknown) {
-				let errorMessage = 'Unknown Error';
-				if (error instanceof Error) {
-					errorMessage = error.message;
-				}
-				return API.v1.failure(errorMessage);
+			if (!user) {
+				return API.v1.failure('User not found');
 			}
+
+			let role;
+
+			if (this.urlParams.type === 'agent') {
+				role = 'livechat-agent';
+			} else if (this.urlParams.type === 'manager') {
+				role = 'livechat-manager';
+			} else {
+				throw new Error('Invalid type');
+			}
+
+			if (user.roles.indexOf(role) !== -1) {
+				return API.v1.success({
+					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
+				});
+			}
+
+			return API.v1.success({
+				user: null,
+			});
 		},
 		async delete() {
 			if (!hasPermission(this.userId, 'view-livechat-manager')) {
 				return API.v1.unauthorized();
 			}
 
-			try {
-				check(this.urlParams, {
-					type: String,
-					_id: String,
-				});
+			check(this.urlParams, {
+				type: String,
+				_id: String,
+			});
 
-				const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
+			const user = await Users.findOneById<ILivechatAgent>(this.urlParams._id, {});
 
-				if (!user) {
-					return API.v1.failure('User not found');
-				}
-
-				if (this.urlParams.type === 'agent') {
-					if (Livechat.removeAgent(user.username)) {
-						return API.v1.success();
-					}
-				} else if (this.urlParams.type === 'manager') {
-					if (Livechat.removeManager(user.username)) {
-						return API.v1.success();
-					}
-				} else {
-					throw new Error('Invalid type');
-				}
-
-				return API.v1.failure();
-			} catch (error: unknown) {
-				let errorMessage = 'Unknown Error';
-				if (error instanceof Error) {
-					errorMessage = error.message;
-				}
-				return API.v1.failure(errorMessage);
+			if (!user) {
+				return API.v1.failure('User not found');
 			}
+
+			if (this.urlParams.type === 'agent') {
+				if (Livechat.removeAgent(user.username)) {
+					return API.v1.success();
+				}
+			} else if (this.urlParams.type === 'manager') {
+				if (Livechat.removeManager(user.username)) {
+					return API.v1.success();
+				}
+			} else {
+				throw new Error('Invalid type');
+			}
+
+			return API.v1.failure();
 		},
 	},
 );

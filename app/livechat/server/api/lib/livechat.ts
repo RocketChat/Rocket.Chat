@@ -16,7 +16,7 @@ export function online(department: string, skipSettingCheck = false, skipFallbac
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
-async function findTriggers(): Promise<ILivechatTrigger[]> {
+async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
 	return triggers.map(({ _id, actions, conditions, runOnce, name, description, enabled, _updatedAt }) => ({
 		_id,
