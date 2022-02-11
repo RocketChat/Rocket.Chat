@@ -40,6 +40,8 @@ import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnecto
 export class PJSIPEndpoint extends Command {
 	private logger: Logger;
 
+	private ignoredExtensions = ['anonymous', 'outboundsipstation_trunk'];
+
 	constructor(command: string, parametersNeeded: boolean) {
 		super(command, parametersNeeded);
 		this.logger = new Logger('PJSIPEndpoint');
@@ -88,6 +90,11 @@ export class PJSIPEndpoint extends Command {
 			});
 			return;
 		}
+
+		if (this.ignoredExtensions.includes(event.objectname)) {
+			return;
+		}
+
 		const endPoint: IExtensionDetails = {
 			extension: event.objectname,
 			state: this.getState(event.devicestate),

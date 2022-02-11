@@ -12,6 +12,7 @@ export type VoipEvents = {
 	callterminated: undefined;
 	hold: undefined;
 	holderror: undefined;
+	muteerror: undefined;
 	unhold: undefined;
 	unholderror: undefined;
 	stateChanged: undefined;

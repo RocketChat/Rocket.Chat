@@ -13,39 +13,42 @@
  * We shall be using only AMI interface in the for now. Other interfaces will be
  * added as and when required.
  */
+import { Db } from 'mongodb';
 
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
 import { Logger } from '../../../../lib/logger/Logger';
-import { CommandType } from './Command';
+import { Command, CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-import { IVoipService } from '../../../../sdk/types/IVoipService';
-import { IManagementConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
+import { ServerType } from '../../../../../definition/IVoipServerConfig';
+import { getServerConfigDataFromSettings } from '../../lib/Helper';
 
 const version = 'Asterisk Connector 1.0';
 
 export class CommandHandler {
 	private connections: Map<CommandType, IConnection>;
 
-	private service: IVoipService;
-
 	private logger: Logger;
 
-	constructor(service: IVoipService) {
+	private continuousMonitor: Command;
+
+	private db: Db;
+
+	constructor(db: Db) {
 		this.logger = new Logger('CommandHandler');
 		this.connections = new Map<CommandType, IConnection>();
-		this.service = service;
+		this.db = db;
 	}
 
 	async initConnection(commandType: CommandType): Promise<void> {
 		// Initialize available connections
 		// const connection = new AMIConnection();
 		const connection = new AMIConnection();
-		let config: IVoipServerConfig | null = null;
+		let config: any = null;
 		if (commandType === CommandType.AMI) {
-			config = await this.service.getServerConfigData(ServerType.MANAGEMENT);
+			config = getServerConfigDataFromSettings(ServerType.MANAGEMENT);
 		}
 		if (!config) {
 			this.logger.warn('Management server configuration not found');
@@ -60,13 +63,11 @@ export class CommandHandler {
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
 		}
-		connection.connect(
-			config.host,
-			(config.configData as IManagementConfigData).port.toString(),
-			(config.configData as IManagementConfigData).username,
-			(config.configData as IManagementConfigData).password,
-		);
+		connection.connect(config.host, config.configData.port.toString(), config.configData.username, config.configData.password);
 		this.connections.set(commandType, connection);
+		this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
+		this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
+		this.continuousMonitor.initMonitor({ data: 'test' });
 	}
 
 	/* Executes |commandToExecute| on a particular command object
@@ -79,7 +80,7 @@ export class CommandHandler {
 	 */
 	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
 		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
-		const command = CommandFactory.getCommandObject(commandToExecute);
+		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
 		command.connection = this.connections.get(command.type) as IConnection;
 		return command.executeCommand(commandData);
 	}
@@ -87,5 +88,9 @@ export class CommandHandler {
 	// Get the version string
 	getVersion(): string {
 		return version;
+	}
+
+	stop(): void {
+		this.continuousMonitor.cleanMonitor();
 	}
 }

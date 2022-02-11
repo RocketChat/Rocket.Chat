@@ -9,4 +9,5 @@ export enum Commands {
 	'extension_info',
 	'queue_summary',
 	'queue_details',
+	'event_stream',
 }

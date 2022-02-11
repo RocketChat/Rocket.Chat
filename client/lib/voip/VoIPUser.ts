@@ -70,7 +70,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			}
 			return {
 				state: this.callState,
-				callerInfo: this._callerInfo,
+				caller: this._callerInfo,
 				userState: this._userState,
 			};
 		}
@@ -251,6 +251,55 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	}
 
 	/**
+	 * Handles call mute-unmute
+	 */
+	private async handleMuteUnmute(muteState: boolean): Promise<void> {
+		const { session } = this;
+		if (this._held === muteState) {
+			return Promise.resolve();
+		}
+		if (!session) {
+			throw new Error('Session not found');
+		}
+
+		const sessionDescriptionHandler = this.session?.sessionDescriptionHandler;
+		if (!(sessionDescriptionHandler instanceof SessionDescriptionHandler)) {
+			throw new Error("Session's session description handler not instance of SessionDescriptionHandler.");
+		}
+
+		const options: SessionInviteOptions = {
+			requestDelegate: {
+				onAccept: (): void => {
+					this._held = muteState;
+					toggleMediaStreamTracks(!this._held, session, 'receiver');
+					toggleMediaStreamTracks(!this._held, session, 'sender');
+				},
+				onReject: (): void => {
+					this.emit('muteerror');
+				},
+			},
+		};
+
+		const { peerConnection } = sessionDescriptionHandler;
+		if (!peerConnection) {
+			throw new Error('Peer connection closed.');
+		}
+		return this.session
+			?.invite(options)
+			.then(() => {
+				toggleMediaStreamTracks(!this._held, session, 'receiver');
+				toggleMediaStreamTracks(!this._held, session, 'sender');
+			})
+			.catch((error: Error) => {
+				if (error instanceof RequestPendingError) {
+					console.error(`[${this.session?.id}] A mute request is already in progress.`);
+				}
+				this.emit('muteerror');
+				throw error;
+			});
+	}
+
+	/**
 	 * Handles call hold-unhold
 	 */
 	private async handleHoldUnhold(holdState: boolean): Promise<void> {
@@ -375,6 +424,7 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
 			logConfiguration: false,
+			logLevel: 'error',
 		};
 
 		this.userAgent = new UserAgent(this.userAgentOptions);
@@ -489,6 +539,20 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			default:
 				throw new Error('Unknown state');
 		}
+	}
+
+	/**
+	 * Public method called from outside to mute the call.
+	 * @remarks
+	 */
+	async muteCall(muteState: boolean): Promise<void> {
+		if (!this.session) {
+			throw new Error('Session does not exist.');
+		}
+		if (this._callState !== 'IN_CALL') {
+			throw new Error(`Incorrect call State = ${this.callState}`);
+		}
+		this.handleMuteUnmute(muteState);
 	}
 
 	/**
