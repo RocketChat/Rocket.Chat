@@ -1,4 +1,4 @@
-import { ActionButton, Icon } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import React, { ComponentProps, FC, memo } from 'react';
 
 type IconButtonProps = {
@@ -8,7 +8,7 @@ type IconButtonProps = {
 };
 
 const IconButton: FC<IconButtonProps> = ({ name, action, title }) => (
-	<ActionButton
+	<Button
 		nude
 		small
 		square
@@ -25,6 +25,6 @@ const IconButton: FC<IconButtonProps> = ({ name, action, title }) => (
 		}}
 	>
 		<Icon name={name} size='24px' color='neutral-700' />
-	</ActionButton>
+	</Button>
 );
 export default memo(IconButton);
