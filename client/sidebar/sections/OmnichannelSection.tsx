@@ -28,13 +28,13 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const availableIcon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
 		color: agentAvailable ? 'success' : undefined,
-		icon: agentAvailable ? ('message' as const) : ('message-disabled' as const),
-	};
+		icon: agentAvailable ? 'message' : 'message-disabled',
+	} as const;
 
 	const directoryIcon = {
 		title: t('Contact_Center'),
-		icon: 'contact' as const,
-	};
+		icon: 'contact',
+	} as const;
 
 	const handleAvailableStatusChange = useMutableCallback(async () => {
 		try {
