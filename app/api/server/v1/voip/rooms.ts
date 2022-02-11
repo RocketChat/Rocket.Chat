@@ -6,7 +6,6 @@ import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
-import { IVoipRoom } from '../../../../../definition/IRoom';
 import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
 
 /**
@@ -168,17 +167,16 @@ API.v1.addRoute(
 			if (!visitor) {
 				return API.v1.failure('invalid-token');
 			}
-			const roomResult = await LivechatVoip.findRoom(token, rid);
-			if (!roomResult) {
+			const room = await LivechatVoip.findRoom(token, rid);
+			if (!room) {
 				return API.v1.failure('invalid-room');
 			}
-			const room: IVoipRoom = roomResult;
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
 			const language: string = rcSettings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, {});
+			const closeResult = await LivechatVoip.closeRoom(visitor, room);
 			if (!closeResult) {
 				return API.v1.failure();
 			}

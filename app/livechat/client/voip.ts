@@ -4,7 +4,6 @@ import { MessageTypes } from '../../ui-utils/client';
 import { IVoipMessage } from '../../../definition/IMessage';
 
 type IMessageFuncReturn = {
-	comment?: string;
 	at?: string;
 	duration?: string;
 };

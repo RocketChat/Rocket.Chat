@@ -1,4 +1,4 @@
-import { Cursor, FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult } from 'mongodb';
+import { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { IVoipRoom, IRoomClosingInfo } from '../../../../definition/IRoom';
@@ -57,41 +57,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 			'v.token': visitorToken,
 		};
 		return this.findOne(query, options);
-	}
-
-	findOpenByVisitorToken(visitorToken: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Cursor<IVoipRoom> {
-		const query: FilterQuery<IVoipRoom> = {
-			't': 'v',
-			'open': true,
-			'v.token': visitorToken,
-		};
-		return this.find(query, options);
-	}
-
-	setFnameById(_id: IVoipRoom['_id'], fname: string): Promise<WriteOpResult> {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				fname,
-			},
-		};
-		return this.update(query, update);
-	}
-
-	updateVisitorStatus(token: string, status: string): Promise<WriteOpResult> {
-		const query: FilterQuery<IVoipRoom> = {
-			'v.token': token,
-			'open': true,
-			't': 'v',
-		};
-
-		const update = {
-			$set: {
-				'v.status': status,
-			},
-		};
-		return this.update(query, update);
 	}
 
 	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<WriteOpResult> {

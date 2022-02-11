@@ -204,7 +204,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		};
 	}
 
-	async handleEvent(event: string, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
+	async handleEvent(event: VoipClientEvents, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
 		const message = {
 			t: event,
 			msg: comment,
@@ -217,7 +217,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		// In the future, we need to check if the room to which we're sending events is on an active call
 		// to prevent sending messages to rooms after call has ended/call never happened
-		if (isOmnichannelVoipRoom(room) && Object.values<string>(VoipClientEvents).includes(event) && room.open) {
+		if (isOmnichannelVoipRoom(room) && room.open) {
 			await sendMessage(user, message, room);
 		} else {
 			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });

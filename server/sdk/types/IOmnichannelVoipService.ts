@@ -15,5 +15,5 @@ export interface IOmnichannelVoipService {
 		options: FindOneOptions<IVoipRoom>,
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
-	closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, options: any): Promise<boolean>;
+	closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean>;
 }

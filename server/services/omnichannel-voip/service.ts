@@ -11,7 +11,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoomClosingInfo } from '../../../definition/IRoom';
+import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType } from '../../../definition/IRoom';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -36,12 +36,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		guest: ILivechatVisitor,
 	): Promise<string> {
 		const status = 'online';
-		const { _id, username, department: departmentId } = guest;
+		const { _id, department: departmentId } = guest;
 		const newRoomAt = new Date();
 
 		this.logger.debug(`Creating Voip room for visitor ${_id}`);
 
-		const room = Object.assign({
+		const room: IVoipRoom = {
 			_id: rid,
 			msgs: 0,
 			usersCount: 1,
@@ -52,7 +52,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			departmentId,
 			v: {
 				_id,
-				username,
 				token: guest.token,
 				status,
 			},
@@ -61,19 +60,32 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 				ts: newRoomAt,
 				username: agent.username,
 			},
-			cl: false,
 			open: true,
 			waitingResponse: true,
 			// this should be overriden by extraRoomInfo when provided
 			// in case it's not provided, we'll use this "default" type
 			source: {
-				type: 'voip',
+				type: OmnichannelSourceType.API,
 			},
 			queuedAt: newRoomAt,
-
 			// We assume room is created when call is started (there could be small delay)
 			callStarted: newRoomAt,
-		});
+			callDuration: 0,
+			uids: [],
+			autoTranslateLanguage: '',
+			metrics: [],
+			responseBy: '',
+			livechatData: '',
+			priorityId: '',
+			u: {
+				_id: agent.agentId,
+				username: agent.username,
+			},
+			_updatedAt: newRoomAt,
+			topic: '',
+			tags: '',
+			closedAt: '',
+		};
 		return (await this.voipRoom.insertOne(room)).insertedId;
 	}
 
@@ -169,7 +181,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, _options = {}): Promise<boolean> {
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -177,7 +189,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 		const now = new Date();
 		const { _id: rid } = room;
-		const closer = visitor ? ('visitor' as const) : ('user' as const);
+		const closer = visitor ? 'visitor' : 'user';
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() / 1000,
