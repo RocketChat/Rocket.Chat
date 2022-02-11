@@ -23,6 +23,34 @@ const {
 	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
 } = process.env;
 
+// class CustomRegenerator extends Errors.Regenerator {
+// 	restoreCustomError(plainError: any): Error | undefined {
+// 		const { message, reason, details, errorType, isClientSafe } = plainError;
+
+// 		if (errorType === 'Meteor.Error') {
+// 			const error = new MeteorError(message, reason, details);
+// 			if (typeof isClientSafe !== 'undefined') {
+// 				error.isClientSafe = isClientSafe;
+// 			}
+// 			return error;
+// 		}
+
+// 		return undefined;
+// 	}
+
+// 	extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
+// 		return {
+// 			...super.extractPlainError(err),
+// 			...(isMeteorError(err) && {
+// 				isClientSafe: err.isClientSafe,
+// 				errorType: err.errorType,
+// 				reason: err.reason,
+// 				details: err.details,
+// 			}),
+// 		};
+// 	}
+// }
+
 // only starts network broker if transporter properly configured
 if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 	(async (): Promise<void> => {
@@ -128,6 +156,7 @@ if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 					},
 				},
 			},
+			// errorRegenerator: new CustomRegenerator(),
 		});
 
 		api.setBroker(new NetworkBroker(network));
