@@ -359,9 +359,12 @@ export class ImportDataConverter {
 					afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
-				if (e instanceof Error) {
-					this._logger.error(e);
+				// this._logger.error(e);
+				if (e instanceof Error || e instanceof Meteor.Error) {
 					this.saveError(_id, e);
+				} else {
+					// Used to avoid duplicated logs
+					this._logger.error(e);
 				}
 			}
 		});
@@ -583,18 +586,22 @@ export class ImportDataConverter {
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					if (e instanceof Error) {
-						this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
-						this._logger.error(e);
-					}
+					// this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
+					this._logger.error({
+						msg: `Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`,
+						err: e,
+					});
 				}
 
 				if (afterImportFn) {
 					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
-				if (e instanceof Error) {
+				if (e instanceof Error || e instanceof Meteor.Error) {
 					this.saveError(_id, e);
+				} else {
+					// Used to avoid duplicated logs
+					this._logger.error(e);
 				}
 			}
 		});
@@ -603,10 +610,11 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				if (e instanceof Error) {
-					this._logger.warn(`Failed to update last message of room ${rid}`);
-					this._logger.error(e);
-				}
+				// this._logger.warn(`Failed to update last message of room ${rid}`);
+				this._logger.error({
+					msg: `Failed to update last message of room ${rid}`,
+					err: e,
+				});
 			}
 		}
 	}
@@ -806,11 +814,14 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			if (e instanceof Error) {
-				this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
-				this._logger.error(e);
-				throw e;
-			}
+			// this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
+			this._logger.error({
+				msg: `Failed to create new room, with name: ${roomData.name}, and members: ${members}`,
+				name: roomData.name,
+				members,
+				err: e,
+			});
+			throw e;
 		}
 
 		this.updateRoomId(roomData._id as 'string', roomData);
@@ -909,8 +920,11 @@ export class ImportDataConverter {
 					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
-				if (e instanceof Error) {
+				if (e instanceof Error || e instanceof Meteor.Error) {
 					this.saveError(_id, e);
+				} else {
+					// Used to avoid duplicated logs
+					this._logger.error(e);
 				}
 			}
 		});

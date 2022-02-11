@@ -86,9 +86,7 @@ Meteor.methods({
 					});
 				}
 			} catch (e: unknown) {
-				if (e instanceof Error) {
-					SystemLogger.error(e);
-				}
+				SystemLogger.error(e);
 			}
 			attachments.push(attachment);
 		} else if (/^audio\/.+/.test(file.type)) {
