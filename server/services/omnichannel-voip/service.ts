@@ -73,7 +73,6 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			callDuration: 0,
 			uids: [],
 			autoTranslateLanguage: '',
-			metrics: [],
 			responseBy: '',
 			livechatData: '',
 			priorityId: '',
@@ -86,6 +85,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			tags: '',
 			closedAt: '',
 			jitsiTimeout: new Date(Date.now() + 3600 * 1000),
+			metrics: undefined,
 		};
 		return (await this.voipRoom.insertOne(room)).insertedId;
 	}
