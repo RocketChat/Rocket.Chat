@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings as rcSettings } from '../../../../settings/server/index';
+import { settings as rcSettings } from '../../../../settings/server';
 import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
