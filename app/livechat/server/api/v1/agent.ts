@@ -23,7 +23,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const agent = room?.servedBy && findAgent(room.servedBy.id);
+			const agent = room?.servedBy && findAgent(room.servedBy._id);
 
 			if (!agent) {
 				throw new Meteor.Error('invalid-agent');
