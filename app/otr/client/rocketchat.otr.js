@@ -7,6 +7,7 @@ import { Notifications } from '../../notifications';
 import { t } from '../../utils';
 import { onClientMessageReceived } from '../../../client/lib/onClientMessageReceived';
 import { onClientBeforeSendMessage } from '../../../client/lib/onClientBeforeSendMessage';
+import { OTRRoom } from './rocketchat.otr.room';
 
 class OTRClass {
 	constructor() {
@@ -36,7 +37,7 @@ class OTRClass {
 			return;
 		}
 
-		this.instancesByRoomId[roomId] = new OTR.Room(Meteor.userId(), roomId); // eslint-disable-line no-use-before-define
+		this.instancesByRoomId[roomId] = new OTRRoom(Meteor.userId(), roomId); // eslint-disable-line no-use-before-define
 		return this.instancesByRoomId[roomId];
 	}
 }

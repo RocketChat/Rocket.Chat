@@ -16,7 +16,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
-OTR.Room = class {
+export class OTRRoom {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
@@ -349,4 +349,4 @@ OTR.Room = class {
 				break;
 		}
 	}
-};
+}
