@@ -1,13 +1,21 @@
 import { Callout } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo, ReactNode } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { ILivechatTag } from '../../../../definition/ILivechatTag';
 import TagEdit from './TagEdit';
 
-function TagEditWithDepartmentData({ data, ...props }) {
+type TagEditWithDepartmentDataPropsType = {
+	data: ILivechatTag;
+	title: ReactNode;
+	tagId: ILivechatTag['_id'];
+	reload: () => void;
+};
+
+function TagEditWithDepartmentData({ data, title, ...props }: TagEditWithDepartmentDataPropsType): ReactElement {
 	const t = useTranslation();
 
 	const {
@@ -16,7 +24,7 @@ function TagEditWithDepartmentData({ data, ...props }) {
 		error: currentDepartmentsError,
 	} = useEndpointData(
 		'livechat/department.listByIds',
-		useMemo(() => ({ ids: data && data.departments ? data.departments : [] }), [data]),
+		useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
 	);
 
 	if ([currentDepartmentsState].includes(AsyncStatePhase.LOADING)) {
@@ -31,7 +39,7 @@ function TagEditWithDepartmentData({ data, ...props }) {
 		);
 	}
 
-	return <TagEdit currentDepartments={currentDepartments} data={data} {...props} />;
+	return <TagEdit title={title} currentDepartments={currentDepartments} data={data} {...props} />;
 }
 
 export default TagEditWithDepartmentData;

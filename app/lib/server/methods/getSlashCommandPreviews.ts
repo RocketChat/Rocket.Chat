@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../../utils';
+import { slashCommands } from '../../../utils/server';
 
 Meteor.methods({
-	executeSlashCommandPreview(command, preview) {
+	getSlashCommandPreviews(command) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSlashCommandPreview',
@@ -23,12 +23,6 @@ Meteor.methods({
 			});
 		}
 
-		if (!preview) {
-			throw new Meteor.Error('error-invalid-command-preview', 'Invalid Preview Provided', {
-				method: 'executeSlashCommandPreview',
-			});
-		}
-
-		return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
+		return slashCommands.getPreviews(command.cmd, command.params, command.msg);
 	},
 });
