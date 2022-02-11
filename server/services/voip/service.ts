@@ -19,6 +19,10 @@ import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
+import { IUser } from '../../../definition/IUser';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { isOmnichannelVoipRoom, IVoipRoom } from '../../../definition/IRoom';
+import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 
 export class VoipService extends ServiceClass implements IVoipService {
 	protected name = 'voip';
@@ -42,7 +46,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
-			this.logger.error({ mst: `Error while initialising the connector. error = ${error}` });
+			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
 		}
 	}
 
@@ -102,11 +106,6 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 		return getServerConfigDataFromSettings(type);
-	}
-
-	// this is a dummy function to avoid having an empty IVoipService interface
-	getConfiguration(): any {
-		return {};
 	}
 
 	getConnector(): CommandHandler {
@@ -218,5 +217,25 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return {
 			result,
 		};
+	}
+
+	async handleEvent(event: VoipClientEvents, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
+		const message = {
+			t: event,
+			msg: comment,
+			groupable: false,
+			voipData: {
+				callDuration: room.callDuration,
+				callStarted: room.callStarted,
+			},
+		};
+
+		// In the future, we need to check if the room to which we're sending events is on an active call
+		// to prevent sending messages to rooms after call has ended/call never happened
+		if (isOmnichannelVoipRoom(room) && room.open) {
+			await sendMessage(user, message, room);
+		} else {
+			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
+		}
 	}
 }
