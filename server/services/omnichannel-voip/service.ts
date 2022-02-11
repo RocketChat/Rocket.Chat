@@ -85,6 +85,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			topic: '',
 			tags: '',
 			closedAt: '',
+			jitsiTimeout: new Date(Date.now() + 3600 * 1000),
 		};
 		return (await this.voipRoom.insertOne(room)).insertedId;
 	}
