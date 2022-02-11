@@ -4,12 +4,13 @@ import React, { useCallback, useMemo, useState, ReactElement, ContextType, useEf
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { useRole } from '../../../contexts/AuthorizationContext';
 import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
 import { useSettingSetValue, useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useLoginWithPassword, useUserId } from '../../../contexts/UserContext';
+import { useLoginWithPassword } from '../../../contexts/UserContext';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -37,13 +38,13 @@ type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Pro
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
 	const t = useTranslation();
-	const userId = useUserId();
+	const hasAdminRole = useRole('admin');
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { loaded, settings, skipCloudRegistration } = useParameters();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
-	const [maxSteps, setMaxSteps] = useState(4);
+	const [maxSteps, setMaxSteps] = useState(3);
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
@@ -159,7 +160,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	}, [dispatchSettings, setupWizardData]);
 
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
-		if (!userId) {
+		if (!hasAdminRole) {
 			try {
 				await registerAdminUser();
 			} catch (e) {
@@ -180,7 +181,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				registrationData: { ...intentData, cloudEmail: email },
 			}));
 
-			goToStep(5);
+			goToStep(4);
 			setShowSetupWizard('in_progress');
 		} catch (e) {
 			console.log(e);
@@ -188,7 +189,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	});
 
 	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
-		await registerAdminUser();
+		if (!hasAdminRole) {
+			await registerAdminUser();
+		}
 		await saveOrganizationData();
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
