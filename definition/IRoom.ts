@@ -167,9 +167,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id: string;
 		username: IUser['username'];
 	};
-	serviceTimeDuration?: string;
-	extraData?: Record<string, any>;
 }
+
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
 }
@@ -192,8 +191,8 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
-export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'serviceTimeDuration' | 'extraData'> &
-	Pick<IVoipRoom, 'callDuration'>;
+export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt'> &
+	Pick<IVoipRoom, 'callDuration'> & { serviceTimeDuration?: number };
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
