@@ -8,8 +8,8 @@ import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { canAccessRoom } from '../authorization/canAccessRoom';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { Authorization } from '../../sdk';
 
 export class E2EEService extends ServiceClass implements IE2EEService {
 	protected readonly name = 'e2ee';
@@ -86,7 +86,7 @@ export class E2EEService extends ServiceClass implements IE2EEService {
 	}
 
 	async getRoomMembersWithoutPublicKey(uid: IUser['_id'], rid: IRoom['_id']): Promise<IUser[]> {
-		if (!(await canAccessRoom({ _id: rid }, { _id: uid }))) {
+		if (!(await Authorization.canAccessRoomId(rid, uid))) {
 			throw new Error('error-invalid-room');
 		}
 
@@ -118,7 +118,7 @@ export class E2EEService extends ServiceClass implements IE2EEService {
 	}
 
 	async setRoomKeyId(uid: IUser['_id'], rid: IRoom['_id'], keyId: Exclude<IRoom['e2eKeyId'], undefined>): Promise<void> {
-		if (!(await canAccessRoom({ _id: rid }, { _id: uid }))) {
+		if (!(await Authorization.canAccessRoomId(rid, uid))) {
 			throw new Error('error-invalid-room');
 		}
 
