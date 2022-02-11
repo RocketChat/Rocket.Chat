@@ -4,7 +4,7 @@ import { FilterQuery } from 'mongodb';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { Logger } from '../app/logger/server';
 import type { IMessage } from '../definition/IMessage';
-import type { IRoom } from '../definition/IRoom';
+import type { IOmnichannelRoom, IRoom } from '../definition/IRoom';
 import type { IUser } from '../definition/IUser';
 import type { ILivechatDepartmentRecord } from '../definition/ILivechatDepartmentRecord';
 import type { ILivechatAgent } from '../definition/ILivechatAgent';
@@ -39,7 +39,7 @@ type EventLikeCallbackSignatures = {
 	'afterSaveMessage': (message: IMessage, room: IRoom) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
-	'livechat.closeRoom': (room: IRoom) => void;
+	'livechat.closeRoom': (room: IOmnichannelRoom) => void;
 	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;

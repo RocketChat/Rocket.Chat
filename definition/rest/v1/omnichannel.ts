@@ -252,7 +252,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/inquiries.list': {
-		GET: (params: { department: string }) => {};
+		GET: (params: { department: string }) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 
 	'livechat/inquiries.take': {
