@@ -34,7 +34,7 @@
 		"cookie-parser": "^1.4.6",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
-		"express": "^4.17.1",
+		"express": "^4.17.2",
 		"fibers": "^5.0.0",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
