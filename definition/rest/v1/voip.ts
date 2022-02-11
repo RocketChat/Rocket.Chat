@@ -1,6 +1,7 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { IQueueMembershipDetails } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
+import { VoipClientEvents } from '../../voip/VoipClientEvents';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
@@ -11,5 +12,8 @@ export type VoipEndpoints = {
 	};
 	'voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: { extension: string }) => IQueueMembershipDetails;
+	};
+	'voip/events': {
+		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};
 };
