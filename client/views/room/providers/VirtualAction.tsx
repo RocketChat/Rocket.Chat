@@ -6,6 +6,7 @@ import { ToolboxAction } from '../lib/Toolbox/index';
 
 const groupsDict = {
 	l: 'live',
+	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
