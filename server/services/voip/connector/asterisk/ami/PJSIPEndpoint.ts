@@ -40,8 +40,6 @@ import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnecto
 export class PJSIPEndpoint extends Command {
 	private logger: Logger;
 
-	private ignoredExtensions = ['anonymous', 'outboundsipstation_trunk'];
-
 	constructor(command: string, parametersNeeded: boolean) {
 		super(command, parametersNeeded);
 		this.logger = new Logger('PJSIPEndpoint');
@@ -82,16 +80,14 @@ export class PJSIPEndpoint extends Command {
 	 * This event is generated as a result of the execution of |pjsipshowendpoints|
 	 */
 	onEndpointList(event: any): void {
+		console.log('---------------------------------------');
+		console.log(event);
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onEndpointList() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
-			return;
-		}
-
-		if (this.ignoredExtensions.includes(event.objectname)) {
 			return;
 		}
 
