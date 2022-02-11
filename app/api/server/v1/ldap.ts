@@ -26,10 +26,8 @@ API.v1.addRoute(
 			try {
 				await LDAP.testConnection();
 			} catch (error: unknown) {
-				if (error instanceof Error) {
-					SystemLogger.error(error);
-					throw new Error('Connection_failed');
-				}
+				SystemLogger.error(error);
+				throw new Error('Connection_failed');
 			}
 
 			return API.v1.success({

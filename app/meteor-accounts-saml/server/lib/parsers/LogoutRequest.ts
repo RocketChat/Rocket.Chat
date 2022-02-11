@@ -38,15 +38,15 @@ export class LogoutRequestParser {
 
 			return callback(null, { idpSession, nameID, id });
 		} catch (e: unknown) {
-			if (e instanceof Error) {
-				SAMLUtils.error(e);
-				SAMLUtils.log(`Caught error: ${e}`);
+			const message = e instanceof Error ? e.message : '';
+			SAMLUtils.error(e);
+			SAMLUtils.log(`Caught error: ${e}`);
 
-				const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-				SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
+			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 
-				return callback(e, null);
-			}
+			return callback(message, null);
+			// return callback(e, null);
 		}
 	}
 }

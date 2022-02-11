@@ -95,9 +95,8 @@ export class SAMLServiceProvider {
 
 				return callback(null, target);
 			} catch (error) {
-				if (error instanceof Error) {
-					return callback(error);
-				}
+				const message = error instanceof Error || error instanceof Meteor.Error ? error.message : '';
+				return callback(message);
 			}
 		});
 	}
@@ -156,9 +155,8 @@ export class SAMLServiceProvider {
 				}
 				callback(null, target);
 			} catch (error) {
-				if (error instanceof Error) {
-					callback(error);
-				}
+				const message = error instanceof Error || error instanceof Meteor.Error ? error.message : '';
+				callback(message);
 			}
 		});
 	}
