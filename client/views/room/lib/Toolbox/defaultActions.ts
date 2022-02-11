@@ -22,7 +22,7 @@ addAction('user-info', {
 });
 
 addAction('contact-profile', {
-	groups: ['live', 'voip'],
+	groups: ['live' /* , 'voip'*/],
 	id: 'contact-profile',
 	title: 'Contact_Info',
 	icon: 'user',

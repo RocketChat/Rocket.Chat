@@ -49,10 +49,6 @@ export default class VoipRoomType extends RoomTypeConfig {
 		this.readOnlyTpl = 'ComposerNotAvailablePhoneCalls';
 	}
 
-	enableMembersListProfile(): boolean {
-		return true;
-	}
-
 	findRoom(identifier: IRoom['_id']): IRoom {
 		return ChatRoom.findOne({ _id: identifier });
 	}
