@@ -13,8 +13,6 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 	constructor() {
 		super();
 
-		console.log('[ee] LicenseService', new Error().stack);
-
 		onValidateLicenses((): void => {
 			if (!isEnterprise()) {
 				return;
