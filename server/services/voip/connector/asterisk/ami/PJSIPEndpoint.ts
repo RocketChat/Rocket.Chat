@@ -80,14 +80,18 @@ export class PJSIPEndpoint extends Command {
 	 * This event is generated as a result of the execution of |pjsipshowendpoints|
 	 */
 	onEndpointList(event: any): void {
-		console.log('---------------------------------------');
-		console.log(event);
 		if (event.actionid !== this.actionid) {
 			this.logger.error({
 				msg: 'onEndpointList() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid,
 			});
+			return;
+		}
+
+		// A SIP address-of-record is a canonical address by which a user is known
+		// If the event doesn't have an AOR, we will ignore it (as it's probably system-only)
+		if (!event?.aor.trim()) {
 			return;
 		}
 
