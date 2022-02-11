@@ -24,7 +24,7 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic: any;
+	topic?: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids: Array<string>;
@@ -32,7 +32,7 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	jitsiTimeout: Date;
+	jitsiTimeout?: Date;
 	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
@@ -148,9 +148,9 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags: any;
-	closedAt: any;
-	metrics: any;
+	tags?: any;
+	closedAt?: Date;
+	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
