@@ -43,7 +43,9 @@ API.v1.addRoute('livechat/visitor', {
 		// If it's updating an existing visitor, it must also update the roomInfo
 		const cursor = LivechatRooms.findOpenByVisitorToken(token);
 		cursor.forEach((room: IRoom) => {
-			Livechat.saveRoomInfo(room, visitor);
+			if (visitor) {
+				Livechat.saveRoomInfo(room, visitor);
+			}
 		});
 
 		if (customFields && customFields instanceof Array) {

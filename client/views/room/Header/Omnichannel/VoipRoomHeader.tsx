@@ -7,7 +7,7 @@ import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
-import BackButton from './BackButton';
+import { BackButton } from './BackButton';
 
 const VoipRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot, room }) => {
 	const [name] = useCurrentRoute();
