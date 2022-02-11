@@ -98,7 +98,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(this.urlParams, {
-				id: String,
+				_id: String,
 			});
 			const { customField } = await findCustomFieldById({ userId: this.userId, customFieldId: this.urlParams.id });
 
