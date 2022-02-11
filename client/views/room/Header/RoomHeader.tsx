@@ -47,7 +47,9 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 				{slots?.insideContent}
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' withTruncatedText content={topic} />}</Header.Subtitle>
+				<Header.Subtitle>
+					{topic && <MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />}
+				</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		{slots?.posContent}

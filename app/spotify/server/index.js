@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { createSpotifyBeforeSaveMessageHandler } from '../lib/spotify';
 
 Meteor.startup(() => {

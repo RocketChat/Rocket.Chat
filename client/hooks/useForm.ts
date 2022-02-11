@@ -8,27 +8,20 @@ type Field = {
 	changed: boolean;
 };
 
-type FormState = {
+type FormState<Values extends Record<string, unknown>> = {
 	fields: Field[];
-	values: Record<string, unknown>;
+	values: Values;
 	hasUnsavedChanges: boolean;
 };
 
-type FormAction = {
-	(prevState: FormState): FormState;
+type FormAction<Values extends Record<string, unknown>> = {
+	(prevState: FormState<Values>): FormState<Values>;
 };
 
-type UseFormReturnType = {
-	values: Record<string, unknown>;
-	handlers: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
-	hasUnsavedChanges: boolean;
-	commit: () => void;
-	reset: () => void;
-};
+const reduceForm = <Values extends Record<string, unknown>>(state: FormState<Values>, action: FormAction<Values>): FormState<Values> =>
+	action(state);
 
-const reduceForm = (state: FormState, action: FormAction): FormState => action(state);
-
-const initForm = (initialValues: Record<string, unknown>): FormState => {
+const initForm = <Values extends Record<string, unknown>>(initialValues: Values): FormState<Values> => {
 	const fields = [];
 
 	for (const [fieldName, initialValue] of Object.entries(initialValues)) {
@@ -48,8 +41,8 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 };
 
 const valueChanged =
-	(fieldName: string, newValue: unknown): FormAction =>
-	(state: FormState): FormState => {
+	<Values extends Record<string, unknown>>(fieldName: string, newValue: unknown): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => {
 		let { fields } = state;
 		const field = fields.find(({ name }) => name === fieldName);
 
@@ -83,8 +76,8 @@ const valueChanged =
 	};
 
 const formCommitted =
-	(): FormAction =>
-	(state: FormState): FormState => ({
+	<Values extends Record<string, unknown>>(): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => ({
 		...state,
 		fields: state.fields.map((field) => ({
 			...field,
@@ -95,8 +88,8 @@ const formCommitted =
 	});
 
 const formReset =
-	(): FormAction =>
-	(state: FormState): FormState => ({
+	<Values extends Record<string, unknown>>(): FormAction<Values> =>
+	(state: FormState<Values>): FormState<Values> => ({
 		...state,
 		fields: state.fields.map((field) => ({
 			...field,
@@ -108,7 +101,7 @@ const formReset =
 				...values,
 				[field.name]: field.initialValue,
 			}),
-			{},
+			{} as Values,
 		),
 		hasUnsavedChanges: false,
 	});
@@ -142,10 +135,24 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 	return target.value;
 };
 
-export const useForm = (
-	initialValues: Record<string, unknown>,
+/**
+ * @deprecated prefer react-hook-form's `useForm`
+ */
+export const useForm = <
+	Reducer extends (
+		state: FormState<Record<string, unknown>>,
+		action: FormAction<Record<string, unknown>>,
+	) => FormState<Record<string, unknown>>,
+>(
+	initialValues: Parameters<Reducer>[0]['values'],
 	onChange: (...args: unknown[]) => void = (): void => undefined,
-): UseFormReturnType => {
+): {
+	values: Parameters<Reducer>[0]['values'];
+	handlers: Record<string, (eventOrValue: ChangeEvent | unknown) => void>;
+	hasUnsavedChanges: boolean;
+	commit: () => void;
+	reset: () => void;
+} => {
 	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
 
 	const commit = useCallback(() => {
@@ -168,12 +175,13 @@ export const useForm = (
 							initialValue,
 							value: newValue,
 							key: name,
+							values: state.values,
 						});
 					},
 				}),
 				{},
 			),
-		[onChange, state.fields],
+		[onChange, state.fields, state.values],
 	);
 
 	return {

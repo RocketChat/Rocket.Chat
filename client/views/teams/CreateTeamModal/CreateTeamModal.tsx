@@ -1,6 +1,6 @@
 import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
 import { usePermission } from '../../../contexts/AuthorizationContext';
@@ -230,7 +230,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 
 	const t = useTranslation();
 
-	const focusRef = useAutoFocus() as Ref<HTMLElement>;
+	const focusRef = useAutoFocus<HTMLInputElement>();
 
 	return (
 		<Modal>

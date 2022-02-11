@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
+import { FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
@@ -14,8 +14,6 @@ export interface IWorkHoursCronJobsWrapper {
 }
 
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
-	public readonly col!: Collection<ILivechatBusinessHour>;
-
 	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
 
 	async findOneDefaultBusinessHour(

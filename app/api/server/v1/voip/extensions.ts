@@ -1,6 +1,8 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
+import { hasPermission } from '../../../../authorization/server/index';
+import { Users } from '../../../../models/server/raw/index';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 
@@ -54,7 +56,7 @@ API.v1.addRoute(
  */
 
 API.v1.addRoute(
-	'connector.extension.getRegistrationInfo',
+	'connector.extension.getRegistrationInfoByExtension',
 	{ authRequired: true },
 	{
 		async get() {
@@ -65,6 +67,39 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
+			return API.v1.success({ ...endpointDetails.result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'connector.extension.getRegistrationInfoByUserId',
+	{ authRequired: true },
+	{
+		async get() {
+			check(
+				this.requestParams(),
+				Match.ObjectIncluding({
+					id: String,
+				}),
+			);
+			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
+				return API.v1.unauthorized();
+			}
+			const { id } = this.requestParams();
+			const { extension } =
+				(await Users.getVoipExtensionByUserId(id, {
+					projection: {
+						_id: 1,
+						username: 1,
+						extension: 1,
+					},
+				})) || {};
+
+			if (!extension) {
+				return API.v1.notFound('Extension not found');
+			}
+			const endpointDetails = await Voip.getRegistrationInfo({ extension });
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { Users } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';

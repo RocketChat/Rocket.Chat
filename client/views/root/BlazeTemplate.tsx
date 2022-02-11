@@ -28,7 +28,7 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 
 		const data = dataRef.current;
 
-		const view = Blaze.renderWithData(Template[template], () => data.all(), ref.current.parentNode);
+		const view = Blaze.renderWithData(Template[template], () => data.all(), ref.current.parentNode, ref.current);
 
 		return (): void => {
 			Blaze.remove(view);

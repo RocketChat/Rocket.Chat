@@ -19,7 +19,7 @@ type CallContextReady = {
 	enabled: true;
 	ready: true;
 	voipClient: VoIPUser;
-	actions: CallActions;
+	actions: CallActionsType;
 };
 type CallContextError = {
 	enabled: true;
@@ -32,7 +32,7 @@ export const isCallContextReady = (context: CallContextValue): context is CallCo
 export const isCallContextError = (context: CallContextValue): context is CallContextError =>
 	(context as CallContextError).error !== undefined;
 
-type CallActions = {
+export type CallActionsType = {
 	mute: () => unknown;
 	unmute: () => unknown;
 	pause: () => unknown;
@@ -65,7 +65,7 @@ export const useIsCallError = (): boolean => {
 	return Boolean(isCallContextError(context));
 };
 
-export const useCallActions = (): CallActions => {
+export const useCallActions = (): CallActionsType => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
@@ -74,11 +74,11 @@ export const useCallActions = (): CallActions => {
 	return context.actions;
 };
 
-export const useCallState = (): VoIpCallerInfo => {
+export const useCallerInfo = (): VoIpCallerInfo => {
 	const context = useContext(CallContext);
 
 	if (!isCallContextReady(context)) {
-		throw new Error('useCallState only if Calls are enabled and ready');
+		throw new Error('useCallerInfo only if Calls are enabled and ready');
 	}
 	const { voipClient } = context;
 	const subscription = useMemo(

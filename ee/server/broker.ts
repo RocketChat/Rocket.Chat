@@ -1,4 +1,4 @@
-import { ServiceBroker, Context, ServiceSchema, Serializers } from 'moleculer';
+import { ServiceBroker, Context, ServiceSchema, Serializers, Errors } from 'moleculer';
 import EJSON from 'ejson';
 
 import { asyncLocalStorage, License } from '../../server/sdk';
@@ -6,6 +6,7 @@ import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
+import { isMeteorError, MeteorError } from '../../server/sdk/errors';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
 
 const events: { [k: string]: string } = {
@@ -200,8 +201,12 @@ class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> =>
-				asyncLocalStorage.run(
+			service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
+				if (!this.isActionWhitelisted(`${name}.${method}`) && !(await this.allowed)) {
+					return;
+				}
+
+				return asyncLocalStorage.run(
 					{
 						id: ctx.id,
 						nodeID: ctx.nodeID,
@@ -209,12 +214,9 @@ class NetworkBroker implements IBroker {
 						broker: this,
 						ctx,
 					},
-					async (): Promise<any> => {
-						if (this.isActionWhitelisted(`${name}.${method}`) || (await this.allowed)) {
-							return i[method](...ctx.params);
-						}
-					},
+					() => i[method](...ctx.params),
 				);
+			};
 		}
 
 		this.broker.createService(service);
@@ -286,6 +288,34 @@ const {
 	TRACING_ENABLED = 'false',
 	SKIP_PROCESS_EVENT_REGISTRATION = 'true',
 } = process.env;
+
+class CustomRegenerator extends Errors.Regenerator {
+	restoreCustomError(plainError: any): Error | undefined {
+		const { message, reason, details, errorType, isClientSafe } = plainError;
+
+		if (errorType === 'Meteor.Error') {
+			const error = new MeteorError(message, reason, details);
+			if (typeof isClientSafe !== 'undefined') {
+				error.isClientSafe = isClientSafe;
+			}
+			return error;
+		}
+
+		return undefined;
+	}
+
+	extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
+		return {
+			...super.extractPlainError(err),
+			...(isMeteorError(err) && {
+				isClientSafe: err.isClientSafe,
+				errorType: err.errorType,
+				reason: err.reason,
+				details: err.details,
+			}),
+		};
+	}
+}
 
 // only starts network broker if transporter properly configured
 if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
@@ -375,6 +405,7 @@ if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 				},
 			},
 		},
+		errorRegenerator: new CustomRegenerator(),
 	});
 
 	new NetworkBroker(network);

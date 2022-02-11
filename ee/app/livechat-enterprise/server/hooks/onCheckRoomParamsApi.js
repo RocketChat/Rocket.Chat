@@ -1,6 +1,6 @@
 import { Match } from 'meteor/check';
 
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 
 callbacks.add(
 	'livechat.onCheckRoomApiParams',

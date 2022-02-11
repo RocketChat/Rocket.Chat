@@ -6,7 +6,7 @@ import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import Page from '../../components/Page';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -37,13 +37,13 @@ const AccountProfilePage = () => {
 
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user ?? {}));
+	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(getInitialValues(user ?? {}));
 	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
-	const logoutOtherClients = useMethod('logoutOtherClients');
+	const logoutOtherClients = useEndpoint('POST', 'users.logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
 	const saveFn = useMethod('saveUserProfile');
 
@@ -221,6 +221,9 @@ const AccountProfilePage = () => {
 		<Page>
 			<Page.Header title={t('Profile')}>
 				<ButtonGroup>
+					<Button primary danger disabled={!hasUnsavedChanges} onClick={reset}>
+						{t('Reset')}
+					</Button>
 					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
 						{t('Save_changes')}
 					</Button>

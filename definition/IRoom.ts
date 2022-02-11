@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-export type RoomType = 'c' | 'd' | 'p' | 'l';
+export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -24,7 +24,7 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic: any;
+	topic?: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids: Array<string>;
@@ -32,7 +32,7 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	jitsiTimeout: Date;
+	jitsiTimeout?: Date;
 	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
@@ -108,8 +108,8 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
-	t: 'l';
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+	t: 'l' | 'v';
 	v: {
 		_id?: string;
 		token?: string;
@@ -130,6 +130,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		id?: string;
 		// A human readable alias that goes with the ID, for post analytical purposes
 		alias?: string;
+		// A label to be shown in the room info
+		label?: string;
 		// The sidebar icon
 		sidebarIcon?: string;
 		// The default sidebar icon
@@ -146,9 +148,9 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags: any;
-	closedAt: any;
-	metrics: any;
+	tags?: any;
+	closedAt?: Date;
+	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
@@ -158,6 +160,25 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
+
+	// optional keys for closed rooms
+	closer?: 'user' | 'visitor';
+	closedBy?: {
+		_id: string;
+		username: IUser['username'];
+	};
+}
+
+export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
+	t: 'l';
+}
+
+export interface IVoipRoom extends IOmnichannelGenericRoom {
+	t: 'v';
+	// The timestamp when call was started
+	callStarted: Date;
+	// The amount of time the call lasted, in milliseconds
+	callDuration: number;
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -170,7 +191,12 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
+export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt'> &
+	Pick<IVoipRoom, 'callDuration'> & { serviceTimeDuration?: number };
+
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+
+export const isOmnichannelVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {

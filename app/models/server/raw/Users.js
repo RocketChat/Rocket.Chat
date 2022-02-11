@@ -652,6 +652,24 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds, agentId) {
+		const query = {
+			_id: agentId,
+			roles: 'livechat-agent',
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+			$addToSet: {
+				openBusinessHours: { $each: businessHourIds },
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
 		const query = {
 			_id: { $in: agentIds },
@@ -814,6 +832,22 @@ export class UsersRaw extends BaseRaw {
 			{
 				$set: {
 					'services.resume.loginTokens': [],
+				},
+			},
+		);
+	}
+
+	removeNonPATLoginTokensExcept(userId, authToken) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						when: { $exists: true },
+						hashedToken: { $ne: authToken },
+					},
 				},
 			},
 		);
