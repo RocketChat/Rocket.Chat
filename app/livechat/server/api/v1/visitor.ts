@@ -37,7 +37,7 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = Livechat.registerGuest(guest);
+		const visitorId = Livechat.registerGuest(guest as any);
 
 		let visitor = await VisitorsRaw.getVisitorByToken(token, {});
 		// If it's updating an existing visitor, it must also update the roomInfo
