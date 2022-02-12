@@ -109,6 +109,18 @@ export type OmnichannelEndpoints = {
 		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => { departments: ILivechatDepartment[] };
 	};
 
+	'livechat/facebook': {
+		POST: (params: {
+			mid: string;
+			page: string;
+			token: string;
+			first_name: string;
+			last_name: string;
+			text: string;
+			attachments: any[];
+		}) => { success: boolean; error?: string; message?: any };
+	};
+
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			customFields: [

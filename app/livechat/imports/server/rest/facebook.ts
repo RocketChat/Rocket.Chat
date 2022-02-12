@@ -13,34 +13,9 @@ import { Livechat } from '../../../server/lib/Livechat';
  * @apiGroup Livechat
  *
  */
-interface IApiParams extends Array<any> {
-	mid: string; // Facebook message id
-	page: string; // Facebook pages id
-	token: string; // Facebook user's token
-	first_name: string; // Facebook user's first name
-	last_name: string; // Facebook user's last name
-	text: string;
-	// [attachments] // Facebook message attachments
-	attachments: any[];
-}
-
-interface ISendMessage {
-	message: IMessage;
-	roomInfo: any;
-	guest: any;
-	agent: any;
-}
-
-interface IMessage {
-	_id: string;
-	rid?: string;
-	token?: string;
-	msg?: string;
-}
-
 API.v1.addRoute('livechat/facebook', {
 	post() {
-		const BodyParams: IApiParams = this.bodyParams;
+		const BodyParams = this.bodyParams;
 
 		if (!BodyParams.text && !BodyParams.attachments) {
 			return {
@@ -73,9 +48,11 @@ API.v1.addRoute('livechat/facebook', {
 			};
 		}
 
-		const sendMessage: ISendMessage = {
+		const sendMessage = {
 			message: {
-				_id: BodyParams.mid,
+				rid: BodyParams.mid,
+				token: BodyParams.token,
+				msg: BodyParams.text,
 			},
 			roomInfo: {
 				facebook: {
@@ -117,7 +94,7 @@ API.v1.addRoute('livechat/facebook', {
 
 		try {
 			return {
-				sucess: true,
+				success: true,
 				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {

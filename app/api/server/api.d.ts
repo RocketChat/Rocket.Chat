@@ -8,7 +8,7 @@ type SuccessResult<T> = {
 	body: T extends object ? { success: true } & T : T;
 };
 
-export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
+type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
 	statusCode: 400;
 	body: T extends object
 		? { success: false } & T
