@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../../../../app/models/server';
-import { canAccessRoom } from '../../../../../app/authorization/server';
+import { canAccessRoomId } from '../../../../../app/authorization/server';
 import { ReadReceipt } from '../../lib/ReadReceipt';
 
 Meteor.methods({
@@ -22,7 +22,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!canAccessRoom({ _id: message.rid }, { _id: Meteor.userId() })) {
+		if (!canAccessRoomId(message.rid, Meteor.userId())) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getReadReceipts' });
 		}
 

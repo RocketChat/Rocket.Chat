@@ -10,7 +10,7 @@ import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessag
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 
-function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...props }) {
+function TagEdit({ title, data, tagId, reload, currentDepartments, ...props }) {
 	const t = useTranslation();
 	const tagsRoute = useRoute('omnichannel-tags');
 
