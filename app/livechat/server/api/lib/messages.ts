@@ -1,15 +1,17 @@
+import { IMessage } from '../../../../../definition/IMessage/IMessage';
 import { LivechatExternalMessage } from '../../../../models/server/raw';
 
-type IPaginationParam = { pagination: { offset: number; count: number; sort: Record<string, any> } };
-
-export async function findExternalMessages(
-	roomId: string,
-	{ pagination: { offset, count, sort } }: IPaginationParam,
-): Promise<{ messages: any; count: number; offset: number; total: number }> {
+export async function findExternalMessages({
+	roomId,
+	pagination,
+}: {
+	roomId: string;
+	pagination: { offset: number; count: number; sort: string };
+}): Promise<{ messages: IMessage[]; count: number; offset: number; total: number }> {
 	const cursor = await LivechatExternalMessage.findByRoomId(roomId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+		sort: pagination.sort || { ts: -1 },
+		skip: pagination.offset,
+		limit: pagination.count,
 	});
 
 	const total = await cursor.count();
@@ -19,7 +21,7 @@ export async function findExternalMessages(
 	return {
 		messages,
 		count: messages.length,
-		offset,
+		offset: pagination.offset,
 		total,
 	};
 }
