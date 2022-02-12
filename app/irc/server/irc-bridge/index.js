@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import * as servers from '../servers';
 import { Settings } from '../../../models/server';
 import { Logger } from '../../../logger/server';

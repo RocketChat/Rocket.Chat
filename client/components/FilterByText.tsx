@@ -14,10 +14,11 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 	textButton: string;
 	onButtonClick: () => void;
 };
+
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children: _, ...props }) => {
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -43,13 +44,15 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 				onChange={handleInputChange}
 				value={text}
 			/>
-			{isFilterByTextPropsWithButton(props) && (
+			{isFilterByTextPropsWithButton(props) ? (
 				<Button onClick={props.onButtonClick} mis='x8' primary>
 					{props.textButton}
 				</Button>
+			) : (
+				children && <Box mis='x8'>{children} </Box>
 			)}
 		</Box>
 	);
 };
 
-export default memo(FilterByText);
+export default memo<FC<FilterByTextProps>>(FilterByText);

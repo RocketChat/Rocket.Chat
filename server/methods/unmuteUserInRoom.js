@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks';
+import { callbacks } from '../../lib/callbacks';
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { RoomMemberActions, roomTypes } from '../../app/utils/server';
 

@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings';
 import { sendMessage } from '../../../lib';
 import { LivechatDepartment, Rooms, Users } from '../../../models';
