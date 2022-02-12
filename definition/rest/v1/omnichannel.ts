@@ -14,8 +14,10 @@ import { ILivechatTrigger } from '../../ILivechatTrigger';
 import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
+import { IUser } from '../../IUser';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+import { SettingValue } from '/definition/ISetting';
 
 type booleanString = 'true' | 'false';
 
@@ -437,5 +439,33 @@ export type OmnichannelEndpoints = {
 			rid: string;
 			data: [name: string, value: string];
 		};
+	};
+
+	'livechat/transcript': {
+		POST: (params: { token: string; rid: string; email: string; user: any; subject: string }) => { message: string };
+	};
+
+	'livechat/transfer.history/:rid': {
+		GET: (params: { rid: string }) => { history: number[]; count: number; offset: number; total: number };
+	};
+
+	'livechat/video.call/:token': {
+		GET: (params: { token: string; rid?: string }) => {
+			videoCall: {
+				rid: string;
+				domain: SettingValue;
+				provider: string;
+				room: string;
+				timeout: Date;
+			};
+		};
+	};
+
+	'livechat/webrtc.call': {
+		GET: (params: { rid?: string }) => { videoCall: { rid: any; provider: string; callStatus: any } };
+	};
+
+	'livechat/webrtc.call/:callId': {
+		PUT: (params: { callId: string; rid?: string; status?: string }) => { status: string | undefined };
 	};
 };
