@@ -1,57 +1,40 @@
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { IUser } from '../../../../../../../definition/IUser';
-import { UserStatus } from '../../../../../../components/UserStatus';
+import { IRoom } from '../../../../../../../definition/IRoom';
 import VerticalBar from '../../../../../../components/VerticalBar';
-import UserAvatar from '../../../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
+import AgentField from '../AgentField';
 import { InfoField } from './InfoField';
 
 type VoipInfoPropsType = {
-	contact: any;
-	user: IUser | null;
+	guest: any;
+	servedBy: IRoom['servedBy'];
 	onClickClose: () => void;
 	onClickReport: () => void;
 	onClickCall: () => void;
 };
 
-export const VoipInfo = ({ contact, user, onClickClose, onClickReport, onClickCall }: VoipInfoPropsType): ReactElement => {
+export const VoipInfo = ({ guest, servedBy, onClickClose, onClickReport, onClickCall }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
 	return (
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='phone' />
-				<VerticalBar.Text>{'Call Information'}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Call_Information')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClickClose} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<InfoField label={t('Contact')} info={contact.name} />
-				<InfoField label={t('Phone_Number')} info={contact.name} />
-				<InfoField label={t('Queue')} info={contact.name} />
-				<InfoField label={t('Last_Call')} info={contact.name} />
-				<InfoField label={t('Waiting_Time')} info={contact.name} />
-				<InfoField label={t('Talk_Time')} info={contact.name} />
-				<InfoField label={t('Hold_Time')} info={contact.name} />
+				<InfoField label={t('Contact')} info={guest.name} />
+				<InfoField label={t('Phone_Number')} info={guest.phone} />
+				<InfoField label={t('Queue')} info={guest.queue} />
+				<InfoField label={t('Last_Call')} info={guest.lastCall} />
+				<InfoField label={t('Waiting_Time')} info={guest.waitingTime} />
+				<InfoField label={t('Talk_Time')} info={guest.talkTime} />
+				<InfoField label={t('Hold_Time')} info={guest.holdTime} />
 
-				<Box fontScale='p2' mb='14px'>
-					<Box mbe='8px'>{t('Agent')}</Box>
-					{user && (
-						<Box display='flex' alignItems='center'>
-							<UserAvatar size='x40' username={user.username || ''} etag={user.avatarETag} />
-							<Box mi='8px'>
-								<UserStatus status={user.status} />
-							</Box>
-							<Box fontScale='p2' mie='4px'>
-								{user.username}
-							</Box>
-							<Box fontScale='p2' color='hint'>
-								{user.name}
-							</Box>
-						</Box>
-					)}
-				</Box>
+				<AgentField agent={servedBy} />
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>

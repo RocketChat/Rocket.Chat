@@ -1,12 +1,14 @@
 import React, { ReactElement } from 'react';
 
-import { IUser } from '../../../../../../../definition/IUser';
-import { useUser } from '../../../../../../contexts/UserContext';
+import { useRoom } from '../../../../../room/contexts/RoomContext';
 import { VoipInfo } from './VoipInfo';
 
-export const VoipInfoWithData = ({ onClickClose }: { onClickClose: () => void }): ReactElement => {
-	const user = useUser() as IUser | null; // TODO: change for servedByUserInfo
-	const contact = { name: 'Guest test' }; // TODO: get voip caller info (connector.extension.getRegistrationInfo)
+const VoipInfoWithData = ({ tabBar: { close } }: any): ReactElement => {
+	const room = useRoom();
+	console.log(room);
+	const { servedBy } = room;
+
+	const guest = {};
 
 	const onClickReport = (): void => {
 		// TODO: report
@@ -16,5 +18,7 @@ export const VoipInfoWithData = ({ onClickClose }: { onClickClose: () => void })
 		// TODO: Call
 	};
 
-	return <VoipInfo user={user} contact={contact} onClickClose={onClickClose} onClickReport={onClickReport} onClickCall={onClickCall} />;
+	return <VoipInfo servedBy={servedBy} guest={guest} onClickClose={close} onClickReport={onClickReport} onClickCall={onClickCall} />;
 };
+
+export default VoipInfoWithData;
