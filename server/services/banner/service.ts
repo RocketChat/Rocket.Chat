@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -11,7 +11,7 @@ import { api } from '../../sdk/api';
 import { IUser } from '../../../definition/IUser';
 import { Optional } from '../../../definition/utils';
 
-export class BannerService extends ServiceClass implements IBannerService {
+export class BannerService extends ServiceClassInternal implements IBannerService {
 	protected name = 'banner';
 
 	private Banners: BannersRaw;
