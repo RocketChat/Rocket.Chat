@@ -106,7 +106,7 @@ export async function searchChats({
 	visitorId,
 	searchText,
 	closedChatsOnly,
-	servedChatsOnly,
+	served,
 	pagination,
 }: {
 	userId: string;
@@ -114,7 +114,7 @@ export async function searchChats({
 	visitorId: string;
 	searchText: string;
 	closedChatsOnly: boolean;
-	servedChatsOnly: boolean;
+	served: boolean;
 	pagination: { offset: number; count: number; sort: string };
 }): Promise<{ history: string[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
@@ -138,14 +138,14 @@ export async function searchChats({
 	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: !closedChatsOnly,
-		served: servedChatsOnly,
+		served,
 		searchText,
 		onlyCount: true,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
 		open: !closedChatsOnly,
-		served: servedChatsOnly,
+		served,
 		searchText,
 		options,
 	});
@@ -165,7 +165,7 @@ export async function findVisitorsToAutocomplete({
 	selector,
 }: {
 	userId: string;
-	selector: { exceptions: any[]; conditions: any[] };
+	selector: { exceptions: any[]; conditions: any[]; term: string };
 }): Promise<{ items: ILivechatVisitor[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };
