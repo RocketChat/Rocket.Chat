@@ -9,7 +9,7 @@ export async function findTriggers({
 }: {
 	userId: string;
 	pagination: IPagination;
-}): Promise<ILivechatTrigger[] | number | any> {
+}): Promise<{ triggers: ILivechatTrigger[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
 	}
