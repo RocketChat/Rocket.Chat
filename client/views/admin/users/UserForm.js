@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { isEmail } from '../../../../lib/utils/isEmail';
+import { validateEmail } from '../../../../lib/emailValidator';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -100,7 +100,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									error={errors && errors.email}
 									flexGrow={1}
 									value={email}
-									error={!isEmail(email) && email.length > 0 ? 'error' : undefined}
+									error={!validateEmail(email) && email.length > 0 ? 'error' : undefined}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
 								/>

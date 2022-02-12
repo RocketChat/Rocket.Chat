@@ -17,7 +17,7 @@ import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/ro
 import './thread.html';
 import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../callbacks/client';
+import { callbacks } from '../../../../lib/callbacks';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';

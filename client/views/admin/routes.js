@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
+import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
@@ -128,4 +129,11 @@ Meteor.startup(() => {
 		name: 'admin',
 		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
+});
+
+registerAdminRoute('/chatpal', {
+	name: 'chatpal-admin',
+	action() {
+		appLayout.renderMainLayout({ center: 'ChatpalAdmin' });
+	},
 });

@@ -5,7 +5,7 @@ import s from 'underscore.string';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';

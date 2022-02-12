@@ -7,7 +7,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
@@ -35,7 +35,7 @@ Template.loginForm.helpers({
 		}
 		switch (Template.instance().state.get()) {
 			case 'register':
-				return t('Register');
+				return t('Register_new_account');
 			case 'login':
 				return t('Login');
 			case 'email-verification':

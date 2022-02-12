@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { fetch } from 'meteor/fetch';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -75,7 +76,7 @@ export class AppsRestApi {
 					// Gets the Apps from the marketplace
 					if (this.queryParams.marketplace) {
 						const headers = getDefaultHeaders();
-						const token = Promise.await(getWorkspaceAccessToken());
+						const token = getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -99,7 +100,7 @@ export class AppsRestApi {
 
 					if (this.queryParams.categories) {
 						const headers = getDefaultHeaders();
-						const token = Promise.await(getWorkspaceAccessToken());
+						const token = getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -149,7 +150,7 @@ export class AppsRestApi {
 
 					return API.v1.success({ apps });
 				},
-				post() {
+				async post() {
 					let buff;
 					let marketplaceInfo;
 					let permissionsGranted;
@@ -159,23 +160,20 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Installation from url is disabled.' });
 						}
 
-						let result;
 						try {
-							result = HTTP.call('GET', this.bodyParams.url, {
-								npmRequestOptions: { encoding: null },
-							});
+							const response = await fetch(this.bodyParams.url);
+
+							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
+								return API.v1.failure({
+									error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
+								});
+							}
+
+							buff = Buffer.from(await response.arrayBuffer());
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
 						}
-
-						if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-							return API.v1.failure({
-								error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
-							});
-						}
-
-						buff = result.content;
 
 						if (this.bodyParams.downloadOnly) {
 							return API.v1.success({ buff });
@@ -184,56 +182,28 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
+						try {
+							const downloadToken = getWorkspaceAccessToken(true, 'marketplace:download', false);
+							const marketplaceToken = getWorkspaceAccessToken();
 
-						const downloadPromise = new Promise((resolve, reject) => {
-							const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
-
-							HTTP.get(
-								`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`,
-								{
+							const [downloadResponse, marketplaceResponse] = await Promise.all([
+								fetch(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
 									headers,
-									npmRequestOptions: { encoding: null },
-								},
-								(error, result) => {
-									if (error) {
-										reject(error);
-									}
-
-									resolve(result);
-								},
-							);
-						});
-
-						const marketplacePromise = new Promise((resolve, reject) => {
-							const token = Promise.await(getWorkspaceAccessToken());
-
-							HTTP.get(
-								`${baseUrl}/v1/apps/${this.bodyParams.appId}?appVersion=${this.bodyParams.version}`,
-								{
+								}),
+								fetch(`${baseUrl}/v1/apps/${this.bodyParams.appId}?appVersion=${this.bodyParams.version}`, {
 									headers: {
-										Authorization: `Bearer ${token}`,
+										Authorization: `Bearer ${marketplaceToken}`,
 										...headers,
 									},
-								},
-								(error, result) => {
-									if (error) {
-										reject(error);
-									}
+								}),
+							]);
 
-									resolve(result);
-								},
-							);
-						});
-
-						try {
-							const [downloadResult, marketplaceResult] = Promise.await(Promise.all([downloadPromise, marketplacePromise]));
-
-							if (!downloadResult.headers['content-type'] || downloadResult.headers['content-type'] !== 'application/zip') {
+							if (downloadResponse.headers.get('content-type') !== 'application/zip') {
 								throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
 							}
 
-							buff = downloadResult.content;
-							marketplaceInfo = marketplaceResult.data[0];
+							buff = Buffer.from(await downloadResponse.arrayBuffer());
+							marketplaceInfo = await marketplaceResponse.json();
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err) {
 							return API.v1.failure(err.message);
@@ -243,11 +213,9 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const formData = Promise.await(
-							getUploadFormData({
-								request: this.request,
-							}),
-						);
+						const formData = await getUploadFormData({
+							request: this.request,
+						});
 						buff = formData?.app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
@@ -265,7 +233,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
+					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -351,7 +319,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
-					const token = Promise.await(getWorkspaceAccessToken());
+					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
@@ -385,7 +353,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-						const token = Promise.await(getWorkspaceAccessToken());
+						const token = getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -411,7 +379,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
-						const token = Promise.await(getWorkspaceAccessToken());
+						const token = getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -432,9 +400,7 @@ export class AppsRestApi {
 
 						return API.v1.success({ app: result.data });
 					}
-
 					const app = manager.getOneById(this.urlParams.id);
-
 					if (!app) {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
@@ -443,7 +409,7 @@ export class AppsRestApi {
 						app: formatAppInstanceForRest(app),
 					});
 				},
-				post() {
+				async post() {
 					let buff;
 					let permissionsGranted;
 
@@ -452,56 +418,53 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 						}
 
-						const result = HTTP.call('GET', this.bodyParams.url, {
-							npmRequestOptions: { encoding: null },
-						});
+						const response = await fetch(this.bodyParams.url);
 
-						if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 							return API.v1.failure({
 								error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
 							});
 						}
 
-						buff = result.content;
+						buff = Buffer.from(await response.arrayBuffer());
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
 						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-						let result;
 						try {
-							result = HTTP.get(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
-								headers,
-								npmRequestOptions: { encoding: null },
-							});
+							const response = await fetch(
+								`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`,
+								{
+									headers,
+								},
+							);
+
+							if (response.status !== 200) {
+								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', await response.text());
+								return API.v1.failure();
+							}
+
+							if (response.headers.get('content-type') !== 'application/zip') {
+								return API.v1.failure({
+									error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
+								});
+							}
+
+							buff = Buffer.from(await response.arrayBuffer());
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 							return API.v1.internalError();
 						}
-
-						if (result.statusCode !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', result.data);
-							return API.v1.failure();
-						}
-
-						if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-							return API.v1.failure({
-								error: 'Invalid url. It doesn\'t exist or is not "application/zip".',
-							});
-						}
-
-						buff = result.content;
 					} else {
 						if (settings.get('Apps_Framework_Development_Mode') !== true) {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const formData = Promise.await(
-							getUploadFormData({
-								request: this.request,
-							}),
-						);
+						const formData = await getUploadFormData({
+							request: this.request,
+						});
 						buff = formData?.app?.fileBuffer;
 						permissionsGranted = (() => {
 							try {
@@ -517,7 +480,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const aff = Promise.await(manager.update(buff, permissionsGranted));
+					const aff = await manager.update(buff, permissionsGranted);
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -567,7 +530,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = Promise.await(getWorkspaceAccessToken());
+					const token = getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}

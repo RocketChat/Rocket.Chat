@@ -35,7 +35,7 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 		]
 			.filter(Boolean)
 			.join(' ');
-
+		const external = [settings.get('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com'].filter(Boolean).join(' ');
 		res.setHeader(
 			'Content-Security-Policy',
 			[
@@ -43,9 +43,9 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 				'connect-src *',
 				`font-src 'self' ${cdn_prefixes} data:`,
 				'frame-src *',
-				'img-src * data:',
+				'img-src * data: blob:',
 				'media-src * data:',
-				`script-src 'self' 'unsafe-eval' ${inlineHashes} ${cdn_prefixes}`,
+				`script-src 'self' 'unsafe-eval' ${inlineHashes} ${cdn_prefixes} ${external}`,
 				`style-src 'self' 'unsafe-inline' ${cdn_prefixes}`,
 			].join('; '),
 		);

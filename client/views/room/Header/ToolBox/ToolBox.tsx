@@ -1,6 +1,6 @@
 import { Menu, Option, MenuProps, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactNode, useRef, ComponentProps, FC } from 'react';
+import React, { memo, ReactNode, useRef, ComponentProps, FC, ReactElement } from 'react';
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
@@ -100,7 +100,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactNode => value && hiddenActionRenderers.current[value](props)}
+					renderItem={({ value, ...props }): ReactElement | null => value && hiddenActionRenderers.current[value](props)}
 				/>
 			)}
 		</>
