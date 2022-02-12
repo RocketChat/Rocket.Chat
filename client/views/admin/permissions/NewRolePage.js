@@ -24,10 +24,6 @@ const NewRolePage = () => {
 
 	const { name } = values;
 
-	const isSaveDisabled = () => {
-		return !(name?.length > 0)
-	};
-
 	const saveRole = useEndpoint('POST', 'roles.create');
 
 	const handleSave = useMutableCallback(async () => {
@@ -51,7 +47,7 @@ const NewRolePage = () => {
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch w='full'>
-					<Button primary onClick={handleSave} disabled={isSaveDisabled()}>
+					<Button primary onClick={handleSave} disabled={!name}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
