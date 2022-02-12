@@ -8,7 +8,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 type AutoCompleteTagsMultiplePropsType = {
-	readonly value: Array<string>;
+	value: Array<string>;
 	onChange: () => {};
 };
 
@@ -37,6 +37,8 @@ const AutoCompleteTagsMultiple = ({ value, onChange }: AutoCompleteTagsMultipleP
 		return 0;
 	});
 
+	const options = sortedByName.map((value) => ({ value: value._id, label: value.name }));
+
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
@@ -44,13 +46,15 @@ const AutoCompleteTagsMultiple = ({ value, onChange }: AutoCompleteTagsMultipleP
 			onChange={onChange}
 			filter={tagsFilter}
 			setFilter={setTagsFilter}
-			options={sortedByName}
+			options={options}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			endReached={
-				tagsPhase === AsyncStatePhase.LOADING ? (): {} => ({}) : (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
+				tagsPhase === AsyncStatePhase.LOADING
+					? (): void => undefined
+					: (start: number): void => loadMoreTags(start, Math.min(50, tagsTotal))
 			}
 		/>
 	);
