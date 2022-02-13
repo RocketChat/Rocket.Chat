@@ -1,10 +1,16 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server/index';
 import { Livechat } from '../lib/Livechat';
+
+type OfflineMessageData = {
+	name: string;
+	email: string;
+	message: string;
+};
 
 callbacks.add(
 	'livechat.offlineMessage',
-	(data) => {
+	(data: OfflineMessageData): OfflineMessageData | undefined => {
 		if (!settings.get('Livechat_webhook_on_offline_msg')) {
 			return data;
 		}

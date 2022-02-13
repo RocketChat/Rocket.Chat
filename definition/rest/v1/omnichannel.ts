@@ -14,10 +14,8 @@ import { ILivechatTrigger } from '../../ILivechatTrigger';
 import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
 import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
-import { IUser } from '../../IUser';
-import { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { SettingValue } from '../../ISetting';
 import { PaginatedResult } from '../helpers/PaginatedResult';
-import { SettingValue } from '/definition/ISetting';
 
 type booleanString = 'true' | 'false';
 

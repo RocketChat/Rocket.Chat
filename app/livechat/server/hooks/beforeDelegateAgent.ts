@@ -1,10 +1,10 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { Users, LivechatDepartmentAgents } from '../../../models';
+import { settings } from '../../../settings/server/index';
+import { Users, LivechatDepartmentAgents } from '../../../models/server/index';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	(agent, { department }) => {
+	(agent, { department }): { agentId: string; username: string } | undefined => {
 		if (agent) {
 			return agent;
 		}

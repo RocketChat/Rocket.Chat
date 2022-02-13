@@ -1,11 +1,12 @@
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { IRoom } from '../../../../definition/IRoom';
+import { settings } from '../../../settings/server/index';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-function sendToRDStation(room) {
+function sendToRDStation(room: IRoom): IRoom {
 	if (!settings.get('Livechat_RDStation_Token')) {
 		return room;
 	}
@@ -23,17 +24,22 @@ function sendToRDStation(room) {
 			'Content-Type': 'application/json',
 		},
 		data: {
+			// eslint-disable-next-line @typescript-eslint/camelcase
 			token_rdstation: settings.get('Livechat_RDStation_Token'),
 			identificador: 'rocketchat-livechat',
+			// eslint-disable-next-line @typescript-eslint/camelcase
 			client_id: livechatData.visitor._id,
 			email,
+			name: '',
+			phone: '',
+			tags: undefined,
 		},
 	};
 
-	options.data.nome = livechatData.visitor.name || livechatData.visitor.username;
+	options.data.name = livechatData.visitor.name || livechatData.visitor.username;
 
 	if (livechatData.visitor.phone) {
-		options.data.telefone = livechatData.visitor.phone;
+		options.data.phone = livechatData.visitor.phone;
 	}
 
 	if (livechatData.tags) {

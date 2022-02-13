@@ -15,6 +15,7 @@ interface IRequestTranscript {
 }
 
 export interface IRoom extends IRocketChatRecord {
+	metrics: any;
 	_id: RoomID;
 	t: RoomType;
 	name?: string;

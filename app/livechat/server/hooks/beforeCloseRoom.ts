@@ -1,15 +1,32 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatDepartment } from '../../../models';
+import { LivechatDepartment } from '../../../models/server/index';
+import { IRoom } from '../../../../definition/IRoom';
 
-const concatUnique = (...arrays) => [...new Set([].concat(...arrays.filter(Array.isArray)))];
+const concatUnique = (
+	...arrays: { room: IRoom; options: unknown }[][]
+): {
+	room: IRoom;
+	options: unknown;
+} => [...new Set([].concat(...arrays.filter(Array.isArray)))];
 
-const normalizeParams = (params, tags = []) => Object.assign(params, { extraData: { tags } });
+const normalizeParams = (
+	params: { room: IRoom; options: unknown },
+	tags = [],
+): {
+	room: IRoom;
+	options: unknown;
+} => Object.assign(params, { extraData: { tags } });
 
 callbacks.add(
 	'livechat.beforeCloseRoom',
-	(originalParams = {}) => {
+	(
+		originalParams = {
+			room: IRoom,
+			options: undefined,
+		},
+	) => {
 		const { room, options } = originalParams;
 		const { departmentId, tags: optionsTags } = room;
 		const { clientAction, tags: oldRoomTags } = options;

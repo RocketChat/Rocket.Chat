@@ -1,8 +1,12 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { LivechatVisitors } from '../../../models';
+import { settings } from '../../../settings/server/index';
+import { LivechatVisitors } from '../../../models/server/index';
 
-function validateMessage(message, room) {
+type MessageData = { editedAt: Date; token: string; t: string; msg: string };
+type RoomData = { t: string | undefined; v: v };
+type v = { token: string; _id: string };
+
+function validateMessage(message: MessageData, room: RoomData): boolean {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return false;
@@ -28,7 +32,7 @@ function validateMessage(message, room) {
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	function (message: MessageData, room: any): MessageData {
 		if (!validateMessage(message, room)) {
 			return message;
 		}

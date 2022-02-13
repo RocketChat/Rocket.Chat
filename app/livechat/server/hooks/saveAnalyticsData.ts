@@ -1,10 +1,37 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server/index';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+
+type MessageData = {
+	editedAt: Date;
+	token: string;
+	file: string;
+};
+
+type RoomData = {
+	t: string;
+	metrics: {
+		v: {
+			lq: string;
+		};
+		servedBy: {
+			ts: string;
+			lr: string;
+		};
+		response: {
+			total: number;
+			tt: number;
+		};
+	};
+	ts: string;
+	servedBy: {
+		ts: string;
+	};
+};
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	function (message: MessageData, room: RoomData): MessageData {
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
