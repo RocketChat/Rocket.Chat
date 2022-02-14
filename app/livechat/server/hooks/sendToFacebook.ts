@@ -1,11 +1,32 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server/index';
 import OmniChannel from '../lib/OmniChannel';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
+type MessageData = {
+	token: string;
+	file: string;
+	editedAt: Date;
+	msg: string;
+	t: string;
+};
+
+type RoomData = {
+	editedAt: Date;
+	t: string;
+	facebook: {
+		page: {
+			id: string;
+		};
+	};
+	v: {
+		token: string;
+	};
+};
+
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	function (message: MessageData, room: RoomData | any) {
 		// skips this callback if the message was edited
 		if (message.editedAt) {
 			return message;
