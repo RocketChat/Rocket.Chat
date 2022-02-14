@@ -18,10 +18,7 @@ const UserAutoComplete = (props) => {
 		useMemo(() => query(debouncedFilter, conditions), [filter]),
 	);
 
-	const options = useMemo(
-		() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [],
-		[data],
-	);
+	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 
 	return (
 		<AutoComplete
@@ -42,9 +39,7 @@ const UserAutoComplete = (props) => {
 					</Chip>
 				);
 			}}
-			renderItem={({ value, ...props }) => (
-				<Option key={value} {...props} avatar={<Avatar value={value} />} />
-			)}
+			renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
 			options={options}
 		/>
 	);

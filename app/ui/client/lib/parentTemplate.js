@@ -6,7 +6,7 @@ import { Blaze } from 'meteor/blaze';
  * @returns {Blaze.TemplateInstance}
  */
 
-Blaze.TemplateInstance.prototype.parentTemplate = function(levels) {
+Blaze.TemplateInstance.prototype.parentTemplate = function (levels) {
 	let view = Blaze.currentView;
 	if (typeof levels === 'undefined') {
 		levels = 1;

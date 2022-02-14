@@ -40,15 +40,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }) => {
 		}
 	});
 
-	return (
-		<AddUsers
-			onClickClose={onClickClose}
-			onClickBack={onClickBack}
-			onClickSave={handleSave}
-			value={users}
-			onChange={onChangeUsers}
-		/>
-	);
+	return <AddUsers onClickClose={onClickClose} onClickBack={onClickBack} onClickSave={handleSave} value={users} onChange={onChangeUsers} />;
 };
 
 export default AddUsersWithData;

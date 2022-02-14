@@ -8,7 +8,7 @@ This package contains the main libraries of Rocket.Chat.
 
 This is an example to create settings:
 ```javascript
-RocketChat.settings.addGroup('Settings_Group', function() {
+settingsRegistry.addGroup('Settings_Group', function() {
     this.add('SettingInGroup', 'default_value', { type: 'boolean', public: true });
 
     this.section('Group_Section', function() {
@@ -24,7 +24,7 @@ RocketChat.settings.addGroup('Settings_Group', function() {
 });
 ```
 
-`RocketChat.settings.add` type:
+`settingsRegistry.add` type:
 
 * `string` - Stores a string value
     * Additional options:
@@ -40,7 +40,7 @@ RocketChat.settings.addGroup('Settings_Group', function() {
         * `actionText`: Translatable value of the button
 * `asset` - Creates an upload field
 
-`RocketChat.settings.add` options:
+`settingsRegistry.add` options:
 
 * `description` - Description of the setting
 * `public` - Boolean to set if the setting should be sent to client or not

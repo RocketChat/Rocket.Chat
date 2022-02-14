@@ -5,6 +5,7 @@ import { IRoom, IOmnichannelRoom, isOmnichannelRoom } from '../../../../definiti
 export type RoomContextValue = {
 	rid: IRoom['_id'];
 	room: IRoom;
+	subscribed: boolean;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);

@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorForward.html';
 import { APIClient } from '../../../../../utils/client';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 Template.visitorForward.helpers({
 	visitor() {
@@ -22,7 +22,7 @@ Template.visitorForward.helpers({
 	agentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	agentConditions() {
@@ -40,7 +40,7 @@ Template.visitorForward.helpers({
 	departmentModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
+			return `${f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${part}</strong>`)}`;
 		};
 	},
 	onClickTagDepartment() {
@@ -58,7 +58,7 @@ Template.visitorForward.helpers({
 	},
 });
 
-Template.visitorForward.onCreated(async function() {
+Template.visitorForward.onCreated(async function () {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
 	this.departments = new ReactiveVar([]);
@@ -103,7 +103,6 @@ Template.visitorForward.onCreated(async function() {
 	this.departments.set(departments);
 });
 
-
 Template.visitorForward.events({
 	'submit form'(event, instance) {
 		event.preventDefault();
@@ -128,13 +127,22 @@ Template.visitorForward.events({
 
 		Meteor.call('livechat:transfer', transferData, (error, result) => {
 			if (error) {
-				toastr.error(t(error.error));
+				dispatchToastMessage({
+					type: 'error',
+					message: t(error.error),
+				});
 			} else if (result) {
 				this.save();
-				toastr.success(t('Transferred'));
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Transferred'),
+				});
 				FlowRouter.go('/');
 			} else {
-				toastr.warning(t('No_available_agents_to_transfer'));
+				dispatchToastMessage({
+					type: 'warning',
+					message: t('No_available_agents_to_transfer'),
+				});
 			}
 		});
 	},

@@ -79,10 +79,7 @@ const makeDangerBanner = (): IBanner => ({
 });
 
 export const createSeatsLimitBanners = async (): Promise<void> => {
-	const [warning, danger] = await Promise.all([
-		Banner.getById(WARNING_BANNER_ID),
-		Banner.getById(DANGER_BANNER_ID),
-	]);
+	const [warning, danger] = await Promise.all([Banner.getById(WARNING_BANNER_ID), Banner.getById(DANGER_BANNER_ID)]);
 	if (!warning) {
 		Banner.create(makeWarningBanner(0));
 	}
@@ -97,7 +94,7 @@ export const enableDangerBanner = (): void => {
 
 export const disableDangerBannerDiscardingDismissal = async (): Promise<void> => {
 	const banner = await Banner.getById(DANGER_BANNER_ID);
-	if (banner && banner.active) {
+	if (banner?.active) {
 		Banner.disable(DANGER_BANNER_ID);
 		Banner.discardDismissal(DANGER_BANNER_ID);
 	}
@@ -109,7 +106,7 @@ export const enableWarningBanner = (seatsLeft: number): void => {
 
 export const disableWarningBannerDiscardingDismissal = async (): Promise<void> => {
 	const banner = await Banner.getById(WARNING_BANNER_ID);
-	if (banner && banner.active) {
+	if (banner?.active) {
 		Banner.disable(WARNING_BANNER_ID);
 		Banner.discardDismissal(WARNING_BANNER_ID);
 	}

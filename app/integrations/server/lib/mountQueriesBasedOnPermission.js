@@ -28,10 +28,10 @@ export const mountIntegrationQueryBasedOnPermissions = (userId) => {
 		query.$or.push({ type: 'webhook-incoming' });
 	}
 	if (canViewOnlyOwnOutgoingIntegrations) {
-		query.$or.push({ '_createdBy._id': userId, type: 'webhook-outgoing' });
+		query.$or.push({ '_createdBy._id': userId, 'type': 'webhook-outgoing' });
 	}
 	if (canViewOnlyOwnIncomingIntegrations) {
-		query.$or.push({ '_createdBy._id': userId, type: 'webhook-incoming' });
+		query.$or.push({ '_createdBy._id': userId, 'type': 'webhook-incoming' });
 	}
 	return query;
 };

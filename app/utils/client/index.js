@@ -1,7 +1,6 @@
 export { t, isRtl } from '../lib/tapi18n';
 export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
-export { isEmail } from '../lib/isEmail';
 export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
 export { roomTypes } from './lib/roomTypes';

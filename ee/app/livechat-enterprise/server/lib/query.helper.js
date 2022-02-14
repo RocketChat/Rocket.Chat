@@ -12,10 +12,7 @@ export const addQueryRestrictionsToRoomsModel = (originalQuery = {}) => {
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [
-			{ departmentAncestors: { $in: units } },
-			{ departmentId: { $in: units } },
-		],
+		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: units } }],
 	};
 	query.$and = [condition, ...expressions];
 	return query;

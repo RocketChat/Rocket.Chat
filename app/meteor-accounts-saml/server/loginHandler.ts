@@ -12,12 +12,12 @@ const makeError = (message: string): Record<string, any> => ({
 	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
 });
 
-Accounts.registerLoginHandler('saml', function(loginRequest) {
+Accounts.registerLoginHandler('saml', function (loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
 		return undefined;
 	}
 
-	const loginResult = SAML.retrieveCredential(loginRequest.credentialToken);
+	const loginResult = Promise.await(SAML.retrieveCredential(loginRequest.credentialToken));
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
@@ -30,8 +30,10 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 	try {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
+		const updatedUser = SAML.insertOrUpdateSAMLUser(userObject);
+		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
-		return SAML.insertOrUpdateSAMLUser(userObject);
+		return updatedUser;
 	} catch (error: any) {
 		SystemLogger.error(error);
 

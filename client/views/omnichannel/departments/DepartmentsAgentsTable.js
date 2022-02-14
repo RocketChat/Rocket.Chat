@@ -6,7 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
+function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, setAgentsRemoved }) {
 	const t = useTranslation();
 	const [agentList, setAgentList] = useState((agents && JSON.parse(JSON.stringify(agents))) || []);
 
@@ -16,7 +16,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 
 	return (
 		<>
-			<AddAgent agentList={agentList} setAgentList={setAgentList} />
+			<AddAgent agentList={agentList} setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
 			<GenericTable
 				header={
 					<>
@@ -44,6 +44,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 						mediaQuery={mediaQuery}
 						agentList={agentList}
 						setAgentList={setAgentList}
+						setAgentsRemoved={setAgentsRemoved}
 						{...props}
 					/>
 				)}

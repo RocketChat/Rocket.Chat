@@ -13,24 +13,16 @@ const todayDate = formatToDateInput(date);
 const getMonthRange = (monthsToSubtractFromToday) => {
 	const date = new Date();
 	return {
-		start: formatToDateInput(
-			new Date(date.getFullYear(), date.getMonth() - monthsToSubtractFromToday, 1),
-		),
-		end: formatToDateInput(
-			new Date(date.getFullYear(), date.getMonth() - monthsToSubtractFromToday + 1, 0),
-		),
+		start: formatToDateInput(new Date(date.getFullYear(), date.getMonth() - monthsToSubtractFromToday, 1)),
+		end: formatToDateInput(new Date(date.getFullYear(), date.getMonth() - monthsToSubtractFromToday + 1, 0)),
 	};
 };
 
 const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => {
 	const date = new Date();
 	return {
-		start: formatToDateInput(
-			new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtractFromStart),
-		),
-		end: formatToDateInput(
-			new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtractFromEnd),
-		),
+		start: formatToDateInput(new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtractFromStart)),
+		end: formatToDateInput(new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtractFromEnd)),
 	};
 };
 
@@ -121,23 +113,8 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 	return (
 		<Box mi='neg-x4' {...props}>
 			<Margins inline='x4'>
-				<InputBox
-					type='date'
-					onChange={handleStart}
-					max={todayDate}
-					value={start}
-					flexGrow={1}
-					h='x20'
-				/>
-				<InputBox
-					type='date'
-					onChange={handleEnd}
-					max={todayDate}
-					min={start}
-					value={end}
-					flexGrow={1}
-					h='x20'
-				/>
+				<InputBox type='date' onChange={handleStart} max={todayDate} value={start} flexGrow={1} h='x20' />
+				<InputBox type='date' onChange={handleEnd} max={todayDate} min={start} value={end} flexGrow={1} h='x20' />
 				<Menu options={options} alignSelf='center' />
 			</Margins>
 		</Box>

@@ -3,7 +3,7 @@ import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/se
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ userId, visitorId }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 
@@ -18,7 +18,7 @@ export async function findVisitorInfo({ userId, visitorId }) {
 }
 
 export async function findVisitedPages({ userId, roomId, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	const room = await LivechatRooms.findOneById(roomId);
@@ -44,14 +44,14 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 }
 
 export async function findChatHistory({ userId, roomId, visitorId, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	if (!await canAccessRoomAsync(room, { _id: userId })) {
+	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -72,8 +72,17 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		total,
 	};
 }
-export async function searchChats({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+
+export async function searchChats({
+	userId,
+	roomId,
+	visitorId,
+	searchText,
+	closedChatsOnly,
+	servedChatsOnly: served,
+	pagination: { offset, count, sort },
+}) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 	const room = await LivechatRooms.findOneById(roomId);
@@ -81,7 +90,7 @@ export async function searchChats({ userId, roomId, visitorId, searchText, close
 		throw new Error('invalid-room');
 	}
 
-	if (!await canAccessRoomAsync(room, { _id: userId })) {
+	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 		throw new Error('error-not-allowed');
 	}
 
@@ -91,8 +100,20 @@ export async function searchChats({ userId, roomId, visitorId, searchText, close
 		limit: count,
 	};
 
-	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, onlyCount: true }).toArray();
-	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, open: !closedChatsOnly, served, searchText, options });
+	const [total] = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		open: !closedChatsOnly,
+		served,
+		searchText,
+		onlyCount: true,
+	}).toArray();
+	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		open: !closedChatsOnly,
+		served,
+		searchText,
+		options,
+	});
 
 	const history = await cursor.toArray();
 
@@ -105,13 +126,13 @@ export async function searchChats({ userId, roomId, visitorId, searchText, close
 }
 
 export async function findVisitorsToAutocomplete({ userId, selector }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };
 	}
 	const { exceptions = [], conditions = {} } = selector;
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			name: 1,
 			username: 1,
@@ -129,7 +150,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 }
 
 export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term, pagination: { offset, count, sort } }) {
-	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
 

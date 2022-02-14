@@ -30,9 +30,7 @@ function ManualWorkspaceRegistrationModal({ onClose, props }) {
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			{(step === Steps.COPY && <CopyStep onNextButtonClick={handleNextButtonClick} />) ||
-				(step === Steps.PASTE && (
-					<PasteStep onBackButtonClick={handleBackButtonClick} onFinish={onClose} />
-				))}
+				(step === Steps.PASTE && <PasteStep onBackButtonClick={handleBackButtonClick} onFinish={onClose} />)}
 		</Modal>
 	);
 }

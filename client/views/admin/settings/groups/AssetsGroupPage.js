@@ -34,20 +34,12 @@ function AssetsGroupPage({ _id, ...group }) {
 			{...group}
 			headerButtons={
 				<>
-					<Button onClick={handleApplyAndRefreshAllClientsButtonClick}>
-						{t('Apply_and_refresh_all_clients')}
-					</Button>
+					<Button onClick={handleApplyAndRefreshAllClientsButtonClick}>{t('Apply_and_refresh_all_clients')}</Button>
 				</>
 			}
 		>
 			{sections.map((sectionName) => (
-				<Section
-					key={sectionName}
-					groupId={_id}
-					hasReset={false}
-					sectionName={sectionName}
-					solo={solo}
-				/>
+				<Section key={sectionName} groupId={_id} hasReset={false} sectionName={sectionName} solo={solo} />
 			))}
 		</GroupPage>
 	);

@@ -10,12 +10,7 @@ type AnnouncementModalParams = {
 	children?: string;
 };
 
-const AnnouncementModal: FC<AnnouncementModalParams> = ({
-	onClose,
-	confirmLabel = 'Close',
-	children,
-	...props
-}) => {
+const AnnouncementModal: FC<AnnouncementModalParams> = ({ onClose, confirmLabel = 'Close', children, ...props }) => {
 	const t = useTranslation();
 
 	return (

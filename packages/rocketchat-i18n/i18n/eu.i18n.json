@@ -47,7 +47,6 @@
   "Archive": "Artxiboa",
   "archive-room": "Artxiboa Room",
   "archive-room_description": "Kanal bat artxibatzeko baimena",
-  "are_also_typing": "ere idazten ari dira",
   "are_typing": "idazten ari dira",
   "Are_you_sure": "Ziur zaude?",
   "Are_you_sure_you_want_to_delete_your_account": "Ziur al zaude zure kontua ezabatu nahi duzula?",
@@ -117,6 +116,7 @@
   "User_joined_channel": "Kanalera batu da.",
   "User_joined_channel_female": "Kanalera batu da.",
   "User_joined_channel_male": "kanalera batu da.",
+  "User_left": "Erabiltzailea irten da",
   "Users": "Erabiltzaileak",
   "We_are_offline_Sorry_for_the_inconvenience": "Lineaz kanpo gaude. Barkatu eragozpenak.",
   "Yes": "Bai"

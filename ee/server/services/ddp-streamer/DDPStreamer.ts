@@ -15,10 +15,10 @@ import { DDP_EVENTS } from './constants';
 
 const {
 	PORT: port = 4000,
-// 	PROMETHEUS_PORT = 9100,
+	// 	PROMETHEUS_PORT = 9100,
 } = process.env;
 
-const proxy = function(req: IncomingMessage, res: ServerResponse): void {
+const proxy = function (req: IncomingMessage, res: ServerResponse): void {
 	// console.log(`request ${ req.url }`);
 	req.pause();
 	const options: RequestOptions = url.parse(req.url || '');
@@ -28,7 +28,7 @@ const proxy = function(req: IncomingMessage, res: ServerResponse): void {
 	options.hostname = 'localhost';
 	options.port = 3000;
 
-	const connector = http.request(options, function(serverResponse) {
+	const connector = http.request(options, function (serverResponse) {
 		serverResponse.pause();
 		if (serverResponse.statusCode) {
 			res.writeHead(serverResponse.statusCode, serverResponse.headers);
@@ -59,7 +59,7 @@ httpServer.listen(port);
 
 const wss = new WebSocket.Server({ server: httpServer });
 
-wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
+wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
 // export default {
 // 	name: 'streamer',
@@ -93,7 +93,7 @@ export class DDPStreamer extends ServiceClass {
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
 		this.onEvent('stream', ([streamer, eventName, args]): void => {
 			const stream = StreamerCentral.instances[streamer];
-			return stream && stream.emitWithoutBroadcast(eventName, ...args);
+			return stream?.emitWithoutBroadcast(eventName, ...args);
 		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
@@ -104,11 +104,7 @@ export class DDPStreamer extends ServiceClass {
 				return;
 			}
 
-			events.emit(
-				'meteor.loginServiceConfiguration',
-				clientAction === 'inserted' ? 'added' : 'changed',
-				data,
-			);
+			events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
 		});
 
 		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {

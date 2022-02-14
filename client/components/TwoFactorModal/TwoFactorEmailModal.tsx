@@ -14,15 +14,11 @@ type TwoFactorEmailModalProps = {
 	emailOrUsername: string;
 };
 
-const TwoFactorEmailModal = ({
-	onConfirm,
-	onClose,
-	emailOrUsername,
-}: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
-	const ref = useAutoFocus();
+	const ref = useAutoFocus<HTMLInputElement>();
 
 	const sendEmailCode = useEndpoint('POST', 'users.2fa.sendEmailCode');
 
@@ -59,12 +55,7 @@ const TwoFactorEmailModal = ({
 		>
 			<Box mbe='x16'>{t('Verify_your_email_for_the_code_we_sent')}</Box>
 			<Box mbe='x4' display='flex' justifyContent='stretch'>
-				<TextInput
-					ref={ref}
-					value={code}
-					onChange={onChange}
-					placeholder={t('Enter_authentication_code')}
-				/>
+				<TextInput ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')} />
 			</Box>
 			<Box display='flex' justifyContent='end' is='a' onClick={onClickResendCode}>
 				{t('Cloud_resend_email')}

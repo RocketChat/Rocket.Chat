@@ -8,12 +8,17 @@ addMigration({
 		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 		const apps = mongo.db.collection('rocketchat_apps');
 
-		Promise.await(apps.updateMany({
-			status: 'initialized',
-		}, {
-			$set: {
-				status: 'manually_disabled',
-			},
-		}));
+		Promise.await(
+			apps.updateMany(
+				{
+					status: 'initialized',
+				},
+				{
+					$set: {
+						status: 'manually_disabled',
+					},
+				},
+			),
+		);
 	},
 });

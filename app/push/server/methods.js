@@ -67,13 +67,16 @@ Meteor.methods({
 			appTokensCollection._collection.insert(doc);
 		} else {
 			// We found the app so update the updatedAt and set the token
-			appTokensCollection.update({ _id: doc._id }, {
-				$set: {
-					updatedAt: new Date(),
-					token: options.token,
-					authToken: options.authToken,
+			appTokensCollection.update(
+				{ _id: doc._id },
+				{
+					$set: {
+						updatedAt: new Date(),
+						token: options.token,
+						authToken: options.authToken,
+					},
 				},
-			});
+			);
 		}
 
 		if (doc.token) {
@@ -87,7 +90,7 @@ Meteor.methods({
 			});
 
 			if (removed) {
-				logger.debug(`Removed ${ removed } existing app items`);
+				logger.debug(`Removed ${removed} existing app items`);
 			}
 		}
 
@@ -100,7 +103,7 @@ Meteor.methods({
 	'raix:push-setuser'(id) {
 		check(id, String);
 
-		logger.debug(`Settings userId "${ this.userId }" for app:`, id);
+		logger.debug(`Settings userId "${this.userId}" for app:`, id);
 		const found = appTokensCollection.update({ _id: id }, { $set: { userId: this.userId } });
 
 		return !!found;

@@ -64,7 +64,9 @@ function UserInfo({
 				<InfoPanel.Section>
 					<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
 
-					<InfoPanel.Text>{customStatus}</InfoPanel.Text>
+					<InfoPanel.Text>
+						<MarkdownText content={customStatus} parseEmoji={true} variant='inline' />
+					</InfoPanel.Text>
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
@@ -153,7 +155,9 @@ function UserInfo({
 						Object.values(customField)[0] ? (
 							<InfoPanel.Field key={Object.keys(customField)[0]}>
 								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
-								<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
+								<InfoPanel.Text>
+									<MarkdownText content={Object.values(customField)[0]} variant='inline' />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						) : null,
 					)}

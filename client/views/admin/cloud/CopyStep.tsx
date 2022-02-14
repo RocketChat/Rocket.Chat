@@ -29,7 +29,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 		loadWorkspaceRegisterData();
 	}, [getWorkspaceRegisterData]);
 
-	const copyRef = useRef<Element>();
+	const copyRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
 		if (!copyRef.current) {
@@ -52,22 +52,9 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 				<Box withRichContent>
 					<p>{t('Cloud_register_offline_helper')}</p>
 				</Box>
-				<Box
-					display='flex'
-					flexDirection='column'
-					alignItems='stretch'
-					padding='x16'
-					flexGrow={1}
-					backgroundColor='neutral-800'
-				>
+				<Box display='flex' flexDirection='column' alignItems='stretch' padding='x16' flexGrow={1} backgroundColor='neutral-800'>
 					<Scrollable vertical>
-						<Box
-							height='x108'
-							fontFamily='mono'
-							fontScale='p1'
-							color='alternative'
-							style={{ wordBreak: 'break-all' }}
-						>
+						<Box height='x108' fontFamily='mono' fontScale='p2' color='alternative' style={{ wordBreak: 'break-all' }}>
 							{clientKey}
 						</Box>
 					</Scrollable>

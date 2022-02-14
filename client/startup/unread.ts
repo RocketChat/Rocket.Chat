@@ -44,7 +44,7 @@ Meteor.startup(() => {
 					const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
 					fireGlobalEvent('unread-changed-by-subscription', {
 						...subscription,
-						usersCount: room && room.usersCount,
+						usersCount: room?.usersCount,
 					});
 
 					if (subscription.alert || subscription.unread > 0) {

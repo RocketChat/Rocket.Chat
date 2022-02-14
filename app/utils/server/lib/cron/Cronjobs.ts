@@ -1,12 +1,6 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-type ScheduleType = 'cron' | 'text';
-
-export interface ICronJobs {
-	add(name: string, schedule: string, callback: Function, scheduleType?: ScheduleType): void;
-	remove(name: string): void;
-	nextScheduledAtDate(name: string): Date | number | undefined;
-}
+import { ICronJobs, ScheduleType } from '../../../../../definition/ICronJobs';
 
 class SyncedCronJobs implements ICronJobs {
 	add(name: string, schedule: string, callback: Function, scheduleType: ScheduleType = 'cron'): void {

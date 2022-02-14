@@ -1,8 +1,10 @@
-import { IStreamer, IStreamerConstructor, IPublication } from '../streamer/streamer.module';
+import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
+import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
@@ -51,9 +53,9 @@ export class NotificationsModule {
 
 	public readonly streamLocal: IStreamer;
 
-	constructor(
-		private Streamer: IStreamerConstructor,
-	) {
+	public readonly streamPresence: IStreamer;
+
+	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
 		this.streamRoom = new this.Streamer('notify-room');
@@ -68,7 +70,7 @@ export class NotificationsModule {
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
 		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
-
+		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
@@ -77,7 +79,7 @@ export class NotificationsModule {
 				return;
 			}
 
-			const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
+			const userEvent = (clientAction: string, { rid }: { rid: string }): void => {
 				switch (clientAction) {
 					case 'removed':
 						streamer.removeListener(userId, userEvent);
@@ -101,7 +103,7 @@ export class NotificationsModule {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
-		this.streamRoomMessage.allowRead(async function(eventName, extraData) {
+		this.streamRoomMessage.allowRead(async function (eventName, extraData) {
 			const room = await Rooms.findOneById(eventName);
 			if (!room) {
 				return false;
@@ -120,7 +122,7 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
-		this.streamRoomMessage.allowEmit('__my_messages__', async function(_eventName, { rid }) {
+		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, { rid }) {
 			if (!this.userId) {
 				return false;
 			}
@@ -151,23 +153,33 @@ export class NotificationsModule {
 
 		this.streamAll.allowWrite('none');
 		this.streamAll.allowRead('all');
-		this.streamAll.allowRead('private-settings-changed', async function() {
+		this.streamAll.allowRead('private-settings-changed', async function () {
 			if (this.userId == null) {
 				return false;
 			}
-			return Authorization.hasAtLeastOnePermission(this.userId, ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+			return Authorization.hasAtLeastOnePermission(this.userId, [
+				'view-privileged-setting',
+				'edit-privileged-setting',
+				'manage-selected-settings',
+			]);
 		});
 
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
 
-		this.streamRoom.allowRead(async function(eventName, extraData): Promise<boolean> {
-			const [rid] = eventName.split('/');
+		this.streamRoom.allowRead(async function (eventName, extraData): Promise<boolean> {
+			const [rid, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
 
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
-				const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(rid, { projection: { t: 1, 'v.token': 1 } });
+				const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(rid, {
+					projection: { 't': 1, 'v.token': 1 },
+				});
 				return !!room && room.t === 'l' && room.v.token === extraData.token;
 			}
 
@@ -179,12 +191,24 @@ export class NotificationsModule {
 			return subsCount > 0;
 		});
 
-		async function canType({ userId, username, extraData, rid }: {userId?: string; username: string; extraData?: {token: string}; rid: string}): Promise<boolean> {
+		async function canType({
+			userId,
+			username,
+			extraData,
+			rid,
+		}: {
+			userId?: string;
+			username: string;
+			extraData?: { token: string };
+			rid: string;
+		}): Promise<boolean> {
 			try {
 				// typing from livechat widget
 				if (extraData?.token) {
 					// TODO improve this to make a query 'v.token'
-					const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(rid, { projection: { t: 1, 'v.token': 1 } });
+					const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(rid, {
+						projection: { 't': 1, 'v.token': 1 },
+					});
 					return !!room && room.t === 'l' && room.v.token === extraData.token;
 				}
 
@@ -193,7 +217,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = await Settings.getValueById('UI_Use_Real_Name') ? 'name' : 'username';
+				const key = (await Settings.getValueById('UI_Use_Real_Name')) ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {
@@ -207,13 +231,13 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (e) {
-				SystemLogger.error(e);
+				SystemLogger.error('Error: ', e);
 				return false;
 			}
 		}
 
 		const { streamRoom } = this;
-		this.streamRoom.allowWrite(async function(eventName, username, _activity, extraData): Promise<boolean> {
+		this.streamRoom.allowWrite(async function (eventName, username, _activity, extraData): Promise<boolean> {
 			const [rid, e] = eventName.split('/');
 
 			// TODO should this use WEB_RTC_EVENTS enum?
@@ -227,39 +251,64 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (!await canType({ extraData, rid, username, userId: this.userId })) {
+			if (!(await canType({ extraData, rid, username, userId: this.userId }))) {
 				return false;
 			}
 
 			// DEPRECATED
 			// Keep compatibility between old and new events
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
-				streamRoom.emit(`${ rid }/typing`, username, _activity.includes('user-typing'));
+				streamRoom.emit(`${rid}/typing`, username, _activity.includes('user-typing'));
 			} else if (e === 'typing') {
-				streamRoom.emit(`${ rid }/user-activity`, username, _activity ? ['user-typing'] : [], extraData);
+				streamRoom.emit(`${rid}/user-activity`, username, _activity ? ['user-typing'] : [], extraData);
 			}
 
 			return true;
 		});
 
 		this.streamRoomUsers.allowRead('none');
-		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
-			if (!this.userId) {
-				return false;
-			}
-
+		this.streamRoomUsers.allowWrite(async function (eventName, ...args) {
 			const [roomId, e] = eventName.split('/');
-			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
-				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
+			if (!this.userId) {
+				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, {
+					projection: { 't': 1, 'servedBy._id': 1 },
+				});
+				if (room && room.t === 'l' && e === 'webrtc' && room.servedBy) {
+					notifyUser(room.servedBy._id, e, ...args);
+					return false;
+				}
+			} else if ((await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
+				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, {
+					projection: { 'v._id': 1, '_id': 0 },
+				}).toArray();
+				if (livechatSubscriptions && e === 'webrtc') {
+					livechatSubscriptions.forEach((subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args));
+					return false;
+				}
+				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
+					projection: { 'u._id': 1, '_id': 0 },
+				}).toArray();
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});
 
-		this.streamUser.allowWrite('logged');
-		this.streamUser.allowRead(async function(eventName) {
-			const [userId] = eventName.split('/');
-			return (this.userId != null) && this.userId === userId;
+		this.streamUser.allowWrite(async function (eventName) {
+			const [, e] = eventName.split('/');
+			if (e === 'webrtc') {
+				return true;
+			}
+
+			return Boolean(this.userId);
+		});
+		this.streamUser.allowRead(async function (eventName) {
+			const [userId, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
+
+			return this.userId != null && this.userId === userId;
 		});
 
 		this.streamImporters.allowRead('all');
@@ -277,26 +326,29 @@ export class NotificationsModule {
 		this.streamAppsEngine.allowWrite('none');
 
 		this.streamCannedResponses.allowWrite('none');
-		this.streamCannedResponses.allowRead(async function() {
-			return !!this.userId && !!await Settings.getValueById('Canned_Responses_Enable') && Authorization.hasPermission(this.userId, 'view-canned-responses');
+		this.streamCannedResponses.allowRead(async function () {
+			return (
+				!!this.userId &&
+				!!(await Settings.getValueById('Canned_Responses_Enable')) &&
+				Authorization.hasPermission(this.userId, 'view-canned-responses')
+			);
 		});
 
 		this.streamIntegrationHistory.allowWrite('none');
-		this.streamIntegrationHistory.allowRead(async function() {
+		this.streamIntegrationHistory.allowRead(async function () {
 			if (!this.userId) {
 				return false;
 			}
-			return Authorization.hasAtLeastOnePermission(this.userId, [
-				'manage-outgoing-integrations',
-				'manage-own-outgoing-integrations',
-			]);
+			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
-		this.streamLivechatRoom.allowRead(async function(roomId, extraData) {
-			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(roomId, { projection: { _id: 0, t: 1, v: 1 } });
+		this.streamLivechatRoom.allowRead(async function (roomId, extraData) {
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v'>>(roomId, {
+				projection: { _id: 0, t: 1, v: 1 },
+			});
 
 			if (!room) {
-				console.warn(`Invalid eventName: "${ roomId }"`);
+				console.warn(`Invalid eventName: "${roomId}"`);
 				return false;
 			}
 
@@ -307,12 +359,12 @@ export class NotificationsModule {
 		});
 
 		this.streamLivechatQueueData.allowWrite('none');
-		this.streamLivechatQueueData.allowRead(async function() {
+		this.streamLivechatQueueData.allowRead(async function () {
 			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
 		});
 
 		this.streamStdout.allowWrite('none');
-		this.streamStdout.allowRead(async function() {
+		this.streamStdout.allowRead(async function () {
 			if (!this.userId) {
 				return false;
 			}
@@ -320,7 +372,7 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomData.allowWrite('none');
-		this.streamRoomData.allowRead(async function(rid) {
+		this.streamRoomData.allowRead(async function (rid) {
 			if (!this.userId) {
 				return false;
 			}
@@ -356,13 +408,11 @@ export class NotificationsModule {
 				const roomEvent = (...args: any[]): void => {
 					// TODO if receive a removed event could do => streamer.removeListener(rid, roomEvent);
 					const payload = streamer.changedPayload(streamer.subscriptionName, 'id', {
-						eventName: `${ userId }/rooms-changed`,
+						eventName: `${userId}/rooms-changed`,
 						args,
 					});
 
-					payload && publication._session.socket?.send(
-						payload,
-					);
+					payload && publication._session.socket?.send(payload);
 				};
 
 				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
@@ -406,6 +456,9 @@ export class NotificationsModule {
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
 		this.streamLocal.allowWrite('none');
+
+		this.streamPresence.allowRead('logged');
+		this.streamPresence.allowWrite('none');
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {
@@ -417,11 +470,11 @@ export class NotificationsModule {
 	}
 
 	notifyRoom(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emit(`${ room }/${ eventName }`, ...args);
+		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
-		return this.streamUser.emit(`${ userId }/${ eventName }`, ...args);
+		return this.streamUser.emit(`${userId}/${eventName}`, ...args);
 	}
 
 	notifyAllInThisInstance(eventName: string, ...args: any[]): void {
@@ -433,14 +486,22 @@ export class NotificationsModule {
 	}
 
 	notifyRoomInThisInstance(room: string, eventName: string, ...args: any[]): void {
-		return this.streamRoom.emitWithoutBroadcast(`${ room }/${ eventName }`, ...args);
+		return this.streamRoom.emitWithoutBroadcast(`${room}/${eventName}`, ...args);
 	}
 
 	notifyUserInThisInstance(userId: string, eventName: string, ...args: any[]): void {
-		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
+		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	progressUpdated(progress: {rate: number}): void {
+	sendPresence(uid: string, ...args: any[]): void {
+		// if (this.debug === true) {
+		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
+		// }
+		emit(uid, args as any);
+		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
+	}
+
+	progressUpdated(progress: { rate: number }): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }

@@ -7,9 +7,12 @@ export default function handleQUIT(args) {
 		'profile.irc.nick': args.nick,
 	});
 
-	Meteor.users.update({ _id: user._id }, {
-		$set: {
-			status: 'offline',
+	Meteor.users.update(
+		{ _id: user._id },
+		{
+			$set: {
+				status: 'offline',
+			},
 		},
-	});
+	);
 }

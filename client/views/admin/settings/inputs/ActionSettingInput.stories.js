@@ -9,13 +9,9 @@ export default {
 	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () => (
-	<ActionSettingInput _id='setting_id' actionText='Action text' value='methodName' />
-);
+export const _default = () => <ActionSettingInput _id='setting_id' actionText='Action text' value='methodName' />;
 
-export const disabled = () => (
-	<ActionSettingInput _id='setting_id' actionText='Action text' value='methodName' disabled />
-);
+export const disabled = () => <ActionSettingInput _id='setting_id' actionText='Action text' value='methodName' disabled />;
 
 export const withinChangedSection = () => (
 	<ActionSettingInput _id='setting_id' actionText='Action text' value='methodName' sectionChanged />

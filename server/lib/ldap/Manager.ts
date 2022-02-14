@@ -9,7 +9,7 @@ import _ from 'underscore';
 import { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
 import { ILDAPUniqueIdentifierField } from '../../../definition/ldap/ILDAPUniqueIdentifierField';
-import { IUser, /* IUserEmail,*/ LoginUsername } from '../../../definition/IUser';
+import { IUser, LoginUsername } from '../../../definition/IUser';
 import { IImportUser } from '../../../definition/IImportUser';
 import { settings } from '../../../app/settings/server';
 import { Users as UsersRaw } from '../../../app/models/server/raw';
@@ -18,7 +18,7 @@ import { LDAPDataConverter } from './DataConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { setUserAvatar } from '../../../app/lib/server/functions';
 
 export class LDAPManager {
@@ -68,7 +68,7 @@ export class LDAPManager {
 	}
 
 	public static async testSearch(username: string): Promise<void> {
-		const escapedUsername = ldapEscape.filter`${ username }`;
+		const escapedUsername = ldapEscape.filter`${username}`;
 		const ldap = new LDAPConnection();
 
 		try {
@@ -76,7 +76,7 @@ export class LDAPManager {
 
 			const users = await ldap.searchByUsername(escapedUsername);
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${ users.length } records for ${ escapedUsername }`);
+				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
 				throw new Error('User not found');
 			}
 		} catch (error) {
@@ -119,6 +119,7 @@ export class LDAPManager {
 	protected static getConverterOptions(): IConverterOptions {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
+			skipExistingUsers: false,
 		};
 	}
 
@@ -156,30 +157,31 @@ export class LDAPManager {
 	}
 
 	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
-		const escapedUsername = ldapEscape.filter`${ username }`;
+		const escapedUsername = ldapEscape.filter`${username}`;
 
 		try {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${ users.length } records for ${ escapedUsername }`);
+				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
 				throw new Error('User not found');
 			}
 
 			const [ldapUser] = users;
-			if (!await ldap.authenticate(ldapUser.dn, password)) {
-				logger.debug(`Wrong password for ${ escapedUsername }`);
+			if (!(await ldap.authenticate(ldapUser.dn, password))) {
+				logger.debug(`Wrong password for ${escapedUsername}`);
+				throw new Error('Invalid user or wrong password');
 			}
 
 			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
-				if (await ldap.searchAndCount(ldapUser.dn, {}) === 0) {
-					authLogger.debug(`Bind successful but user ${ ldapUser.dn } was not found via search`);
+				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
+					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
 				}
 			}
 
-			if (!await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn)) {
+			if (!(await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn))) {
 				throw new Error('User not in a valid group');
 			}
 
@@ -189,7 +191,12 @@ export class LDAPManager {
 		}
 	}
 
-	private static async loginNewUserFromLDAP(slugifiedUsername: string, ldapPass: string, ldapUser: ILDAPEntry, ldap: LDAPConnection): Promise<LDAPLoginResult> {
+	private static async loginNewUserFromLDAP(
+		slugifiedUsername: string,
+		ldapPass: string,
+		ldapUser: ILDAPEntry,
+		ldap: LDAPConnection,
+	): Promise<LDAPLoginResult> {
 		logger.debug({ msg: 'User does not exist, creating', username: slugifiedUsername });
 
 		let username: string | undefined;
@@ -202,51 +209,86 @@ export class LDAPManager {
 		return this.addLdapUser(ldapUser, username, ldapPass, ldap);
 	}
 
-	private static async addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): Promise<LDAPLoginResult> {
+	private static async addLdapUser(
+		ldapUser: ILDAPEntry,
+		username: string | undefined,
+		password: string | undefined,
+		ldap: LDAPConnection,
+	): Promise<LDAPLoginResult> {
 		const user = await this.syncUserForLogin(ldapUser, undefined, username);
 
-		this.onLogin(ldapUser, user, password, ldap);
-		if (user) {
-			return {
-				userId: user._id,
-			};
-		}
-	}
-
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
-		logger.debug('running onLDAPLogin');
-
-		if (user) {
-			if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-				Accounts.setPassword(user._id, password, { logout: false });
-			}
-
-			this.syncUserAvatar(user, ldapUser);
+		if (!user) {
+			return;
 		}
 
-		callbacks.run('onLDAPLogin', { user, ldapUser }, ldap);
-	}
+		this.onLogin(ldapUser, user, password, ldap, true);
 
-	private static async loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): Promise<LDAPLoginResult> {
-		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
-			logger.debug('User exists without "ldap: true"');
-			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
-		}
-
-		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true;
-		logger.debug({ msg: 'Logging user in', syncData });
-		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
-
-		this.onLogin(ldapUser, updatedUser, password, ldap);
 		return {
 			userId: user._id,
 		};
 	}
 
-	private static async syncUserForLogin(ldapUser: ILDAPEntry, existingUser?: IUser, usedUsername?: string | undefined): Promise<IUser | undefined> {
-		logger.debug({ msg: 'Syncing user data', ldapUser: _.omit(ldapUser, '_raw'), user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
+	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
+		logger.debug('running onLDAPLogin');
+		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
+			Accounts.setPassword(user._id, password, { logout: false });
+		}
+
+		this.syncUserAvatar(user, ldapUser);
+		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
+	}
+
+	private static async loginExistingUser(
+		ldap: LDAPConnection,
+		user: IUser,
+		ldapUser: ILDAPEntry,
+		password: string,
+	): Promise<LDAPLoginResult> {
+		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
+			logger.debug('User exists without "ldap: true"');
+			throw new Meteor.Error(
+				'LDAP-login-error',
+				`LDAP Authentication succeeded, but there's already an existing user with provided username [${user.username}] in Mongo.`,
+			);
+		}
+
+		// If we're merging an ldap user with a local user, then we need to sync the data even if 'update data on login' is off.
+		const forceUserSync = !user.ldap;
+
+		const syncData = forceUserSync || (settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true);
+		logger.debug({ msg: 'Logging user in', syncData });
+		const updatedUser = (syncData && (await this.syncUserForLogin(ldapUser, user))) || user;
+
+		this.onLogin(ldapUser, updatedUser, password, ldap, false);
+		return {
+			userId: user._id,
+		};
+	}
+
+	private static async syncUserForLogin(
+		ldapUser: ILDAPEntry,
+		existingUser?: IUser,
+		usedUsername?: string | undefined,
+	): Promise<IUser | undefined> {
+		logger.debug({
+			msg: 'Syncing user data',
+			ldapUser: _.omit(ldapUser, '_raw'),
+			user: { ...(existingUser && { email: existingUser.emails, _id: existingUser._id }) },
+		});
 
 		const userData = this.mapUserData(ldapUser, usedUsername);
+
+		// make sure to persist existing user data when passing to sync/convert
+		// TODO this is only needed because ImporterDataConverter assigns a default role and type if nothing is set. we might need to figure out a better way and stop doing that there
+		if (existingUser) {
+			if (!userData.roles && existingUser.roles) {
+				userData.roles = existingUser.roles;
+			}
+			if (!userData.type && existingUser.type) {
+				userData.type = existingUser.type as IImportUser['type'];
+			}
+		}
+
 		const options = this.getConverterOptions();
 		LDAPDataConverter.convertSingleUser(userData, options);
 
@@ -341,7 +383,7 @@ export class LDAPManager {
 		}
 
 		if (settings.get('LDAP_Default_Domain') !== '' && username) {
-			return [`${ username }@${ settings.get('LDAP_Default_Domain') }`];
+			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
 		}
 
 		if (ldapUser.mail && ldapUser.mail.includes('@')) {

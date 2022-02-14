@@ -33,15 +33,20 @@ export function AddUser({ roles, onReload, ...props }) {
 				...errors,
 				email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
 			})),
-		password: (password) =>
+		password: (password, values) =>
 			setErrors((errors) => ({
 				...errors,
-				password: !password.trim().length ? t('The_field_is_required', t('password')) : undefined,
+				password: !password.trim().length && !values.setRandomPassword ? t('The_field_is_required', t('password')) : undefined,
+			})),
+		setRandomPassword: (setRandomPassword, values) =>
+			setErrors((errors) => ({
+				...errors,
+				password: !values.password.trim().length && !setRandomPassword ? t('The_field_is_required', t('password')) : undefined,
 			})),
 	};
 
-	const validateForm = ({ key, value }) => {
-		validationKeys[key] && validationKeys[key](value);
+	const validateForm = ({ key, value, values }) => {
+		validationKeys[key] && validationKeys[key](value, values);
 	};
 
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
@@ -73,20 +78,18 @@ export function AddUser({ roles, onReload, ...props }) {
 		[router],
 	);
 
-	const saveAction = useEndpointAction(
-		'POST',
-		'users.create',
-		values,
-		t('User_created_successfully!'),
-	);
+	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
-			validateForm({ key, value });
+			validateForm({ key, value, values });
 		});
 
-		const { name, username, password, email } = values;
-		if (name === '' || username === '' || password === '' || email === '') {
+		const { name, username, password, email, setRandomPassword } = values;
+		if (name === '' || username === '' || email === '') {
+			return false;
+		}
+		if (password === '' && setRandomPassword === false) {
 			return false;
 		}
 
@@ -97,10 +100,7 @@ export function AddUser({ roles, onReload, ...props }) {
 		}
 	});
 
-	const availableRoles = useMemo(
-		() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [],
-		[roleData],
-	);
+	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 
 	const append = useMemo(
 		() => (
@@ -121,13 +121,6 @@ export function AddUser({ roles, onReload, ...props }) {
 	);
 
 	return (
-		<UserForm
-			errors={errors}
-			formValues={values}
-			formHandlers={handlers}
-			availableRoles={availableRoles}
-			append={append}
-			{...props}
-		/>
+		<UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props} />
 	);
 }

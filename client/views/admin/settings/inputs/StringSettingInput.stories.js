@@ -20,22 +20,12 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<StringSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <StringSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<StringSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />
-);
+export const withValue = () => <StringSettingInput _id='setting_id' label='Label' value='Value' placeholder='Placeholder' />;
 
 export const multiline = () => (
-	<StringSettingInput
-		_id='setting_id'
-		label='Label'
-		value={'Value\n'.repeat(10)}
-		placeholder='Placeholder'
-		multiline
-	/>
+	<StringSettingInput _id='setting_id' label='Label' value={'Value\n'.repeat(10)} placeholder='Placeholder' multiline />
 );
 
 export const withResetButton = () => (

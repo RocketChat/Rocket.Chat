@@ -6,7 +6,7 @@ import { API } from '../api';
 	// @ts-expect-error
 	const { headers } = this.request;
 
-	const { rc_room_type: roomType, rc_is_widget: isWidget } = parse(headers.cookie);
+	const { rc_room_type: roomType, rc_is_widget: isWidget } = parse(headers.cookie || '');
 
 	const isLivechatRoom = roomType && roomType === 'l';
 	return !!(isLivechatRoom && isWidget === 't');

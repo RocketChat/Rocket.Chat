@@ -20,18 +20,9 @@ export const _default = () => (
 	/>
 );
 
-export const disabled = () => (
-	<PasswordSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
-);
+export const disabled = () => <PasswordSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />;
 
-export const withValue = () => (
-	<PasswordSettingInput
-		_id='setting_id'
-		label='Label'
-		value='5w0rdf15h'
-		placeholder='Placeholder'
-	/>
-);
+export const withValue = () => <PasswordSettingInput _id='setting_id' label='Label' value='5w0rdf15h' placeholder='Placeholder' />;
 
 export const withResetButton = () => (
 	<PasswordSettingInput

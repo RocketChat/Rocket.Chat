@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import toastr from 'toastr';
 
 import { hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client';
@@ -8,6 +7,7 @@ import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
 import UrlChangeModal from '../components/UrlChangeModal';
 import { imperativeModal } from '../lib/imperativeModal';
+import { dispatchToastMessage } from '../lib/toast';
 import { isSyncReady } from '../lib/userData';
 
 Meteor.startup(() => {
@@ -34,7 +34,7 @@ Meteor.startup(() => {
 			const confirm = (): void => {
 				imperativeModal.close();
 				Meteor.call('saveSetting', 'Site_Url', currentUrl, () => {
-					toastr.success(t('Saved'));
+					dispatchToastMessage({ type: 'success', message: t('Saved') });
 				});
 			};
 			imperativeModal.open({
