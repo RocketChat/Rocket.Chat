@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import type WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -42,7 +43,12 @@ export class Server extends EventEmitter {
 
 	serialize = ejson.stringify;
 
-	parse = (packet: string): IPacket => {
+	parse = (data: WebSocket.Data, isBinary: boolean): IPacket => {
+		if (isBinary) {
+			throw new MeteorError(500, 'Binary data not supported');
+		}
+		const packet = data.toString();
+
 		const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
 		return ejson.parse(payload);
 	};
