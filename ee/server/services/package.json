@@ -44,7 +44,7 @@
 		"pino": "^7.6.4",
 		"sodium-native": "^3.2.1",
 		"sodium-plus": "^0.9.0",
-		"underscore.string": "^3.3.5",
+		"underscore.string": "^3.3.6",
 		"uuid": "^7.0.3",
 		"ws": "^7.5.5"
 	},
