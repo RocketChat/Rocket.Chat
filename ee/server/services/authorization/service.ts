@@ -1,4 +1,4 @@
-import '../../broker';
+import '../../startup/broker';
 
 import { api } from '../../../../server/sdk/api';
 import { Authorization } from '../../../../server/services/authorization/service';

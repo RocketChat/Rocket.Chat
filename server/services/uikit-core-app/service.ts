@@ -1,4 +1,4 @@
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IUiKitCoreApp, IUiKitCoreAppService } from '../../sdk/types/IUiKitCoreApp';
 
 const registeredApps = new Map();
@@ -17,7 +17,7 @@ export const registerCoreApp = (module: IUiKitCoreApp): void => {
 	registeredApps.set(module.appId, module);
 };
 
-export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
+export class UiKitCoreApp extends ServiceClassInternal implements IUiKitCoreAppService {
 	protected name = 'uikit-core-app';
 
 	async isRegistered(appId: string): Promise<boolean> {
