@@ -17,7 +17,7 @@ function GroupPage({
 	i18nLabel,
 	i18nDescription = undefined,
 	tabs = undefined,
-	customPage = undefined,
+	isCustom = false,
 }) {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -138,10 +138,10 @@ function GroupPage({
 
 			{tabs}
 
-			{customPage}
-
-			<Page.ScrollableContentWithShadow>
-				{children && (
+			{isCustom ? (
+				children
+			) : (
+				<Page.ScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 						{t.has(i18nDescription) && (
 							<Box is='p' color='hint' fontScale='p2'>
@@ -151,8 +151,8 @@ function GroupPage({
 
 						<Accordion className='page-settings'>{children}</Accordion>
 					</Box>
-				)}
-			</Page.ScrollableContentWithShadow>
+				</Page.ScrollableContentWithShadow>
+			)}
 		</Page>
 	);
 }

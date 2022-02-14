@@ -1,12 +1,14 @@
-import { Tabs, Box, TextInput, Field } from '@rocket.chat/fuselage';
+import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import type { ISetting } from '../../../../../definition/ISetting';
-import { useEditableSettings, useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
+import Page from '../../../../components/Page';
+import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
+import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
+
 // import { useEndpoint } from '../../../../contexts/ServerContext';
 // import { useSetting } from '../../../../contexts/SettingsContext';
 // import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 import VoipExtensionsPage from './VoipExtensionsPage';
@@ -17,14 +19,14 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	// const testConnection = useEndpoint('POST', 'voip.testConnection');
 	// const voipEnabled = useSetting('VOIP_Enabled');
 
-	const editableSettings = useEditableSettings(
-		useMemo(
-			() => ({
-				group: 'VoIP',
-			}),
-			[],
-		),
-	);
+	// const editableSettings = useEditableSettings(
+	// 	useMemo(
+	// 		() => ({
+	// 			group: 'VoIP',
+	// 		}),
+	// 		[],
+	// 	),
+	// );
 
 	// const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
 
@@ -58,13 +60,19 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	);
 
 	return (
-		<GroupPage _id={_id} {...group} tabs={tabsComponent} customPage={tab === 'Extensions' && <VoipExtensionsPage />}>
-			{tab === 'Server_Configuration' && (
-				<>
-					{sections.map((sectionName) => (
-						<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={false} />
-					))}
-				</>
+		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true}>
+			{tab === 'Extensions' ? (
+				<VoipExtensionsPage />
+			) : (
+				<Page.ScrollableContentWithShadow>
+					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+						<Accordion className='page-settings'>
+							{sections.map((sectionName) => (
+								<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={false} />
+							))}
+						</Accordion>
+					</Box>
+				</Page.ScrollableContentWithShadow>
 			)}
 		</GroupPage>
 	);
