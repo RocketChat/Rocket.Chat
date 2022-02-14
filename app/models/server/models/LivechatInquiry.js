@@ -25,7 +25,7 @@ export class LivechatInquiry extends Base {
 		return this.findOne(
 			{
 				status: 'queued',
-				...department && { department },
+				...(department && { department }),
 			},
 			{
 				sort: {
@@ -42,60 +42,75 @@ export class LivechatInquiry extends Base {
 	}
 
 	/*
-	* mark the inquiry as taken
-	*/
+	 * mark the inquiry as taken
+	 */
 	takeInquiry(inquiryId) {
-		this.update({
-			_id: inquiryId,
-		}, {
-			$set: { status: 'taken', takenAt: new Date() },
-			$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
-		});
+		this.update(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: 'taken', takenAt: new Date() },
+				$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
+			},
+		);
 	}
 
 	/*
-	* mark inquiry as open
-	*/
+	 * mark inquiry as open
+	 */
 	openInquiry(inquiryId) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$set: { status: 'open' },
-		});
+		return this.update(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: 'open' },
+			},
+		);
 	}
 
 	/*
-	* mark inquiry as queued
-	*/
+	 * mark inquiry as queued
+	 */
 	queueInquiry(inquiryId) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$set: { status: 'queued', queuedAt: new Date() },
-			$unset: { takenAt: 1 },
-		});
+		return this.update(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: 'queued', queuedAt: new Date() },
+				$unset: { takenAt: 1 },
+			},
+		);
 	}
 
 	queueInquiryAndRemoveDefaultAgent(inquiryId) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$set: { status: 'queued', queuedAt: new Date() },
-			$unset: { takenAt: 1, defaultAgent: 1 },
-		});
+		return this.update(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: 'queued', queuedAt: new Date() },
+				$unset: { takenAt: 1, defaultAgent: 1 },
+			},
+		);
 	}
 
 	/*
-	* mark inquiry as ready
-	*/
+	 * mark inquiry as ready
+	 */
 	readyInquiry(inquiryId) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$set: {
-				status: 'ready',
+		return this.update(
+			{
+				_id: inquiryId,
 			},
-		});
+			{
+				$set: {
+					status: 'ready',
+				},
+			},
+		);
 	}
 
 	changeDepartmentIdByRoomId(rid, department) {
@@ -112,8 +127,8 @@ export class LivechatInquiry extends Base {
 	}
 
 	/*
-	* return the status of the inquiry (open or taken)
-	*/
+	 * return the status of the inquiry (open or taken)
+	 */
 	getStatus(inquiryId) {
 		return this.findOne({ _id: inquiryId }).status;
 	}
@@ -121,7 +136,7 @@ export class LivechatInquiry extends Base {
 	updateVisitorStatus(token, status) {
 		const query = {
 			'v.token': token,
-			status: 'queued',
+			'status': 'queued',
 		};
 
 		const update = {
@@ -134,13 +149,16 @@ export class LivechatInquiry extends Base {
 	}
 
 	setDefaultAgentById(inquiryId, defaultAgent) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$set: {
-				defaultAgent,
+		return this.update(
+			{
+				_id: inquiryId,
 			},
-		});
+			{
+				$set: {
+					defaultAgent,
+				},
+			},
+		);
 	}
 
 	setNameByRoomId(rid, name) {
@@ -157,7 +175,7 @@ export class LivechatInquiry extends Base {
 	findOneByToken(token) {
 		const query = {
 			'v.token': token,
-			status: 'queued',
+			'status': 'queued',
 		};
 		return this.findOne(query);
 	}
@@ -168,7 +186,7 @@ export class LivechatInquiry extends Base {
 			{
 				$match: {
 					status: 'queued',
-					...department && { department },
+					...(department && { department }),
 				},
 			},
 			{
@@ -219,16 +237,19 @@ export class LivechatInquiry extends Base {
 	}
 
 	removeDefaultAgentById(inquiryId) {
-		return this.update({
-			_id: inquiryId,
-		}, {
-			$unset: { defaultAgent: 1 },
-		});
+		return this.update(
+			{
+				_id: inquiryId,
+			},
+			{
+				$unset: { defaultAgent: 1 },
+			},
+		);
 	}
 
 	/*
-	* remove the inquiry by roomId
-	*/
+	 * remove the inquiry by roomId
+	 */
 	removeByRoomId(rid) {
 		return this.remove({ rid });
 	}
@@ -250,11 +271,14 @@ export class LivechatInquiry extends Base {
 	}
 
 	setEstimatedInactivityCloseTime(_id, date) {
-		return this.update({ _id }, {
-			$set: {
-				estimatedInactivityCloseTimeAt: new Date(date),
+		return this.update(
+			{ _id },
+			{
+				$set: {
+					estimatedInactivityCloseTimeAt: new Date(date),
+				},
 			},
-		});
+		);
 	}
 
 	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo

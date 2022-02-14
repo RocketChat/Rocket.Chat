@@ -23,10 +23,7 @@ import {
 	WriteOpResult,
 } from 'mongodb';
 
-import {
-	IRocketChatRecord,
-	RocketChatRecordDeleted,
-} from '../../../../definition/IRocketChatRecord';
+import { IRocketChatRecord, RocketChatRecordDeleted } from '../../../../definition/IRocketChatRecord';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 
 export { IndexSpecification } from 'mongodb';
@@ -35,16 +32,16 @@ export { IndexSpecification } from 'mongodb';
 type EnhancedOmit<T, K> = string | number extends keyof T
 	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
 	: T extends any
-		? Pick<T, Exclude<keyof T, K>> // discriminated unions
-		: never;
+	? Pick<T, Exclude<keyof T, K>> // discriminated unions
+	: never;
 
 // [extracted from @types/mongo]
 type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
 	? {} extends U
 		? Exclude<U, {}>
 		: unknown extends U
-			? ObjectId
-			: U
+		? ObjectId
+		: U
 	: ObjectId;
 
 export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
@@ -63,14 +60,15 @@ type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-		? Pick<Defaults, keyof Defaults>
-		: Omit<Defaults, keyof Defaults>;
+	? Pick<Defaults, keyof Defaults>
+	: Omit<Defaults, keyof Defaults>;
 
-const warnFields = process.env.NODE_ENV !== 'production'
-	? (...rest: any): void => {
-		console.warn(...rest, new Error().stack);
-	}
-	: new Function();
+const warnFields =
+	process.env.NODE_ENV !== 'production'
+		? (...rest: any): void => {
+				console.warn(...rest, new Error().stack);
+		  }
+		: new Function();
 
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
 	public readonly defaultFields: C;
@@ -83,11 +81,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	public readonly trash?: Collection<RocketChatRecordDeleted<T>>;
 
-	constructor(
-		public readonly col: Collection<T>,
-		trash?: Collection<T>,
-		options?: { preventSetUpdatedAt?: boolean },
-	) {
+	constructor(public readonly col: Collection<T>, trash?: Collection<T>, options?: { preventSetUpdatedAt?: boolean }) {
 		this.name = this.col.collectionName.replace(baseName, '');
 		this.trash = trash as unknown as Collection<RocketChatRecordDeleted<T>>;
 
@@ -117,19 +111,13 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		};
 	}
 
-	private ensureDefaultFields(
-		options?: undefined,
-	): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
+	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
 
-	private ensureDefaultFields(
-		options: WithoutProjection<FindOneOptions<T>>,
-	): WithoutProjection<FindOneOptions<T>>;
+	private ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
 
 	private ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
 
-	private ensureDefaultFields<P>(
-		options?: any,
-	): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
+	private ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
 		if (this.defaultFields === undefined) {
 			return options;
 		}
@@ -144,7 +132,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 		return {
 			projection: this.defaultFields,
-			...fields && Object.values(fields).length && { projection: fields },
+			...(fields && Object.values(fields).length && { projection: fields }),
 			...rest,
 		};
 	}
@@ -157,15 +145,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.findOneAndUpdate(query, update, options);
 	}
 
-	async findOneById(
-		_id: string,
-		options?: WithoutProjection<FindOneOptions<T>> | undefined,
-	): Promise<T | null>;
+	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
 
-	async findOneById<P>(
-		_id: string,
-		options: FindOneOptions<P extends T ? T : P>,
-	): Promise<P | null>;
+	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
 		const query = { _id } as FilterQuery<T>;
@@ -175,15 +157,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	async findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
 
-	async findOne(
-		query: FilterQuery<T> | string,
-		options: WithoutProjection<FindOneOptions<T>>,
-	): Promise<T | null>;
+	async findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
 
-	async findOne<P>(
-		query: FilterQuery<T> | string,
-		options: FindOneOptions<P extends T ? T : P>,
-	): Promise<P | null>;
+	async findOne<P>(query: FilterQuery<T> | string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
 		const q = typeof query === 'string' ? ({ _id: query } as FilterQuery<T>) : query;
@@ -198,10 +174,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
 
-	find(
-		query: FilterQuery<T>,
-		options: WithoutProjection<FindOneOptions<T>>,
-	): Cursor<ResultFields<T, C>>;
+	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
 
 	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
 
@@ -228,19 +201,12 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.updateOne(filter, update, options);
 	}
 
-	updateMany(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateManyOptions,
-	): Promise<UpdateWriteOpResult> {
+	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
 		this.setUpdatedAt(update);
 		return this.col.updateMany(filter, update, options);
 	}
 
-	insertMany(
-		docs: Array<InsertionModel<T>>,
-		options?: CollectionInsertOneOptions,
-	): Promise<InsertWriteOpResult<WithId<T>>> {
+	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectID();
@@ -254,10 +220,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.insertMany(docs as unknown as Array<OptionalId<T>>, options);
 	}
 
-	insertOne(
-		doc: InsertionModel<T>,
-		options?: CollectionInsertOneOptions,
-	): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
 			doc = { _id: oid.toHexString(), ...doc };
@@ -306,10 +269,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.deleteOne(filter, options);
 	}
 
-	async deleteMany(
-		filter: FilterQuery<T>,
-		options?: CommonOptions,
-	): Promise<DeleteWriteOpResultObject> {
+	async deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject> {
 		if (!this.trash) {
 			return this.col.deleteMany(filter, options);
 		}
@@ -376,9 +336,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	async trashFindOneById<P extends RocketChatRecordDeleted<T>>(
 		_id: string,
 		options?:
-		| undefined
-		| WithoutProjection<RocketChatRecordDeleted<T>>
-		| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+			| undefined
+			| WithoutProjection<RocketChatRecordDeleted<T>>
+			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Promise<RocketChatRecordDeleted<P> | null> {
 		const query = {
 			_id,
@@ -418,8 +378,8 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		deletedAt: Date,
 		query?: FilterQuery<RocketChatRecordDeleted<T>>,
 		options?:
-		| WithoutProjection<RocketChatRecordDeleted<T>>
-		| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
+			| WithoutProjection<RocketChatRecordDeleted<T>>
+			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
 	): Cursor<RocketChatRecordDeleted<T>> {
 		const q = {
 			__collection__: this.name,

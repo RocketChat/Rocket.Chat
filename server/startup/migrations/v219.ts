@@ -1,4 +1,3 @@
-
 import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
@@ -10,7 +9,6 @@ addMigration({
 			new: 'Livechat_abandoned_rooms_action',
 		};
 
-
 		const oldSetting = await Settings.findOne({ _id: SettingIds.old });
 		if (!oldSetting) {
 			return;
@@ -20,13 +18,16 @@ addMigration({
 
 		const newValue = oldValue && oldValue === true ? 'close' : 'none';
 
-		Settings.update({
-			_id: SettingIds.new,
-		}, {
-			$set: {
-				value: newValue,
+		Settings.update(
+			{
+				_id: SettingIds.new,
 			},
-		});
+			{
+				$set: {
+					value: newValue,
+				},
+			},
+		);
 
 		return Settings.removeById(SettingIds.old);
 	},

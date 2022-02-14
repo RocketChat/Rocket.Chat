@@ -1,19 +1,6 @@
-import {
-	Box,
-	Modal,
-	ButtonGroup,
-	Button,
-	TextInput,
-	Field,
-	ToggleSwitch,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
-import {
-	useMutableCallback,
-	useDebouncedCallback,
-	useAutoFocus,
-} from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
+import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
 import { usePermission } from '../../../contexts/AuthorizationContext';
@@ -243,7 +230,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 
 	const t = useTranslation();
 
-	const focusRef = useAutoFocus() as Ref<HTMLElement>;
+	const focusRef = useAutoFocus<HTMLInputElement>();
 
 	return (
 		<Modal>
@@ -274,11 +261,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput
-								placeholder={t('Teams_New_Description_Placeholder')}
-								value={description}
-								onChange={onChangeDescription}
-							/>
+							<TextInput placeholder={t('Teams_New_Description_Placeholder')} value={description} onChange={onChangeDescription} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -286,9 +269,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Private_Label')}</Field.Label>
 								<Field.Description>
-									{type
-										? t('Teams_New_Private_Description_Enabled')
-										: t('Teams_New_Private_Description_Disabled')}
+									{type ? t('Teams_New_Private_Description_Enabled') : t('Teams_New_Private_Description_Disabled')}
 								</Field.Description>
 							</Box>
 							<ToggleSwitch checked={type} onChange={onChangeType} />
@@ -299,16 +280,10 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
 								<Field.Description>
-									{readOnly
-										? t('Only_authorized_users_can_write_new_messages')
-										: t('Teams_New_Read_only_Description')}
+									{readOnly ? t('Only_authorized_users_can_write_new_messages') : t('Teams_New_Read_only_Description')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch
-								checked={readOnly}
-								disabled={!canChangeReadOnly}
-								onChange={onChangeReadOnly}
-							/>
+							<ToggleSwitch checked={readOnly} disabled={!canChangeReadOnly} onChange={onChangeReadOnly} />
 						</Box>
 					</Field>
 					<Field disabled={!canChangeEncrypted}>
@@ -316,16 +291,10 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
 								<Field.Description>
-									{type
-										? t('Teams_New_Encrypted_Description_Enabled')
-										: t('Teams_New_Encrypted_Description_Disabled')}
+									{type ? t('Teams_New_Encrypted_Description_Enabled') : t('Teams_New_Encrypted_Description_Disabled')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch
-								checked={encrypted}
-								disabled={!canChangeEncrypted}
-								onChange={onChangeEncrypted}
-							/>
+							<ToggleSwitch checked={encrypted} disabled={!canChangeEncrypted} onChange={onChangeEncrypted} />
 						</Box>
 					</Field>
 					<Field>

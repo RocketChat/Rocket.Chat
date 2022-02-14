@@ -28,10 +28,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 		reload: reloadUserInfo,
 	} = useEndpointData(
 		'users.info',
-		useMemo(
-			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
-			[uid, username],
-		),
+		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [uid, username]),
 	);
 
 	const onChange = useMutableCallback(() => {
@@ -42,34 +39,20 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
 
-		const {
-			name,
-			username,
-			roles = [],
-			status,
-			statusText,
-			bio,
-			utcOffset,
-			lastLogin,
-			nickname,
-		} = user;
+		const { name, username, roles = [], status, statusText, bio, utcOffset, lastLogin, nickname } = user;
 
 		return {
 			name,
 			username,
 			lastLogin,
 			showRealNames,
-			roles:
-				roles &&
-				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			phone: user.phone,
 			utcOffset,
 			customFields: {
 				...user.customFields,
-				...(approveManuallyUsers &&
-					user.active === false &&
-					user.reason && { Reason: user.reason }),
+				...(approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason }),
 			},
 			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),

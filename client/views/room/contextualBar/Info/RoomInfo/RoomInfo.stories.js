@@ -20,41 +20,18 @@ const room = {
 
 export const Default = () => (
 	<VerticalBar height={800}>
-		<RoomInfo
-			{...room}
-			icon='lock'
-			onClickHide={alert}
-			onClickLeave={alert}
-			onClickEdit={alert}
-			onClickDelete={alert}
-		/>
+		<RoomInfo {...room} icon='lock' onClickHide={alert} onClickLeave={alert} onClickEdit={alert} onClickDelete={alert} />
 	</VerticalBar>
 );
 
 export const Archived = () => (
 	<VerticalBar height={800}>
-		<RoomInfo
-			{...room}
-			icon='lock'
-			onClickHide={alert}
-			onClickLeave={alert}
-			onClickEdit={alert}
-			onClickDelete={alert}
-			archived
-		/>
+		<RoomInfo {...room} icon='lock' onClickHide={alert} onClickLeave={alert} onClickEdit={alert} onClickDelete={alert} archived />
 	</VerticalBar>
 );
 
 export const Broadcast = () => (
 	<VerticalBar height={800}>
-		<RoomInfo
-			{...room}
-			icon='lock'
-			onClickHide={alert}
-			onClickLeave={alert}
-			onClickEdit={alert}
-			onClickDelete={alert}
-			broadcast
-		/>
+		<RoomInfo {...room} icon='lock' onClickHide={alert} onClickLeave={alert} onClickEdit={alert} onClickDelete={alert} broadcast />
 	</VerticalBar>
 );

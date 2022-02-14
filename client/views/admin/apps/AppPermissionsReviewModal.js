@@ -25,10 +25,10 @@ const AppPermissionsReviewModal = ({ appPermissions, cancel, confirm, modalProps
 				<Modal.Title>{t('Apps_Permissions_Review_Modal_Title')}</Modal.Title>
 				<Modal.Close onClick={handleCloseButtonClick} />
 			</Modal.Header>
-			<Modal.Content marginBlockEnd={20} fontScale='p3'>
+			<Modal.Content marginBlockEnd={20} fontScale='p2'>
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Modal.Content>
-			<Modal.Content fontScale='p3'>
+			<Modal.Content fontScale='p2'>
 				<ul>
 					{appPermissions.length
 						? appPermissions.map((permission, count) => (

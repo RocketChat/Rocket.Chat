@@ -49,11 +49,6 @@ const businessHours = [
 
 export const Default = () => (
 	<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
-		<BusinessHoursTable
-			businessHours={businessHours}
-			businessHoursTotal={businessHours.length}
-			params={{}}
-			onChangeParams={() => {}}
-		/>
+		<BusinessHoursTable businessHours={businessHours} businessHoursTotal={businessHours.length} params={{}} onChangeParams={() => {}} />
 	</Box>
 );

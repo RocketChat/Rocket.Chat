@@ -2,13 +2,13 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../../apps/server';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Team } from '../../../../server/sdk';
 import { RoomMemberActions, roomTypes } from '../../../utils/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
-export const addUserToRoom = function(rid, user, inviter, silenced) {
+export const addUserToRoom = function (rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
@@ -41,13 +41,15 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
-	}));
+			throw error;
+		}),
+	);
 
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
@@ -57,6 +59,10 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		userMentions: 1,
 		groupMentions: 0,
 		...getDefaultSubscriptionPref(user),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4b679864471ffa3ade5a31dbfb07bbd43088196c
 	});
 
 	if (!silenced) {
@@ -78,7 +84,7 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			// Add a new event, with an optional inviter
 			callbacks.run('afterAddedToRoom', { user, inviter }, room);
 

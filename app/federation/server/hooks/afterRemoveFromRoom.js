@@ -37,7 +37,12 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		//
 		const normalizedSourceUser = normalizers.normalizeUser(removedUser);
 
-		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(localDomain, room._id, normalizedSourceUser, domainsAfterRemoval);
+		const removeUserEvent = await FederationRoomEvents.createRemoveUserEvent(
+			localDomain,
+			room._id,
+			normalizedSourceUser,
+			domainsAfterRemoval,
+		);
 
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);

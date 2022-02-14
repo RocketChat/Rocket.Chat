@@ -20,9 +20,7 @@ describe('TeamsRemoveRoomProps (definition/rest/v1)', () => {
 			assert.isTrue(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName' }));
 		});
 		it('should return false if roomId and teamName are provided but an additional property is provided', () => {
-			assert.isFalse(
-				isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName', foo: 'bar' }),
-			);
+			assert.isFalse(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName', foo: 'bar' }));
 		});
 	});
 });

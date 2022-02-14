@@ -9,8 +9,7 @@ export type FilesListOptions = {
 	text: string;
 };
 
-const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage =>
-	message.rid === rid && 'rid' in message;
+const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage => message.rid === rid && 'rid' in message;
 
 export class FilesList extends MessageList {
 	public constructor(private _options: FilesListOptions) {

@@ -3,7 +3,7 @@ import { WebApp } from 'meteor/webapp';
 import { FileUpload } from './FileUpload';
 import { Uploads } from '../../../models/server/raw';
 
-WebApp.connectHandlers.use(FileUpload.getPath(), async function(req, res, next) {
+WebApp.connectHandlers.use(FileUpload.getPath(), async function (req, res, next) {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match && match[1]) {
@@ -15,7 +15,7 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async function(req, res, next) 
 				return res.end();
 			}
 
-			res.setHeader('Content-Security-Policy', 'default-src \'none\'');
+			res.setHeader('Content-Security-Policy', "default-src 'none'");
 			res.setHeader('Cache-Control', 'max-age=31536000');
 			return FileUpload.get(file, req, res, next);
 		}

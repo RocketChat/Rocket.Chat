@@ -43,7 +43,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function({ file }) {
+				Messages.findFilesByUserId(userId).forEach(function ({ file }) {
 					store.deleteById(file._id);
 				});
 				Messages.removeByUserId(userId);
@@ -66,7 +66,11 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 		}
 
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
-		api.broadcast('user.deleted', user);
+
+		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't dissappear from logged in sessions
+		if (messageErasureType !== 'Keep') {
+			api.broadcast('user.deleted', user);
+		}
 	}
 
 	// Remove user from users database

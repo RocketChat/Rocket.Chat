@@ -8,9 +8,7 @@ const ScrollerWithCustomProps = forwardRef(function ScrollerWithCustomProps(prop
 			{...props}
 			ref={ref}
 			renderView={({ style, ...props }) => <div {...props} style={{ ...style }} />}
-			renderTrackHorizontal={(props) => (
-				<div {...props} style={{ display: 'none' }} className='track-horizontal' />
-			)}
+			renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal' />}
 		/>
 	);
 });

@@ -45,10 +45,7 @@ const useValues = (view) => {
 				return true;
 			}
 
-			if (
-				elements.length &&
-				elements.map((element) => ({ element })).filter(filterInputFields).length
-			) {
+			if (elements.length && elements.map((element) => ({ element })).filter(filterInputFields).length) {
 				return true;
 			}
 		};
@@ -171,14 +168,7 @@ function ConnectedModalBlock(props) {
 
 	return (
 		<kitContext.Provider value={context}>
-			<ModalBlock
-				view={view}
-				errors={errors}
-				appId={appId}
-				onSubmit={handleSubmit}
-				onCancel={handleCancel}
-				onClose={handleClose}
-			/>
+			<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
 		</kitContext.Provider>
 	);
 }

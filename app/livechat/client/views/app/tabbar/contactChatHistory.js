@@ -8,7 +8,6 @@ import _ from 'underscore';
 
 import { t, APIClient } from '../../../../../utils/client';
 
-
 const HISTORY_LIMIT = 50;
 
 Template.contactChatHistory.helpers({
@@ -42,7 +41,7 @@ Template.contactChatHistory.helpers({
 	},
 });
 
-Template.contactChatHistory.onCreated(async function() {
+Template.contactChatHistory.onCreated(async function () {
 	const currentData = Template.currentData();
 	this.offset = new ReactiveVar(0);
 	this.visitorId = new ReactiveVar();
@@ -71,9 +70,11 @@ Template.contactChatHistory.onCreated(async function() {
 		const offset = this.offset.get();
 		const searchTerm = this.searchTerm.get();
 
-		let baseUrl = `livechat/visitors.searchChats/room/${ currentData.rid }/visitor/${ this.visitorId.get() }?count=${ limit }&offset=${ offset }&closedChatsOnly=true&servedChatsOnly=true`;
+		let baseUrl = `livechat/visitors.searchChats/room/${
+			currentData.rid
+		}/visitor/${this.visitorId.get()}?count=${limit}&offset=${offset}&closedChatsOnly=true&servedChatsOnly=true`;
 		if (searchTerm) {
-			baseUrl += `&searchText=${ searchTerm }`;
+			baseUrl += `&searchText=${searchTerm}`;
 		}
 
 		this.isLoading.set(true);
@@ -84,14 +85,14 @@ Template.contactChatHistory.onCreated(async function() {
 	});
 
 	this.autorun(async () => {
-		const { room } = await APIClient.v1.get(`rooms.info?roomId=${ currentData.rid }`);
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${currentData.rid}`);
 		if (room?.v) {
 			this.visitorId.set(room.v._id);
 		}
 	});
 });
 
-Template.contactChatHistory.onRendered(function() {
+Template.contactChatHistory.onRendered(function () {
 	Tracker.autorun((computation) => {
 		if (this.isLoading.get()) {
 			return;
@@ -105,9 +106,8 @@ Template.contactChatHistory.onRendered(function() {
 	});
 });
 
-
 Template.contactChatHistory.events({
-	'scroll .js-list': _.throttle(function(e, instance) {
+	'scroll .js-list': _.throttle(function (e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
 		}
@@ -116,19 +116,19 @@ Template.contactChatHistory.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		const { _id: rid, v: { name, username } = { }, closedAt } = this;
+		const { _id: rid, v: { name, username } = {}, closedAt } = this;
 
 		const closedAtLabel = t('Closed_At');
 		const closedDay = moment(closedAt).format('MMM D YYYY');
 
 		instance.chatHistoryMessagesContext.set({
-			label: `${ name || username }, ${ closedAtLabel } ${ closedDay }`,
+			label: `${name || username}, ${closedAtLabel} ${closedDay}`,
 			rid,
 		});
 
 		instance.showChatHistoryMessages.set(true);
 	},
-	'keyup #chat-search': _.debounce(function(e, instance) {
+	'keyup #chat-search': _.debounce(function (e, instance) {
 		if (e.keyCode === 13) {
 			return e.preventDefault();
 		}

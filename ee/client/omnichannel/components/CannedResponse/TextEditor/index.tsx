@@ -10,15 +10,7 @@ type TextEditorType = {
 };
 
 const TextEditor: FC<TextEditorType> = ({ children }) => (
-	<Box
-		display='flex'
-		flexDirection='column'
-		pbs='12px'
-		pi='16px'
-		pbe='16px'
-		rcx-box--animated
-		rcx-input-box__wrapper
-	>
+	<Box display='flex' flexDirection='column' pbs='12px' pi='16px' pbe='16px' rcx-box--animated rcx-input-box__wrapper>
 		{children}
 	</Box>
 );

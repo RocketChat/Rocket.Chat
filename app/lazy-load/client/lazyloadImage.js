@@ -11,7 +11,7 @@ const imgsrcs = new Set();
 Template.lazyloadImage.helpers({
 	class() {
 		const loaded = Template.instance().loaded.get();
-		return `${ this.class } ${ loaded ? '' : 'lazy-img' }`;
+		return `${this.class} ${loaded ? '' : 'lazy-img'}`;
 	},
 
 	srcUrl() {
@@ -30,14 +30,14 @@ Template.lazyloadImage.helpers({
 		}
 
 		imgsrcs.add(this.src);
-		return `data:image/png;base64,${ preview || emptyImageEncoded }`;
+		return `data:image/png;base64,${preview || emptyImageEncoded}`;
 	},
 });
 
-Template.lazyloadImage.onCreated(function() {
+Template.lazyloadImage.onCreated(function () {
 	this.loaded = new ReactiveVar(false);
 });
 
-Template.lazyloadImage.onRendered(function() {
+Template.lazyloadImage.onRendered(function () {
 	addImage(this);
 });

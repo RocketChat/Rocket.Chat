@@ -8,13 +8,9 @@ export class BannerModule implements IUiKitCoreApp {
 	async viewClosed(payload: any): Promise<any> {
 		const {
 			payload: {
-				view: {
-					viewId: bannerId,
-				},
+				view: { viewId: bannerId },
 			},
-			user: {
-				_id: userId,
-			},
+			user: { _id: userId },
 		} = payload;
 
 		return Banner.dismiss(userId, bannerId);

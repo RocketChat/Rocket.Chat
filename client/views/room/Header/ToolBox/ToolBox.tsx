@@ -1,6 +1,6 @@
 import { Menu, Option, MenuProps, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactNode, useRef, ComponentProps, FC } from 'react';
+import React, { memo, ReactNode, useRef, ComponentProps, FC, ReactElement } from 'react';
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
@@ -30,9 +30,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 
 	const { actions: mapActions } = useToolboxContext();
 
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
-		(a, b) => (a.order || 0) - (b.order || 0),
-	);
+	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
@@ -102,9 +100,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactNode =>
-						value && hiddenActionRenderers.current[value](props)
-					}
+					renderItem={({ value, ...props }): ReactElement | null => value && hiddenActionRenderers.current[value](props)}
 				/>
 			)}
 		</>

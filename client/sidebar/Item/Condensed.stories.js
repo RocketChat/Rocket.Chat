@@ -23,24 +23,13 @@ const avatar = <UserAvatar size='x16' url='https://via.placeholder.com/16' />;
 
 export const Normal = () => (
 	<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-		<Condensed
-			clickable
-			title='John Doe'
-			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
-			avatar={avatar}
-		/>
+		<Condensed clickable title='John Doe' titleIcon={<Box mi='x4'>{<Status.Online />}</Box>} avatar={avatar} />
 	</Box>
 );
 
 export const Selected = () => (
 	<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-		<Condensed
-			clickable
-			selected
-			title='John Doe'
-			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
-			avatar={avatar}
-		/>
+		<Condensed clickable selected title='John Doe' titleIcon={<Box mi='x4'>{<Status.Online />}</Box>} avatar={avatar} />
 	</Box>
 );
 
@@ -71,13 +60,6 @@ export const Menu = () => (
 
 export const Actions = () => (
 	<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-		<Condensed
-			clickable
-			selected
-			title='John Doe'
-			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
-			avatar={avatar}
-			actions={actions}
-		/>
+		<Condensed clickable selected title='John Doe' titleIcon={<Box mi='x4'>{<Status.Online />}</Box>} avatar={avatar} actions={actions} />
 	</Box>
 );
