@@ -82,6 +82,14 @@ export class LocalBroker implements IBroker {
 		this.events.emit(event, ...args);
 	}
 
+	async broadcastToServices<T extends keyof EventSignatures>(
+		_services: string[],
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
+		this.events.emit(event, ...args);
+	}
+
 	async nodeList(): Promise<IBrokerNode[]> {
 		return [];
 	}

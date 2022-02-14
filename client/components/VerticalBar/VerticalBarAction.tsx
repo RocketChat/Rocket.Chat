@@ -1,11 +1,11 @@
-import { ActionButton } from '@rocket.chat/fuselage';
-import React, { ReactElement, memo, MouseEventHandler } from 'react';
+import { ActionButton, Icon } from '@rocket.chat/fuselage';
+import React, { ReactElement, memo, MouseEventHandler, ComponentProps } from 'react';
 
 const VerticalBarAction = ({
 	name,
 	...props
 }: {
-	name: string;
+	name: ComponentProps<typeof Icon>['name'];
 	title?: string;
 	onClick?: MouseEventHandler<HTMLOrSVGElement>;
 }): ReactElement => <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;

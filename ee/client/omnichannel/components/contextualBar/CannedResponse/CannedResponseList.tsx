@@ -44,7 +44,7 @@ const CannedResponseList: FC<{
 	reload,
 }) => {
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const cannedId = useTabContext();
 

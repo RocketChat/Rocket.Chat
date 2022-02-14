@@ -114,6 +114,7 @@
   "Accounts_OAuth_Custom_Merge_Users": "Объединить пользователей",
   "Accounts_OAuth_Custom_Name_Field": "Поле Имени",
   "Accounts_OAuth_Custom_Roles_Claim": "Имя поля Роли / Группы",
+  "Accounts_OAuth_Custom_Roles_To_Sync": "Роли для синхронизации",
   "Accounts_OAuth_Custom_Scope": "Область",
   "Accounts_OAuth_Custom_Secret": "Ключ",
   "Accounts_OAuth_Custom_Show_Button_On_Login_Page": "Показать кнопку на Странице Входа",

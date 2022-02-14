@@ -8,7 +8,7 @@ type TextButtonProps = {
 	action: () => void;
 };
 
-const TextButton = forwardRef<Element, TextButtonProps>(function TextButton({ text, action }, ref) {
+const TextButton = forwardRef<HTMLElement, TextButtonProps>(function TextButton({ text, action }, ref) {
 	const t = useTranslation();
 
 	return (
