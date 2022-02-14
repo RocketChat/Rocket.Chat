@@ -1,3 +1,4 @@
+import { IInstance } from '../../IInstance';
 import { IInstanceStatus } from '../../IInstanceStatus';
 
 export type InstancesEndpoints = {
@@ -7,10 +8,10 @@ export type InstancesEndpoints = {
 				| IInstanceStatus
 				| {
 						connection: {
-							address: unknown;
-							currentStatus: unknown;
-							instanceRecord: unknown;
-							broadcastAuth: unknown;
+							address: string; // unknown
+							currentStatus: IInstance['currentStatus']; // unknown
+							instanceRecord: IInstance['instanceRecord']; // unknown
+							broadcastAuth: boolean; // unknown
 						};
 				  }
 			)[];
