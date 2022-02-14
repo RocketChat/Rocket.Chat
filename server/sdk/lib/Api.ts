@@ -36,7 +36,7 @@ export class Api {
 		}
 	}
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data?: unknown): Promise<any> {
 		return this.broker.call(method, data);
 	}
 
@@ -46,6 +46,14 @@ export class Api {
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcast(event, ...args);
+	}
+
+	async broadcastToServices<T extends keyof EventSignatures>(
+		services: string[],
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
+		return this.broker.broadcastToServices(services, event, ...args);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {

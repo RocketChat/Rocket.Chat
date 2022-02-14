@@ -1,4 +1,3 @@
-import '../ee/server/broker';
 import '../app/settings/server/startup';
 import '../lib/oauthRedirectUri';
 import './lib/logger/startup';
