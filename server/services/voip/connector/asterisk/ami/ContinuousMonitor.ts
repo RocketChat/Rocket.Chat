@@ -68,30 +68,12 @@ export class ContinuousMonitor extends Command {
 	// Todo : Move this out of connector. This class is a busy class.
 	// Not sure if we should do it here.
 	private async getQueueDetails(queueName: string): Promise<IQueueDetails> {
-		const queue = new ACDQueue(Commands.queue_details.toString(), true);
+		const queue = new ACDQueue(Commands.queue_details.toString(), true, this.db);
 		queue.connection = this.connection;
 		const queueDetails = await queue.executeCommand({ queueName });
 		return queueDetails.result as unknown as IQueueDetails;
 	}
 
-	/*
-	private async findMemberUsers(queueName: string): Promise<string[]> {
-		const queue = new ACDQueue(Commands.queue_details.toString(), true);
-		queue.connection = this.connection;
-		const queueDetails = await queue.executeCommand({ queueName });
-		const { members } = queueDetails.result as unknown as IQueueDetails;
-		if (!members) {
-			return [];
-		}
-
-		const extensionList = members.map((m) => {
-			return m.name.toLowerCase().replace('pjsip/', '');
-		});
-
-		this.logger.debug(`Finding members of queue ${queueName} between users`);
-		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
-	}
-	*/
 	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
 		const queueName = event.queue;
@@ -215,6 +197,9 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('queuecallerjoin', this);
 		this.connection.off('agentcalled', this);
 		this.connection.off('agentconnect', this);
+		this.connection.off('queuememberadded', this);
+		this.connection.off('queuememberremoved', this);
+		this.connection.off('queuecallerabandon', this);
 	}
 
 	initMonitor(_data: any): boolean {
