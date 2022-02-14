@@ -1,4 +1,4 @@
-FROM node:14.18.2-bullseye-slim
+FROM node:14.18.3-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
