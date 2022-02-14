@@ -72,3 +72,11 @@ export abstract class ServiceClass implements IServiceClass {
 		this.events.emit(event, ...args);
 	}
 }
+
+/**
+ * An internal service is a service that is registered only on monolith node.
+ * Services that run on their own node should use @ServiceClass instead.
+ */
+export abstract class ServiceClassInternal extends ServiceClass {
+	protected internal = true;
+}
