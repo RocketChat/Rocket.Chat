@@ -5,7 +5,7 @@ type RoomData = { _id: string; v: string };
 
 callbacks.add(
 	'livechat.newRoom',
-	(room: RoomData) => {
+	(room: IRoom) => {
 		const { _id, v: guestId } = room;
 
 		const lastChat = {
