@@ -13,7 +13,7 @@ const hidden = {
 	position: 'fixed',
 } as const;
 
-const CategoryDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: unknown) => void }>(
+const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: unknown) => void }>(
 	function CategoryDropDownListWrapper({ children, onClose }, ref) {
 		const target = useRef<HTMLElement>(null);
 		useOutsideClick([target], onClose);
@@ -26,4 +26,4 @@ const CategoryDropDownListWrapper = forwardRef<Element, ComponentProps<typeof Bo
 	},
 );
 
-export default CategoryDropDownListWrapper;
+export default DropDownListWrapper;

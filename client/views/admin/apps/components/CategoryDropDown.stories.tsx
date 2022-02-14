@@ -55,7 +55,7 @@ const testGroup: CategoryDropDownListProps['groups'] = [
 	},
 ];
 
-export const Achor: Story = () => <CategoryDropDownAnchor />;
+export const Anchor: Story = () => <CategoryDropDownAnchor selectedCategoriesCount={testGroup.flatMap((group) => group.items).length} />;
 export const List: Story = () => {
 	const [data, setData] = useState(() => testGroup);
 
@@ -65,14 +65,16 @@ export const List: Story = () => {
 };
 
 export const Default: Story = () => {
-	const [data, , categoryTagList, onSelected] = useCategories();
+	const [, selectedCategories, categoryTagList] = useCategories();
+
+	const [data, setData] = useState(() => testGroup);
+
+	const onSelected = useCategoryToggle(setData);
 
 	return (
 		<>
 			<ButtonGroup>
-				<CategoryDropDown mini data={data} onSelected={onSelected} />
-				<CategoryDropDown small data={data} onSelected={onSelected} />
-				<CategoryDropDown data={data} onSelected={onSelected} />
+				<CategoryDropDown data={data} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</ButtonGroup>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</>

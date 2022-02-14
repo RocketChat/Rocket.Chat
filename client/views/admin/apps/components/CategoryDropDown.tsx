@@ -1,18 +1,17 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, FC, useCallback, ComponentProps } from 'react';
+import React, { useRef, FC, useCallback } from 'react';
 
-import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
-import CategoryDropDownListWrapper from './CategoryDropDownListWrapper';
+import DropDownListWrapper from './DropDownListWrapper';
 
-const CategoryDropDown: FC<
-	{
-		data: CategoryDropDownListProps['groups'];
-		onSelected: CategoryDropDownListProps['onSelected'];
-	} & Partial<Pick<ComponentProps<typeof CategoryDropDownAnchor>, 'small' | 'mini'>>
-> = ({ data, onSelected, ...props }) => {
-	const reference = useRef<HTMLElement>(null);
+const CategoryDropDown: FC<{
+	data: CategoryDropDownListProps['groups'];
+	onSelected: CategoryDropDownListProps['onSelected'];
+	selectedCategories: (CategoryDropdownItem & { checked: true })[];
+}> = ({ data, onSelected, selectedCategories, ...props }) => {
+	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
@@ -31,11 +30,16 @@ const CategoryDropDown: FC<
 
 	return (
 		<>
-			<CategoryDropDownAnchor ref={reference} onClick={toggleCollapsed as any} {...props} />
+			<CategoryDropDownAnchor
+				ref={reference}
+				onClick={toggleCollapsed as any}
+				selectedCategoriesCount={selectedCategories.length}
+				{...props}
+			/>
 			{collapsed && (
-				<CategoryDropDownListWrapper ref={reference} onClose={onClose}>
+				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<CategoryDropDownList groups={data} onSelected={onSelected} />
-				</CategoryDropDownListWrapper>
+				</DropDownListWrapper>
 			)}
 		</>
 	);
