@@ -1,7 +1,4 @@
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-
 import { FailureResult } from '../../../app/api/server/api.d';
-import { ILivechatMessage } from '../../../imports/client/@rocket.chat/apps-engine/definition/livechat/ILivechatMessage.d';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IBusinessHourWorkHour, ILivechatBusinessHour } from '../../ILivechatBusinessHour';
@@ -12,9 +9,10 @@ import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
 import { ILivechatTrigger } from '../../ILivechatTrigger';
 import { ILivechatVisitor, ILivechatVisitorDTO } from '../../ILivechatVisitor';
-import { IMessage } from '../../IMessage';
+import { IMessage, IOmnichannelSystemMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
-import { SettingValue } from '../../ISetting';
+import { SettingValue, ISetting } from '../../ISetting';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
 
 type booleanString = 'true' | 'false';
@@ -123,12 +121,7 @@ export type OmnichannelEndpoints = {
 
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
-			customFields: [
-				{
-					_id: string;
-					label: string;
-				},
-			];
+			customFields: ILivechatCustomField[];
 		}>;
 	};
 	'livechat/rooms': {
@@ -321,7 +314,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/agent.next/:token': {
-		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent };
+		GET: (params: { token: string; department?: string }) => { agent: ILivechatAgent } | void;
 	};
 
 	'livechat/config': {
@@ -372,13 +365,13 @@ export type OmnichannelEndpoints = {
 
 	'livechat/message': {
 		POST: (params: { _id?: string; token: string; rid: string; msg: string; agent: { agentId: string; username: string } }) => {
-			message: ILivechatMessage;
+			message: IMessage;
 		};
 	};
 
 	'livechat/message/:_id': {
-		GET: (params: { _id: string; token: string; rid: string }) => { message: ILivechatMessage };
-		PUT: (params: { _id: string; token: string; rid: string; msg: string }) => { message: ILivechatMessage };
+		GET: (params: { _id: string; token: string; rid: string }) => { message: IMessage };
+		PUT: (params: { _id: string; token: string; rid: string; msg: string }) => { message: IMessage };
 		DELETE: (params: { _id: string; token: string; rid: string }) => {
 			message: {
 				_id: string;
@@ -388,13 +381,15 @@ export type OmnichannelEndpoints = {
 	};
 
 	'livechat/messages.history/:rid': {
-		GET: (params: { rid: string; searchText: { text: string; token: string }; ls: string; end: string; limit: string }) => {
-			messages: ILivechatMessage[];
+		GET: (params: { rid: string; searchText: { text: string }; token: string; ls: string; end: string; limit: string }) => {
+			messages: IMessage[];
 		};
 	};
 
 	'livechat/messages': {
-		POST: (params: { visitor: ILivechatVisitor; messages: ILivechatMessage[] }) => { messages: ILivechatMessage[] };
+		POST: (params: { visitor: { token: string }; messages: { msg: string }[] }) => {
+			messages: { username: string; msg: string; ts: Date }[];
+		};
 	};
 
 	'livechat/offline.message': {
@@ -403,21 +398,8 @@ export type OmnichannelEndpoints = {
 
 	'livechat/page.visited': {
 		POST: (params: { token: string; rid?: string; pageInfo: { change: string; title: string; location: { href: string } } }) => {
-			page: Pick<
-				{
-					t: string;
-					rid: any;
-					ts: Date;
-					msg: any;
-					u: {
-						_id: any;
-						username: any;
-					};
-					groupable: boolean;
-				},
-				'rid' | 'msg' | 't' | 'ts' | 'u' | 'groupable'
-			>;
-		};
+			page: Pick<IOmnichannelSystemMessage, 'msg' | 'navigation'>;
+		} | void;
 	};
 
 	'livechat/room': {
@@ -435,8 +417,12 @@ export type OmnichannelEndpoints = {
 	'livechat/room.survey': {
 		POST: (params: { rid: string; token: string; data: [name: string, value: string] }) => {
 			rid: string;
-			data: [name: string, value: string];
+			data: { [k: string]: string };
 		};
+	};
+
+	'livechat/room.visitor': {
+		PUT: (params: { rid: string; oldVisitorId: string; newVisitorId: string }) => { room: IOmnichannelRoom };
 	};
 
 	'livechat/transcript': {

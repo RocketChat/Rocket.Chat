@@ -62,7 +62,9 @@ API.v1.addRoute('livechat/video.call/:token', {
 			timeout: new Date(Date.now() + 3600 * 1000),
 		};
 
-		return API.v1.success(deprecationWarning({ videoCall }));
+		return API.v1.success(
+			deprecationWarning({ endpoint: 'livechat/video.call/:token', versionWillBeRemoved: '5.0', response: { videoCall } }),
+		);
 	},
 });
 

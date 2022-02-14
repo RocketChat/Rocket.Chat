@@ -10,7 +10,7 @@ export async function findLivechatCustomFields({
 	pagination,
 }: {
 	userId: string;
-	text: string;
+	text?: string;
 	pagination: { offset: number; count: number; sort: Record<string, unknown> };
 }): Promise<{ customFields: ILivechatCustomField[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {

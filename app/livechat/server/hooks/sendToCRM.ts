@@ -4,44 +4,21 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Messages, LivechatRooms } from '../../../models/server/index';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+import { IOmnichannelSystemMessage } from '../../../../definition/IMessage';
+import { IOmnichannelRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
+import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-type RoomData = {
-	_id: string;
-	departmentId: string;
-	servedBy: Date;
-	closedAt: Date;
-	closedBy: Date;
-	closer: string;
-	oldServedBy: Date;
-	oldDepartmentId: string;
+type RoomGuestInfo = IOmnichannelRoom & {
+	visitor: ILivechatVisitor & { email: ILivechatVisitor['visitorEmails']; customFields: ILivechatVisitor['livechatData'] };
+	customFields: IOmnichannelRoom['livechatData'];
 };
 
-type PostData = {
-	_id: string;
-	label: string;
-	type: string;
-	topic: string;
-	createdAt: Date;
-	lastMessageAt: Date;
-	tags: string[];
-	customFields: any[];
-	messages: any[];
-	visitor: {
-		_id: string;
-		token: string;
-		name: string;
-		username: string;
-		email: string;
-		phone: string;
-		department: string;
-		ip: string;
-		os: string | undefined;
-		browser: string | undefined;
-		customFields: any[];
-	};
+type AdditionalFieldsRoomData = Pick<IOmnichannelRoom, 'departmentId' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer'> & {
+	oldServedBy?: IOmnichannelRoom['servedBy'];
+	oldDepartmentId?: IOmnichannelRoom['departmentId'];
 };
 
 const sendMessageType = (msgType: string): boolean | SettingValue => {
@@ -57,18 +34,7 @@ const sendMessageType = (msgType: string): boolean | SettingValue => {
 	}
 };
 
-const getAdditionalFieldsByType = (
-	type: string,
-	room: RoomData,
-): {
-	departmentId?: string;
-	servedBy?: Date;
-	closedAt?: Date;
-	closedBy?: Date;
-	closer?: string;
-	oldDepartmentId?: string;
-	oldServedBy?: Date;
-} => {
+const getAdditionalFieldsByType = (type: string, room: AdditionalFieldsRoomData): Partial<AdditionalFieldsRoomData> => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
 		case 'LivechatSessionStarted':
@@ -84,14 +50,14 @@ const getAdditionalFieldsByType = (
 			return {};
 	}
 };
-function sendToCRM(type: string, room: RoomData, includeMessages: boolean): RoomData {
+function sendToCRM(type: string, room: IOmnichannelRoom, includeMessages?: any): IOmnichannelRoom {
 	includeMessages = true;
 
 	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}
 
-	const postData: PostData = Livechat.getLivechatRoomGuestInfo(room);
+	const postData = Livechat.getLivechatRoomGuestInfo(room) as unknown as RoomGuestInfo & { type: string; messages: any[] };
 
 	postData.type = type;
 
@@ -105,7 +71,7 @@ function sendToCRM(type: string, room: RoomData, includeMessages: boolean): Room
 	}
 
 	if (messages) {
-		messages.forEach((message) => {
+		messages.forEach((message: IOmnichannelSystemMessage) => {
 			if (message.t && !sendMessageType(message.t)) {
 				return;
 			}
@@ -115,29 +81,15 @@ function sendToCRM(type: string, room: RoomData, includeMessages: boolean): Room
 				msg: message.msg,
 				ts: message.ts,
 				editedAt: message.editedAt,
-				agentId: undefined,
 				navigation: undefined,
 				closingMessage: false,
 				file: undefined,
 				attachments: null,
+				...(message.u.username !== postData.visitor.username && { agentId: message.u._id }),
+				...(message.t === msgNavType && { navigation: message.navigation }),
+				...(message.t === msgClosingType && { closingMessage: true }),
+				...(message.file && { file: message.file, attachments: message.attachments }),
 			};
-
-			if (message.u.username !== postData.visitor.username) {
-				msg.agentId = message.u._id;
-			}
-
-			if (message.t === msgNavType) {
-				msg.navigation = message.navigation;
-			}
-
-			if (message.t === msgClosingType) {
-				msg.closingMessage = true;
-			}
-
-			if (message.file) {
-				msg.file = message.file;
-				msg.attachments = message.attachments;
-			}
 
 			const { u } = message;
 			postData.messages.push(Promise.await(normalizeMessageFileUpload({ u, ...msg })));
@@ -262,6 +214,10 @@ callbacks.add(
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// only call webhook if it is a livechat room
 		if (room.t !== 'l' || room.v == null || room.v.token == null) {
 			return message;

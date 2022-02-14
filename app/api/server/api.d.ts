@@ -22,7 +22,7 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
-export type UnauthorizedResult<T> = {
+type UnauthorizedResult<T> = {
 	statusCode: 403;
 	body: {
 		success: false;
@@ -30,7 +30,7 @@ export type UnauthorizedResult<T> = {
 	};
 };
 
-export type NotFoundResult<T> = {
+type NotFoundResult<T> = {
 	statusCode: 403;
 	body: {
 		success: false;
@@ -83,6 +83,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		query: Record<string, unknown>;
 	};
 	getUserFromParams(): IUser;
+	isWidget(): boolean;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

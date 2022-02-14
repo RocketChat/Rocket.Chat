@@ -1,32 +1,15 @@
 import { HTTP } from 'meteor/http';
 
-import { IRoom } from '../../../../definition/IRoom';
+import { IOmnichannelRoom, IRoom } from '../../../../definition/IRoom';
 import { settings } from '../../../settings/server/index';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
 
-type livechatData = {
-	_id: any;
-	label: any;
-	topic: any;
-	createdAt: any;
-	lastMessageAt: any;
-	tags: any;
-	customFields: any;
-	visitor: {
-		_id: any;
-		token: any;
-		name: any;
-		username: any;
-		email: { address: string }[] | null;
-		phone: null;
-		department: any;
-		ip: any;
-		os: string | undefined;
-		browser: string | undefined;
-		customFields: any;
-	};
+type RoomGuestInfo = IOmnichannelRoom & {
+	visitor: ILivechatVisitor & { email: ILivechatVisitor['visitorEmails']; customFields: ILivechatVisitor['livechatData'] };
+	customFields: IOmnichannelRoom['livechatData'];
 };
 
 function sendToRDStation(room: IRoom): IRoom {
@@ -34,7 +17,7 @@ function sendToRDStation(room: IRoom): IRoom {
 		return room;
 	}
 
-	const livechatData: livechatData = Livechat.getLivechatRoomGuestInfo(room);
+	const livechatData = Livechat.getLivechatRoomGuestInfo(room) as unknown as RoomGuestInfo;
 
 	if (!livechatData.visitor.email) {
 		return room;
@@ -53,28 +36,20 @@ function sendToRDStation(room: IRoom): IRoom {
 			// eslint-disable-next-line @typescript-eslint/camelcase
 			client_id: livechatData.visitor._id,
 			email,
-			name: '',
+			name: livechatData.visitor.name || livechatData.visitor.username,
 			phone: '',
 			tags: undefined,
+			...(livechatData.visitor.phone && { phone: livechatData.visitor.phone }),
+			...(livechatData.tags && { tags: livechatData.tags }),
 		},
 	};
-
-	options.data.name = livechatData.visitor.name || livechatData.visitor.username;
-
-	if (livechatData.visitor.phone) {
-		options.data.phone = livechatData.visitor.phone;
-	}
-
-	if (livechatData.tags) {
-		options.data.tags = livechatData.tags;
-	}
 
 	Object.keys(livechatData.customFields || {}).forEach((field) => {
 		options.data[field] = livechatData.customFields[field];
 	});
 
 	Object.keys(livechatData.visitor.customFields || {}).forEach((field) => {
-		options.data[field] = livechatData.visitor.customFields[field];
+		options.data[field] = livechatData.visitor?.customFields?.[field];
 	});
 
 	try {

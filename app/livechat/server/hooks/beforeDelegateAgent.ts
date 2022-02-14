@@ -2,10 +2,14 @@ import { ILivechatAgent } from '../../../../definition/ILivechatAgent';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server/index';
 import { Users, LivechatDepartmentAgents } from '../../../models/server/index';
+import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	(agent: ILivechatAgent, { department }: { department: string }): { agentId: string; username: string } | undefined => {
+	(
+		agent: ILivechatAgent,
+		{ department }: { department?: ILivechatDepartmentRecord },
+	): ILivechatAgent | { agentId: string; username: string } | null => {
 		if (agent) {
 			return agent;
 		}

@@ -30,7 +30,8 @@ type MessageTypesValues =
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close';
+	| 'livechat-close'
+	| 'livechat_navigation_history';
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -72,6 +73,8 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
+	editedAt?: string;
+	token?: string;
 }
 
 export interface IOmnichannelSystemMessage extends IMessage {
@@ -81,6 +84,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 			location: {
 				href: string;
 			};
+			token?: string;
 		};
 	};
 	transferData?: {

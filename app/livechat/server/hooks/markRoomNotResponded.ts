@@ -1,27 +1,15 @@
-import { IRoom } from '../../../../definition/IRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models/server/index';
-
-type MessageData = {
-	editedAt: Date;
-	token: string;
-	t: string;
-	msg: string;
-	u: {
-		_id: string;
-		username: string;
-	};
-};
-
-type RoomData = {
-	_id: string;
-	t: string;
-	isWaitingResponse: boolean;
-};
+import { IMessage } from '../../../../definition/IMessage';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData | undefined): MessageData {
+	function (message: IMessage, room: IRoom | undefined): IMessage {
+		if (!room || !isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
@@ -33,7 +21,7 @@ callbacks.add(
 		}
 
 		// check if room is yet awaiting for response
-		if (typeof room?.t !== 'undefined' && room.t === 'l' && room.isWaitingResponse) {
+		if (room.t === 'l' && room.isWaitingResponse) {
 			return message;
 		}
 

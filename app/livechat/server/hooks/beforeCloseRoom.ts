@@ -1,37 +1,21 @@
-import { Meteor } from 'meteor/meteor';
-
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatDepartment } from '../../../models/server/index';
-import { IRoom } from '../../../../definition/IRoom';
 
 type RoomData = {
 	departmentId: string;
-	tags:
+	tags: string[];
 };
 
-const concatUnique = (
-	...arrays: { room: RoomData; options: unknown }[][]
-): {
-	room: IRoom;
-	options: unknown;
-} => [...new Set([].concat(...arrays.filter(Array.isArray)))];
+const concatUnique = (...arrays: string[][]): string[] => [...new Set(...arrays.filter(Array.isArray))];
 
 const normalizeParams = (
-	params: { room: RoomData; options: unknown },
-	tags = [],
-): {
-	room: RoomData;
-	options: unknown;
-} => Object.assign(params, { extraData: { tags } });
+	params: { room: RoomData; options: { clientAction: string; tags: string[] } },
+	tags: string[] = [],
+): { room: RoomData; options: { clientAction: string; tags: string[] } } => Object.assign(params, { extraData: { tags } });
 
 callbacks.add(
 	'livechat.beforeCloseRoom',
-	(
-		originalParams = {
-			room: RoomData,
-			options: undefined,
-		},
-	) => {
+	(originalParams: { room: RoomData; options: { clientAction: string; tags: string[] } }) => {
 		const { room, options } = originalParams;
 		const { departmentId, tags: optionsTags } = room;
 		const { clientAction, tags: oldRoomTags } = options;
@@ -56,9 +40,7 @@ callbacks.add(
 		const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
 		const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
 		if (!checkRoomTags || !checkDepartmentTags) {
-			throw new Meteor.Error('error-tags-must-be-assigned-before-closing-chat', 'Tag(s) must be assigned before closing the chat', {
-				method: 'livechat.beforeCloseRoom',
-			});
+			throw new Error('error-tags-must-be-assigned-before-closing-chat');
 		}
 
 		return normalizeParams({ ...originalParams }, extraRoomTags);

@@ -157,13 +157,18 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
-	livechatData: any;
+	livechatData: { [k: string]: any };
 	queuedAt?: Date;
 
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
 	closer?: 'visitor' | 'user';
+	closedBy?: {
+		_id: string;
+		username: string;
+	};
+	isWaitingResponse?: boolean;
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {

@@ -105,8 +105,8 @@ export function getRoom({
 	guest: ILivechatVisitor;
 	rid: string;
 	roomInfo: Partial<IOmnichannelRoom>;
-	agent?: { agentId: string; username: string };
-	extraParams?: any[];
+	agent?: { agentId?: string; username: string };
+	extraParams?: any;
 }): Promise<{
 	room: any;
 	newRoom: boolean;
@@ -218,6 +218,6 @@ export async function getExtraConfigInfo(room: IOmnichannelRoom): Promise<any> {
 	return callbacks.run('livechat.onLoadConfigApi', { room });
 }
 
-export function onCheckRoomParams(params: any[]): Promise<any> {
+export function onCheckRoomParams<T extends Match.Pattern>(params: T): Promise<T> {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

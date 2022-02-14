@@ -61,14 +61,14 @@ callbacks.add(
 			if (agentLastReply === room.ts) {
 				// first response
 				const firstResponseDate = now;
-				const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
-				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+				const firstResponseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
+				const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 				const avgResponseTime =
 					((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
 
 				const firstReactionDate = now;
-				const firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
-				const reactionTime = (now.getTime() - agentJoinTime) / 1000;
+				const firstReactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
+				const reactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
 
 				analyticsData = {
 					firstResponseDate,
@@ -81,11 +81,11 @@ callbacks.add(
 				};
 			} else if (visitorLastQuery > agentLastReply) {
 				// response, not first
-				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+				const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 				const avgResponseTime =
 					((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
 
-				const reactionTime = (now.getTime() - visitorLastQuery) / 1000;
+				const reactionTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 
 				analyticsData = {
 					responseTime,

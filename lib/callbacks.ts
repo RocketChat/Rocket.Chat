@@ -36,11 +36,15 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom) => void;
+	'afterSaveMessage': (message: IMessage, room: IRoom | IOmnichannelRoom) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (room: IOmnichannelRoom) => void;
-	'livechat.saveRoom': (room: IRoom) => void;
+	'livechat.newRoom': (room: IOmnichannelRoom) => void;
+	'livechat.saveRoom': (room: IOmnichannelRoom) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => void;
+	'livechat.saveInfo': (room: IOmnichannelRoom) => void;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
@@ -83,7 +87,10 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
 	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
+	'livechat.beforeDelegateAgent': (
+		agent: ILivechatAgent,
+		params: { department?: ILivechatDepartmentRecord },
+	) => ILivechatAgent | { agentId: string; username: string } | null;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterQuery<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },

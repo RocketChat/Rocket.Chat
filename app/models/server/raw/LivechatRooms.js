@@ -1181,4 +1181,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 		return this.findOne(query, options);
 	}
+
+	findOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.find(query, options);
+	}
 }
