@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
+import { ObjectId } from 'mongodb';
 
 import { ImportData as ImportDataRaw } from '../../../models/server/raw';
 import { IImportUser } from '../../../../definition/IImportUser';
@@ -120,6 +121,7 @@ export class ImportDataConverter {
 
 	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
+			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
 			...options,
@@ -513,24 +515,24 @@ export class ImportDataConverter {
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
 		const messages = Promise.await(this.getMessagesToImport());
-		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
+		messages.forEach(({ data, _id }: IImportMessageRecord) => {
 			try {
-				if (beforeImportFn && !beforeImportFn(m, 'message')) {
+				if (beforeImportFn && !beforeImportFn(data, 'message')) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				if (!m.ts || isNaN(m.ts as unknown as number)) {
+				if (!data.ts || isNaN(data.ts as unknown as number)) {
 					throw new Error('importer-message-invalid-timestamp');
 				}
 
-				const creator = this.findImportedUser(m.u._id);
+				const creator = this.findImportedUser(data.u._id);
 				if (!creator) {
-					this._logger.warn(`Imported user not found: ${m.u._id}`);
+					this._logger.warn(`Imported user not found: ${data.u._id}`);
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const rid = this.findImportedRoomId(m.rid);
+				const rid = this.findImportedRoomId(data.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
 				}
@@ -539,8 +541,8 @@ export class ImportDataConverter {
 				}
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-				const mentions = m.mentions && this.convertMessageMentions(m);
-				const channels = m.channels && this.convertMessageChannels(m);
+				const mentions = data.mentions && this.convertMessageMentions(data);
+				const channels = data.channels && this.convertMessageChannels(data);
 
 				const msgObj: IMessage = {
 					rid,
@@ -548,32 +550,32 @@ export class ImportDataConverter {
 						_id: creator._id,
 						username: creator.username,
 					},
-					msg: m.msg,
-					ts: m.ts,
-					t: m.t || undefined,
-					groupable: m.groupable,
-					tmid: m.tmid,
-					tlm: m.tlm,
-					tcount: m.tcount,
-					replies: m.replies && this.convertMessageReplies(m.replies),
-					editedAt: m.editedAt,
-					editedBy: m.editedBy && (this.findImportedUser(m.editedBy) || undefined),
+					msg: data.msg,
+					ts: data.ts,
+					t: data.t || undefined,
+					groupable: data.groupable,
+					tmid: data.tmid,
+					tlm: data.tlm,
+					tcount: data.tcount,
+					replies: data.replies && this.convertMessageReplies(data.replies),
+					editedAt: data.editedAt,
+					editedBy: data.editedBy && (this.findImportedUser(data.editedBy) || undefined),
 					mentions,
 					channels,
-					_importFile: m._importFile,
-					url: m.url,
-					attachments: m.attachments,
-					bot: m.bot,
-					emoji: m.emoji,
-					alias: m.alias,
+					_importFile: data._importFile,
+					url: data.url,
+					attachments: data.attachments,
+					bot: data.bot,
+					emoji: data.emoji,
+					alias: data.alias,
 				};
 
-				if (m._id) {
-					msgObj._id = m._id;
+				if (data._id) {
+					msgObj._id = data._id;
 				}
 
-				if (m.reactions) {
-					msgObj.reactions = this.convertMessageReactions(m.reactions);
+				if (data.reactions) {
+					msgObj.reactions = this.convertMessageReactions(data.reactions);
 				}
 
 				try {
@@ -584,7 +586,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					afterImportFn(m, 'message', true);
+					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
 				this.saveError(_id, e);
@@ -863,38 +865,38 @@ export class ImportDataConverter {
 
 	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const channels = Promise.await(this.getChannelsToImport());
-		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
+		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
-				if (beforeImportFn && !beforeImportFn(c, 'channel')) {
+				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				if (!c.name && c.t !== 'd') {
+				if (!data.name && data.t !== 'd') {
 					throw new Error('importer-channel-missing-name');
 				}
 
-				c.importIds = c.importIds.filter((item) => item);
-				c.users = _.uniq(c.users);
+				data.importIds = data.importIds.filter((item) => item);
+				data.users = _.uniq(data.users);
 
-				if (!c.importIds.length) {
+				if (!data.importIds.length) {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				const existingRoom = this.findExistingRoom(c);
+				const existingRoom = this.findExistingRoom(data);
 
 				if (existingRoom) {
-					this.updateRoom(existingRoom, c, startedByUserId);
+					this.updateRoom(existingRoom, data, startedByUserId);
 				} else {
-					this.insertRoom(c, startedByUserId);
+					this.insertRoom(data, startedByUserId);
 				}
 
-				if (c.archived && c._id) {
-					this.archiveRoomById(c._id);
+				if (data.archived && data._id) {
+					this.archiveRoomById(data._id);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(c, 'channel', !existingRoom);
+					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
 				this.saveError(_id, e);

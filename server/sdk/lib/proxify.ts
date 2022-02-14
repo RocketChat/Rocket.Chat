@@ -25,6 +25,7 @@ function handler<T extends object>(namespace: string, waitService: boolean): Pro
 	};
 }
 
+// TODO remove the need to wait for a service, if that is really needed it should have a dependency on startup
 export function proxifyWithWait<T>(namespace: string): Prom<T> {
 	return new Proxy({}, handler(namespace, true)) as unknown as Prom<T>;
 }

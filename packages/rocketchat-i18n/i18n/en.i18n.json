@@ -4861,7 +4861,7 @@
   "onboarding.form.registeredServerForm.included.externalProviders": "Integration with external providers (WhatsApp, Facebook, Telegram, Twitter)",
   "onboarding.form.registeredServerForm.included.apps": "Access to marketplace apps",
   "onboarding.form.registeredServerForm.fields.accountEmail.inputLabel": "Cloud account email",
-  "onboarding.form.registeredServerForm.fields.accountEmail.tooltipLabel": "To register your server, we need to connect it to your cloud account. If you already have one - we wll link it automatically. Otherwise, a new account will be created",
+  "onboarding.form.registeredServerForm.fields.accountEmail.tooltipLabel": "To register your server, we need to connect it to your cloud account. If you already have one - we will link it automatically. Otherwise, a new account will be created",
   "onboarding.form.registeredServerForm.fields.accountEmail.inputPlaceholder": "Please enter your Email",
   "onboarding.form.registeredServerForm.keepInformed": "Keep me informed about news and events",
   "onboarding.form.registeredServerForm.continueStandalone": "Continue as standalone",
