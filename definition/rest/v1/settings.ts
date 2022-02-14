@@ -1,4 +1,4 @@
-import { ISetting, ISettingColor } from '../../ISetting';
+import { ISetting, ISettingColor, SettingValue } from '../../ISetting';
 import { PaginatedResult } from '../helpers/PaginatedResult';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
@@ -10,38 +10,38 @@ type SettingsUpdatePropsActions = {
 export type OauthCustomConfiguration = {
 	_id: string;
 	clientId?: string;
-	custom: unknown;
+	custom: boolean; // unknown
 	service?: string;
-	serverURL: unknown;
-	tokenPath: unknown;
-	identityPath: unknown;
-	authorizePath: unknown;
-	scope: unknown;
+	serverURL: string; // unknown
+	tokenPath: string; // unknown
+	identityPath: string; // unknown
+	authorizePath: string; // unknown
+	scope: string; // unknown
 	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: unknown;
-	identityTokenSentVia: unknown;
-	keyField: unknown;
-	usernameField: unknown;
-	emailField: unknown;
-	nameField: unknown;
-	avatarField: unknown;
-	rolesClaim: unknown;
-	groupsClaim: unknown;
-	mapChannels: unknown;
-	channelsMap: unknown;
-	channelsAdmin: unknown;
-	mergeUsers: unknown;
-	mergeRoles: unknown;
-	accessTokenParam: unknown;
-	showButton: unknown;
+	tokenSentVia: string | boolean; // unknown
+	identityTokenSentVia: string | boolean; // unknown
+	keyField: string | boolean; // unknown
+	usernameField: string | boolean; // unknown
+	emailField: string | boolean; // unknown
+	nameField: string | boolean; // unknown
+	avatarField: string | boolean; // unknown
+	rolesClaim: string; // unknown
+	groupsClaim: string; // unknown
+	mapChannels: string; // unknown
+	channelsMap: string; // unknown
+	channelsAdmin: string; // unknown
+	mergeUsers: boolean; // unknown
+	mergeRoles: boolean; // unknown
+	accessTokenParam: string; // unknown
+	showButton: boolean; // unknown
 
-	appId: unknown;
+	appId: string; // unknown
 	consumerKey?: string;
 
-	clientConfig: unknown;
-	buttonLabelText: unknown;
-	buttonLabelColor: unknown;
-	buttonColor: unknown;
+	clientConfig: { provider: SettingValue }; // unknown
+	buttonLabelText: SettingValue; // unknown
+	buttonLabelColor: SettingValue; // unknown
+	buttonColor: SettingValue; // unknown
 };
 
 export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
