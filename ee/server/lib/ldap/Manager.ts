@@ -114,9 +114,14 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
-		await this.syncUserRoles(ldap, user, dn);
-		await this.syncUserChannels(ldap, user, dn);
-		await this.syncUserTeams(ldap, user, dn, isNewRecord);
+		try {
+			await this.syncUserRoles(ldap, user, dn);
+			await this.syncUserChannels(ldap, user, dn);
+			await this.syncUserTeams(ldap, user, dn, isNewRecord);
+		} catch (e) {
+			logger.debug(`Advanced Sync failed for user: ${dn}`);
+			logger.error(e);
+		}
 	}
 
 	private static async advancedSync(
@@ -312,23 +317,28 @@ export class LDAPEEManager extends LDAPManager {
 
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
-				const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
-				if (!room) {
-					return;
-				}
+				try {
+					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+					if (!room) {
+						return;
+					}
 
-				if (isUserInGroup) {
-					if (room.teamMain) {
-						logger.error(`Can't add user to channel ${channel} because it is a team.`);
-					} else {
-						addUserToRoom(room._id, user);
-						logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+					if (isUserInGroup) {
+						if (room.teamMain) {
+							logger.error(`Can't add user to channel ${channel} because it is a team.`);
+						} else {
+							addUserToRoom(room._id, user);
+							logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+						}
+					} else if (syncUserChannelsRemove && !room.teamMain) {
+						const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
+						if (subscription) {
+							removeUserFromRoom(room._id, user);
+						}
 					}
-				} else if (syncUserChannelsRemove && !room.teamMain) {
-					const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
-					if (subscription) {
-						removeUserFromRoom(room._id, user);
-					}
+				} catch (e) {
+					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
+					logger.error(e);
 				}
 			}
 		}

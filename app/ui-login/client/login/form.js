@@ -35,7 +35,7 @@ Template.loginForm.helpers({
 		}
 		switch (Template.instance().state.get()) {
 			case 'register':
-				return t('Register');
+				return t('Register_new_account');
 			case 'login':
 				return t('Login');
 			case 'email-verification':

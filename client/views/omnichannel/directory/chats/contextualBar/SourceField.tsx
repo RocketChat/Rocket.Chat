@@ -1,9 +1,9 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
 
 import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
+import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useRoomIcon } from '../../../../../hooks/useRoomIcon';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -30,8 +30,8 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		widget: t('Livechat'),
 		email: t('Email'),
 		sms: t('SMS'),
-		app: t('Custom_Integration'), // TODO: use app text
-		api: t('Custom_Integration'), // TODO: use app text
+		app: room.source.alias || t('Custom_Integration'),
+		api: room.source.alias || t('Custom_Integration'),
 		other: t('Custom_Integration'),
 	};
 
@@ -46,24 +46,17 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		widget: '',
 		email: room?.source.id,
 		sms: t('External'),
-		app: t('External'), // TODO: use app text
-		api: t('External'),
+		app: room.source.label || t('External'),
+		api: room.source.label || t('External'),
 		other: t('External'),
 	};
-
-	const sourceIcon = useRoomIcon(room) as {
-		name: ComponentProps<typeof Icon>['name'];
-		color?: string | undefined;
-	};
-
-	const sourceName = sourceIcon?.name || '';
 
 	return (
 		<Field>
 			<Label>{t('Channel')}</Label>
 			<Info>
 				<Box display='flex' alignItems='center'>
-					<Icon name={sourceName} size='x24' />
+					<OmnichannelRoomIcon room={room} size='x24' placement='default' />
 					<Label mi='x8' mbe='0'>
 						{defaultTypesLabels[room.source.type] || roomSource}
 					</Label>

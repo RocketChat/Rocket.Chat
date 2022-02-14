@@ -130,6 +130,9 @@ const toggleSelectionState = (next, current, input) => {
 	}
 };
 
+/**
+ * @type import('react').ForwardRefExoticComponent<{ onClose: unknown } & import('react').RefAttributes<HTMLElement>>
+ */
 const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
 	const t = useTranslation();
