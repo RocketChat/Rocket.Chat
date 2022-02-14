@@ -19,6 +19,31 @@ type RoomData = {
 	oldDepartmentId: string;
 };
 
+type PostData = {
+	_id: string;
+	label: string;
+	type: string;
+	topic: string;
+	createdAt: Date;
+	lastMessageAt: Date;
+	tags: string[];
+	customFields: any[];
+	messages: any[];
+	visitor: {
+		_id: string;
+		token: string;
+		name: string;
+		username: string;
+		email: string;
+		phone: string;
+		department: string;
+		ip: string;
+		os: string | undefined;
+		browser: string | undefined;
+		customFields: any[];
+	};
+};
+
 const sendMessageType = (msgType: string): boolean | SettingValue => {
 	switch (msgType) {
 		case msgClosingType:
@@ -66,7 +91,7 @@ function sendToCRM(type: string, room: RoomData, includeMessages: boolean): Room
 		return room;
 	}
 
-	const postData = Livechat.getLivechatRoomGuestInfo(room);
+	const postData: PostData = Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;
 
@@ -90,6 +115,11 @@ function sendToCRM(type: string, room: RoomData, includeMessages: boolean): Room
 				msg: message.msg,
 				ts: message.ts,
 				editedAt: message.editedAt,
+				agentId: undefined,
+				navigation: undefined,
+				closingMessage: false,
+				file: undefined,
+				attachments: null,
 			};
 
 			if (message.u.username !== postData.visitor.username) {

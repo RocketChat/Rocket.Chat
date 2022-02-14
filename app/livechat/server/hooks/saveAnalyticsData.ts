@@ -31,14 +31,14 @@ type RoomData = {
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData): MessageData {
+	function (message: MessageData, room: RoomData | undefined): MessageData {
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
 		}
 
 		// check if room is livechat
-		if (room.t !== 'l') {
+		if (room?.t !== 'l') {
 			return message;
 		}
 

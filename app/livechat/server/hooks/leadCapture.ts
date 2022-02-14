@@ -2,9 +2,19 @@ import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server/index';
 import { LivechatVisitors } from '../../../models/server/index';
 
-type MessageData = { editedAt: Date; token: string; t: string; msg: string };
-type RoomData = { t: string | undefined; v: v };
-type v = { token: string; _id: string };
+type MessageData = {
+	editedAt: Date;
+	token: string;
+	t: string;
+	msg: string;
+};
+type RoomData = {
+	t: string;
+	v: {
+		token: string;
+		_id: string;
+	};
+};
 
 function validateMessage(message: MessageData, room: RoomData): boolean {
 	// skips this callback if the message was edited
@@ -37,10 +47,10 @@ callbacks.add(
 			return message;
 		}
 
-		const phoneRegexp = new RegExp(settings.get('Livechat_lead_phone_regex'), 'g');
+		const phoneRegexp = new RegExp(settings.get('Livechat_lead_phone_regex') as string, 'g');
 		const msgPhones = message.msg.match(phoneRegexp);
 
-		const emailRegexp = new RegExp(settings.get('Livechat_lead_email_regex'), 'gi');
+		const emailRegexp = new RegExp(settings.get('Livechat_lead_email_regex') as string, 'gi');
 		const msgEmails = message.msg.match(emailRegexp);
 
 		if (msgEmails || msgPhones) {

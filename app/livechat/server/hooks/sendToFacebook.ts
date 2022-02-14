@@ -26,7 +26,7 @@ type RoomData = {
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData | any) {
+	function (message: MessageData, room: RoomData | undefined) {
 		// skips this callback if the message was edited
 		if (message.editedAt) {
 			return message;
@@ -37,7 +37,7 @@ callbacks.add(
 		}
 
 		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
+		if (!(typeof room?.t !== 'undefined' && room.t === 'l' && room.facebook && room.v && room.v.token)) {
 			return message;
 		}
 
@@ -56,8 +56,8 @@ callbacks.add(
 		}
 
 		OmniChannel.reply({
-			page: room.facebook.page.id,
-			token: room.v.token,
+			page: room?.facebook.page.id,
+			token: room?.v.token,
 			text: message.msg,
 		});
 

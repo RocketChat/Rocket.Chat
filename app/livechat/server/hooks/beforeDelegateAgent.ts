@@ -1,10 +1,11 @@
+import { ILivechatAgent } from '../../../../definition/ILivechatAgent';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server/index';
 import { Users, LivechatDepartmentAgents } from '../../../models/server/index';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	(agent, { department }): { agentId: string; username: string } | undefined => {
+	(agent: ILivechatAgent, { department }: { department: string }): { agentId: string; username: string } | undefined => {
 		if (agent) {
 			return agent;
 		}

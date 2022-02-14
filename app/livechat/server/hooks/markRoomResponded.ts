@@ -11,11 +11,16 @@ type MessageData = {
 		username: string;
 	};
 };
-type RoomData = { responseBy: string; t: string; _id: string; isWaitingResponse: boolean };
+type RoomData = {
+	_id: string;
+	responseBy: string;
+	t: string;
+	isWaitingResponse: boolean;
+};
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData): MessageData {
+	function (message: MessageData, room: RoomData | undefined): MessageData {
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
@@ -25,12 +30,12 @@ callbacks.add(
 		if (message.token) {
 			return message;
 		}
-		if (room.responseBy) {
+		if (room?.responseBy) {
 			LivechatRooms.setAgentLastMessageTs(room._id);
 		}
 
 		// check if room is yet awaiting for response
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.isWaitingResponse)) {
+		if (!(typeof room?.t !== 'undefined' && room.t === 'l' && room.isWaitingResponse)) {
 			return message;
 		}
 

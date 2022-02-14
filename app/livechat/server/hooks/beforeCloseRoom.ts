@@ -4,18 +4,23 @@ import { callbacks } from '../../../../lib/callbacks';
 import { LivechatDepartment } from '../../../models/server/index';
 import { IRoom } from '../../../../definition/IRoom';
 
+type RoomData = {
+	departmentId: string;
+	tags:
+};
+
 const concatUnique = (
-	...arrays: { room: IRoom; options: unknown }[][]
+	...arrays: { room: RoomData; options: unknown }[][]
 ): {
 	room: IRoom;
 	options: unknown;
 } => [...new Set([].concat(...arrays.filter(Array.isArray)))];
 
 const normalizeParams = (
-	params: { room: IRoom; options: unknown },
+	params: { room: RoomData; options: unknown },
 	tags = [],
 ): {
-	room: IRoom;
+	room: RoomData;
 	options: unknown;
 } => Object.assign(params, { extraData: { tags } });
 
@@ -23,7 +28,7 @@ callbacks.add(
 	'livechat.beforeCloseRoom',
 	(
 		originalParams = {
-			room: IRoom,
+			room: RoomData,
 			options: undefined,
 		},
 	) => {

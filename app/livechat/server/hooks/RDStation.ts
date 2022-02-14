@@ -6,12 +6,35 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
+type livechatData = {
+	_id: any;
+	label: any;
+	topic: any;
+	createdAt: any;
+	lastMessageAt: any;
+	tags: any;
+	customFields: any;
+	visitor: {
+		_id: any;
+		token: any;
+		name: any;
+		username: any;
+		email: { address: string }[] | null;
+		phone: null;
+		department: any;
+		ip: any;
+		os: string | undefined;
+		browser: string | undefined;
+		customFields: any;
+	};
+};
+
 function sendToRDStation(room: IRoom): IRoom {
 	if (!settings.get('Livechat_RDStation_Token')) {
 		return room;
 	}
 
-	const livechatData = Livechat.getLivechatRoomGuestInfo(room);
+	const livechatData: livechatData = Livechat.getLivechatRoomGuestInfo(room);
 
 	if (!livechatData.visitor.email) {
 		return room;

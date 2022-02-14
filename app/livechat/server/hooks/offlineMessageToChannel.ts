@@ -5,7 +5,13 @@ import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
 import { LivechatDepartment, Rooms, Users } from '../../../models/server';
 
-type OfflineMessageData = { name: string; email: string; department: string; message: string; host: string };
+type OfflineMessageData = {
+	name: string;
+	email: string;
+	department: string;
+	message: string;
+	host: string;
+};
 
 callbacks.add(
 	'livechat.offlineMessage',

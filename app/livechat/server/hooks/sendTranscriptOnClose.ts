@@ -2,7 +2,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { LivechatRooms } from '../../../models/server/index';
 
-type RoomData = { _id: string; transcriptRequest: any; v: { token: string } };
+type RoomData = {
+	_id: string;
+	transcriptRequest: any;
+	v: { token: string };
+};
 
 const sendTranscriptOnClose = (room: RoomData): RoomData => {
 	const { _id: rid, transcriptRequest, v: { token } = {} } = room;
