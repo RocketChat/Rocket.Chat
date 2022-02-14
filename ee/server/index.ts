@@ -1,4 +1,3 @@
-import './broker';
 import './startup';
 
 import '../app/models';
