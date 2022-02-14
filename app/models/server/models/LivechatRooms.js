@@ -699,28 +699,6 @@ export class LivechatRooms extends Base {
 		return this.find(query);
 	}
 
-	changeAgentByRoomId(roomId, newAgent) {
-		const query = {
-			_id: roomId,
-			t: 'l',
-		};
-		const update = {
-			$set: {
-				servedBy: {
-					_id: newAgent.agentId,
-					username: newAgent.username,
-					ts: new Date(),
-				},
-			},
-		};
-
-		if (newAgent.ts) {
-			update.$set.servedBy.ts = newAgent.ts;
-		}
-
-		this.update(query, update);
-	}
-
 	changeDepartmentIdByRoomId(roomId, departmentId) {
 		const query = {
 			_id: roomId,

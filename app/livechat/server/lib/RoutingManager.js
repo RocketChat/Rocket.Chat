@@ -99,8 +99,7 @@ export const RoutingManager = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		LivechatRooms.changeAgentByRoomId(rid, agent);
-		Rooms.incUsersCountById(rid);
+		Rooms.incUsersCountAndChangeAgentByRoomId(rid, agent);
 
 		const user = Users.findOneById(agent.agentId);
 		const room = LivechatRooms.findOneById(rid);

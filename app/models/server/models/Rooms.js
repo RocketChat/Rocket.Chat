@@ -994,6 +994,31 @@ export class Rooms extends Base {
 			$inc: {
 				usersCount: inc,
 			},
+			$set: {
+				tempField: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	// Note: regarding omnichannel property - "servedBy" - over here
+	// For some reason, the update statement with only "servedBy" is not working properly if the updated is performed from LivechatRooms collection.
+	// hence I moved it over here
+	incUsersCountAndChangeAgentByRoomId(_id, newAgent, inc = 1) {
+		const query = { _id };
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+			$set: {
+				servedBy: {
+					_id: newAgent.agentId,
+					username: newAgent.username,
+					ts: newAgent.ts || new Date(),
+				},
+			},
 		};
 
 		return this.update(query, update);
