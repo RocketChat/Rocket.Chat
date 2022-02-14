@@ -91,11 +91,7 @@ export class PushClass {
 
 		const user = Users.findOne({ _id: userId });
 
-		const hasToken = user
-			.services
-			.resume
-			.loginTokens
-			.filter((t) => t.hashedToken === hashedToken).length > 0;
+		const hasToken = user.services.resume.loginTokens.filter((t) => t.hashedToken === hashedToken).length > 0;
 
 		if (!hasToken) {
 			this._removeToken(pushToken);
