@@ -126,6 +126,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			let roomId = room.id;
 			if (roomId) {
 				await this.RoomsModel.setTeamMainById(roomId, teamId);
+				Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
 			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
@@ -147,8 +148,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamModel.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
-
-			Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
 
 			return {
 				_id: teamId,
