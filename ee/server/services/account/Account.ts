@@ -10,6 +10,7 @@ import { getCollection, Collections } from '../mongo';
 import { IUser } from '../../../../definition/IUser';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { IAccount, ILoginResult } from '../../../../server/sdk/types/IAccount';
+import { MeteorError } from '../../../../server/sdk/errors';
 
 const saveSession = async (uid: string, newToken: IHashedStampedToken): Promise<void> => {
 	const Users = await getCollection<IUser>(Collections.User);
@@ -57,12 +58,18 @@ const loginViaResume = async (resume: string): Promise<false | ILoginResult> => 
 
 	const { when } = user.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken) || {};
 
+	const tokenExpires = when && _tokenExpiration(when);
+
+	if (tokenExpires && new Date() >= tokenExpires) {
+		throw new MeteorError(403, 'Your session has expired. Please log in again.');
+	}
+
 	return {
 		uid: user._id,
 		token: resume,
 		hashedToken,
-		tokenExpires: when ? _tokenExpiration(when) : undefined,
 		type: 'resume',
+		...(tokenExpires && { tokenExpires }),
 	};
 };
 
