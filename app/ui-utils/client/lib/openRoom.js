@@ -62,6 +62,7 @@ export const openRoom = async function (type, name, render = true) {
 			}
 
 			NewRoomManager.open(room._id);
+			Session.set('openedRoom', room._id);
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
