@@ -1,9 +1,12 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models';
+import { LivechatRooms } from '../../../models/server/index';
+
+type MessageData = { token: string; ts: string };
+type RoomData = { _id: string; t: string; v: { token: string } };
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	function (message: MessageData, room: RoomData): MessageData {
 		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 			return message;
 		}

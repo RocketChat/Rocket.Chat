@@ -1,13 +1,25 @@
+import { SettingValue } from '../../../../definition/ISetting';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, LivechatRooms } from '../../../models';
+import { Messages, LivechatRooms } from '../../../models/server/index';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-const sendMessageType = (msgType) => {
+type RoomData = {
+	_id: string;
+	departmentId: string;
+	servedBy: Date;
+	closedAt: Date;
+	closedBy: Date;
+	closer: string;
+	oldServedBy: Date;
+	oldDepartmentId: string;
+};
+
+const sendMessageType = (msgType: string): boolean | SettingValue => {
 	switch (msgType) {
 		case msgClosingType:
 			return true;
@@ -20,7 +32,18 @@ const sendMessageType = (msgType) => {
 	}
 };
 
-const getAdditionalFieldsByType = (type, room) => {
+const getAdditionalFieldsByType = (
+	type: string,
+	room: RoomData,
+): {
+	departmentId?: string;
+	servedBy?: Date;
+	closedAt?: Date;
+	closedBy?: Date;
+	closer?: string;
+	oldDepartmentId?: string;
+	oldServedBy?: Date;
+} => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
 		case 'LivechatSessionStarted':
@@ -36,7 +59,9 @@ const getAdditionalFieldsByType = (type, room) => {
 			return {};
 	}
 };
-function sendToCRM(type, room, includeMessages = true) {
+function sendToCRM(type: string, room: RoomData, includeMessages: boolean): RoomData {
+	includeMessages = true;
+
 	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}
@@ -94,7 +119,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	const response = Livechat.sendRequest(responseData);
 
-	if (response && response.data && response.data.data) {
+	if (response?.data?.data) {
 		LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
 	}
 
