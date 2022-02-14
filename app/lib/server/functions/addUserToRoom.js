@@ -57,7 +57,6 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		userMentions: 1,
 		groupMentions: 0,
 		...getDefaultSubscriptionPref(user),
-
 	});
 
 	if (!silenced) {
