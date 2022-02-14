@@ -3,7 +3,7 @@ export const Login = (function () {
 		const $el = $(el);
 		if ($el.length) {
 			$el.addClass('active');
-			return $el.find('input').focus();
+			return $el.find('input').trigger('focus');
 		}
 	}
 	function onBlur(input) {
