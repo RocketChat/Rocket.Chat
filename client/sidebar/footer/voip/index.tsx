@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import { useCallActions, useCallerInfo } from '../../../contexts/CallContext';
+import { useCallActions, useCallerInfo, useCallOpenRoom } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
@@ -8,6 +8,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
+	const openRoom = useCallOpenRoom();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
@@ -55,7 +56,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	return (
 		<VoipFooterComponent
-			callerName={callerInfo.caller.callerName}
+			caller={callerInfo.caller}
 			callerState={callerInfo.state}
 			callActions={callActions}
 			title={t('Phone_call')}
@@ -65,6 +66,7 @@ export const VoipFooter = (): ReactElement | null => {
 			toggleMic={toggleMic}
 			togglePause={togglePause}
 			tooltips={tooltips}
+			openRoom={openRoom}
 		/>
 	);
 };
