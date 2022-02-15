@@ -61,7 +61,7 @@ export const MessageContext = createContext<MessageContextValue>({
 export const useMessageActions = (): MessageContextValue => {
 	const context = useContext(MessageContext);
 	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
+		throw Error('useMessageActions should be used only inside messages context');
 	}
 	return context;
 };
