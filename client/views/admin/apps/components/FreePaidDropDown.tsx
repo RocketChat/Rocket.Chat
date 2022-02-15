@@ -2,6 +2,8 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useCallback, useRef } from 'react';
 
 import { FreePaidDropDownProps } from '../definitions/FreePaidDropDownDefinitions';
+import { isValidReference } from '../helpers/isValidReference';
+import { onMouseEventPreventSideEffects } from '../helpers/preventSideEffects';
 import DropDownListWrapper from './DropDownListWrapper';
 import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
 import FreePaidDropDownList from './FreePaidDropDownList';
@@ -12,13 +14,14 @@ const FreePaidDropDown: FC<FreePaidDropDownProps> = ({ group, onSelected, ...pro
 
 	const onClose = useCallback(
 		(e) => {
-			if (e.target !== reference.current && !reference.current?.contains(e.target)) {
+			if (isValidReference(reference, e)) {
 				toggleCollapsed(false);
 				return;
 			}
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
+
+			// TODO Create index file for helpers
+			onMouseEventPreventSideEffects(e);
+
 			return false;
 		},
 		[toggleCollapsed],

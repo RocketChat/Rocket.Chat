@@ -11,7 +11,7 @@ const FreePaidDropDownList: FC<FreePaidDropDownProps> = ({ group, onSelected }) 
 			</Box>
 		)}
 		{group.items.map((item) => (
-			<Option key={item.id} {...({ label: item.label } as any)} onClick={(): void => onSelected(item)}>
+			<Option key={item.id} label={item.label} onClick={(): void => onSelected(item)}>
 				<RadioButton checked={item.checked} onChange={(): void => onSelected(item)} />
 			</Option>
 		))}

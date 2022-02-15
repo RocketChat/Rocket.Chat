@@ -2,6 +2,8 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, FC, useCallback } from 'react';
 
 import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import { isValidReference } from '../helpers/isValidReference';
+import { onMouseEventPreventSideEffects } from '../helpers/preventSideEffects';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 import DropDownListWrapper from './DropDownListWrapper';
@@ -16,13 +18,13 @@ const CategoryDropDown: FC<{
 
 	const onClose = useCallback(
 		(e) => {
-			if (e.target !== reference.current && !reference.current?.contains(e.target)) {
+			if (isValidReference(reference, e)) {
 				toggleCollapsed(false);
 				return;
 			}
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
+
+			onMouseEventPreventSideEffects(e);
+
 			return false;
 		},
 		[toggleCollapsed],
