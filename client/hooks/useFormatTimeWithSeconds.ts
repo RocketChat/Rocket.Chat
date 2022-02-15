@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import { useUserPreference } from '../contexts/UserContext';
 
-const dayFormat = ['h:mm:ss A', 'H:mm:ss'] as const;
+const dayFormat = ['L h:mm:ss A', 'L H:mm:ss'] as const;
 const format = 'L LTS';
 
 export const useFormatTimeWithSeconds = (): ((input: moment.MomentInput) => string) => {
