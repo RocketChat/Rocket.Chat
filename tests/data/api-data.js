@@ -4,7 +4,9 @@ import { publicChannelName, privateChannelName } from './channel.js';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
 import { username, email, adminUsername, adminPassword } from './user.js';
 
-export const request = supertest('http://localhost:3000');
+const apiUrl = process.env.TEST_URL || 'http://localhost:3000';
+
+export const request = supertest(apiUrl);
 const prefix = '/api/v1/';
 
 export function wait(cb, time) {
