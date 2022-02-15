@@ -6,7 +6,6 @@ const { spawn } = require('child_process');
 const net = require('net');
 
 const processes = [];
-let exitCode;
 
 const baseDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(baseDir);
@@ -64,6 +63,7 @@ function startProcess(opts) {
 	}
 
 	proc.on('exit', function (code, signal) {
+		let exitCode;
 		if (code != null) {
 			exitCode = code;
 			console.log(opts.name, `exited with code ${code}`);
