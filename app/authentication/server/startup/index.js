@@ -278,17 +278,15 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 
 	/**
 	 * if settings shows setup wizard to be pending
-	 * and no admin's been found,
 	 * and existing role list doesn't include admin
 	 * create this user admin.
 	 * count this as the completion of setup wizard step 1.
 	 */
-	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
-	if (!roles.includes('admin') && !hasAdmin) {
-		roles.push('admin');
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+	if (settings.get('Show_Setup_Wizard') === 'pending') {
+		if (!roles.includes('admin')) {
+		    roles.push('admin');
 		}
+		Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 	}
 
 	addUserRoles(_id, roles);
