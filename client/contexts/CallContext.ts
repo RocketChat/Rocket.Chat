@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { ICallerInfo } from '../../definition/voip/ICallerInfo';
 import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';
 
@@ -20,6 +21,7 @@ type CallContextReady = {
 	ready: true;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
+	openRoom: (caller: ICallerInfo) => void;
 };
 type CallContextError = {
 	enabled: true;
@@ -95,6 +97,16 @@ export const useCallerInfo = (): VoIpCallerInfo => {
 		[voipClient],
 	);
 	return useSubscription(subscription);
+};
+
+export const useCallOpenRoom = (): CallContextReady['openRoom'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useCallerInfo only if Calls are enabled and ready');
+	}
+
+	return context.openRoom;
 };
 
 export const useCallClient = (): VoIPUser => {
