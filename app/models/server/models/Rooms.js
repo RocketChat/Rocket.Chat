@@ -994,9 +994,6 @@ export class Rooms extends Base {
 			$inc: {
 				usersCount: inc,
 			},
-			$set: {
-				tempField: 1,
-			},
 		};
 
 		return this.update(query, update);
