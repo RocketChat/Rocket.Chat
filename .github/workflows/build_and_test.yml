@@ -335,6 +335,7 @@ jobs:
           MOLECULER_LOG_LEVEL: info
           TRANSPORTER: nats://localhost:4222
           TEST_URL: http://localhost:4000
+          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
