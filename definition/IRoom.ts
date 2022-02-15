@@ -169,6 +169,12 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		username: string;
 	};
 	isWaitingResponse?: boolean;
+
+	facebook?: {
+		page: {
+			id: string;
+		};
+	};
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
