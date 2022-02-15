@@ -2,31 +2,17 @@ import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server/index';
 import OmniChannel from '../lib/OmniChannel';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-
-type MessageData = {
-	token: string;
-	file: string;
-	editedAt: Date;
-	msg: string;
-	t: string;
-};
-
-type RoomData = {
-	editedAt: Date;
-	t: string;
-	facebook: {
-		page: {
-			id: string;
-		};
-	};
-	v: {
-		token: string;
-	};
-};
+import { IMessage } from '../../../../definition/IMessage';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData | undefined) {
+	function (message: IMessage, room: IRoom): IMessage {
+		// do nothing if room is not omnichannel room
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// skips this callback if the message was edited
 		if (message.editedAt) {
 			return message;

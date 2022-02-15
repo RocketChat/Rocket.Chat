@@ -1,16 +1,16 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models/server/index';
-
-type MessageData = { token: string; ts: string };
-type RoomData = {
-	_id: string;
-	t: string;
-	v: { token: string };
-};
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
+import { IMessage } from '../../../../definition/IMessage';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData | undefined): MessageData {
+	function (message: IMessage, room: IRoom): IMessage {
+		// do nothing if room is not omnichannel room
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		if (!(typeof room?.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 			return message;
 		}

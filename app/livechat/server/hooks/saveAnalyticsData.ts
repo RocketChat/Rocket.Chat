@@ -1,37 +1,17 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models/server/index';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-
-type MessageData = {
-	editedAt: Date;
-	token: string;
-	file: string;
-};
-
-type RoomData = {
-	t: string;
-	metrics: {
-		v: {
-			lq: string;
-		};
-		servedBy: {
-			ts: string;
-			lr: string;
-		};
-		response: {
-			total: number;
-			tt: number;
-		};
-	};
-	ts: string;
-	servedBy: {
-		ts: string;
-	};
-};
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
+import { IMessage } from '../../../../definition/IMessage';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: RoomData | undefined): MessageData {
+	function (message: IMessage, room: IRoom): IMessage {
+		// do nothing if room is not omnichannel room
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;

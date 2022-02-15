@@ -1,14 +1,14 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { LivechatRooms } from '../../../models/server/index';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 
-type RoomData = {
-	_id: string;
-	transcriptRequest: any;
-	v: { token: string };
-};
+const sendTranscriptOnClose = (room: IRoom): IRoom => {
+	// do nothing if room is not omnichannel room
+	if (!isOmnichannelRoom(room)) {
+		return room;
+	}
 
-const sendTranscriptOnClose = (room: RoomData): RoomData => {
 	const { _id: rid, transcriptRequest, v: { token } = {} } = room;
 	if (!transcriptRequest || !token) {
 		return room;
