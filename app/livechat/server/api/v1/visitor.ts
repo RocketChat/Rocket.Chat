@@ -37,7 +37,6 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-
 		const visitorId = Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
 		let visitor = await VisitorsRaw.getVisitorByToken(token, {});
