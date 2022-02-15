@@ -22,6 +22,8 @@ type VoipFooterPropsType = {
 		endCall: string;
 	};
 	openRoom: (caller: ICallerInfo) => void;
+	wrapUpCallEnabled: boolean;
+	openWrapUpCallModal: () => void;
 };
 
 export const VoipFooter = ({
@@ -36,6 +38,8 @@ export const VoipFooter = ({
 	togglePause,
 	tooltips,
 	openRoom,
+	wrapUpCallEnabled,
+	openWrapUpCallModal,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
 		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
@@ -79,6 +83,7 @@ export const VoipFooter = ({
 						onClick={(): unknown => {
 							toggleMic(false);
 							togglePause(false);
+							wrapUpCallEnabled && openWrapUpCallModal();
 							return callActions.end();
 						}}
 					>

@@ -1,6 +1,9 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 
+import { WrapUpCallModal } from '../../../components/voip/modal/WrapUpCallModal';
 import { useCallActions, useCallerInfo, useCallOpenRoom } from '../../../contexts/CallContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
@@ -9,9 +12,15 @@ export const VoipFooter = (): ReactElement | null => {
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
 	const openRoom = useCallOpenRoom();
+	const wrapUpCallEnabled = useSetting('WrapUpCall_Enabled') as boolean;
+	const setModal = useSetModal();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
+
+	const openWrapUpCallModal = useCallback(() => {
+		setModal(<WrapUpCallModal />);
+	}, [setModal]);
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -67,6 +76,8 @@ export const VoipFooter = (): ReactElement | null => {
 			togglePause={togglePause}
 			tooltips={tooltips}
 			openRoom={openRoom}
+			wrapUpCallEnabled={wrapUpCallEnabled}
+			openWrapUpCallModal={openWrapUpCallModal}
 		/>
 	);
 };
