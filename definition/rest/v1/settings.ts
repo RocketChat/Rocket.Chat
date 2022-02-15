@@ -10,38 +10,38 @@ type SettingsUpdatePropsActions = {
 export type OauthCustomConfiguration = {
 	_id: string;
 	clientId?: string;
-	custom: boolean; // unknown
+	custom: boolean;
 	service?: string;
-	serverURL: string; // unknown
-	tokenPath: string; // unknown
-	identityPath: string; // unknown
-	authorizePath: string; // unknown
-	scope: string; // unknown
+	serverURL: string;
+	tokenPath: string;
+	identityPath: string;
+	authorizePath: string;
+	scope: string;
 	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: string | boolean; // unknown
-	identityTokenSentVia: string | boolean; // unknown
-	keyField: string | boolean; // unknown
-	usernameField: string | boolean; // unknown
-	emailField: string | boolean; // unknown
-	nameField: string | boolean; // unknown
-	avatarField: string | boolean; // unknown
-	rolesClaim: string; // unknown
-	groupsClaim: string; // unknown
-	mapChannels: string; // unknown
-	channelsMap: string; // unknown
-	channelsAdmin: string; // unknown
-	mergeUsers: boolean; // unknown
-	mergeRoles: boolean; // unknown
-	accessTokenParam: string; // unknown
-	showButton: boolean; // unknown
+	tokenSentVia: string | boolean;
+	identityTokenSentVia: string | boolean;
+	keyField: string | boolean;
+	usernameField: string | boolean;
+	emailField: string | boolean;
+	nameField: string | boolean;
+	avatarField: string | boolean;
+	rolesClaim: string;
+	groupsClaim: string;
+	mapChannels: string;
+	channelsMap: string;
+	channelsAdmin: string;
+	mergeUsers: boolean;
+	mergeRoles: boolean;
+	accessTokenParam: string;
+	showButton: boolean;
 
-	appId: string; // unknown
+	appId: string;
 	consumerKey?: string;
 
-	clientConfig: { provider: SettingValue }; // unknown
-	buttonLabelText: SettingValue; // unknown
-	buttonLabelColor: SettingValue; // unknown
-	buttonColor: SettingValue; // unknown
+	clientConfig: { provider: SettingValue };
+	buttonLabelText: SettingValue;
+	buttonLabelColor: SettingValue;
+	buttonColor: SettingValue;
 };
 
 export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
