@@ -146,7 +146,8 @@ export class ContinuousMonitor extends Command {
 			case 'AgentConnect': {
 				const { calls } = queueDetails;
 				members.forEach((m) => {
-					api.broadcast('queue.agentconnected', m, event.queue, calls);
+					// event.holdtime signifies wait time in the queue.
+					api.broadcast('queue.agentconnected', m, event.queue, calls, event.holdtime);
 				});
 				break;
 			}
