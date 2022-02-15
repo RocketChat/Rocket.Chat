@@ -6,7 +6,7 @@ import { VoIpCallerInfo } from '../../../../definition/voip/VoIpCallerInfo';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
-	callerName: ICallerInfo['callerName'];
+	caller: ICallerInfo;
 	callerState: VoIpCallerInfo['state'];
 	callActions: CallActionsType;
 	title: string;
@@ -21,11 +21,11 @@ type VoipFooterPropsType = {
 		acceptCall: string;
 		endCall: string;
 	};
-	openRoom: () => void;
+	openRoom: (caller: ICallerInfo) => void;
 };
 
 export const VoipFooter = ({
-	callerName,
+	caller,
 	callerState,
 	callActions,
 	title,
@@ -60,7 +60,7 @@ export const VoipFooter = ({
 		<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 			<Box>
 				<Box color='white' fontScale='p2' withTruncatedText>
-					{callerName}
+					{caller.callerName}
 				</Box>
 				<Box color='hint' fontScale='c1' withTruncatedText>
 					{subtitle}
@@ -99,7 +99,7 @@ export const VoipFooter = ({
 						primary
 						onClick={(): void => {
 							callActions.pickUp();
-							openRoom();
+							openRoom(caller);
 						}}
 					>
 						<Icon name='phone' size='x16' />

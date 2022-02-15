@@ -32,7 +32,11 @@ export const Default = (): ReactElement => {
 	return (
 		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
 			<VoipFooter
-				callerName='Tiago'
+				caller={{
+					callerName: 'Tiago',
+					callerId: 'guest-1',
+					host: '',
+				}}
 				callerState='OFFER_RECEIVED'
 				callActions={callActions}
 				title='Sales Department'
