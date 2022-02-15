@@ -14,7 +14,7 @@ type TwoFactorTotpModalProps = {
 const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): ReactElement => {
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
-	const ref = useAutoFocus();
+	const ref = useAutoFocus<HTMLInputElement>();
 
 	const onConfirmTotpCode = (): void => {
 		onConfirm(code, Method.TOTP);

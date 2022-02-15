@@ -32,7 +32,10 @@ const OrganizationInfoStep = (): ReactElement => {
 		settings,
 		goToPreviousStep,
 		goToNextStep,
+		completeSetupWizard,
 		currentStep,
+		skipCloudRegistration,
+		maxSteps,
 	} = useSetupWizardContext();
 
 	const countryOptions = getSettingOptions(settings, 'Country', t);
@@ -41,6 +44,9 @@ const OrganizationInfoStep = (): ReactElement => {
 	const organizationSizeOptions = getSettingOptions(settings, 'Size', t);
 
 	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
+		if (skipCloudRegistration) {
+			return completeSetupWizard();
+		}
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
 		goToNextStep();
 	};
@@ -51,11 +57,12 @@ const OrganizationInfoStep = (): ReactElement => {
 			onSubmit={handleSubmit}
 			onBackButtonClick={goToPreviousStep}
 			currentStep={currentStep}
-			stepCount={4}
+			stepCount={maxSteps}
 			organizationTypeOptions={organizationTypeOptions}
 			organizationIndustryOptions={organizationIndustryOptions}
 			organizationSizeOptions={organizationSizeOptions}
 			countryOptions={countryOptions}
+			nextStep={skipCloudRegistration ? t('Register') : undefined}
 		/>
 	);
 };

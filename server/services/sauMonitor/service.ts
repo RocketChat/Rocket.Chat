@@ -1,10 +1,10 @@
 // import type { Db } from 'mongodb';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { ISAUMonitorService } from '../../sdk/types/ISAUMonitorService';
 import { sauEvents } from './events';
 
-export class SAUMonitorService extends ServiceClass implements ISAUMonitorService {
+export class SAUMonitorService extends ServiceClassInternal implements ISAUMonitorService {
 	protected name = 'sau-monitor';
 
 	constructor() {
