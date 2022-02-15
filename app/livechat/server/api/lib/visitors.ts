@@ -83,9 +83,9 @@ export async function findChatHistory({
 	}
 
 	const cursor = LivechatRooms.findByVisitorId(visitorId, {
-		sort: pagination.sort || { ts: -1 },
-		skip: pagination.offset,
-		limit: pagination.count,
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
 	});
 
 	const total = await cursor.count();
@@ -165,12 +165,12 @@ export async function findVisitorsToAutocomplete({
 	selector,
 }: {
 	userId: string;
-	selector: { exceptions: any[]; conditions: any[]; term: string };
+	selector: { exceptions: any[]; conditions: any[], term: string };
 }): Promise<{ items: ILivechatVisitor[] }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		return { items: [] };
 	}
-	const { exceptions = [], conditions = {} } = selector;
+	const { exceptions = [], conditions = {}  } = selector;
 
 	const options = {
 		projection: {

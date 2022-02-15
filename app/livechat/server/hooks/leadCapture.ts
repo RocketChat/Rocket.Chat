@@ -1,22 +1,15 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server/index';
 import { LivechatVisitors } from '../../../models/server/index';
+import { IMessage } from '../../../../definition/IMessage';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 
-type MessageData = {
-	editedAt: Date;
-	token: string;
-	t: string;
-	msg: string;
-};
-type RoomData = {
-	t: string;
-	v: {
-		token: string;
-		_id: string;
-	};
-};
+function validateMessage(message: IMessage, room: IRoom): boolean | IMessage {
+	// do nothing if room is not omnichannel room
+	if (!isOmnichannelRoom(room)) {
+		return message;
+	}
 
-function validateMessage(message: MessageData, room: RoomData): boolean {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return false;
@@ -42,7 +35,12 @@ function validateMessage(message: MessageData, room: RoomData): boolean {
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: MessageData, room: any): MessageData {
+	function (message: IMessage, room: IRoom): IMessage {
+		// do nothing if room is not omnichannel room
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		if (!validateMessage(message, room)) {
 			return message;
 		}
