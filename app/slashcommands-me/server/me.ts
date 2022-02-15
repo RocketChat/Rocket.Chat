@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { slashCommands } from '../../utils';
+import { slashCommands } from '../../utils/lib/slashCommand';
 
 /*
  * Me is a named function that will replace /me commands
@@ -9,11 +9,7 @@ import { slashCommands } from '../../utils';
  */
 slashCommands.add(
 	'me',
-	function Me(command, params, item) {
-		if (command !== 'me') {
-			return;
-		}
-
+	function Me(_command: 'me', params: string, item: Record<string, string>): void {
 		if (s.trim(params)) {
 			const msg = item;
 			msg.msg = `_${params}_`;
@@ -24,4 +20,8 @@ slashCommands.add(
 		description: 'Displays_action_text',
 		params: 'your_message',
 	},
+	undefined,
+	false,
+	undefined,
+	undefined,
 );
