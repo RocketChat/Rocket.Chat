@@ -2,7 +2,6 @@
 
 const path = require('path');
 const fs = require('fs');
-const extend = require('util')._extend;
 const { spawn } = require('child_process');
 const net = require('net');
 
@@ -43,22 +42,14 @@ const appOptions = {
 	env: {
 		PORT: 3000,
 		ROOT_URL: 'http://localhost:3000',
-		// MONGO_URL: 'mongodb://localhost:27017/test',
-		// MONGO_OPLOG_URL: 'mongodb://localhost:27017/local',
 	},
 };
 
-function startProcess(opts, callback) {
+function startProcess(opts) {
 	const proc = spawn(opts.command, opts.params, opts.options);
 
-	if (opts.waitForMessage) {
-		proc.stdout.on('data', function waitForMessage(data) {
-			if (data.toString().match(opts.waitForMessage)) {
-				if (callback) {
-					callback();
-				}
-			}
-		});
+	if (opts.onData) {
+		proc.stdout.on('data', opts.onData);
 	}
 
 	if (!opts.silent) {
@@ -103,22 +94,62 @@ function startProcess(opts, callback) {
 	processes.push(proc);
 }
 
-function startApp(callback) {
-	startProcess(
-		{
+function startRocketChat() {
+	return new Promise((resolve) => {
+		const waitServerRunning = (message) => {
+			if (message.toString().match('SERVER RUNNING')) {
+				return resolve();
+			}
+		};
+
+		startProcess({
 			name: 'Meteor App',
 			command: 'node',
 			params: ['/tmp/build-test/bundle/main.js'],
-			// command: 'node',
-			// params: ['.meteor/local/build/main.js'],
-			waitForMessage: appOptions.waitForMessage,
+			onData: waitServerRunning,
 			options: {
 				cwd: srcDir,
-				env: extend(appOptions.env, process.env),
+				env: {
+					...appOptions.env,
+					...process.env,
+				},
 			},
-		},
-		callback,
-	);
+		});
+	});
+}
+
+function startMicroservices() {
+	return new Promise((resolve) => {
+		const servicesDir = path.resolve(srcDir, 'ee', 'server', 'services');
+
+		const waitStart = (message) => {
+			if (message.toString().match('started successfully')) {
+				return resolve();
+			}
+		};
+
+		const startService = (name) => {
+			startProcess({
+				name: `${name} service`,
+				command: 'npm',
+				params: ['run', `start:${name}`],
+				...(name === 'ddp-streamer' && { onData: waitStart }),
+				options: {
+					cwd: servicesDir,
+					env: {
+						...appOptions.env,
+						...process.env,
+					},
+				},
+			});
+		};
+
+		startService('account');
+		startService('authorization');
+		startService('ddp-streamer');
+		startService('presence');
+		startService('stream-hub');
+	});
 }
 
 function startChimp() {
@@ -126,21 +157,23 @@ function startChimp() {
 		name: 'Chimp',
 		command: 'npm',
 		params: ['test'],
-		// command: 'exit',
-		// params: ['2'],
 		options: {
-			env: Object.assign({}, process.env, {
+			env: {
+				...process.env,
 				NODE_PATH: `${process.env.NODE_PATH + path.delimiter + srcDir + path.delimiter + srcDir}/node_modules`,
-			}),
+			},
 		},
 	});
 }
 
-function chimpNoMirror() {
-	appOptions.waitForMessage = 'SERVER RUNNING';
-	startApp(function () {
-		startChimp();
-	});
-}
+(async () => {
+	const [, , options = ''] = process.argv;
 
-chimpNoMirror();
+	await startRocketChat();
+
+	if (options === '--enterprise') {
+		await startMicroservices();
+	}
+
+	startChimp();
+})();
