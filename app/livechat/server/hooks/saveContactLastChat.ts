@@ -1,11 +1,15 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
-
-type RoomData = { _id: string; v: string };
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 
 callbacks.add(
 	'livechat.newRoom',
 	(room: IRoom) => {
+		// do nothing if room is not omnichannel room
+		if (!isOmnichannelRoom(room)) {
+			return;
+		}
+
 		const { _id, v: guestId } = room;
 
 		const lastChat = {
