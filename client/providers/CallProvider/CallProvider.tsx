@@ -40,10 +40,10 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	const handleAgentConnected = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
+		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
 			dispatchToastMessage({
 				type: 'success',
-				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls}`,
+				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls} wait-time = ${queue.waittimeinqueue}`,
 				options: {
 					showDuration: '6000',
 					hideDuration: '6000',

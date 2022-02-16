@@ -179,7 +179,8 @@ export class ContinuousMonitor extends Command {
 
 				await this.storePbxEvent(event, 'AgentConnect');
 				members.forEach((m) => {
-					api.broadcast('queue.agentconnected', m, event.queue, calls);
+					// event.holdtime signifies wait time in the queue.
+					api.broadcast('queue.agentconnected', m, event.queue, calls, event.holdtime);
 				});
 				break;
 			}

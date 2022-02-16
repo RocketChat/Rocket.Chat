@@ -83,7 +83,7 @@ export type EventSignatures = {
 		id: string;
 	}): void;
 	'queue.agentcalled'(userid: string, queuename: string, callerid: Record<string, string>): void;
-	'queue.agentconnected'(userid: string, queuename: string, queuedcalls: string): void;
+	'queue.agentconnected'(userid: string, queuename: string, queuedcalls: string, waittimeinqueue: string): void;
 	'queue.callerjoined'(userid: string, queuename: string, callerid: Record<string, string>, queuedcalls: string): void;
 	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;

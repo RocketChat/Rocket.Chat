@@ -43,13 +43,13 @@ export interface IQueueEvent extends IEventBase {
 	destuniqueid: string;
 	destlinkedid: string;
 	membername: string;
-	holdtime: string;
 	queue: string;
 	interface: string;
 }
 
 export interface IAgentConnectEvent extends IQueueEvent {
 	event: 'AgentConnect';
+	holdtime: string;
 }
 
 export interface IAgentCalledEvent extends IQueueEvent {
