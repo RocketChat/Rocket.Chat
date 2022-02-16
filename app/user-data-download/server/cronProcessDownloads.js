@@ -165,6 +165,11 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 			case 'ult':
 				messageObject.msg = TAPi18n.__('User_left_team');
 				break;
+			case 'user-added-room-to-team':
+				messageObject.msg = TAPi18n.__('added__roomName__to_team', {
+					roomName: msg.msg,
+				});
+				break;
 			case 'user-converted-to-team':
 				messageObject.msg = TAPi18n.__('Converted__roomName__to_team', {
 					roomName: msg.msg,
@@ -174,6 +179,19 @@ const getMessageData = function (msg, hideUsers, userData, usersMap) {
 				messageObject.msg = TAPi18n.__('Converted__roomName__to_channel', {
 					roomName: msg.msg,
 				});
+				break;
+			case 'user-deleted-room-from-team':
+				messageObject.msg = TAPi18n.__('Deleted__roomName__', {
+					roomName: msg.msg,
+				});
+				break;
+			case 'user-removed-room-from-team':
+				messageObject.msg = TAPi18n.__('Removed__roomName__from_this_team', {
+					roomName: msg.msg,
+				});
+				break;
+			case 'ujt':
+				messageObject.msg = TAPi18n.__('User_joined_team');
 				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', {
