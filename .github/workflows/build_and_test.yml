@@ -321,6 +321,8 @@ jobs:
 
       - name: NPM install
         # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+        env:
+          NODE_ENV: 'production'
         run: |
           npm install
           cd ./ee/server/services
@@ -336,6 +338,7 @@ jobs:
           TRANSPORTER: nats://localhost:4222
           TEST_URL: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+          NODE_ENV: 'production'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
