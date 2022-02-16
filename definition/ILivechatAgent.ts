@@ -1,8 +1,16 @@
-export interface ILivechatAgent {
-	_id: string;
-	emails: { adress: string; verified: boolean };
-	status: string;
-	name: string;
-	username: string;
-	statusLivechat: string;
+import { IUser } from './IUser';
+
+export enum ILivechatAgentStatus {
+	AVAILABLE = 'available',
+	UNAVAILABLE = 'unavailable',
+}
+
+export interface ILivechatAgent extends IUser {
+	statusLivechat: ILivechatAgentStatus;
+	livechat: {
+		maxNumberSimultaneousChat: number;
+	};
+	livechatCount: number;
+	lastRoutingTime: Date;
+	livechatStatusSystemModified?: boolean;
 }
