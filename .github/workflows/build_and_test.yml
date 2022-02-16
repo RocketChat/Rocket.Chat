@@ -157,7 +157,7 @@ jobs:
           cd /tmp/build-test
           tar czf /tmp/build/Rocket.Chat.tar.gz bundle
           cd /tmp/build-test/bundle/programs/server
-          npm install
+          npm install --production
           cd /tmp
           tar czf Rocket.Chat.test.tar.gz ./build-test
 
@@ -331,9 +331,6 @@ jobs:
         run: |
           cd ./ee/server/services
           npm run build
-          cp package.json ./dist
-          cd ./dist
-          npm install --production
 
       - name: E2E Test
         env:

@@ -139,7 +139,7 @@ function startMicroservices() {
 				params: ['service.js'],
 				...(name === 'ddp-streamer' && { onData: waitStart }),
 				options: {
-					cwd: path.resolve(srcDir, 'ee', 'server', 'services', name),
+					cwd: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name),
 					env: {
 						...appOptions.env,
 						...process.env,
