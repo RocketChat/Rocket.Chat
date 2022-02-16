@@ -1,9 +1,12 @@
+import { IVoipRoom } from './IRoom';
+
 export interface IAgentExtensionMap {
 	_id: string;
 	agentName: string;
 	extension: string;
 }
 
-export interface IOmnichannelVoipServiceResult {
-	result: string[] | IAgentExtensionMap[];
+export interface IRoomCreationResponse {
+	newRoom: boolean;
+	room: IVoipRoom;
 }

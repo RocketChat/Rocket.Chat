@@ -14,7 +14,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		title: !registered ? t('Enable') : t('Disable'),
 		color: registered ? 'success' : undefined,
 		icon: registered ? 'phone' : 'phone-disabled',
-	};
+	} as const;
 	const voipClient = useCallClient();
 
 	// TODO: move registration flow to context provider

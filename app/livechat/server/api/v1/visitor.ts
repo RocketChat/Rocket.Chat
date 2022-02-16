@@ -37,13 +37,15 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = Livechat.registerGuest(guest);
+		const visitorId = Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
 		let visitor = await VisitorsRaw.getVisitorByToken(token, {});
 		// If it's updating an existing visitor, it must also update the roomInfo
 		const cursor = LivechatRooms.findOpenByVisitorToken(token);
 		cursor.forEach((room: IRoom) => {
-			Livechat.saveRoomInfo(room, visitor);
+			if (visitor) {
+				Livechat.saveRoomInfo(room, visitor);
+			}
 		});
 
 		if (customFields && customFields instanceof Array) {

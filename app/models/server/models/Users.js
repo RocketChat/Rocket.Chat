@@ -1050,6 +1050,9 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	/**
+	 * @param {import('mongodb').FilterQuery<import('../../../../definition/IStats').IStats>} fields
+	 */
 	getOldest(fields = { _id: 1 }) {
 		const query = {
 			_id: {
