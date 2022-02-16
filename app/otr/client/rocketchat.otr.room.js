@@ -31,17 +31,20 @@ export class OTRRoom {
 		this.sessionKey = null;
 	}
 
-	handshake(refresh) {
+	async handshake(refresh) {
 		this.establishing.set(true);
 		this.firstPeer = true;
-		this.generateKeyPair().then(() => {
+		try {
+			await this.generateKeyPair();
 			Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
 				roomId: this.roomId,
 				userId: this.userId,
 				publicKey: EJSON.stringify(this.exportedPublicKey),
 				refresh,
 			});
-		});
+		} catch (e) {
+			throw e;
+		}
 	}
 
 	acknowledge() {
@@ -77,7 +80,7 @@ export class OTRRoom {
 		Meteor.call('deleteOldOTRMessages', this.roomId);
 	}
 
-	generateKeyPair() {
+	async generateKeyPair() {
 		if (this.userOnlineComputation) {
 			this.userOnlineComputation.stop();
 		}
@@ -94,34 +97,29 @@ export class OTRRoom {
 			}
 		});
 
-		// Generate an ephemeral key pair.
-		return OTR.crypto
-			.generateKey(
+		try {
+			// Generate an ephemeral key pair.
+			this.keyPair = await OTR.crypto.generateKey(
 				{
 					name: 'ECDH',
 					namedCurve: 'P-256',
 				},
 				false,
 				['deriveKey', 'deriveBits'],
-			)
-			.then((keyPair) => {
-				this.keyPair = keyPair;
-				return OTR.crypto.exportKey('jwk', keyPair.publicKey);
-			})
-			.then((exportedPublicKey) => {
-				this.exportedPublicKey = exportedPublicKey;
+			);
 
-				// Once we have generated new keys, it's safe to delete old messages
-				Meteor.call('deleteOldOTRMessages', this.roomId);
-			})
-			.catch((e) => {
-				dispatchToastMessage({ type: 'error', message: e });
-			});
+			this.exportedPublicKey = await OTR.crypto.exportKey('jwk', this.keyPair.publicKey);
+
+			// Once we have generated new keys, it's safe to delete old messages
+			Meteor.call('deleteOldOTRMessages', this.roomId);
+		} catch (e) {
+			throw e;
+		}
 	}
 
-	importPublicKey(publicKey) {
-		return OTR.crypto
-			.importKey(
+	async importPublicKey(publicKey) {
+		try {
+			const peerPublicKey = await OTR.crypto.importKey(
 				'jwk',
 				EJSON.parse(publicKey),
 				{
@@ -130,147 +128,149 @@ export class OTRRoom {
 				},
 				false,
 				[],
-			)
-			.then((peerPublicKey) =>
-				OTR.crypto.deriveBits(
-					{
-						name: 'ECDH',
-						namedCurve: 'P-256',
-						public: peerPublicKey,
-					},
-					this.keyPair.privateKey,
-					256,
-				),
-			)
-			.then((bits) =>
-				OTR.crypto.digest(
-					{
-						name: 'SHA-256',
-					},
-					bits,
-				),
-			)
-			.then((hashedBits) => {
-				// We truncate the hash to 128 bits.
-				const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
-				return OTR.crypto.importKey(
-					'raw',
-					sessionKeyData,
-					{
-						name: 'AES-GCM',
-					},
-					false,
-					['encrypt', 'decrypt'],
-				);
-			})
-			.then((sessionKey) => {
-				// Session key available.
-				this.sessionKey = sessionKey;
-			});
+			);
+			const bits = await OTR.crypto.deriveBits(
+				{
+					name: 'ECDH',
+					namedCurve: 'P-256',
+					public: peerPublicKey,
+				},
+				this.keyPair.privateKey,
+				256,
+			);
+			const hashedBits = await OTR.crypto.digest(
+				{
+					name: 'SHA-256',
+				},
+				bits,
+			);
+			// We truncate the hash to 128 bits.
+			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
+			// Session key available.
+			this.sessionKey = await OTR.crypto.importKey(
+				'raw',
+				sessionKeyData,
+				{
+					name: 'AES-GCM',
+				},
+				false,
+				['encrypt', 'decrypt'],
+			);
+		} catch (e) {
+			throw e;
+		}
 	}
 
-	encryptText(data) {
+	async encryptText(data) {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(12));
-
-		return OTR.crypto
-			.encrypt(
+		try {
+			let cipherText = await OTR.crypto.encrypt(
 				{
 					name: 'AES-GCM',
 					iv,
 				},
 				this.sessionKey,
 				data,
-			)
-			.then((cipherText) => {
-				cipherText = new Uint8Array(cipherText);
-				const output = new Uint8Array(iv.length + cipherText.length);
-				output.set(iv, 0);
-				output.set(cipherText, iv.length);
-				return EJSON.stringify(output);
-			})
-			.catch(() => {
-				throw new Meteor.Error('encryption-error', 'Encryption error.');
-			});
+			);
+
+			cipherText = new Uint8Array(cipherText);
+			const output = new Uint8Array(iv.length + cipherText.length);
+			output.set(iv, 0);
+			output.set(cipherText, iv.length);
+			return EJSON.stringify(output);
+		} catch (e) {
+			// dispatchToastMessage({ type: 'error', message: e });
+			throw new Meteor.Error('encryption-error', 'Encryption error.');
+		}
 	}
 
-	encrypt(message) {
+	async encrypt(message) {
 		let ts;
 		if (isNaN(TimeSync.serverOffset())) {
 			ts = new Date();
 		} else {
 			ts = new Date(Date.now() + TimeSync.serverOffset());
 		}
-
-		const data = new TextEncoder('UTF-8').encode(
-			EJSON.stringify({
-				_id: message._id,
-				text: message.msg,
-				userId: this.userId,
-				ack: Random.id((Random.fraction() + 1) * 20),
-				ts,
-			}),
-		);
-		const enc = this.encryptText(data);
-		return enc;
+		try {
+			const data = new TextEncoder('UTF-8').encode(
+				EJSON.stringify({
+					_id: message._id,
+					text: message.msg,
+					userId: this.userId,
+					ack: Random.id((Random.fraction() + 1) * 20),
+					ts,
+				}),
+			);
+			const enc = await this.encryptText(data);
+			return enc;
+		} catch (e) {
+			throw new Meteor.Error('encryption-error', 'Encryption error.');
+		}
 	}
 
-	decrypt(message) {
+	async decrypt(message) {
 		let cipherText = EJSON.parse(message);
 		const iv = cipherText.slice(0, 12);
 		cipherText = cipherText.slice(12);
 
-		return OTR.crypto
-			.decrypt(
+		try {
+			const data = await OTR.crypto.decrypt(
 				{
 					name: 'AES-GCM',
 					iv,
 				},
 				this.sessionKey,
 				cipherText,
-			)
-			.then((data) => {
-				data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
-				return data;
-			})
-			.catch((e) => {
-				dispatchToastMessage({ type: 'error', message: e });
-				return message;
-			});
+			);
+
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
+		} catch (e) {
+			dispatchToastMessage({ type: 'error', message: e });
+			return message;
+		}
 	}
 
-	onUserStream(type, data) {
+	async onUserStream(type, data) {
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
 
-				const establishConnection = () => {
+				const establishConnection = async () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
-					this.generateKeyPair().then(() => {
-						this.importPublicKey(data.publicKey).then(() => {
-							this.firstPeer = false;
-							goToRoomById(data.roomId);
-							Meteor.defer(() => {
-								this.established.set(true);
-								this.acknowledge();
-							});
+
+					try {
+						await this.generateKeyPair();
+						await this.importPublicKey(data.publicKey);
+						await goToRoomById(data.roomId);
+						Meteor.defer(() => {
+							this.established.set(true);
+							this.acknowledge();
 						});
-					});
+					} catch (e) {
+						dispatchToastMessage({ type: 'error', message: String(e) });
+						throw new Meteor.Error('establish-connection-error', 'Establish connection error.');
+					}
 				};
 
-				(async () => {
+				const closeOrCancelModal = () => {
+					Meteor.clearTimeout(timeout);
+					this.deny();
+					imperativeModal.close();
+				};
+
+				try {
 					const { username } = await Presence.get(data.userId);
 					if (data.refresh && this.established.get()) {
 						this.reset();
-						establishConnection();
+						await establishConnection();
 					} else {
 						if (this.established.get()) {
 							this.reset();
 						}
-
 						imperativeModal.open({
 							component: GenericModal,
 							props: {
@@ -281,35 +281,35 @@ export class OTRRoom {
 								}),
 								confirmText: TAPi18n.__('Yes'),
 								cancelText: TAPi18n.__('No'),
-								onClose: () => imperativeModal.close,
-								onCancel: () => {
-									Meteor.clearTimeout(timeout);
-									this.deny();
-									imperativeModal.close();
-								},
-								onConfirm: () => {
-									establishConnection();
+								onClose: () => closeOrCancelModal(),
+								onCancel: () => closeOrCancelModal(),
+								onConfirm: async () => {
+									await establishConnection();
 									imperativeModal.close();
 								},
 							},
 						});
 					}
-
 					timeout = Meteor.setTimeout(() => {
 						this.establishing.set(false);
 						imperativeModal.close();
 					}, 10000);
-				})();
+				} catch (e) {
+					dispatchToastMessage({ type: 'error', message: String(e) });
+				}
 				break;
 
 			case 'acknowledge':
-				this.importPublicKey(data.publicKey).then(() => {
+				try {
+					await this.importPublicKey(data.publicKey);
 					this.established.set(true);
-				});
+				} catch (e) {
+					dispatchToastMessage({ type: 'error', message: String(e) });
+				}
 				break;
 
 			case 'deny':
-				(async () => {
+				try {
 					const { username } = await Presence.get(this.peerId);
 					if (this.establishing.get()) {
 						this.reset();
@@ -324,11 +324,13 @@ export class OTRRoom {
 							},
 						});
 					}
-				})();
+				} catch (e) {
+					dispatchToastMessage({ type: 'error', message: String(e) });
+				}
 				break;
 
 			case 'end':
-				(async () => {
+				try {
 					const { username } = await Presence.get(this.peerId);
 
 					if (this.established.get()) {
@@ -345,7 +347,10 @@ export class OTRRoom {
 							},
 						});
 					}
-				})();
+				} catch (e) {
+					dispatchToastMessage({ type: 'error', message: String(e) });
+				}
+
 				break;
 		}
 	}
