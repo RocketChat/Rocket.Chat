@@ -141,7 +141,7 @@ export class ContinuousMonitor extends Command {
 				ts: new Date(),
 				phone: event.calleridnum,
 				queue: event.queue,
-				holdTime: event.holdtime,
+				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
 				callUniqueId: event.uniqueid,
 			});
 		} catch (e) {
