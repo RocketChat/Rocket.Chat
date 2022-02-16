@@ -142,7 +142,6 @@ async function startMicroservices() {
 					env: {
 						...appOptions.env,
 						...process.env,
-						NODE_ENV: 'production',
 						PORT: 4000,
 					},
 				},
