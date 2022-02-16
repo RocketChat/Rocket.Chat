@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 import mem from 'mem';
 
 import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { VoipServerConfigurationRaw } from '../../../app/models/server/raw/VoipServerConfiguration';
 import {
@@ -20,7 +20,7 @@ import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from 
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
 
-export class VoipService extends ServiceClass implements IVoipService {
+export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
 
 	private logger: Logger;
@@ -42,7 +42,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
-			this.logger.error({ mst: `Error while initialising the connector. error = ${error}` });
+			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
 		}
 	}
 
@@ -104,45 +104,12 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return getServerConfigDataFromSettings(type);
 	}
 
-	// this is a dummy function to avoid having an empty IVoipService interface
-	getConfiguration(): any {
-		return {};
-	}
-
 	getConnector(): CommandHandler {
 		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
-	}
-
-	private cachedQueueSummary(): () => Promise<IVoipConnectorResult> {
-		// arbitrary 5 secs cache to prevent fetching this from asterisk too often
-		return mem(this.getQueueSummary.bind(this), { maxAge: 5000 });
-	}
-
-	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]> {
-		return mem(this.getQueueDetails.bind(this), { maxAge: 5000 });
-	}
-
-	private async getQueueDetails(): Promise<{ name: string; members: string[] }[]> {
-		const summary = await this.cachedQueueSummary()();
-		const queues = (summary.result as unknown as IQueueSummary[]).map((q) => q.name);
-
-		const queueInfo: { name: string; members: string[] }[] = [];
-		for await (const queue of queues) {
-			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
-				queue,
-			})) as IVoipConnectorResult;
-
-			queueInfo.push({
-				name: queue,
-				members: (queueDetails.result as IQueueDetails).members.map((member) => member.name.replace('PJSIP/', '')),
-			});
-		}
-
-		return queueInfo;
 	}
 
 	async getQueuedCallsForThisExtension({ extension }: { extension: string }): Promise<IVoipConnectorResult> {

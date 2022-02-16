@@ -20,7 +20,7 @@ import {
 	SessionInviteOptions,
 	RequestPendingError,
 } from 'sip.js';
-import { OutgoingByeRequest, OutgoingRequestDelegate } from 'sip.js/lib/core';
+import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
 import { CallStates } from '../../../definition/voip/CallStates';
@@ -404,7 +404,26 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 					this._callState = 'SERVER_CONNECTED';
 
 					this.emit('connected');
+					/**
+					 * There is an interesting problem that happens with Asterisk.
+					 * After websocket connection succeeds and if there is no SIP
+					 * message goes in 30 seconds, asterisk disconnects the socket.
+					 *
+					 * If any SIP message goes before 30 seconds, asterisk holds the connection.
+					 * This problem could be solved in multiple ways. One is that
+					 * whenever disconnect happens make sure that the socket is connected back using
+					 * this.userAgent.reconnect() method. But this is expensive as it does connect-disconnect
+					 * every 30 seconds till we send register message.
+					 *
+					 * Another approach is to send SIP OPTIONS just to tell server that
+					 * there is a UA using this socket. This is implemented below
+					 **/
 
+					const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
+					const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
+					if (outgoingMessage) {
+						this.userAgent?.userAgentCore.request(outgoingMessage);
+					}
 					if (this.userAgent) {
 						this.registerer = new Registerer(this.userAgent);
 					}

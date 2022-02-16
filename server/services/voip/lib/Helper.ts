@@ -1,4 +1,4 @@
-import { ServerType, IVoipCallServerConfig, IVoipManagementServerConfig } from '../../../../definition/IVoipServerConfig';
+import { ServerType, IVoipManagementServerConfig, IVoipCallServerConfig } from '../../../../definition/IVoipServerConfig';
 import { settings } from '../../../../app/settings/server';
 
 export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {

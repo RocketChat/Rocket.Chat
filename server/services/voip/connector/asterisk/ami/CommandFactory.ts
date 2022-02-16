@@ -25,11 +25,14 @@ export class CommandFactory {
 				return new Command(Commands.ping.toString(), false, db);
 			case Commands.extension_info:
 			case Commands.extension_list: {
-				return new PJSIPEndpoint(command.toString(), false);
+				return new PJSIPEndpoint(command.toString(), false, db);
 			}
 			case Commands.queue_details:
 			case Commands.queue_summary: {
-				return new ACDQueue(command.toString(), false);
+				return new ACDQueue(command.toString(), false, db);
+			}
+			case Commands.event_stream: {
+				return new ContinuousMonitor(command.toString(), false, db);
 			}
 			case Commands.event_stream: {
 				return new ContinuousMonitor(command.toString(), false, db);

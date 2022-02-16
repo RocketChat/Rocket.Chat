@@ -92,12 +92,12 @@ export class Command {
 		this._db = db;
 	}
 
-	constructor(command: string, parametersNeeded: boolean, db?: Db) {
+	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		this._commandText = command;
 		this._actionid = -1;
 		this._parametersNeeded = parametersNeeded;
 		this.result = {};
-		if (db) this._db = db;
+		this._db = db;
 	}
 
 	protected prepareCommandAndExecution(

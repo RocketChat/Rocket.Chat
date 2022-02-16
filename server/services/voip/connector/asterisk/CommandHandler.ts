@@ -67,7 +67,7 @@ export class CommandHandler {
 		this.connections.set(commandType, connection);
 		this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
 		this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
-		this.continuousMonitor.initMonitor({ data: 'test' });
+		this.continuousMonitor.initMonitor({});
 	}
 
 	/* Executes |commandToExecute| on a particular command object

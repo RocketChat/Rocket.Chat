@@ -19,6 +19,7 @@ import { Logger } from '../../../../../lib/logger/Logger';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 import { UsersRaw } from '../../../../../../app/models/server/raw/Users';
+import { PbxEventsRaw } from '../../../../../../app/models/server/raw/PbxEvents';
 import { api } from '../../../../../sdk/api';
 import { ACDQueue } from './ACDQueue';
 import { Commands } from '../Commands';
@@ -29,6 +30,7 @@ import {
 	IEventBase,
 	IQueueCallerAbandon,
 	IQueueCallerJoinEvent,
+	IQueueEvent,
 	IQueueMemberAdded,
 	IQueueMemberRemoved,
 	isIAgentCalledEvent,
@@ -37,6 +39,10 @@ import {
 	isIQueueCallerJoinEvent,
 	isIQueueMemberAddedEvent,
 	isIQueueMemberRemovedEvent,
+	isICallOnHoldEvent,
+	isICallUnHoldEvent,
+	ICallOnHold,
+	ICallUnHold,
 } from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -44,11 +50,14 @@ export class ContinuousMonitor extends Command {
 
 	private users: UsersRaw;
 
+	private pbxEvents: PbxEventsRaw;
+
 	constructor(command: string, parametersNeeded: boolean, db: Db) {
 		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ContinuousMonitor');
 		this.users = new UsersRaw(db.collection('users'));
+		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
 	}
 
 	private async getMembersFromQueueDetails(queueDetails: IQueueDetails): Promise<string[]> {
@@ -68,30 +77,12 @@ export class ContinuousMonitor extends Command {
 	// Todo : Move this out of connector. This class is a busy class.
 	// Not sure if we should do it here.
 	private async getQueueDetails(queueName: string): Promise<IQueueDetails> {
-		const queue = new ACDQueue(Commands.queue_details.toString(), true);
+		const queue = new ACDQueue(Commands.queue_details.toString(), true, this.db);
 		queue.connection = this.connection;
 		const queueDetails = await queue.executeCommand({ queueName });
 		return queueDetails.result as unknown as IQueueDetails;
 	}
 
-	/*
-	private async findMemberUsers(queueName: string): Promise<string[]> {
-		const queue = new ACDQueue(Commands.queue_details.toString(), true);
-		queue.connection = this.connection;
-		const queueDetails = await queue.executeCommand({ queueName });
-		const { members } = queueDetails.result as unknown as IQueueDetails;
-		if (!members) {
-			return [];
-		}
-
-		const extensionList = members.map((m) => {
-			return m.name.toLowerCase().replace('pjsip/', '');
-		});
-
-		this.logger.debug(`Finding members of queue ${queueName} between users`);
-		return (await this.users.findByExtensions(extensionList).toArray()).map((u) => u._id);
-	}
-	*/
 	async processQueueMembershipChange(event: IQueueMemberAdded | IQueueMemberRemoved): Promise<void> {
 		const extension = event.interface.toLowerCase().replace('pjsip/', '');
 		const queueName = event.queue;
@@ -134,7 +125,28 @@ export class ContinuousMonitor extends Command {
 			id: event.calleridnum,
 			name: event.calleridname,
 		};
+
 		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
+	}
+
+	async storePbxEvent(event: IQueueEvent, eventName: string): Promise<void> {
+		try {
+			// store pbx event
+			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
+			// However, since we're not using it for anything special, it's a "fair use"
+			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
+			await this.pbxEvents.insertOne({
+				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
+				event: eventName,
+				ts: new Date(),
+				phone: event.calleridnum,
+				queue: event.queue,
+				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
+				callUniqueId: event.uniqueid,
+			});
+		} catch (e) {
+			this.logger.debug('Event was handled by other instance');
+		}
 	}
 
 	async processAndBroadcastEventToAllQueueMembers(event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent): Promise<void> {
@@ -147,7 +159,7 @@ export class ContinuousMonitor extends Command {
 					id: event.calleridnum,
 					name: event.calleridname,
 				};
-
+				await this.storePbxEvent(event, 'QueueCallerJoin');
 				this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
 					api.broadcast('queue.callerjoined', m, event.queue, callerId, event.count);
@@ -156,6 +168,7 @@ export class ContinuousMonitor extends Command {
 			}
 			case 'QueueCallerAbandon': {
 				const { calls } = queueDetails;
+				await this.storePbxEvent(event, 'QueueCallerAbandon');
 				members.forEach((m) => {
 					api.broadcast('queue.callabandoned', m, event.queue, calls);
 				});
@@ -163,8 +176,11 @@ export class ContinuousMonitor extends Command {
 			}
 			case 'AgentConnect': {
 				const { calls } = queueDetails;
+
+				await this.storePbxEvent(event, 'AgentConnect');
 				members.forEach((m) => {
-					api.broadcast('queue.agentconnected', m, event.queue, calls);
+					// event.holdtime signifies wait time in the queue.
+					api.broadcast('queue.agentconnected', m, event.queue, calls, event.holdtime);
 				});
 				break;
 			}
@@ -173,12 +189,18 @@ export class ContinuousMonitor extends Command {
 		}
 	}
 
+	async processHoldUnholdEvents(event: ICallOnHold | ICallUnHold): Promise<void> {
+		this.storePbxEvent(event, event.event);
+	}
+
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
+		// Event received when a queue member is notified of a call in queue
 		if (isIAgentCalledEvent(event)) {
 			return this.processAgentCalled(event);
 		}
 
+		// Event received when a call joins queue
 		if (isIQueueCallerJoinEvent(event)) {
 			return this.processAndBroadcastEventToAllQueueMembers(event);
 		}
@@ -195,6 +217,10 @@ export class ContinuousMonitor extends Command {
 			return this.processQueueMembershipChange(event);
 		}
 
+		if (isICallOnHoldEvent(event) || isICallUnHoldEvent(event)) {
+			return this.processHoldUnholdEvents(event);
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
@@ -209,12 +235,19 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('queuememberadded', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('queuememberremoved', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('queuecallerabandon', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('hold', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
 		this.connection.off('queuecallerjoin', this);
 		this.connection.off('agentcalled', this);
 		this.connection.off('agentconnect', this);
+		this.connection.off('queuememberadded', this);
+		this.connection.off('queuememberremoved', this);
+		this.connection.off('queuecallerabandon', this);
+		this.connection.off('hold', this);
+		this.connection.off('unhold', this);
 	}
 
 	initMonitor(_data: any): boolean {

@@ -1,8 +1,11 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
+import { ILivechatAgent } from '../../ILivechatAgent';
+import { IRoom } from '../../IRoom';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+import { VoipClientEvents } from '../../voip/VoipClientEvents';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
@@ -25,5 +28,11 @@ export type VoipEndpoints = {
 	'omnichannel/agent/extension': {
 		POST: (params: { userId: string; extension: string } | { username: string; extension: string }) => void;
 		DELETE: (params: { username: string }) => void;
+	};
+	'voip/events': {
+		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
+	};
+	'voip/room': {
+		GET: (params: { token: string; agentId: ILivechatAgent['_id'] }) => { room: IRoom; newRoom: boolean };
 	};
 };

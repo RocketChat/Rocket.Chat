@@ -35,19 +35,19 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 }
 
 export interface ILivechatVisitorDTO {
-	id: string;
+	id?: string;
 	token: string;
-	name: string;
-	email: string;
-	department: string;
-	phone: string | { number: string };
-	username: string;
-	customFields: {
+	name?: string;
+	email?: string;
+	department?: string;
+	phone?: string | { number: string };
+	username?: string;
+	customFields?: {
 		key: string;
 		value: string;
 		overwrite: boolean;
 	}[];
-	connectionData: {
+	connectionData?: {
 		httpHeaders: Record<string, string>;
 	};
 }

@@ -1,8 +1,8 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 type ContentPropsType = {
-	icon: string;
+	icon: ComponentProps<typeof Icon>['name'];
 	text: string;
 };
 

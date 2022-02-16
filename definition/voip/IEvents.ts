@@ -43,13 +43,13 @@ export interface IQueueEvent extends IEventBase {
 	destuniqueid: string;
 	destlinkedid: string;
 	membername: string;
-	holdtime: string;
 	queue: string;
 	interface: string;
 }
 
 export interface IAgentConnectEvent extends IQueueEvent {
 	event: 'AgentConnect';
+	holdtime: string;
 }
 
 export interface IAgentCalledEvent extends IQueueEvent {
@@ -62,21 +62,29 @@ export interface IQueueCallerJoinEvent extends IQueueEvent {
 	count: string;
 }
 
-export interface IQueueMemberAdded extends IEventBase {
+export interface IQueueMemberAdded extends IQueueEvent {
 	event: 'QueueMemberAdded';
 	queue: string;
 	interface: string;
 }
 
-export interface IQueueMemberRemoved extends IEventBase {
+export interface IQueueMemberRemoved extends IQueueEvent {
 	event: 'QueueMemberRemoved';
 	queue: string;
 	interface: string;
 }
 
-export interface IQueueCallerAbandon extends IEventBase {
+export interface IQueueCallerAbandon extends IQueueEvent {
 	event: 'QueueCallerAbandon';
 	queue: string;
+}
+
+export interface ICallOnHold extends IQueueEvent {
+	event: 'Hold';
+}
+
+export interface ICallUnHold extends IQueueEvent {
+	event: 'Unhold';
 }
 
 export const isIAgentConnectEvent = (v: any): v is IAgentConnectEvent => v?.event === 'AgentConnect';
@@ -85,3 +93,5 @@ export const isIQueueCallerJoinEvent = (v: any): v is IQueueCallerJoinEvent => v
 export const isIQueueMemberAddedEvent = (v: any): v is IQueueMemberAdded => v?.event === 'QueueMemberAdded';
 export const isIQueueMemberRemovedEvent = (v: any): v is IQueueMemberRemoved => v?.event === 'QueueMemberRemoved';
 export const isIQueueCallerAbandonEvent = (v: any): v is IQueueCallerAbandon => v?.event === 'QueueCallerAbandon';
+export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Hold';
+export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
