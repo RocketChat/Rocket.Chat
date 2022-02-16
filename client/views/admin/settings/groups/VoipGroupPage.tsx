@@ -11,7 +11,7 @@ import { useTranslation, TranslationKey } from '../../../../contexts/Translation
 // import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
-import VoipExtensionsPage from './VoipExtensionsPage';
+import VoipExtensionsPage from './voip/VoipExtensionsPage';
 
 function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const t = useTranslation();

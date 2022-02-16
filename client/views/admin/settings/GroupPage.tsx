@@ -1,16 +1,27 @@
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
 
+import { ISetting, ISettingColor } from '../../../../definition/ISetting';
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings } from '../../../contexts/EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../../../contexts/EditableSettingsContext';
 import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
+import { useTranslation, useLoadLanguage, TranslationKey } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
-function GroupPage({
+type GroupPageProps = {
+	children: ReactNode;
+	headerButtons?: ReactNode;
+	_id: string;
+	i18nLabel: string;
+	i18nDescription?: string;
+	tabs?: ReactNode;
+	isCustom?: boolean;
+};
+
+const GroupPage: FC<GroupPageProps> = ({
 	children = undefined,
 	headerButtons = undefined,
 	_id,
@@ -18,7 +29,7 @@ function GroupPage({
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
-}) {
+}) => {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -45,12 +56,23 @@ function GroupPage({
 	const loadLanguage = useLoadLanguage();
 	const user = useUser();
 
+	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
+
 	const save = useMutableCallback(async () => {
-		const changes = changedEditableSettings.map(({ _id, value, editor }) => ({
-			_id,
-			value,
-			editor,
-		}));
+		const changes = changedEditableSettings.map((setting) => {
+			if (isColorSetting(setting)) {
+				return {
+					_id: setting._id,
+					value: setting.value,
+					editor: setting.editor,
+				};
+			}
+
+			return {
+				_id: setting._id,
+				value: setting.value,
+			};
+		});
 
 		if (changes.length === 0) {
 			return;
@@ -61,51 +83,60 @@ function GroupPage({
 
 			if (changes.some(({ _id }) => _id === 'Language')) {
 				const lng = user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
-
-				await loadLanguage(lng);
-				dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
-				return;
+				if (typeof lng === 'string') {
+					await loadLanguage(lng);
+					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
+					return;
+				}
+				throw new Error('lng is not a string');
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error as string });
 		}
 	});
 
 	const dispatchToEditing = useEditableSettingsDispatch();
 
 	const cancel = useMutableCallback(() => {
-		dispatchToEditing(
-			changedEditableSettings
-				.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
-				.map((setting) => {
-					if (!setting) {
-						return;
-					}
+		const settingsToDispatch = changedEditableSettings
+			.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
+			.map((setting) => {
+				if (!setting) {
+					return;
+				}
 
+				if (isColorSetting(setting)) {
 					return {
 						_id: setting._id,
 						value: setting.value,
 						editor: setting.editor,
 						changed: false,
 					};
-				})
-				.filter(Boolean),
-		);
+				}
+
+				return {
+					_id: setting._id,
+					value: setting.value,
+					changed: false,
+				};
+			})
+			.filter(Boolean);
+		dispatchToEditing(settingsToDispatch as Partial<IEditableSetting>[]);
 	});
 
-	const handleSubmit = (event) => {
+	const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		save();
 	};
 
-	const handleCancelClick = (event) => {
+	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
 		cancel();
 	};
 
-	const handleSaveClick = (event) => {
+	const handleSaveClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
 		save();
 	};
@@ -115,9 +146,12 @@ function GroupPage({
 	}
 	console.log('CHILDREN', children);
 
+	// The settings
+	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
+
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header title={t(i18nLabel)}>
+			<Page.Header title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
 						<Button danger primary type='reset' onClick={handleCancelClick}>
@@ -143,7 +177,7 @@ function GroupPage({
 			) : (
 				<Page.ScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{t.has(i18nDescription) && (
+						{i18nDescription && isTranslationKey(i18nDescription) && t.has(i18nDescription) && (
 							<Box is='p' color='hint' fontScale='p2'>
 								{t(i18nDescription)}
 							</Box>
@@ -155,7 +189,7 @@ function GroupPage({
 			)}
 		</Page>
 	);
-}
+};
 
 export default Object.assign(memo(GroupPage), {
 	Skeleton: GroupPageSkeleton,

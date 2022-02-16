@@ -50,22 +50,36 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
 				return API.v1.unauthorized();
 			}
-			check(this.bodyParams, {
-				username: String,
-				extension: String,
-			});
-			const { username, extension } = this.bodyParams;
+			check(
+				this.bodyParams,
+				Match.OneOf(
+					Match.ObjectIncluding({
+						username: String,
+						extension: String,
+					}),
+					Match.ObjectIncluding({
+						userId: String,
+						extension: String,
+					}),
+				),
+			);
+
+			const { userId, username, extension } = this.bodyParams;
 			const user = await Users.findOneByAgentUsername(username, {
 				projection: {
 					_id: 1,
 					username: 1,
 				},
 			});
-			if (!user) {
+			
+			if (!user && !userId) {
 				return API.v1.notFound();
 			}
+
+			const uId = userId || user._id;
+
 			try {
-				await Users.setExtension(user._id, extension);
+				await Users.setExtension(uId, extension);
 				return API.v1.success();
 			} catch (e) {
 				logger.error({ msg: 'omnichannel/agent/extension extension already exists' });
@@ -109,9 +123,10 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					type: String,
 					username: Match.Maybe(String),
+					userId: Match.Maybe(String),
 				}),
 			);
-			const { type, username } = this.queryParams;
+			const { type, username, userId } = this.queryParams;
 			switch ((type as string).toLowerCase()) {
 				case 'free': {
 					const extension = await LivechatVoip.getFreeExtensions();
@@ -131,10 +146,12 @@ API.v1.addRoute(
 					const user = await Users.findOneByAgentUsername(username, {
 						projection: { _id: 1 },
 					});
-					if (!user) {
+					if (!user && !userId) {
 						return API.v1.notFound('User not found');
 					}
-					const extension = await Users.getVoipExtensionByUserId(user._id, {
+
+					const uId = userId || user._id;
+					const extension = await Users.getVoipExtensionByUserId(uId, {
 						projection: {
 							_id: 1,
 							username: 1,
