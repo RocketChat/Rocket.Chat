@@ -40,7 +40,6 @@ import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { useFreePaidToggle } from './hooks/useFreePaidToggle';
 
-// TODO Missing useEffect
 const AppsTable: FC<{
 	isMarketplace: boolean;
 }> = ({ isMarketplace }) => {
