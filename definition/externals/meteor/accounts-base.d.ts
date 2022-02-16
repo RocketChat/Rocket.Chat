@@ -8,6 +8,8 @@ declare module 'meteor/accounts-base' {
 
 		function _generateStampedLoginToken(): { token: string; when: Date };
 
+		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
+
 		function _runLoginHandlers(methodInvocation: Function, loginRequest: Record<string, any>): Record<string, any> | undefined;
 
 		export class ConfigError extends Error {}
