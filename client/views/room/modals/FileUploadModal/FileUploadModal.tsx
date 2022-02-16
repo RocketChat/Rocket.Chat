@@ -11,12 +11,20 @@ type FileUploadModalProps = {
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
 	fileName: string;
+	fileDescription?: string;
 	invalidContentType: boolean;
 };
 
-const FileUploadModal = ({ onClose, file, fileName, onSubmit, invalidContentType }: FileUploadModalProps): ReactElement => {
+const FileUploadModal = ({
+	onClose,
+	file,
+	fileName,
+	fileDescription,
+	onSubmit,
+	invalidContentType,
+}: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
-	const [description, setDescription] = useState<string>('');
+	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
