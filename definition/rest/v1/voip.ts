@@ -1,11 +1,11 @@
 import { IQueueSummary } from '../../ACDQueues';
-import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IRoom } from '../../IRoom';
+import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
-import { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { PaginatedResult } from '../helpers/PaginatedResult';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { PaginatedResult, PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
