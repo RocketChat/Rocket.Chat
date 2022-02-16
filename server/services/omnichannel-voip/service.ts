@@ -290,8 +290,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		});
 
 		return (extensions as unknown as IVoipExtensionBase[]).map((ext) => {
-			const allocated = ext.state === 'registered';
-			if (!allocated) return ext;
 			const user = allocatedExtensions.find((ex) => ex.extension === ext.extension);
 			return {
 				userId: user?._id,
