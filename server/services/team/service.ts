@@ -26,13 +26,13 @@ import {
 	ITeamService,
 	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 import { ISubscription } from '../../../definition/ISubscription';
 
-export class TeamService extends ServiceClass implements ITeamService {
+export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	private TeamModel: TeamRaw;
