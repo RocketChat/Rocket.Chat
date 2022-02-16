@@ -7,12 +7,12 @@ import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
 import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 
-export class NPSService extends ServiceClass implements INPSService {
+export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';
 
 	private Nps: NpsRaw;
