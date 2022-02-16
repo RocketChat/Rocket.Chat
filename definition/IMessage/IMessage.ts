@@ -29,7 +29,9 @@ type MessageTypesValues =
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close';
+	| 'livechat-close'
+	| 'otr'
+	| 'otr-ack';
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -65,6 +67,8 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending';
+	otrAck?: string;
+	notification?: boolean;
 
 	urls: any;
 	/** @deprecated Deprecated in favor of files */
