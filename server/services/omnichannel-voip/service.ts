@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IVoipExtensionBase } from '../../../definition/IVoipExtension';
+import { IVoipExtensionBase, IVoipExtensionWithAgentInfo } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
 import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
@@ -263,6 +263,41 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
+	}
+
+	private getQueuesForExt(
+		ext: string,
+		queueInfo: {
+			name: string;
+			members: string[];
+		}[],
+	): string[] {
+		return queueInfo.reduce((acc: string[], queue: { name: string; members: string[] }) => {
+			if (queue.members.includes(ext)) {
+				acc.push(queue.name);
+			}
+			return acc;
+		}, []);
+	}
+
+	async getExtensionListWithAgentData(): Promise<IVoipExtensionWithAgentInfo[]> {
+		const { result: extensions } = await Voip.getExtensionList();
+		const summary = await (await Voip.cachedQueueDetails())();
+		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
+			extension: 1,
+			_id: 1,
+			username: 1,
+		});
+
+		return (extensions as unknown as IVoipExtensionBase[]).map((ext) => {
+			const user = allocatedExtensions.find((ex) => ex.extension === ext.extension);
+			return {
+				userId: user?._id,
+				username: user?.username,
+				queues: this.getQueuesForExt(ext.extension, summary),
+				...ext,
+			};
+		});
 	}
 
 	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {

@@ -89,6 +89,13 @@ export class PJSIPEndpoint extends Command {
 			});
 			return;
 		}
+
+		// A SIP address-of-record is a canonical address by which a user is known
+		// If the event doesn't have an AOR, we will ignore it (as it's probably system-only)
+		if (!event?.aor.trim()) {
+			return;
+		}
+
 		const endPoint: IExtensionDetails = {
 			extension: event.objectname,
 			state: this.getState(event.devicestate),
