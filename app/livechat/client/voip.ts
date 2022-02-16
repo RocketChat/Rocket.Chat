@@ -6,6 +6,7 @@ import { IVoipMessage } from '../../../definition/IMessage';
 type IMessageFuncReturn = {
 	at?: string;
 	duration?: string;
+	time?: string;
 };
 
 const messageTypes = [
@@ -14,8 +15,10 @@ const messageTypes = [
 		system: true,
 		message: 'Voip_call_started',
 		data(message: IVoipMessage): IMessageFuncReturn {
+			const seconds = message?.voipData?.callWaitingTime || 0;
 			return {
 				at: message.voipData?.callStarted?.toString(),
+				time: moment.duration(seconds, 'seconds').humanize(),
 			};
 		},
 	},

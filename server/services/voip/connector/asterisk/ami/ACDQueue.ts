@@ -2,6 +2,8 @@
  * This class is responsible for handling ACD Queue summary
  * @remarks
  */
+import { Db } from 'mongodb';
+
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
@@ -11,8 +13,8 @@ import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnecto
 export class ACDQueue extends Command {
 	private logger: Logger;
 
-	constructor(command: string, parametersNeeded: boolean) {
-		super(command, parametersNeeded);
+	constructor(command: string, parametersNeeded: boolean, db: Db) {
+		super(command, parametersNeeded, db);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('ACDQueue');
 	}

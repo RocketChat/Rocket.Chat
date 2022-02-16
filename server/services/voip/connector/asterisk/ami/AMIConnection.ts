@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /**
  * Class representing AMI connection.
  * @remarks
@@ -21,6 +22,15 @@ import { CallbackContext } from './CallbackContext';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Manager = require('asterisk-manager');
 
+function makeLoggerDummy(logger: Logger): Logger {
+	logger.log = function log(..._args: any[]): void {};
+	logger.debug = function debug(..._args: any[]): void {};
+	logger.info = function info(..._args: any[]): void {};
+	logger.error = function error(..._args: any[]): void {};
+
+	return logger;
+}
+
 export class AMIConnection implements IConnection {
 	connection: typeof Manager | undefined;
 
@@ -28,8 +38,14 @@ export class AMIConnection implements IConnection {
 
 	private logger: Logger;
 
+	// This class prints a ton of logs that are useful for debugging specific communication things
+	// However, for most usecases, logs here won't be needed. Hardcoding while we add a setting
+	// "Print extended voip connection logs" which will control classes' logging behavior
+	private printLogs = false;
+
 	constructor() {
-		this.logger = new Logger('AMIConnection');
+		const logger = new Logger('AMIConnection');
+		this.logger = this.printLogs ? logger : makeLoggerDummy(logger);
 		this.eventHandlers = new Map<string, CallbackContext[]>();
 	}
 
@@ -125,12 +141,11 @@ export class AMIConnection implements IConnection {
 	}
 
 	eventHandlerCallback(event: any): void {
-		this.logger.info({ msg: 'eventHandlerCallback()', event });
 		if (!this.eventHandlers.has(event.event.toLowerCase())) {
-			this.logger.info({ msg: `eventHandlerCallback() no event handler set for ${event.event}` });
+			this.logger.info({ msg: `No event handler set for ${event.event}` });
 			return;
 		}
-		this.logger.debug({ msg: 'eventHandlerCallback() Event found', event: event.event });
+
 		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
 		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${handlers.length}` });
 		/* Go thru all the available handlers  and call each one of them if the actionid matches */
