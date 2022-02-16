@@ -1,10 +1,8 @@
 /* eslint-disable new-cap, no-proto */
 
-import * as crypto_module from 'crypto';
-
 import ByteBuffer from 'bytebuffer';
 
-import { words } from './wordList';
+import { getRandomFraction } from '../../../lib/random';
 
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
@@ -126,37 +124,15 @@ export async function readFileAsArrayBuffer(file) {
 	});
 }
 
-function hexString(digits) {
-	const numBytes = Math.ceil(digits / 2);
-	let bytes;
-	// Try to get cryptographically strong randomness. Fall back to
-	// non-cryptographically strong if not available.
-	try {
-		bytes = crypto_module.randomBytes(numBytes);
-	} catch (e) {
-		// XXX should re-throw any error except insufficient entropy
-		bytes = crypto_module.pseudoRandomBytes(numBytes);
-	}
-	const result = bytes.toString('hex');
-	// If the number of digits is odd, we'll have generated an extra 4 bits
-	// of randomness, so we need to trim the last digit.
-	return result.substring(0, digits);
-}
-
-// criptographically secure way of generating a number between 0-1( similar to Math.random())
-function fraction() {
-	const numerator = Number.parseInt(hexString(8), 16);
-	return numerator * 2.3283064365386963e-10; // 2^-3;
-}
-
-export function generateMnemonicPhrase(n, sep = ' ') {
+export async function generateMnemonicPhrase(n, sep = ' ') {
+	const { default: wordList } = await import('./wordList');
 	const result = new Array(n);
-	let len = words.length;
+	let len = wordList.length;
 	const taken = new Array(len);
 
 	while (n--) {
-		const x = Math.floor(fraction() * len);
-		result[n] = words[x in taken ? taken[x] : x];
+		const x = Math.floor(getRandomFraction() * len);
+		result[n] = wordList[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
 	return result.join(sep);
