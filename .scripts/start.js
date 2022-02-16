@@ -126,8 +126,6 @@ function startRocketChat() {
 
 function startMicroservices() {
 	return new Promise((resolve) => {
-		const servicesDir = path.resolve(srcDir, 'ee', 'server', 'services');
-
 		const waitStart = (message) => {
 			if (message.toString().match('started successfully')) {
 				return resolve();
@@ -137,14 +135,15 @@ function startMicroservices() {
 		const startService = (name) => {
 			startProcess({
 				name: `${name} service`,
-				command: 'npm',
-				params: ['run', `start:${name}`],
+				command: 'node',
+				params: ['service.js'],
 				...(name === 'ddp-streamer' && { onData: waitStart }),
 				options: {
-					cwd: servicesDir,
+					cwd: path.resolve(srcDir, 'ee', 'server', 'services', name),
 					env: {
 						...appOptions.env,
 						...process.env,
+						NODE_ENV: 'production',
 					},
 				},
 			});
