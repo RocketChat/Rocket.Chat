@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 
 import type { ReadReceipt } from '../../../../../definition/ReadReceipt';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useFormatTimeWithSeconds } from '../../../../hooks/useFormatTimeWithSeconds';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 
 const hoverStyle = css`
@@ -16,7 +16,7 @@ const hoverStyle = css`
 
 const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 	const displayName = useUserDisplayName(user);
-	const formatDateAndTime = useFormatTimeWithSeconds();
+	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 
 	return (
 		<Box
