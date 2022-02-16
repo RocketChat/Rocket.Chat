@@ -5,7 +5,7 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { canAccessRoom, hasPermission } from '../../authorization/server';
+import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Messages, Users, Rooms } from '../../models';
 
 const recursiveRemove = (msg, deep = 1) => {
@@ -164,7 +164,7 @@ Meteor.methods({
 		};
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		const room = Rooms.findOneById(originalMessage.rid, { fields: { lastMessage: 1 } });
+		const room = Rooms.findOneById(originalMessage.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}

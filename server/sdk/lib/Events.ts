@@ -20,8 +20,11 @@ import { ISocketConnection } from '../../../definition/ISocketConnection';
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
+	'shutdown': (params: Record<string, string[]>) => void;
+	'$services.changed': (info: unknown) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
 	'accounts.logout': (info: { userId: string; connection: ISocketConnection }) => void;
+	'authorization.guestPermissions': (permissions: string[]) => void;
 	'socket.connected': (connection: ISocketConnection) => void;
 	'socket.disconnected': (connection: ISocketConnection) => void;
 	'banner.new'(bannerId: string): void;

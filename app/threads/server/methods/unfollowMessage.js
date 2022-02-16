@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomId } from '../../../authorization/server';
 import { unfollow } from '../functions';
 
 Meteor.methods({
@@ -27,7 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!canAccessRoom({ _id: message.rid }, { _id: uid })) {
+		if (!canAccessRoomId(message.rid, uid)) {
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
