@@ -2,7 +2,7 @@ import { Db, FindOneOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IVoipExtensionBase } from '../../../definition/IVoipExtension';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
@@ -17,7 +17,7 @@ import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { IVoipMessage } from '../../../definition/IMessage';
 
-export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
+export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
 
 	private logger: Logger;

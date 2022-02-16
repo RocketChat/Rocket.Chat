@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { VoipServerConfigurationRaw } from '../../../app/models/server/raw/VoipServerConfiguration';
 import {
@@ -19,7 +19,7 @@ import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from 
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
 
-export class VoipService extends ServiceClass implements IVoipService {
+export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
 
 	private logger: Logger;
