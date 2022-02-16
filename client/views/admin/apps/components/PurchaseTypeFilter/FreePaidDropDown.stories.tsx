@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { useFreePaidToggle } from '../../hooks/useFreePaidToggle';
+import { useRadioToggle } from '../../hooks/useRadioToggle';
 import RadioButtonList from '../RadioButtonList';
 import FreePaidDropDown from './FreePaidDropDown';
 import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
@@ -25,7 +25,7 @@ export const Anchor: Story = () => <FreePaidDropDownAnchor group={testGroup} />;
 export const List: Story = () => {
 	const [data, setData] = useState(() => testGroup);
 
-	const onSelected = useFreePaidToggle(setData);
+	const onSelected = useRadioToggle(setData);
 
 	return <RadioButtonList group={data} onSelected={onSelected} />;
 };
@@ -33,7 +33,7 @@ export const List: Story = () => {
 export const Default: Story = () => {
 	const [data, setData] = useState(() => testGroup);
 
-	const onSelected = useFreePaidToggle(setData);
+	const onSelected = useRadioToggle(setData);
 
 	return (
 		<>

@@ -38,7 +38,7 @@ import TagList from './components/CategoryFilter/TagList';
 import FreePaidDropDown from './components/PurchaseTypeFilter/FreePaidDropDown';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { useFreePaidToggle } from './hooks/useFreePaidToggle';
+import { useRadioToggle } from './hooks/useRadioToggle';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -76,7 +76,7 @@ const AppsTable: FC<{
 		],
 	});
 
-	const freePaidFilterOnSelected = useFreePaidToggle(setFreePaidFilterStructure);
+	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
 
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
