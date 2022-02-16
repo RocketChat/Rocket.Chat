@@ -19,6 +19,7 @@ import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
+import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
@@ -213,5 +214,18 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		return {
 			result,
 		};
+	}
+
+	async checkManagementConnection(
+		host: string,
+		port: string,
+		userName: string,
+		password: string,
+	): Promise<IManagementServerConnectionStatus> {
+		return this.commandHandler.checkManagementConnection(host, port, userName, password);
+	}
+
+	async checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus> {
+		return this.commandHandler.checkCallserverConnection(websocketUrl, protocol);
 	}
 }
