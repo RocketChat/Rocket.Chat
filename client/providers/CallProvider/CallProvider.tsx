@@ -130,17 +130,13 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		if (!user) {
-			return;
-		}
-
 		Notifications.onUser('callerjoined', handleQueueJoined);
 		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('agentconnected', handleAgentConnected);
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
-	}, [user, handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
+	}, [handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');

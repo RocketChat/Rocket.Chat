@@ -11,7 +11,11 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType } from '../../../definition/IRoom';
+import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isOmnichannelVoipRoom } from '../../../definition/IRoom';
+import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
+import { IVoipMessage } from '../../../definition/IMessage';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -22,11 +26,14 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 	private voipRoom: VoipRoomsRaw;
 
+	private pbxEvents: PbxEventsRaw;
+
 	constructor(db: Db) {
 		super();
 		this.users = new UsersRaw(db.collection('users'));
 		this.voipRoom = new VoipRoomsRaw(db.collection('rocketchat_room'));
 		this.logger = new Logger('OmnichannelVoipService');
+		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
 	}
 
 	private async createVoipRoom(
@@ -40,6 +47,21 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		const newRoomAt = new Date();
 
 		this.logger.debug(`Creating Voip room for visitor ${_id}`);
+
+		// Use latest queue caller join event
+		const callStartPbxEvent = await this.pbxEvents.findOne(
+			{
+				phone: guest?.phone?.[0].phoneNumber,
+				event: 'QueueCallerJoin',
+			},
+			{ sort: { ts: -1 } },
+		);
+
+		if (!callStartPbxEvent) {
+			this.logger.warn(`Call for visitor ${guest._id} is not associated with a pbx event`);
+		}
+
+		const { queue = 'default', callUniqueId } = callStartPbxEvent || {};
 
 		const room: IVoipRoom = {
 			_id: rid,
@@ -70,7 +92,9 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			queuedAt: newRoomAt,
 			// We assume room is created when call is started (there could be small delay)
 			callStarted: newRoomAt,
-			callDuration: 0,
+			queue,
+			callUniqueId,
+
 			uids: [],
 			autoTranslateLanguage: '',
 			responseBy: '',
@@ -170,11 +194,46 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 			open: 1,
 			v: 1,
 			ts: 1,
+			callUniqueId: 1,
 		};
 		if (!rid) {
 			return this.voipRoom.findOneByVisitorToken(token, { projection });
 		}
 		return this.voipRoom.findOneByIdAndVisitorToken(rid, token, { projection });
+	}
+
+	private async calculateOnHoldTimeForRoom(room: IVoipRoom, closedAt: Date): Promise<number> {
+		if (!room || !room.callUniqueId) {
+			return 0;
+		}
+
+		const events = await this.pbxEvents.findByEvents(room.callUniqueId, ['Hold', 'Unhold']).toArray();
+		if (!events.length) {
+			// if there's no events, that means no hold time
+			return 0;
+		}
+
+		if (events.length === 1 && events[0].event === 'Unhold') {
+			// if the only event is an unhold event, something bad happened
+			return 0;
+		}
+
+		if (events.length === 1 && events[0].event === 'Hold') {
+			// if the only event is a hold event, the call was ended while on hold
+			// hold time = room.closedAt - event.ts
+			return (closedAt.getTime() - events[0].ts.getTime()) / 1000;
+		}
+
+		let currentOnHoldTime = 0;
+
+		for (let i = 0; i < events.length; i += 2) {
+			const onHold = events[i].ts;
+			const unHold = events[i + 1]?.ts || closedAt;
+
+			currentOnHoldTime += (unHold.getTime() - onHold.getTime()) / 1000;
+		}
+
+		return currentOnHoldTime;
 	}
 
 	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean> {
@@ -186,10 +245,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		const now = new Date();
 		const { _id: rid } = room;
 		const closer = visitor ? 'visitor' : 'user';
+		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
 			callDuration: now.getTime() / 1000,
 			closer,
+			callTotalHoldTime,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 		if (visitor) {
@@ -202,5 +263,56 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
+	}
+
+	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {
+		// Fetch agent connected event for started call
+		const agentCalledEvent = await this.pbxEvents.findOne({ callUniqueId: room.callUniqueId, event: 'AgentConnect' });
+		// Update room with the agentconnect event information (hold time => time call was in queue)
+		await this.voipRoom.updateOne(
+			{ _id: room._id },
+			{
+				$set: {
+					// holdtime is stored in seconds, so convert to millis
+					callWaitingTime: Number(agentCalledEvent?.holdTime) * 1000,
+				},
+			},
+		);
+
+		if (message.voipData) {
+			message.voipData.callWaitingTime = agentCalledEvent?.holdTime;
+		}
+
+		await sendMessage(user, message, room);
+	}
+
+	async handleEvent(event: VoipClientEvents, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
+		const message = {
+			t: event,
+			msg: comment,
+			groupable: false as const,
+			voipData: {
+				callDuration: Number(room.callDuration) || 0,
+				callStarted: room.callStarted.toISOString(),
+			},
+		};
+
+		if (
+			isOmnichannelVoipRoom(room) &&
+			room.open &&
+			room.callUniqueId &&
+			// Check if call exists by looking if we have pbx events of it
+			(await this.pbxEvents.findOne({ callUniqueId: room.callUniqueId }))
+		) {
+			switch (event) {
+				case VoipClientEvents['VOIP-CALL-STARTED']:
+					this.handleCallStartedEvent(user, message, room);
+					break;
+				default:
+					await sendMessage(user, message, room);
+			}
+		} else {
+			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
+		}
 	}
 }

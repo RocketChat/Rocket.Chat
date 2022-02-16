@@ -83,9 +83,10 @@ export interface IMessage extends IRocketChatRecord {
 }
 
 export type IVoipMessage = IMessage & {
-	voipData?: {
+	voipData: {
 		callDuration?: number;
 		callStarted?: string;
+		callWaitingTime?: string;
 	};
 };
 
