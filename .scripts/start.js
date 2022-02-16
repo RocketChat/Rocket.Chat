@@ -124,20 +124,19 @@ function startRocketChat() {
 	});
 }
 
-function startMicroservices() {
-	return new Promise((resolve) => {
-		const waitStart = (message) => {
-			if (message.toString().match('started successfully')) {
-				return resolve();
-			}
-		};
-
-		const startService = (name) => {
+async function startMicroservices() {
+	const startService = (name) => {
+		return new Promise((resolve) => {
+			const waitStart = (message) => {
+				if (message.toString().match('started successfully')) {
+					return resolve();
+				}
+			};
 			startProcess({
 				name: `${name} service`,
 				command: 'node',
 				params: ['service.js'],
-				...(name === 'ddp-streamer' && { onData: waitStart }),
+				onData: waitStart,
 				options: {
 					cwd: path.resolve(srcDir, 'ee', 'server', 'services', 'dist', 'ee', 'server', 'services', name),
 					env: {
@@ -148,14 +147,16 @@ function startMicroservices() {
 					},
 				},
 			});
-		};
+		});
+	};
 
-		startService('account');
-		startService('authorization');
-		startService('ddp-streamer');
-		startService('presence');
-		startService('stream-hub');
-	});
+	await Promise.all([
+		startService('account'),
+		startService('authorization'),
+		startService('ddp-streamer'),
+		startService('presence'),
+		startService('stream-hub'),
+	]);
 }
 
 function startChimp() {
