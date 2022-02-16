@@ -34,9 +34,6 @@ export class CommandFactory {
 			case Commands.event_stream: {
 				return new ContinuousMonitor(command.toString(), false, db);
 			}
-			case Commands.event_stream: {
-				return new ContinuousMonitor(command.toString(), false, db);
-			}
 		}
 	}
 }
