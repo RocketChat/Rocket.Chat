@@ -44,8 +44,33 @@ const appOptions = {
 	},
 };
 
+let killingAllProcess = false;
+function killAllProcesses(mainExitCode) {
+	if (killingAllProcess) {
+		return;
+	}
+	killingAllProcess = true;
+
+	processes.forEach((p) => {
+		console.log('Killing process', p.pid);
+		p.kill();
+	});
+
+	waitPortRelease(appOptions.env.PORT)
+		.then(() => {
+			console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${mainExitCode}`);
+			process.exit(mainExitCode);
+		})
+		.catch((error) => {
+			console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${mainExitCode}`);
+			console.error(error);
+			process.exit(mainExitCode);
+		});
+}
+
 function startProcess(opts) {
 	const proc = spawn(opts.command, opts.params, opts.options);
+	processes.push(proc);
 
 	if (opts.onData) {
 		proc.stdout.on('data', opts.onData);
@@ -63,35 +88,16 @@ function startProcess(opts) {
 	}
 
 	proc.on('exit', function (code, signal) {
-		let exitCode;
+		processes.splice(processes.indexOf(proc), 1);
+
 		if (code != null) {
-			exitCode = code;
 			console.log(opts.name, `exited with code ${code}`);
 		} else {
 			console.log(opts.name, `exited with signal ${signal}`);
 		}
 
-		processes.splice(processes.indexOf(proc), 1);
-
-		processes.forEach((p) => {
-			console.log('Killing process', p.pid);
-			p.kill();
-		});
-
-		if (processes.length === 0) {
-			waitPortRelease(appOptions.env.PORT)
-				.then(() => {
-					console.log(`Port ${appOptions.env.PORT} was released, exiting with code ${exitCode}`);
-					process.exit(exitCode);
-				})
-				.catch((error) => {
-					console.error(`Error waiting port ${appOptions.env.PORT} to be released, exiting with code ${exitCode}`);
-					console.error(error);
-					process.exit(exitCode);
-				});
-		}
+		killAllProcesses(code);
 	});
-	processes.push(proc);
 }
 
 function startRocketChat() {
