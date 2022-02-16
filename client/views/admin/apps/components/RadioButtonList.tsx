@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 
 import { FreePaidDropDownProps } from '../definitions/FreePaidDropDownDefinitions';
 
-const FreePaidDropDownList: FC<FreePaidDropDownProps> = ({ group, onSelected }) => (
+const RadioButtonList: FC<FreePaidDropDownProps> = ({ group, onSelected }) => (
 	<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
 		{group.label && (
 			<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
@@ -18,4 +18,4 @@ const FreePaidDropDownList: FC<FreePaidDropDownProps> = ({ group, onSelected }) 
 	</Tile>
 );
 
-export default FreePaidDropDownList;
+export default RadioButtonList;
