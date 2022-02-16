@@ -1,16 +1,15 @@
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
-import { IAuthorizationLivechat } from '../../../server/sdk/types/IAuthorizationLivechat';
-import { validators } from './roomAccessValidator.compatibility';
-import { api } from '../../../server/sdk/api';
-import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { IAuthorizationLivechat } from '../../../server/sdk/types/IAuthorizationLivechat';
+import { ServiceClassInternal } from '../../../server/sdk/types/ServiceClass';
+import { validators } from './roomAccessValidator.compatibility';
+import type { IOmnichannelRoom } from '../../../definition/IRoom';
 
-class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivechat {
+export class AuthorizationLivechat extends ServiceClassInternal implements IAuthorizationLivechat {
 	protected name = 'authorization-livechat';
 
 	protected internal = true;
 
-	async canAccessRoom(room: Partial<IRoom>, user: Partial<IUser>, extraData?: object): Promise<boolean> {
+	async canAccessRoom(room: IOmnichannelRoom, user: Pick<IUser, '_id'>, extraData?: object): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user, extraData)) {
 				return true;
@@ -20,5 +19,3 @@ class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivech
 		return false;
 	}
 }
-
-api.registerService(new AuthorizationLivechat());

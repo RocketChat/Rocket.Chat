@@ -184,9 +184,9 @@ export class Client extends EventEmitter {
 		this.timeout = setTimeout(this.handleIdle, timeout);
 	}
 
-	handler = async (payload: string): Promise<void> => {
+	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
-			const packet = server.parse(payload);
+			const packet = server.parse(payload, isBinary);
 			this.emit('message', packet);
 			if (this.wait) {
 				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
@@ -209,6 +209,3 @@ export class Client extends EventEmitter {
 		return this.ws.send(this.encodePayload(payload));
 	}
 }
-
-// TODO implement meteor errors
-// a["{\"msg\":\"result\",\"id\":\"12\",\"error\":{\"isClientSafe\":true,\"error\":403,\"reason\":\"User has no password set\",\"message\":\"User has no password set [403]\",\"errorType\":\"Meteor.Error\"}}"]
