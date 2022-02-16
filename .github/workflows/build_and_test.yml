@@ -175,8 +175,8 @@ jobs:
 
   test:
     runs-on: ubuntu-20.04
-    # TODO revert this change before merge
-    needs: build-disabled
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
 
     strategy:
       matrix:
