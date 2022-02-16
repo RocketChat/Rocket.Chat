@@ -235,6 +235,7 @@ export const RoomHistoryManager = new (class extends Emitter {
 		waitAfterFlush(() => {
 			const heightDiff = wrapper.scrollHeight - previousHeight;
 			wrapper.scrollTop = scroll + heightDiff;
+			lastMessage && document.getElementById(lastMessage._id).scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
 		});
 
 		room.isLoading.set(false);
