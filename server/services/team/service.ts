@@ -171,7 +171,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const { name, type, updateRoom = true } = updateData;
 
 		if (updateRoom && name) {
-			saveRoomName(team.roomId, name, user);
+			await saveRoomName(team.roomId, name, user);
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {

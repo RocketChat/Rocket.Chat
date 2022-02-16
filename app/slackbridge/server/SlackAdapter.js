@@ -994,7 +994,7 @@ export default class SlackAdapter {
 				imported: 'slackbridge',
 			});
 		} else {
-			saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false);
+			Promise.await(saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false));
 		}
 	}
 
