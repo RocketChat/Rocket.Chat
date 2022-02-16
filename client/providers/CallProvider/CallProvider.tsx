@@ -1,10 +1,13 @@
-import React, { useMemo, FC, useRef, useEffect, useCallback } from 'react';
+import { Random } from 'meteor/random';
+import React, { useMemo, FC, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { Notifications } from '../../../app/notifications/client';
+import { roomTypes } from '../../../app/utils/client';
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
@@ -37,10 +40,10 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	const handleAgentConnected = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
+		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
 			dispatchToastMessage({
 				type: 'success',
-				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls}`,
+				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls} wait-time = ${queue.waittimeinqueue}`,
 				options: {
 					showDuration: '6000',
 					hideDuration: '6000',
@@ -127,17 +130,16 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		if (!user) {
-			return;
-		}
-
 		Notifications.onUser('callerjoined', handleQueueJoined);
 		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('agentconnected', handleAgentConnected);
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
-	}, [user, handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
+	}, [handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
+
+	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
+	const voipEndpoint = useEndpoint('GET', 'voip/room');
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {
@@ -171,8 +173,21 @@ export const CallProvider: FC = ({ children }) => {
 					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
 				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
+			openRoom: async (caller): Promise<void> => {
+				if (user) {
+					const { visitor } = await visitorEndpoint({
+						visitor: {
+							token: Random.id(),
+							phone: caller.callerId,
+							name: caller.callerName || caller.callerId,
+						},
+					});
+					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
+					voipRoom.room && roomTypes.openRouteLink(voipRoom.room.t, voipRoom.room);
+				}
+			},
 		};
-	}, [result]);
+	}, [result, user, visitorEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}

@@ -6,7 +6,7 @@ import { VoIpCallerInfo } from '../../../../definition/voip/VoIpCallerInfo';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
-	callerName: ICallerInfo['callerName'];
+	caller: ICallerInfo;
 	callerState: VoIpCallerInfo['state'];
 	callActions: CallActionsType;
 	title: string;
@@ -21,10 +21,11 @@ type VoipFooterPropsType = {
 		acceptCall: string;
 		endCall: string;
 	};
+	openRoom: (caller: ICallerInfo) => void;
 };
 
 export const VoipFooter = ({
-	callerName,
+	caller,
 	callerState,
 	callActions,
 	title,
@@ -34,6 +35,7 @@ export const VoipFooter = ({
 	toggleMic,
 	togglePause,
 	tooltips,
+	openRoom,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
 		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
@@ -58,7 +60,7 @@ export const VoipFooter = ({
 		<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 			<Box>
 				<Box color='white' fontScale='p2' withTruncatedText>
-					{callerName}
+					{caller.callerName}
 				</Box>
 				<Box color='hint' fontScale='c1' withTruncatedText>
 					{subtitle}
@@ -89,7 +91,17 @@ export const VoipFooter = ({
 					</Button>
 				)}
 				{callerState === 'OFFER_RECEIVED' && (
-					<Button title={tooltips.acceptCall} small square success primary onClick={callActions.pickUp}>
+					<Button
+						title={tooltips.acceptCall}
+						small
+						square
+						success
+						primary
+						onClick={(): void => {
+							callActions.pickUp();
+							openRoom(caller);
+						}}
+					>
 						<Icon name='phone' size='x16' />
 					</Button>
 				)}

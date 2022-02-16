@@ -2,7 +2,9 @@ import { FindOneOptions } from 'mongodb';
 
 import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/IOmnichannelVoipServiceResult';
 import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom } from '../../../definition/IRoom';
+import { IVoipRoom, IRoom } from '../../../definition/IRoom';
+import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
+import { IUser } from '../../../definition/IUser';
 
 export interface IOmnichannelVoipService {
 	getConfiguration(): any;
@@ -16,4 +18,5 @@ export interface IOmnichannelVoipService {
 	): Promise<IRoomCreationResponse>;
 	findRoom(token: string, rid: string): Promise<IVoipRoom | null>;
 	closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean>;
+	handleEvent(event: VoipClientEvents, room: IRoom, user: IUser, comment?: string): Promise<void>;
 }

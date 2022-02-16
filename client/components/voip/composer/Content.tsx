@@ -1,9 +1,8 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { Keys } from '@rocket.chat/icons';
-import React, { ReactElement } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 type ContentPropsType = {
-	icon: Keys;
+	icon: ComponentProps<typeof Icon>['name'];
 	text: string;
 };
 
