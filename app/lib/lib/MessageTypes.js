@@ -27,7 +27,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'aut',
+		id: 'added-user-to-team',
 		system: true,
 		message: 'Added__username__to_team',
 		data(message) {
@@ -48,7 +48,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'rut',
+		id: 'removed-user-from-team',
 		system: true,
 		message: 'Removed__username__from_team',
 		data(message) {
@@ -78,7 +78,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userConvertToTeam',
+		id: 'user-converted-to-team',
 		system: true,
 		message: 'Converted__roomName__to_team',
 		data(message) {
@@ -88,7 +88,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userConvertToChannel',
+		id: 'user-converted-to-channel',
 		system: true,
 		message: 'Converted__roomName__to_channel',
 		data(message) {
@@ -98,7 +98,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userRemoveRoomFromTeam',
+		id: 'user-removed-room-from-team',
 		system: true,
 		message: 'Removed__roomName__from_this_team',
 		data(message) {
@@ -108,7 +108,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userDeleteRoomFromTeam',
+		id: 'user-deleted-room-from-team',
 		system: true,
 		message: 'Deleted__roomName__',
 		data(message) {
@@ -118,7 +118,7 @@ Meteor.startup(function () {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'userAddRoomToTeam',
+		id: 'user-added-room-to-team',
 		system: true,
 		message: 'added__roomName__to_team',
 		data(message) {
@@ -333,16 +333,16 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_ru',
 	},
 	{
-		key: 'rut',
-		i18nLabel: 'Message_HideType_rut',
+		key: 'removed-user-from-team',
+		i18nLabel: 'Message_HideType_removed_user_from_team',
 	},
 	{
 		key: 'au',
 		i18nLabel: 'Message_HideType_au',
 	},
 	{
-		key: 'aut',
-		i18nLabel: 'Message_HideType_aut',
+		key: 'added-user-to-team',
+		i18nLabel: 'Message_HideType_added_user_to_team',
 	},
 	{
 		key: 'mute_unmute',
@@ -417,23 +417,23 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_room_allowed_reacting',
 	},
 	{
-		key: 'userAddRoomToTeam',
-		i18nLabel: 'Message_HideType_userAddRoomToTeam',
+		key: 'user-added-room-to-team',
+		i18nLabel: 'Message_HideType_user_added_room_to_team',
 	},
 	{
-		key: 'userConvertToChannel',
-		i18nLabel: 'Message_HideType_userConvertToChannel',
+		key: 'user-converted-to-channel',
+		i18nLabel: 'Message_HideType_user_converted_to_channel',
 	},
 	{
-		key: 'userConvertToTeam',
-		i18nLabel: 'Message_HideType_userConvertToTeam',
+		key: 'user-converted-to-team',
+		i18nLabel: 'Message_HideType_user_converted_to_team',
 	},
 	{
-		key: 'userDeleteRoomFromTeam',
-		i18nLabel: 'Message_HideType_userDeleteRoomFromTeam',
+		key: 'user-deleted-room-from-team',
+		i18nLabel: 'Message_HideType_user_deleted_room_from_team',
 	},
 	{
-		key: 'userRemoveRoomFromTeam',
-		i18nLabel: 'Message_HideType_userRemoveRoomFromTeam',
+		key: 'user-removed-room-from-team',
+		i18nLabel: 'Message_HideType_user_removed_room_from_team',
 	},
 ];
