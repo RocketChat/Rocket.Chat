@@ -2938,7 +2938,7 @@
   "Message_HideType_subscription_role_added": "Hide \"Was Set Role\" messages",
   "Message_HideType_subscription_role_removed": "Hide \"Role No Longer Defined\" messages",
   "Message_HideType_uj": "Hide \"User Join\" messages",
-  "Message_HideType_user_joined_team": "Hide \"User Joined Team\" messages",
+  "Message_HideType_ujt": "Hide \"User Joined Team\" messages",
   "Message_HideType_ul": "Hide \"User Leave\" messages",
   "Message_HideType_ult": "Hide \"User Left Team\" messages",
   "Message_HideType_user_added_room_to_team": "Hide \"User Added Room to Team\" messages",  
