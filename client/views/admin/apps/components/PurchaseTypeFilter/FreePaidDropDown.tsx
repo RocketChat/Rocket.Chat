@@ -1,14 +1,14 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useCallback, useRef } from 'react';
 
-import { FreePaidDropDownProps } from '../definitions/FreePaidDropDownDefinitions';
-import { isValidReference } from '../helpers/isValidReference';
-import { onMouseEventPreventSideEffects } from '../helpers/preventSideEffects';
-import DropDownListWrapper from './DropDownListWrapper';
+import { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
+import { isValidReference } from '../../helpers/isValidReference';
+import { onMouseEventPreventSideEffects } from '../../helpers/preventSideEffects';
+import DropDownListWrapper from '../DropDownListWrapper';
+import RadioButtonList from '../RadioButtonList';
 import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
-import RadioButtonList from './RadioButtonList';
 
-const FreePaidDropDown: FC<FreePaidDropDownProps> = ({ group, onSelected, ...props }) => {
+const FreePaidDropDown: FC<RadioDropDownProps> = ({ group, onSelected, ...props }) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 

@@ -2,9 +2,9 @@ import { ButtonGroup } from '@rocket.chat/fuselage';
 import { Story } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
-import { useCategories } from '../hooks/useCategories';
-import { useCategoryToggle } from '../hooks/useCategoryToggle';
+import { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import { useCategories } from '../../hooks/useCategories';
+import { useCategoryToggle } from '../../hooks/useCategoryToggle';
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';

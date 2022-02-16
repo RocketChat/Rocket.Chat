@@ -1,9 +1,9 @@
 import { Box, Option, RadioButton, Tile } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { FreePaidDropDownProps } from '../definitions/FreePaidDropDownDefinitions';
+import { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
 
-const RadioButtonList: FC<FreePaidDropDownProps> = ({ group, onSelected }) => (
+const RadioButtonList: FC<RadioDropDownProps> = ({ group, onSelected }) => (
 	<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
 		{group.label && (
 			<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
