@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 
-import { FreePaidDropDownItem, FreePaidDropDownOnSelected, FreePaidDropDownSetData } from '../definitions/FreePaidDropDownDefinitions';
+import { RadioDropDownItem, RadioDropDownOnSelected, RadioDropDownSetData } from '../definitions/RadioDropDownDefinitions';
 
-export const useFreePaidToggle = (setData: FreePaidDropDownSetData): FreePaidDropDownOnSelected => {
+export const useFreePaidToggle = (setData: RadioDropDownSetData): RadioDropDownOnSelected => {
 	const onSelected = useCallback(
-		(item: FreePaidDropDownItem) =>
+		(item: RadioDropDownItem) =>
 			setData((prevState) => {
 				prevState.items.forEach((currentItem) => {
 					currentItem.checked = currentItem === item;
