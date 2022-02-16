@@ -6,7 +6,7 @@ import { isValidReference } from '../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../helpers/preventSideEffects';
 import DropDownListWrapper from './DropDownListWrapper';
 import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
-import FreePaidDropDownList from './FreePaidDropDownList';
+import RadioButtonList from './RadioButtonList';
 
 const FreePaidDropDown: FC<FreePaidDropDownProps> = ({ group, onSelected, ...props }) => {
 	const reference = useRef<HTMLInputElement>(null);
@@ -32,7 +32,7 @@ const FreePaidDropDown: FC<FreePaidDropDownProps> = ({ group, onSelected, ...pro
 			<FreePaidDropDownAnchor ref={reference} onClick={toggleCollapsed as any} group={group} {...props} />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
-					<FreePaidDropDownList group={group} onSelected={onSelected} />
+					<RadioButtonList group={group} onSelected={onSelected} />
 				</DropDownListWrapper>
 			)}
 		</>

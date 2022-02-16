@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useFreePaidToggle } from '../hooks/useFreePaidToggle';
 import FreePaidDropDown from './FreePaidDropDown';
 import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
-import FreePaidDropDownList from './FreePaidDropDownList';
+import RadioButtonList from './RadioButtonList';
 
 export default {
 	title: 'apps/components/FreePaidDropDown',
@@ -27,7 +27,7 @@ export const List: Story = () => {
 
 	const onSelected = useFreePaidToggle(setData);
 
-	return <FreePaidDropDownList group={data} onSelected={onSelected} />;
+	return <RadioButtonList group={data} onSelected={onSelected} />;
 };
 
 export const Default: Story = () => {
