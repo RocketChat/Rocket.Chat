@@ -12,7 +12,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
@@ -81,7 +81,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			if (!canAccessRoom({ _id: this.urlParams.rid }, { _id: this.userId })) {
+			if (!canAccessRoomId(this.urlParams.rid, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
