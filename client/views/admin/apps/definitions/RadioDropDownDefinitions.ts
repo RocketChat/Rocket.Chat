@@ -16,7 +16,7 @@ export type RadioDropDownItem = {
 
 export type RadioDropDownOnSelected = (item: RadioDropDownItem) => void;
 
-export type RadioDropDOwnSetData = React.Dispatch<
+export type RadioDropDownSetData = React.Dispatch<
 	React.SetStateAction<{
 		label: string;
 		items: RadioDropDownItem[];
