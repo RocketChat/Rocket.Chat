@@ -67,18 +67,17 @@ const AppsTable: FC<{
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 
-	const FreePaidFilterStructure = {
+	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
 		items: [
 			{ id: 'all', label: t('All_Apps'), checked: true },
 			{ id: 'free', label: t('Free_Apps'), checked: false },
 			{ id: 'paid', label: t('Paid_Apps'), checked: false },
 		],
-	};
-
-	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState(FreePaidFilterStructure);
+	});
 
 	const freePaidFilterOnSelected = useFreePaidToggle(setFreePaidFilterStructure);
+
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
@@ -91,6 +90,7 @@ const AppsTable: FC<{
 
 	return (
 		<>
+			{/* TODO Divide into two components: Filters and AppsTable */}
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
 				<FreePaidDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
@@ -197,7 +197,6 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
-			{/* TODO: Create error variations for empty search message */}
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>
