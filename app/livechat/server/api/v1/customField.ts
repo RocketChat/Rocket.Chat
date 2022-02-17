@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/custom.field', {
 });
 
 API.v1.addRoute('livechat/custom.fields', {
-	post() {
+	async post() {
 		check(this.bodyParams, {
 			token: String,
 			customFields: [
@@ -50,17 +50,22 @@ API.v1.addRoute('livechat/custom.fields', {
 		const { token } = this.bodyParams;
 		const guest = findGuest(token);
 		if (!guest) {
-			throw new Meteor.Error('invalid-token');
+			throw new Error('invalid-token');
 		}
 
+		const errors: { error: string; field: string }[] = [];
 		const fields = this.bodyParams.customFields.map((customField) => {
 			const data = Object.assign({ token }, customField);
 			if (!Livechat.setCustomFields(data)) {
-				return API.v1.failure();
+				errors.push({ error: 'Cannot store data for field', field: customField.key });
 			}
 
 			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
 		});
+
+		if (errors.length) {
+			return API.v1.failure({ errors });
+		}
 
 		return API.v1.success({ fields });
 	},

@@ -1,4 +1,3 @@
-import { FailureResult } from '../../../app/api/server/api.d';
 import { ILivechatInquiryRecord } from '../../IInquiry';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IBusinessHourWorkHour, ILivechatBusinessHour } from '../../ILivechatBusinessHour';
@@ -348,14 +347,11 @@ export type OmnichannelEndpoints = {
 
 	'livechat/custom.fields': {
 		POST: (params: { token: string; customFields: { key: string; value: string; overwrite: boolean } }) => {
-			fields: (
-				| FailureResult<void, undefined, undefined, undefined>
-				| {
-						Key: string;
-						value: string;
-						overwrite: boolean;
-				  }
-			)[];
+			fields: {
+				Key: string;
+				value: string;
+				overwrite: boolean;
+			}[];
 		};
 	};
 
