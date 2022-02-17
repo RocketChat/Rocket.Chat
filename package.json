@@ -253,7 +253,7 @@
 		"jsdom": "^16.6.0",
 		"jsrsasign": "^10.4.0",
 		"juice": "^8.0.0",
-		"katex": "^0.11.1",
+		"katex": "^0.15.2",
 		"ldap-escape": "^2.0.5",
 		"ldapjs": "^2.3.1",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
