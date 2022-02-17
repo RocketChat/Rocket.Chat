@@ -157,7 +157,7 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
-	livechatData: { [k: string]: any };
+	livechatData: { [k: string]: unknown };
 	queuedAt?: Date;
 
 	ts: Date;
