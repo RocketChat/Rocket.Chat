@@ -3,10 +3,10 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const RoleForm = ({ values, handlers, className, editing = false, isProtected = false }) => {
+const RoleForm = ({ values, handlers, validators, className, editing = false, isProtected = false }) => {
 	const t = useTranslation();
 
-	const { name, description, scope, mandatory2fa } = values;
+	const { name, description, scope, mandatory2fa, error } = values;
 
 	const { handleName, handleDescription, handleScope, handleMandatory2fa } = handlers;
 
@@ -23,8 +23,16 @@ const RoleForm = ({ values, handlers, className, editing = false, isProtected = 
 			<Field className={className}>
 				<Field.Label>{t('Role')}</Field.Label>
 				<Field.Row>
-					<TextInput disabled={editing} value={name} onChange={handleName} placeholder={t('Role')} />
+					<TextInput
+						onBlur={validators}
+						borderColor={error?.name ? '#f5455c' : ''}
+						disabled={editing}
+						value={name}
+						onChange={handleName}
+						placeholder={t('Role')}
+					/>
 				</Field.Row>
+				{error?.name ? <Field.Hint>{error.name}</Field.Hint> : null}
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
