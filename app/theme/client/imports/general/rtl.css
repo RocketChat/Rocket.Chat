@@ -51,6 +51,11 @@
 			left: auto;
 		}
 
+		& .scroll-down {
+			right: 50%;
+			left: auto;
+		}
+
 		&.compact {
 			& .message {
 				padding: 5px 45px 5px 15px;

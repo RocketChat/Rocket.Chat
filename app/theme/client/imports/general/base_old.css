@@ -1705,6 +1705,28 @@
 		}
 	}
 
+	& .scroll-down {
+		position: absolute;
+		z-index: 2;
+		bottom: 8px;
+		left: 50%;
+
+		width: 130px;
+		height: 30px;
+		margin: 0 -65px;
+
+		cursor: pointer;
+		user-select: none;
+		transition: transform 0.3s ease-out;
+		transform: translateY(0);
+		text-align: center;
+
+		border-radius: 20px;
+
+		font-size: 0.8em;
+		line-height: 30px;
+	}
+
 	& .jump-recent {
 		position: absolute;
 		z-index: 15;

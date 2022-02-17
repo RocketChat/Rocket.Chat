@@ -613,6 +613,13 @@ Meteor.startup(() => {
 					RoomHistoryManager.getMoreNext(this._id);
 				}
 			}
+			const newMessage = document.getElementsByClassName('new-message')[0];
+			if (newMessage.classList.contains('not')) {
+				const top = document.getElementsByClassName('scroll-down')[0];
+				const { scrollHeight, scrollTop, clientHeight } = e.target;
+				if (Math.ceil(scrollTop) < scrollHeight - clientHeight) top.style.display = 'block';
+				else top.style.display = 'none';
+			}
 		}, 100),
 
 		'click .time a'(e) {
@@ -623,6 +630,12 @@ Meteor.startup(() => {
 				msg: repliedMessageId,
 				hash: Random.id(),
 			});
+		},
+		'click .scroll-down'() {
+			const wrapperObj = document.getElementsByClassName('wrapper')[0];
+			wrapperObj.style.scrollBehavior = 'smooth';
+			const { scrollHeight, clientHeight } = wrapperObj;
+			wrapperObj.scrollTop = scrollHeight - clientHeight;
 		},
 	});
 
@@ -816,6 +829,9 @@ Meteor.startup(() => {
 		const wrapper = this.find('.wrapper');
 
 		const store = NewRoomManager.getStore(rid);
+
+		const scrollDownObj = document.getElementsByClassName('scroll-down')[0];
+		scrollDownObj.style.display = 'none';
 
 		const afterMessageGroup = () => {
 			if (store.scroll && !store.atBottom) {
@@ -1016,6 +1032,9 @@ Meteor.startup(() => {
 				if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 					return;
 				}
+
+				const scrollDown = document.getElementsByClassName('scroll-down')[0];
+				if (scrollDown) scrollDown.style.display = 'none';
 
 				if (msg.u._id === Meteor.userId()) {
 					return template.sendToBottom();
