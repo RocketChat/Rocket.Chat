@@ -11,7 +11,8 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionE
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
-import UsersInput from './UsersInput';
+
+import UserAutoCompleteMultiple from '/client/components/UserAutoCompleteMultiple';
 
 type CreateTeamModalState = {
 	name: any;
@@ -313,7 +314,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 								({t('optional')})
 							</Box>
 						</Field.Label>
-						<UsersInput value={members} onChange={onChangeMembers} />
+						<UserAutoCompleteMultiple value={members} onChange={onChangeMembers} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

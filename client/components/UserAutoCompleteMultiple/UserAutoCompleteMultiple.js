@@ -1,3 +1,4 @@
+import { MultiSelectFiltered } from '@rocket.chat/fuselage';
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
@@ -14,39 +15,37 @@ const UserAutoCompleteMultiple = (props) => {
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
-	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
-	const onClickRemove = useMutableCallback((e) => {
-		e.stopPropagation();
-		e.preventDefault();
-		props.onChange(e.currentTarget.value, 'remove');
-	});
+	const options = useMemo(() => (data && data.items.map((user) => [user.username, user.name])) || [], [data]);
+
+	const renderItem = ({ value, label, ...props }) => (
+		<Option key={value} {...props}>
+			<Option.Avatar>
+				<UserAvatar username={value} size='x20' />
+			</Option.Avatar>
+			<Option.Content>
+				{label} <Option.Description>({value})</Option.Description>
+			</Option.Content>
+		</Option>
+	);
+
+	const renderSelected = ({ value, onMouseDown }) => (
+		<Chip {...props} key={value} value={value} height='x20' onClick={onMouseDown} mie='x4'>
+			<UserAvatar size='x20' username={value} />
+			<Box is='span' margin='none' mis='x4'>
+				{value}
+			</Box>
+		</Chip>
+	);
 
 	return (
-		<AutoComplete
+		<MultiSelectFiltered
 			{...props}
+			options={options}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value: selected }) =>
-				selected?.map((value) => (
-					<Chip key={value} {...props} height='x20' value={value} onClick={onClickRemove} mie='x4'>
-						<UserAvatar size='x20' username={value} />
-						<Box is='span' margin='none' mis='x4'>
-							{value}
-						</Box>
-					</Chip>
-				))
-			}
-			renderItem={({ value, label, ...props }) => (
-				<Option key={value} {...props}>
-					<Option.Avatar>
-						<UserAvatar username={value} size='x20' />
-					</Option.Avatar>
-					<Option.Content>
-						{label} <Option.Description>({value})</Option.Description>
-					</Option.Content>
-				</Option>
-			)}
-			options={options}
+			renderSelected={renderSelected}
+			renderItem={renderItem}
+			addonIcon='magnifier'
 		/>
 	);
 };
