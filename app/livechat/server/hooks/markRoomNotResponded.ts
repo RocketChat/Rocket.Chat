@@ -25,7 +25,7 @@ callbacks.add(
 			return message;
 		}
 
-		LivechatRooms.setNotResponseByRoomId(room?._id);
+		LivechatRooms.setNotResponseByRoomId(room._id);
 
 		return message;
 	},
