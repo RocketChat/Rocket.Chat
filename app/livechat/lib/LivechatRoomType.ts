@@ -3,11 +3,15 @@ import { Session } from 'meteor/session';
 
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
-import { settings } from '../../settings/server/index';
-import { hasPermission } from '../../authorization/client/index';
-import { openRoom } from '../../ui-utils/client/index';
+// @ts-expect-error
+import { settings } from '../../settings';
+// @ts-expect-error
+import { hasPermission } from '../../authorization';
+// @ts-expect-error
+import { openRoom } from '../../ui-utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
-import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils/server';
+// @ts-expect-error
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 
 let LivechatInquiry: any;
 

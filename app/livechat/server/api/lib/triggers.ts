@@ -1,4 +1,3 @@
-import { IPagination } from '../../../../../ee/app/livechat-enterprise/server/api/lib/definition';
 import { ILivechatTrigger } from '../../../../../definition/ILivechatTrigger';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatTrigger } from '../../../../models/server/raw';
@@ -8,7 +7,7 @@ export async function findTriggers({
 	pagination,
 }: {
 	userId: string;
-	pagination: IPagination;
+	pagination: { offset: number; sort: Record<string, unknown>; count: number };
 }): Promise<{ triggers: ILivechatTrigger[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 		throw new Error('error-not-authorized');
