@@ -74,6 +74,9 @@ Meteor.startup(function () {
 				message.msg = t('Encrypted_message');
 				return Promise.resolve(message);
 			}
+			if (message.t !== 'otr') {
+				return message;
+			}
 			const otrRoom = OTR.getInstanceByRoomId(message.rid);
 			return otrRoom.decrypt(message.msg).then((data) => {
 				const { _id, text, ack } = data;
