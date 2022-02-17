@@ -238,7 +238,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return currentOnHoldTime;
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean> {
+	// Comment can be used to store wrapup call data
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, user: IUser, comment?: string, tags?: string[]): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -253,6 +254,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			callDuration: now.getTime() / 1000,
 			closer,
 			callTotalHoldTime,
+			tags,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 		if (visitor) {
@@ -263,6 +265,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			};
 		}
 
+		const message = {
+			t: 'voip-call-wrapup',
+			msg: comment,
+			groupable: false,
+		};
+
+		await sendMessage(user, message, room);
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
 	}

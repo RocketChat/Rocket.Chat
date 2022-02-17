@@ -4,9 +4,7 @@ import { MessageTypes } from '../../ui-utils/client';
 import { IVoipMessage } from '../../../definition/IMessage';
 
 type IMessageFuncReturn = {
-	at?: string;
-	duration?: string;
-	time?: string;
+	[k: string]: string | undefined;
 };
 
 const messageTypes = [
@@ -66,6 +64,16 @@ const messageTypes = [
 		data(message: IVoipMessage): IMessageFuncReturn {
 			return {
 				at: message.ts.toString(),
+			};
+		},
+	},
+	{
+		id: 'voip-call-wrapup',
+		system: true,
+		message: 'Voip_call_wrapup',
+		data(message: IVoipMessage): IMessageFuncReturn {
+			return {
+				comment: message.msg,
 			};
 		},
 	},

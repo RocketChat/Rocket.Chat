@@ -210,7 +210,7 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{ authRequired: true },
 	{
 		async post() {
 			check(this.bodyParams, {
@@ -232,7 +232,7 @@ API.v1.addRoute(
 			}
 			const language: string = rcSettings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-			const closeResult = await LivechatVoip.closeRoom(visitor, room);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user);
 			if (!closeResult) {
 				return API.v1.failure();
 			}
