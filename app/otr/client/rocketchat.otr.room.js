@@ -15,6 +15,7 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { otrSystemMessages } from '../lib/constants';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -23,6 +24,7 @@ OTR.Room = class {
 		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
+		this.isFirstOTR = true;
 
 		this.userOnlineComputation = null;
 
@@ -42,6 +44,10 @@ OTR.Room = class {
 				refresh,
 			});
 		});
+		if (refresh) {
+			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+			this.isFirstOTR = false;
+		}
 	}
 
 	acknowledge() {
@@ -61,6 +67,7 @@ OTR.Room = class {
 	}
 
 	end() {
+		this.isFirstOTR = true;
 		this.reset();
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {
 			roomId: this.roomId,
@@ -245,7 +252,6 @@ OTR.Room = class {
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
-
 				const establishConnection = () => {
 					this.establishing.set(true);
 					Meteor.clearTimeout(timeout);
@@ -256,6 +262,9 @@ OTR.Room = class {
 							Meteor.defer(() => {
 								this.established.set(true);
 								this.acknowledge();
+								if (data.refresh) {
+									Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								}
 							});
 						});
 					});
@@ -306,6 +315,10 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.established.set(true);
 				});
+				if (this.isFirstOTR) {
+					Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+				}
+				this.isFirstOTR = false;
 				break;
 
 			case 'deny':

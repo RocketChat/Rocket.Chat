@@ -4,7 +4,7 @@ import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence'
 import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../../app/metrics';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
 import { Users } from '../../../app/models/server/raw/index';
@@ -133,10 +133,8 @@ settings.set = use(settings.set, (context, next) => {
 	updateValue(record._id, record);
 });
 
-export class MeteorService extends ServiceClass implements IMeteor {
+export class MeteorService extends ServiceClassInternal implements IMeteor {
 	protected name = 'meteor';
-
-	protected internal = true;
 
 	constructor() {
 		super();
