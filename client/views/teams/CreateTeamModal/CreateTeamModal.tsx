@@ -3,6 +3,7 @@ import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -11,8 +12,6 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionE
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
-
-import UserAutoCompleteMultiple from '/client/components/UserAutoCompleteMultiple';
 
 type CreateTeamModalState = {
 	name: any;

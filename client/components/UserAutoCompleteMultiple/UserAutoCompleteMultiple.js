@@ -1,6 +1,5 @@
-import { MultiSelectFiltered } from '@rocket.chat/fuselage';
-import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { MultiSelectFiltered, Box, Option, Chip } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
