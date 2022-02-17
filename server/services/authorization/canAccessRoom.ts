@@ -52,10 +52,19 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
+		const hasPermission = await Authorization.hasPermission(user._id, 'view-d-room');
+		const hasSubcriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+
 		if (!room?._id || !user?._id) {
 			return false;
 		}
-		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
+
+		// if the user has not permission to view direct rooms, return false
+		if (room.t === 'd' && !hasPermission) {
+			return false;
+		}
+
+		if (hasSubcriptions) {
 			return true;
 		}
 		return false;
@@ -83,7 +92,6 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 	// if (!room || !user) {
 	// 	return false;
 	// }
-
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
 			return true;
