@@ -122,22 +122,13 @@ jobs:
           cd ./ee/server/services
           meteor npm run typecheck
 
-      # TODO uncomment before merging
-      # - name: Build Storybook to sanity check components
-      #   run: npm run build-storybook ; rm -rf ./storybook-static
+      - name: Build Storybook to sanity check components
+        run: npm run build-storybook ; rm -rf ./storybook-static
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
         run: |
           meteor reset
-
-      # - name: Try building micro services
-      #   run: |
-      #     cd ./ee/server/services
-      #     npm run build
-      #     # check if build succeeded
-      #     [ ! -d ./dist/ee/server/services ] && exit 1
-      #     # rm -rf dist/
 
       - name: Build Rocket.Chat From Pull Request
         if: startsWith(github.ref, 'refs/pull/') == true
@@ -176,7 +167,6 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     needs: build
-    if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
 
     strategy:
       matrix:
@@ -265,7 +255,6 @@ jobs:
       matrix:
         node-version: ['14.18.3']
         mongodb-version: ['4.4']
-        # mongodb-version: ['3.6', '4.0', '4.2', '4.4', '5.0']
 
     steps:
       - name: Launch MongoDB
@@ -341,18 +330,10 @@ jobs:
           MOLECULER_LOG_LEVEL: info
           TRANSPORTER: nats://localhost:4222
           TEST_URL: http://localhost:4000
-          SKIP_PROCESS_EVENT_REGISTRATION: 'true'
+          # SKIP_PROCESS_EVENT_REGISTRATION: 'true'
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          # for i in $(seq 1 5); do
-          #   docker exec mongo mongo rocketchat --eval 'db.dropDatabase()'
-          #   npm run testci && s=0 && break
-
-          #   s=$?
-          #   sleep 1
-          # done;
-          # exit $s
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
