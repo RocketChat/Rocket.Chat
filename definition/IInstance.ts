@@ -1,3 +1,4 @@
+/*
 export interface IInstance {
 	address: string;
 	currentStatus: {
@@ -19,3 +20,4 @@ export interface IInstance {
 		};
 	};
 }
+*/

@@ -1,4 +1,3 @@
-import { IInstance } from '../../IInstance';
 import { IInstanceStatus } from '../../IInstanceStatus';
 
 export type InstancesEndpoints = {
@@ -9,8 +8,8 @@ export type InstancesEndpoints = {
 				| {
 						connection: {
 							address: string;
-							currentStatus: IInstance['currentStatus'];
-							instanceRecord: IInstance['instanceRecord'];
+							currentStatus: IInstanceStatus['currentStatus'];
+							instanceRecord: IInstanceStatus['instanceRecord'];
 							broadcastAuth: boolean;
 						};
 				  }
