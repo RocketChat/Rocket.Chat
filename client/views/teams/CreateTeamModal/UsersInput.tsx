@@ -56,7 +56,14 @@ const UsersInput: FC<UsersInputProps> = (props) => {
 	);
 
 	return (
-		<MultiSelectFiltered options={options} renderItem={renderItem} filter={filter} setFilter={setFilter} renderSelected={renderSelected} />
+		<MultiSelectFiltered
+			options={options}
+			filter={filter}
+			setFilter={setFilter}
+			renderItem={renderItem}
+			renderSelected={renderSelected}
+			addonIcon='magnifier'
+		/>
 	);
 };
 
