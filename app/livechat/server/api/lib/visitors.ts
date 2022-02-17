@@ -26,15 +26,19 @@ export async function findVisitorInfo({
 	};
 }
 
-export async function findVisitedPages({
-	userId,
-	roomId,
-	pagination,
-}: {
-	userId: string;
-	roomId: string;
-	pagination: { offset: number; count: number; sort: string };
-}): Promise<{ pages: any[]; count: number; offset: number; total: number }> {
+export async function findVisitedPages(
+	userId: string,
+	roomId: string,
+	{
+		offset,
+		count,
+		sort,
+	}: {
+		offset: string;
+		count: number;
+		sort: Record<string, unknown>;
+	},
+): Promise<{ pages: any[]; count: number; offset: number; total: number }> {
 	if (!(await hasPermissionAsync(userId, 'view-l-room'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -43,9 +47,9 @@ export async function findVisitedPages({
 		throw new Error('invalid-room');
 	}
 	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
-		sort: pagination.sort || { ts: -1 },
-		skip: pagination.offset,
-		limit: pagination.count,
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
 	});
 
 	const total = await cursor.count();
@@ -55,7 +59,7 @@ export async function findVisitedPages({
 	return {
 		pages,
 		count: pages.length,
-		offset: pagination.offset,
+		offset: offset,
 		total,
 	};
 }
