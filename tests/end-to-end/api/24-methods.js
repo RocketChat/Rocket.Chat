@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-describe('Meteor.methods', function() {
+describe('Meteor.methods', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -15,8 +15,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -35,7 +36,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -53,7 +55,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message into thread', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -71,7 +74,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getThreadMessages'))
+			request
+				.post(methodCall('getThreadMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'getThreadMessages',
@@ -88,7 +92,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return message thread', (done) => {
-			request.post(methodCall('getThreadMessages'))
+			request
+				.post(methodCall('getThreadMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -118,8 +123,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -138,7 +144,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -156,7 +163,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -174,7 +182,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'getMessages',
@@ -191,7 +200,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if msgIds not specified', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -214,7 +224,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the first message', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -236,7 +247,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return both messages', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -266,8 +278,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -286,7 +299,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -304,7 +318,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -322,7 +337,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadHistory',
@@ -339,7 +355,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -362,7 +379,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all messages for the specified room', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -385,7 +403,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return only the first message', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -408,7 +427,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return only one message when limit = 1', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -431,7 +451,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the messages since the last one', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -462,8 +483,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -482,7 +504,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -500,7 +523,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -517,7 +541,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadNextMessages',
@@ -534,7 +559,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -557,7 +583,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all messages for the specified room', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -580,7 +607,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return only the latest message', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -603,7 +631,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return only one message when limit = 1', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -633,8 +662,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -653,9 +683,10 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create test user', (done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password: username })
 				.end((err, res) => {
@@ -665,7 +696,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('add user to room', (done) => {
-			request.post(api('groups.invite'))
+			request
+				.post(api('groups.invite'))
 				.set(credentials)
 				.send({
 					roomId: rid,
@@ -677,7 +709,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.send({
 					message: JSON.stringify({
 						method: 'getUsersOfRoom',
@@ -694,7 +727,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -710,14 +744,14 @@ describe('Meteor.methods', function() {
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
+					expect(data.error).to.have.a.property('error', 'error-invalid-room');
 				})
 				.end(done);
 		});
 
 		it('should return the users for the specified room', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -741,7 +775,8 @@ describe('Meteor.methods', function() {
 
 	describe('[@getUserRoles]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getUserRoles'))
+			request
+				.post(methodCall('getUserRoles'))
 				.send({
 					message: JSON.stringify({
 						method: 'getUserRoles',
@@ -758,7 +793,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the roles for the current user', (done) => {
-			request.post(methodCall('getUserRoles'))
+			request
+				.post(methodCall('getUserRoles'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -781,7 +817,8 @@ describe('Meteor.methods', function() {
 
 	describe('[@listCustomUserStatus]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('listCustomUserStatus'))
+			request
+				.post(methodCall('listCustomUserStatus'))
 				.send({
 					message: JSON.stringify({
 						method: 'listCustomUserStatus',
@@ -798,7 +835,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return custom status for the current user', (done) => {
-			request.post(methodCall('listCustomUserStatus'))
+			request
+				.post(methodCall('listCustomUserStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -825,7 +863,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'permissions/get',
@@ -842,7 +881,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all permissions', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -864,7 +904,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all permissions after the given date', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -893,10 +934,11 @@ describe('Meteor.methods', function() {
 		};
 		let postMessageDate = false;
 
-		const channelName = `methods-test-channel-${ Date.now() }`;
+		const channelName = `methods-test-channel-${Date.now()}`;
 
 		before('create test group', (done) => {
-			request.post(api('groups.create'))
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -915,7 +957,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -933,7 +976,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -950,7 +994,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
@@ -967,7 +1012,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return an error if the rid param is empty', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -985,7 +1031,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return an error if the start param is missing', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1003,7 +1050,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return and empty list if using current time', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1025,7 +1073,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return two messages if using a time from before the first msg was sent', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1047,7 +1096,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return a single message if using a time from in between the messages', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1075,7 +1125,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('public-settings:get'))
+			request
+				.post(methodCall('public-settings:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'public-settings/get',
@@ -1092,7 +1143,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the list of public settings', (done) => {
-			request.post(methodCall('public-settings:get'))
+			request
+				.post(methodCall('public-settings:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1119,7 +1171,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('private-settings:get'))
+			request
+				.post(methodCall('private-settings:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'private-settings/get',
@@ -1140,7 +1193,8 @@ describe('Meteor.methods', function() {
 				.then(updatePermission('edit-privileged-setting', []))
 				.then(updatePermission('manage-selected-settings', []))
 				.then(() => {
-					request.post(methodCall('private-settings:get'))
+					request
+						.post(methodCall('private-settings:get'))
 						.set(credentials)
 						.send({
 							message: JSON.stringify({
@@ -1164,7 +1218,8 @@ describe('Meteor.methods', function() {
 
 		it('should return properties when user has any related permissions', (done) => {
 			updatePermission('view-privileged-setting', ['admin']).then(() => {
-				request.post(methodCall('private-settings:get'))
+				request
+					.post(methodCall('private-settings:get'))
 					.set(credentials)
 					.send({
 						message: JSON.stringify({
@@ -1192,7 +1247,8 @@ describe('Meteor.methods', function() {
 				.then(updatePermission('edit-privileged-setting', ['admin']))
 				.then(updatePermission('manage-selected-settings', ['admin']))
 				.then(() => {
-					request.post(methodCall('private-settings:get'))
+					request
+						.post(methodCall('private-settings:get'))
 						.set(credentials)
 						.send({
 							message: JSON.stringify({
@@ -1222,7 +1278,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'subscriptions/get',
@@ -1239,7 +1296,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all subscriptions', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1261,7 +1319,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all subscriptions after the given date', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1288,8 +1347,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -1308,12 +1368,13 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should send a message', (done) => {
-			request.post(methodCall('sendMessage'))
+			request
+				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						method: 'sendMessage',
-						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message' }],
+						params: [{ _id: `${Date.now() + Math.random()}`, rid, msg: 'test message' }],
 						id: 1000,
 					}),
 				})
@@ -1331,12 +1392,19 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should parse correctly urls sent in message', (done) => {
-			request.post(methodCall('sendMessage'))
+			request
+				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						method: 'sendMessage',
-						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+						params: [
+							{
+								_id: `${Date.now() + Math.random()}`,
+								rid,
+								msg: 'test message with https://github.com',
+							},
+						],
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1361,8 +1429,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -1381,12 +1450,19 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send message with URL', (done) => {
-			request.post(methodCall('sendMessage'))
+			request
+				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						method: 'sendMessage',
-						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+						params: [
+							{
+								_id: `${Date.now() + Math.random()}`,
+								rid,
+								msg: 'test message with https://github.com',
+							},
+						],
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1405,12 +1481,19 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send message with URL inside markdown', (done) => {
-			request.post(methodCall('sendMessage'))
+			request
+				.post(methodCall('sendMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						method: 'sendMessage',
-						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with ```https://github.com```' }],
+						params: [
+							{
+								_id: `${Date.now() + Math.random()}`,
+								rid,
+								msg: 'test message with ```https://github.com```',
+							},
+						],
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1427,7 +1510,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should update a message with a URL', (done) => {
-			request.post(methodCall('updateMessage'))
+			request
+				.post(methodCall('updateMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1447,12 +1531,19 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should not parse URLs inside markdown on update', (done) => {
-			request.post(methodCall('updateMessage'))
+			request
+				.post(methodCall('updateMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
 						method: 'updateMessage',
-						params: [{ _id: messageWithMarkdownId, rid, msg: 'test message with ```https://github.com``` updated' }],
+						params: [
+							{
+								_id: messageWithMarkdownId,
+								rid,
+								msg: 'test message with ```https://github.com``` updated',
+							},
+						],
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1465,7 +1556,8 @@ describe('Meteor.methods', function() {
 					expect(data).to.have.a.property('msg').that.is.an('string');
 				})
 				.then(() => {
-					request.get(api(`chat.getMessage?msgId=${ messageWithMarkdownId }`))
+					request
+						.get(api(`chat.getMessage?msgId=${messageWithMarkdownId}`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1488,9 +1580,10 @@ describe('Meteor.methods', function() {
 		let dmTestId;
 
 		before('create test user', (done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password: username, roles: ['user'] })
 				.end((err, res) => {
@@ -1500,9 +1593,10 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create test user 2', (done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password: username, roles: ['user'] })
 				.end((err, res) => {
@@ -1512,7 +1606,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('login testUser', (done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: testUser.username,
 					password: testUser.username,
@@ -1527,7 +1622,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create direct conversation with user', (done) => {
-			request.post(methodCall('createDirectMessage'))
+			request
+				.post(methodCall('createDirectMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1546,7 +1642,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create direct conversation between both users', (done) => {
-			request.post(methodCall('createDirectMessage'))
+			request
+				.post(methodCall('createDirectMessage'))
 				.set(testUserCredentials)
 				.send({
 					message: JSON.stringify({
@@ -1565,7 +1662,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should deactivate a user', (done) => {
-			request.post(methodCall('setUserActiveStatus'))
+			request
+				.post(methodCall('setUserActiveStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1582,7 +1680,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should deactivate another user', (done) => {
-			request.post(methodCall('setUserActiveStatus'))
+			request
+				.post(methodCall('setUserActiveStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1599,7 +1698,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should mark the direct conversation between admin=>testUser as readonly when user is deactivated', (done) => {
-			request.post(methodCall('getRoomByTypeAndName'))
+			request
+				.post(methodCall('getRoomByTypeAndName'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1616,7 +1716,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should activate a user', (done) => {
-			request.post(methodCall('setUserActiveStatus'))
+			request
+				.post(methodCall('setUserActiveStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1633,7 +1734,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should set readonly=false when user is activated (and the other side is also active)', (done) => {
-			request.post(methodCall('getRoomByTypeAndName'))
+			request
+				.post(methodCall('getRoomByTypeAndName'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1650,7 +1752,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should keep the direct conversation between testUser=>testUser2 as readonly when one of them is deactivated', (done) => {
-			request.post(api('login'))
+			request
+				.post(api('login'))
 				.send({
 					user: testUser.username,
 					password: testUser.username,
@@ -1662,7 +1765,8 @@ describe('Meteor.methods', function() {
 					testUserCredentials['X-User-Id'] = res.body.data.userId;
 				})
 				.then(() => {
-					request.post(methodCall('getRoomByTypeAndName'))
+					request
+						.post(methodCall('getRoomByTypeAndName'))
 						.set(testUserCredentials)
 						.send({
 							message: JSON.stringify({
@@ -1681,7 +1785,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should activate another user', (done) => {
-			request.post(methodCall('setUserActiveStatus'))
+			request
+				.post(methodCall('setUserActiveStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1698,7 +1803,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should set readonly=false when both users are activated', (done) => {
-			request.post(methodCall('getRoomByTypeAndName'))
+			request
+				.post(methodCall('getRoomByTypeAndName'))
 				.set(testUserCredentials)
 				.send({
 					message: JSON.stringify({
@@ -1715,7 +1821,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should keep readonly=true when user is activated (and the other side is deactivated)', (done) => {
-			request.post(methodCall('getRoomByTypeAndName'))
+			request
+				.post(methodCall('getRoomByTypeAndName'))
 				.set(testUserCredentials)
 				.send({
 					message: JSON.stringify({

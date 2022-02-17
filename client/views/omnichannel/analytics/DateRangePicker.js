@@ -11,11 +11,7 @@ const todayDate = formatToDateInput(moment());
 
 const getMonthRange = (monthsToSubtractFromToday) => ({
 	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
-	end: formatToDateInput(
-		monthsToSubtractFromToday === 0
-			? moment()
-			: moment().subtract(monthsToSubtractFromToday).date(0),
-	),
+	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
 });
 
 const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => ({

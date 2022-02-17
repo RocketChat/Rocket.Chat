@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-Accounts.registerLoginHandler('login-token', function(result) {
+Accounts.registerLoginHandler('login-token', function (result) {
 	if (!result.loginToken) {
 		return;
 	}
+
+	check(result.loginToken, String);
 
 	const user = Meteor.users.findOne({
 		'services.loginToken.token': result.loginToken,

@@ -102,21 +102,30 @@ export class AppListenerBridge {
 		switch (inte) {
 			case AppInterface.IPostLivechatAgentAssigned:
 			case AppInterface.IPostLivechatAgentUnassigned:
-				return this.orch.getManager().getListenerManager().executeListener(inte, {
-					room: this.orch.getConverters().get('rooms').convertRoom(data.room),
-					agent: this.orch.getConverters().get('users').convertToApp(data.user),
-				});
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, {
+						room: this.orch.getConverters().get('rooms').convertRoom(data.room),
+						agent: this.orch.getConverters().get('users').convertToApp(data.user),
+					});
 			case AppInterface.IPostLivechatRoomTransferred:
 				const converter = data.type === LivechatTransferEventType.AGENT ? 'users' : 'departments';
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, {
-					type: data.type,
-					room: this.orch.getConverters().get('rooms').convertById(data.room),
-					from: this.orch.getConverters().get(converter).convertById(data.from),
-					to: this.orch.getConverters().get(converter).convertById(data.to),
-				});
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, {
+						type: data.type,
+						room: this.orch.getConverters().get('rooms').convertById(data.room),
+						from: this.orch.getConverters().get(converter).convertById(data.from),
+						to: this.orch.getConverters().get(converter).convertById(data.to),
+					});
 			case AppInterface.IPostLivechatGuestSaved:
-				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
 			case AppInterface.IPostLivechatRoomSaved:
 				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
 			default:

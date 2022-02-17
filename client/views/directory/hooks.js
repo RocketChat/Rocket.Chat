@@ -1,11 +1,6 @@
 import { useMemo } from 'react';
 
-export function useQuery(
-	{ text, itemsPerPage, current },
-	[column, direction],
-	type,
-	workspace = 'local',
-) {
+export function useQuery({ text, itemsPerPage, current }, [column, direction], type, workspace = 'local') {
 	return useMemo(
 		() => ({
 			query: JSON.stringify({

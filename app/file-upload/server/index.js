@@ -7,6 +7,4 @@ import './methods/sendFileMessage';
 import './methods/getS3FileUrl';
 import './startup/settings';
 
-export {
-	FileUpload,
-};
+export { FileUpload };

@@ -45,7 +45,7 @@ export class Api {
 		this.middlewares[method].push(callback);
 	}
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data?: any): Promise<any> {
 		this.middlewares[method]?.forEach((callback) => callback(...data));
 
 		return this.broker.call(method, data);
@@ -59,6 +59,14 @@ export class Api {
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcast(event, ...args);
+	}
+
+	async broadcastToServices<T extends keyof EventSignatures>(
+		services: string[],
+		event: T,
+		...args: Parameters<EventSignatures[T]>
+	): Promise<void> {
+		return this.broker.broadcastToServices(services, event, ...args);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {

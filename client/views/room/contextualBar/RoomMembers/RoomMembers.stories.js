@@ -10,13 +10,6 @@ export default {
 
 export const Default = () => (
 	<VerticalBar>
-		<RoomMembers
-			onClickBack={alert}
-			onClickClose={alert}
-			onClickSave={alert}
-			value={[]}
-			errors={{}}
-			type='all'
-		/>
+		<RoomMembers onClickBack={alert} onClickClose={alert} onClickSave={alert} value={[]} errors={{}} type='all' />
 	</VerticalBar>
 );

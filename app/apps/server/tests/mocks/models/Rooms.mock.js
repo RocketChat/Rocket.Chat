@@ -89,7 +89,7 @@ export class RoomsMock extends BaseModelMock {
 				username: 'rocket.cat',
 			},
 		},
-	}
+	};
 
 	static convertedData = {
 		GENERAL: {
@@ -123,5 +123,5 @@ export class RoomsMock extends BaseModelMock {
 			lastModifiedAt: new Date('2019-04-07T23:45:25.407Z'),
 			customFields: {},
 		},
-	}
+	};
 }

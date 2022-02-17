@@ -3,6 +3,7 @@ import React, { FC, memo, useCallback, useRef, useState } from 'react';
 
 import { EmojiPicker } from '../../../../../../app/emoji/client';
 import { Backdrop } from '../../../../../../client/components/Backdrop';
+import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useUserPreference } from '../../../../../../client/contexts/UserContext';
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
@@ -15,6 +16,8 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 
 	const [visible, setVisible] = useState(false);
 
+	const t = useTranslation();
+
 	const useMarkdownSyntax = (char: '*' | '_' | '~' | '[]()'): (() => void) =>
 		useCallback(() => {
 			if (textAreaRef?.current) {
@@ -24,16 +27,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 
 				if (char === '[]()') {
 					if (startPos !== endPos) {
-						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(
-							startPos,
-							endPos,
-						)}]()${text.slice(endPos)}`;
+						textAreaRef.current.value = `${text.slice(0, startPos)}[${text.slice(startPos, endPos)}]()${text.slice(endPos)}`;
 					}
 				} else {
-					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(
-						startPos,
-						endPos,
-					)}${char}${text.slice(endPos)}`;
+					textAreaRef.current.value = `${text.slice(0, startPos)}${char}${text.slice(startPos, endPos)}${char}${text.slice(endPos)}`;
 				}
 				textAreaRef.current.focus();
 
@@ -60,10 +57,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
 			textAreaRef.current.focus();
-			textAreaRef.current.setSelectionRange(
-				startPos + emojiValue.length,
-				startPos + emojiValue.length,
-			);
+			textAreaRef.current.setSelectionRange(startPos + emojiValue.length, startPos + emojiValue.length);
 
 			onChange(textAreaRef.current.value);
 		}
@@ -93,17 +87,13 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 		<TextEditor>
 			<TextEditor.Toolbox>
 				<Box display='flex' flexDirection='row'>
-					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} />
-					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} />
-					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} />
-					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} />
-					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} />
+					<TextEditor.Toolbox.IconButton name='bold' action={useMarkdownSyntax('*')} title={t('bold')} />
+					<TextEditor.Toolbox.IconButton name='italic' action={useMarkdownSyntax('_')} title={t('italic')} />
+					<TextEditor.Toolbox.IconButton name='strike' action={useMarkdownSyntax('~')} title={t('strike')} />
+					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} title={t('link')} />
+					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} title={t('Emoji')} />
 				</Box>
-				<TextEditor.Toolbox.TextButton
-					text='Insert_Placeholder'
-					action={openPlaceholderSelect}
-					ref={ref}
-				/>
+				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={openPlaceholderSelect} ref={ref} />
 				<Backdrop
 					display={visible ? 'block' : 'none'}
 					onClick={(): void => {
@@ -113,11 +103,7 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 				/>
 				<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
 					<Tile elevation='1' w='224px'>
-						<InsertPlaceholderDropdown
-							onChange={onChange}
-							textAreaRef={textAreaRef}
-							setVisible={setVisible}
-						/>
+						<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
 					</Tile>
 				</PositionAnimated>
 			</TextEditor.Toolbox>

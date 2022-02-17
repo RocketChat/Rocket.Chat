@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { useUserId } from '../../../contexts/UserContext';
-import { useUserData } from '../../../hooks/useUserData';
+import { usePresence } from '../../../hooks/usePresence';
 import RoomHeader from './RoomHeader';
 
 const DirectRoomHeader = ({ room, slots }) => {
 	const userId = useUserId();
 	const directUserId = room.uids.filter((uid) => uid !== userId).shift();
-	const directUserData = useUserData(directUserId);
+	const directUserData = usePresence(directUserId);
 
 	return <RoomHeader slots={slots} room={room} topic={directUserData?.statusText} />;
 };

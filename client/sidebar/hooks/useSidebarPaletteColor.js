@@ -102,9 +102,7 @@ const useTheme = () => {
 	const result = useMemo(() => {
 		const n900 = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-darkest');
 		const n800 = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-dark');
-		const sibebarSurface = customColors.find(
-			({ _id }) => _id === 'theme-color-rc-color-primary-background',
-		);
+		const sibebarSurface = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-background');
 		const n700 = customColors.find(({ _id }) => _id === '');
 		const n600 = customColors.find(({ _id }) => _id === 'theme-color-rc-color-primary-light');
 		const n500 = customColors.find(({ _id }) => _id === 'theme-color-rc-primary-light-medium');
@@ -136,8 +134,7 @@ const useTheme = () => {
 	return result;
 };
 
-const toVar = (color) =>
-	color && color[0] === '#' ? color : oldPallet[color] || `var(--${color})`;
+const toVar = (color) => (color && color[0] === '#' ? color : oldPallet[color] || `var(--${color})`);
 
 const getStyle = (
 	(selector) => (colors) =>
@@ -200,10 +197,7 @@ const useSidebarPaletteColorIE11 = () => {
 	const colors = useTheme();
 	useEffect(() => {
 		(async () => {
-			const [{ default: cssVars }, CSSOM] = await Promise.all([
-				import('css-vars-ponyfill'),
-				import('cssom'),
-			]);
+			const [{ default: cssVars }, CSSOM] = await Promise.all([import('css-vars-ponyfill'), import('cssom')]);
 			try {
 				getStyleTag().innerHTML = getStyle(colors);
 				const fuselageStyle = document.getElementById('fuselage-style');
@@ -229,15 +223,12 @@ const useSidebarPaletteColorIE11 = () => {
 
 				const filterSelectors = (selector) => /rcx-(sidebar|button|divider|input)/.test(selector);
 				const insertSelector = (selector) =>
-					selector.replace(
-						/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/,
-						(match, group, g2, g3, offset, text) => {
-							if (group === '.') {
-								return `${modifier} ${text}`;
-							}
-							return `${match} ${modifier} ${g3}`;
-						},
-					);
+					selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
+						if (group === '.') {
+							return `${modifier} ${text}`;
+						}
+						return `${match} ${modifier} ${g3}`;
+					});
 
 				sidebarStyle.innerHTML = sheet.cssRules
 					.map((rule) => {
@@ -248,11 +239,7 @@ const useSidebarPaletteColorIE11 = () => {
 							.join();
 						Array.from(rule.style.length)
 							.map((_, index) => rule.style[index])
-							.forEach(
-								(key, index) =>
-									!/color|background|shadow/.test(key) &&
-									rule.style.removeProperty(rule.style[index]),
-							);
+							.forEach((key, index) => !/color|background|shadow/.test(key) && rule.style.removeProperty(rule.style[index]));
 						return rule.cssText;
 					})
 					.join('');

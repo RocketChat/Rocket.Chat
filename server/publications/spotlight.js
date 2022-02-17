@@ -27,10 +27,14 @@ Meteor.methods({
 	},
 });
 
-DDPRateLimiter.addRule({
-	type: 'method',
-	name: 'spotlight',
-	userId(/* userId*/) {
-		return true;
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'spotlight',
+		userId(/* userId*/) {
+			return true;
+		},
 	},
-}, 100, 100000);
+	100,
+	100000,
+);

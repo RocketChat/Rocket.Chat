@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChatRoom, ChatSubscription } from '../../../models';
+import { ChatRoom } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
-
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -73,13 +72,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
-	}
-
-	canSendMessage(roomId) {
-		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
 	}
 
 	allowRoomSettingChange(room, setting) {

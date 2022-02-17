@@ -3,9 +3,9 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
-import { settings } from '../../settings';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -32,7 +32,6 @@ export class AppServerOrchestrator {
 		}
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-		Permissions.create('manage-apps', ['admin']);
 
 		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
 			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
@@ -78,6 +77,9 @@ export class AppServerOrchestrator {
 		return this._model;
 	}
 
+	/**
+	 * @returns {AppsPersistenceModel}
+	 */
 	getPersistenceModel() {
 		return this._persistModel;
 	}
@@ -130,6 +132,9 @@ export class AppServerOrchestrator {
 		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
+	/**
+	 * @returns {Logger}
+	 */
 	getRocketChatLogger() {
 		return this._rocketchatLogger;
 	}
@@ -151,9 +156,11 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.load()
-			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
-			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
+		return this._manager
+			.load()
+			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`))
+			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err))
+			.then(() => this.getBridges().getSchedulerBridge().startScheduler());
 	}
 
 	async unload() {
@@ -163,7 +170,8 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.unload()
+		return this._manager
+			.unload()
 			.then(() => console.log('Unloaded the Apps Framework.'))
 			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
 	}
@@ -173,8 +181,7 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager.updateAppsMarketplaceInfo(apps)
-			.then(() => this._manager.get());
+		return this._manager.updateAppsMarketplaceInfo(apps).then(() => this._manager.get());
 	}
 
 	async triggerEvent(event, ...payload) {
@@ -182,21 +189,24 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this.getBridges().getListenerBridge().handleEvent(event, ...payload).catch((error) => {
-			if (error instanceof EssentialAppDisabledException) {
-				throw new Meteor.Error('error-essential-app-disabled');
-			}
+		return this.getBridges()
+			.getListenerBridge()
+			.handleEvent(event, ...payload)
+			.catch((error) => {
+				if (error instanceof EssentialAppDisabledException) {
+					throw new Meteor.Error('error-essential-app-disabled');
+				}
 
-			throw error;
-		});
+				throw error;
+			});
 	}
 }
 
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settings.addGroup('General', function() {
-	this.section('Apps', function() {
+settingsRegistry.addGroup('General', function () {
+	this.section('Apps', function () {
 		this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
 			values: [
@@ -235,13 +245,16 @@ settings.addGroup('General', function() {
 
 		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
-			values: [{
-				key: 'gridfs',
-				i18nLabel: 'GridFS',
-			}, {
-				key: 'filesystem',
-				i18nLabel: 'FileSystem',
-			}],
+			values: [
+				{
+					key: 'gridfs',
+					i18nLabel: 'GridFS',
+				},
+				{
+					key: 'filesystem',
+					i18nLabel: 'FileSystem',
+				},
+			],
 			public: true,
 			hidden: false,
 			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
@@ -259,7 +272,7 @@ settings.addGroup('General', function() {
 	});
 });
 
-settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
+settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageType = value;
 	} else {
@@ -267,7 +280,7 @@ settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
 	}
 });
 
-settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
+settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageFilesystemPath = value;
 	} else {
@@ -275,7 +288,7 @@ settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value)
 	}
 });
 
-settings.get('Apps_Framework_enabled', (key, isEnabled) => {
+settings.watch('Apps_Framework_enabled', (isEnabled) => {
 	// In case this gets called before `Meteor.startup`
 	if (!Apps.isInitialized()) {
 		return;
@@ -288,7 +301,7 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	}
 });
 
-settings.get('Apps_Logs_TTL', (key, value) => {
+settings.watch('Apps_Logs_TTL', (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}

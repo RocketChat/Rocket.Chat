@@ -1,3 +1,5 @@
+export const USER_STATUS_TEXT_MAX_LENGTH = 120;
+
 export const colors = {
 	busy: 'danger-500',
 	away: 'warning-600',

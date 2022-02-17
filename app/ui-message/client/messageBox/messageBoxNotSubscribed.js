@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { settings } from '../../../settings';
-import { call, RoomManager, RoomHistoryManager } from '../../../ui-utils';
-import { roomTypes } from '../../../utils';
-import { hasAllPermission } from '../../../authorization';
+import { settings } from '../../../settings/client';
+import { RoomManager, RoomHistoryManager } from '../../../ui-utils/client';
+import { roomTypes } from '../../../utils/client';
+import { hasAllPermission } from '../../../authorization/client';
 import './messageBoxNotSubscribed.html';
-
+import { call } from '../../../../client/lib/utils/call';
 
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
@@ -17,21 +17,22 @@ Template.messageBoxNotSubscribed.helpers({
 		return Meteor.userId() && roomTypes.verifyShowJoinLink(this.rid);
 	},
 	roomName() {
-		const room = Session.get(`roomData${ this.rid }`);
+		const room = Session.get(`roomData${this.rid}`);
 		return roomTypes.getRoomName(room.t, room);
 	},
 	isJoinCodeRequired() {
-		const room = Session.get(`roomData${ this.rid }`);
+		const room = Session.get(`roomData${this.rid}`);
 		return room && room.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
-		return (Meteor.userId() == null)
-			&& settings.get('Accounts_AllowAnonymousRead') === true;
+		return Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead') === true;
 	},
 	isAnonymousWriteAllowed() {
-		return (Meteor.userId() == null)
-			&& settings.get('Accounts_AllowAnonymousRead') === true
-			&& settings.get('Accounts_AllowAnonymousWrite') === true;
+		return (
+			Meteor.userId() == null &&
+			settings.get('Accounts_AllowAnonymousRead') === true &&
+			settings.get('Accounts_AllowAnonymousWrite') === true
+		);
 	},
 });
 

@@ -22,7 +22,7 @@ class NotificationClass {
 
 	private maxBatchSize = Number(NOTIFICATIONS_BATCH_SIZE);
 
-	private maxScheduleDelaySeconds: {[key: string]: number} = {
+	private maxScheduleDelaySeconds: { [key: string]: number } = {
 		online: Number(NOTIFICATIONS_SCHEDULE_DELAY_ONLINE),
 		away: Number(NOTIFICATIONS_SCHEDULE_DELAY_AWAY),
 		offline: Number(NOTIFICATIONS_SCHEDULE_DELAY_OFFLINE),
@@ -112,12 +112,26 @@ class NotificationClass {
 		sendEmailFromData(item.data);
 	}
 
-	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
-		const receiver = user || await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
-			projection: {
-				statusConnection: 1,
-			},
-		});
+	async scheduleItem({
+		uid,
+		rid,
+		mid,
+		items,
+		user,
+	}: {
+		uid: string;
+		rid: string;
+		mid: string;
+		items: NotificationItem[];
+		user?: Partial<IUser>;
+	}): Promise<void> {
+		const receiver =
+			user ||
+			(await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
+				projection: {
+					statusConnection: 1,
+				},
+			}));
 
 		if (!receiver) {
 			return;

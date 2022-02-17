@@ -9,6 +9,6 @@ export interface ILoginResult {
 }
 
 export interface IAccount extends IServiceClass {
-	login({ resume, user, password }: {resume: string; user: {username: string}; password: string}): Promise<false | ILoginResult>;
-	logout({ userId, token }: {userId: string; token: string}): Promise<void>;
+	login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult>;
+	logout({ userId, token }: { userId: string; token: string }): Promise<void>;
 }

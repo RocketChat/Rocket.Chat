@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
+import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { Users } from '../../app/models/server';
 import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
@@ -23,15 +24,28 @@ function saveUserProfile(settings, customFields) {
 		});
 	}
 
+	validateUserEditing(this.userId, {
+		_id: this.userId,
+		email: settings.email,
+		username: settings.username,
+		name: settings.realname,
+		password: settings.newPassword,
+		statusText: settings.statusText,
+	});
+
 	const user = Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
-		if (!saveUserIdentity({
-			_id: this.userId,
-			name: settings.realname,
-			username: settings.username,
-		})) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUserProfile' });
+		if (
+			!saveUserIdentity({
+				_id: this.userId,
+				name: settings.realname,
+				username: settings.username,
+			})
+		) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				method: 'saveUserProfile',
+			});
 		}
 	}
 

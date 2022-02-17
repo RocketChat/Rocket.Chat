@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Messages, Subscriptions, Integrations } from '../../../models/server';
+import { Rooms, Messages, Subscriptions } from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { roomTypes, getValidRoomName } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
@@ -13,13 +14,18 @@ const updateRoomName = (rid, displayName, isDiscussion) => {
 
 	// Check if the username is available
 	if (!checkUsernameAvailability(slugifiedRoomName)) {
-		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${ slugifiedRoomName }' already exists`, { function: 'RocketChat.updateRoomName', handle: slugifiedRoomName });
+		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
+			function: 'RocketChat.updateRoomName',
+			handle: slugifiedRoomName,
+		});
 	}
 
-	return Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+	return (
+		Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName)
+	);
 };
 
-export const saveRoomName = function(rid, displayName, user, sendMessage = true) {
+export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);
 	if (roomTypes.getConfig(room.t).preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -35,10 +41,10 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 		return;
 	}
 
-	Integrations.updateRoomName(room.name, displayName);
+	await Integrations.updateRoomName(room.name, displayName);
 	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
 	callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
-};
+}

@@ -12,12 +12,7 @@ type ReachedSeatsCapModalProps = {
 	onClose: () => void;
 };
 
-const ReachedSeatsCapModal = ({
-	members,
-	limit,
-	onClose,
-	requestSeatsLink,
-}: ReachedSeatsCapModalProps): ReactElement => {
+const ReachedSeatsCapModal = ({ members, limit, onClose, requestSeatsLink }: ReachedSeatsCapModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal>

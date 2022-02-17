@@ -25,6 +25,4 @@ export const Default = () => <DeleteTeam rooms={rooms} />;
 
 export const ModalStepOne = () => <StepOne rooms={rooms} selectedRooms={{}} {...commonProps} />;
 
-export const ModalStepTwo = () => (
-	<StepTwo deletedRooms={rooms} keptRooms={rooms} {...commonProps} />
-);
+export const ModalStepTwo = () => <StepTwo deletedRooms={rooms} keptRooms={rooms} {...commonProps} />;

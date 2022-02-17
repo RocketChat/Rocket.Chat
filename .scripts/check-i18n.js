@@ -27,52 +27,50 @@ const removeMissingKeys = (i18nFiles, usedKeys) => {
 			return;
 		}
 
-		validateKeys(json, usedKeys)
-			.forEach(({ key }) => {
-				json[key] = null;
-			});
+		validateKeys(json, usedKeys).forEach(({ key }) => {
+			json[key] = null;
+		});
 
 		fs.writeFileSync(file, JSON.stringify(json, null, 2));
 	});
 };
 
 const checkUniqueKeys = (content, json, filename) => {
-	const matchKeys = content.matchAll(/^\s+"([^"]+)"/mg);
+	const matchKeys = content.matchAll(/^\s+"([^"]+)"/gm);
 
 	const allKeys = [...matchKeys];
 
 	if (allKeys.length !== Object.keys(json).length) {
-		throw new Error(`Duplicated keys found on file ${ filename }`);
+		throw new Error(`Duplicated keys found on file ${filename}`);
 	}
 };
 
 const validate = (i18nFiles, usedKeys) => {
-	const totalErrors = i18nFiles
-		.reduce((errors, file) => {
-			const content = fs.readFileSync(file, 'utf8');
-			const json = JSON.parse(content);
+	const totalErrors = i18nFiles.reduce((errors, file) => {
+		const content = fs.readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
 
-			checkUniqueKeys(content, json, file);
+		checkUniqueKeys(content, json, file);
 
-			// console.log('json, usedKeys2', json, usedKeys);
+		// console.log('json, usedKeys2', json, usedKeys);
 
-			const result = validateKeys(json, usedKeys);
+		const result = validateKeys(json, usedKeys);
 
-			if (result.length === 0) {
-				return errors;
-			}
+		if (result.length === 0) {
+			return errors;
+		}
 
-			console.log('\n## File', file, `(${ result.length } errors)`);
+		console.log('\n## File', file, `(${result.length} errors)`);
 
-			result.forEach(({ key, miss }) => {
-				console.log('\n- Key:', key, '\n  Missing variables:', miss.join(', '));
-			});
+		result.forEach(({ key, miss }) => {
+			console.log('\n- Key:', key, '\n  Missing variables:', miss.join(', '));
+		});
 
-			return errors + result.length;
-		}, 0);
+		return errors + result.length;
+	}, 0);
 
 	if (totalErrors > 0) {
-		throw new Error(`\n${ totalErrors } errors found`);
+		throw new Error(`\n${totalErrors} errors found`);
 	}
 };
 
@@ -82,19 +80,17 @@ const checkFiles = async (sourcePath, sourceFile, fix = false) => {
 
 	checkUniqueKeys(content, sourceContent, sourceFile);
 
-	const usedKeys = Object.entries(sourceContent)
-		.map(([key, value]) => {
-			const replaces = value.match(regexVar);
-			return {
-				key,
-				replaces,
-			};
-		});
+	const usedKeys = Object.entries(sourceContent).map(([key, value]) => {
+		const replaces = value.match(regexVar);
+		return {
+			key,
+			replaces,
+		};
+	});
 
-	const keysWithInterpolation = usedKeys
-		.filter(({ replaces }) => !!replaces);
+	const keysWithInterpolation = usedKeys.filter(({ replaces }) => !!replaces);
 
-	const i18nFiles = await fg([`${ sourcePath }/**/*.i18n.json`]);
+	const i18nFiles = await fg([`${sourcePath}/**/*.i18n.json`]);
 
 	if (fix) {
 		return removeMissingKeys(i18nFiles, keysWithInterpolation);

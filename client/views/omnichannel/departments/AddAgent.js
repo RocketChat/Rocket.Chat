@@ -7,7 +7,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function AddAgent({ agentList, setAgentList, ...props }) {
+function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }) {
 	const t = useTranslation();
 	const [userId, setUserId] = useState();
 	const getAgent = useEndpointAction('GET', `livechat/users/agent/${userId}`);
@@ -24,6 +24,7 @@ function AddAgent({ agentList, setAgentList, ...props }) {
 		if (agentList.filter((e) => e.agentId === user._id).length === 0) {
 			setAgentList([{ ...user, agentId: user._id }, ...agentList]);
 			setUserId();
+			setAgentsAdded((agents) => [...agents, { agentId: user._id }]);
 		} else {
 			dispatchToastMessage({ type: 'error', message: t('This_agent_was_already_selected') });
 		}

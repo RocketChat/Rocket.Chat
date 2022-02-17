@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { useContext, FC } from 'react';
+import React, { useContext, FC, ReactNode } from 'react';
 
 import { useLayout } from '../../contexts/LayoutContext';
 import BurgerMenu from '../BurgerMenu';
@@ -7,7 +7,7 @@ import TemplateHeader from '../Header';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
-	title: string;
+	title: ReactNode;
 };
 
 const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
@@ -32,7 +32,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props
 						<BurgerMenu />
 					</TemplateHeader.ToolBox>
 				)}
-				<Box is='h1' fontScale='h1' flexGrow={1}>
+				<Box is='h2' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>
 				{children}

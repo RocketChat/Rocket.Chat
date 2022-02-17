@@ -34,15 +34,11 @@ const RoomActions = ({ room, reload }) => {
 	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
 
 	const updateRoomEndpoint = useEndpointActionExperimental('POST', 'teams.updateRoom');
-	const removeRoomEndpoint = useEndpointActionExperimental(
-		'POST',
-		'teams.removeRoom',
-		t('Success'),
-	);
+	const removeRoomEndpoint = useEndpointActionExperimental('POST', 'teams.removeRoom', t('Room_has_been_removed'));
 	const deleteRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		room.t === 'c' ? 'channels.delete' : 'groups.delete',
-		t('Success'),
+		t('Room_has_been_deleted'),
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {

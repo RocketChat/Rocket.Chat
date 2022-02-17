@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
@@ -11,6 +10,7 @@ import {
 	Users as UsersRaw,
 	Settings as SettingsRaw,
 } from '../../../models/server/raw';
+import './Presence';
 
 // TODO: Replace this in favor of the api.broadcast
 // StreamerCentral.on('broadcast', (name, eventName, args) => {
@@ -22,8 +22,8 @@ import {
 // });
 
 export class Stream extends Streamer {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
-		Meteor.publish(name, function(eventName, options) {
+	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
+		Meteor.publish(name, function (eventName, options) {
 			return Promise.await(fn.call(this, eventName, options));
 		});
 	}

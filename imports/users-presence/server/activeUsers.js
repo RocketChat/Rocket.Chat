@@ -11,12 +11,8 @@ export const STATUS_MAP = {
 	[UserStatus.BUSY]: 3,
 };
 
-export const setUserStatus = (user, status/* , statusConnection*/) => {
-	const {
-		_id,
-		username,
-		statusText,
-	} = user;
+export const setUserStatus = (user, status /* , statusConnection*/) => {
+	const { _id, username, statusText } = user;
 
 	// since this callback can be called by only one instance in the cluster
 	// we need to broadcast the change to all instances
@@ -26,8 +22,10 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 };
 
 let TroubleshootDisablePresenceBroadcast;
-settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
-	if (TroubleshootDisablePresenceBroadcast === value) { return; }
+settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
+	if (TroubleshootDisablePresenceBroadcast === value) {
+		return;
+	}
 	TroubleshootDisablePresenceBroadcast = value;
 
 	if (value) {

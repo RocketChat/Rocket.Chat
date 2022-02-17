@@ -3,37 +3,49 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Integrations, Rooms, Users, Roles, Subscriptions } from '../../../../models';
-import { hasAllPermission, hasPermission } from '../../../../authorization';
+import { Rooms, Users, Subscriptions } from '../../../../models/server';
+import { Integrations, Roles } from '../../../../models/server/raw';
+import { hasAllPermission, hasPermission } from '../../../../authorization/server';
 
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
-	updateIncomingIntegration(integrationId, integration) {
+	async updateIncomingIntegration(integrationId, integration) {
 		if (!_.isString(integration.channel) || integration.channel.trim() === '') {
-			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', { method: 'updateIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+				method: 'updateIncomingIntegration',
+			});
 		}
 
 		const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {
-				throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', { method: 'updateIncomingIntegration' });
+				throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+					method: 'updateIncomingIntegration',
+				});
 			}
 		}
 
 		let currentIntegration;
 
 		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
-			currentIntegration = Integrations.findOne(integrationId);
+			currentIntegration = await Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
-			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
+			currentIntegration = await Integrations.findOne({
+				'_id': integrationId,
+				'_createdBy._id': this.userId,
+			});
 		} else {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateIncomingIntegration' });
+			throw new Meteor.Error('not_authorized', 'Unauthorized', {
+				method: 'updateIncomingIntegration',
+			});
 		}
 
 		if (!currentIntegration) {
-			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', { method: 'updateIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+				method: 'updateIncomingIntegration',
+			});
 		}
 
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -43,21 +55,27 @@ Meteor.methods({
 
 				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 				integration.scriptError = undefined;
-				Integrations.update(integrationId, {
-					$set: { scriptCompiled: integration.scriptCompiled },
-					$unset: { scriptError: 1 },
-				});
+				await Integrations.updateOne(
+					{ _id: integrationId },
+					{
+						$set: { scriptCompiled: integration.scriptCompiled },
+						$unset: { scriptError: 1 },
+					},
+				);
 			} catch (e) {
 				integration.scriptCompiled = undefined;
 				integration.scriptError = _.pick(e, 'name', 'message', 'stack');
-				Integrations.update(integrationId, {
-					$set: {
-						scriptError: integration.scriptError,
+				await Integrations.updateOne(
+					{ _id: integrationId },
+					{
+						$set: {
+							scriptError: integration.scriptError,
+						},
+						$unset: {
+							scriptCompiled: 1,
+						},
 					},
-					$unset: {
-						scriptCompiled: 1,
-					},
-				});
+				);
 			}
 		}
 
@@ -69,54 +87,60 @@ Meteor.methods({
 			switch (channelType) {
 				case '#':
 					record = Rooms.findOne({
-						$or: [
-							{ _id: channel },
-							{ name: channel },
-						],
+						$or: [{ _id: channel }, { name: channel }],
 					});
 					break;
 				case '@':
 					record = Users.findOne({
-						$or: [
-							{ _id: channel },
-							{ username: channel },
-						],
+						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
 			}
 
 			if (!record) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' });
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+					method: 'updateIncomingIntegration',
+				});
 			}
 
-			if (!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
-				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' });
+			if (
+				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
+				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
+			) {
+				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+					method: 'updateIncomingIntegration',
+				});
 			}
 		}
 
 		const user = Users.findOne({ username: currentIntegration.username });
 
 		if (!user || !user._id) {
-			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', { method: 'updateIncomingIntegration' });
+			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
+				method: 'updateIncomingIntegration',
+			});
 		}
 
-		Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, 'bot');
 
-		Integrations.update(integrationId, {
-			$set: {
-				enabled: integration.enabled,
-				name: integration.name,
-				avatar: integration.avatar,
-				emoji: integration.emoji,
-				alias: integration.alias,
-				channel: channels,
-				script: integration.script,
-				scriptEnabled: integration.scriptEnabled,
-				_updatedAt: new Date(),
-				_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
+		await Integrations.updateOne(
+			{ _id: integrationId },
+			{
+				$set: {
+					enabled: integration.enabled,
+					name: integration.name,
+					avatar: integration.avatar,
+					emoji: integration.emoji,
+					alias: integration.alias,
+					channel: channels,
+					script: integration.script,
+					scriptEnabled: integration.scriptEnabled,
+					_updatedAt: new Date(),
+					_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
+				},
 			},
-		});
+		);
 
-		return Integrations.findOne(integrationId);
+		return Integrations.findOneById(integrationId);
 	},
 });

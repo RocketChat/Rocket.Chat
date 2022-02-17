@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { openRoom } from '../../../ui-utils';
-import { ChatRoom, ChatSubscription } from '../../../models';
+import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
@@ -61,7 +61,9 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	condition() {
 		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true);
+		return (
+			groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
+		);
 	}
 
 	showJoinLink(roomId) {
@@ -82,18 +84,6 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
-	}
-
-	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId, t: 'c' }, { fields: { prid: 1 } });
-		if (room.prid) {
-			return true;
-		}
-
-		// TODO: remove duplicated code
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
 	}
 
 	enableMembersListProfile() {
