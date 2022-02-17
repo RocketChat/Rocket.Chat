@@ -222,7 +222,7 @@
 		"cors": "^2.8.5",
 		"css-vars-ponyfill": "^2.4.7",
 		"csv-parse": "^4.16.3",
-		"date-fns": "^2.23.0",
+		"date-fns": "^2.28.0",
 		"dompurify": "^2.2.9",
 		"ejson": "^2.2.1",
 		"emailreplyparser": "^0.0.5",
