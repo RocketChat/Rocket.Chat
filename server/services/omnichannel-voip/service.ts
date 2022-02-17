@@ -16,6 +16,8 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { IVoipMessage } from '../../../definition/IMessage';
+import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
+import { FindVoipRoomsParams } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -298,6 +300,43 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				...ext,
 			};
 		});
+	}
+
+	async findVoipRooms({
+		agents,
+		open,
+		createdAt,
+		closedAt,
+		visitorId,
+		tags,
+		queue,
+		options: { offset = 0, count, fields, sort } = {},
+	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
+		const cursor = this.voipRoom.findRoomsWithCriteria({
+			agents,
+			open,
+			createdAt,
+			closedAt,
+			tags,
+			queue,
+			visitorId,
+			options: {
+				sort: sort || { ts: -1 },
+				offset,
+				count,
+				fields,
+			},
+		});
+
+		const total = await cursor.count();
+		const rooms = await cursor.toArray();
+
+		return {
+			rooms,
+			count: rooms.length,
+			total,
+			offset,
+		};
 	}
 
 	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {

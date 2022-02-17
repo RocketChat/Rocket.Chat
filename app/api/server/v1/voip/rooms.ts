@@ -7,7 +7,21 @@ import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { ILivechatAgent } from '../../../../../definition/ILivechatAgent';
+import { hasPermission } from '../../../../authorization/server';
+import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 
+type DateParam = { start?: string; end?: string };
+const validateDateParams = (property: string, date: DateParam | string): DateParam => {
+	const parsedDate = date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
+
+	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
+		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
+	}
+	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
+		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
+	}
+	return parsedDate;
+};
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -107,6 +121,48 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-room');
 			}
 			return API.v1.success({ room, newRoom: false });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'voip/rooms',
+	{ authRequired: true },
+	{
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const { sort, fields } = this.parseJsonQuery();
+			const { agents, open, tags, queue, visitorId } = this.requestParams();
+			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
+
+			check(agents, Match.Maybe([String]));
+			check(open, Match.Maybe(String));
+			check(tags, Match.Maybe([String]));
+			check(queue, Match.Maybe(String));
+			check(visitorId, Match.Maybe(String));
+
+			// Reusing same L room permissions for simplicity
+			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
+			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+			if (!hasAdminAccess && !hasAgentAccess) {
+				return API.v1.unauthorized();
+			}
+
+			const createdAt = validateDateParams('createdAt', createdAtParam);
+			const closedAt = validateDateParams('closedAt', closedAtParam);
+
+			return API.v1.success(
+				await LivechatVoip.findVoipRooms({
+					agents,
+					open,
+					tags,
+					queue,
+					visitorId,
+					createdAt,
+					closedAt,
+					options: { sort, offset, count, fields },
+				}),
+			);
 		},
 	},
 );

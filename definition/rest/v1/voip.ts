@@ -1,6 +1,6 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
-import { IRoom } from '../../IRoom';
+import { IRoom, IVoipRoom } from '../../IRoom';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
@@ -24,5 +24,16 @@ export type VoipEndpoints = {
 	};
 	'voip/room': {
 		GET: (params: { token: string; agentId: ILivechatAgent['_id'] }) => { room: IRoom; newRoom: boolean };
+	};
+	'voip/rooms': {
+		GET: (params: {
+			agents: string[];
+			open: boolean;
+			createdAt: string;
+			closedAt: string;
+			tags: string[];
+			queue: string;
+			visitorId: string;
+		}) => PaginatedResult<{ rooms: IVoipRoom[] }>;
 	};
 };
