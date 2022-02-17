@@ -284,7 +284,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	 */
 	if (settings.get('Show_Setup_Wizard') === 'pending') {
 		if (!roles.includes('admin')) {
-		    roles.push('admin');
+			roles.push('admin');
 		}
 		Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 	}
