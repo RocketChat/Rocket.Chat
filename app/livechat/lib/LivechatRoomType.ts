@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import { IOmnichannelRoom } from '../../../definition/IRoom';
-import { ChatRoom } from '../../models/client/models/ChatRoom';
+// @ts-expect-error
+import { ChatRoom } from '../../models';
 // @ts-expect-error
 import { settings } from '../../settings';
 // @ts-expect-error
