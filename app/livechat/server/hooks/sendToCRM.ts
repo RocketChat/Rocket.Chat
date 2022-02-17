@@ -50,9 +50,7 @@ const getAdditionalFieldsByType = (type: string, room: AdditionalFieldsRoomData)
 			return {};
 	}
 };
-function sendToCRM(type: string, room: IOmnichannelRoom, includeMessages?: any): IOmnichannelRoom {
-	includeMessages = true;
-
+function sendToCRM(type: string, room: IOmnichannelRoom, includeMessages: any = true): IOmnichannelRoom {
 	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}

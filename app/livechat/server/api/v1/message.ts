@@ -183,7 +183,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('invalid-room');
 				}
 
-				const message = Messages.findOneById(_id);
+				const message = await Messages.findOneById(_id);
 				if (!message) {
 					throw new Meteor.Error('invalid-message');
 				}
