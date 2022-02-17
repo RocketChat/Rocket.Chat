@@ -1,4 +1,4 @@
-import { ISetting, ISettingColor, SettingValue } from '../../ISetting';
+import { ISetting, ISettingColor } from '../../ISetting';
 import { PaginatedResult } from '../helpers/PaginatedResult';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
@@ -18,13 +18,13 @@ export type OauthCustomConfiguration = {
 	authorizePath: string;
 	scope: string;
 	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: string | boolean;
-	identityTokenSentVia: string | boolean;
-	keyField: string | boolean;
-	usernameField: string | boolean;
-	emailField: string | boolean;
-	nameField: string | boolean;
-	avatarField: string | boolean;
+	tokenSentVia: string;
+	identityTokenSentVia: string;
+	keyField: string;
+	usernameField: string;
+	emailField: string;
+	nameField: string;
+	avatarField: string;
 	rolesClaim: string;
 	groupsClaim: string;
 	mapChannels: string;
@@ -38,10 +38,10 @@ export type OauthCustomConfiguration = {
 	appId: string;
 	consumerKey?: string;
 
-	clientConfig: { provider: SettingValue };
-	buttonLabelText: SettingValue;
-	buttonLabelColor: SettingValue;
-	buttonColor: SettingValue;
+	clientConfig: unknown;
+	buttonLabelText: string;
+	buttonLabelColor: string;
+	buttonColor: string;
 };
 
 export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
