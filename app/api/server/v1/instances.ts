@@ -17,7 +17,7 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				instances: instances.map((instance: IInstanceStatus) => {
-					const connection = getInstanceConnection(instance);
+					const connection = getInstanceConnection(instance) as IInstanceStatus;
 					if (connection) {
 						delete connection.instanceRecord;
 					}

@@ -6,7 +6,7 @@ export interface IInstance {
 		retryTime: number;
 		status: string;
 	};
-	instanceRecord: {
+	instanceRecord?: {
 		name: string;
 		pid: number;
 		_createdAt: Date;
