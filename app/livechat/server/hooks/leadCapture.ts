@@ -48,7 +48,7 @@ callbacks.add(
 		const phoneRegexp = new RegExp(settings.get<string>('Livechat_lead_phone_regex'), 'g');
 		const msgPhones = message.msg.match(phoneRegexp);
 
-		const emailRegexp = new RegExp(settings.get('Livechat_lead_email_regex') as string, 'gi');
+		const emailRegexp = new RegExp(settings.get<string>('Livechat_lead_email_regex'), 'gi');
 		const msgEmails = message.msg.match(emailRegexp);
 
 		if (msgEmails || msgPhones) {
