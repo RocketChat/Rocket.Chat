@@ -296,9 +296,7 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd];
 			}
 
-			const { channel } = API.channels.create.execute(userId, bodyParams);
-
-			return API.v1.success({ channel });
+			return API.v1.success(API.channels.create.execute(userId, bodyParams));
 		},
 	},
 );
