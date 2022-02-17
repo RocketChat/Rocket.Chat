@@ -6,6 +6,8 @@ import type { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { filterAppByPurchaseType } from '../helpers/filterAppByPurchaseType';
 import { filterAppByText } from '../helpers/filterAppByText';
+import { filterAppsByClosestDate } from '../helpers/filterAppsByCloseDate';
+import { filterAppsByFarthestDate } from '../helpers/filterAppsByFarthestDate';
 import { App } from '../types';
 
 type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
@@ -13,19 +15,19 @@ type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextTy
 export const useFilteredApps = ({
 	appsData,
 	text,
-	sortDirection,
 	current,
 	itemsPerPage,
 	categories = [],
 	purchaseType,
+	sorting,
 }: {
 	appsData: appsDataType;
 	text: string;
-	sortDirection: 'asc' | 'desc';
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
 	purchaseType?: string;
+	sorting?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -36,6 +38,18 @@ export const useFilteredApps = ({
 
 		let filtered: App[] = apps;
 		let shouldShowSearchText = true;
+
+		const sortingMethods: Record<string, () => App[]> = {
+			za: () => filtered.reverse(),
+			mru: () => filtered.sort((firstApp, secondApp) => filterAppsByClosestDate(firstApp.modifiedDate, secondApp.modifiedDate)),
+			lru: () => filtered.sort((firstApp, secondApp) => filterAppsByFarthestDate(firstApp.modifiedDate, secondApp.modifiedDate)),
+		};
+
+		if (!!sorting && sorting !== 'az') {
+			console.log(filtered.map((app) => app.id));
+			filtered = sortingMethods[sorting]();
+			console.log(filtered.map((app) => app.id));
+		}
 
 		if (purchaseType && purchaseType !== 'all') {
 			filtered = filterAppByPurchaseType(filtered, purchaseType);
@@ -60,17 +74,13 @@ export const useFilteredApps = ({
 			shouldShowSearchText = true;
 		}
 
-		if (sortDirection === 'desc') {
-			filtered.reverse();
-		}
-
 		const total = filtered.length;
 		const offset = current > total ? 0 : current;
 		const end = current + itemsPerPage;
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [appsData.value, purchaseType, categories, text, sortDirection, current, itemsPerPage]);
+	}, [appsData.value, purchaseType, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {

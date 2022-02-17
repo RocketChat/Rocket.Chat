@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 
 import { useRadioToggle } from '../../hooks/useRadioToggle';
 import RadioButtonList from '../RadioButtonList';
-import SortDropDown from './SortDropDown';
-import SortDropDownAnchor from './SortDropDownAnchor';
+import RadioDropDownAnchor from './RadioDownAnchor';
+import RadioDropDown from './RadioDropDown';
 
 export default {
-	title: 'apps/components/FreePaidDropDown',
-	component: SortDropDownAnchor,
+	title: 'apps/components/SortDropDown',
+	component: RadioDropDown,
 };
 
 const testGroup = {
@@ -21,7 +21,7 @@ const testGroup = {
 	],
 };
 
-export const Anchor: Story = () => <SortDropDownAnchor group={testGroup} />;
+export const Anchor: Story = () => <RadioDropDownAnchor group={testGroup} />;
 
 export const List: Story = () => {
 	const [data, setData] = useState(() => testGroup);
@@ -38,7 +38,7 @@ export const Default: Story = () => {
 
 	return (
 		<>
-			<SortDropDown group={data} onSelected={onSelected} />
+			<RadioDropDown group={data} onSelected={onSelected} />
 		</>
 	);
 };
