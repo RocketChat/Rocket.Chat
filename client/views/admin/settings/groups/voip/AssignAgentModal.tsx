@@ -53,7 +53,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) =>
 						<Field.Row>
 							<Select
 								disabled={state === AsyncStatePhase.LOADING || agent === ''}
-								options={availableExtensions?.available?.map((extension) => [extension, extension]) || []}
+								options={availableExtensions?.extensions?.map((extension) => [extension, extension]) || []}
 								value={extension}
 								placeholder={t('Select_an_option')}
 								onChange={setExtension}

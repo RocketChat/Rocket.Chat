@@ -3147,7 +3147,7 @@ settingsRegistry.addGroup('VoIP', function () {
 			alert: 'Experimental_Feature_Alert',
 		});
 
-		this.section('Server Configuration', function () {
+		this.section('Server_Configuration', function () {
 			// TODO: Remove default values before deploying
 			this.add('VoIP_Server_Host', 'omni-asterisk.dev.rocket.chat', {
 				type: 'string',
@@ -3183,7 +3183,7 @@ settingsRegistry.addGroup('VoIP', function () {
 			});
 		});
 
-		this.section('Management Server', function () {
+		this.section('Management_Server', function () {
 			this.add('VoIP_Management_Server_Host', 'omni-asterisk.dev.rocket.chat', {
 				type: 'string',
 				public: true,

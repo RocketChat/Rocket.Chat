@@ -22,9 +22,7 @@ export type VoipEndpoints = {
 		GET: (params: PaginatedRequest) => PaginatedResult & { extensions: IVoipExtensionWithAgentInfo[] };
 	};
 	'omnichannel/extension': {
-		GET: (
-			params: { userId: string; type: string } | { username: string; type: string },
-		) => PaginatedResult & { extensions?: string[]; available?: string[] }; // TODO: check how to do conditional types when the type param changes
+		GET: (params: { userId: string; type: string } | { username: string; type: string }) => PaginatedResult & { extensions: string[] };
 	};
 	'omnichannel/agent/extension': {
 		POST: (params: { userId: string; extension: string } | { username: string; extension: string }) => void;

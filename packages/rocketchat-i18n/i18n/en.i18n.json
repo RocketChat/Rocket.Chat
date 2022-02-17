@@ -560,6 +560,7 @@
   "assign-roles": "Assign Roles",
   "assign-roles_description": "Permission to assign roles to other users",
   "Associate": "Associate",
+  "Associate_Agent" : "Associate Agent",
   "Associate_Agent_to_Extension" : "Associate Agent to Extension",
   "at": "at",
   "At_least_one_added_token_is_required_by_the_user": "At least one added token is required by the user",

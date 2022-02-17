@@ -1,4 +1,4 @@
-import { Chip, Skeleton, Table, Button } from '@rocket.chat/fuselage';
+import { Box, Chip, Table, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useMemo, useCallback, useState } from 'react';
 
@@ -6,7 +6,6 @@ import GenericTable from '../../../../../components/GenericTable';
 import Page from '../../../../../components/Page';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import AssignAgentModal from './AssignAgentModal';
 import RemoveAgentButton from './RemoveAgentButton';
@@ -35,7 +34,7 @@ const VoipExtensionsPage: FC = () => {
 		[itemsPerPage, current],
 	);
 
-	const { value: data, phase, reload } = useEndpointData('omnichannel/extensions', query);
+	const { value: data, reload } = useEndpointData('omnichannel/extensions', query);
 
 	const header = useMemo(
 		() =>
@@ -46,7 +45,7 @@ const VoipExtensionsPage: FC = () => {
 				<GenericTable.HeaderCell key='username' w='x240'>
 					{t('Agent_Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key='queues' w='x240'>
+				<GenericTable.HeaderCell key='queues' w='x120'>
 					{t('Queues')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'remove-add'} w='x60' />,
@@ -56,15 +55,21 @@ const VoipExtensionsPage: FC = () => {
 
 	const renderRow = useCallback(
 		({ _id, extension, username, state, queues }) => (
-			<Table.Row key={_id} tabIndex={0} role='link' action>
+			<Table.Row key={_id} tabIndex={0}>
 				<Table.Cell withTruncatedText>{extension}</Table.Cell>
 				<Table.Cell withTruncatedText>{username || state}</Table.Cell>
-				<Table.Cell withTruncatedText>
-					{queues?.map((queue: string) => (
-						<Chip key={queue} value={queue}>
-							{queue}
-						</Chip>
-					))}
+				<Table.Cell withTruncatedText maxHeight='x36'>
+					<Box display='flex' flexDirection='row' alignItems='center' title={queues?.join(', ')}>
+						{queues?.map(
+							(queue: string, index: number) =>
+								index <= 1 && (
+									<Chip mie='x4' key={queue} value={queue}>
+										{queue}
+									</Chip>
+								),
+						)}
+						{queues?.length > 2 && `+${(queues.length - 2).toString()}`}
+					</Box>
 				</Table.Cell>
 				{username ? <RemoveAgentButton username={username} reload={reload} /> : null}
 			</Table.Row>
@@ -72,24 +77,23 @@ const VoipExtensionsPage: FC = () => {
 		[reload],
 	);
 
-	if (phase === AsyncStatePhase.LOADING) {
-		return <Skeleton width='full' />;
-	}
-
-	if (!data) {
-		return null;
-	}
-
-	console.log(data);
-
 	return (
 		<Page.Content>
-			<Button onClick={(): void => setModal(<AssignAgentModal closeModal={(): void => setModal()} reload={reload} />)}> test </Button>
+			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mb='x14'>
+				<Box fontScale='p2' color='hint'>
+					{data?.total} {t('Extensions')}
+				</Box>
+				<Box>
+					<Button primary onClick={(): void => setModal(<AssignAgentModal closeModal={(): void => setModal()} reload={reload} />)}>
+						{t('Associate_Agent')}
+					</Button>
+				</Box>
+			</Box>
 			<GenericTable
 				header={header}
 				renderRow={renderRow}
-				results={data.extensions.map((extension) => ({ _id: extension.extension, ...extension }))}
-				total={data.total}
+				results={data?.extensions.map((extension) => ({ _id: extension.extension, ...extension }))}
+				total={data?.total}
 				params={params}
 				setParams={setParams}
 				// renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
