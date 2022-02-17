@@ -28,7 +28,7 @@ const waitPortRelease = (port, count = 0) =>
 			if (count > 60) {
 				return reject();
 			}
-			console.log('Port', port, 'not release, waiting 1s...');
+			console.log('Port', port, 'not released, waiting 1s...');
 			setTimeout(() => {
 				waitPortRelease(port, ++count)
 					.then(resolve)
