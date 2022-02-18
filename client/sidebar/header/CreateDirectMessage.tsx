@@ -20,14 +20,8 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 
 	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
 
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return setUsers([...users, value]);
-		}
-		setUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value: Username[]) => {
+		setUsers(value);
 	});
 
 	const onCreate = useMutableCallback(async () => {

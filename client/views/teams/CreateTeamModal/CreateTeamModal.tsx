@@ -136,14 +136,9 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	);
 
 	const onChangeMembers = useCallback(
-		(value, action) => {
-			if (!action) {
-				if (members.includes(value)) {
-					return;
-				}
-				return handleMembers([...members, value]);
-			}
-			handleMembers(members.filter((current) => current !== value));
+		(value) => {
+			console.log('-----', value, 'members:', members);
+			handleMembers(value);
 		},
 		[handleMembers, members],
 	);
