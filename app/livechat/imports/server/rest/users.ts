@@ -2,7 +2,8 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { Users } from '../../../../models/server/raw/index';
-import { hasPermission } from '../../../../authorization/client/hasPermission';
+// @ts-expect-error
+import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
