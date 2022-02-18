@@ -81,8 +81,8 @@ const AppsTable: FC<{
 		items: [
 			{ id: 'az', label: 'A-Z', checked: true },
 			{ id: 'za', label: 'Z-A', checked: false },
-			{ id: 'mru', label: 'Most recent updated', checked: false },
-			{ id: 'lru', label: 'Least recent updated', checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: false },
+			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
 		],
 	});
 
@@ -95,7 +95,7 @@ const AppsTable: FC<{
 		itemsPerPage,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
 		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
-		sorting: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
+		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
 	});
 
 	return (
