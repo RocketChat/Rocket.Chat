@@ -22,7 +22,7 @@ const updateMessages = debounceByRoomId(
 	Meteor.bindEnvironment(({ _id, lm }) => {
 		// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
 		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
-		if (!firstSubscription) {
+		if (!firstSubscription || !firstSubscription.ls) {
 			return;
 		}
 
@@ -42,31 +42,32 @@ export const ReadReceipt = {
 
 		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
 
-		// if users last seen is greadebounceByRoomIdter than room's last message, it means the user already have this room marked as read
+		// if users last seen is greater than room's last message, it means the user already have this room marked as read
 		if (userLastSeen > room.lm) {
 			return;
 		}
 
-		if (userLastSeen) {
-			this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
-		}
+		this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 
 		updateMessages(room);
 	},
 
-	markMessageAsReadBySender(message, roomId, userId) {
+	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		// this will usually happens if the message sender is the only one on the room
-		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(roomId);
-		if (firstSubscription && message.unread && message.ts < firstSubscription.ls) {
-			Messages.setAsReadById(message._id, firstSubscription.ls);
+		if (!message.unread) {
+			return;
 		}
 
-		const room = Rooms.findOneById(roomId, { fields: { t: 1 } });
-		const extraData = roomTypes.getConfig(room.t).getReadReceiptsExtraData(message);
+		// mark message as read if the sender is the only one in the room
+		const isUserAlone = Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count() === 0;
+		if (isUserAlone) {
+			Messages.setAsReadById(message._id);
+		}
+
+		const extraData = roomTypes.getConfig(t).getReadReceiptsExtraData(message);
 
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},

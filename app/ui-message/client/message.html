@@ -49,7 +49,9 @@
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
+					{{#unless system}}
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					{{/unless}}
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
@@ -111,6 +113,11 @@
 						{{> messageLocation location=msg.location}}
 					{{/if}}
 				</div>
+				{{#if system}}
+					<div class='title border-component-color color-info-font-color'>
+						<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+					</div>
+				{{/if}}
 			</div>
 
 			{{#if hasOembed}}
