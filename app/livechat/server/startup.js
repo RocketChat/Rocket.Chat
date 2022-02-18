@@ -37,7 +37,6 @@ Meteor.startup(async () => {
 	callbacks.add(
 		'beforeJoinRoom',
 		function (user, room) {
-			console.log('beforeJoinRoom', user, room);
 			if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
@@ -53,13 +52,11 @@ Meteor.startup(async () => {
 	callbacks.add(
 		'beforeJoinRoom',
 		function (user, room) {
-			console.log('beforeJoinRoom', user, room);
 			if (room.t === 'l' && !room.servedBy) {
 				const inquiry = LivechatInquiry.findOneByRoomId(room._id);
 				if (!inquiry) {
 					throw new Meteor.Error('error-invalid-inquiry', `Error: No inquiry found connected to room with id: ${room._id}`);
 				}
-				console.log('beforeJoinRoom', inquiry);
 				Meteor.runAsUser(user._id, () => Meteor.call('livechat:takeInquiry', inquiry._id));
 			}
 
