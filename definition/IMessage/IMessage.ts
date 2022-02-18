@@ -18,6 +18,8 @@ type VoipMessageTypesValues =
 	| 'voip-call-duration'
 	| 'voip-call-wrapup';
 
+type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+
 export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -34,12 +36,14 @@ export type MessageTypesValues =
 	| 'room_archived'
 	| 'room_unarchived'
 	| 'room_changed_privacy'
+	| 'room_changed_description'
+	| 'room_changed_announcement'
 	| 'room_changed_avatar'
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close'
-	| VoipMessageTypesValues;
+	| VoipMessageTypesValues
+	| OmnichannelTypesValues;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;

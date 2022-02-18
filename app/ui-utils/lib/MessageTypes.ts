@@ -1,7 +1,7 @@
 import { IMessage, MessageTypesValues } from '../../../definition/IMessage';
 import type keys from '../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 
-interface IMessageType {
+export interface IMessageType {
 	id: MessageTypesValues;
 	system: boolean;
 	message: keyof typeof keys;

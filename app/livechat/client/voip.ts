@@ -1,15 +1,15 @@
 import moment from 'moment';
 
-import { MessageTypes } from '../../ui-utils/client';
+import { MessageTypes, IMessageType } from '../../ui-utils/client';
 import { IVoipMessage } from '../../../definition/IMessage';
 
 type IMessageFuncReturn = { at: string } | { at: string; time: string } | { comment: string } | { duration: string };
 
-const messageTypes = [
+const messageTypes: IMessageType[] = [
 	{
-		id: 'voip-call-started' as const,
+		id: 'voip-call-started',
 		system: true,
-		message: 'Voip_call_started' as const,
+		message: 'Voip_call_started',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			const seconds = message?.voipData?.callWaitingTime || 0;
 			return {
@@ -19,9 +19,9 @@ const messageTypes = [
 		},
 	},
 	{
-		id: 'voip-call-duration' as const,
+		id: 'voip-call-duration',
 		system: true,
-		message: 'Voip_call_duration' as const,
+		message: 'Voip_call_duration',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			const seconds = (message?.voipData?.callDuration || 0) / 1000;
 			const duration = moment.duration(seconds, 'seconds').humanize();
@@ -31,14 +31,14 @@ const messageTypes = [
 		},
 	},
 	{
-		id: 'voip-call-declined' as const,
+		id: 'voip-call-declined',
 		system: true,
-		message: 'Voip_call_declined' as const,
+		message: 'Voip_call_declined',
 	},
 	{
-		id: 'voip-call-on-hold' as const,
+		id: 'voip-call-on-hold',
 		system: true,
-		message: 'Voip_call_on_hold' as const,
+		message: 'Voip_call_on_hold',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			return {
 				at: message.ts.toString(),
@@ -46,9 +46,9 @@ const messageTypes = [
 		},
 	},
 	{
-		id: 'voip-call-unhold' as const,
+		id: 'voip-call-unhold',
 		system: true,
-		message: 'Voip_call_unhold' as const,
+		message: 'Voip_call_unhold',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			return {
 				at: message.ts.toString(),
@@ -56,9 +56,9 @@ const messageTypes = [
 		},
 	},
 	{
-		id: 'voip-call-ended' as const,
+		id: 'voip-call-ended',
 		system: true,
-		message: 'Voip_call_ended' as const,
+		message: 'Voip_call_ended',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			return {
 				at: message.ts.toString(),
@@ -66,9 +66,9 @@ const messageTypes = [
 		},
 	},
 	{
-		id: 'voip-call-wrapup' as const,
+		id: 'voip-call-wrapup',
 		system: true,
-		message: 'Voip_call_wrapup' as const,
+		message: 'Voip_call_wrapup',
 		data(message: IVoipMessage): IMessageFuncReturn {
 			return {
 				comment: message.msg,
