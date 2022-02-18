@@ -5,7 +5,7 @@ export interface IMessageType {
 	id: MessageTypesValues;
 	system: boolean;
 	message: keyof typeof keys;
-	data?: (message: any) => any;
+	data?: (message: IMessage) => any;
 }
 
 type MessageTypes = {
