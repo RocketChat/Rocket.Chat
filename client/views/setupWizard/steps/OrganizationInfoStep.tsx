@@ -2,6 +2,7 @@ import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import React, { ComponentProps, ReactElement } from 'react';
 
 import { ISetting } from '../../../../definition/ISetting';
+import { useRole } from '../../../contexts/AuthorizationContext';
 import { useTranslation, TranslationKey } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -25,6 +26,7 @@ const getSettingOptions = (
 
 const OrganizationInfoStep = (): ReactElement => {
 	const t = useTranslation();
+	const hasAdminRole = useRole('admin');
 
 	const {
 		setupWizardData: { organizationData },
@@ -55,7 +57,7 @@ const OrganizationInfoStep = (): ReactElement => {
 		<OrganizationInfoPage
 			initialValues={organizationData}
 			onSubmit={handleSubmit}
-			onBackButtonClick={goToPreviousStep}
+			onBackButtonClick={!hasAdminRole ? goToPreviousStep : undefined}
 			currentStep={currentStep}
 			stepCount={maxSteps}
 			organizationTypeOptions={organizationTypeOptions}
