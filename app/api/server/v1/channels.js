@@ -306,13 +306,13 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const findResult = findChannelByIdOrName({
+			const room = findChannelByIdOrName({
 				params: this.requestParams(),
 				checkedArchived: false,
 			});
 
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('eraseRoom', findResult._id);
+				Meteor.call('eraseRoom', room._id);
 			});
 
 			return API.v1.success();
