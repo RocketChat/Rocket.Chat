@@ -4697,6 +4697,7 @@
   "Voip_call_on_hold": "Call placed on hold at __at__",
   "Voip_call_unhold": "Call resumed at __at__",
   "Voip_call_ended": "Call ended at __at__",
+  "Voip_call_wrapup": "Call wrapup notes added: __comment__",
   "Chat_opened_by_visitor": "Chat opened by the visitor",
   "Wait_activation_warning": "Before you can login, your account must be manually activated by an administrator.",
   "Waiting_queue": "Waiting queue",

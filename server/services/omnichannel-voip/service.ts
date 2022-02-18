@@ -16,6 +16,8 @@ import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { IVoipMessage } from '../../../definition/IMessage';
+import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
+import { FindVoipRoomsParams } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -236,7 +238,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return currentOnHoldTime;
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean> {
+	// Comment can be used to store wrapup call data
+	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, user: IUser, comment?: string, tags?: string[]): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -251,6 +254,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			callDuration: now.getTime() / 1000,
 			closer,
 			callTotalHoldTime,
+			tags,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 		if (visitor) {
@@ -261,6 +265,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			};
 		}
 
+		const message = {
+			t: 'voip-call-wrapup',
+			msg: comment,
+			groupable: false,
+		};
+
+		await sendMessage(user, message, room);
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
 	}
@@ -298,6 +309,43 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				...ext,
 			};
 		});
+	}
+
+	async findVoipRooms({
+		agents,
+		open,
+		createdAt,
+		closedAt,
+		visitorId,
+		tags,
+		queue,
+		options: { offset = 0, count, fields, sort } = {},
+	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
+		const cursor = this.voipRoom.findRoomsWithCriteria({
+			agents,
+			open,
+			createdAt,
+			closedAt,
+			tags,
+			queue,
+			visitorId,
+			options: {
+				sort: sort || { ts: -1 },
+				offset,
+				count,
+				fields,
+			},
+		});
+
+		const total = await cursor.count();
+		const rooms = await cursor.toArray();
+
+		return {
+			rooms,
+			count: rooms.length,
+			total,
+			offset,
+		};
 	}
 
 	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {
