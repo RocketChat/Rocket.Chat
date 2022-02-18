@@ -15,9 +15,10 @@ type VoipMessageTypesValues =
 	| 'voip-call-on-hold'
 	| 'voip-call-unhold'
 	| 'voip-call-ended'
-	| 'voip-call-duration';
+	| 'voip-call-duration'
+	| 'voip-call-wrapup';
 
-type MessageTypesValues =
+export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
 	| 'ul'
