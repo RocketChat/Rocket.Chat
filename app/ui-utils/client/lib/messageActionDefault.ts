@@ -3,6 +3,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
+import { isString } from 'underscore';
 
 import { messageArgs } from './messageArgs';
 import { roomTypes } from '../../../utils/client';
@@ -233,7 +234,7 @@ Meteor.startup(async function () {
 						return false;
 					}
 
-					if (!inputValue.trim()) {
+					if (isString(inputValue) && !inputValue.trim()) {
 						modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 						return false;
 					}
