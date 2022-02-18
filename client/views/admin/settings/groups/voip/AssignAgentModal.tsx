@@ -18,7 +18,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) =>
 	const [agent, setAgent] = useState('');
 	console.log(agent);
 	const [extension, setExtension] = useState('');
-	const query = useMemo(() => ({ type: 'available', userId: agent }), [agent]);
+	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 
 	const assignAgent = useEndpoint('POST', 'omnichannel/agent/extension');
 

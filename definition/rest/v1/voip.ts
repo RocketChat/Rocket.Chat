@@ -1,6 +1,7 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IRoom } from '../../IRoom';
+import { IUser } from '../../IUser';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
@@ -22,9 +23,14 @@ export type VoipEndpoints = {
 		GET: (params: PaginatedRequest) => PaginatedResult & { extensions: IVoipExtensionWithAgentInfo[] };
 	};
 	'omnichannel/extension': {
-		GET: (params: { userId: string; type: string } | { username: string; type: string }) => PaginatedResult & { extensions: string[] };
+		GET: (
+			params: { userId: string; type: 'free' | 'allocated' | 'available' } | { username: string; type: 'free' | 'allocated' | 'available' },
+		) => {
+			extensions: string[];
+		};
 	};
 	'omnichannel/agent/extension': {
+		GET: (params: { username: string }) => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		POST: (params: { userId: string; extension: string } | { username: string; extension: string }) => void;
 		DELETE: (params: { username: string }) => void;
 	};

@@ -3158,7 +3158,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 			this.add('VoIP_Server_Websocket_Port', 443, {
-				type: 'number',
+				type: 'int',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
