@@ -767,6 +767,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByRolesAndType(roles, type, options) {
+		const query = { roles, type };
+
+		return this.findOne(query, options);
+	}
+
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
