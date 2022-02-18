@@ -3,11 +3,12 @@ import { useMemo, ContextType } from 'react';
 import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
-import { filterAppByCategories } from '../helpers/filterAppByCategories';
-import { filterAppByPurchaseType } from '../helpers/filterAppByPurchaseType';
-import { filterAppByText } from '../helpers/filterAppByText';
-import { filterAppsByClosestDate } from '../helpers/filterAppsByCloseDate';
-import { filterAppsByFarthestDate } from '../helpers/filterAppsByFarthestDate';
+import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
+import { filterAppsByFree } from '../helpers/filterAppsByFree';
+import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
+import { filterAppsByText } from '../helpers/filterAppsByText';
+import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
+import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import { App } from '../types';
 
 type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
@@ -19,7 +20,7 @@ export const useFilteredApps = ({
 	itemsPerPage,
 	categories = [],
 	purchaseType,
-	sorting,
+	sortingMethod,
 }: {
 	appsData: appsDataType;
 	text: string;
@@ -27,7 +28,7 @@ export const useFilteredApps = ({
 	itemsPerPage: number;
 	categories?: string[];
 	purchaseType?: string;
-	sorting?: string;
+	sortingMethod?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -40,19 +41,21 @@ export const useFilteredApps = ({
 		let shouldShowSearchText = true;
 
 		const sortingMethods: Record<string, () => App[]> = {
-			za: () => filtered.reverse(),
-			mru: () => filtered.sort((firstApp, secondApp) => filterAppsByClosestDate(firstApp.modifiedDate, secondApp.modifiedDate)),
-			lru: () => filtered.sort((firstApp, secondApp) => filterAppsByFarthestDate(firstApp.modifiedDate, secondApp.modifiedDate)),
+			az: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
+			za: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
+			mru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
+			lru: () =>
+				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 		};
 
-		if (!!sorting && sorting !== 'az') {
-			console.log(filtered.map((app) => app.id));
-			filtered = sortingMethods[sorting]();
-			console.log(filtered.map((app) => app.id));
+		if (sortingMethod) {
+			filtered = sortingMethods[sortingMethod]();
 		}
 
 		if (purchaseType && purchaseType !== 'all') {
-			filtered = filterAppByPurchaseType(filtered, purchaseType);
+			filtered =
+				purchaseType === 'paid' ? filtered.filter((app) => filterAppsByPaid(app)) : filtered.filter((app) => filterAppsByFree(app));
 
 			if (!filtered.length) {
 				shouldShowSearchText = false;
@@ -60,17 +63,17 @@ export const useFilteredApps = ({
 		}
 
 		if (Boolean(categories.length) && Boolean(text)) {
-			filtered = apps.filter((app) => filterAppByCategories(app, categories)).filter(({ name }) => filterAppByText(name, text));
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
 		}
 
 		if (Boolean(categories.length) && !text) {
-			filtered = apps.filter((app) => filterAppByCategories(app, categories));
+			filtered = apps.filter((app) => filterAppsByCategories(app, categories));
 			shouldShowSearchText = false;
 		}
 
 		if (!categories.length && Boolean(text)) {
-			filtered = apps.filter(({ name }) => filterAppByText(name, text));
+			filtered = apps.filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
 		}
 
@@ -80,7 +83,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [appsData.value, purchaseType, categories, text, current, itemsPerPage]);
+	}, [appsData.value, sortingMethod, purchaseType, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
