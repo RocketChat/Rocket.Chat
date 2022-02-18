@@ -1,8 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../api';
 import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
 import { LivechatVoip } from '../../../../../server/sdk';
@@ -11,17 +9,22 @@ import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 
 type DateParam = { start?: string; end?: string };
-const validateDateParams = (property: string, date: DateParam | string): DateParam => {
-	const parsedDate = date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
-
-	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
+const parseDateParams = (date: string): DateParam => {
+	return date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
+};
+const validateDateParams = (property: string, date: DateParam): DateParam => {
+	if (date?.start && isNaN(Date.parse(date.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
+	if (date?.end && isNaN(Date.parse(date.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
-	return parsedDate;
+	return date;
 };
+const parseAndValidate = (property: string, date: string): DateParam => {
+	return validateDateParams(property, parseDateParams(date));
+};
+
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -148,8 +151,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const createdAt = validateDateParams('createdAt', createdAtParam);
-			const closedAt = validateDateParams('closedAt', closedAtParam);
+			const createdAt = parseAndValidate('createdAt', createdAtParam);
+			const closedAt = parseAndValidate('closedAt', closedAtParam);
 
 			return API.v1.success(
 				await LivechatVoip.findVoipRooms({
@@ -216,8 +219,10 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				rid: String,
 				token: String,
+				tags: Match.Maybe([String]),
+				comment: Match.Maybe([String]),
 			});
-			const { rid, token } = this.bodyParams;
+			const { rid, token, comment, tags } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
@@ -230,9 +235,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const language: string = rcSettings.get('Language') || 'en';
-			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, comment, tags);
 			if (!closeResult) {
 				return API.v1.failure();
 			}
