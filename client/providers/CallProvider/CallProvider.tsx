@@ -1,11 +1,10 @@
 import { Random } from 'meteor/random';
-import React, { useMemo, FC, useRef, useCallback, useEffect } from 'react';
+import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { Notifications } from '../../../app/notifications/client';
 import { roomTypes } from '../../../app/utils/client';
-import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -23,6 +22,8 @@ export const CallProvider: FC = ({ children }) => {
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const [queueCounter, setQueueCounter] = useState('');
 
 	const handleAgentCalled = useCallback(
 		(queue: { queuename: string }): void => {
@@ -50,6 +51,8 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '50000',
 				},
 			});
+
+			setQueueCounter(queue.queuedcalls);
 		},
 		[dispatchToastMessage],
 	);
@@ -65,6 +68,8 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '50000',
 				},
 			});
+
+			setQueueCounter(queue.queuedcalls);
 		},
 		[dispatchToastMessage],
 	);
@@ -80,6 +85,8 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '50000',
 				},
 			});
+
+			setQueueCounter(queue.queuedcalls);
 		},
 		[dispatchToastMessage],
 	);
@@ -95,12 +102,14 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '50000',
 				},
 			});
+
+			setQueueCounter(queue.queuedcallafterabandon);
 		},
 		[dispatchToastMessage],
 	);
 
 	const handleQueueJoined = useCallback(
-		async (joiningDetails: { queuename: string; callerid: { id: string } }): Promise<void> => {
+		async (joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): Promise<void> => {
 			dispatchToastMessage({
 				type: 'success',
 				message: `Received call in ${joiningDetails.queuename} from customerid ${joiningDetails.callerid.id}`,
@@ -111,22 +120,9 @@ export const CallProvider: FC = ({ children }) => {
 				},
 			});
 
-			// TODO: can we change this to use a hook instead of the APIClient directly?
-			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
-				extension: user?.extension,
-			});
-
-			dispatchToastMessage({
-				type: 'success',
-				message: `Calls waiting in ${joiningDetails.queuename} are ${list.callWaitingCount}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
+			setQueueCounter(joiningDetails.queuedcalls);
 		},
-		[dispatchToastMessage, user?.extension],
+		[dispatchToastMessage],
 	);
 
 	useEffect(() => {
@@ -163,6 +159,7 @@ export const CallProvider: FC = ({ children }) => {
 			ready: true,
 			registrationInfo,
 			voipClient,
+			queueCounter,
 			actions: {
 				mute: (): Promise<void> => voipClient.muteCall(true), // voipClient.mute(),
 				unmute: (): Promise<void> => voipClient.muteCall(false), // voipClient.unmute()
@@ -187,7 +184,7 @@ export const CallProvider: FC = ({ children }) => {
 				}
 			},
 		};
-	}, [result, user, visitorEndpoint, voipEndpoint]);
+	}, [queueCounter, result, user, visitorEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}

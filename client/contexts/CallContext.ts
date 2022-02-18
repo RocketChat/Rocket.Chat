@@ -21,6 +21,7 @@ type CallContextReady = {
 	ready: true;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
+	queueCounter: number;
 	openRoom: (caller: ICallerInfo) => void;
 };
 type CallContextError = {
@@ -116,4 +117,14 @@ export const useCallClient = (): VoIPUser => {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
 	return context.voipClient;
+};
+
+export const useQueueCounter = (): CallContextReady['queueCounter'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useQueueInfo only if Calls are enabled and ready');
+	}
+
+	return context.queueCounter;
 };
