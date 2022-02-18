@@ -29,6 +29,7 @@
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
 import _ from 'underscore';
+import { Db } from 'mongodb';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
@@ -40,8 +41,8 @@ import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnecto
 export class PJSIPEndpoint extends Command {
 	private logger: Logger;
 
-	constructor(command: string, parametersNeeded: boolean) {
-		super(command, parametersNeeded);
+	constructor(command: string, parametersNeeded: boolean, db: Db) {
+		super(command, parametersNeeded, db);
 		this.logger = new Logger('PJSIPEndpoint');
 		this._type = CommandType.AMI;
 	}
@@ -88,6 +89,13 @@ export class PJSIPEndpoint extends Command {
 			});
 			return;
 		}
+
+		// A SIP address-of-record is a canonical address by which a user is known
+		// If the event doesn't have an AOR, we will ignore it (as it's probably system-only)
+		if (!event?.aor.trim()) {
+			return;
+		}
+
 		const endPoint: IExtensionDetails = {
 			extension: event.objectname,
 			state: this.getState(event.devicestate),

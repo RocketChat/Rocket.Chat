@@ -5,7 +5,6 @@ import AdminInfoStep from './steps/AdminInfoStep';
 import CloudAccountConfirmation from './steps/CloudAccountConfirmation';
 import OrganizationInfoStep from './steps/OrganizationInfoStep';
 import RegisterServerStep from './steps/RegisterServerStep';
-import StandaloneServerStep from './steps/StandaloneServerStep';
 
 const SetupWizardPage = (): ReactElement => {
 	const { currentStep } = useSetupWizardContext();
@@ -18,8 +17,6 @@ const SetupWizardPage = (): ReactElement => {
 		case 3:
 			return <RegisterServerStep />;
 		case 4:
-			return <StandaloneServerStep />;
-		case 5:
 			return <CloudAccountConfirmation />;
 
 		default:

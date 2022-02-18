@@ -6,6 +6,10 @@ import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
 
+function paginate<T>(array: T[], count = 10, offset = 0): T[] {
+	return array.slice(offset, offset + count);
+}
+
 API.v1.addRoute(
 	'omnichannel/agent/extension',
 	{ authRequired: true },
@@ -138,12 +142,31 @@ API.v1.addRoute(
 						},
 					});
 					const freeExt = await LivechatVoip.getFreeExtensions();
-					const extensions = [extension.extension, ...freeExt];
+					const extensions = extension ? [extension.extension, ...freeExt] : freeExt;
 					return API.v1.success({ extensions });
 				}
 				default:
 					return API.v1.notFound(`${type} not found `);
 			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/extensions',
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
+	{
+		async get() {
+			const { offset, count } = this.getPaginationItems();
+			const extensions = await LivechatVoip.getExtensionListWithAgentData();
+
+			// paginating in memory as Asterisk doesn't provide pagination for commands
+			return API.v1.success({
+				extensions: paginate(extensions, count, offset),
+				offset,
+				count,
+				total: extensions.length,
+			});
 		},
 	},
 );

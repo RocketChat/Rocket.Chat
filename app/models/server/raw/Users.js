@@ -917,6 +917,24 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneByExtension(extension, options) {
+		const query = {
+			extension,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByExtensions(extensions, options) {
+		const query = {
+			extension: {
+				$in: extensions,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	getVoipExtensionByUserId(userId, options) {
 		const query = {
 			_id: userId,
