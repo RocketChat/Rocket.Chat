@@ -7,7 +7,7 @@ class SetupWizard extends Page {
 	}
 
 	get goToWorkspace() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="go-to-workspace"]');
+		return browser.element('button:contains("Confirm")');
 	}
 
 	get organizationType() {
@@ -30,36 +30,24 @@ class SetupWizard extends Page {
 		return browser.element('[name="country"]');
 	}
 
-	get website() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Website"]');
-	}
-
-	get siteName() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Site_Name"]');
-	}
-
-	get language() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Language"]');
-	}
-
-	get serverType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Server_Type"]');
-	}
-
 	get registeredServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server"]');
+		return browser.element('input[name=email]');
+	}
+
+	get registerButton() {
+		return browser.element('button:contains("Register")');
+	}
+
+	get agreementField() {
+		return browser.element('input[name=agreement]').closest('.rcx-check-box');
 	}
 
 	get standaloneServer() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="register-server-standalone"]');
+		return browser.element('button:contains("Continue as standalone")');
 	}
 
-	get serviceTermsAndPrivacyPolicyLabel() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="agree-terms-and-privacy"]').parent();
-	}
-
-	get serviceTermsAndPrivacyPolicy() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="agree-terms-and-privacy"]');
+	get standaloneConfirmText() {
+		return browser.element('.rcx-box:contains("Standalone Server Confirmation")');
 	}
 
 	login() {
