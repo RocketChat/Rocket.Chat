@@ -4,19 +4,15 @@ import React, { memo, useMemo, useState } from 'react';
 import type { ISetting } from '../../../../../definition/ISetting';
 import Page from '../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useSettings } from '../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
-
-// import { useEndpoint } from '../../../../contexts/ServerContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 import VoipExtensionsPage from './voip/VoipExtensionsPage';
 
 function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+	// const dispatchToastMessage = useToastMessageDispatch();
 	// const testConnection = useEndpoint('POST', 'voip.testConnection');
 	// const voipEnabled = useSetting('VOIP_Enabled');
 
@@ -69,18 +65,17 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		[serverConfig],
 	);
 
-	const testConnection = useEndpoint('GET', 'voip/callServer/checkConnection', testConnectionParams);
-
-	console.log('VoipGroupPage', testConnectionParams);
+	// const testConnection = useEndpoint('GET', 'voip/callServer/checkConnection', testConnectionParams);
 
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
-		try {
-			const result = await testConnection;
-			console.log('handleTestConnectionButtonClick', result);
-			dispatchToastMessage({ type: 'success', message: t(result) });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+		// try {
+		// 	const result = await testConnection;
+		// 	console.log('handleTestConnectionButtonClick', result);
+		// 	dispatchToastMessage({ type: 'success', message: result as string });
+		// } catch (error) {
+		// 	dispatchToastMessage({ type: 'error', message: error as string });
+		// }
+		console.log('testConnection', testConnectionParams);
 	};
 
 	console.log(group);

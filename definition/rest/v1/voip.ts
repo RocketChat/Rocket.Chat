@@ -6,7 +6,7 @@ import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivity
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { PaginatedResult, PaginatedResult } from '../helpers/PaginatedResult';
+import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
