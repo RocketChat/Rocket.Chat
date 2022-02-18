@@ -6,7 +6,7 @@ API.default.addRoute(
 	{ authRequired: false },
 	{
 		get() {
-			const user = this.getLoggedInUser();
+			const user = (this as any).getLoggedInUser();
 
 			return API.v1.success(Promise.await(getServerInfo(user?._id)));
 		},

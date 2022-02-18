@@ -4,9 +4,11 @@
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 
-API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
-	const hardUpperLimit = settings.get('API_Upper_Count_Limit') <= 0 ? 100 : settings.get('API_Upper_Count_Limit');
-	const defaultCount = settings.get('API_Default_Count') <= 0 ? 50 : settings.get('API_Default_Count');
+(API as any).helperMethods.set('getPaginationItems', function _getPaginationItems(this: any) {
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const hardUpperLimit = settings.get('API_Upper_Count_Limit')! <= 0 ? 100 : settings.get('API_Upper_Count_Limit');
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const defaultCount = settings.get('API_Default_Count')! <= 0 ? 50 : settings.get('API_Default_Count');
 	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
 	let count = defaultCount;
 
@@ -17,7 +19,7 @@ API.helperMethods.set('getPaginationItems', function _getPaginationItems() {
 		count = defaultCount;
 	}
 
-	if (count > hardUpperLimit) {
+	if (count && hardUpperLimit && count > hardUpperLimit) {
 		count = hardUpperLimit;
 	}
 

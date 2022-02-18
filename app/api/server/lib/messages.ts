@@ -1,13 +1,22 @@
+import { IUser } from '../../../../definition/IUserAction';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 
-export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findMentionedMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	roomId: string;
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<unknown> {
 	const room = await Rooms.findOneById(roomId);
 	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	const user = (await Users.findOneById(uid, { fields: { username: 1 } })) as IUser;
 	if (!user) {
 		throw new Error('invalid-user');
 	}
@@ -30,7 +39,15 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findStarredMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findStarredMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	roomId: string;
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<unknown> {
 	const room = await Rooms.findOneById(roomId);
 	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
@@ -58,7 +75,7 @@ export async function findStarredMessages({ uid, roomId, pagination: { offset, c
 	};
 }
 
-export async function findSnippetedMessageById({ uid, messageId }) {
+export async function findSnippetedMessageById({ uid, messageId }: { uid: string; messageId: string }): Promise<unknown> {
 	if (!(await getValue('Message_AllowSnippeting'))) {
 		throw new Error('error-not-allowed');
 	}
@@ -88,7 +105,15 @@ export async function findSnippetedMessageById({ uid, messageId }) {
 	};
 }
 
-export async function findSnippetedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
+export async function findSnippetedMessages({
+	uid,
+	roomId,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	roomId: string;
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<unknown> {
 	if (!(await getValue('Message_AllowSnippeting'))) {
 		throw new Error('error-not-allowed');
 	}
@@ -116,7 +141,17 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	};
 }
 
-export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: { offset, count, sort } }) {
+export async function findDiscussionsFromRoom({
+	uid,
+	roomId,
+	text,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	roomId: string;
+	text: string;
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<unknown> {
 	const room = await Rooms.findOneById(roomId);
 
 	if (!(await canAccessRoomAsync(room, { _id: uid }))) {

@@ -1,8 +1,19 @@
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server/raw';
 import { Subscriptions } from '../../../models/server';
+import { IMessage } from '../../../../definition/IMessage';
 
-export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {
+export async function findAdminRooms({
+	uid,
+	filter,
+	types = [],
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	filter: string;
+	types: string[];
+	pagination: { offset: number; count: number; sort: number };
+}): Promise<unknown> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -29,9 +40,9 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		teamMain: 1,
 	};
 
-	const name = filter && filter.trim();
-	const discussion = types && types.includes('discussions');
-	const includeTeams = types && types.includes('teams');
+	const name = filter?.trim();
+	const discussion = types?.includes('discussions');
+	const includeTeams = types?.includes('teams');
 	const showOnlyTeams = types.length === 1 && types.includes('teams');
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
@@ -63,7 +74,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	};
 }
 
-export async function findAdminRoom({ uid, rid }) {
+export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<unknown> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -93,7 +104,13 @@ export async function findAdminRoom({ uid, rid }) {
 	return Rooms.findOneById(rid, { fields });
 }
 
-export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
+export async function findChannelAndPrivateAutocomplete({
+	uid,
+	selector,
+}: {
+	uid: string;
+	selector: Record<string, unknown>;
+}): Promise<unknown> {
 	const options = {
 		fields: {
 			_id: 1,
@@ -110,7 +127,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IMessage) => item.rid);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
@@ -119,7 +136,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	};
 }
 
-export async function findAdminRoomsAutocomplete({ uid, selector }) {
+export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: string; selector: Record<string, unknown> }): Promise<unknown> {
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
 		throw new Error('error-not-authorized');
 	}
@@ -144,10 +161,22 @@ export async function findAdminRoomsAutocomplete({ uid, selector }) {
 	};
 }
 
-export async function findChannelAndPrivateAutocompleteWithPagination({ uid, selector, pagination: { offset, count, sort } }) {
+export async function findChannelAndPrivateAutocompleteWithPagination({
+	uid,
+	selector,
+	pagination: { offset, count, sort },
+}: {
+	uid: string;
+	selector: Record<string, unknown>;
+	pagination: {
+		offset: number;
+		count: number;
+		sort: number;
+	};
+}): Promise<unknown> {
 	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IMessage) => item.rid);
 
 	const options = {
 		fields: {
@@ -173,7 +202,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({ uid, sel
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, name }) {
+export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<unknown> {
 	const options = {
 		fields: {
 			_id: 1,
@@ -190,7 +219,7 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 
 	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
-		.map((item) => item.rid);
+		.map((item: IMessage) => item.rid);
 
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 

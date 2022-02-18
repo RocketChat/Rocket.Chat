@@ -3,7 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export async function findUsersToAutocomplete({ uid, selector }) {
+export async function findUsersToAutocomplete({ uid, selector }: { uid: string; selector: Record<string, undefined> }): Promise<unknown> {
 	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
 		return { items: [] };
 	}
@@ -24,7 +24,8 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 	};
 
 	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
-		new RegExp(escapeRegExp(selector.term), 'i'),
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		new RegExp(escapeRegExp(selector.term!), 'i'),
 		exceptions,
 		conditions,
 		options,
@@ -39,7 +40,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
  * Returns a new query object with the inclusive fields only
  * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query) {
+export function getInclusiveFields(query: {}): unknown {
 	const newQuery = {};
 
 	for (const [key, value] of Object.entries(query)) {
@@ -55,7 +56,7 @@ export function getInclusiveFields(query) {
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields) {
+export function getNonEmptyFields(fields: Record<string, unknown>): unknown {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -78,7 +79,7 @@ export function getNonEmptyFields(fields) {
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
-export function getNonEmptyQuery(query) {
+export function getNonEmptyQuery(query: {}): unknown {
 	const defaultQuery = {
 		$or: [
 			{ 'emails.address': { $regex: '', $options: 'i' } },

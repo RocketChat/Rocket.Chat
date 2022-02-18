@@ -1,10 +1,10 @@
 // Convenience method, almost need to turn it into a middleware of sorts
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models';
-import { API } from '../api';
+import { Users } from '../../../models/server';
+import { API } from '../api.js';
 
-API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
+(API as any).helperMethods.set('getUserFromParams', function _getUserFromParams(this: any) {
 	const doesntExist = { _doesntExist: true };
 	let user;
 	const params = this.requestParams();
@@ -26,7 +26,7 @@ API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
 	return user;
 });
 
-API.helperMethods.set('getUserListFromParams', function _getUserListFromParams() {
+(API as any).helperMethods.set('getUserListFromParams', function _getUserListFromParams(this: any) {
 	let users;
 	const params = this.requestParams();
 	// if params.userId is provided, include it as well
