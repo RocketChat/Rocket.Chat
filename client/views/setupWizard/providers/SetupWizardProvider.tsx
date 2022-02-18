@@ -1,6 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useMemo, useState, ReactElement, ContextType, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -41,10 +41,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const hasAdminRole = useRole('admin');
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
-	const { loaded, settings, skipCloudRegistration } = useParameters();
+	const { isSuccess, data } = useParameters();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
-	const [maxSteps, setMaxSteps] = useState(3);
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
@@ -56,12 +55,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
 	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
-
-	useEffect(() => {
-		if (skipCloudRegistration) {
-			return setMaxSteps(2);
-		}
-	}, [skipCloudRegistration]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -202,9 +195,9 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			setupWizardData,
 			setSetupWizardData,
 			currentStep,
-			loaded,
-			settings,
-			skipCloudRegistration,
+			loaded: isSuccess,
+			settings: data.settings,
+			skipCloudRegistration: data.serverAlreadyRegistered,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
@@ -214,16 +207,15 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
-			maxSteps,
+			maxSteps: data.hasAdmin ? 2 : 3,
 		}),
 		[
 			setupWizardData,
 			setSetupWizardData,
 			currentStep,
-			loaded,
+			isSuccess,
 			registerAdminUser,
-			settings,
-			skipCloudRegistration,
+			data,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
@@ -232,7 +224,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			saveWorkspaceData,
 			saveOrganizationData,
 			completeSetupWizard,
-			maxSteps,
 		],
 	);
 
