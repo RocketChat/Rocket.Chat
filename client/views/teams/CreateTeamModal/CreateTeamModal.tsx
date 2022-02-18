@@ -137,10 +137,9 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 
 	const onChangeMembers = useCallback(
 		(value) => {
-			console.log('-----', value, 'members:', members);
 			handleMembers(value);
 		},
-		[handleMembers, members],
+		[handleMembers],
 	);
 
 	const canSave = hasUnsavedChanges && !nameError;
