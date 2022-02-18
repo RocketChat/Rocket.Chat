@@ -31,6 +31,6 @@ export type App = {
 		warnings: { [key: string]: string };
 	};
 	marketplace: unknown;
-	modifiedDate: string;
+	modifiedAt: string;
 	permissions: unknown[];
 };
