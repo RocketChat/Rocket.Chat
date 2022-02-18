@@ -31,19 +31,19 @@ class Discussion extends Page {
 	}
 
 	get discussionName() {
-		return browser.element('#create-discussion #discussion_name');
+		return browser.element('.rcx-field:contains("Discussion name") input');
 	}
 
 	get discussionMessage() {
-		return browser.element('#create-discussion #discussion_message');
+		return browser.element('.rcx-field:contains("Your message") textarea');
 	}
 
 	get parentChannelName() {
-		return browser.element('#create-discussion #parentChannel');
+		return browser.element('.rcx-field:contains("Parent channel or group") input');
 	}
 
 	get saveDiscussionButton() {
-		return browser.element('.js-save-discussion');
+		return browser.element('button:contains("Create")');
 	}
 
 	// Sequences
@@ -56,9 +56,9 @@ class Discussion extends Page {
 
 		this.parentChannelName.type(parentChannelName);
 
-		browser.element('.rc-popup-list__list .rc-popup-list__item').click();
+		browser.element('.rcx-options .rcx-option:first-child').click();
 
-		cy.get('.js-save-discussion').should('be.enabled');
+		this.saveDiscussionButton.should('be.enabled');
 
 		this.saveDiscussionButton.click();
 	}

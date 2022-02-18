@@ -4,7 +4,7 @@ import mainContent from './main-content.page';
 class SideNav extends Page {
 	// New channel
 	get channelType() {
-		return browser.element('.create-channel__content [name=type]~.rc-switch__button');
+		return browser.element('#modal-root .rcx-field:contains("Private") .rcx-toggle-switch__fake');
 	}
 
 	get channelReadOnly() {
@@ -12,11 +12,11 @@ class SideNav extends Page {
 	}
 
 	get channelName() {
-		return browser.element('.create-channel__content input[name="name"]');
+		return browser.element('#modal-root [placeholder="Channel Name"]');
 	}
 
 	get saveChannelBtn() {
-		return browser.element('.rc-modal__content [data-button="create"]');
+		return browser.element('#modal-root button:contains("Create")');
 	}
 
 	// Account box
@@ -57,23 +57,23 @@ class SideNav extends Page {
 	}
 
 	get statusOnline() {
-		return browser.element('.rc-popover__item--online');
+		return browser.element('.rcx-box--with-inline-elements:contains("online")');
 	}
 
 	get statusAway() {
-		return browser.element('.rc-popover__item--away');
+		return browser.element('.rcx-box--with-inline-elements:contains("away")');
 	}
 
 	get statusBusy() {
-		return browser.element('.rc-popover__item--busy');
+		return browser.element('.rcx-box--with-inline-elements:contains("busy")');
 	}
 
 	get statusOffline() {
-		return browser.element('.rc-popover__item--offline');
+		return browser.element('.rcx-box--with-inline-elements:contains("offline")');
 	}
 
 	get account() {
-		return browser.element('[data-id="account"][data-type="open"]');
+		return browser.element('.rcx-option__content:contains("My Account")');
 	}
 
 	get admin() {
@@ -81,7 +81,7 @@ class SideNav extends Page {
 	}
 
 	get logout() {
-		return browser.element('[data-id="logout"][data-type="open"]');
+		return browser.element('.rcx-option__content:contains("Logout")');
 	}
 
 	get sideNavBar() {
@@ -106,11 +106,11 @@ class SideNav extends Page {
 	}
 
 	get newChannelBtn() {
-		return browser.element('[data-qa="sidebar-create-dm"]');
+		return browser.element('.rcx-option__content:contains("Channel")');
 	}
 
 	get newDiscussionBtn() {
-		return browser.element('[data-qa="sidebar-create-discussion"]');
+		return browser.element('.rcx-option__content:contains("Discussion")');
 	}
 
 	get newChannelIcon() {
@@ -148,7 +148,7 @@ class SideNav extends Page {
 	}
 
 	get burgerBtn() {
-		return browser.element('.burger');
+		return browser.element('.burger, [aria-label="Open_menu"]');
 	}
 
 	get sidebarWrap() {
@@ -160,7 +160,7 @@ class SideNav extends Page {
 	}
 
 	get firstSidebarItemMenu() {
-		return browser.element('.sidebar-item:first-child .sidebar-item__menu');
+		return browser.element('[data-qa=sidebar-avatar-button]');
 	}
 
 	get popoverOverlay() {
@@ -170,7 +170,7 @@ class SideNav extends Page {
 	// Opens a channel via rooms list
 	openChannel(channelName) {
 		cy.contains('[data-qa="sidebar-item-title"]', channelName).scrollIntoView().click();
-		cy.get('.rc-header__name').should('contain', channelName);
+		cy.get('.rcx-room-header').should('contain', channelName);
 	}
 
 	// Opens a channel via spotlight search
@@ -180,9 +180,11 @@ class SideNav extends Page {
 		this.spotlightSearch.type(channelName);
 		cy.wait(500);
 
-		cy.get(`[data-qa='sidebar-item'][aria-label='${channelName}']:first-child`).click();
+		cy.get(
+			`[data-qa="sidebar-search-result"] .rcx-sidebar-item--clickable:contains("${channelName}"), [data-qa="sidebar-search-result"] .rcx-sidebar-item[aria-label='${channelName}']`,
+		).click();
 
-		cy.get('.rc-header__name').should('contain', channelName);
+		cy.get('.rcx-room-header').should('contain', channelName);
 	}
 
 	// Gets a channel from the rooms list
@@ -201,16 +203,16 @@ class SideNav extends Page {
 
 		this.channelName.type(channelName);
 
-		cy.get('.rc-modal__content [data-button="create"]').should('be.enabled');
+		this.saveChannelBtn.should('be.enabled');
 
 		// if (isReadOnly) {
 		// 	this.channelReadOnly.click();
 		// }
 
 		this.saveChannelBtn.click();
-		this.channelType.should('not.be.visible');
+		this.channelType.should('not.exist');
 		mainContent.messageInput.should('be.focused');
 	}
 }
 
-module.exports = new SideNav();
+export default new SideNav();

@@ -663,4 +663,4 @@ class Administration extends Page {
 	}
 }
 
-module.exports = new Administration();
+export default new Administration();

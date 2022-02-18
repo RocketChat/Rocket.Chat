@@ -29,19 +29,19 @@ describe('[Login]', () => {
 		});
 
 		it('it should not show name field', () => {
-			loginPage.nameField.should('not.be.visible');
+			loginPage.nameField.should('not.exist');
 		});
 
 		it('it should not show email field', () => {
-			loginPage.emailField.should('not.be.visible');
+			loginPage.emailField.should('not.exist');
 		});
 
 		it('it should not show confirm password field', () => {
-			loginPage.confirmPasswordField.should('not.be.visible');
+			loginPage.confirmPasswordField.should('not.exist');
 		});
 
 		it('it should not show back to login button', () => {
-			loginPage.backToLoginButton.should('not.be.visible');
+			loginPage.backToLoginButton.should('not.exist');
 		});
 	});
 
@@ -73,12 +73,13 @@ describe('[Setup Wizard]', () => {
 	});
 
 	describe('[Render - Step 1]', () => {
-		it('it should show organization type', () => {
-			setupWizard.organizationType.should('be.visible');
-		});
-
 		it('it should show organization name', () => {
 			setupWizard.organizationName.should('be.visible');
+			setupWizard.organizationName.type('Org Name');
+		});
+
+		it('it should show organization type', () => {
+			setupWizard.organizationType.should('be.visible');
 		});
 
 		it('it should show industry', () => {
@@ -87,15 +88,17 @@ describe('[Setup Wizard]', () => {
 
 		it('it should show size', () => {
 			setupWizard.size.should('be.visible');
+			setupWizard.size.type('1 - 10 People');
 		});
 
 		it('it should show country', () => {
 			setupWizard.country.should('be.visible');
+			setupWizard.country.type('bra');
 		});
 
-		it('it should show website', () => {
-			setupWizard.website.scrollIntoView().should('be.visible');
-		});
+		// it('it should show website', () => {
+		// 	setupWizard.website.scrollIntoView().should('be.visible');
+		// });
 
 		after(() => {
 			setupWizard.goNext();

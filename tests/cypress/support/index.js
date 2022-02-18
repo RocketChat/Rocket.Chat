@@ -19,14 +19,14 @@ import './commands';
 // Cypress.Cookies.debug(true);
 
 Cypress.Cookies.defaults({
-	whitelist: ['rc_uid', 'rc_token'],
+	preserve: ['rc_uid', 'rc_token'],
 });
 
 Cypress.LocalStorage.clear = function () {};
 
-Cypress.on('fail', () => {
-	Cypress.stop();
-	throw new Error();
+Cypress.on('uncaught:exception', (error) => {
+	console.error(error);
+	return false;
 });
 
 // Alternatively you can use CommonJS syntax:

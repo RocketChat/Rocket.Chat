@@ -24,7 +24,7 @@ describe('[Register]', () => {
 		});
 
 		it('it should not show email / username field', () => {
-			loginPage.emailOrUsernameField.should('not.be.visible');
+			loginPage.emailOrUsernameField.should('not.exist');
 		});
 
 		it('it should show submit button', () => {
@@ -32,11 +32,11 @@ describe('[Register]', () => {
 		});
 
 		it('it should not show register button', () => {
-			loginPage.registerButton.should('not.be.visible');
+			loginPage.registerButton.should('not.exist');
 		});
 
 		it('it should not show forgot password button', () => {
-			loginPage.forgotPasswordButton.should('not.be.visible');
+			loginPage.forgotPasswordButton.should('not.exist');
 		});
 
 		it('it should show back to login button', () => {

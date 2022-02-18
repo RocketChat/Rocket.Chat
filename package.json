@@ -131,7 +131,7 @@
 		"chai-dom": "^1.10.0",
 		"chai-spies": "^1.0.0",
 		"cross-env": "^7.0.3",
-		"cypress": "^4.12.1",
+		"cypress": "^9.5.0",
 		"emojione-assets": "^4.5.0",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^8.3.0",

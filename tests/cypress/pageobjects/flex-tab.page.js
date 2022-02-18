@@ -3,16 +3,16 @@ import Global from './global';
 
 class FlexTab extends Page {
 	get moreActions() {
-		return browser.element('.rc-room-actions__button.js-more');
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
 
 	// Channel Info Tab
 	get channelTab() {
-		return browser.element('.tab-button:not(.hidden) .tab-button-icon--info-circled');
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
 	}
 
 	get channelSettings() {
-		return browser.element('.channel-settings');
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-info-circled');
 	}
 
 	get channelSettingName() {
@@ -89,11 +89,11 @@ class FlexTab extends Page {
 
 	// Members Tab
 	get membersTab() {
-		return browser.element('.tab-button:not(.hidden) .tab-button-icon--team');
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-members');
 	}
 
 	get membersTabContent() {
-		return browser.element('.animated');
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-members');
 	}
 
 	get userSearchBar() {
@@ -137,7 +137,7 @@ class FlexTab extends Page {
 	}
 
 	get avatarImage() {
-		return browser.element('.flex-tab-container .avatar-image');
+		return browser.element('aside.rcx-vertical-bar .rcx-avatar');
 	}
 
 	get memberUserName() {
@@ -150,7 +150,7 @@ class FlexTab extends Page {
 
 	// Search Tab
 	get searchTab() {
-		return browser.element('.tab-button:not(.hidden) .tab-button-icon--magnifier');
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-magnifier');
 	}
 
 	get searchTabContent() {
@@ -167,16 +167,16 @@ class FlexTab extends Page {
 
 	// Notifications Tab
 	get notificationsTab() {
-		return browser.element('.rc-popover__item[data-id=push-notifications]');
+		return browser.element('.rcx-option__content:contains("Notifications Preferences")');
 	}
 
 	get notificationsSettings() {
-		return browser.element('.push-notifications');
+		return browser.element('aside > h3 > div > i.rcx-box--full.rcx-icon--name-bell');
 	}
 
 	// Files Tab
 	get filesTab() {
-		return browser.element('.rc-popover__item[data-id=uploaded-files-list], .tab-button[data-id=uploaded-files-list]');
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-clip');
 	}
 
 	get fileItem() {
@@ -184,7 +184,7 @@ class FlexTab extends Page {
 	}
 
 	get filesTabContent() {
-		return browser.element('.uploaded-files-list');
+		return browser.element('aside > h3 > div > i.rcx-icon--name-attachment');
 	}
 
 	get fileDelete() {
@@ -201,29 +201,29 @@ class FlexTab extends Page {
 
 	// Mentions Tab
 	get mentionsTab() {
-		return browser.element('.rc-popover__item[data-id=mentions], .tab-button[data-id=mentions]');
+		return browser.element('.rcx-option__content:contains("Mentions")');
 	}
 
 	get mentionsTabContent() {
-		return browser.element('.mentioned-messages-list');
+		return browser.element('aside > h3 > div > i.rcx-icon--name-at');
 	}
 
 	// Starred Tab
 	get starredTab() {
-		return browser.element('.rc-popover__item[data-id=starred-messages], .tab-button[data-id=starred-messages]');
+		return browser.element('.rcx-option__content:contains("Starred Messages")');
 	}
 
 	get starredTabContent() {
-		return browser.element('.starred-messages-list');
+		return browser.element('aside > h3 > div > i.rcx-icon--name-star');
 	}
 
 	// Pinned Tab
 	get pinnedTab() {
-		return browser.element('.rc-popover__item[data-id=pinned-messages], .tab-button[data-id=pinned-messages]');
+		return browser.element('.rcx-option__content:contains("Pinned Messages")');
 	}
 
 	get pinnedTabContent() {
-		return browser.element('.pinned-messages-list');
+		return browser.element('aside > h3 > div > i.rcx-icon--name-pin');
 	}
 
 	get firstSetting() {
@@ -370,7 +370,7 @@ class FlexTab extends Page {
 		// desiredState true=open false=closed
 
 		const operate = (tab, panel, more) => {
-			this[panel].should(!desiredState ? 'be.visible' : 'not.be.visible');
+			this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
 
 			if (more) {
 				this.moreActions.click();
@@ -378,7 +378,14 @@ class FlexTab extends Page {
 
 			this[tab].click();
 
-			this[panel].should(desiredState ? 'be.visible' : 'not.be.visible');
+			// The button "more" keeps the focus when popover is closed from a click
+			// on an item, need to click again to change the status to unselected and
+			// allow the next click to open the popover again
+			if (more) {
+				this.moreActions.click();
+			}
+
+			this[panel].should(desiredState ? 'be.visible' : 'not.exist');
 		};
 
 		const tabs = {
@@ -399,7 +406,7 @@ class FlexTab extends Page {
 			},
 
 			files() {
-				operate('filesTab', 'filesTabContent', true);
+				operate('filesTab', 'filesTabContent');
 			},
 
 			mentions() {
@@ -452,4 +459,4 @@ class FlexTab extends Page {
 	}
 }
 
-module.exports = new FlexTab();
+export default new FlexTab();

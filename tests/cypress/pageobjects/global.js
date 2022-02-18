@@ -56,4 +56,4 @@ class Global {
 	}
 }
 
-module.exports = new Global();
+export default new Global();

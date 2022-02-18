@@ -68,4 +68,4 @@ class PreferencesMainContent extends Page {
 	}
 }
 
-module.exports = new PreferencesMainContent();
+export default new PreferencesMainContent();

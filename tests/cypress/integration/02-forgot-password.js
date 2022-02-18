@@ -8,7 +8,7 @@ describe('[Forgot Password]', () => {
 
 	describe('render:', () => {
 		it('it should not show name field', () => {
-			loginPage.nameField.should('not.be.visible');
+			loginPage.nameField.should('not.exist');
 		});
 
 		it('it should show email field', () => {
@@ -16,15 +16,15 @@ describe('[Forgot Password]', () => {
 		});
 
 		it('it should not show password field', () => {
-			loginPage.passwordField.should('not.be.visible');
+			loginPage.passwordField.should('not.exist');
 		});
 
 		it('it should not show confirm password field', () => {
-			loginPage.confirmPasswordField.should('not.be.visible');
+			loginPage.confirmPasswordField.should('not.exist');
 		});
 
 		it('it should not show email / username field', () => {
-			loginPage.emailOrUsernameField.should('not.be.visible');
+			loginPage.emailOrUsernameField.should('not.exist');
 		});
 
 		it('it should show submit button', () => {
@@ -32,11 +32,11 @@ describe('[Forgot Password]', () => {
 		});
 
 		it('it should not show register button', () => {
-			loginPage.registerButton.should('not.be.visible');
+			loginPage.registerButton.should('not.exist');
 		});
 
 		it('it should not show forgot password button', () => {
-			loginPage.forgotPasswordButton.should('not.be.visible');
+			loginPage.forgotPasswordButton.should('not.exist');
 		});
 
 		it('it should show back to login button', () => {

@@ -3,7 +3,7 @@ import { adminEmail, adminPassword } from '../../data/user';
 
 class SetupWizard extends Page {
 	get nextStep() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="active-step"] [data-qa="next-step"]');
+		return browser.element('button:contains("Next"):visible');
 	}
 
 	get goToWorkspace() {
@@ -11,23 +11,23 @@ class SetupWizard extends Page {
 	}
 
 	get organizationType() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Type"]');
+		return browser.element('[name="organizationType"]');
 	}
 
 	get organizationName() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Organization_Name"]');
+		return browser.element('[name="organizationName"]');
 	}
 
 	get industry() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Industry"]');
+		return browser.element('[name="organizationIndustry"]');
 	}
 
 	get size() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Size"]');
+		return browser.element('[name="organizationSize"]');
 	}
 
 	get country() {
-		return browser.element('[data-qa="setup-wizard"] [data-qa="Country"]');
+		return browser.element('[name="country"]');
 	}
 
 	get website() {
@@ -75,4 +75,4 @@ class SetupWizard extends Page {
 	}
 }
 
-module.exports = new SetupWizard();
+export default new SetupWizard();

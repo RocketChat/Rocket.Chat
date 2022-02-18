@@ -124,7 +124,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should not show the general channel', () => {
-					admin.roomsGeneralChannel.should('not.be.visible');
+					admin.roomsGeneralChannel.should('not.exist');
 				});
 			});
 
@@ -171,11 +171,11 @@ describe('[Administration]', () => {
 				});
 
 				it('it should not show the general channel', () => {
-					admin.roomsGeneralChannel.should('not.be.visible');
+					admin.roomsGeneralChannel.should('not.exist');
 				});
 
 				it('it should not show the general channel', () => {
-					admin.roomsGeneralChannel.should('not.be.visible');
+					admin.roomsGeneralChannel.should('not.exist');
 				});
 			});
 		});
@@ -229,7 +229,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should not show rocket.cat', () => {
-					admin.usersRocketCat.should('not.be.visible');
+					admin.usersRocketCat.should('not.exist');
 				});
 			});
 

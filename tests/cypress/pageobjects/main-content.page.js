@@ -7,15 +7,15 @@ class MainContent extends Page {
 
 	// Main Content Header (Channel Title Area)
 	get emptyFavoriteStar() {
-		return browser.element('.js-favorite .rc-header__icon--star');
+		return browser.element('.rcx-room-header .rcx-icon--name-star');
 	}
 
 	get favoriteStar() {
-		return browser.element('.js-favorite .rc-header__icon--star-filled');
+		return browser.element('.rcx-room-header .rcx-icon--name-star-filled');
 	}
 
 	get channelTitle() {
-		return browser.element('.rc-header__name');
+		return browser.element('.rcx-room-header');
 	}
 
 	// Main Content Footer (Message Input Area)
@@ -247,6 +247,7 @@ class MainContent extends Page {
 
 	// Clear and sets the text to the input
 	setTextToInput(text) {
+		cy.wait(200);
 		this.messageInput.clear(text);
 		if (text) {
 			this.messageInput.type(text);
@@ -264,7 +265,7 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageQuoteEqualsText(text) {
-		cy.get('.message:last-child .attachment-text').should('contain', text);
+		cy.get('.message:last-child .rcx-attachment__details').should('contain', text);
 	}
 
 	waitForLastMessageEqualsHtml(text) {
@@ -343,4 +344,4 @@ class MainContent extends Page {
 	}
 }
 
-module.exports = new MainContent();
+export default new MainContent();

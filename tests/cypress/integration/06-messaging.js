@@ -39,7 +39,7 @@ function messagingTest(currentTest) {
 
 		if (currentTest === 'general') {
 			it('it should not show the Admin tag', () => {
-				mainContent.lastMessageUserTag.should('not.be.visible');
+				mainContent.lastMessageUserTag.should('not.exist');
 			});
 		}
 	});
@@ -201,17 +201,17 @@ function messageActionsTest(currentTest, testChannel) {
 
 			if (currentTest === 'general') {
 				it('it should not show the pin action', () => {
-					mainContent.messagePin.should('not.be.visible');
+					mainContent.messagePin.should('not.exist');
 				});
 			}
 
 			it('it should not show the mark as unread action', () => {
-				mainContent.messageUnread.should('not.be.visible');
+				mainContent.messageUnread.should('not.exist');
 			});
 
 			if (currentTest === 'direct') {
 				it('it should not show the Reply to DM action', () => {
-					mainContent.messageReplyInDM.should('not.be.visible');
+					mainContent.messageReplyInDM.should('not.exist');
 				});
 			} else if (currentTest !== 'private') {
 				context('when the channel last message was posted by someone else', () => {
@@ -225,7 +225,7 @@ function messageActionsTest(currentTest, testChannel) {
 						toggleOpenMessageActionMenu();
 
 						// We don't have the test DM user in a DM channel or have the `create-d` permission
-						mainContent.messageReplyInDM.should('not.be.visible');
+						mainContent.messageReplyInDM.should('not.exist');
 					});
 
 					context('when the user has permission to create DMs', () => {
@@ -310,7 +310,7 @@ function messageActionsTest(currentTest, testChannel) {
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
 					Global.modalConfirm.click();
-					Global.modalOverlay.should('not.be.visible');
+					Global.modalOverlay.should('not.exist');
 				});
 
 				it('it should not show the deleted message', () => {
