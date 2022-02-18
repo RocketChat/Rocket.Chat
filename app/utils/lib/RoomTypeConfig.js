@@ -1,50 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-
-let Users;
-let settings;
-if (Meteor.isServer) {
-	({ settings } = require('../../settings/server'));
-	Users = require('../../models/server/models/Users').default;
-} else {
-	({ settings } = require('../../settings/client'));
-}
-
-export const RoomSettingsEnum = {
-	TYPE: 'type',
-	NAME: 'roomName',
-	TOPIC: 'roomTopic',
-	ANNOUNCEMENT: 'roomAnnouncement',
-	DESCRIPTION: 'roomDescription',
-	READ_ONLY: 'readOnly',
-	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
-	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
-	JOIN_CODE: 'joinCode',
-	BROADCAST: 'broadcast',
-	SYSTEM_MESSAGES: 'systemMessages',
-	E2E: 'encrypted',
-};
-
-export const RoomMemberActions = {
-	ARCHIVE: 'archive',
-	IGNORE: 'ignore',
-	BLOCK: 'block',
-	MUTE: 'mute',
-	SET_AS_OWNER: 'setAsOwner',
-	SET_AS_LEADER: 'setAsLeader',
-	SET_AS_MODERATOR: 'setAsModerator',
-	LEAVE: 'leave',
-	REMOVE_USER: 'removeUser',
-	JOIN: 'join',
-	INVITE: 'invite',
-};
-
-export const UiTextContext = {
-	CLOSE_WARNING: 'closeWarning',
-	HIDE_WARNING: 'hideWarning',
-	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
-};
 
 export class RoomTypeRouteConfig {
 	constructor({ name, path }) {
@@ -103,99 +57,8 @@ export class RoomTypeConfig {
 		this._route = route;
 	}
 
-	/**
-	 * The room type's internal identifier.
-	 */
-	get identifier() {
-		return this._identifier;
-	}
-
-	/**
-	 * The order of this room type for the display.
-	 */
-	get order() {
-		return this._order;
-	}
-
-	/**
-	 * Sets the order of this room type for the display.
-	 *
-	 * @param {number} order the number value for the order
-	 */
-	set order(order) {
-		if (typeof order !== 'number') {
-			throw new Error('The order must be a number.');
-		}
-
-		this._order = order;
-	}
-
-	/**
-	 * The icon class, css, to use as the visual aid.
-	 */
-	get icon() {
-		return this._icon;
-	}
-
-	/**
-	 * The header name of this type.
-	 */
-	get header() {
-		return this._header;
-	}
-
-	/**
-	 * The i18n label for this room type.
-	 */
-	get label() {
-		return this._label;
-	}
-
-	/**
-	 * The route config for this room type.
-	 */
-	get route() {
-		return this._route;
-	}
-
-	allowRoomSettingChange(/* room, setting */) {
-		return true;
-	}
-
-	allowMemberAction(/* room, action */) {
-		return false;
-	}
-
-	/**
-	 * Return a room's name
-	 *
-	 * @abstract
-	 * @return {string} Room's name according to it's type
-	 */
-	roomName(/* room */) {
-		return '';
-	}
-
-	canBeCreated(hasPermission) {
-		if (!hasPermission && typeof hasPermission !== 'function') {
-			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
-		}
-		return Meteor.isServer ? hasPermission(Meteor.userId(), `create-${this._identifier}`) : hasPermission([`create-${this._identifier}`]);
-	}
-
-	canBeDeleted(hasPermission, room) {
-		if (!hasPermission && typeof hasPermission !== 'function') {
-			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
-		}
-		return Meteor.isServer ? hasPermission(Meteor.userId(), `delete-${room.t}`, room._id) : hasPermission(`delete-${room.t}`, room._id);
-	}
-
 	supportMembersList(/* room */) {
 		return true;
-	}
-
-	isGroupChat() {
-		return false;
 	}
 
 	canAddUser(/* userId, room */) {
@@ -208,10 +71,6 @@ export class RoomTypeConfig {
 
 	userDetailShowAdmin(/* room */) {
 		return true;
-	}
-
-	preventRenaming(/* room */) {
-		return false;
 	}
 
 	includeInRoomSearch() {
@@ -232,60 +91,11 @@ export class RoomTypeConfig {
 		return '';
 	}
 
-	/**
-	 * Returns the full object of message sender
-	 * @param {string} senderId Sender's _id
-	 * @return {object} Sender's object from db
-	 */
-	getMsgSender(senderId) {
-		if (Meteor.isServer && Users) {
-			return Users.findOneById(senderId);
-		}
-		return {};
-	}
-
-	/**
-	 * Returns details to use on notifications
-	 *
-	 * @param {object} room
-	 * @param {object} user
-	 * @param {string} notificationMessage
-	 * @return {object} Notification details
-	 */
-	getNotificationDetails(room, user, notificationMessage) {
-		if (!Meteor.isServer) {
-			return {};
-		}
-
-		const title = `#${this.roomName(room)}`;
-
-		const text = `${settings.get('UI_Use_Real_Name') ? user.name : user.username}: ${notificationMessage}`;
-
-		return { title, text };
-	}
-
-	/**
-	 * Check if there is an user with the same id and loginToken
-	 * @param {object} allowData
-	 * @return {object} User's object from db
-	 */
-	canAccessUploadedFile(/* accessData */) {
-		return false;
-	}
-
-	getReadReceiptsExtraData(/* message */) {
-		return {};
-	}
-
 	getAvatarPath(/* roomData */) {
 		return '';
 	}
 
 	openCustomProfileTab() {
 		return false;
-	}
-
-	getDiscussionType() {
-		return 'p';
 	}
 }

@@ -99,7 +99,9 @@ function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const path = `${s.ltrim(roomTypes.getRelativePath(room.t, subscription), '/')}?msg=${message._id}`;
+	const basePath = roomTypes.getRelativePath(room.t, subscription).replace(Meteor.absoluteUrl(), '');
+
+	const path = `${s.ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(path, {
 		full: true,
 		cloud: settings.get('Offline_Message_Use_DeepLink'),
