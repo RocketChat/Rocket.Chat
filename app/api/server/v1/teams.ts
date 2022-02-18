@@ -140,7 +140,11 @@ API.v1.addRoute(
 				});
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(team._id), Team.removeAllMembersFromTeam(team._id), Team.deleteById(team._id)]);
+			await Promise.all([
+				Team.unsetTeamIdOfRooms(this.userId, team._id),
+				Team.removeAllMembersFromTeam(team._id),
+				Team.deleteById(team._id),
+			]);
 
 			return API.v1.success();
 		},
@@ -606,9 +610,6 @@ API.v1.addRoute(
 
 			const rooms: string[] = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
-			// Remove the team's main room
-			Meteor.call('eraseRoom', team.roomId);
-
 			// If we got a list of rooms to delete along with the team, remove them first
 			if (rooms.length) {
 				rooms.forEach((room) => {
@@ -617,7 +618,10 @@ API.v1.addRoute(
 			}
 
 			// Move every other room back to the workspace
-			await Team.unsetTeamIdOfRooms(team._id);
+			await Team.unsetTeamIdOfRooms(this.userId, team._id);
+
+			// Remove the team's main room
+			Meteor.call('eraseRoom', team.roomId);
 
 			// Delete all team memberships
 			Team.removeAllMembersFromTeam(team._id);
