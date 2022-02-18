@@ -1,7 +1,6 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IRoom } from '../../IRoom';
-import { IUser } from '../../IUser';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
@@ -45,5 +44,19 @@ export type VoipEndpoints = {
 	};
 	'voip/callServer/checkConnection': {
 		GET: (params: { websocketUrl: string; host: string; port: string; path: string }) => IManagementServerConnectionStatus;
+	};
+	'voip/rooms': {
+		GET: (params: {
+			agents: string[];
+			open: boolean;
+			createdAt: string;
+			closedAt: string;
+			tags: string[];
+			queue: string;
+			visitorId: string;
+		}) => PaginatedResult<{ rooms: IVoipRoom[] }>;
+	};
+	'voip/room.close': {
+		POST: (params: { rid: string; token: string; comment: string; tags: string[] }) => { rid: string; comment: string };
 	};
 };
