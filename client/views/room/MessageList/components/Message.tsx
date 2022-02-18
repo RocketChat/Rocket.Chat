@@ -119,7 +119,10 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 							{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
 						</MessageRoles>
 						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
-						{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
+						{message.private && (
+							// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
+							<MessageStatusPrivateIndicator name='message'>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>
+						)}
 						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
