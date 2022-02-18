@@ -2,9 +2,9 @@ import { Button, ButtonGroup, Field, Modal, TextAreaInput } from '@rocket.chat/f
 import React, { ReactElement } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-// import AutoCompleteTags from '../../../../ee/client/omnichannel/tags/AutoCompleteTags';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import Tags from '../../Omnichannel/Tags';
 
 type WrapUpCallPayload = {
 	notes: string;
@@ -37,14 +37,7 @@ export const WrapUpCallModal = (): ReactElement => {
 					</Field.Row>
 					<Field.Hint>{t('These_notes_will_be_available_in_the_call_summary')}</Field.Hint>
 				</Field>
-				{/* {isEnterprise && (
-					<Field>
-						<Field.Label>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<AutoCompleteTags />
-						</Field.Row>
-					</Field>
-				)} */}
+				<Tags />
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
