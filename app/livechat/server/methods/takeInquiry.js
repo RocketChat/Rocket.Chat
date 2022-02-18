@@ -25,7 +25,7 @@ Meteor.methods({
 			fields: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
 		});
 		if (!userCanTakeInquiry(user)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			throw new Meteor.Error('error-not-allowed-due-to-offline', `Not allowed since user's status is offline`, {
 				method: 'livechat:takeInquiry',
 			});
 		}

@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { roomTypes } from '../../utils';
-import { LivechatRooms } from '../../models';
+import { LivechatRooms, LivechatInquiry } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
@@ -37,6 +37,7 @@ Meteor.startup(async () => {
 	callbacks.add(
 		'beforeJoinRoom',
 		function (user, room) {
+			console.log('beforeJoinRoom', user, room);
 			if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
@@ -47,6 +48,25 @@ Meteor.startup(async () => {
 		},
 		callbacks.priority.LOW,
 		'cant-join-room',
+	);
+
+	callbacks.add(
+		'beforeJoinRoom',
+		function (user, room) {
+			console.log('beforeJoinRoom', user, room);
+			if (room.t === 'l' && !room.servedBy) {
+				const inquiry = LivechatInquiry.findOneByRoomId(room._id);
+				if (!inquiry) {
+					throw new Meteor.Error('error-invalid-inquiry', `Error: No inquiry found connected to room with id: ${room._id}`);
+				}
+				console.log('beforeJoinRoom', inquiry);
+				Meteor.runAsUser(user._id, () => Meteor.call('livechat:takeInquiry', inquiry._id));
+			}
+
+			return user;
+		},
+		callbacks.priority.HIGH,
+		'auto-assign-managers-to-livechat-rooms-if-no-one-is-assigned-to-chat',
 	);
 
 	const monitor = new LivechatAgentActivityMonitor();
