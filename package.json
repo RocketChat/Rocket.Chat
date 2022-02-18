@@ -161,7 +161,7 @@
 		"stylelint-order": "^4.1.0",
 		"supertest": "^6.1.6",
 		"template-file": "^6.0.0",
-		"ts-loader": "^8.3.0",
+		"ts-loader": "^9.2.1",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.3.4",
 		"webpack": "^4.44.1"
