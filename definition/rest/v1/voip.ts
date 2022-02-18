@@ -1,6 +1,7 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
-import { IRoom } from '../../IRoom';
+import { IRoom, IVoipRoom } from '../../IRoom';
+import { IUser } from '../../IUser';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
