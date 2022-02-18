@@ -16,7 +16,7 @@ const hoverStyle = css`
 
 const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 	const displayName = useUserDisplayName(user);
-	const formatDateAndTime = useFormatDateAndTime();
+	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 
 	return (
 		<Box

@@ -556,9 +556,6 @@ export class Subscriptions extends Base {
 		return this.db.findOne(
 			{
 				rid,
-				ls: {
-					$exists: true,
-				},
 			},
 			{
 				sort: {
