@@ -9,7 +9,7 @@ Meteor.methods({
 		const serverAlreadyRegistered = !!settings.get('Cloud_Workspace_Client_Id') || process.env.DEPLOY_PLATFORM === 'rocket-cloud';
 
 		return {
-			setupWizardSettings,
+			settings: setupWizardSettings,
 			serverAlreadyRegistered,
 		};
 	},

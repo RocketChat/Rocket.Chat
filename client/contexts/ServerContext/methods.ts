@@ -1,6 +1,7 @@
 import type { DeleteWriteOpResultObject } from 'mongodb';
 
 import { IRoom } from '../../../definition/IRoom';
+import { ISetting } from '../../../definition/ISetting';
 import { IUser } from '../../../definition/IUser';
 import { AddWebdavAccountMethod } from './methods/addWebdavAccount';
 import { FollowMessageMethod } from './methods/followMessage';
@@ -55,7 +56,11 @@ export type ServerMethods = {
 	'eraseRoom': (...args: any[]) => any;
 	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
-	'getSetupWizardParameters': (...args: any[]) => any;
+	'getSetupWizardParameters': () => {
+		settings: ISetting[];
+		serverAlreadyRegistered: boolean;
+		hasAdmin: boolean;
+	};
 	'getUsersOfRoom': (...args: any[]) => any;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
