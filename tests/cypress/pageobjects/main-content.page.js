@@ -1,4 +1,5 @@
 import Page from './Page';
+import flexTab from './flex-tab.page';
 
 class MainContent extends Page {
 	get mainContent() {
@@ -273,7 +274,7 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		return cy.get('.message:last-child .attachment-text').should('contain', text);
+		return cy.get('.message:last-child .rcx-attachment__details .rcx-box--with-inline-elements').should('contain', text);
 	}
 
 	// Wait for the last message author username to equal the provided text
@@ -306,12 +307,12 @@ class MainContent extends Page {
 	selectAction(action) {
 		switch (action) {
 			case 'edit':
-				this.messageEdit.click();
+				this.messageEdit.click().wait(100);
 				this.messageInput.type('this message was edited');
 				break;
 			case 'reply':
-				this.messageReply.click();
-				this.messageInput.type(' this is a reply message');
+				this.messageReply.click().wait(100);
+				flexTab.messageInput.type('this is a reply message');
 				break;
 			case 'delete':
 				this.messageDelete.click();
@@ -323,8 +324,8 @@ class MainContent extends Page {
 				this.messageCopy.click();
 				break;
 			case 'quote':
-				this.messageQuote.click();
-				this.messageInput.type(' this is a quote message');
+				this.messageQuote.click().wait(100);
+				this.messageInput.type('this is a quote message');
 				break;
 			case 'star':
 				this.messageStar.click();

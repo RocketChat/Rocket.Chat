@@ -53,7 +53,7 @@ class SideNav extends Page {
 	}
 
 	get popOverHideOption() {
-		return browser.element('.rc-popover__content [data-id="hide"][data-type="sidebar-item"]');
+		return browser.element('.rcx-option__content:contains("Hide")');
 	}
 
 	get statusOnline() {

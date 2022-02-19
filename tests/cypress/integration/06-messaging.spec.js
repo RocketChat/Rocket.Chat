@@ -1,5 +1,6 @@
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';
+import flexTab from '../pageobjects/flex-tab.page';
 import Global from '../pageobjects/global';
 import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
@@ -149,8 +150,8 @@ function createDMUserAndPost(testChannel, done) {
 
 function leaveTestDM() {
 	// Leave the existing DM
-	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView();
-	dmElement.closest('.sidebar-item').find('.sidebar-item__menu').invoke('show').click();
+	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView().rightclick().wait(200);
+	dmElement.closest('.rcx-sidebar-item--clickable').find('.rcx-sidebar-item__menu-wrapper > button').click();
 	sideNav.popOverHideOption.click();
 
 	Global.modal.should('be.visible');
@@ -172,31 +173,31 @@ function messageActionsTest(currentTest, testChannel) {
 			});
 
 			it('it should show the message action menu', () => {
-				mainContent.messageActionMenu.should('be.visible');
+				mainContent.messageActionMenu.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the edit action', () => {
-				mainContent.messageEdit.should('be.visible');
+				mainContent.messageEdit.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the delete action', () => {
-				mainContent.messageDelete.should('be.visible');
+				mainContent.messageDelete.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the permalink action', () => {
-				mainContent.messagePermalink.should('be.visible');
+				mainContent.messagePermalink.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the copy action', () => {
-				mainContent.messageCopy.should('be.visible');
+				mainContent.messageCopy.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the quote the action', () => {
-				mainContent.messageQuote.should('be.visible');
+				mainContent.messageQuote.scrollIntoView().should('be.visible');
 			});
 
 			it('it should show the star action', () => {
-				mainContent.messageStar.should('be.visible');
+				mainContent.messageStar.scrollIntoView().should('be.visible');
 			});
 
 			if (currentTest === 'general') {
@@ -278,7 +279,7 @@ function messageActionsTest(currentTest, testChannel) {
 
 				it('it should reply the message', () => {
 					mainContent.selectAction('reply');
-					mainContent.sendBtn.click();
+					flexTab.sendBtn.click();
 				});
 
 				it('it should check if the message was replied', () => {
@@ -286,6 +287,7 @@ function messageActionsTest(currentTest, testChannel) {
 						const text = $el.data('id');
 						mainContent.lastMessageQuote.should('has.attr', 'data-tmid', text);
 					});
+					flexTab.threadTab.click();
 				});
 			});
 

@@ -6,6 +6,18 @@ class FlexTab extends Page {
 		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
 
+	get sendBtn() {
+		return browser.element('.rcx-vertical-bar .rc-message-box__icon.js-send');
+	}
+
+	get messageInput() {
+		return browser.element('.rcx-vertical-bar .js-input-message');
+	}
+
+	get threadTab() {
+		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-thread');
+	}
+
 	// Channel Info Tab
 	get channelTab() {
 		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-info-circled');
