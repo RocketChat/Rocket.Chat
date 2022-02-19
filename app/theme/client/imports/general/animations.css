@@ -104,7 +104,7 @@
 	}
 }
 
-@keyframes spinh {
+@keyframes spin {
 	from {
 		transform: rotateY(0deg);
 	}
