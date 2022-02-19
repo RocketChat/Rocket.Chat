@@ -144,7 +144,7 @@ class SideNav extends Page {
 	}
 
 	get preferencesClose() {
-		return browser.element('.sidebar-flex__close-button[data-action="close"]');
+		return browser.element('.flex-nav i.rcx-icon--name-cross');
 	}
 
 	get burgerBtn() {

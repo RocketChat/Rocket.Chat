@@ -44,7 +44,7 @@ describe('[User Preferences]', () => {
 			});
 
 			it('it should show the submit button', () => {
-				preferencesMainContent.submitBtn.should('be.visible');
+				preferencesMainContent.submitBtn.should('be.visible').should('be.disabled');
 			});
 		});
 
