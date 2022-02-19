@@ -189,7 +189,7 @@ class SideNav extends Page {
 
 	// Gets a channel from the rooms list
 	getChannelFromList(channelName) {
-		return cy.get('[data-qa="sidebar-item-title"]').contains(channelName);
+		return cy.contains('[data-qa="sidebar-item-title"]', channelName).scrollIntoView();
 	}
 
 	createChannel(channelName, isPrivate /* isReadOnly*/) {
