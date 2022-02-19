@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC, useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
@@ -11,7 +11,7 @@ import Chat from './chats/Chat';
 import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
 import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
 
-const ChatsContextualBar = ({ chatReload }) => {
+const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
@@ -19,21 +19,28 @@ const ChatsContextualBar = ({ chatReload }) => {
 
 	const t = useTranslation();
 
-	const openInRoom = () => {
-		directoryRoute.push({ page: 'chats', id, bar: 'view' });
+	const openInRoom = (): void => {
+		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
-	const handleChatsVerticalBarCloseButtonClick = () => {
+	const handleChatsVerticalBarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'chats' });
 	};
 
-	const handleChatsVerticalBarBackButtonClick = () => {
-		directoryRoute.push({ page: 'chats', id, bar: 'info' });
+	const handleChatsVerticalBarBackButtonClick = (): void => {
+		id && directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info?roomId=${id}`);
+	const query = useMemo(
+		() => ({
+			roomId: id || '',
+		}),
+		[id],
+	);
 
-	if (bar === 'view') {
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info`, query);
+
+	if (bar === 'view' && id) {
 		return <Chat rid={id} />;
 	}
 
