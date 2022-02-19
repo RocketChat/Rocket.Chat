@@ -1,4 +1,4 @@
-import { MultiSelectFiltered, Box, Option, Chip } from '@rocket.chat/fuselage';
+import { MultiSelectFiltered, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip, CheckBox } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -16,19 +16,20 @@ const UserAutoCompleteMultiple = (props) => {
 	);
 	const options = useMemo(() => (data && data.items.map((user) => [user.username, user.name])) || [], [data]);
 
-	const renderItem = ({ value, label, ...props }) => (
+	const renderItem = ({ value, label, selected, ...props }) => (
 		<Option key={value} {...props}>
-			<Option.Avatar>
+			<OptionAvatar>
 				<UserAvatar username={value} size='x20' />
-			</Option.Avatar>
-			<Option.Content>
-				{label} <Option.Description>({value})</Option.Description>
-			</Option.Content>
+			</OptionAvatar>
+			<OptionContent>
+				{label} <OptionDescription>({value})</OptionDescription>
+			</OptionContent>
+			<CheckBox checked={selected} />
 		</Option>
 	);
 
 	const renderSelected = ({ value, onMouseDown }) => (
-		<Chip {...props} key={value} value={value} height='x20' onClick={onMouseDown} mie='x4'>
+		<Chip {...props} key={value} value={value} onClick={onMouseDown} margin='x4'>
 			<UserAvatar size='x20' username={value} />
 			<Box is='span' margin='none' mis='x4'>
 				{value}

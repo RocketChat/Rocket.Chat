@@ -4,7 +4,6 @@ import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
-import Avatar from './Avatar';
 
 const query = (term = '', conditions = {}) => ({ selector: JSON.stringify({ term, conditions }) });
 
@@ -30,14 +29,16 @@ const UserAutoComplete = (props) => {
 			</Chip>
 		) : null;
 
+	const renderItem = ({ value, ...props }) => <Option key={value} {...props} avatar={<UserAvatar size='x20' username={value} />} />;
+
 	return (
 		<SelectFiltered
 			{...props}
 			options={options}
 			filter={filter}
 			setFilter={setFilter}
-			// addonIcon='magnifier'
-			renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
+			addonIcon='magnifier'
+			renderItem={renderItem}
 			renderSelected={renderSelected}
 		/>
 	);
