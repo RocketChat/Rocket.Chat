@@ -75,6 +75,7 @@ class LoginPage extends Page {
 
 	open() {
 		super.open('');
+		cy.wait(500);
 	}
 
 	gotToRegister() {
