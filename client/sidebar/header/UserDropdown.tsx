@@ -92,7 +92,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	});
 
 	const handleMyAccount = useMutableCallback(() => {
-		accountRoute.push({});
+		accountRoute.push({ group: 'profile' });
 		onClose();
 	});
 
