@@ -26,6 +26,7 @@ import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
+import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 
 export const chatMessages = {};
 
@@ -247,7 +248,7 @@ Template.roomOld.helpers({
 	},
 
 	chatNowLink() {
-		return roomTypes.getRouteLink('d', { name: this.username });
+		return roomCoordinator.getRouteLink('d', { name: this.username });
 	},
 
 	announcement() {
@@ -658,7 +659,7 @@ Meteor.startup(() => {
 				return c.stop();
 			}
 
-			if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			if (roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
 				return;
 			}
 			const usernames = Array.from(new Set(room.usernames));
@@ -940,7 +941,7 @@ Meteor.startup(() => {
 
 			if (room?.t === 'l') {
 				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
-				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
 			}
 		});
 

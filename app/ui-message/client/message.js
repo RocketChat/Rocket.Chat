@@ -21,6 +21,7 @@ import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
 import './messageThread';
 import './message.html';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -422,7 +423,7 @@ Template.message.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room);
+		return roomCoordinator.getIcon(room);
 	},
 	customClass() {
 		const { customClass, msg } = this;
