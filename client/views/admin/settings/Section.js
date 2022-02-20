@@ -2,34 +2,27 @@ import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import {
-	useEditableSettings,
-	useEditableSettingsDispatch,
-} from '../../../contexts/EditableSettingsContext';
+import { useEditableSettings, useEditableSettingsDispatch } from '../../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import SectionSkeleton from './SectionSkeleton';
 import Setting from './Setting';
 
-function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
+function Section({ children = undefined, groupId, hasReset = true, help = undefined, sectionName, tabName, solo }) {
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
 				group: groupId,
 				section: sectionName,
+				tab: tabName,
 			}),
-			[groupId, sectionName],
+			[groupId, sectionName, tabName],
 		),
 	);
 
-	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [
-		editableSettings,
-	]);
+	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
 
 	const canReset = useMemo(
-		() =>
-			editableSettings.some(
-				({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue),
-			),
+		() => editableSettings.some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)),
 		[editableSettings],
 	);
 
@@ -43,9 +36,7 @@ function Section({ children, groupId, hasReset = true, help, sectionName, solo }
 					_id,
 					value: packageValue,
 					editor: packageEditor,
-					changed:
-						JSON.stringify(value) !== JSON.stringify(packageValue) ||
-						JSON.stringify(editor) !== JSON.stringify(packageEditor),
+					changed: JSON.stringify(value) !== JSON.stringify(packageValue) || JSON.stringify(editor) !== JSON.stringify(packageEditor),
 				})),
 		);
 	});
@@ -57,13 +48,9 @@ function Section({ children, groupId, hasReset = true, help, sectionName, solo }
 	};
 
 	return (
-		<Accordion.Item
-			data-qa-section={sectionName}
-			noncollapsible={solo || !sectionName}
-			title={sectionName && t(sectionName)}
-		>
+		<Accordion.Item data-qa-section={sectionName} noncollapsible={solo || !sectionName} title={sectionName && t(sectionName)}>
 			{help && (
-				<Box is='p' color='hint' fontScale='p1'>
+				<Box is='p' color='hint' fontScale='p2'>
 					{help}
 				</Box>
 			)}

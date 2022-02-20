@@ -95,7 +95,7 @@ export const normalizers = {
 
 	// Fix when authenticating from a meteor app with 'emails' field
 	meteor(identity) {
-		if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+		if (!identity.email && identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1) {
 			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 		}
 	},
@@ -110,10 +110,13 @@ export const renameInvalidProperties = (input) => {
 		return input;
 	}
 
-	return Object.entries(input).reduce((result, [name, value]) => ({
-		...result,
-		[name.replace(IDENTITY_PROPNAME_FILTER, '_')]: renameInvalidProperties(value),
-	}), {});
+	return Object.entries(input).reduce(
+		(result, [name, value]) => ({
+			...result,
+			[name.replace(IDENTITY_PROPNAME_FILTER, '_')]: renameInvalidProperties(value),
+		}),
+		{},
+	);
 };
 
 export const getNestedValue = (propertyPath, source) =>
@@ -127,7 +130,7 @@ export const getRegexpMatch = (formula, data) => {
 		return getNestedValue(formula, data);
 	}
 	if (regexAndPath.length !== 3) {
-		throw new Error(`expected array of length 3, got ${ regexAndPath.length }`);
+		throw new Error(`expected array of length 3, got ${regexAndPath.length}`);
 	}
 
 	const [, regexString, path] = regexAndPath;

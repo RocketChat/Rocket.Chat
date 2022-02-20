@@ -6,4 +6,6 @@ export interface ILicense extends IServiceClass {
 	isEnterprise(): boolean;
 
 	getModules(): string[];
+
+	getGuestPermissions(): string[];
 }

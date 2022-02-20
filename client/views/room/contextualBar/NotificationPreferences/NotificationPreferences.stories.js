@@ -1,11 +1,10 @@
-import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import NotificationsPreferences from './NotificationPreferences';
 
 export default {
-	title: 'components/basic/NotificationsPreferences',
+	title: 'room/contextualBar/NotificationsPreferences',
 	component: NotificationsPreferences,
 };
 
@@ -41,7 +40,6 @@ const handleOptions = {
 const handleSelect = { desktop: {}, mobile: {}, email: {} };
 
 handleSelect.desktop.alert = 'default';
-handleSelect.desktop.audio = 'default';
 handleSelect.desktop.sound = 'chime';
 
 handleSelect.mobile.alert = 'mentions';
@@ -49,21 +47,18 @@ handleSelect.mobile.alert = 'mentions';
 handleSelect.email.alert = 'nothing';
 
 export const Default = () => (
-	<Box height='600px'>
-		<VerticalBar>
-			<NotificationsPreferences
-				handleOn={handleOn}
-				handleSwitch={handleSwitch}
-				handleOptions={handleOptions}
-				handleSelect={handleSelect}
-				handleChangeOption={{
-					desktopAlert: () => {},
-					desktopAudio: () => {},
-					mobileAlert: () => {},
-					emailAlert: () => {},
-				}}
-				handleSoundChange={{ desktopSound: () => {} }}
-			/>
-		</VerticalBar>
-	</Box>
+	<VerticalBar>
+		<NotificationsPreferences
+			handleOn={handleOn}
+			handleSwitch={handleSwitch}
+			handleOptions={handleOptions}
+			handleSelect={handleSelect}
+			handleChangeOption={{
+				desktopAlert: () => {},
+				mobileAlert: () => {},
+				emailAlert: () => {},
+			}}
+			handleSoundChange={{ desktopSound: () => {} }}
+		/>
+	</VerticalBar>
 );

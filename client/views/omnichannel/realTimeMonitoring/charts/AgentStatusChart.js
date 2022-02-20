@@ -17,7 +17,13 @@ const initialData = {
 };
 
 const init = (canvas, context, t) =>
-	drawDoughnutChart(canvas, t('Agents'), context, labels, Object.values(initialData));
+	drawDoughnutChart(
+		canvas,
+		t('Agents'),
+		context,
+		labels.map((l) => t(l)),
+		Object.values(initialData),
+	);
 
 const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -32,10 +38,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/agents-status',
-		params,
-	);
+	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/agents-status', params);
 
 	reloadRef.current.agentStatusChart = reload;
 
@@ -50,10 +53,10 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			updateChartData('Offline', [offline]);
-			updateChartData('Available', [available]);
-			updateChartData('Away', [away]);
-			updateChartData('Busy', [busy]);
+			updateChartData(t('Offline'), [offline]);
+			updateChartData(t('Available'), [available]);
+			updateChartData(t('Away'), [away]);
+			updateChartData(t('Busy'), [busy]);
 		}
 	}, [available, away, busy, offline, state, t, updateChartData]);
 

@@ -1,0 +1,8 @@
+{
+	"added": {
+		"ignore": [
+			"packages/accounts-linkedin/**/*",
+			"packages/linkedin-oauth/**/*"
+		]
+	}
+}

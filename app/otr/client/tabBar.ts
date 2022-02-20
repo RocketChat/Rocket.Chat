@@ -20,14 +20,19 @@ addAction('otr', () => {
 		}
 	}, [shouldAddAction]);
 
-	return useMemo(() => (shouldAddAction
-		? {
-			groups: ['direct'],
-			id: 'otr',
-			title: 'OTR',
-			icon: 'key',
-			template,
-			order: 13,
-			full: true,
-		} : null), [shouldAddAction]);
+	return useMemo(
+		() =>
+			shouldAddAction
+				? {
+						groups: ['direct'],
+						id: 'otr',
+						title: 'OTR',
+						icon: 'shredder',
+						template,
+						order: 13,
+						full: true,
+				  }
+				: null,
+		[shouldAddAction],
+	);
 });

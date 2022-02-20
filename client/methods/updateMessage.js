@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import toastr from 'toastr';
 import _ from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
-import { callbacks } from '../../app/callbacks/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
+import { callbacks } from '../../lib/callbacks';
+import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods({
 	updateMessage(message) {
@@ -32,7 +32,10 @@ Meteor.methods({
 		const me = Meteor.users.findOne(Meteor.userId());
 
 		if (!(hasPermission || (editAllowed && editOwn))) {
-			toastr.error(t('error-action-not-allowed', { action: t('Message_editing') }));
+			dispatchToastMessage({
+				type: 'error',
+				message: t('error-action-not-allowed', { action: t('Message_editing') }),
+			});
 			return false;
 		}
 
@@ -43,7 +46,7 @@ Meteor.methods({
 				if (msgTs) {
 					const currentTsDiff = moment().diff(msgTs, 'minutes');
 					if (currentTsDiff > blockEditInMinutes) {
-						toastr.error(t('error-message-editing-blocked'));
+						dispatchToastMessage({ type: 'error', message: t('error-message-editing-blocked') });
 						return false;
 					}
 				}

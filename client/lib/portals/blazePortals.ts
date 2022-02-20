@@ -8,9 +8,7 @@ type BlazePortalEntry = {
 	node: ReactNode;
 };
 
-class BlazePortalsSubscriptions
-	extends Emitter<{ update: void }>
-	implements Subscription<BlazePortalEntry[]> {
+class BlazePortalsSubscriptions extends Emitter<{ update: void }> implements Subscription<BlazePortalEntry[]> {
 	private map = new Map<Blaze.TemplateInstance, BlazePortalEntry>();
 
 	getCurrentValue = (): BlazePortalEntry[] => Array.from(this.map.values());

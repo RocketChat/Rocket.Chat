@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import speakeasy from 'speakeasy';
 
 import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 export const TOTP = {
 	generateSecret() {
@@ -13,7 +13,7 @@ export const TOTP = {
 	generateOtpauthURL(secret, username) {
 		return speakeasy.otpauthURL({
 			secret: secret.ascii,
-			label: `Rocket.Chat:${ username }`,
+			label: `Rocket.Chat:${username}`,
 		});
 	},
 

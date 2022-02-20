@@ -41,10 +41,23 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 	const { id, type, i18nLabel, i18nDescription, values, required } = appSetting;
 
 	const label = (i18nLabel && tApp(i18nLabel)) + (required ? ' *' : '') || id || tApp(id);
-	const hint = useMemo(() => i18nDescription && <MarkdownText content={tApp(i18nDescription)} />, [
-		i18nDescription,
-		tApp,
-	]);
+	const hint = useMemo(() => i18nDescription && <MarkdownText content={tApp(i18nDescription)} />, [i18nDescription, tApp]);
+
+	let translatedValues;
+	if (values?.length) {
+		translatedValues = values.map((selectFieldEntry) => {
+			const { key, i18nLabel } = selectFieldEntry;
+
+			if (!i18nLabel) {
+				return selectFieldEntry;
+			}
+
+			return {
+				key,
+				i18nLabel: tApp(i18nLabel),
+			};
+		});
+	}
 
 	return (
 		<MemoizedSetting
@@ -54,7 +67,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 			value={value}
 			onChangeValue={onChange}
 			_id={id}
-			values={values}
+			values={translatedValues}
 			{...props}
 		/>
 	);

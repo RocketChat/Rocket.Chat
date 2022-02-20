@@ -2,19 +2,49 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload } from '../../../ui';
+import { AudioRecorder, fileUpload, USER_ACTIVITIES, UserAction } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = () => new Promise((resolve, reject) =>
-	AudioRecorder.start((result) => (result ? resolve() : reject())));
+const startRecording = async (rid, tmid) => {
+	try {
+		await AudioRecorder.start();
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+	} catch (error) {
+		throw error;
+	}
+};
 
-const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
+const stopRecording = async (rid, tmid) => {
+	const result = await new Promise((resolve) => AudioRecorder.stop(resolve));
+	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+	return result;
+};
 
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
-Template.messageBoxAudioMessage.onCreated(async function() {
+const clearIntervalVariables = () => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+		recordingRoomId.set(null);
+	}
+};
+
+const cancelRecording = async (instance, rid, tmid) => {
+	clearIntervalVariables();
+
+	instance.time.set('00:00');
+
+	const blob = await stopRecording(rid, tmid);
+
+	instance.state.set(null);
+
+	return blob;
+};
+
+Template.messageBoxAudioMessage.onCreated(async function () {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
 	this.isMicrophoneDenied = new ReactiveVar(false);
@@ -47,25 +77,32 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 	}
 });
 
+Template.messageBoxAudioMessage.onDestroyed(async function () {
+	if (this.state.get() === 'recording') {
+		const { rid, tmid } = this.data;
+		await cancelRecording(this, rid, tmid);
+	}
+});
+
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
-		return AudioRecorder.isSupported()
-			&& !Template.instance().isMicrophoneDenied.get()
-			&& settings.get('FileUpload_Enabled')
-			&& settings.get('Message_AudioRecorderEnabled')
-			&& (!settings.get('FileUpload_MediaTypeBlackList')
-				|| !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i))
-			&& (!settings.get('FileUpload_MediaTypeWhiteList')
-				|| settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+		return (
+			AudioRecorder.isSupported() &&
+			!Template.instance().isMicrophoneDenied.get() &&
+			settings.get('FileUpload_Enabled') &&
+			settings.get('Message_AudioRecorderEnabled') &&
+			(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/audio\/mp3|audio\/\*/i)) &&
+			(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i))
+		);
 	},
 
 	stateClass() {
-		if (recordingRoomId.get() && (recordingRoomId.get() !== Template.currentData().rid)) {
+		if (recordingRoomId.get() && recordingRoomId.get() !== Template.currentData().rid) {
 			return 'rc-message-box__audio-message--busy';
 		}
 
 		const state = Template.instance().state.get();
-		return state && `rc-message-box__audio-message--${ state }`;
+		return state && `rc-message-box__audio-message--${state}`;
 	},
 
 	time() {
@@ -77,23 +114,24 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
 
-		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
+		if (recordingRoomId.get() && recordingRoomId.get() !== this.rid) {
 			return;
 		}
 
 		instance.state.set('recording');
 
 		try {
-			await startRecording();
-
+			await startRecording(this.rid, this.tmid);
 			const startTime = new Date();
-			recordingInterval.set(setInterval(() => {
-				const now = new Date();
-				const distance = (now.getTime() - startTime.getTime()) / 1000;
-				const minutes = Math.floor(distance / 60);
-				const seconds = Math.floor(distance % 60);
-				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-			}, 1000));
+			recordingInterval.set(
+				setInterval(() => {
+					const now = new Date();
+					const distance = (now.getTime() - startTime.getTime()) / 1000;
+					const minutes = Math.floor(distance / 60);
+					const seconds = Math.floor(distance % 60);
+					instance.time.set(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+				}, 1000),
+			);
 			recordingRoomId.set(this.rid);
 		} catch (error) {
 			console.log(error);
@@ -105,17 +143,7 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-			recordingRoomId.set(null);
-		}
-
-		instance.time.set('00:00');
-
-		await stopRecording();
-
-		instance.state.set(null);
+		await cancelRecording(instance, this.rid, this.tmid);
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -123,19 +151,9 @@ Template.messageBoxAudioMessage.events({
 
 		instance.state.set('loading');
 
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-			recordingRoomId.set(null);
-		}
-
-		instance.time.set('00:00');
-
-		const blob = await stopRecording();
-
-		instance.state.set(null);
-
 		const { rid, tmid } = this;
-		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
+		const blob = await cancelRecording(instance, rid, tmid);
+
+		await fileUpload([{ file: blob, type: 'video', name: `${t('Audio record')}.mp3` }], { input: blob }, { rid, tmid });
 	},
 });

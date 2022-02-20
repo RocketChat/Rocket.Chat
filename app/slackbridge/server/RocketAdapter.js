@@ -5,15 +5,15 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 
-import { logger } from './logger';
-import { callbacks } from '../../callbacks';
+import { rocketLogger } from './logger';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
-		logger.rocket.debug('constructor');
+		rocketLogger.debug('constructor');
 		this.slackBridge = slackBridge;
 		this.util = util;
 		this.userTags = {};
@@ -39,7 +39,7 @@ export default class RocketAdapter {
 	}
 
 	registerForEvents() {
-		logger.rocket.debug('Register for events');
+		rocketLogger.debug('Register for events');
 		callbacks.add('afterSaveMessage', this.onMessage.bind(this), callbacks.priority.LOW, 'SlackBridge_Out');
 		callbacks.add('afterDeleteMessage', this.onMessageDelete.bind(this), callbacks.priority.LOW, 'SlackBridge_Delete');
 		callbacks.add('setReaction', this.onSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_SetReaction');
@@ -47,7 +47,7 @@ export default class RocketAdapter {
 	}
 
 	unregisterForEvents() {
-		logger.rocket.debug('Unregister for events');
+		rocketLogger.debug('Unregister for events');
 		callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
 		callbacks.remove('afterDeleteMessage', 'SlackBridge_Delete');
 		callbacks.remove('setReaction', 'SlackBridge_SetReaction');
@@ -61,10 +61,10 @@ export default class RocketAdapter {
 					// This is on a channel that the rocket bot is not subscribed on this slack server
 					return;
 				}
-				logger.rocket.debug('onRocketMessageDelete', rocketMessageDeleted);
+				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
 				slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
-				logger.rocket.error('Unhandled error onMessageDelete', err);
+				rocketLogger.error('Unhandled error onMessageDelete', err);
 			}
 		});
 	}
@@ -75,10 +75,10 @@ export default class RocketAdapter {
 				return;
 			}
 
-			logger.rocket.debug('onRocketSetReaction');
+			rocketLogger.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`set${ rocketMsgID }${ reaction }`)) {
+				if (this.slackBridge.reactionsMap.delete(`set${rocketMsgID}${reaction}`)) {
 					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -94,7 +94,7 @@ export default class RocketAdapter {
 				}
 			}
 		} catch (err) {
-			logger.rocket.error('Unhandled error onSetReaction', err);
+			rocketLogger.error('Unhandled error onSetReaction', err);
 		}
 	}
 
@@ -104,10 +104,10 @@ export default class RocketAdapter {
 				return;
 			}
 
-			logger.rocket.debug('onRocketUnSetReaction');
+			rocketLogger.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`unset${ rocketMsgID }${ reaction }`)) {
+				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsgID}${reaction}`)) {
 					// This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -124,7 +124,7 @@ export default class RocketAdapter {
 				}
 			}
 		} catch (err) {
-			logger.rocket.error('Unhandled error onUnSetReaction', err);
+			rocketLogger.error('Unhandled error onUnSetReaction', err);
 		}
 	}
 
@@ -135,7 +135,7 @@ export default class RocketAdapter {
 					// This is on a channel that the rocket bot is not subscribed
 					return;
 				}
-				logger.rocket.debug('onRocketMessage', rocketMessage);
+				rocketLogger.debug('onRocketMessage', rocketMessage);
 
 				if (rocketMessage.editedAt) {
 					// This is an Edit Event
@@ -154,7 +154,7 @@ export default class RocketAdapter {
 				// A new message from Rocket.Chat
 				this.processSendMessage(rocketMessage, slack);
 			} catch (err) {
-				logger.rocket.error('Unhandled error onMessage', err);
+				rocketLogger.error('Unhandled error onMessage', err);
 			}
 		});
 
@@ -168,7 +168,7 @@ export default class RocketAdapter {
 		} else {
 			// They want to limit to certain groups
 			const outSlackChannels = _.pluck(settings.get('SlackBridge_Out_Channels'), '_id') || [];
-			// logger.rocket.debug('Out SlackChannels: ', outSlackChannels);
+			// rocketLogger.debug('Out SlackChannels: ', outSlackChannels);
 			if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
 				slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 			}
@@ -185,7 +185,7 @@ export default class RocketAdapter {
 		}
 
 		const fileId = rocketMessage.file._id;
-		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${fileId}/`) >= 0);
 	}
 
 	processFileShare(rocketMessage, slack) {
@@ -205,7 +205,7 @@ export default class RocketAdapter {
 				}
 			}
 
-			const message = `${ text } ${ fileName }`;
+			const message = `${text} ${fileName}`;
 
 			rocketMessage.msg = message;
 			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
@@ -235,7 +235,7 @@ export default class RocketAdapter {
 	}
 
 	createRocketID(slackChannel, ts) {
-		return `slack-${ slackChannel }-${ ts.replace(/\./g, '-') }`;
+		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
 	}
 
 	findChannel(slackChannelId) {
@@ -260,7 +260,7 @@ export default class RocketAdapter {
 	}
 
 	addChannel(slackChannelID, hasRetried = false) {
-		logger.rocket.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
+		rocketLogger.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let addedRoom;
 
 		this.slackAdapters.forEach((slack) => {
@@ -272,7 +272,7 @@ export default class RocketAdapter {
 			if (slackChannel) {
 				const members = slack.slackAPI.getMembers(slackChannelID);
 				if (!members) {
-					logger.rocket.error('Could not fetch room members');
+					rocketLogger.error('Could not fetch room members');
 					return;
 				}
 
@@ -286,7 +286,7 @@ export default class RocketAdapter {
 					const rocketUserCreator = this.getRocketUserCreator(slackChannel);
 
 					if (!rocketUserCreator) {
-						logger.rocket.error('Could not fetch room creator information', slackChannel.creator);
+						rocketLogger.error('Could not fetch room creator information', slackChannel.creator);
 						return;
 					}
 
@@ -296,12 +296,12 @@ export default class RocketAdapter {
 						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
-							logger.rocket.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
+							rocketLogger.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
 							Meteor._sleepForMs(1000);
 							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
 						}
-						console.log(e.message);
+						rocketLogger.error(e.message);
 					}
 
 					const roomUpdate = {
@@ -327,7 +327,7 @@ export default class RocketAdapter {
 		});
 
 		if (!addedRoom) {
-			logger.rocket.debug('Channel not added');
+			rocketLogger.debug('Channel not added');
 		}
 		return addedRoom;
 	}
@@ -335,13 +335,16 @@ export default class RocketAdapter {
 	findUser(slackUserID) {
 		const rocketUser = Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
-			this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUser.username }` };
+			this.userTags[slackUserID] = {
+				slack: `<@${slackUserID}>`,
+				rocket: `@${rocketUser.username}`,
+			};
 		}
 		return rocketUser;
 	}
 
 	addUser(slackUserID) {
-		logger.rocket.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
 		let addedUser;
 		this.slackAdapters.forEach((slack) => {
 			if (addedUser) {
@@ -408,7 +411,7 @@ export default class RocketAdapter {
 						try {
 							setUserAvatar(user, url, null, 'url');
 						} catch (error) {
-							logger.rocket.debug('Error setting user avatar', error.message);
+							rocketLogger.debug('Error setting user avatar', error.message);
 						}
 					}
 				}
@@ -419,14 +422,17 @@ export default class RocketAdapter {
 				}
 				Users.addImportIds(rocketUserData.rocketId, importIds);
 				if (!this.userTags[slackUserID]) {
-					this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUserData.name }` };
+					this.userTags[slackUserID] = {
+						slack: `<@${slackUserID}>`,
+						rocket: `@${rocketUserData.name}`,
+					};
 				}
 				addedUser = Users.findOneById(rocketUserData.rocketId);
 			}
 		});
 
 		if (!addedUser) {
-			logger.rocket.debug('User not added');
+			rocketLogger.debug('User not added');
 		}
 
 		return addedUser;
@@ -495,7 +501,7 @@ export default class RocketAdapter {
 					}
 				}, 500);
 			} else {
-				logger.rocket.debug('Send message to Rocket.Chat');
+				rocketLogger.debug('Send message to Rocket.Chat');
 				sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 			}
 		}

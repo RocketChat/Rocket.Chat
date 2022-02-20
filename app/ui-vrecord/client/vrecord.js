@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload } from '../../ui';
+import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -28,59 +28,65 @@ Template.vrecDialog.helpers({
 	time() {
 		return Template.instance().time.get();
 	},
-
 });
 
 const recordingInterval = new ReactiveVar(null);
 
+const stopVideoRecording = (rid, tmid) => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+	}
+	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+};
+
 Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
+		const rid = t.rid.get();
+		const tmid = t.tmid.get();
+
 		VideoRecorder.stop();
 		VRecDialog.close();
 		t.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid, tmid);
 	},
 
 	'click .vrec-dialog .record'(e, t) {
+		const rid = t.rid.get();
+		const tmid = t.tmid.get();
 		if (VideoRecorder.recording.get()) {
 			VideoRecorder.stopRecording();
-			if (recordingInterval.get()) {
-				clearInterval(recordingInterval.get());
-				recordingInterval.set(null);
-			}
+			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
+			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			t.time.set('00:00');
 			const startTime = new Date();
-			recordingInterval.set(setInterval(() => {
-				const now = new Date();
-				const distance = (now.getTime() - startTime.getTime()) / 1000;
-				const minutes = Math.floor(distance / 60);
-				const seconds = Math.floor(distance % 60);
-				t.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-			}, 1000));
+			recordingInterval.set(
+				setInterval(() => {
+					const now = new Date();
+					const distance = (now.getTime() - startTime.getTime()) / 1000;
+					const minutes = Math.floor(distance / 60);
+					const seconds = Math.floor(distance % 60);
+					t.time.set(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+				}, 1000),
+			);
 		}
 	},
 
 	'click .vrec-dialog .ok'(e, instance) {
 		const [rid, tmid, input] = [instance.rid.get(), instance.tmid.get(), instance.input.get()];
 		const cb = (blob) => {
-			fileUpload([{ file: blob, type: 'video', name: `${ TAPi18n.__('Video record') }.webm` }], input, { rid, tmid });
+			fileUpload([{ file: blob, type: 'video', name: `${TAPi18n.__('Video record')}.webm` }], input, { rid, tmid });
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
 		instance.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid, tmid);
 	},
 });
 
-Template.vrecDialog.onCreated(function() {
+Template.vrecDialog.onCreated(function () {
 	this.width = 400;
 	this.height = 290;
 
@@ -94,7 +100,7 @@ Template.vrecDialog.onCreated(function() {
 		this.input.set(input);
 	};
 
-	this.setPosition = function(dialog, source, anchor = 'left') {
+	this.setPosition = function (dialog, source, anchor = 'left') {
 		const _set = () => {
 			const sourcePos = $(source).offset();
 			let top = sourcePos.top - this.height - 5;
@@ -107,13 +113,13 @@ Template.vrecDialog.onCreated(function() {
 				if (right < 0) {
 					right = 10;
 				}
-				return dialog.css({ top: `${ top }px`, right: `${ right }px` });
+				return dialog.css({ top: `${top}px`, right: `${right}px` });
 			}
-			let left = (sourcePos.left - this.width) + 100;
+			let left = sourcePos.left - this.width + 100;
 			if (left < 0) {
 				left = 10;
 			}
-			return dialog.css({ top: `${ top }px`, left: `${ left }px` });
+			return dialog.css({ top: `${top}px`, left: `${left}px` });
 		};
 
 		const set = _.debounce(_set, 2000);
@@ -123,6 +129,7 @@ Template.vrecDialog.onCreated(function() {
 	};
 });
 
-Template.vrecDialog.onDestroyed(function() {
+Template.vrecDialog.onDestroyed(function () {
+	VRecDialog.close(this.rid.get());
 	$(window).off('resize', this.remove);
 });

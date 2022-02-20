@@ -3,10 +3,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models';
 import { AppEvents, Apps } from '../../../apps/server';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Team } from '../../../../server/sdk';
 
-export const removeUserFromRoom = function(rid, user, options = {}) {
+export const removeUserFromRoom = function (rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);
 
 	if (room) {
@@ -22,14 +22,24 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 
 		callbacks.run('beforeLeaveRoom', user, room);
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+			fields: { _id: 1 },
+		});
 
 		if (subscription) {
 			const removedUser = user;
 			if (options.byUser) {
-				Messages.createUserRemovedWithRoomIdAndUser(rid, user, {
+				const extraData = {
 					u: options.byUser,
-				});
+				};
+
+				if (room.teamMain) {
+					Messages.createUserRemovedFromTeamWithRoomIdAndUser(rid, user, extraData);
+				} else {
+					Messages.createUserRemovedWithRoomIdAndUser(rid, user, extraData);
+				}
+			} else if (room.teamMain) {
+				Messages.createUserLeaveTeamWithRoomIdAndUser(rid, removedUser);
 			} else {
 				Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
 			}
@@ -45,7 +55,7 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 			Promise.await(Team.removeMember(room.teamId, user._id));
 		}
 
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			// TODO: CACHE: maybe a queue?
 			callbacks.run('afterLeaveRoom', user, room);
 

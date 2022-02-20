@@ -12,16 +12,13 @@ function SendTestButton({ id }) {
 	const sendTest = useEndpoint('POST', `email-inbox.send-test/${id}`);
 
 	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
 			<Button
 				small
 				ghost
 				title={t('Send_Test_Email')}
 				onClick={(e) =>
-					e.preventDefault() &
-					e.stopPropagation() &
-					sendTest() &
-					dispatchToastMessage({ type: 'success', message: t('Email_sent') })
+					e.preventDefault() & e.stopPropagation() & sendTest() & dispatchToastMessage({ type: 'success', message: t('Email_sent') })
 				}
 			>
 				<Icon name='send' size='x20' />

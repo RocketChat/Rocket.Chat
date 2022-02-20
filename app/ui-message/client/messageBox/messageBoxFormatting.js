@@ -1,7 +1,6 @@
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings';
 
-
 export const formattingButtons = [
 	{
 		label: 'bold',

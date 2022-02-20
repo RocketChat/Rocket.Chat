@@ -25,7 +25,7 @@ const AppearancePageContainer: FC = () => {
 		return <PageSkeleton />;
 	}
 
-	if (!data || !data.success || !data.appearance || error) {
+	if (!data || !data.appearance || error) {
 		return (
 			<Page>
 				<Page.Header title={t('Edit_Custom_Field')} />

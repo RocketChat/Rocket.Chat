@@ -8,6 +8,8 @@ import ColTitle from './ColTitle';
 import Footer from './Footer';
 import Title from './Title';
 
+export const DOUBLE_COLUMN_CARD_WIDTH = 552;
+
 export default Object.assign(Card, {
 	Title,
 	Body,
@@ -19,5 +21,3 @@ export default Object.assign(Card, {
 	Divider: CardDivider,
 	Icon: CardIcon,
 });
-
-export const DOUBLE_COLUMN_CARD_WIDTH = 552;

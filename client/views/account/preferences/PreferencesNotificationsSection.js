@@ -1,12 +1,4 @@
-import {
-	Accordion,
-	Field,
-	Select,
-	FieldGroup,
-	ToggleSwitch,
-	Button,
-	Box,
-} from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box } from '@rocket.chat/fuselage';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
 import { KonchatNotification } from '../../../../app/ui';
@@ -31,51 +23,29 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 
 	const [notificationsPermission, setNotificationsPermission] = useState();
 
-	const userDesktopNotificationRequireInteraction = useUserPreference(
-		'desktopNotificationRequireInteraction',
-	);
+	const userDesktopNotificationRequireInteraction = useUserPreference('desktopNotificationRequireInteraction');
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
-	const userMobileNotifications = useUserPreference('mobileNotifications');
+	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode');
-	const userDesktopAudioNotifications = useUserPreference('audioNotifications');
 
-	const defaultDesktopNotifications = useSetting(
-		'Accounts_Default_User_Preferences_desktopNotifications',
-	);
-	const defaultDesktopAudioNotifications = useSetting(
-		'Accounts_Default_User_Preferences_audioNotifications',
-	);
-	const defaultMobileNotifications = useSetting(
-		'Accounts_Default_User_Preferences_mobileNotifications',
-	);
+	const defaultDesktopNotifications = useSetting('Accounts_Default_User_Preferences_desktopNotifications');
+	const defaultMobileNotifications = useSetting('Accounts_Default_User_Preferences_pushNotifications');
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
 	const { values, handlers, commit } = useForm(
 		{
 			desktopNotificationRequireInteraction: userDesktopNotificationRequireInteraction,
 			desktopNotifications: userDesktopNotifications,
-			mobileNotifications: userMobileNotifications,
+			pushNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
-			audioNotifications: userDesktopAudioNotifications,
 		},
 		onChange,
 	);
 
-	const {
-		desktopNotificationRequireInteraction,
-		desktopNotifications,
-		mobileNotifications,
-		emailNotificationMode,
-		audioNotifications,
-	} = values;
+	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode } = values;
 
-	const {
-		handleDesktopNotificationRequireInteraction,
-		handleDesktopNotifications,
-		handleMobileNotifications,
-		handleEmailNotificationMode,
-		handleAudioNotifications,
-	} = handlers;
+	const { handleDesktopNotificationRequireInteraction, handleDesktopNotifications, handlePushNotifications, handleEmailNotificationMode } =
+		handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
@@ -90,51 +60,26 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 	}, [t]);
 
 	const onAskNotificationPermission = useCallback(() => {
-		window.Notification &&
-			Notification.requestPermission().then((val) => setNotificationsPermission(val));
+		window.Notification && Notification.requestPermission().then((val) => setNotificationsPermission(val));
 	}, []);
 
-	const notificationOptions = useMemo(
-		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, t(val)]),
-		[t],
-	);
+	const notificationOptions = useMemo(() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, t(val)]), [t]);
 
 	const desktopNotificationOptions = useMemo(() => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift([
-			'default',
-			`${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications])})`,
-		]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications])})`]);
 		return optionsCp;
 	}, [defaultDesktopNotifications, notificationOptions, t]);
 
-	const desktopNotificationAudioOptions = useMemo(() => {
-		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift([
-			'default',
-			`${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopAudioNotifications])})`,
-		]);
-		return optionsCp;
-	}, [defaultDesktopAudioNotifications, notificationOptions, t]);
-
 	const mobileNotificationOptions = useMemo(() => {
 		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift([
-			'default',
-			`${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications])})`,
-		]);
+		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultMobileNotifications])})`]);
 		return optionsCp;
 	}, [defaultMobileNotifications, notificationOptions, t]);
 
 	const emailNotificationOptions = useMemo(() => {
-		const options = Object.entries(emailNotificationOptionsLabelMap).map(([key, val]) => [
-			key,
-			t(val),
-		]);
-		options.unshift([
-			'default',
-			`${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode])})`,
-		]);
+		const options = Object.entries(emailNotificationOptionsLabelMap).map(([key, val]) => [key, t(val)]);
+		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode])})`]);
 		return options;
 	}, [t, userEmailNotificationMode]);
 
@@ -165,10 +110,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Field.Label>{t('Notification_RequireInteraction')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch
-								checked={desktopNotificationRequireInteraction}
-								onChange={handleDesktopNotificationRequireInteraction}
-							/>
+							<ToggleSwitch checked={desktopNotificationRequireInteraction} onChange={handleDesktopNotificationRequireInteraction} />
 						</Field.Row>
 					</Box>
 					<Field.Hint>{t('Only_works_with_chrome_version_greater_50')}</Field.Hint>
@@ -176,31 +118,13 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 				<Field>
 					<Field.Label>{t('Notification_Desktop_Default_For')}</Field.Label>
 					<Field.Row>
-						<Select
-							value={desktopNotifications}
-							onChange={handleDesktopNotifications}
-							options={desktopNotificationOptions}
-						/>
+						<Select value={desktopNotifications} onChange={handleDesktopNotifications} options={desktopNotificationOptions} />
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Notification_Desktop_Audio_Default_For')}</Field.Label>
+					<Field.Label>{t('Notification_Push_Default_For')}</Field.Label>
 					<Field.Row>
-						<Select
-							value={audioNotifications}
-							onChange={handleAudioNotifications}
-							options={desktopNotificationAudioOptions}
-						/>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Notification_Mobile_Default_For')}</Field.Label>
-					<Field.Row>
-						<Select
-							value={mobileNotifications}
-							onChange={handleMobileNotifications}
-							options={mobileNotificationOptions}
-						/>
+						<Select value={pushNotifications} onChange={handlePushNotifications} options={mobileNotificationOptions} />
 					</Field.Row>
 				</Field>
 				<Field>
@@ -214,8 +138,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 						/>
 					</Field.Row>
 					<Field.Hint>
-						{canChangeEmailNotification &&
-							t('You_need_to_verifiy_your_email_address_to_get_notications')}
+						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 					</Field.Hint>
 				</Field>

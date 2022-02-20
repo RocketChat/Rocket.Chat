@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { MessageTypes } from './MessageTypes';
 import { settings } from '../../settings';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 export const Message = {
 	parse(msg, language) {
@@ -12,10 +12,12 @@ export const Message = {
 		if (messageType) {
 			if (messageType.render) {
 				return messageType.render(msg);
-			} if (messageType.template) {
+			}
+			if (messageType.template) {
 				// Render message
 				return;
-			} if (messageType.message) {
+			}
+			if (messageType.message) {
 				if (!language) {
 					language = Meteor._localStorage.getItem('userLanguage');
 				}

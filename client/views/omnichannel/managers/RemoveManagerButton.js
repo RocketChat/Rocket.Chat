@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -32,11 +32,11 @@ function RemoveManagerButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteManager} onCancel={() => setModal()} />);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteManager} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
 			<Button small ghost title={t('Remove')} onClick={handleDelete}>
 				<Icon name='trash' size='x16' />
 			</Button>

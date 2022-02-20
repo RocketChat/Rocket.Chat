@@ -22,10 +22,10 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		hideUsernames: useUserPreference('hideUsernames'),
 		hideRoles: useUserPreference('hideRoles'),
 		hideFlexTab: useUserPreference('hideFlexTab'),
-		hideAvatars: useUserPreference('hideAvatars'),
 		clockMode: useUserPreference('clockMode') ?? 0,
 		sendOnEnter: useUserPreference('sendOnEnter'),
 		messageViewMode: useUserPreference('messageViewMode'),
+		displayAvatars: useUserPreference('displayAvatars'),
 	};
 
 	const { values, handlers, commit } = useForm(settings, onChange);
@@ -41,7 +41,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		hideUsernames,
 		hideRoles,
 		hideFlexTab,
-		hideAvatars,
+		displayAvatars,
 		clockMode,
 		sendOnEnter,
 		messageViewMode,
@@ -58,7 +58,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		handleHideUsernames,
 		handleHideRoles,
 		handleHideFlexTab,
-		handleHideAvatars,
+		handleDisplayAvatars,
 		handleClockMode,
 		handleSendOnEnter,
 		handleMessageViewMode,
@@ -114,10 +114,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 							<Field.Label>{t('Show_Message_In_Main_Thread')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={showMessageInMainThread}
-									onChange={handleShowMessageInMainThread}
-								/>
+								<ToggleSwitch checked={showMessageInMainThread} onChange={handleShowMessageInMainThread} />
 							</Field.Row>
 						</Field>
 					),
@@ -183,10 +180,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 							<Field.Label>{t('Collapse_Embedded_Media_By_Default')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									checked={collapseMediaByDefault}
-									onChange={handleCollapseMediaByDefault}
-								/>
+								<ToggleSwitch checked={collapseMediaByDefault} onChange={handleCollapseMediaByDefault} />
 							</Field.Row>
 						</Field>
 					),
@@ -229,24 +223,20 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 				{useMemo(
 					() => (
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Hide_Avatars')}</Field.Label>
+							<Field.Label>{t('Display_avatars')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={hideAvatars} onChange={handleHideAvatars} />
+								<ToggleSwitch checked={displayAvatars} onChange={handleDisplayAvatars} />
 							</Field.Row>
 						</Field>
 					),
-					[handleHideAvatars, hideAvatars, t],
+					[handleDisplayAvatars, displayAvatars, t],
 				)}
 				{useMemo(
 					() => (
 						<Field>
 							<Field.Label>{t('Enter_Behaviour')}</Field.Label>
 							<Field.Row>
-								<Select
-									value={sendOnEnter}
-									onChange={handleSendOnEnter}
-									options={sendOnEnterOptions}
-								/>
+								<Select value={sendOnEnter} onChange={handleSendOnEnter} options={sendOnEnterOptions} />
 							</Field.Row>
 							<Field.Hint>{t('Enter_Behaviour_Description')}</Field.Hint>
 						</Field>
@@ -258,11 +248,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 						<Field>
 							<Field.Label>{t('View_mode')}</Field.Label>
 							<Field.Row>
-								<Select
-									value={messageViewMode}
-									onChange={handleMessageViewMode}
-									options={messageViewModeOptions}
-								/>
+								<Select value={messageViewMode} onChange={handleMessageViewMode} options={messageViewModeOptions} />
 							</Field.Row>
 							<Field.Hint>{t('Message_view_mode_info')}</Field.Hint>
 						</Field>

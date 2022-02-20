@@ -22,8 +22,7 @@ function AppMenu({ app, ...props }) {
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
-	const isSubscribed =
-		app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
+	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
 
 	const closeModal = useCallback(() => {
@@ -71,15 +70,7 @@ function AppMenu({ app, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [
-		checkUserLoggedIn,
-		setModal,
-		closeModal,
-		buildExternalUrl,
-		app.id,
-		app.purchaseType,
-		syncApp,
-	]);
+	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -92,12 +83,7 @@ function AppMenu({ app, ...props }) {
 			}
 		};
 		setModal(
-			<WarningModal
-				close={closeModal}
-				confirm={confirm}
-				text={t('Apps_Marketplace_Deactivate_App_Prompt')}
-				confirmText={t('Yes')}
-			/>,
+			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
@@ -129,12 +115,7 @@ function AppMenu({ app, ...props }) {
 		}
 
 		setModal(
-			<WarningModal
-				close={closeModal}
-				confirm={uninstall}
-				text={t('Apps_Marketplace_Uninstall_App_Prompt')}
-				confirmText={t('Yes')}
-			/>,
+			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [closeModal, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
 
@@ -192,16 +173,7 @@ function AppMenu({ app, ...props }) {
 				action: handleUninstall,
 			},
 		}),
-		[
-			canAppBeSubscribed,
-			t,
-			handleSubscription,
-			handleViewLogs,
-			isAppEnabled,
-			handleDisable,
-			handleEnable,
-			handleUninstall,
-		],
+		[canAppBeSubscribed, t, handleSubscription, handleViewLogs, isAppEnabled, handleDisable, handleEnable, handleUninstall],
 	);
 
 	return <Menu options={menuOptions} placement='bottom-start' {...props} />;

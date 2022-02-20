@@ -5,15 +5,17 @@ import { Tracker } from 'meteor/tracker';
 import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { menu, fireGlobalEvent } from '../../app/ui-utils/client';
+import { menu } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
 import { ISubscription } from '../../definition/ISubscription';
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>
 	ChatSubscription.find(
 		{
 			open: true,
 			hideUnreadStatus: { $ne: true },
+			archived: { $ne: true },
 		},
 		{
 			fields: {
@@ -42,7 +44,7 @@ Meteor.startup(() => {
 					const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
 					fireGlobalEvent('unread-changed-by-subscription', {
 						...subscription,
-						usersCount: room && room.usersCount,
+						usersCount: room?.usersCount,
 					});
 
 					if (subscription.alert || subscription.unread > 0) {

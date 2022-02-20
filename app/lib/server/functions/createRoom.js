@@ -5,14 +5,13 @@ import s from 'underscore.string';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization';
-import { callbacks } from '../../../callbacks';
-import { Rooms, Subscriptions, Users } from '../../../models';
+import { callbacks } from '../../../../lib/callbacks';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
 
-
-export const createRoom = function(type, name, owner, members = [], readOnly, { teamId, ...extraData } = {}, options = {}) {
+export const createRoom = function (type, name, owner, members = [], readOnly, { teamId, ...extraData } = {}, options = {}) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -24,13 +23,17 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	members = [].concat(members);
 
 	if (!name) {
-		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
+		throw new Meteor.Error('error-invalid-name', 'Invalid name', {
+			function: 'RocketChat.createRoom',
+		});
 	}
 
 	owner = Users.findOneByUsernameIgnoringCase(owner, { fields: { username: 1 } });
 
 	if (!owner) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			function: 'RocketChat.createRoom',
+		});
 	}
 
 	if (!_.contains(members, owner.username)) {
@@ -51,8 +54,9 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	}
 
 	let room = {
-		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
+		...extraData,
+		name: getValidRoomName(name, null, validRoomNameOptions),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
@@ -60,7 +64,6 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 			_id: owner._id,
 			username: owner.username,
 		},
-		...extraData,
 		ts: now,
 		ro: readOnly === true,
 	};
@@ -74,13 +77,15 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 
 	room._USERNAMES = members;
 
-	const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	const prevent = Promise.await(
+		Apps.triggerEvent('IPreRoomCreatePrevent', room).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
-	}));
+			throw error;
+		}),
+	);
 
 	if (prevent) {
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
@@ -102,7 +107,9 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	room = Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
+		const member = Users.findOneByUsername(username, {
+			fields: { 'username': 1, 'settings.preferences': 1 },
+		});
 		if (!member) {
 			continue;
 		}
@@ -123,6 +130,11 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
+
+	if (room.teamId) {
+		const team = Promise.await(Team.getOneById(room.teamId));
+		Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
+	}
 
 	if (type === 'c') {
 		Meteor.defer(() => {

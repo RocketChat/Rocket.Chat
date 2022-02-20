@@ -1,12 +1,16 @@
 import { Meteor } from 'meteor/meteor';
+import { parser } from '@rocket.chat/message-parser';
 
-import { Messages, Rooms } from '../../../models';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { Messages, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../../lib/callbacks';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = function(message, user, originalMessage) {
+const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
+
+export const updateMessage = function (message, user, originalMessage) {
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}
@@ -44,6 +48,14 @@ export const updateMessage = function(message, user, originalMessage) {
 
 	message = callbacks.run('beforeSaveMessage', message);
 
+	try {
+		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+			message.md = parser(message.msg);
+		}
+	} catch (e) {
+		SystemLogger.error(e); // errors logged while the parser is at experimental stage
+	}
+
 	const tempid = message._id;
 	delete message._id;
 
@@ -57,7 +69,7 @@ export const updateMessage = function(message, user, originalMessage) {
 		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(function() {
+	Meteor.defer(function () {
 		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
 	});
 };

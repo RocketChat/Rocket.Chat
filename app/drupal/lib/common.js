@@ -26,15 +26,15 @@ const config = {
 const Drupal = new CustomOAuth('drupal', config);
 
 if (Meteor.isServer) {
-	Meteor.startup(function() {
-		settings.get('API_Drupal_URL', function(key, value) {
+	Meteor.startup(function () {
+		settings.get('API_Drupal_URL', function (key, value) {
 			config.serverURL = value;
 			Drupal.configure(config);
 		});
 	});
 } else {
-	Meteor.startup(function() {
-		Tracker.autorun(function() {
+	Meteor.startup(function () {
+		Tracker.autorun(function () {
 			if (settings.get('API_Drupal_URL')) {
 				config.serverURL = settings.get('API_Drupal_URL');
 				Drupal.configure(config);

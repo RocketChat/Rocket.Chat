@@ -4,55 +4,11 @@ import { SettingsContext } from '../contexts/SettingsContext';
 import { UserContext } from '../contexts/UserContext';
 import RoomList from './RoomList/index';
 import Header from './header';
-// import Extended from './Item/Extended';
-// import RoomAvatar from '../avatar/RoomAvatar';
 
 export default {
 	title: 'Sidebar',
 	component: '',
 };
-
-// const viewModes = ['extended', 'medium', 'condensed'];
-// const sortBy = ['activity', 'alphabetical'];
-
-/*
-	[] extended
-		[] com avatar
-		[] sem avatar
-		[] unread
-			[] sem badge
-		[] badges
-			[] normal
-			[] mention grupo
-			[] mention direta
-		[] last message
-			[] `You:`
-			[] No messages yet
-			[] Fulano:
-			[] yesterday
-			[] day month
-	[] medium
-		[] sem avatar
-		[] com avatar
-			[] sem avatar
-			[] unread
-				[] sem badge
-			[] badges
-				[] normal
-				[] mention grupo
-				[] mention direta
-	[] condensed
-		[] sem avatar
-		[] com avatar
-			[] sem avatar
-			[] unread
-				[] sem badge
-			[] badges
-				[] normal
-				[] mention grupo
-				[] mention direta
-
-*/
 
 const subscriptions = [
 	{
@@ -101,10 +57,9 @@ const subscriptions = [
 
 const userPreferences = {
 	sidebarViewMode: 'medium',
-	sidebarHideAvatar: false,
+	sidebarDisplayAvatar: true,
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
-	sidebarShowDiscussion: true,
 	sidebarShowUnread: true,
 	sidebarSortby: 'activity',
 };
@@ -149,9 +104,9 @@ const Sidebar = () => (
 	<>
 		<SettingsContext.Provider value={settingContextValue}>
 			<UserContext.Provider value={userContextValue}>
-				<aside class='sidebar sidebar--main' role='navigation'>
+				<aside className='sidebar sidebar--main' role='navigation'>
 					<Header />
-					<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
+					<div className='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
 						<RoomList />
 					</div>
 				</aside>

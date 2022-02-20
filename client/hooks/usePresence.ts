@@ -1,4 +1,7 @@
-import { useUserData } from './useUserData';
+import { useMemo } from 'react';
+import { useSubscription } from 'use-subscription';
+
+import { Presence, UserPresence } from '../lib/presence';
 
 type Presence = 'online' | 'offline' | 'busy' | 'away' | 'loading';
 
@@ -6,9 +9,22 @@ type Presence = 'online' | 'offline' | 'busy' | 'away' | 'loading';
  * Hook to fetch and subscribe users presence
  *
  * @param uid - User Id
- * @returns User Presence - 'online' | 'offline' | 'busy' | 'away' | 'loading'
+ * @returns UserPresence
  * @public
  */
+export const usePresence = (uid: string): UserPresence | undefined => {
+	const subscription = useMemo(
+		() => ({
+			getCurrentValue: (): UserPresence | undefined => (uid ? Presence.store.get(uid) : undefined),
+			subscribe: (callback: any): any => {
+				uid && Presence.listen(uid, callback);
+				return (): void => {
+					uid && Presence.stop(uid, callback);
+				};
+			},
+		}),
+		[uid],
+	);
 
-export const usePresence = (uid: string, presence: Presence): Presence =>
-	useUserData(uid)?.status || presence;
+	return useSubscription(subscription);
+};

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import Invites from '../../../models/server/models/Invites';
+import { Invites } from '../../../models/server/raw';
 
-export const removeInvite = (userId, invite) => {
+export const removeInvite = async (userId, invite) => {
 	if (!userId || !invite) {
 		return false;
 	}
@@ -13,17 +13,22 @@ export const removeInvite = (userId, invite) => {
 	}
 
 	if (!invite._id) {
-		throw new Meteor.Error('error-the-field-is-required', 'The field _id is required', { method: 'removeInvite', field: '_id' });
+		throw new Meteor.Error('error-the-field-is-required', 'The field _id is required', {
+			method: 'removeInvite',
+			field: '_id',
+		});
 	}
 
 	// Before anything, let's check if there's an existing invite
-	const existing = Invites.findOneById(invite._id);
+	const existing = await Invites.findOneById(invite._id);
 
 	if (!existing) {
-		throw new Meteor.Error('invalid-invitation-id', 'Invalid Invitation _id', { method: 'removeInvite' });
+		throw new Meteor.Error('invalid-invitation-id', 'Invalid Invitation _id', {
+			method: 'removeInvite',
+		});
 	}
 
-	Invites.removeById(invite._id);
+	await Invites.removeById(invite._id);
 
 	return true;
 };

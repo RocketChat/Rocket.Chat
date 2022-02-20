@@ -1,13 +1,11 @@
 .sidebar-flex {
 	&__header {
-
 		display: flex;
 
 		padding: var(--sidebar-default-padding);
 	}
 
 	&__title {
-
 		flex: 1;
 
 		font-size: 1rem;

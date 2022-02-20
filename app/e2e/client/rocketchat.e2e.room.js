@@ -23,33 +23,20 @@ import {
 	readFileAsArrayBuffer,
 } from './helper';
 import { Notifications } from '../../notifications/client';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { call } from '../../ui-utils';
-import { roomTypes, RoomSettingsEnum } from '../../utils';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { roomTypes, RoomSettingsEnum } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
+import { call } from '../../../client/lib/utils/call';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
-	[E2ERoomState.NOT_STARTED]: [
-		E2ERoomState.ESTABLISHING,
-		E2ERoomState.DISABLED,
-		E2ERoomState.KEYS_RECEIVED,
-	],
-	[E2ERoomState.READY]: [
-		E2ERoomState.DISABLED,
-	],
-	[E2ERoomState.ERROR]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.NOT_STARTED,
-	],
-	[E2ERoomState.WAITING_KEYS]: [
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.ERROR,
-		E2ERoomState.DISABLED,
-	],
+	[E2ERoomState.NOT_STARTED]: [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED],
+	[E2ERoomState.READY]: [E2ERoomState.DISABLED],
+	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
+	[E2ERoomState.WAITING_KEYS]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED],
 	[E2ERoomState.ESTABLISHING]: [
 		E2ERoomState.READY,
 		E2ERoomState.KEYS_RECEIVED,
@@ -91,7 +78,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
-				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
+				this.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
@@ -100,11 +87,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	log(...msg) {
-		log(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	error(...msg) {
-		logError(`E2E ROOM { state: ${ this.state }, rid: ${ this.roomId } }`, ...msg);
+		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	setState(requestedState) {
@@ -112,7 +99,7 @@ export class E2ERoom extends Emitter {
 		const nextState = filterMutation(currentState, requestedState);
 
 		if (!nextState) {
-			this.error(`invalid state ${ currentState } -> ${ requestedState }`);
+			this.error(`invalid state ${currentState} -> ${requestedState}`);
 			return;
 		}
 
@@ -197,14 +184,17 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		Subscriptions.direct.update({
-			_id: subscription._id,
-		}, {
-			$set: {
-				'lastMessage.msg': data.text,
-				'lastMessage.e2e': 'done',
+		Subscriptions.direct.update(
+			{
+				_id: subscription._id,
 			},
-		});
+			{
+				$set: {
+					'lastMessage.msg': data.text,
+					'lastMessage.e2e': 'done',
+				},
+			},
+		);
 		this.log('decryptSubscriptions Done');
 	}
 
@@ -237,7 +227,8 @@ export class E2ERoom extends Emitter {
 
 		try {
 			const room = Rooms.findOne({ _id: this.roomId });
-			if (!room.e2eKeyId) { // TODO CHECK_PERMISSION
+			if (!room.e2eKeyId) {
+				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -406,12 +397,14 @@ export class E2ERoom extends Emitter {
 			ts = new Date(Date.now() + TimeSync.serverOffset());
 		}
 
-		const data = new TextEncoder('UTF-8').encode(EJSON.stringify({
-			_id: message._id,
-			text: message.msg,
-			userId: this.userId,
-			ts,
-		}));
+		const data = new TextEncoder('UTF-8').encode(
+			EJSON.stringify({
+				_id: message._id,
+				text: message.msg,
+				userId: this.userId,
+				ts,
+			}),
+		);
 
 		return this.encryptText(data);
 	}

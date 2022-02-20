@@ -1,18 +1,10 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
+import { AudioAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/AudioAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
-
-export type AudioAttachmentProps = {
-	audio_url: string;
-	audio_type: string;
-	audio_size?: number;
-	file?: FileProp;
-} & AttachmentPropsBase;
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	title,
@@ -28,7 +20,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			<MarkdownText variant='inline' content={description} />
+			<MarkdownText parseEmoji variant='inline' content={description} />
 			<Attachment.Row>
 				<Attachment.Title>{title}</Attachment.Title>
 				{size && <Attachment.Size size={size} />}

@@ -1,19 +1,14 @@
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
 
+import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
-const UserStatusMenu = ({
-	onChange = () => {},
-	optionWidth,
-	initialStatus = 'offline',
-	placement = 'bottom-end',
-	...props
-}) => {
+const UserStatusMenu = ({ onChange, optionWidth = undefined, initialStatus = 'offline', placement = 'bottom-end', ...props }) => {
 	const t = useTranslation();
-
 	const [status, setStatus] = useState(initialStatus);
+	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption');
 
 	const options = useMemo(() => {
 		const renderOption = (status, label) => (
@@ -25,23 +20,24 @@ const UserStatusMenu = ({
 			</Box>
 		);
 
-		return [
+		const statuses = [
 			['online', renderOption('online', t('Online'))],
-			['busy', renderOption('busy', t('Busy'))],
 			['away', renderOption('away', t('Away'))],
-			['offline', renderOption('offline', t('Invisible'))],
+			['busy', renderOption('busy', t('Busy'))],
 		];
-	}, [t]);
 
-	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(
-		-1,
-		options,
-		([selected], [, hide]) => {
-			setStatus(selected);
-			reset();
-			hide();
-		},
-	);
+		if (allowInvisibleStatus) {
+			statuses.push(['offline', renderOption('offline', t('Invisible'))]);
+		}
+
+		return statuses;
+	}, [t, allowInvisibleStatus]);
+
+	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
+		setStatus(selected);
+		reset();
+		hide();
+	});
 
 	const ref = useRef();
 	const onClick = useCallback(() => {
@@ -62,17 +58,7 @@ const UserStatusMenu = ({
 
 	return (
 		<>
-			<Button
-				ref={ref}
-				small
-				square
-				ghost
-				onClick={onClick}
-				onBlur={hide}
-				onKeyUp={handleKeyUp}
-				onKeyDown={handleKeyDown}
-				{...props}
-			>
+			<Button ref={ref} small square ghost onClick={onClick} onBlur={hide} onKeyUp={handleKeyUp} onKeyDown={handleKeyDown} {...props}>
 				<UserStatus status={status} />
 			</Button>
 			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>

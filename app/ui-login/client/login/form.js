@@ -5,12 +5,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { t, handleError } from '../../../utils';
+import { callbacks } from '../../../../lib/callbacks';
+import { t } from '../../../utils';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.loginForm.helpers({
 	userName() {
@@ -31,11 +31,11 @@ Template.loginForm.helpers({
 	},
 	btnLoginSave() {
 		if (Template.instance().loading.get()) {
-			return `${ t('Please_wait') }...`;
+			return `${t('Please_wait')}...`;
 		}
 		switch (Template.instance().state.get()) {
 			case 'register':
-				return t('Register');
+				return t('Register_new_account');
 			case 'login':
 				return t('Login');
 			case 'email-verification':
@@ -73,7 +73,7 @@ Template.loginForm.helpers({
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
 	typedEmail() {
-		return s.trim(Template.instance().typedEmail);
+		return Template.instance().typedEmail?.trim();
 	},
 });
 
@@ -86,44 +86,45 @@ Template.loginForm.events({
 		const state = instance.state.get();
 		if (formData) {
 			if (state === 'email-verification') {
-				Meteor.call('sendConfirmationEmail', s.trim(formData.email), () => {
+				Meteor.call('sendConfirmationEmail', formData.email?.trim(), () => {
 					instance.loading.set(false);
 					callbacks.run('userConfirmationEmailRequested');
-					toastr.success(t('We_have_sent_registration_email'));
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
 					return instance.state.set('login');
 				});
 				return;
 			}
 			if (state === 'forgot-password') {
-				Meteor.call('sendForgotPasswordEmail', s.trim(formData.email), (err) => {
+				Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (err) => {
 					if (err) {
 						handleError(err);
 						return instance.state.set('login');
 					}
 					instance.loading.set(false);
 					callbacks.run('userForgotPasswordEmailRequested');
-					toastr.success(t('If_this_email_is_registered'));
+					dispatchToastMessage({ type: 'success', message: t('If_this_email_is_registered') });
 					return instance.state.set('login');
 				});
 				return;
 			}
 			if (state === 'register') {
 				formData.secretURL = FlowRouter.getParam('hash');
-				return Meteor.call('registerUser', formData, function(error) {
+				return Meteor.call('registerUser', formData, function (error) {
 					instance.loading.set(false);
 					if (error != null) {
 						if (error.reason === 'Email already exists.') {
-							toastr.error(t('Email_already_exists'));
+							dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
 						} else {
 							handleError(error);
 						}
 						return;
 					}
 					callbacks.run('userRegistered');
-					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
+					return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function (error) {
 						if (error && error.error === 'error-invalid-email') {
 							return instance.state.set('wait-email-activation');
-						} if (error && error.error === 'error-user-is-not-activated') {
+						}
+						if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
 						}
 						Session.set('forceLogin', false);
@@ -137,24 +138,35 @@ Template.loginForm.events({
 			if (settings.get('CROWD_Enable')) {
 				loginMethod = 'loginWithCrowd';
 			}
-			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
+			return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function (error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'error-user-is-not-activated') {
-						return toastr.error(t('Wait_activation_warning'));
-					} if (error.error === 'error-invalid-email') {
-						instance.typedEmail = formData.emailOrUsername;
-						return instance.state.set('email-verification');
-					} if (error.error === 'error-user-is-not-activated') {
-						toastr.error(t('Wait_activation_warning'));
-					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
-						toastr.error(t('App_user_not_allowed_to_login'));
-					} else if (error.error === 'error-login-blocked-for-ip') {
-						toastr.error(t('Error_login_blocked_for_ip'));
-					} else if (error.error === 'error-login-blocked-for-user') {
-						toastr.error(t('Error_login_blocked_for_user'));
-					} else {
-						return toastr.error(t('User_not_found_or_incorrect_password'));
+					switch (error.error) {
+						case 'error-user-is-not-activated':
+							return dispatchToastMessage({ type: 'error', message: t('Wait_activation_warning') });
+						case 'error-invalid-email':
+							instance.typedEmail = formData.emailOrUsername;
+							return instance.state.set('email-verification');
+						case 'error-app-user-is-not-allowed-to-login':
+							dispatchToastMessage({ type: 'error', message: t('App_user_not_allowed_to_login') });
+							break;
+						case 'error-login-blocked-for-ip':
+							dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_ip') });
+							break;
+						case 'error-login-blocked-for-user':
+							dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_user') });
+							break;
+						case 'error-license-user-limit-reached':
+							dispatchToastMessage({
+								type: 'error',
+								message: t('error-license-user-limit-reached'),
+							});
+							break;
+						default:
+							return dispatchToastMessage({
+								type: 'error',
+								message: t('User_not_found_or_incorrect_password'),
+							});
 					}
 				}
 				Session.set('forceLogin', false);
@@ -175,22 +187,10 @@ Template.loginForm.events({
 	},
 });
 
-Template.loginForm.onCreated(function() {
+Template.loginForm.onCreated(function () {
 	const instance = this;
-	this.customFields = new ReactiveVar();
 	this.loading = new ReactiveVar(false);
-	Tracker.autorun(() => {
-		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
-		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
-			try {
-				return this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
-			} catch (error1) {
-				return console.error('Invalid JSON for Accounts_CustomFields');
-			}
-		} else {
-			return this.customFields.set(null);
-		}
-	});
+
 	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
@@ -205,35 +205,7 @@ Template.loginForm.onCreated(function() {
 	});
 
 	this.validSecretURL = new ReactiveVar(false);
-	const validateCustomFields = function(formObj, validationObj) {
-		const customFields = instance.customFields.get();
-		if (!customFields) {
-			return;
-		}
-
-		for (const field in formObj) {
-			if (formObj.hasOwnProperty(field)) {
-				const value = formObj[field];
-				if (customFields[field] == null) {
-					continue;
-				}
-				const customField = customFields[field];
-				if (customField.required === true && !value) {
-					validationObj[field] = t('Field_required');
-					return validationObj[field];
-				}
-				if ((customField.maxLength != null) && value.length > customField.maxLength) {
-					validationObj[field] = t('Max_length_is', customField.maxLength);
-					return validationObj[field];
-				}
-				if ((customField.minLength != null) && value.length < customField.minLength) {
-					validationObj[field] = t('Min_length_is', customField.minLength);
-					return validationObj[field];
-				}
-			}
-		}
-	};
-	this.validate = function() {
+	this.validate = function () {
 		const formData = $('#login-card').serializeArray();
 		const formObj = {};
 		const validationObj = {};
@@ -266,7 +238,6 @@ Template.loginForm.onCreated(function() {
 			if (settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
 				validationObj.reason = t('Invalid_reason');
 			}
-			validateCustomFields(formObj, validationObj);
 		}
 		$('#login-card h2').removeClass('error');
 		$('#login-card input.error, #login-card select.error').removeClass('error');
@@ -276,8 +247,8 @@ Template.loginForm.onCreated(function() {
 
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];
-				$(`#login-card input[name=${ key }], #login-card select[name=${ key }]`).addClass('error');
-				$(`#login-card input[name=${ key }]~.input-error, #login-card select[name=${ key }]~.input-error`).text(value);
+				$(`#login-card input[name=${key}], #login-card select[name=${key}]`).addClass('error');
+				$(`#login-card input[name=${key}]~.input-error, #login-card select[name=${key}]~.input-error`).text(value);
 			});
 			instance.loading.set(false);
 			return false;
@@ -289,7 +260,7 @@ Template.loginForm.onCreated(function() {
 	}
 });
 
-Template.loginForm.onRendered(function() {
+Template.loginForm.onRendered(function () {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		callbacks.run('loginPageStateChange', this.state.get());
@@ -297,11 +268,11 @@ Template.loginForm.onRendered(function() {
 			case 'login':
 			case 'forgot-password':
 			case 'email-verification':
-				return Meteor.defer(function() {
+				return Meteor.defer(function () {
 					return $('input[name=email]').select().focus();
 				});
 			case 'register':
-				return Meteor.defer(function() {
+				return Meteor.defer(function () {
 					return $('input[name=name]').select().focus();
 				});
 		}

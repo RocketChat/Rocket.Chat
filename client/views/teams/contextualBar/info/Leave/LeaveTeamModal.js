@@ -3,62 +3,48 @@ import React, { useState, useCallback } from 'react';
 
 import { StepOne, StepTwo } from '.';
 
-export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
+const STEPS = {
+	LIST_ROOMS: 'LIST_ROOMS',
+	CONFIRM_LEAVE: 'CONFIRM_LEAVE',
+};
+
+export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const [step, setStep] = useState(() => {
 		if (rooms.length === 0) {
-			return 2;
+			return STEPS.CONFIRM_LEAVE;
 		}
-		return 1;
+		return STEPS.LIST_ROOMS;
 	});
 	const [selectedRooms, setSelectedRooms] = useState({});
-	const [keptRooms, setKeptRooms] = useState({});
 
 	const lastOwnerRooms = rooms.filter(({ isLastOwner }) => isLastOwner);
 
-	const onContinue = useCallback(() => setStep((step) => step + 1), []);
+	const onContinue = useCallback(() => setStep(STEPS.CONFIRM_LEAVE), []);
 
-	const onReturn = useCallback(() => setStep((step) => step - 1), []);
+	const onReturn = useCallback(() => setStep(STEPS.LIST_ROOMS), []);
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
-			if (selectedRooms[room.rid]) {
-				return { ...selectedRooms, [room.rid]: undefined };
+			if (selectedRooms[room._id]) {
+				delete selectedRooms[room._id];
+				return { ...selectedRooms };
 			}
-			return { ...selectedRooms, [room.rid]: room };
+			return { ...selectedRooms, [room._id]: room };
 		});
 	}, []);
 
 	const onToggleAllRooms = useMutableCallback(() => {
 		setSelectedRooms((selectedRooms) => {
 			if (Object.values(selectedRooms).filter(Boolean).length === 0) {
-				return Object.fromEntries(
-					rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room.rid, room]),
-				);
+				return Object.fromEntries(rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room._id, room]));
 			}
 
 			return {};
 		});
 	});
 
-	const onSelectRooms = useMutableCallback(() => {
-		const keptRooms = Object.fromEntries(
-			rooms.filter((room) => !selectedRooms[room.rid]).map((room) => [room.rid, room]),
-		);
-		setKeptRooms(keptRooms);
-		onContinue();
-	});
-
-	if (step === 2) {
-		return (
-			<StepTwo
-				onConfirm={onConfirm}
-				onCancel={rooms.length > 1 && onReturn}
-				onClose={onCancel}
-				lastOwnerRooms={Object.fromEntries(lastOwnerRooms.map((room) => [room._id, room]))}
-				keptRooms={keptRooms}
-				rooms={rooms}
-			/>
-		);
+	if (step === STEPS.CONFIRM_LEAVE) {
+		return <StepTwo onConfirm={onConfirm} onCancel={rooms.length > 0 && onReturn} onClose={onCancel} rooms={rooms} />;
 	}
 
 	return (
@@ -70,10 +56,10 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 			selectedRooms={selectedRooms}
 			onToggleAllRooms={onToggleAllRooms}
 			onChangeParams={(...args) => console.log(args)}
-			onConfirm={onSelectRooms}
+			onConfirm={onContinue}
 			onChangeRoomSelection={onChangeRoomSelection}
 		/>
 	);
 };
 
-export default LeaveRoomModal;
+export default LeaveTeamModal;

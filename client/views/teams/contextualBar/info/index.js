@@ -7,7 +7,7 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
-import TeamsInfoWithLogic from './TeamsInfoWithLogic';
+import TeamsInfoWithData from './TeamsInfoWithData';
 
 export default function TeamsInfoWithRooms({ rid }) {
 	const [editing, setEditing] = useState(false);
@@ -39,6 +39,6 @@ export default function TeamsInfoWithRooms({ rid }) {
 	return editing ? (
 		<EditChannelWithData onClickBack={onClickBack} rid={rid} />
 	) : (
-		<TeamsInfoWithLogic openEditing={setEditing} room={value.room} />
+		<TeamsInfoWithData openEditing={setEditing} room={value.room} />
 	);
 }

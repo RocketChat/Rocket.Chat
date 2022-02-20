@@ -1,12 +1,5 @@
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, {
-	ReactNode,
-	useContext,
-	useMemo,
-	useState,
-	useCallback,
-	useLayoutEffect,
-} from 'react';
+import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect, MouseEventHandler } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
@@ -18,9 +11,7 @@ import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
 
-const useToolboxActions = (
-	room: IRoom,
-): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
+const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
 	const { listen, actions } = useContext(ToolboxContext);
 	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
 
@@ -39,9 +30,7 @@ const useToolboxActions = (
 const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
-	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig | undefined, string?]>([
-		undefined,
-	]);
+	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig | undefined, string?]>([undefined]);
 	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map(), 5));
 	const handleChange = useMutableCallback((fn) => {
 		fn(list);
@@ -76,22 +65,19 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		});
 	});
 
-	const openUserInfo = useCallback(
-		(username) => {
-			switch (room.t) {
-				case 'l':
-					open('room-info', username);
-					break;
-				case 'd':
-					open('user-info', username);
-					break;
-				default:
-					open('members-list', username);
-					break;
-			}
-		},
-		[room.t, open],
-	);
+	const openUserInfo = useMutableCallback((username) => {
+		switch (room.t) {
+			case 'l':
+				open('room-info', username);
+				break;
+			case 'd':
+				room.uids?.length > 2 ? open('user-info-group', username) : open('user-info', username);
+				break;
+			default:
+				open('members-list', username);
+				break;
+		}
+	});
 
 	useLayoutEffect(() => {
 		if (!tab) {
@@ -118,32 +104,20 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		<ToolboxContext.Provider value={contextValue}>
 			{actions
 				.filter(
-					([, action]) =>
-						uid ||
-						(allowAnonymousRead &&
-							action.hasOwnProperty('anonymous') &&
-							(action as ToolboxActionConfig).anonymous),
+					([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous),
 				)
 				.map(([id, item]) => (
-					<VirtualAction
-						action={item}
-						room={room}
-						id={id}
-						key={id + room._id}
-						handleChange={handleChange}
-					/>
+					<VirtualAction action={item} room={room} id={id} key={id + room._id} handleChange={handleChange} />
 				))}
 			{children}
 		</ToolboxContext.Provider>
 	);
 };
 
-export const useTabContext = (): ToolboxActionConfig | undefined =>
-	useContext(ToolboxContext).context;
-export const useTab = (): ToolboxActionConfig | undefined =>
-	useContext(ToolboxContext).activeTabBar;
+export const useTabContext = (): unknown | undefined => useContext(ToolboxContext).context;
+export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
-export const useTabBarClose = (): Function => useContext(ToolboxContext).close;
+export const useTabBarClose = (): MouseEventHandler<HTMLOrSVGElement> => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
 
 export default ToolboxProvider;

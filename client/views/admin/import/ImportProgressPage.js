@@ -4,10 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 
-import {
-	ProgressStep,
-	ImportingStartedStates,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep, ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -56,16 +53,7 @@ function ImportProgressPage() {
 		};
 
 		loadCurrentOperation();
-	}, [
-		getCurrentImportOperation,
-		handleError,
-		importHistoryRoute,
-		prepareImportRoute,
-		setCompleted,
-		setImporterKey,
-		setTotal,
-		t,
-	]);
+	}, [getCurrentImportOperation, handleError, importHistoryRoute, prepareImportRoute, setCompleted, setImporterKey, setTotal, t]);
 
 	useEffect(() => {
 		if (!importerKey) {
@@ -153,13 +141,13 @@ function ImportProgressPage() {
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
-						<Box is='p' fontScale='p1'>
+						<Box is='p' fontScale='p2'>
 							{t(step[0].toUpperCase() + step.slice(1))}
 						</Box>
 						{progressRate ? (
 							<Box display='flex' justifyContent='center'>
 								<Box is='progress' value={completed} max={total} marginInlineEnd='x24' />
-								<Box is='span' fontScale='p1'>
+								<Box is='span' fontScale='p2'>
 									{completed}/{total} ({s.numberFormat(progressRate, 0)}%)
 								</Box>
 							</Box>

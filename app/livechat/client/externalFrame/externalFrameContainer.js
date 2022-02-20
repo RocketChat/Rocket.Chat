@@ -35,7 +35,7 @@ Template.ExternalFrameContainer.helpers({
 	},
 });
 
-Template.ExternalFrameContainer.onCreated(async function() {
+Template.ExternalFrameContainer.onCreated(async function () {
 	this.authToken = new ReactiveVar();
 
 	const { 'X-Auth-Token': authToken } = APIClient.getCredentials();

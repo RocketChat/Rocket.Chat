@@ -2,8 +2,7 @@ import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo } from 'react';
 
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -14,7 +13,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, onReload }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -32,32 +31,45 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 
-	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
-		try {
-			return await action();
-		} catch (error) {
-			if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
-				const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
-				setModal(
-					<ConfirmOwnerChangeWarningModal
-						shouldChangeOwner={shouldChangeOwner}
-						shouldBeRemoved={shouldBeRemoved}
-						{...modalProps}
-						onConfirm={async () => {
-							await action(true);
-							setModal();
-						}}
-						onCancel={() => {
-							setModal();
-							onChange();
-						}}
-					/>,
-				);
-				return;
-			}
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+	const handleClose = useCallback(() => {
+		setModal();
+		onChange();
+	}, [setModal, onChange]);
+
+	const handleDeletedUser = () => {
+		setModal();
+		userRoute.push({});
+		onReload();
 	};
+
+	const confirmOwnerChanges =
+		(action, modalProps = {}) =>
+		async () => {
+			try {
+				return await action();
+			} catch (error) {
+				if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
+					const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
+					setModal(
+						<ConfirmOwnerChangeWarningModal
+							shouldChangeOwner={shouldChangeOwner}
+							shouldBeRemoved={shouldBeRemoved}
+							{...modalProps}
+							onConfirm={async () => {
+								await action(true);
+								setModal();
+							}}
+							onCancel={() => {
+								setModal();
+								onChange();
+							}}
+						/>,
+					);
+					return;
+				}
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
 
 	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
 	const deleteUserEndpoint = useEndpoint('POST', 'users.delete');
@@ -72,15 +84,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 			const result = await deleteUserEndpoint(deleteUserQuery);
 			if (result.success) {
-				setModal(
-					<DeleteSuccessModal
-						children={t('User_has_been_deleted')}
-						onClose={() => {
-							setModal();
-							onChange();
-						}}
-					/>,
-				);
+				handleDeletedUser();
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 			} else {
 				setModal();
 			}
@@ -93,11 +98,9 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const confirmDeleteUser = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t(`Delete_User_Warning_${erasureType}`)}
-				onCancel={() => setModal()}
-				onDelete={deleteUser}
-			/>,
+			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={() => setModal()} confirmText={t('Delete')}>
+				{t(`Delete_User_Warning_${erasureType}`)}
+			</GenericModal>,
 		);
 	}, [deleteUser, erasureType, setModal, t]);
 
@@ -121,16 +124,12 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 		if (result) {
 			setModal(
-				<DeleteSuccessModal
-					children={t('Users_key_has_been_reset')}
-					onClose={() => {
-						setModal();
-						onChange();
-					}}
-				/>,
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Users_key_has_been_reset')}
+				</GenericModal>,
 			);
 		}
-	}, [resetE2EEKeyRequest, onChange, setModal, t, _id]);
+	}, [resetE2EEKeyRequest, setModal, t, _id, handleClose]);
 
 	const resetTOTP = useCallback(async () => {
 		setModal();
@@ -138,36 +137,26 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 		if (result) {
 			setModal(
-				<DeleteSuccessModal
-					children={t('Users_TOTP_has_been_reset')}
-					onClose={() => {
-						setModal();
-						onChange();
-					}}
-				/>,
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Users_TOTP_has_been_reset')}
+				</GenericModal>,
 			);
 		}
-	}, [resetTOTPRequest, onChange, setModal, t, _id]);
+	}, [resetTOTPRequest, setModal, t, _id, handleClose]);
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t('E2E_Reset_Other_Key_Warning')}
-				deleteText={t('Reset')}
-				onCancel={() => setModal()}
-				onDelete={resetE2EEKey}
-			/>,
+			<GenericModal variant='danger' onConfirm={resetE2EEKey} onCancel={() => setModal()} confirmText={t('Reset')}>
+				{t('E2E_Reset_Other_Key_Warning')}
+			</GenericModal>,
 		);
 	}, [resetE2EEKey, t, setModal]);
 
 	const confirmResetTOTP = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t('TOTP_Reset_Other_Key_Warning')}
-				deleteText={t('Reset')}
-				onCancel={() => setModal()}
-				onDelete={resetTOTP}
-			/>,
+			<GenericModal variant='danger' onConfirm={resetTOTP} onCancel={() => setModal()} confirmText={t('Reset')}>
+				{t('TOTP_Reset_Other_Key_Warning')}
+			</GenericModal>,
 		);
 	}, [resetTOTP, t, setModal]);
 
@@ -178,9 +167,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		}),
 		[_id, isActive],
 	);
-	const changeActiveStatusMessage = isActive
-		? 'User_has_been_deactivated'
-		: 'User_has_been_activated';
+	const changeActiveStatusMessage = isActive ? 'User_has_been_deactivated' : 'User_has_been_activated';
 	const changeActiveStatusRequest = useEndpoint('POST', 'users.setActiveStatus');
 
 	const changeActiveStatus = confirmOwnerChanges(
@@ -314,9 +301,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 				ghost={false}
 				flexShrink={0}
 				key='menu'
-				renderItem={({ label: { label, icon }, ...props }) => (
-					<Option label={label} title={label} icon={icon} {...props} />
-				)}
+				renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
 				options={menuOptions}
 			/>
 		);

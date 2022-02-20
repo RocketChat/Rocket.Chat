@@ -3,7 +3,7 @@ import React from 'react';
 import Announcement from '.';
 
 export default {
-	title: 'components/Announcement',
+	title: 'room/Announcement',
 	component: Announcement,
 };
 

@@ -3,9 +3,7 @@ import React from 'react';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import UserInfo from '../../../../client/views/room/contextualBar/UserInfo';
 
-const MaxChatsPerAgentDisplay = ({
-	data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {},
-}) => {
+const MaxChatsPerAgentDisplay = ({ data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {} }) => {
 	const t = useTranslation();
 	return (
 		maxNumberSimultaneousChat && (

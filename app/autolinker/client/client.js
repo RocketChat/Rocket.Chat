@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import Autolinker from 'autolinker';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { escapeRegExp } from '../../../lib/escapeRegExp';
-
-export const createAutolinkerMessageRenderer = (config) =>
+export const createAutolinkerMessageRenderer =
+	({ phone, ...config }) =>
 	(message) => {
 		if (!message.html?.trim()) {
 			return message;
@@ -13,7 +13,7 @@ export const createAutolinkerMessageRenderer = (config) =>
 		let msgParts;
 		let regexTokens;
 		if (message.tokens && message.tokens.length) {
-			regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => escapeRegExp(token)) })`, 'g');
+			regexTokens = new RegExp(`(${(message.tokens || []).map(({ token }) => escapeRegExp(token))})`, 'g');
 			msgParts = message.html.split(regexTokens);
 		} else {
 			msgParts = [message.html];
@@ -24,11 +24,13 @@ export const createAutolinkerMessageRenderer = (config) =>
 				if (regexTokens && regexTokens.test(msgPart)) {
 					return msgPart;
 				}
-				return Autolinker.link(msgPart, {
+
+				const muttableConfig = {
 					...config,
+					phone: false,
 					stripTrailingSlash: false,
 					replaceFn: (match) => {
-						const token = `=!=${ Random.id() }=!=`;
+						const token = `=!=${Random.id()}=!=`;
 						const tag = match.buildTag();
 
 						if (~match.matchedText.indexOf(Meteor.absoluteUrl())) {
@@ -41,7 +43,14 @@ export const createAutolinkerMessageRenderer = (config) =>
 							text: tag.toAnchorString(),
 						});
 						return token;
-					} });
+					},
+				};
+
+				const autolinkerMsg = Autolinker.link(msgPart, muttableConfig);
+
+				muttableConfig.phone = phone;
+
+				return phone ? Autolinker.link(autolinkerMsg, muttableConfig) : autolinkerMsg;
 			})
 			.join('');
 

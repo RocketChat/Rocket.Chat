@@ -2,12 +2,12 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 
 import { AppEvents, Apps } from '../../../apps/server';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Team } from '../../../../server/sdk';
 import { RoomMemberActions, roomTypes } from '../../../utils/server';
 
-export const addUserToRoom = function(rid, user, inviter, silenced) {
+export const addUserToRoom = function (rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
@@ -40,13 +40,15 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
-		if (error instanceof AppsEngineException) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	Promise.await(
+		Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
-	}));
+			throw error;
+		}),
+	);
 
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
@@ -59,22 +61,29 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 	if (!silenced) {
 		if (inviter) {
-			Messages.createUserAddedWithRoomIdAndUser(rid, user, {
+			const extraData = {
 				ts: now,
 				u: {
 					_id: inviter._id,
 					username: inviter.username,
 				},
-			});
+			};
+			if (room.teamMain) {
+				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, user, extraData);
+			} else {
+				Messages.createUserAddedWithRoomIdAndUser(rid, user, extraData);
+			}
 		} else if (room.prid) {
 			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
+		} else if (room.teamMain) {
+			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, { ts: now });
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		Meteor.defer(function() {
+		Meteor.defer(function () {
 			// Add a new event, with an optional inviter
 			callbacks.run('afterAddedToRoom', { user, inviter }, room);
 

@@ -1,8 +1,7 @@
 import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -48,17 +47,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [
-		saveStatus,
-		_id,
-		previousName,
-		previousStatusType,
-		name,
-		statusType,
-		dispatchToastMessage,
-		t,
-		onChange,
-	]);
+	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleClose = () => {
@@ -71,10 +60,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			try {
 				await deleteStatus(_id);
 				setModal(() => (
-					<DeleteSuccessModal
-						children={t('Custom_User_Status_Has_Been_Deleted')}
-						onClose={handleClose}
-					/>
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Custom_User_Status_Has_Been_Deleted')}
+					</GenericModal>
 				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -87,11 +75,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		};
 
 		setModal(() => (
-			<DeleteWarningModal
-				children={t('Custom_User_Status_Delete_Warning')}
-				onDelete={handleDelete}
-				onCancel={handleCancel}
-			/>
+			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} confirmText={t('Delete')}>
+				{t('Custom_User_Status_Delete_Warning')}
+			</GenericModal>
 		));
 	}, [_id, close, deleteStatus, dispatchToastMessage, onChange, setModal, t]);
 
@@ -107,22 +93,13 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Presence')}</Field.Label>
 				<Field.Row>
-					<Select
-						value={statusType}
-						onChange={(value) => setStatusType(value)}
-						placeholder={t('Presence')}
-						options={presenceOptions}
-					/>
+					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions} />
 				</Field.Row>
 			</Field>
 			<Field>

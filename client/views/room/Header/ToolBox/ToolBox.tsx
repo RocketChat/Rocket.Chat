@@ -1,14 +1,15 @@
 import { Menu, Option, MenuProps, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useContext, ReactNode, useRef, ComponentProps, FC } from 'react';
+import React, { memo, ReactNode, useRef, ComponentProps, FC, ReactElement } from 'react';
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
+import { IRoom } from '../../../../../definition/IRoom';
 import Header from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
-import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
+import { useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
@@ -16,7 +17,8 @@ const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: 
 );
 
 type ToolBoxProps = {
-	className: ComponentProps<typeof Box>['className'];
+	className?: ComponentProps<typeof Box>['className'];
+	room?: IRoom;
 };
 
 const ToolBox: FC<ToolBoxProps> = ({ className }) => {
@@ -26,10 +28,9 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const t = useTranslation();
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
-	const { actions: mapActions } = useContext(ToolboxContext);
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
-		(a, b) => (a.order || 0) - (b.order || 0),
-	);
+	const { actions: mapActions } = useToolboxContext();
+
+	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
@@ -99,9 +100,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactNode =>
-						hiddenActionRenderers.current[value](props)
-					}
+					renderItem={({ value, ...props }): ReactElement | null => value && hiddenActionRenderers.current[value](props)}
 				/>
 			)}
 		</>

@@ -29,22 +29,24 @@ type ExportEmail = {
 	subject: string;
 	messages: string[];
 	language: string;
-}
+};
 
 type ExportFile = {
 	rid: string;
 	dateFrom: Date;
 	dateTo: Date;
 	format: 'html' | 'json';
-}
-
-type ExportInput = {
-	type: 'email';
-	data: ExportEmail;
-} | {
-	type: 'file';
-	data: ExportFile;
 };
+
+type ExportInput =
+	| {
+			type: 'email';
+			data: ExportEmail;
+	  }
+	| {
+			type: 'file';
+			data: ExportFile;
+	  };
 
 type ISentViaEmail = {
 	missing: string[];
@@ -55,7 +57,9 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 
 	const missing = [...data.toUsers].filter(Boolean);
 
-	Users.findUsersByUsernames(data.toUsers, { fields: { username: 1, 'emails.address': 1 } }).forEach((user: IUser) => {
+	Users.findUsersByUsernames(data.toUsers, {
+		fields: { 'username': 1, 'emails.address': 1 },
+	}).forEach((user: IUser) => {
 		const emailAddress = user.emails?.[0].address;
 
 		if (!emailAddress) {
@@ -88,11 +92,16 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 	}
 
 	const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-		sort: {	ts: 1 },
-	}).fetch().map(function(message: any) {
-		const dateTime = moment(message.ts).locale(lang).format('L LT');
-		return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ Message.parse(message, data.language) }</p>`;
-	}).join('');
+		sort: { ts: 1 },
+	})
+		.fetch()
+		.map(function (message: any) {
+			const dateTime = moment(message.ts).locale(lang).format('L LT');
+			return `<p style='margin-bottom: 5px'><b>${
+				message.u.username
+			}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
+		})
+		.join('');
 
 	Mailer.send({
 		to: emails,
@@ -108,7 +117,7 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => {
 	const exportType = data.format;
 
-	const baseDir = `/tmp/exportFile-${ Random.id() }`;
+	const baseDir = `/tmp/exportFile-${Random.id()}`;
 
 	const exportPath = baseDir;
 	const assetsPath = path.join(baseDir, 'assets');
@@ -118,32 +127,24 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	const roomData = getRoomData(data.rid);
 
-	roomData.targetFile = `${ (data.format === 'json' && roomData.roomName) || roomData.roomId }.${ data.format }`;
+	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${data.format}`;
 
 	const fullFileList: any[] = [];
 
 	const roomsToExport = [roomData];
 
-	const filter = !data.dateFrom && !data.dateTo
-		? {}
-		: {
-			ts: {
-				...data.dateFrom && { $gte: data.dateFrom },
-				...data.dateTo && { $lte: data.dateTo },
-			},
-		};
+	const filter =
+		!data.dateFrom && !data.dateTo
+			? {}
+			: {
+					ts: {
+						...(data.dateFrom && { $gte: data.dateFrom }),
+						...(data.dateTo && { $lte: data.dateTo }),
+					},
+			  };
 
 	const exportMessages = async (): Promise<void> => {
-		const { fileList } = await exportRoomMessagesToFile(
-			exportPath,
-			assetsPath,
-			exportType,
-			roomsToExport,
-			user,
-			filter,
-			{},
-			false,
-		);
+		const { fileList } = await exportRoomMessagesToFile(exportPath, assetsPath, exportType, roomsToExport, user, filter, {}, false);
 
 		fullFileList.push(...fileList);
 
@@ -156,19 +157,21 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	await exportMessages();
 
-	fullFileList.forEach((attachmentData: any) => {
-		copyFile(attachmentData, assetsPath);
-	});
+	for await (const attachmentData of fullFileList) {
+		await copyFile(attachmentData, assetsPath);
+	}
 
-	const exportFile = `${ baseDir }-export.zip`;
+	const exportFile = `${baseDir}-export.zip`;
 	await makeZipFile(exportPath, exportFile);
 
 	const file = await uploadZipFile(exportFile, user._id, exportType);
 
 	const subject = TAPi18n.__('Channel_Export');
 
-	// eslint-disable-next-line @typescript-eslint/camelcase
-	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }) });
+	const body = TAPi18n.__('UserDataDownload_EmailBody', {
+		// eslint-disable-next-line @typescript-eslint/camelcase
+		download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }),
+	});
 
 	sendEmail(user, subject, body);
 };

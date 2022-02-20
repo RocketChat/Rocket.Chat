@@ -6,7 +6,7 @@ import CallJitsi from './CallJitsi';
 import CallModal from './components/CallModal';
 
 export default {
-	title: 'components/basic/CallJitsi',
+	title: 'room/contextualBar/CallJitsi',
 	component: CallJitsi,
 };
 

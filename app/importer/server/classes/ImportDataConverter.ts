@@ -1,16 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
+import { ObjectId } from 'mongodb';
 
-import { ImportData } from '../models/ImportData';
-import { IImportUser } from '../definitions/IImportUser';
-import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
-import { IImportChannel } from '../definitions/IImportChannel';
-import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
-import { Users, Rooms, Subscriptions } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
+import { ImportData as ImportDataRaw } from '../../../models/server/raw';
+import { IImportUser } from '../../../../definition/IImportUser';
+import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
+import { IImportChannel } from '../../../../definition/IImportChannel';
+import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
+import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
+import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
+import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { IUser } from '../../../../definition/IUser';
+import { IUser, IUserEmail } from '../../../../definition/IUser';
+import type { Logger } from '../../../../server/lib/logger/Logger';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -35,14 +38,10 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
-interface IConversionCallbacks {
-	beforeImportFn?: {
-		(data: IImportUser | IImportChannel | IImportMessage, type: string): boolean;
-	};
-	afterImportFn?: {
-		(data: IImportUser | IImportChannel | IImportMessage, type: string): void;
-	};
-}
+export type IConverterOptions = {
+	flagEmailsAsVerified?: boolean;
+	skipExistingUsers?: boolean;
+};
 
 const guessNameFromUsername = (username: string): string =>
 	username
@@ -61,11 +60,27 @@ export class ImportDataConverter {
 
 	private _roomNameCache: Map<string, string>;
 
-	constructor() {
+	private _logger: Logger;
+
+	private _options: IConverterOptions;
+
+	public get options(): IConverterOptions {
+		return this._options;
+	}
+
+	constructor(options?: IConverterOptions) {
+		this._options = options || {
+			flagEmailsAsVerified: false,
+			skipExistingUsers: false,
+		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
 		this._roomCache = new Map();
 		this._roomNameCache = new Map();
+	}
+
+	setLogger(logger: Logger): void {
+		this._logger = logger;
 	}
 
 	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
@@ -104,8 +119,9 @@ export class ImportDataConverter {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
+	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
+			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
 			...options,
@@ -126,17 +142,7 @@ export class ImportDataConverter {
 		});
 	}
 
-	updateUserId(_id: string, userData: IImportUser): void {
-		const updateData: Record<string, any> = {
-			$set: {
-				statusText: userData.statusText || undefined,
-				roles: userData.roles || ['user'],
-				type: userData.type || 'user',
-				bio: userData.bio || undefined,
-				name: userData.name || undefined,
-			},
-		};
-
+	addUserImportId(updateData: Record<string, any>, userData: IImportUser): void {
 		if (userData.importIds?.length) {
 			updateData.$addToSet = {
 				importIds: {
@@ -144,76 +150,166 @@ export class ImportDataConverter {
 				},
 			};
 		}
+	}
 
-		Users.update({ _id }, updateData);
+	addUserEmails(updateData: Record<string, any>, userData: IImportUser, existingEmails: Array<IUserEmail>): void {
+		if (!userData.emails?.length) {
+			return;
+		}
+
+		const verifyEmails = Boolean(this.options.flagEmailsAsVerified);
+		const newEmailList: Array<IUserEmail> = [];
+
+		for (const email of userData.emails) {
+			const verified = verifyEmails || existingEmails.find((ee) => ee.address === email)?.verified || false;
+
+			newEmailList.push({
+				address: email,
+				verified,
+			});
+		}
+
+		updateData.$set.emails = newEmailList;
+	}
+
+	addUserServices(updateData: Record<string, any>, userData: IImportUser): void {
+		if (!userData.services) {
+			return;
+		}
+
+		for (const serviceKey in userData.services) {
+			if (!userData.services[serviceKey]) {
+				continue;
+			}
+
+			const service = userData.services[serviceKey];
+
+			for (const key in service) {
+				if (!service[key]) {
+					continue;
+				}
+
+				updateData.$set[`services.${serviceKey}.${key}`] = service[key];
+			}
+		}
+	}
+
+	addCustomFields(updateData: Record<string, any>, userData: IImportUser): void {
+		if (!userData.customFields) {
+			return;
+		}
+
+		const subset = (source: Record<string, any>, currentPath: string): void => {
+			for (const key in source) {
+				if (!source.hasOwnProperty(key)) {
+					continue;
+				}
+
+				const keyPath = `${currentPath}.${key}`;
+				if (typeof source[key] === 'object' && !Array.isArray(source[key])) {
+					subset(source[key], keyPath);
+					continue;
+				}
+
+				updateData.$set[keyPath] = source[key];
+			}
+		};
+
+		subset(userData.customFields, 'customFields');
 	}
 
 	updateUser(existingUser: IUser, userData: IImportUser): void {
-		userData._id = existingUser._id;
+		const { _id } = existingUser;
 
-		this.updateUserId(userData._id, userData);
+		userData._id = _id;
+
+		if (!userData.roles && !existingUser.roles) {
+			userData.roles = ['user'];
+		}
+		if (!userData.type && !existingUser.type) {
+			userData.type = 'user';
+		}
+
+		// #ToDo: #TODO: Move this to the model class
+		const updateData: Record<string, any> = {
+			$set: {
+				...(userData.roles && { roles: userData.roles }),
+				...(userData.type && { type: userData.type }),
+				...(userData.statusText && { statusText: userData.statusText }),
+				...(userData.bio && { bio: userData.bio }),
+				...(userData.services?.ldap && { ldap: true }),
+				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+			},
+		};
+
+		this.addCustomFields(updateData, userData);
+		this.addUserServices(updateData, userData);
+		this.addUserImportId(updateData, userData);
+		this.addUserEmails(updateData, userData, existingUser.emails || []);
+
+		if (Object.keys(updateData.$set).length === 0) {
+			delete updateData.$set;
+		}
+		if (Object.keys(updateData).length > 0) {
+			Users.update({ _id }, updateData);
+		}
+
+		if (userData.utcOffset) {
+			Users.setUtcOffset(_id, userData.utcOffset);
+		}
+
+		if (userData.name || userData.username) {
+			saveUserIdentity({ _id, name: userData.name, username: userData.username });
+		}
 
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
 		}
-
-		if (userData.avatarUrl) {
-			try {
-				Users.update({ _id: existingUser._id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
-			} catch (error) {
-				console.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-				console.error(error);
-			}
-		}
 	}
 
 	insertUser(userData: IImportUser): IUser {
-		const password = `${ Date.now() }${ userData.name || '' }${ userData.emails.length ? userData.emails[0].toUpperCase() : '' }`;
-		const userId = userData.emails.length ? Accounts.createUser({
-			email: userData.emails[0],
-			password,
-		}) : Accounts.createUser({
-			username: userData.username,
-			password,
-			// @ts-ignore
-			joinDefaultChannelsSilenced: true,
-		});
+		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+		const userId = userData.emails.length
+			? Accounts.createUser({
+					email: userData.emails[0],
+					password,
+			  })
+			: Accounts.createUser({
+					username: userData.username,
+					password,
+					// @ts-ignore
+					joinDefaultChannelsSilenced: true,
+			  });
 
-		userData._id = userId;
 		const user = Users.findOneById(userId, {});
+		this.updateUser(user, userData);
 
-		if (user && userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], user._id, userData.username);
-		}
-
-		Meteor.runAsUser(userId, () => {
-			Meteor.call('setUsername', userData.username, { joinDefaultChannelsSilenced: true });
-			if (userData.name) {
-				Users.setName(userId, userData.name);
-			}
-
-			this.updateUserId(userId, userData);
-
-			if (userData.utcOffset) {
-				Users.setUtcOffset(userId, userData.utcOffset);
-			}
-
-			if (userData.avatarUrl) {
-				try {
-					Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
-				} catch (error) {
-					console.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					console.error(error);
-				}
-			}
-		});
-
+		addUserToDefaultChannels(user, true);
 		return user;
 	}
 
-	convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = ImportData.find({ dataType: 'user' });
-		users.forEach(({ data, _id }: IImportUserRecord) => {
+	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
+		return ImportDataRaw.getAllUsers().toArray();
+	}
+
+	findExistingUser(data: IImportUser): IUser | undefined {
+		if (data.emails.length) {
+			const emailUser = Users.findOneByEmailAddress(data.emails[0], {});
+
+			if (emailUser) {
+				return emailUser;
+			}
+		}
+
+		// If we couldn't find one by their email address, try to find an existing user by their username
+		if (data.username) {
+			return Users.findOneByUsernameIgnoringCase(data.username, {});
+		}
+	}
+
+	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+		const users = Promise.await(this.getUsersToImport());
+		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -227,22 +323,20 @@ export class ImportDataConverter {
 					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				let existingUser;
-				if (data.emails.length) {
-					existingUser = Users.findOneByEmailAddress(data.emails[0], {});
+				let existingUser = this.findExistingUser(data);
+				if (existingUser && this._options.skipExistingUsers) {
+					this.skipRecord(_id);
+					return;
 				}
 
-				if (data.username) {
-					// If we couldn't find one by their email address, try to find an existing user by their username
-					if (!existingUser) {
-						existingUser = Users.findOneByUsernameIgnoringCase(data.username, {});
-					}
-				} else {
+				if (!data.username) {
 					data.username = generateUsernameSuggestion({
 						name: data.name,
 						emails: data.emails,
 					});
 				}
+
+				const isNewUser = !existingUser;
 
 				if (existingUser) {
 					this.updateUser(existingUser, data);
@@ -257,49 +351,48 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				if (data.deleted && existingUser?.active) {
 					setUserActiveStatus(data._id, false, true);
+				} else if (data.deleted === false && existingUser?.active === false) {
+					setUserActiveStatus(data._id, true);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'user');
+					afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
+				this._logger.error(e);
 				this.saveError(_id, e);
 			}
 		});
 	}
 
-	saveNewId(importId: string, newId: string): void {
-		ImportData.update({
-			_id: importId,
-		}, {
-			$set: {
-				id: newId,
+	protected saveError(importId: string, error: Error): void {
+		this._logger.error(error);
+		ImportData.update(
+			{
+				_id: importId,
 			},
-		});
-	}
-
-	saveError(importId: string, error: Error): void {
-		console.error(error);
-		ImportData.update({
-			_id: importId,
-		}, {
-			$push: {
-				errors: {
-					message: error.message,
-					stack: error.stack,
+			{
+				$push: {
+					errors: {
+						message: error.message,
+						stack: error.stack,
+					},
 				},
 			},
-		});
+		);
 	}
 
-	skipRecord(_id: string): void {
-		ImportData.update({
-			_id,
-		}, {
-			$set: {
-				skipped: true,
+	protected skipRecord(_id: string): void {
+		ImportData.update(
+			{
+				_id,
 			},
-		});
+			{
+				$set: {
+					skipped: true,
+				},
+			},
+		);
 	}
 
 	convertMessageReactions(importedReactions: Record<string, IImportMessageReaction>): undefined | IMessageReactions {
@@ -376,7 +469,7 @@ export class ImportDataConverter {
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\@${ importId }`, 'gi'), `@${ data.username }`);
+			message.msg = message.msg.replace(new RegExp(`\@${importId}`, 'gi'), `@${data.username}`);
 
 			result.push({
 				_id: data._id,
@@ -400,11 +493,11 @@ export class ImportDataConverter {
 			const _id = this.findImportedRoomId(importId);
 
 			if (!_id || !name) {
-				console.warn(`Mentioned room not found: ${ importId }`);
+				this._logger.warn(`Mentioned room not found: ${importId}`);
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\#${ importId }`, 'gi'), `#${ name }`);
+			message.msg = message.msg.replace(new RegExp(`\#${importId}`, 'gi'), `#${name}`);
 
 			result.push({
 				_id,
@@ -415,27 +508,31 @@ export class ImportDataConverter {
 		return result;
 	}
 
+	protected async getMessagesToImport(): Promise<Array<IImportMessageRecord>> {
+		return ImportDataRaw.getAllMessages().toArray();
+	}
+
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
-		const messages = ImportData.find({ dataType: 'message' });
-		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
+		const messages = Promise.await(this.getMessagesToImport());
+		messages.forEach(({ data, _id }: IImportMessageRecord) => {
 			try {
-				if (beforeImportFn && !beforeImportFn(m, 'message')) {
+				if (beforeImportFn && !beforeImportFn(data, 'message')) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				if (!m.ts || isNaN(m.ts as unknown as number)) {
+				if (!data.ts || isNaN(data.ts as unknown as number)) {
 					throw new Error('importer-message-invalid-timestamp');
 				}
 
-				const creator = this.findImportedUser(m.u._id);
+				const creator = this.findImportedUser(data.u._id);
 				if (!creator) {
-					console.warn(`Imported user not found: ${ m.u._id }`);
+					this._logger.warn(`Imported user not found: ${data.u._id}`);
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const rid = this.findImportedRoomId(m.rid);
+				const rid = this.findImportedRoomId(data.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
 				}
@@ -444,8 +541,8 @@ export class ImportDataConverter {
 				}
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-				const mentions = m.mentions && this.convertMessageMentions(m);
-				const channels = m.channels && this.convertMessageChannels(m);
+				const mentions = data.mentions && this.convertMessageMentions(data);
+				const channels = data.channels && this.convertMessageChannels(data);
 
 				const msgObj: IMessage = {
 					rid,
@@ -453,43 +550,43 @@ export class ImportDataConverter {
 						_id: creator._id,
 						username: creator.username,
 					},
-					msg: m.msg,
-					ts: m.ts,
-					t: m.t || undefined,
-					groupable: m.groupable,
-					tmid: m.tmid,
-					tlm: m.tlm,
-					tcount: m.tcount,
-					replies: m.replies && this.convertMessageReplies(m.replies),
-					editedAt: m.editedAt,
-					editedBy: m.editedBy && (this.findImportedUser(m.editedBy) || undefined),
+					msg: data.msg,
+					ts: data.ts,
+					t: data.t || undefined,
+					groupable: data.groupable,
+					tmid: data.tmid,
+					tlm: data.tlm,
+					tcount: data.tcount,
+					replies: data.replies && this.convertMessageReplies(data.replies),
+					editedAt: data.editedAt,
+					editedBy: data.editedBy && (this.findImportedUser(data.editedBy) || undefined),
 					mentions,
 					channels,
-					_importFile: m._importFile,
-					url: m.url,
-					attachments: m.attachments,
-					bot: m.bot,
-					emoji: m.emoji,
-					alias: m.alias,
+					_importFile: data._importFile,
+					url: data.url,
+					attachments: data.attachments,
+					bot: data.bot,
+					emoji: data.emoji,
+					alias: data.alias,
 				};
 
-				if (m._id) {
-					msgObj._id = m._id;
+				if (data._id) {
+					msgObj._id = data._id;
 				}
 
-				if (m.reactions) {
-					msgObj.reactions = this.convertMessageReactions(m.reactions);
+				if (data.reactions) {
+					msgObj.reactions = this.convertMessageReactions(data.reactions);
 				}
 
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					console.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
-					console.error(e);
+					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
+					this._logger.error(e);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(m, 'message');
+					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
 				this.saveError(_id, e);
@@ -500,8 +597,8 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				console.warn(`Failed to update last message of room ${ rid }`);
-				console.error(e);
+				this._logger.warn(`Failed to update last message of room ${rid}`);
+				this._logger.error(e);
 			}
 		}
 	}
@@ -519,7 +616,7 @@ export class ImportDataConverter {
 		this.updateRoomId(room._id, roomData);
 	}
 
-	findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
 		const record = ImportData.findDMForImportedUsers(...users);
 		if (record) {
 			return record.data;
@@ -633,7 +730,7 @@ export class ImportDataConverter {
 			description: roomData.description,
 		};
 
-		const roomUpdate: {$set?: Record<string, any>; $addToSet?: Record<string, any>} = {};
+		const roomUpdate: { $set?: Record<string, any>; $addToSet?: Record<string, any> } = {};
 
 		if (Object.keys(set).length > 0) {
 			roomUpdate.$set = set;
@@ -685,7 +782,7 @@ export class ImportDataConverter {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				console.warn('One or more imported users not found: ${ roomData.users }');
+				this._logger.warn(`One or more imported users not found: ${roomData.users}`);
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -693,15 +790,16 @@ export class ImportDataConverter {
 		// Create the channel
 		try {
 			Meteor.runAsUser(creatorId, () => {
-				const roomInfo = roomData.t === 'd'
-					? Meteor.call('createDirectMessage', ...members)
-					: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+				const roomInfo =
+					roomData.t === 'd'
+						? Meteor.call('createDirectMessage', ...members)
+						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			console.warn(roomData.name, members);
-			console.error(e);
+			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
+			this._logger.error(e);
 			throw e;
 		}
 
@@ -709,31 +807,33 @@ export class ImportDataConverter {
 	}
 
 	convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Array<string> {
-		return importedIds.map((user) => {
-			if (user === 'rocket.cat') {
-				return user;
-			}
-
-			if (this._userCache.has(user)) {
-				const cache = this._userCache.get(user);
-				if (cache) {
-					return cache.username;
-				}
-			}
-
-			const obj = Users.findOneByImportId(user, { fields: { _id: 1, username: 1 } });
-			if (obj) {
-				this.addUserToCache(user, obj._id, obj.username);
-
-				if (idToRemove && obj._id === idToRemove) {
-					return false;
+		return importedIds
+			.map((user) => {
+				if (user === 'rocket.cat') {
+					return user;
 				}
 
-				return obj.username;
-			}
+				if (this._userCache.has(user)) {
+					const cache = this._userCache.get(user);
+					if (cache) {
+						return cache.username;
+					}
+				}
 
-			return false;
-		}).filter((user) => user);
+				const obj = Users.findOneByImportId(user, { fields: { _id: 1, username: 1 } });
+				if (obj) {
+					this.addUserToCache(user, obj._id, obj.username);
+
+					if (idToRemove && obj._id === idToRemove) {
+						return false;
+					}
+
+					return obj.username;
+				}
+
+				return false;
+			})
+			.filter((user) => user);
 	}
 
 	findExistingRoom(data: IImportChannel): IRoom {
@@ -759,40 +859,44 @@ export class ImportDataConverter {
 		return Rooms.findOneByNonValidatedName(data.name, {});
 	}
 
+	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
+		return ImportDataRaw.getAllChannels().toArray();
+	}
+
 	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const channels = ImportData.find({ dataType: 'channel' });
-		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
+		const channels = Promise.await(this.getChannelsToImport());
+		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
-				if (beforeImportFn && !beforeImportFn(c, 'channel')) {
+				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
 					this.skipRecord(_id);
 					return;
 				}
 
-				if (!c.name && c.t !== 'd') {
+				if (!data.name && data.t !== 'd') {
 					throw new Error('importer-channel-missing-name');
 				}
 
-				c.importIds = c.importIds.filter((item) => item);
-				c.users = _.uniq(c.users);
+				data.importIds = data.importIds.filter((item) => item);
+				data.users = _.uniq(data.users);
 
-				if (!c.importIds.length) {
+				if (!data.importIds.length) {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				const existingRoom = this.findExistingRoom(c);
+				const existingRoom = this.findExistingRoom(data);
 
 				if (existingRoom) {
-					this.updateRoom(existingRoom, c, startedByUserId);
+					this.updateRoom(existingRoom, data, startedByUserId);
 				} else {
-					this.insertRoom(c, startedByUserId);
+					this.insertRoom(data, startedByUserId);
 				}
 
-				if (c.archived && c._id) {
-					this.archiveRoomById(c._id);
+				if (data.archived && data._id) {
+					this.archiveRoomById(data._id);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(c, 'channel');
+					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
 				this.saveError(_id, e);
@@ -815,11 +919,9 @@ export class ImportDataConverter {
 		});
 	}
 
-	clearImportData(): void {
-		const rawCollection = ImportData.model.rawCollection();
-		const remove = Meteor.wrapAsync(rawCollection.remove, rawCollection);
-
-		remove({});
+	public clearImportData(): void {
+		// Using raw collection since its faster
+		Promise.await(ImportData.model.rawCollection().remove({}));
 	}
 
 	clearSuccessfullyImportedData(): void {

@@ -4,7 +4,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import AddUsers from './AddUsers';
 
 export default {
-	title: 'components/RoomMembers/AddUsers',
+	title: 'room/contextualBar/RoomMembers/AddUsers',
 	component: AddUsers,
 };
 
@@ -16,12 +16,6 @@ export const Default = () => (
 
 export const Error = () => (
 	<VerticalBar>
-		<AddUsers
-			onClickBack={alert}
-			onClickClose={alert}
-			onClickSave={alert}
-			value={[]}
-			errors={{ users: 'With Test Error' }}
-		/>
+		<AddUsers onClickBack={alert} onClickClose={alert} onClickSave={alert} value={[]} errors={{ users: 'With Test Error' }} />
 	</VerticalBar>
 );

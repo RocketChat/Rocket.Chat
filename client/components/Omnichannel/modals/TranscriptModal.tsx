@@ -2,14 +2,14 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
+import { IOmnichannelRoom } from '../../../../definition/IRoom';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
 
 type TranscriptModalProps = {
 	email: string;
-	room?: IRoom;
+	room: IOmnichannelRoom;
 	onRequest: (email: string, subject: string) => void;
 	onSend?: (email: string, subject: string, token: string) => void;
 	onCancel: () => void;
@@ -27,7 +27,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 }) => {
 	const t = useTranslation();
 
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { values, handlers } = useForm({
 		email: emailDefault || '',
@@ -38,8 +38,8 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 	const { handleEmail, handleSubject } = handlers;
 	const [emailError, setEmailError] = useState('');
 	const [subjectError, setSubjectError] = useState('');
-	const { transcriptRequest } = (room as unknown) as IRoom;
-	const roomOpen = room && room.open;
+	const { transcriptRequest } = room;
+	const roomOpen = room?.open;
 	const token = room?.v?.token;
 
 	const handleRequest = useCallback(() => {
@@ -76,7 +76,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 				<Modal.Title>{t('Transcript')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p1'>
+			<Modal.Content fontScale='p2'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<Field marginBlock='x15'>
 					<Field.Label>{t('Email')}*</Field.Label>

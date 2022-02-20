@@ -11,10 +11,10 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 	};
 	const getUserPreferences = () => {
 		const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-		const allDefaultUserSettings = settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
+		const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
-		return allDefaultUserSettings.reduce((accumulator, setting) => {
-			const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
+		return allDefaultUserSettings.reduce((accumulator, [key]) => {
+			const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
 			accumulator[settingWithoutPrefix] = getUserPreference(me, settingWithoutPrefix);
 			return accumulator;
 		}, {});
@@ -22,7 +22,7 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(me) {
 	const verifiedEmail = isVerifiedEmail();
 	me.email = verifiedEmail ? verifiedEmail.address : undefined;
 
-	me.avatarUrl = getURL(`/avatar/${ me.username }`, { cdn: false, full: true });
+	me.avatarUrl = getURL(`/avatar/${me.username}`, { cdn: false, full: true });
 
 	const userPreferences = (me.settings && me.settings.preferences) || {};
 

@@ -2,10 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import {
-	useEditableSetting,
-	useEditableSettingsDispatch,
-} from '../../../contexts/EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch } from '../../../contexts/EditableSettingsContext';
 import { useSettingStructure } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import MemoizedSetting from './MemoizedSetting';
@@ -76,35 +73,20 @@ function Setting({ className, settingId, sectionChanged }) {
 		});
 	}, [setting.value, setting.editor, update, persistedSetting]);
 
-	const {
-		_id,
-		disabled,
-		disableReset,
-		readonly,
-		type,
-		packageEditor,
-		packageValue,
-		i18nLabel,
-		i18nDescription,
-		alert,
-	} = setting;
+	const { _id, disabled, disableReset, readonly, type, packageEditor, packageValue, i18nLabel, i18nDescription, alert, invisible } =
+		setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || _id || t(_id);
 	const hint = useMemo(
-		() =>
-			t.has(i18nDescription) && <MarkdownText preserveHtml={true} content={t(i18nDescription)} />,
+		() => t.has(i18nDescription) && <MarkdownText preserveHtml={true} content={t(i18nDescription)} />,
 		[i18nDescription, t],
 	);
-	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [
-		alert,
-		t,
-	]);
+	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [alert, t]);
 	const hasResetButton =
 		!disableReset &&
 		!readonly &&
 		type !== 'asset' &&
-		(JSON.stringify(packageEditor) !== JSON.stringify(editor) ||
-			JSON.stringify(value) !== JSON.stringify(packageValue)) &&
+		(JSON.stringify(packageEditor) !== JSON.stringify(editor) || JSON.stringify(value) !== JSON.stringify(packageValue)) &&
 		!disabled;
 
 	return (
@@ -122,6 +104,7 @@ function Setting({ className, settingId, sectionChanged }) {
 			onChangeValue={onChangeValue}
 			onChangeEditor={onChangeEditor}
 			onResetButtonClick={onResetButtonClick}
+			invisible={invisible}
 		/>
 	);
 }

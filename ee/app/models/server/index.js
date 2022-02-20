@@ -11,7 +11,7 @@ import './models/LivechatDepartment';
 import './models/LivechatRooms';
 import './models/LivechatInquiry';
 import './models/Messages';
-import './raw/LivechatDepartment';
+import './models/Users';
 import './raw/LivechatRooms';
 import './raw/LivechatDepartmentAgents';
 

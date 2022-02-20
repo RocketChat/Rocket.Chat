@@ -1,18 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
+import { VideoAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/VideoAttachmentProps';
+import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
-
-export type VideoAttachmentProps = {
-	video_url: string;
-	video_type: string;
-	video_size: number;
-	file?: FileProp;
-} & AttachmentPropsBase;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	title,
@@ -40,7 +33,11 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 					<Box is='video' width='full' controls>
 						<source src={getURL(url)} type={type} />
 					</Box>
-					{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}
+					{description && (
+						<Attachment.Details is='figcaption'>
+							<MarkdownText parseEmoji variant='inline' content={description} />
+						</Attachment.Details>
+					)}
 				</Attachment.Content>
 			)}
 		</Attachment>

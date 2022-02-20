@@ -15,8 +15,7 @@ function OAuthGroupPage({ _id, ...group }) {
 	const solo = sections.length === 1;
 	const t = useTranslation();
 
-	const sectionIsCustomOAuth = (sectionName) =>
-		sectionName && /^Custom OAuth:\s.+/.test(sectionName);
+	const sectionIsCustomOAuth = (sectionName) => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
 	const getAbsoluteUrl = useAbsoluteUrl();
 
@@ -74,9 +73,7 @@ function OAuthGroupPage({ _id, ...group }) {
 			{...group}
 			headerButtons={
 				<>
-					<Button onClick={handleRefreshOAuthServicesButtonClick}>
-						{t('Refresh_oauth_services')}
-					</Button>
+					<Button onClick={handleRefreshOAuthServicesButtonClick}>{t('Refresh_oauth_services')}</Button>
 					<Button onClick={handleAddCustomOAuthButtonClick}>{t('Add_custom_oauth')}</Button>
 				</>
 			}

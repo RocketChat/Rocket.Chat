@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
-import { Logger } from '../../logger';
-import { _setRealName } from '../../lib';
-import { Users } from '../../models';
-import { settings } from '../../settings';
-import { hasRole } from '../../authorization';
+import { Logger } from '../../logger/server';
+import { _setRealName } from '../../lib/server';
+import { Users } from '../../models/server';
+import { settings } from '../../settings/server';
+import { hasRole } from '../../authorization/server';
 import { deleteUser } from '../../lib/server/functions';
+import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
-const logger = new Logger('CROWD', {});
+const logger = new Logger('CROWD');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
@@ -37,12 +37,12 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 export class CROWD {
 	constructor() {
-		const AtlassianCrowd = require('atlassian-crowd');
+		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get('CROWD_URL');
 
 		this.options = {
 			crowd: {
-				base: !/\/$/.test(url) ? url += '/' : url,
+				base: !/\/$/.test(url) ? (url += '/') : url,
 			},
 			application: {
 				name: settings.get('CROWD_APP_USERNAME'),
@@ -150,11 +150,12 @@ export class CROWD {
 		const user = {
 			username: self.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
-			emails: [{
-				address: crowdUser.email,
-				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
-			}],
-			active: crowdUser.active,
+			emails: [
+				{
+					address: crowdUser.email,
+					verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+				},
+			],
 			crowd: true,
 		};
 
@@ -173,6 +174,8 @@ export class CROWD {
 		Meteor.users.update(id, {
 			$set: user,
 		});
+
+		setUserActiveStatus(id, crowdUser.active);
 	}
 
 	sync() {
@@ -186,7 +189,7 @@ export class CROWD {
 
 		logger.info('Sync started...');
 
-		users.forEach(function(user) {
+		users.forEach(function (user) {
 			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info('Syncing user', crowd_username);
 
@@ -201,13 +204,13 @@ export class CROWD {
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
+				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
-						Meteor.defer(function() {
-							deleteUser(user._id);
+						Meteor.defer(function () {
+							Promise.await(deleteUser(user._id));
 							logger.info('User removed:', crowd_username);
 						});
 					}
@@ -275,7 +278,7 @@ export class CROWD {
 	}
 }
 
-Accounts.registerLoginHandler('crowd', function(loginRequest) {
+Accounts.registerLoginHandler('crowd', function (loginRequest) {
 	if (!loginRequest.crowd) {
 		return undefined;
 	}
@@ -290,13 +293,13 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		const crowd = new CROWD();
 		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-		if (user && (user.crowd === false)) {
-			logger.debug(`User ${ loginRequest.username } is not a valid crowd user, falling back`);
+		if (user && user.crowd === false) {
+			logger.debug(`User ${loginRequest.username} is not a valid crowd user, falling back`);
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 		}
 
 		if (!user) {
-			logger.debug(`User ${ loginRequest.username } is not allowd to access Rocket.Chat`);
+			logger.debug(`User ${loginRequest.username} is not allowd to access Rocket.Chat`);
 			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 
@@ -307,36 +310,28 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 	}
 });
 
-
 const jobName = 'CROWD_Sync';
 
-const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
-	if (settings.get('CROWD_Sync_User_Data') !== true) {
-		logger.info('Disabling CROWD Background Sync');
-		if (SyncedCron.nextScheduledAtDate(jobName)) {
-			SyncedCron.remove(jobName);
-		}
-		return;
-	}
-
-	const crowd = new CROWD();
-
-	if (settings.get('CROWD_Sync_Interval')) {
-		logger.info('Enabling CROWD Background Sync');
-		SyncedCron.add({
-			name: jobName,
-			schedule: (parser) => parser.text(settings.get('CROWD_Sync_Interval')),
-			job() {
-				crowd.sync();
-			},
-		});
-	}
-}), 500);
-
 Meteor.startup(() => {
-	Meteor.defer(() => {
-		settings.get('CROWD_Sync_Interval', addCronJob);
-		settings.get('CROWD_Sync_User_Data', addCronJob);
+	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], function addCronJobDebounced([data, interval]) {
+		if (data !== true) {
+			logger.info('Disabling CROWD Background Sync');
+			if (SyncedCron.nextScheduledAtDate(jobName)) {
+				SyncedCron.remove(jobName);
+			}
+			return;
+		}
+		const crowd = new CROWD();
+		if (interval) {
+			logger.info('Enabling CROWD Background Sync');
+			SyncedCron.add({
+				name: jobName,
+				schedule: (parser) => parser.text(interval),
+				job() {
+					crowd.sync();
+				},
+			});
+		}
 	});
 });
 
@@ -344,11 +339,15 @@ Meteor.methods({
 	crowd_test_connection() {
 		const user = Meteor.user();
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'crowd_test_connection',
+			});
 		}
 
 		if (!hasRole(user._id, 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_test_connection' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'crowd_test_connection',
+			});
 		}
 
 		if (settings.get('CROWD_Enable') !== true) {
@@ -364,7 +363,9 @@ Meteor.methods({
 				params: [],
 			};
 		} catch (error) {
-			logger.error('Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd');
+			logger.error(
+				'Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd',
+			);
 			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
 		}
 	},
@@ -375,7 +376,9 @@ Meteor.methods({
 		}
 
 		if (!hasRole(user._id, 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_sync_users' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'crowd_sync_users',
+			});
 		}
 
 		try {
@@ -386,7 +389,7 @@ Meteor.methods({
 			const actual = Math.ceil((stopTime - startTime) / 1000);
 
 			return {
-				message: `User data synced in ${ actual } seconds`,
+				message: `User data synced in ${actual} seconds`,
 				params: [],
 			};
 		} catch (error) {

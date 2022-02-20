@@ -16,6 +16,7 @@ const HeaderWithData = () => {
 	const user = useUser();
 	const t = useTranslation();
 	useSidebarPaletteColor();
+
 	return (
 		<>
 			<Sidebar.TopBar.Section className='sidebar--custom-colors'>
@@ -26,8 +27,8 @@ const HeaderWithData = () => {
 					{user && (
 						<>
 							<Directory title={t('Directory')} />
-							<Sort title={t('Filters')} />
-							<CreateRoom title={t('Create_A_New_Channel')} data-qa='sidebar-create' />
+							<Sort title={t('Display')} />
+							<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
 						</>
 					)}
 					{!user && <Login title={t('Login')} />}

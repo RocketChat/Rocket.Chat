@@ -3,10 +3,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 
-import { DateFormat } from '../../../lib';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
 import { APIClient } from '../../../utils/client';
+import { formatTime } from '../../../../client/lib/utils/formatTime';
 
 Template.snippetPage.helpers({
 	snippet() {
@@ -30,15 +30,15 @@ Template.snippetPage.helpers({
 	time() {
 		const snippet = Template.instance().message.get();
 		if (snippet !== undefined) {
-			return DateFormat.formatTime(snippet.ts);
+			return formatTime(snippet.ts);
 		}
 	},
 });
 
-Template.snippetPage.onCreated(async function() {
+Template.snippetPage.onCreated(async function () {
 	const snippetId = FlowRouter.getParam('snippetId');
 	this.message = new ReactiveVar({});
 
-	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${ snippetId }`);
+	const { message } = await APIClient.v1.get(`chat.getSnippetedMessageById?messageId=${snippetId}`);
 	this.message.set(message);
 });

@@ -1,27 +1,39 @@
-import { Collection, Cursor, FindOneOptions } from 'mongodb';
+import { Collection, Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { IBannerDismiss } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
-type T = IBannerDismiss;
-export class BannersDismissRaw extends BaseRaw<T> {
-	constructor(
-		public readonly col: Collection<T>,
-		public readonly trash?: Collection<T>,
-	) {
+export class BannersDismissRaw extends BaseRaw<IBannerDismiss> {
+	constructor(public readonly col: Collection<IBannerDismiss>, trash?: Collection<IBannerDismiss>) {
 		super(col, trash);
 
-		this.col.createIndexes([
-			{ key: { userId: 1, bannerId: 1 } },
-		]);
+		this.col.createIndexes([{ key: { userId: 1, bannerId: 1 } }]);
 	}
 
-	findByUserIdAndBannerId(userId: string, bannerIds: string[], options?: FindOneOptions<T>): Cursor<T> {
+	findByUserIdAndBannerId(userId: string, bannerIds: string[]): Cursor<IBannerDismiss>;
+
+	findByUserIdAndBannerId(
+		userId: string,
+		bannerIds: string[],
+		options: WithoutProjection<FindOneOptions<IBannerDismiss>>,
+	): Cursor<IBannerDismiss>;
+
+	findByUserIdAndBannerId<P>(
+		userId: string,
+		bannerIds: string[],
+		options: FindOneOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+	): Cursor<P>;
+
+	findByUserIdAndBannerId<P>(
+		userId: string,
+		bannerIds: string[],
+		options?: undefined | WithoutProjection<FindOneOptions<IBannerDismiss>> | FindOneOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+	): Cursor<P> | Cursor<IBannerDismiss> {
 		const query = {
 			userId,
 			bannerId: { $in: bannerIds },
 		};
 
-		return this.col.find(query, options);
+		return options ? this.col.find(query, options) : this.col.find(query);
 	}
 }

@@ -3,27 +3,31 @@ import { Match, check } from 'meteor/check';
 import { Markdown } from '../../../markdown/server';
 import { Messages } from '../../../models';
 
-const objectMaybeIncluding = (types) => Match.Where((value) => {
-	Object.keys(types).forEach((field) => {
-		if (value[field] != null) {
-			try {
-				check(value[field], types[field]);
-			} catch (error) {
-				error.path = field;
-				throw error;
+const objectMaybeIncluding = (types) =>
+	Match.Where((value) => {
+		Object.keys(types).forEach((field) => {
+			if (value[field] != null) {
+				try {
+					check(value[field], types[field]);
+				} catch (error) {
+					error.path = field;
+					throw error;
+				}
 			}
-		}
+		});
+
+		return true;
 	});
 
-	return true;
-});
-
 const validateAttachmentsFields = (attachmentField) => {
-	check(attachmentField, objectMaybeIncluding({
-		short: Boolean,
-		title: String,
-		value: Match.OneOf(String, Match.Integer, Boolean),
-	}));
+	check(
+		attachmentField,
+		objectMaybeIncluding({
+			short: Boolean,
+			title: String,
+			value: Match.OneOf(String, Match.Integer, Boolean),
+		}),
+	);
 
 	if (typeof attachmentField.value !== 'undefined') {
 		attachmentField.value = String(attachmentField.value);
@@ -31,39 +35,45 @@ const validateAttachmentsFields = (attachmentField) => {
 };
 
 const validateAttachmentsActions = (attachmentActions) => {
-	check(attachmentActions, objectMaybeIncluding({
-		type: String,
-		text: String,
-		url: String,
-		image_url: String,
-		is_webview: Boolean,
-		webview_height_ratio: String,
-		msg: String,
-		msg_in_chat_window: Boolean,
-	}));
+	check(
+		attachmentActions,
+		objectMaybeIncluding({
+			type: String,
+			text: String,
+			url: String,
+			image_url: String,
+			is_webview: Boolean,
+			webview_height_ratio: String,
+			msg: String,
+			msg_in_chat_window: Boolean,
+		}),
+	);
 };
 
 const validateAttachment = (attachment) => {
-	check(attachment, objectMaybeIncluding({
-		color: String,
-		text: String,
-		ts: Match.OneOf(String, Number),
-		thumb_url: String,
-		button_alignment: String,
-		actions: [Match.Any],
-		message_link: String,
-		collapsed: Boolean,
-		author_name: String,
-		author_link: String,
-		author_icon: String,
-		title: String,
-		title_link: String,
-		title_link_download: Boolean,
-		image_url: String,
-		audio_url: String,
-		video_url: String,
-		fields: [Match.Any],
-	}));
+	check(
+		attachment,
+		objectMaybeIncluding({
+			color: String,
+			text: String,
+			ts: Match.OneOf(String, Number),
+			thumb_url: String,
+			button_alignment: String,
+			actions: [Match.Any],
+			message_link: String,
+			collapsed: Boolean,
+			author_name: String,
+			author_link: String,
+			author_icon: String,
+			title: String,
+			title_link: String,
+			title_link_download: Boolean,
+			image_url: String,
+			audio_url: String,
+			video_url: String,
+			fields: [Match.Any],
+		}),
+	);
 
 	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
@@ -76,20 +86,23 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const insertMessage = function(user, message, rid, upsert = false) {
+export const insertMessage = function (user, message, rid, upsert = false) {
 	if (!user || !message || !rid) {
 		return false;
 	}
 
-	check(message, objectMaybeIncluding({
-		_id: String,
-		msg: String,
-		text: String,
-		alias: String,
-		emoji: String,
-		avatar: String,
-		attachments: [Match.Any],
-	}));
+	check(
+		message,
+		objectMaybeIncluding({
+			_id: String,
+			msg: String,
+			text: String,
+			alias: String,
+			emoji: String,
+			avatar: String,
+			attachments: [Match.Any],
+		}),
+	);
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
@@ -117,9 +130,11 @@ export const insertMessage = function(user, message, rid, upsert = false) {
 		message.html = message.msg;
 		message = Markdown.code(message);
 
-		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+		const urls = message.html.match(
+			/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g,
+		);
 		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
+			message.urls = [...new Set(urls)].map((url) => ({ url }));
 		}
 
 		message = Markdown.mountTokensBack(message, false);
@@ -131,10 +146,13 @@ export const insertMessage = function(user, message, rid, upsert = false) {
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
-		Messages.upsert({
-			_id,
-			'u._id': message.u._id,
-		}, message);
+		Messages.upsert(
+			{
+				_id,
+				'u._id': message.u._id,
+			},
+			message,
+		);
 		message._id = _id;
 	} else {
 		message._id = Messages.insert(message);

@@ -1,11 +1,8 @@
-import {
-	useMutableCallback,
-	useLocalStorage,
-	useDebouncedValue,
-} from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
@@ -30,7 +27,7 @@ const useReactModal = (Component, props) => {
 	});
 };
 
-const TeamsChannels = ({ teamId }) => {
+const TeamsChannels = ({ teamId, rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 
@@ -49,6 +46,7 @@ const TeamsChannels = ({ teamId }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
+	const canAddExistingTeam = usePermission('add-team-channel', rid);
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannelWithData, { teamId, reload });
 
@@ -59,15 +57,7 @@ const TeamsChannels = ({ teamId }) => {
 	});
 
 	if (state.tab === 'RoomInfo') {
-		return (
-			<RoomInfo
-				rid={state.rid}
-				onClickClose={onClickClose}
-				onClickBack={handleBack}
-				onEnterRoom={goToRoom}
-				resetState={setState}
-			/>
-		);
+		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} resetState={setState} />;
 	}
 
 	return (
@@ -80,8 +70,8 @@ const TeamsChannels = ({ teamId }) => {
 			channels={items}
 			total={total}
 			onClickClose={onClickClose}
-			onClickAddExisting={addExisting}
-			onClickCreateNew={createNew}
+			onClickAddExisting={canAddExistingTeam && addExisting}
+			onClickCreateNew={canAddExistingTeam && createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
 			reload={reload}

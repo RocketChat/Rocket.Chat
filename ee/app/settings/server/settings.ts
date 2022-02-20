@@ -1,52 +1,60 @@
 import { Meteor } from 'meteor/meteor';
 
-import { SettingsEvents, settings } from '../../../../app/settings/server/functions/settings';
+import { settings } from '../../../../app/settings/server/functions/settings';
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
 import SettingsModel from '../../../../app/models/server/models/Settings';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
+import { use } from '../../../../app/settings/server/Middleware';
+import { SettingsEvents } from '../../../../app/settings/server';
 
-export function changeSettingValue(record: ISetting): undefined | { value: SettingValue } {
+export function changeSettingValue(record: ISetting): SettingValue {
 	if (!record.enterprise) {
-		return;
+		return record.value;
 	}
 
 	if (!isEnterprise()) {
-		return { value: record.invalidValue };
+		return record.invalidValue;
 	}
 
 	if (!record.modules?.length) {
-		return;
+		return record.invalidValue;
 	}
 
 	for (const moduleName of record.modules) {
 		if (!hasLicense(moduleName)) {
-			return { value: record.invalidValue };
+			return record.invalidValue;
 		}
 	}
+
+	return record.value;
 }
 
-SettingsEvents.on('store-setting-value', (record: ISetting, newRecord: { value: SettingValue }) => {
-	const changedValue = changeSettingValue(record);
-	if (changedValue) {
-		newRecord.value = changedValue.value;
+settings.set = use(settings.set, (context, next) => {
+	const [record] = context;
+
+	if (!record.enterprise) {
+		return next(...context);
 	}
+	const value = changeSettingValue(record);
+
+	return next({ ...record, value });
 });
 
 SettingsEvents.on('fetch-settings', (settings: Array<ISetting>): void => {
 	for (const setting of settings) {
 		const changedValue = changeSettingValue(setting);
-		if (changedValue) {
-			setting.value = changedValue.value;
+		if (changedValue === undefined) {
+			continue;
 		}
+		setting.value = changedValue;
 	}
 });
 
 function updateSettings(): void {
 	const enterpriseSettings = SettingsModel.findEnterpriseSettings();
 
-	enterpriseSettings.forEach((record: ISetting) => settings.storeSettingValue(record, false));
+	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
-
 
 Meteor.startup(() => {
 	updateSettings();

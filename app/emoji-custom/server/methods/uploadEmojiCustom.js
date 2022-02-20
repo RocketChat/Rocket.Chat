@@ -13,9 +13,7 @@ const getFile = async (file, extension) => {
 		return file;
 	}
 
-	return sharp(file)
-		.png()
-		.toBuffer();
+	return sharp(file).png().toBuffer();
 };
 
 Meteor.methods({
@@ -39,16 +37,21 @@ Meteor.methods({
 		if (['gif', 'x-icon', 'bmp', 'webm'].includes(emojiData.extension)) {
 			fileBuffer = file;
 		} else {
-			const { data: resizedEmojiBuffer } = await Media.resizeFromBuffer(file, 128, 128, true, false, false, 'inside');
+			// This is to support the idea of having "sticker-like" emojis
+			const { data: resizedEmojiBuffer } = await Media.resizeFromBuffer(file, 512, 512, true, false, false, 'inside');
 			fileBuffer = resizedEmojiBuffer;
 		}
 
 		const rs = RocketChatFile.bufferToStream(fileBuffer);
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
-		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
-		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500),
-		));
+		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
+			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
+			contentType,
+		);
+		ws.on(
+			'end',
+			Meteor.bindEnvironment(() => Meteor.setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500)),
+		);
 
 		rs.pipe(ws);
 	},

@@ -1,14 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 
-import { CustomUserStatus } from '../../../models';
+import { CustomUserStatus } from '../../../models/server/raw';
 
 Meteor.methods({
-	listCustomUserStatus() {
+	async listCustomUserStatus() {
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'listCustomUserStatus' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'listCustomUserStatus',
+			});
 		}
 
-		return CustomUserStatus.find({}).fetch();
+		return CustomUserStatus.find({}).toArray();
 	},
 });

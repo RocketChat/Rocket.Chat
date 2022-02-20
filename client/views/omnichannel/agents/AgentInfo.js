@@ -38,14 +38,7 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 				<UserInfo.Avatar size={'x332'} username={username} />
 			</Box>
 
-			<ButtonGroup
-				mi='neg-x4'
-				flexShrink={0}
-				flexWrap='nowrap'
-				withTruncatedText
-				justifyContent='center'
-				flexShrink={0}
-			>
+			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
 				{children}
 			</ButtonGroup>
 
@@ -57,7 +50,7 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 				{statusLivechat && (
 					<>
 						<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
-						<UserInfo.Info>{t(statusLivechat)}</UserInfo.Info>
+						<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
 					</>
 				)}
 

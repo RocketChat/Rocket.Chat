@@ -1,28 +1,21 @@
-/* eslint-env mocha */
-
 import { expect } from 'chai';
 
-import {
-	normalizers,
-	fromTemplate,
-	renameInvalidProperties,
-	getNestedValue,
-	getRegexpMatch,
-} from './transform_helpers';
-
+import { normalizers, fromTemplate, renameInvalidProperties, getNestedValue, getRegexpMatch } from './transform_helpers';
 
 const data = {
-	id: '123456',
+	'id': '123456',
 	'invalid.property': true,
-	name: 'foo',
-	email: 'foo@bar.com',
-	nested: {
-		value: 'baz',
+	'name': 'foo',
+	'email': 'foo@bar.com',
+	'nested': {
+		'value': 'baz',
 		'another.invalid.prop': true,
 	},
-	list: [{
-		'invalid.property': 'in-array',
-	}],
+	'list': [
+		{
+			'invalid.property': 'in-array',
+		},
+	],
 };
 
 describe('fromTemplate', () => {
@@ -34,7 +27,7 @@ describe('fromTemplate', () => {
 	}, data);
 
 	it('returns match from regexp on top-level properties', () => {
-		const template = '{{/^foo@bar\.(.+)/::email}}';
+		const template = '{{/^foo@bar.(.+)/::email}}';
 		const expected = 'com';
 		const result = fromTemplate(template, normalizedData);
 		expect(result).to.equal(expected);
@@ -63,14 +56,14 @@ describe('fromTemplate', () => {
 
 	it('returns composed value from nested prop with template syntax', () => {
 		const template = '{{name}}.{{nested.value}}';
-		const expected = `${ normalizedData.name }.${ normalizedData.nested.value }`;
+		const expected = `${normalizedData.name}.${normalizedData.nested.value}`;
 		const result = fromTemplate(template, normalizedData);
 
 		expect(result).to.equal(expected);
 	});
 
 	it('returns composed string from multiple template chunks with static parts', () => {
-		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar\.(.+)/::email}}-from-template';
+		const template = 'composed-{{name}}-at-{{nested.value}}-dot-{{/^foo@bar.(.+)/::email}}-from-template';
 		const expected = 'composed-foo-at-baz-dot-com-from-template';
 		const result = fromTemplate(template, normalizedData);
 		expect(result).to.equal(expected);

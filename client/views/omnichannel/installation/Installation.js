@@ -11,7 +11,7 @@ import Wrapper from './Wrapper';
 const Installation = () => {
 	const t = useTranslation();
 
-	const siteUrl = useSetting('Site_Url').replace(/\/$/, '');
+	const siteUrl = useSetting('Site_Url')?.replace(/\/$/, '');
 
 	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
 	<script type="text/javascript">
@@ -30,9 +30,7 @@ const Installation = () => {
 				<Box maxWidth='x600' alignSelf='center'>
 					<p>
 						<RawText>
-							{t(
-								'To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site',
-							)}
+							{t('To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site')}
 						</RawText>
 					</p>
 					<TextCopy pi='none' text={installString} wrapper={Wrapper} />

@@ -29,13 +29,8 @@ export function withData(Component) {
 			[rid, debouncedText],
 		);
 
-		const { discussionsList, initialItemCount, loadMoreItems } = useDiscussionsList(
-			options,
-			userId,
-		);
-		const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList(
-			discussionsList,
-		);
+		const { discussionsList, initialItemCount, loadMoreItems } = useDiscussionsList(options, userId);
+		const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList(discussionsList);
 
 		const handleTextChange = useCallback((e) => {
 			setText(e.currentTarget.value);
@@ -62,9 +57,7 @@ export function withData(Component) {
 		);
 	};
 
-	WrappedComponent.displayName = `withData(${
-		Component.displayName ?? Component.name ?? 'Component'
-	})`;
+	WrappedComponent.displayName = `withData(${Component.displayName ?? Component.name ?? 'Component'})`;
 
 	return WrappedComponent;
 }
