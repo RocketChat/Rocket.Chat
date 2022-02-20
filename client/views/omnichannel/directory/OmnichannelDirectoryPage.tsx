@@ -7,6 +7,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import ContextualBar from './ContextualBar';
+import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
@@ -32,6 +33,7 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 
 	const [contactReload, setContactReload] = useState();
 	const [chatReload, setChatReload] = useState();
+	const [callReload, setCallReload] = useState();
 
 	const t = useTranslation();
 
@@ -56,7 +58,8 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 				</Tabs>
 				<Page.Content>
 					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
-						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />)}
+						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
+						(tab === 'calls' && <CallTab setCallReload={setCallReload} />)}
 				</Page.Content>
 			</Page>
 			<ContextualBar chatReload={chatReload} contactReload={contactReload} />

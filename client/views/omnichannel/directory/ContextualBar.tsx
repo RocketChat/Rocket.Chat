@@ -1,12 +1,13 @@
 import React, { FC } from 'react';
 
 import { useRouteParameter } from '../../../contexts/RouterContext';
+import CallsContextualBar from './CallsContextualBar';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
 type ContextualBarProps = {
-	contactReload?: () => void;
-	chatReload?: () => void;
+	contactReload: () => void;
+	chatReload: () => void;
 };
 
 const ContextualBar: FC<ContextualBarProps> = ({ contactReload, chatReload }) => {
@@ -22,6 +23,8 @@ const ContextualBar: FC<ContextualBarProps> = ({ contactReload, chatReload }) =>
 			return <ContactContextualBar contactReload={contactReload} />;
 		case 'chats':
 			return <ChatsContextualBar chatReload={chatReload} />;
+		case 'calls':
+			return <CallsContextualBar callReload={chatReload} />;
 		default:
 			return null;
 	}
