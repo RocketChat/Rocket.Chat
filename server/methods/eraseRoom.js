@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { deleteRoom } from '../../app/lib';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Rooms } from '../../app/models';
 import { Apps } from '../../app/apps/server';
-import { roomTypes } from '../../app/utils';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -25,7 +25,11 @@ Meteor.methods({
 			});
 		}
 
-		if (!roomTypes.getConfig(room.t).canBeDeleted(hasPermission, room)) {
+		if (
+			!roomCoordinator
+				.getRoomDirectives(room.t)
+				?.canBeDeleted((permissionId, rid) => hasPermission(Meteor.userId(), permissionId, rid), room)
+		) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom',
 			});

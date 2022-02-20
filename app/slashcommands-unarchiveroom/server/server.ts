@@ -3,9 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { roomTypes, RoomMemberActions } from '../../utils/server';
+import { RoomMemberActions } from '../../utils/server';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 
 function Unarchive(_command: 'unarchive', params: string, item: Record<string, string>): void | Promise<void> | Function {
 	let channel = params.trim();
@@ -32,7 +33,7 @@ function Unarchive(_command: 'unarchive', params: string, item: Record<string, s
 	}
 
 	// You can not archive direct messages.
-	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
 		return;
 	}
 

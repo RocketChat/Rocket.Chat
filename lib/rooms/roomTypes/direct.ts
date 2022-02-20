@@ -1,6 +1,5 @@
 import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
-import type { ISubscription } from '../../../definition/ISubscription';
 
 export function getDirectMessageRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {
 	return {
@@ -15,7 +14,7 @@ export function getDirectMessageRoomType(coordinator: RoomCoordinator): IRoomTyp
 				return coordinator.openRoom('d', rid);
 			},
 			link(sub): Record<string, string> {
-				return { rid: (sub as ISubscription).rid || sub.name || '' };
+				return { rid: sub.rid || sub.name || '' };
 			},
 		},
 	};

@@ -1,9 +1,9 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, IRoomTypeServerDirectives, RoomData } from '../../definition/IRoomTypeConfig';
-import type { IRoom } from '../../definition/IRoom';
-import type { ISubscription } from '../../definition/ISubscription';
+import type { IRoomTypeConfig, IRoomTypeRouteConfig, IRoomTypeClientDirectives, IRoomTypeServerDirectives, RoomIdentification } from '../../definition/IRoomTypeConfig';
+// import type { IRoom } from '../../definition/IRoom';
+// import type { ISubscription } from '../../definition/ISubscription';
 import type { SettingValue } from '../../definition/ISetting';
 
 export abstract class RoomCoordinator {
@@ -19,7 +19,57 @@ export abstract class RoomCoordinator {
 		this.mainOrder = 1;
 	}
 
+	protected validateRoute(route: IRoomTypeRouteConfig): void {
+		const { name, path, action, link } = route;
+
+		if (typeof name !== 'string' || name.length === 0) {
+			throw new Error('The route name must be a string.');
+		}
+
+		if (path !== undefined && (typeof path !== 'string' || path.length === 0)) {
+			throw new Error('The route path must be a string.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof action)) {
+			throw new Error('The route action must be a function.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof link)) {
+			throw new Error('The route link must be a function.');
+		}
+	}
+
+	protected validateRoomConfig(roomConfig: IRoomTypeConfig): void {
+		const { identifier, order, icon, header, label, route } = roomConfig;
+
+		if (typeof identifier !== 'string' || identifier.length === 0) {
+			throw new Error('The identifier must be a string.');
+		}
+
+		if (typeof order !== 'number') {
+			throw new Error('The order must be a number.');
+		}
+
+		if (icon !== undefined && (typeof icon !== 'string' || icon.length === 0)) {
+			throw new Error('The icon must be a string.');
+		}
+
+		if (header !== undefined && (typeof header !== 'string' || header.length === 0)) {
+			throw new Error('The header must be a string.');
+		}
+
+		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
+			throw new Error('The label must be a string.');
+		}
+
+		if (route !== undefined) {
+			this.validateRoute(route);
+		}
+	}
+
 	protected addRoomType(roomConfig: IRoomTypeConfig, directives: IRoomTypeClientDirectives | IRoomTypeServerDirectives): void {
+		this.validateRoomConfig(roomConfig);
+
 		if (this.roomTypes[roomConfig.identifier]) {
 			return;
 		}
@@ -58,7 +108,7 @@ export abstract class RoomCoordinator {
 		return this.roomTypes[identifier]?.config;
 	}
 
-	getRouteLink(roomType: string, subData: RoomData): string | false {
+	getRouteLink(roomType: string, subData: RoomIdentification): string | false {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return false;
@@ -72,7 +122,7 @@ export abstract class RoomCoordinator {
 		return FlowRouter.path(config.route.name, routeData);
 	}
 
-	getURL(roomType: string, subData: IRoom | ISubscription): string | false {
+	getURL(roomType: string, subData: RoomIdentification): string | false {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return false;
@@ -86,7 +136,7 @@ export abstract class RoomCoordinator {
 		return FlowRouter.url(config.route.name, routeData);
 	}
 
-	getRouteData(roomType: string, subData: RoomData): Record<string, string> | false {
+	getRouteData(roomType: string, subData: RoomIdentification): Record<string, string> | false {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config) {
 			return false;
@@ -97,7 +147,7 @@ export abstract class RoomCoordinator {
 			routeData = config.route.link(subData);
 		} else if (subData?.name) {
 			routeData = {
-				rid: (subData as ISubscription).rid || (subData as IRoom)._id,
+				rid: subData.rid || subData._id,
 				name: subData.name,
 			};
 		}

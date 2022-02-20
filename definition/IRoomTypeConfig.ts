@@ -8,15 +8,16 @@ import type { IMessage } from './IMessage';
 import type { ReadReceipt } from './ReadReceipt';
 import type { ValueOf, AtLeast } from './utils';
 
-export type RoomData = IRoom | ISubscription | { name: IUser['username'] };
+export type RoomIdentification = Partial<ISubscription> | (Partial<IRoom> & { rid?: string });
 
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
 	action?: RouteOptions['action'];
-	link?: (data: RoomData) => Record<string, string>;
+	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
+// #ToDo: Review all references to these enums
 export const RoomSettingsEnum = {
 	TYPE: 'type',
 	NAME: 'roomName',
@@ -75,6 +76,9 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (room: Partial<IRoom> & { username?: IRoom['_id'] }) => string;
 	getIcon: (room: Partial<IRoom>) => string | undefined;
 	getUserStatus: (roomId: string) => string | undefined;
+	findRoom: (identifier: string) => IRoom | undefined;
+	showJoinLink: (roomId: string) => boolean;
+	isLivechatRoom: () => boolean;
 }
 
 export interface IRoomTypeServerDirectives {

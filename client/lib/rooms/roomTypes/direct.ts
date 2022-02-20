@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Subscriptions, Users } from '../../../../app/models/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
+import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
@@ -122,6 +122,8 @@ roomCoordinator.add(DirectMessageRoomType, {
 		if (this.isGroupChat(room)) {
 			return 'balloon';
 		}
+
+		return DirectMessageRoomType.icon;
 	},
 
 	getUserStatus(roomId: string): string | undefined {
@@ -131,5 +133,24 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 
 		return Session.get(`user_${subscription.name}_status`);
+	},
+
+	findRoom(identifier: string): IRoom | undefined {
+		if (!hasPermission('view-d-room')) {
+			return;
+		}
+
+		const query = {
+			t: 'd',
+			$or: [
+				{ name: identifier },
+				{ rid: identifier},
+			]
+		};
+
+		const subscription = Subscriptions.findOne(query);
+		if (subscription?.rid) {
+			return ChatRoom.findOne(subscription.rid);
+		}
 	},
 } as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>);

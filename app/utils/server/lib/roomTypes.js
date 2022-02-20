@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-
 export const roomTypes = new (class roomTypesServer extends RoomTypesCommon {
 	/**
 	 * Add a publish for a room type

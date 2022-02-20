@@ -77,6 +77,14 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	openRoom(_type: string, _name: string, _render = true): void {
 		// Nothing to do on the server side.
 	}
+
+	getTypesToShowOnDashboard(): Array<IRoomTypeConfig['identifier']> {
+		return Object.keys(this.roomTypes).filter((key) => (this.roomTypes[key].directives as IRoomTypeServerDirectives).includeInDashboard());
+	}
+
+	getRoomName(roomType: string, roomData: IRoom): string {
+		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
+	}
 }
 
 export const roomCoordinator = new RoomCoordinatorServer();

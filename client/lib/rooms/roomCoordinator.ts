@@ -1,8 +1,9 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type { IRoom } from '../../../definition/IRoom';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives } from '../../../definition/IRoomTypeConfig';
+import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
 import type { ValueOf } from '../../../definition/utils';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
@@ -41,7 +42,15 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getUserStatus(_roomId: string): string | undefined {
 				return undefined;
 			},
-
+			findRoom(_identifier: string): IRoom | undefined {
+				return undefined;
+			},
+			showJoinLink(_roomId: string): boolean {
+				return false;
+			},
+			isLivechatRoom(): boolean {
+				return false;
+			},
 			...directives,
 			config: roomConfig,
 		});
@@ -61,6 +70,34 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	getIcon(room: Partial<IRoom>): string | undefined {
 		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
+	}
+
+	openRouteLink(roomType: string, subData: RoomIdentification, queryParams?: Record<string, string>): void {
+		const config = this.getRoomTypeConfig(roomType);
+		if (!config?.route) {
+			return;
+		}
+
+		let routeData = {};
+		if (config.route.link) {
+			routeData = config.route.link(subData);
+		} else if (subData?.name) {
+			routeData = {
+				name: subData.name,
+			};
+		} else {
+			return;
+		}
+
+		FlowRouter.go(config.route.name, routeData, queryParams);
+	}
+
+	isLivechatRoom(roomType: string): boolean {
+		return Boolean(this.getRoomDirectives(roomType)?.isLivechatRoom());
+	}
+
+	getRoomName(roomType: string, roomData: Partial<IRoom>): string {
+		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
 	}
 }
 
