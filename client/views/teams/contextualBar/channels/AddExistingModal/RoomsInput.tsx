@@ -34,7 +34,7 @@ const useRoomsAutoComplete = (
 		}
 
 		return data.items.map((room: Serialized<IRoom>) => ({
-			label: roomCoordinator.getRoomName(room.t, room as unknown as IRoom),
+			label: roomCoordinator.getRoomName(room.t, { _id: room._id, name: room.name, fname: room.fname, prid: room.prid }),
 			value: room._id,
 		}));
 	}, [data]);

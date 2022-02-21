@@ -22,7 +22,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			allowMemberAction(_room: Partial<IRoom>, _action: ValueOf<typeof RoomMemberActions>): boolean {
 				return false;
 			},
-			roomName(_room: Partial<IRoom>): string {
+			roomName(_room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
 				return '';
 			},
 			isGroupChat(_room: Partial<IRoom>): boolean {
@@ -37,7 +37,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			condition(): boolean {
 				return true;
 			},
-			getAvatarPath(_room: Partial<IRoom> & { username?: IRoom['_id'] }): string {
+			getAvatarPath(_room): string {
 				return '';
 			},
 			getIcon(_room: Partial<IRoom>): string | undefined {
@@ -122,7 +122,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return Boolean(this.getRoomDirectives(roomType)?.isLivechatRoom());
 	}
 
-	getRoomName(roomType: string, roomData: Partial<IRoom>): string {
+	getRoomName(roomType: string, roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
 		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
 	}
 

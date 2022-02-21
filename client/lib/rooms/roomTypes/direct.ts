@@ -44,7 +44,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(roomData: Partial<IRoom>): string | undefined {
+	roomName(roomData): string | undefined {
 		const subscription = ((): { fname?: string; name?: string } | undefined => {
 			if (roomData.fname || roomData.name) {
 				return {
@@ -91,7 +91,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
-	getAvatarPath(room: Partial<IRoom> & { username?: IRoom['_id'] }): string {
+	getAvatarPath(room): string {
 		if (!room) {
 			return '';
 		}

@@ -42,7 +42,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	roomName(roomData: Partial<IRoom>): string | undefined {
+	roomName(roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string | undefined {
 		if (roomData.prid) {
 			return roomData.fname;
 		}
@@ -73,7 +73,7 @@ roomCoordinator.add(PrivateRoomType, {
 		return groupByType && hasPermission('view-p-room');
 	},
 
-	getAvatarPath(room: Partial<IRoom> & { username?: IRoom['_id'] }): string {
+	getAvatarPath(room): string {
 		return getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
 	},
 

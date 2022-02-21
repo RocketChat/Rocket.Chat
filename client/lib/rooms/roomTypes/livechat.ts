@@ -56,7 +56,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	},
 
-	getAvatarPath(room: Partial<IRoom> & { username?: IRoom['_id'] }): string {
+	getAvatarPath(room): string {
 		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 

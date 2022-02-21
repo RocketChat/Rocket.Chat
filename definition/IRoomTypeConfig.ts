@@ -70,12 +70,14 @@ export interface IRoomTypeClientDirectives {
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
-	roomName: (room: Partial<IRoom>) => string | undefined;
+	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
 	openCustomProfileTab: (instance: any, room: IRoom, username: string) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
-	getAvatarPath: (room: Partial<IRoom> & { username?: IRoom['_id'] }) => string;
+	getAvatarPath: (
+		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
+	) => string;
 	getIcon: (room: Partial<IRoom>) => string | undefined;
 	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
