@@ -9,6 +9,7 @@ import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';
 import { RoomManager } from '../../../../ui-utils/client/lib/RoomManager';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
@@ -59,7 +60,15 @@ Template.livechatReadOnly.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		await callWithErrorHandling('livechat:joinRoom', this.rid);
+		try {
+			const { success } = (await APIClient.v1.get(`livechat/room.join?roomId=${this.rid}`)) || {};
+			if (!success) {
+				throw new Meteor.Error('error-join-room', 'Error joining room');
+			}
+		} catch (error) {
+			handleError(error);
+			throw error;
+		}
 	},
 });
 
@@ -88,20 +97,24 @@ Template.livechatReadOnly.onCreated(async function () {
 		}
 	});
 
-	this.loadInquiry = async (roomId) => {
+	this.loadRoomAndInquiry = async (roomId) => {
 		this.preparing.set(true);
 		const { inquiry } = await APIClient.v1.get(`livechat/inquiries.getOne?roomId=${roomId}`);
 		this.inquiry.set(inquiry);
 		if (inquiry && inquiry._id) {
 			inquiryDataStream.on(inquiry._id, this.updateInquiry);
 		}
+
+		const { room } = await APIClient.v1.get(`rooms.info?roomId=${roomId}`);
+		this.room.set(room);
+		if (room && room._id) {
+			RoomManager.roomStream.on(roomId, (room) => this.room.set(room));
+		}
+
 		this.preparing.set(false);
 	};
 
-	this.autorun(() => this.loadInquiry(this.rid));
-	RoomManager.roomStream.on(this.rid, (room) => this.room.set(room));
-	const { room } = await APIClient.v1.get(`rooms.info?roomId=${this.rid}`);
-	this.room.set(room);
+	this.autorun(() => this.loadRoomAndInquiry(this.rid));
 });
 
 Template.livechatReadOnly.onDestroyed(function () {
@@ -111,5 +124,5 @@ Template.livechatReadOnly.onDestroyed(function () {
 	}
 
 	const { rid } = Template.currentData();
-	RoomManager.roomStream.removeListener(rid, this.updateRoom);
+	RoomManager.roomStream.removeListener(rid);
 });
