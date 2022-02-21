@@ -122,9 +122,6 @@ jobs:
           cd ./ee/server/services
           meteor npm run typecheck
 
-      - name: Build Storybook to sanity check components
-        run: npm run build-storybook ; rm -rf ./storybook-static
-
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
         run: |
