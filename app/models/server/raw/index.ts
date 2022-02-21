@@ -68,6 +68,7 @@ import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const trashCollection = trash.rawCollection();
 
@@ -154,7 +155,7 @@ const map = {
 	[Rooms.col.collectionName]: RoomsModel,
 };
 
-if (!process.env.DISABLE_DB_WATCH) {
+if (!isRunningMs()) {
 	const models = {
 		Messages,
 		Users,
