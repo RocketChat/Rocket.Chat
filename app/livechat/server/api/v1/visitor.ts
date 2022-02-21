@@ -8,6 +8,7 @@ import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { ILivechatVisitorDTO } from '../../../../../definition/ILivechatVisitor';
 import { IRoom } from '../../../../../definition/IRoom';
+import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {
@@ -104,7 +105,8 @@ API.v1.addRoute('livechat/visitor/:token', {
 			},
 		}).fetch();
 
-		if (rooms?.length) {
+		// if gdpr is enabled, bypass rooms check
+		if (rooms?.length && !settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 

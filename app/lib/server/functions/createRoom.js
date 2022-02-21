@@ -6,7 +6,7 @@ import s from 'underscore.string';
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization';
 import { callbacks } from '../../../../lib/callbacks';
-import { Rooms, Subscriptions, Users } from '../../../models';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 import { Team } from '../../../../server/sdk';
@@ -130,6 +130,11 @@ export const createRoom = function (type, name, owner, members = [], readOnly, {
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
+
+	if (room.teamId) {
+		const team = Promise.await(Team.getOneById(room.teamId));
+		Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
+	}
 
 	if (type === 'c') {
 		Meteor.defer(() => {
