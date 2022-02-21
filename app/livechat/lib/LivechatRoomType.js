@@ -100,20 +100,14 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid, user) {
+	readOnly(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
-		if (inquiry && inquiry.status === 'queued') {
-			return true;
-		}
-
 		const subscription = ChatSubscription.findOne({ rid });
-
-		return (!room.servedBy || room.servedBy._id !== user._id) && !subscription;
+		return !subscription;
 	}
 
 	getAvatarPath(roomData) {
