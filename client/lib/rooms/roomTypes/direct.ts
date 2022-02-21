@@ -104,9 +104,8 @@ roomCoordinator.add(DirectMessageRoomType, {
 		if (this.isGroupChat(room)) {
 			return getAvatarURL({
 				username: (room.uids || []).length + (room.usernames || []).join(),
-				roomId: undefined,
 				cache: room.avatarETag,
-			});
+			}) as string;
 		}
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
@@ -142,10 +141,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		const query = {
 			t: 'd',
-			$or: [
-				{ name: identifier },
-				{ rid: identifier},
-			]
+			$or: [{ name: identifier }, { rid: identifier }],
 		};
 
 		const subscription = Subscriptions.findOne(query);

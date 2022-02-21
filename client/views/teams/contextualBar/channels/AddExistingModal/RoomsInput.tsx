@@ -6,7 +6,7 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import { Serialized } from '../../../../../../definition/Serialized';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
 type RoomsInputProps = {
 	value: Serialized<IRoom>[];
@@ -34,7 +34,7 @@ const useRoomsAutoComplete = (
 		}
 
 		return data.items.map((room: Serialized<IRoom>) => ({
-			label: roomCoordinator.getRoomName(room.t, room),
+			label: roomCoordinator.getRoomName(room.t, room as unknown as IRoom),
 			value: room._id,
 		}));
 	}, [data]);

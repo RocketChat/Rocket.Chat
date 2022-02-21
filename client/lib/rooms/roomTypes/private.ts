@@ -74,7 +74,7 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	getAvatarPath(room: Partial<IRoom> & { username?: IRoom['_id'] }): string {
-		return getAvatarURL({ roomId: room._id, cache: room.avatarETag, username: undefined });
+		return getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
 	},
 
 	getIcon(room: Partial<IRoom>): string | undefined {
