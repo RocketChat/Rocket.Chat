@@ -4,6 +4,7 @@ import { PaginatedResult } from '../../../../../definition/rest/helpers/Paginate
 import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
 import { filterAppByCategories } from '../helpers/filterAppByCategories';
+import { filterAppByPurchaseType } from '../helpers/filterAppByPurchaseType';
 import { filterAppByText } from '../helpers/filterAppByText';
 import { App } from '../types';
 
@@ -14,8 +15,9 @@ export const useFilteredApps = ({
 	text,
 	sortDirection,
 	current,
-	categories = [],
 	itemsPerPage,
+	categories = [],
+	purchaseType,
 }: {
 	appsData: appsDataType;
 	text: string;
@@ -23,6 +25,7 @@ export const useFilteredApps = ({
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
+	purchaseType?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -33,6 +36,14 @@ export const useFilteredApps = ({
 
 		let filtered: App[] = apps;
 		let shouldShowSearchText = true;
+
+		if (purchaseType && purchaseType !== 'all') {
+			filtered = filterAppByPurchaseType(filtered, purchaseType);
+
+			if (!filtered.length) {
+				shouldShowSearchText = false;
+			}
+		}
 
 		if (Boolean(categories.length) && Boolean(text)) {
 			filtered = apps.filter((app) => filterAppByCategories(app, categories)).filter(({ name }) => filterAppByText(name, text));
@@ -59,7 +70,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
-	}, [categories, current, appsData, itemsPerPage, sortDirection, text]);
+	}, [appsData.value, purchaseType, categories, text, sortDirection, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
