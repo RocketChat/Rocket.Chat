@@ -1670,6 +1670,7 @@
   "Error_Site_URL_description": "Por favor, atualize sua configuração \"Site_Url\". Saiba mais <a target=\"_blank\" href=\"https://go.rocket.chat/i/invalid-site-url\">aqui</>",
   "error-action-not-allowed": "__action__ não é permitido",
   "error-agent-offline": "Agente está offline",
+  "error-agent-status-service-offline": "Status do agente está offline ou serviço Omnichannel não está ativado",
   "error-application-not-found": "Aplicação não encontrada",
   "error-archived-duplicate-name": "Já há um canal arquivado com o nome '__room_name__'",
   "error-avatar-invalid-url": "URL inválida de avatar: __url__",
@@ -1704,6 +1705,7 @@
   "error-import-file-missing": "O arquivo a ser importado não foi encontrado no caminho especificado.",
   "error-importer-not-defined": "O importador não foi definido corretamente;  está faltando a classe Import.",
   "error-input-is-not-a-valid-field": "__input__ não é válido um __field__",
+  "error-inquiry-taken": "Chat já está em atendimento",
   "error-invalid-account": "Conta inválida",
   "error-invalid-actionlink": "Link de ação inválido",
   "error-invalid-arguments": "Argumentos inválidos",
@@ -4891,6 +4893,5 @@
   "onboarding.form.registeredServerForm.agreeToReceiveUpdates": "Ao registrar, eu concordo em receber atualizações relevantes do produto e de segurança",
   "onboarding.form.standaloneServerForm.title": "Confirmação de Servidor Standalone",
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Alguns dos serviços estarão indisponíveis ou vão requerer configuração manual",
-  "onboarding.form.standaloneServerForm.publishOwnApp": "De modo a enviar notificações push você precisará compilar e publicar seu próprio aplicativo no Google Play e App Store",
-  "onboarding.form.standaloneServerForm.manuallyIntegrate": ""
+  "onboarding.form.standaloneServerForm.publishOwnApp": "De modo a enviar notificações push você precisará compilar e publicar seu próprio aplicativo no Google Play e App Store"
 }
