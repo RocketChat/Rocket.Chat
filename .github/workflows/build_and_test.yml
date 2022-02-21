@@ -324,7 +324,6 @@ jobs:
           MONGO_URL: mongodb://localhost:27017/rocketchat
           MONGO_OPLOG_URL: mongodb://localhost:27017/local
           ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
-          MOLECULER_LOG_LEVEL: info
           TRANSPORTER: nats://localhost:4222
           TEST_URL: http://localhost:4000
           SKIP_PROCESS_EVENT_REGISTRATION: 'true'

@@ -10,7 +10,7 @@ const {
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
 	SERIALIZER = 'EJSON',
-	MOLECULER_LOG_LEVEL = 'error',
+	MOLECULER_LOG_LEVEL = 'warn',
 	BALANCE_STRATEGY = 'RoundRobin',
 	BALANCE_PREFER_LOCAL = 'false',
 	RETRY_FACTOR = '2',
