@@ -135,7 +135,7 @@ const CallTable: FC = () => {
 		({ _id, fname, callStarted, queue, callDuration, v }) => (
 			<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{fname}</Table.Cell>
-				<Table.Cell withTruncatedText>{v?.phone?.[0].phoneNumber}</Table.Cell>
+				<Table.Cell withTruncatedText>{v?.phone}</Table.Cell>
 				<Table.Cell withTruncatedText>{queue}</Table.Cell>
 				<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 				<Table.Cell withTruncatedText>{callDuration}</Table.Cell>

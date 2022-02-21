@@ -194,7 +194,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 		_id?: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: IVisitorPhone[] | null;
+		phone?: string | null;
 	};
 }
 

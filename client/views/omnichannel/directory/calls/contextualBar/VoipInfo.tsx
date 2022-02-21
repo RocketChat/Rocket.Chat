@@ -46,7 +46,7 @@ export const VoipInfo = ({ room, onClickClose }: VoipInfoPropsType): ReactElemen
 					</Field>
 				)}
 				{fname && <InfoField label={t('Contact')} info={fname} />}
-				{v?.phone?.[0].phoneNumber && <InfoField label={t('Caller_Id')} info={v?.phone?.[0].phoneNumber} />}
+				{v?.phone && <InfoField label={t('Caller_Id')} info={v?.phone} />}
 				{queue && <InfoField label={t('Queue')} info={queue} />}
 				{callEndedAt && <InfoField label={t('Last_Call')} info={moment(callEndedAt).format('L LTS')} />}
 				{callWaitingTime && <InfoField label={t('Waiting_Time')} info={callWaitingTime.toString()} />}
