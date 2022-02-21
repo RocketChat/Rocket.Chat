@@ -47,7 +47,6 @@ export const Default = (): ReactElement => {
 				togglePause={togglePause}
 				tooltips={tooltips}
 				openRoom={() => null}
-				wrapUpCallEnabled={true}
 				openWrapUpCallModal={() => null}
 			/>
 		</Box>
