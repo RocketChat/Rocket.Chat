@@ -17,7 +17,6 @@ const CallsContextualBar: FC = () => {
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 	const token = useQueryStringParameter('token');
-	console.log('CallsContextualBar', token);
 
 	const t = useTranslation();
 

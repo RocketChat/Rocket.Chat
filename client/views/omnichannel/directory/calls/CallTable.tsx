@@ -66,7 +66,6 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 	});
 
 	const onRowClick = useMutableCallback((id, token) => {
-		console.log('onRowClick', id, token);
 		directoryRoute.push(
 			{
 				page: 'calls',

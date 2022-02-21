@@ -147,8 +147,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 			query.queue = queue;
 		}
 
-		console.log(query);
-
 		return this.find(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
