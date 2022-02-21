@@ -55,7 +55,7 @@ export interface IContactStatus extends IEventBase {
 	systemname: string;
 	uri: string;
 	contactstatus: ContactStatuses;
-	aor: string;
+	aor: string; // this is what we want to use
 	endpointname: string;
 	roundtripusec: string;
 }

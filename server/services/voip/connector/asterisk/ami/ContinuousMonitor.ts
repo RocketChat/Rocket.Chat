@@ -131,16 +131,31 @@ export class ContinuousMonitor extends Command {
 		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
-	async storePbxEvent(event: IQueueEvent, eventName: string): Promise<void> {
+	async storePbxEvent(event: IQueueEvent | IContactStatus, eventName: string): Promise<void> {
 		try {
+			const now = new Date();
 			// store pbx event
+			if (isIContactStatusEvent(event)) {
+				// This event represents when an agent drops a call because of disconnection
+				// May happen for any reason outside of our control, like closing the browswer
+				// Or network/power issues
+				await this.pbxEvents.insertOne({
+					event: eventName,
+					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
+					ts: now,
+					agentExtension: event.aor,
+				});
+
+				return;
+			}
+
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
 			await this.pbxEvents.insertOne({
 				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
 				event: eventName,
-				ts: new Date(),
+				ts: now,
 				phone: event.calleridnum,
 				queue: event.queue,
 				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
@@ -203,6 +218,7 @@ export class ContinuousMonitor extends Command {
 			// aor signifies address of record, which should be used for
 			// fetching the room for which serverBy = event.aor
 			this.logger.error(`Contact status Removed = ${event.contactstatus} aor = ${event.aor}`);
+			this.storePbxEvent(event, event.event);
 		}
 	}
 
