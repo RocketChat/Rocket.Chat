@@ -33,10 +33,6 @@ Template.livechatReadOnly.helpers({
 	isOnHold() {
 		return Template.currentData().onHold;
 	},
-	isSubscribed() {
-		const subscription = Template.instance().subscription.get();
-		return !!subscription;
-	},
 });
 
 Template.livechatReadOnly.events({
