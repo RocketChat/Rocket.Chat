@@ -28,7 +28,6 @@ import {
 	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { canAccessRoom } from '../authorization/canAccessRoom';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 import { ISubscription } from '../../../definition/ISubscription';
@@ -174,7 +173,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const { name, type, updateRoom = true } = updateData;
 
 		if (updateRoom && name) {
-			saveRoomName(team.roomId, name, user);
+			await saveRoomName(team.roomId, name, user);
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
@@ -360,7 +359,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		// validate access for every room first
 		for await (const room of validRooms) {
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
@@ -402,7 +401,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const user = await this.Users.findOneById(uid);
 		if (!canRemoveAnyRoom) {
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
@@ -465,7 +464,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const user = await this.Users.findOneById(uid);
 		if (!canUpdateAnyRoom) {
-			const canSeeRoom = await canAccessRoom(room, user);
+			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
