@@ -82,7 +82,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// Use latest queue caller join event
 		const callStartPbxEvent = await this.pbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0].phoneNumber,
+				phone: guest?.phone?.[0]?.phoneNumber,
 				event: 'QueueCallerJoin',
 			},
 			{ sort: { ts: -1 } },
@@ -107,6 +107,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				phone: guest?.phone?.[0]?.phoneNumber,
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -410,7 +411,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			groupable: false as const,
 			voipData: {
 				callDuration: Number(room.callDuration) || 0,
-				callStarted: room.callStarted.toISOString(),
+				callStarted: room.callStarted?.toISOString() || new Date().toISOString(),
 			},
 		};
 
