@@ -16,14 +16,10 @@ function Open(_command: 'open', params: string, _item: Record<string, string>): 
 	room = room.replace(/#|@/, '');
 	const query = {
 		name: room,
-		t: {},
-	};
-
-	if (type) {
-		query.t = {
+		t: {
 			$in: type,
-		};
-	}
+		},
+	};
 
 	const subscription = ChatSubscription.findOne(query);
 
