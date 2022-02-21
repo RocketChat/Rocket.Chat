@@ -98,7 +98,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
 	}
 
-	openRouteLink(roomType: string, subData: RoomIdentification, queryParams?: Record<string, string>): void {
+	openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;

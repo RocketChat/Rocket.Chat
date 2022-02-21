@@ -3,6 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../../app/models/client';
 import { IRoom } from '../../../definition/IRoom';
+import { ISubscription } from '../../../definition/ISubscription';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 import { callWithErrorHandling } from './callWithErrorHandling';
 
@@ -13,7 +14,7 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 		return;
 	}
 
-	const subscription = ChatSubscription.findOne({ rid });
+	const subscription: ISubscription | undefined = ChatSubscription.findOne({ rid });
 
 	if (subscription) {
 		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
