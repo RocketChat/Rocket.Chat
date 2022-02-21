@@ -16,6 +16,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { OtrRoomState } from './OtrRoomState';
+
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;

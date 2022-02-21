@@ -1,13 +1,13 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useCallback } from 'react';
 
+import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import OTR from './OTR';
 import OTRModal from './OTRModal';
-import { OtrRoomState } from '/app/otr/client/OtrRoomState';
 
 const OTRWithData = ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
