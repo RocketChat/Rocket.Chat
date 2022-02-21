@@ -1,4 +1,4 @@
-import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput, SelectOptions } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput, SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ComponentProps, FC, FormEvent, useMemo, useState } from 'react';
 
@@ -55,7 +55,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		params: { sender: actionSender, msg: actionMsg, name: actionAgentName },
 	} = actions;
 
-	const conditionOptions: SelectOptions = useMemo(
+	const conditionOptions: SelectOption[] = useMemo(
 		() => [
 			['page-url', t('Visitor_page_URL')],
 			['time-on-site', t('Visitor_time_on_site')],
@@ -74,7 +74,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 
 	const conditionValuePlaceholder = conditionValuePlaceholders[conditionName];
 
-	const senderOptions: SelectOptions = useMemo(
+	const senderOptions: SelectOption[] = useMemo(
 		() => [
 			['queue', t('Impersonate_next_agent_from_queue')],
 			['custom', t('Custom_agent')],
