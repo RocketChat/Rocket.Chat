@@ -14,7 +14,7 @@ import {
 	Icon,
 } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -34,9 +34,11 @@ import AppRow from './AppRow';
 import { useAppsReload, useAppsResult } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import CategoryDropDown from './components/CategoryDropDown';
+import FreePaidDropDown from './components/FreePaidDropDown';
 import TagList from './components/TagList';
 import { useCategories } from './hooks/useCategories';
 import { useFilteredApps } from './hooks/useFilteredApps';
+import { useFreePaidToggle } from './hooks/useFreePaidToggle';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -65,6 +67,17 @@ const AppsTable: FC<{
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 
+	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
+		label: t('Filter_By_Price'),
+		items: [
+			{ id: 'all', label: t('All_Apps'), checked: true },
+			{ id: 'free', label: t('Free_Apps'), checked: false },
+			{ id: 'paid', label: t('Paid_Apps'), checked: false },
+		],
+	});
+
+	const freePaidFilterOnSelected = useFreePaidToggle(setFreePaidFilterStructure);
+
 	const appsResult = useFilteredApps({
 		appsData: isMarketplace ? marketplaceApps : installedApps,
 		text,
@@ -72,12 +85,15 @@ const AppsTable: FC<{
 		itemsPerPage,
 		sortDirection,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
+		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
 	});
 
 	return (
 		<>
+			{/* TODO Divide into two components: Filters and AppsTable */}
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
-				<CategoryDropDown data={categories} onSelected={onSelected} />
+				<FreePaidDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
+				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 			{(appsResult.phase === AsyncStatePhase.LOADING ||
@@ -181,7 +197,6 @@ const AppsTable: FC<{
 					</States>
 				</Box>
 			)}
-			{/* TODO: Create error variations for empty search message */}
 			{appsResult.phase === AsyncStatePhase.REJECTED && (
 				<Box mbs='x20'>
 					<States>

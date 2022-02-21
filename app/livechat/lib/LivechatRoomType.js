@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { ChatRoom } from '../../models';
+import { ChatRoom, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
@@ -106,12 +106,8 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
-		if (inquiry && inquiry.status === 'queued') {
-			return true;
-		}
-
-		return !room.servedBy;
+		const subscription = ChatSubscription.findOne({ rid });
+		return !subscription;
 	}
 
 	getAvatarPath(roomData) {
