@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { ChatRoom } from '../../models';
+import { ChatRoom, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
@@ -100,7 +100,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid) {
+	readOnly(rid, user) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
@@ -111,7 +111,9 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		return !room.servedBy;
+		const subscription = ChatSubscription.findOne({ rid });
+
+		return (!room.servedBy || room.servedBy._id !== user._id) && !subscription;
 	}
 
 	getAvatarPath(roomData) {
