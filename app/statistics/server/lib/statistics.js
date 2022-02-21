@@ -25,6 +25,7 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { engagementMetrics } from '../functions/getEngagementStats';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -100,6 +101,16 @@ export const statistics = {
 
 		// Teams statistics
 		statistics.teams = await Team.getStatistics();
+
+		statistics.totalTeams = statistics.teams.totalTeams;
+
+		statistics.totalChannelInTeams = _.reduce(
+			statistics.teams.teamStats,
+			function (num, team) {
+				return num + team.totalRooms;
+			},
+			0,
+		);
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -259,6 +270,9 @@ export const statistics = {
 
 		statistics.enterprise = getEnterpriseStatistics();
 		await Analytics.resetSeatRequestCount();
+
+		const engagement = await engagementMetrics.get();
+		console.log(engagement);
 
 		return statistics;
 	},

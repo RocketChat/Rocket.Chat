@@ -33,6 +33,7 @@ Meteor.methods({
 			});
 		}
 
+		console.log(emails);
 		const subject = settings.get('Invitation_Subject');
 
 		return validEmails.filter((email) => {
