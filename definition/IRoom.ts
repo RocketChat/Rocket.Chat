@@ -1,7 +1,6 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
-import { IVisitorPhone } from './ILivechatVisitor';
 
 export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
@@ -115,7 +114,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id?: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: string;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
