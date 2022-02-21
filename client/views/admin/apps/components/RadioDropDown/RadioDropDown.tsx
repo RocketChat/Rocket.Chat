@@ -1,14 +1,15 @@
+import { Select } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useCallback, useRef } from 'react';
+import React, { ComponentProps, FC, useCallback, useRef } from 'react';
 
 import { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
-import { onMouseEventPreventSideEffects } from '../../helpers/preventSideEffects';
+import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';
 import RadioButtonList from '../RadioButtonList';
-import FreePaidDropDownAnchor from './FreePaidDropDownAnchor';
+import RadioDropDownAnchor from './RadioDownAnchor';
 
-const FreePaidDropDown: FC<RadioDropDownProps> = ({ group, onSelected, ...props }) => {
+const RadioDropDown: FC<RadioDropDownProps & Partial<ComponentProps<typeof Select>>> = ({ group, onSelected, ...props }) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -19,7 +20,6 @@ const FreePaidDropDown: FC<RadioDropDownProps> = ({ group, onSelected, ...props 
 				return;
 			}
 
-			// TODO Create index file for helpers
 			onMouseEventPreventSideEffects(e);
 
 			return false;
@@ -29,7 +29,7 @@ const FreePaidDropDown: FC<RadioDropDownProps> = ({ group, onSelected, ...props 
 
 	return (
 		<>
-			<FreePaidDropDownAnchor ref={reference} onClick={toggleCollapsed as any} group={group} {...props} />
+			<RadioDropDownAnchor ref={reference} onClick={toggleCollapsed as any} group={group} {...props} />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<RadioButtonList group={group} onSelected={onSelected} />
@@ -39,4 +39,4 @@ const FreePaidDropDown: FC<RadioDropDownProps> = ({ group, onSelected, ...props 
 	);
 };
 
-export default FreePaidDropDown;
+export default RadioDropDown;
