@@ -5,6 +5,7 @@ import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
 import { TEAM_TYPE, ITeam } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
+import { RoomType } from './../../../definition/IRoom';
 
 async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -15,6 +16,15 @@ async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
+
+const roomTypePermission = async (roomType: RoomType, uid: string): Promise<boolean> => {
+	if (roomType === 'c') return await Authorization.hasPermission(uid, 'view-c-room');
+	if (roomType === 'p') return await Authorization.hasPermission(uid, 'view-p-room');
+	if (roomType === 'd') return await Authorization.hasPermission(uid, 'view-d-room');
+	if (roomType === 'l') return await Authorization.hasPermission(uid, 'view-l-room');
+
+	return false;
+};
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
@@ -52,10 +62,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
-		const roomTypes = ['c', 'p', 'd', 'l'];
-		const isRoomType = roomTypes.includes(room.t);
-		const viewRoom = `view-${room.t}-room`;
-		const hasViewPermission = await Authorization.hasPermission(user._id, viewRoom);
+		const hasViewPermission = await roomTypePermission(room.t, user._id);
 
 		const hasSubscriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
 
@@ -63,7 +70,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return false;
 		}
 
-		if (isRoomType && !hasViewPermission) {
+		if (!hasViewPermission) {
 			return false;
 		}
 
