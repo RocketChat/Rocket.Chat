@@ -1,4 +1,8 @@
-export const getDefaultUserFields = () => ({
+type DefaultUserFields = {
+	[k: string]: number;
+};
+
+export const getDefaultUserFields = (): DefaultUserFields => ({
 	'name': 1,
 	'username': 1,
 	'nickname': 1,

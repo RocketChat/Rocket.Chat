@@ -1,6 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from '../index';
@@ -8,6 +9,7 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
+import { chatMessages } from '../views/app/room';
 
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
 	const data = new FormData();
@@ -118,6 +120,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 		tmid = replies[0]._id;
 	}
 
+	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+	const messageBoxText = Meteor._localStorage.getItem(key) || '';
+
 	const uploadNextFile = () => {
 		const file = files.pop();
 		if (!file) {
@@ -129,6 +134,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			props: {
 				file: file.file,
 				fileName: file.name,
+				fileDescription: messageBoxText,
 				onClose: () => {
 					imperativeModal.close();
 					uploadNextFile();
@@ -140,6 +146,12 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 						msg: msg || undefined,
 						file,
 					});
+					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
+					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
+					const { input } = chatMessages[chatMessageKey];
+					input.value = null;
+					$(input).trigger('input');
+					Meteor._localStorage.removeItem(localStorageKey);
 					imperativeModal.close();
 					uploadNextFile();
 				},

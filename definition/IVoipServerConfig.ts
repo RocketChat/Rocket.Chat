@@ -3,12 +3,20 @@ export enum ServerType {
 	CALL_SERVER = 'call-server',
 }
 
-export interface IVoipServerConfig {
+export interface IVoipServerConfigBase {
 	type: ServerType;
 	host: string;
 	name: string;
-	configData: IManagementConfigData | ICallServerConfigData;
-	active: boolean;
+}
+
+export interface IVoipCallServerConfig extends IVoipServerConfigBase {
+	type: ServerType.CALL_SERVER;
+	configData: ICallServerConfigData;
+}
+
+export interface IVoipManagementServerConfig extends IVoipServerConfigBase {
+	type: ServerType.MANAGEMENT;
+	configData: IManagementConfigData;
 }
 
 export interface IManagementConfigData {

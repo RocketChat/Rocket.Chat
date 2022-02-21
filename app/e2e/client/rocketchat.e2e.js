@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -18,6 +17,7 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
+	generateMnemonicPhrase,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
@@ -136,7 +136,7 @@ class E2E extends Emitter {
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('e2e.setUserPublicAndPrivateKeys', {
 				public_key: Meteor._localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), this.createRandomPassword()),
+				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), await this.createRandomPassword()),
 			});
 		}
 
@@ -256,8 +256,8 @@ class E2E extends Emitter {
 		call('e2e.requestSubscriptionKeys');
 	}
 
-	createRandomPassword() {
-		const randomPassword = `${Random.id(3)}-${Random.id(3)}-${Random.id(3)}`.toLowerCase();
+	async createRandomPassword() {
+		const randomPassword = await generateMnemonicPhrase(5);
 		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}

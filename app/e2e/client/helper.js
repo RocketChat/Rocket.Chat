@@ -2,6 +2,8 @@
 
 import ByteBuffer from 'bytebuffer';
 
+import { getRandomFraction } from '../../../lib/random';
+
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
 export function toString(thing) {
@@ -120,6 +122,20 @@ export async function readFileAsArrayBuffer(file) {
 		};
 		reader.readAsArrayBuffer(file);
 	});
+}
+
+export async function generateMnemonicPhrase(n, sep = ' ') {
+	const { default: wordList } = await import('./wordList');
+	const result = new Array(n);
+	let len = wordList.length;
+	const taken = new Array(len);
+
+	while (n--) {
+		const x = Math.floor(getRandomFraction() * len);
+		result[n] = wordList[x in taken ? taken[x] : x];
+		taken[x] = --len in taken ? taken[len] : len;
+	}
+	return result.join(sep);
 }
 
 export class Deferred {

@@ -16,6 +16,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRole } from '../../../definition/IRole';
 import type { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
+import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -74,6 +75,22 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		this.onEvent('watch.roles', clearCache);
 		this.onEvent('permission.changed', clearCache);
+		this.onEvent('authorization.guestPermissions', (permissions: string[]) => {
+			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+		});
+	}
+
+	async started(): Promise<void> {
+		if (!(await License.isEnterprise())) {
+			return;
+		}
+
+		const permissions = await License.getGuestPermissions();
+		if (!permissions) {
+			return;
+		}
+
+		AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
 	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
@@ -117,10 +134,6 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 
 		return this.canAccessRoom(room, { _id: uid });
-	}
-
-	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {
-		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
 	async getUsersFromPublicRoles(): Promise<Pick<IUser, '_id' | 'username' | 'roles'>[]> {
@@ -183,8 +196,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
-		for (const permission of permissions) {
-			if (await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
+		for await (const permission of permissions) {
+			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
 			}
 		}
@@ -194,8 +207,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
-		for (const permission of permissions) {
-			if (!await this.rolesHasPermissionCached(permission, sortedRoles)) { // eslint-disable-line
+		for await (const permission of permissions) {
+			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;
 			}
 		}

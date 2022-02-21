@@ -1,4 +1,4 @@
 import { BaseRaw } from './BaseRaw';
-import { IVoipServerConfig } from '../../../../definition/IVoipServerConfig';
+import { IVoipServerConfigBase } from '../../../../definition/IVoipServerConfig';
 
-export class VoipServerConfigurationRaw extends BaseRaw<IVoipServerConfig> {}
+export class VoipServerConfigurationRaw extends BaseRaw<IVoipServerConfigBase> {}

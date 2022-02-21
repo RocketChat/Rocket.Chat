@@ -1,4 +1,4 @@
-import { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult } from 'mongodb';
+import { FilterQuery, WithoutProjection, FindOneOptions, WriteOpResult, Cursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { IVoipRoom, IRoomClosingInfo } from '../../../../definition/IRoom';
@@ -14,6 +14,14 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 			'v.token': visitorToken,
 		};
 		return this.findOne(query, options);
+	}
+
+	findOpenByAgentId(agentId: string): Cursor<IVoipRoom> {
+		return this.find({
+			't': 'v',
+			'open': true,
+			'servedBy._id': agentId,
+		});
 	}
 
 	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
@@ -82,5 +90,75 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 				},
 			},
 		);
+	}
+
+	findRoomsWithCriteria({
+		agents,
+		open,
+		createdAt,
+		closedAt,
+		tags,
+		queue,
+		visitorId,
+		options = {},
+	}: {
+		agents?: string[];
+		open?: boolean;
+		createdAt?: { start?: string; end?: string };
+		closedAt?: { start?: string; end?: string };
+		tags?: string[];
+		queue?: string;
+		visitorId?: string;
+		options?: {
+			sort?: Record<string, unknown>;
+			count?: number;
+			fields?: Record<string, unknown>;
+			offset?: number;
+		};
+	}): Cursor<IVoipRoom> {
+		const query: FilterQuery<IVoipRoom> = {
+			t: 'v',
+		};
+
+		if (agents) {
+			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+		}
+		if (open !== undefined) {
+			query.open = { $exists: open };
+			query.onHold = { $ne: true };
+		}
+		if (visitorId && visitorId !== 'undefined') {
+			query['v._id'] = visitorId;
+		}
+		if (createdAt && Object.keys(createdAt).length) {
+			query.ts = {};
+			if (createdAt.start) {
+				query.ts.$gte = new Date(createdAt.start);
+			}
+			if (createdAt.end) {
+				query.ts.$lte = new Date(createdAt.end);
+			}
+		}
+		if (closedAt && Object.keys(closedAt).length) {
+			query.closedAt = {};
+			if (closedAt.start) {
+				query.closedAt.$gte = new Date(closedAt.start);
+			}
+			if (closedAt.end) {
+				query.closedAt.$lte = new Date(closedAt.end);
+			}
+		}
+		if (tags) {
+			query.tags = { $in: tags };
+		}
+		if (queue) {
+			query.queue = queue;
+		}
+
+		return this.find(query, {
+			sort: options.sort || { name: 1 },
+			skip: options.offset,
+			limit: options.count,
+		});
 	}
 }

@@ -1,23 +1,26 @@
 import { Db } from 'mongodb';
+import mem from 'mem';
 
 import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { VoipServerConfigurationRaw } from '../../../app/models/server/raw/VoipServerConfiguration';
-import { ServerType, IVoipServerConfig, isICallServerConfigData } from '../../../definition/IVoipServerConfig';
+import {
+	ServerType,
+	isICallServerConfigData,
+	IVoipServerConfigBase,
+	IVoipCallServerConfig,
+	IVoipManagementServerConfig,
+} from '../../../definition/IVoipServerConfig';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
-import { IUser } from '../../../definition/IUser';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { isOmnichannelVoipRoom, IVoipRoom } from '../../../definition/IRoom';
-import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
-import { settings } from '../../../app/settings/server';
+import { getServerConfigDataFromSettings } from './lib/Helper';
 
-export class VoipService extends ServiceClass implements IVoipService {
+export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
 
 	private logger: Logger;
@@ -35,7 +38,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 		// TODO: If we decide to move away from this approach after the MVP, don't forget do do a migration to remove the collection!
 		this.VoipServerConfiguration = new VoipServerConfigurationRaw(db.collection('rocketchat_voip_server_configuration'));
 
-		this.commandHandler = new CommandHandler(this);
+		this.commandHandler = new CommandHandler(db);
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 		} catch (error) {
@@ -48,10 +51,13 @@ export class VoipService extends ServiceClass implements IVoipService {
 		await this.commandHandler.initConnection(CommandType.AMI);
 	}
 
-	async addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+	/**
+	 * @deprecated The method should not be used
+	 */
+	async addServerConfigData(config: Omit<IVoipServerConfigBase, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
 
-		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
+		await this.deactivateServerConfigDataIfAvailable(type);
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
@@ -66,10 +72,13 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return returnValue;
 	}
 
-	async updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+	/**
+	 * @deprecated The method should not be used
+	 */
+	async updateServerConfigData(config: Omit<IVoipServerConfigBase, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
 
-		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
+		await this.deactivateServerConfigDataIfAvailable(type);
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
@@ -83,86 +92,91 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 	// in-future, if we want to keep a track of duration during which a server config was active, then we'd need to modify the
 	// IVoipServerConfig interface and add columns like "valid_from_ts" and "valid_to_ts"
+	/**
+	 * @deprecated The method should not be used
+	 */
 	async deactivateServerConfigDataIfAvailable(type: ServerType): Promise<boolean> {
 		await this.VoipServerConfiguration.updateMany({ type, active: true }, { $set: { active: false } });
 		return true;
 	}
 
-	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
-		// TODO: Decide the approach we will take regarding settings after the MVP,
-		// For now this work around should be enough.
-
-		// const config = this.VoipServerConfiguration.findOne({ type, active: true });
-
-		const management = type === ServerType.MANAGEMENT;
-		return {
-			type,
-			host: settings.get(management ? 'VoIP_Management_Server_Host' : 'VoIP_Server_Host'),
-			name: settings.get(management ? 'VoIP_Management_Server_Name' : 'VoIP_Server_Name'),
-			active: true,
-			...(management
-				? {
-						configData: {
-							port: parseInt(settings.get('VoIP_Management_Server_Port')),
-							username: settings.get('VoIP_Management_Server_Username'),
-							password: settings.get('VoIP_Management_Server_Password'),
-						},
-				  }
-				: {
-						configData: {
-							websocketPort: parseInt(settings.get('VoIP_Server_Websocket_Port')),
-							websocketPath: settings.get('VoIP_Server_Websocket_Path'),
-						},
-				  }),
-		};
+	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
+		return getServerConfigDataFromSettings(type);
 	}
 
-	getConnector(): Promise<CommandHandler> {
-		return Promise.resolve(this.commandHandler);
+	getConnector(): CommandHandler {
+		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}
 
-	async getQueuedCallsForThisExtension(requestParams: { extension: string }): Promise<IVoipConnectorResult> {
+	private cachedQueueSummary(): () => Promise<IVoipConnectorResult> {
+		// arbitrary 5 secs cache to prevent fetching this from asterisk too often
+		return mem(this.getQueueSummary.bind(this), { maxAge: 5000 });
+	}
+
+	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]> {
+		return mem(this.getQueueDetails.bind(this), { maxAge: 5000 });
+	}
+
+	private async getQueueDetails(): Promise<{ name: string; members: string[] }[]> {
+		const summary = await this.cachedQueueSummary()();
+		const queues = (summary.result as unknown as IQueueSummary[]).map((q) => q.name);
+
+		const queueInfo: { name: string; members: string[] }[] = [];
+		for await (const queue of queues) {
+			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+				queue,
+			})) as IVoipConnectorResult;
+
+			queueInfo.push({
+				name: queue,
+				members: (queueDetails.result as IQueueDetails).members.map((member) => member.name.replace('PJSIP/', '')),
+			});
+		}
+
+		return queueInfo;
+	}
+
+	async getQueuedCallsForThisExtension({ extension }: { extension: string }): Promise<IVoipConnectorResult> {
 		const membershipDetails: IQueueMembershipDetails = {
 			queueCount: 0,
 			callWaitingCount: 0,
-			extension: '',
+			extension,
 		};
-		membershipDetails.extension = requestParams.extension;
-		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
-		for (const queue of queueSummary.result as IQueueSummary[]) {
-			const queueDetails = Promise.await(
-				this.commandHandler.executeCommand(Commands.queue_details, { queueName: queue.name }),
-			) as IVoipConnectorResult;
-			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetails });
-			if (!(queueDetails.result as unknown as IQueueDetails).members) {
+		const queueSummary = (await this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+
+		for await (const queue of queueSummary.result as IQueueSummary[]) {
+			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+				queueName: queue.name,
+			})) as IVoipConnectorResult;
+
+			const details = queueDetails.result as IQueueDetails;
+
+			if (!details.members.length) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
 			}
-			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some((element) =>
-				element.name.endsWith(requestParams.extension),
-			);
+
+			const isAMember = details.members.some((element) => element.name.endsWith(extension));
 			if (!isAMember) {
 				// Current extension is not a member of queue in question.
 				// continue with next queue.
 				continue;
 			}
-			membershipDetails.callWaitingCount += Number((queueDetails.result as unknown as IQueueDetails).calls);
+
+			membershipDetails.callWaitingCount += Number(details.calls);
 			membershipDetails.queueCount++;
 		}
-		const result: IVoipConnectorResult = {
-			result: membershipDetails,
-		};
-		return Promise.resolve(result);
+
+		return { result: membershipDetails };
 	}
 
-	async getConnectorVersion(): Promise<string> {
-		const version = this.commandHandler.getVersion();
-		return Promise.resolve(version);
+	getConnectorVersion(): string {
+		return this.commandHandler.getVersion();
 	}
 
 	async getExtensionList(): Promise<IVoipConnectorResult> {
@@ -174,14 +188,14 @@ export class VoipService extends ServiceClass implements IVoipService {
 	}
 
 	async getRegistrationInfo(requestParams: { extension: string }): Promise<{ result: IRegistrationInfo }> {
-		const config = await this.getServerConfigData(ServerType.CALL_SERVER);
-
+		const config = this.getServerConfigData(ServerType.CALL_SERVER);
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			throw new Error('Not found');
 		}
 
 		const endpointDetails = await this.commandHandler.executeCommand(Commands.extension_info, requestParams);
+
 		if (!isIExtensionDetails(endpointDetails.result)) {
 			// TODO The result and the assertion doenst match amol please check
 			throw new Error('getRegistrationInfo Invalid endpointDetails response');
@@ -190,37 +204,14 @@ export class VoipService extends ServiceClass implements IVoipService {
 			throw new Error('getRegistrationInfo Invalid configData response');
 		}
 
-		const callServerConfig = config.configData;
-
-		const extensionDetails = endpointDetails.result;
-
-		const extensionRegistrationInfo: IRegistrationInfo = {
+		const result = {
 			host: config.host,
-			callServerConfig,
-			extensionDetails,
+			callServerConfig: config.configData,
+			extensionDetails: endpointDetails.result,
 		};
+
 		return {
-			result: extensionRegistrationInfo,
+			result,
 		};
-	}
-
-	async handleEvent(event: VoipClientEvents, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
-		const message = {
-			t: event,
-			msg: comment,
-			groupable: false,
-			voipData: {
-				callDuration: room.callDuration,
-				callStarted: room.callStarted,
-			},
-		};
-
-		// In the future, we need to check if the room to which we're sending events is on an active call
-		// to prevent sending messages to rooms after call has ended/call never happened
-		if (isOmnichannelVoipRoom(room) && room.open) {
-			await sendMessage(user, message, room);
-		} else {
-			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
-		}
 	}
 }

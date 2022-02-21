@@ -1,40 +1,18 @@
-import { Random } from 'meteor/random';
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
-import { useCallActions, useCallerInfo } from '../../../contexts/CallContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
+import { useCallActions, useCallerInfo, useCallOpenRoom } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
-	const user = useUser();
+
+	const openRoom = useCallOpenRoom();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
-
-	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
-	const voipEndpoint = useEndpoint('GET', 'voip/room');
-
-	const openRoom = useCallback(async () => {
-		if (user) {
-			if ('caller' in callerInfo) {
-				const { visitor } = await visitorEndpoint({
-					visitor: {
-						token: Random.id(),
-						phone: callerInfo?.caller.callerId,
-						name: callerInfo.caller.callerName || callerInfo.caller.callerId,
-					},
-				});
-				const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-				voipRoom.room && roomTypes.openRouteLink(voipRoom.room.t, voipRoom.room);
-			}
-		}
-	}, [callerInfo, user, visitorEndpoint, voipEndpoint]);
 
 	const toggleMic = useCallback(
 		(state: boolean) => {
@@ -79,7 +57,7 @@ export const VoipFooter = (): ReactElement | null => {
 
 	return (
 		<VoipFooterComponent
-			callerName={callerInfo.caller.callerName}
+			caller={callerInfo.caller}
 			callerState={callerInfo.state}
 			callActions={callActions}
 			title={t('Phone_call')}
