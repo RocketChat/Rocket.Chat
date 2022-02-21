@@ -540,8 +540,8 @@ API.v1.addRoute(
 					{
 						rid,
 						format,
-						...(dateFrom && { dateFrom }),
-						...(dateTo && { dateTo }),
+						dateFrom,
+						dateTo,
 					},
 					user,
 				);
