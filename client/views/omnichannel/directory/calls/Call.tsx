@@ -7,8 +7,6 @@ import RoomWithData from '../../../room/Room';
 
 const Chat: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	useEffect(() => {
-		// NewRoomManager.open(rid);
-		// RoomManager.open(`l${rid}`);
 		openRoom('l', rid, false);
 	}, [rid]);
 
