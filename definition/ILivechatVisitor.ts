@@ -51,3 +51,5 @@ export interface ILivechatVisitorDTO {
 		httpHeaders: Record<string, string>;
 	};
 }
+
+export const isILivechatVisitor = (a: any): a is ILivechatVisitor => typeof a?.token === 'string';

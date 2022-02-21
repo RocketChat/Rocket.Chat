@@ -16,6 +16,7 @@ import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartme
 import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { ISocketConnection } from '../../../definition/ISocketConnection';
+import { IPbxEvent } from '../../../definition/IPbxEvent';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
@@ -91,4 +92,5 @@ export type EventSignatures = {
 	'queue.queuememberadded'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.queuememberremoved'(userid: string, queuename: string, queuedcalls: string): void;
 	'queue.callabandoned'(userid: string, queuename: string, queuedcallafterabandon: string): void;
+	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 };
