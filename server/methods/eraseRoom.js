@@ -3,9 +3,10 @@ import { check } from 'meteor/check';
 
 import { deleteRoom } from '../../app/lib';
 import { hasPermission } from '../../app/authorization';
-import { Rooms } from '../../app/models';
+import { Rooms, Messages } from '../../app/models';
 import { Apps } from '../../app/apps/server';
 import { roomTypes } from '../../app/utils';
+import { Team } from '../sdk';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -39,6 +40,12 @@ Meteor.methods({
 		}
 
 		const result = deleteRoom(rid);
+
+		if (room.teamId) {
+			const team = Promise.await(Team.getOneById(room.teamId));
+			const user = Meteor.user();
+			Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		}
 
 		if (Apps && Apps.isLoaded()) {
 			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
