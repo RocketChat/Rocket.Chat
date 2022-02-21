@@ -10,7 +10,7 @@ import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/I
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
-import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
+import { ILivechatVisitor, isILivechatVisitor } from '../../../definition/ILivechatVisitor';
 import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isOmnichannelVoipRoom } from '../../../definition/IRoom';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -18,6 +18,7 @@ import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { IVoipMessage } from '../../../definition/IMessage';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
+import { ILivechatAgent } from '../../../definition/ILivechatAgent';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -36,6 +37,34 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		this.voipRoom = new VoipRoomsRaw(db.collection('rocketchat_room'));
 		this.logger = new Logger('OmnichannelVoipService');
 		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
+
+		// handle agent disconnections
+		this.onEvent('watch.pbxevents', async ({ data }) => {
+			const extension = data.agentExtension;
+			if (!extension) {
+				return;
+			}
+			await this.processAgentDisconnect(extension);
+		});
+	}
+
+	private async processAgentDisconnect(extension: string): Promise<void> {
+		this.logger.info(`Processing disconnection event for agent with extension ${extension}`);
+		const agent = await this.users.findOneByExtension(extension);
+		if (!agent) {
+			// this should not even be possible, but just in case
+			return;
+		}
+
+		const openRooms = await this.voipRoom.findOpenByAgentId(agent._id).toArray();
+		this.logger.info(`Closing ${openRooms.length} for agent with extension ${extension}`);
+		// In the best scenario, an agent would only have one active voip room
+		// this is to handle the "just in case" scenario of a server and agent failure multiple times
+		// and multiple rooms are left opened for one single agent. Best case this will iterate once
+		for await (const room of openRooms) {
+			await this.handleEvent(VoipClientEvents['VOIP-CALL-ENDED'], room, agent, 'Agent disconnected abruptly');
+			await this.closeRoom(agent, room, agent, 'Agent disconnected abruptly', undefined, 'voip-call-ended-unexpectedly');
+		}
 	}
 
 	private async createVoipRoom(
@@ -240,7 +269,14 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	}
 
 	// Comment can be used to store wrapup call data
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom, user: IUser, comment?: string, tags?: string[]): Promise<boolean> {
+	async closeRoom(
+		closerParam: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		user: IUser,
+		comment?: string,
+		tags?: string[],
+		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly' = 'voip-call-wrapup',
+	): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -248,7 +284,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		const now = new Date();
 		const { _id: rid } = room;
-		const closer = visitor ? 'visitor' : 'user';
+		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
 		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
@@ -258,16 +294,14 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			tags,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
-		if (visitor) {
-			this.logger.debug(`Closing by visitor ${visitor._id}`);
-			closeData.closedBy = {
-				_id: visitor._id,
-				username: visitor.username,
-			};
-		}
+		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
+		closeData.closedBy = {
+			_id: closerParam._id,
+			username: closerParam.username,
+		};
 
 		const message = {
-			t: 'voip-call-wrapup',
+			t: sysMessageId,
 			msg: comment,
 			groupable: false,
 		};
