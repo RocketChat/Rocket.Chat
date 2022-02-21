@@ -12,7 +12,7 @@ import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTi
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t, roomTypes } from '../../utils';
+import { t } from '../../utils';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
@@ -374,7 +374,7 @@ Template.message.helpers({
 			return true;
 		}
 
-		if (roomTypes.readOnly(room._id, u._id) && !room.reactWhenReadOnly) {
+		if (roomCoordinator.readOnly(room._id, u) && !room.reactWhenReadOnly) {
 			return true;
 		}
 	},

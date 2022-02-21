@@ -61,6 +61,8 @@ export interface IRoomTypeConfig {
 	header?: string;
 	label?: string;
 	route?: IRoomTypeRouteConfig;
+	customTemplate?: string;
+	readOnlyTpl?: string;
 }
 
 export interface IRoomTypeClientDirectives {
@@ -79,6 +81,8 @@ export interface IRoomTypeClientDirectives {
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
+	canSendMessage: (rid: string) => boolean;
+	readOnly?: (rid: string, user: AtLeast<IUser, 'username'>) => boolean;
 }
 
 export interface IRoomTypeServerDirectives {

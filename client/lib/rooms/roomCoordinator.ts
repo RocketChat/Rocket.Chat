@@ -1,11 +1,15 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
+import _ from 'underscore';
 
+import { hasPermission } from '../../../app/authorization/client';
+import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
-import type { IRoom } from '../../../definition/IRoom';
+import type { IRoom, RoomType } from '../../../definition/IRoom';
 import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { ValueOf } from '../../../definition/utils';
+import type { IUser } from '../../../definition/IUser';
+import type { AtLeast, ValueOf } from '../../../definition/utils';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
 
@@ -51,6 +55,9 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			isLivechatRoom(): boolean {
 				return false;
 			},
+			canSendMessage(rid: string): boolean {
+				return ChatSubscription.find({ rid }).count() > 0;
+			},
 			...directives,
 			config: roomConfig,
 		});
@@ -62,6 +69,25 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	getRoomDirectives(roomType: string): IRoomTypeClientDirectives | undefined {
 		return this.roomTypes[roomType]?.directives as IRoomTypeClientDirectives;
+	}
+
+	getRoomTypeById(rid: string): RoomType | undefined {
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
+		return room?.t;
+	}
+
+	getRoomDirectivesById(rid: string): IRoomTypeClientDirectives | undefined {
+		const roomType = this.getRoomTypeById(rid);
+		if (roomType) {
+			return this.getRoomDirectives(roomType);
+		}
+	}
+
+	getRoomTypeConfigById(rid: string): IRoomTypeConfig | undefined {
+		const roomType = this.getRoomTypeById(rid);
+		if (roomType) {
+			return this.getRoomTypeConfig(roomType);
+		}
 	}
 
 	openRoom(type: string, name: string, render = true): void {
@@ -99,6 +125,77 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	getRoomName(roomType: string, roomData: Partial<IRoom>): string {
 		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
 	}
+
+	readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
+		const fields = {
+			ro: 1,
+			t: 1,
+			...(user && { muted: 1, unmuted: 1 }),
+		};
+		const room = ChatRoom.findOne({ _id: rid }, { fields });
+		if (!room) {
+			return false;
+		}
+
+		const directives = this.getRoomDirectives(room.t);
+		if (directives?.readOnly) {
+			return directives.readOnly(rid, user);
+		}
+
+		if (!user?.username) {
+			return Boolean(room.ro);
+		}
+
+		if (!room) {
+			return false;
+		}
+
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+			return true;
+		}
+
+		if (room.ro) {
+			if (Array.isArray(room.unmuted) && room.unmuted.indexOf(user.username) !== -1) {
+				return false;
+			}
+
+			if (hasPermission('post-readonly', room._id)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	// #ToDo: Move this out of the RoomCoordinator
+	archived(rid: string): boolean {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
+		return Boolean(room?.archived);
+	}
+
+	verifyCanSendMessage(rid: string): boolean {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+		if (!room?.t) {
+			return false;
+		}
+
+		return Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid));
+	}
+
+	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {
+		return _.sortBy(this.roomTypesOrder, 'order')
+			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
+			.filter((type) => type.directives.condition());
+	}
+
+	// getSortedRouteNames(): Array<string> {
+	// 	return _.sortBy(this.roomTypesOrder, 'order')
+	// 		.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
+	// 		.filter((type) => type.config.route?.name && type.directives.condition())
+	// 		.map((type) => type.config.route?.name as string);
+	// }
 }
 
 export const roomCoordinator = new RoomCoordinatorClient();

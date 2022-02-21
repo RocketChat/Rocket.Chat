@@ -7,7 +7,6 @@ import './startup/settingsOnLoadCdnPrefix';
 import './startup/settingsOnLoadDirectReply';
 import './startup/settingsOnLoadSMTP';
 import '../lib/MessageTypes';
-import '../startup/defaultRoomTypes';
 import './lib/bugsnag';
 import './lib/debug';
 import './lib/loginErrorMessageOverride';

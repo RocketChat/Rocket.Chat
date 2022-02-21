@@ -1,7 +1,13 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 
-import type { IRoomTypeConfig, IRoomTypeRouteConfig, IRoomTypeClientDirectives, IRoomTypeServerDirectives, RoomIdentification } from '../../definition/IRoomTypeConfig';
+import type {
+	IRoomTypeConfig,
+	IRoomTypeRouteConfig,
+	IRoomTypeClientDirectives,
+	IRoomTypeServerDirectives,
+	RoomIdentification,
+} from '../../definition/IRoomTypeConfig';
 // import type { IRoom } from '../../definition/IRoom';
 // import type { ISubscription } from '../../definition/ISubscription';
 import type { SettingValue } from '../../definition/ISetting';
@@ -153,6 +159,28 @@ export abstract class RoomCoordinator {
 		}
 
 		return routeData;
+	}
+
+	getRouteNames(): Array<string> {
+		return Object.values(this.roomTypes)
+			.map(({ config }) => config.route?.name)
+			.filter(Boolean) as Array<string>;
+	}
+
+	getRouteNameIdentifier(routeName: string): string | undefined {
+		if (!routeName) {
+			return;
+		}
+
+		return Object.keys(this.roomTypes).find((key) => this.roomTypes[key].config.route?.name === routeName);
+	}
+
+	isRouteNameKnown(routeName: string): boolean {
+		return Boolean(this.getRouteNameIdentifier(routeName));
+	}
+
+	getRoomTypes(): Array<string> {
+		return Object.keys(this.roomTypes);
 	}
 
 	abstract openRoom(_type: string, _name: string, _render?: boolean): void;

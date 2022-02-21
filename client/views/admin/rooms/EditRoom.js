@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
-import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
+import { RoomSettingsEnum } from '../../../../app/utils/client';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
@@ -12,9 +12,10 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 const getInitialValues = (room) => ({
-	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
+	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, { type: room.t, ...room }),
 	roomType: room.t,
 	readOnly: !!room.ro,
 	archived: !!room.archived,
@@ -38,7 +39,7 @@ function EditRoom({ room, onChange }) {
 
 	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
 		useMemo(() => {
-			const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
+			const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange;
 			return [
 				isAllowed(room, RoomSettingsEnum.NAME),
 				isAllowed(room, RoomSettingsEnum.TOPIC),

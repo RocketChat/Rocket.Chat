@@ -3,8 +3,9 @@ import { Template } from 'meteor/templating';
 
 import { callbacks } from '../../../lib/callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
-import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
+import { UiTextContext, getUserPreference } from '../../utils';
 import { settings } from '../../settings';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Template.roomList.helpers({
 	rooms() {
@@ -119,7 +120,7 @@ Template.roomList.helpers({
 		if (instance.data.anonymous) {
 			return 'No_channels_yet';
 		}
-		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+		return roomCoordinator.getRoomDirectives(instance.data.identifier)?.getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 

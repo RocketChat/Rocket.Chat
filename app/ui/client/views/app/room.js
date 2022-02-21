@@ -10,7 +10,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference } from '../../../../utils/client';
+import { t, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
@@ -30,7 +30,7 @@ import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator
 
 export const chatMessages = {};
 
-const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+const userCanDrop = (_id) => !roomCoordinator.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -946,12 +946,7 @@ Meteor.startup(() => {
 		});
 
 		this.autorun(() => {
-			if (
-				!Object.values(roomTypes.roomTypes)
-					.map(({ route }) => route && route.name)
-					.filter(Boolean)
-					.includes(FlowRouter.getRouteName())
-			) {
+			if (!roomCoordinator.getRouteName().includes(FlowRouter.getRouteName())) {
 				return;
 			}
 

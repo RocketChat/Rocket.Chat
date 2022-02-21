@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 
-import { roomTypes } from '../../utils/client';
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -32,7 +31,7 @@ export const EmojiEvents = {
 			return false;
 		}
 
-		if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
+		if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
 			return false;
 		}
 
@@ -88,7 +87,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
+			if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
 				return false;
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
