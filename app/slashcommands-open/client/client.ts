@@ -12,7 +12,7 @@ function Open(_command: 'open', params: string, _item: Record<string, string>): 
 	};
 
 	let room = params.trim();
-	const type = dict[room[0]];
+	const type = dict[room[0]] || [];
 	room = room.replace(/#|@/, '');
 	const query = {
 		name: room,
