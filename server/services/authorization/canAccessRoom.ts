@@ -52,6 +52,8 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
+		const roomTypes = ['c', 'p', 'd', 'l'];
+		const isRoomType = roomTypes.includes(room.t);
 		const viewRoom = `view-${room.t}-room`;
 		const hasViewPermission = await Authorization.hasPermission(user._id, viewRoom);
 
@@ -61,7 +63,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return false;
 		}
 
-		if (!hasViewPermission) {
+		if (isRoomType && !hasViewPermission) {
 			return false;
 		}
 
