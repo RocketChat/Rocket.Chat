@@ -2,7 +2,7 @@ import { Session } from 'meteor/session';
 
 import { hasPermission } from '../../../../app/authorization/client';
 import { LivechatInquiry } from '../../../../app/livechat/client/collections/LivechatInquiry';
-import { ChatRoom } from '../../../../app/models/client';
+import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoom, IOmnichannelRoom } from '../../../../definition/IRoom';
@@ -88,11 +88,7 @@ roomCoordinator.add(LivechatRoomType, {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
-		if (inquiry && inquiry.status === 'queued') {
-			return true;
-		}
-
-		return !room.servedBy;
+		const subscription = ChatSubscription.findOne({ rid });
+		return !subscription;
 	},
 } as AtLeast<IRoomTypeClientDirectives, 'roomName'>);
