@@ -65,13 +65,18 @@ export const addUserToRoom = function (rid, user, inviter, silenced) {
 
 	if (!silenced) {
 		if (inviter) {
-			Messages.createUserAddedWithRoomIdAndUser(rid, user, {
+			const extraData = {
 				ts: now,
 				u: {
 					_id: inviter._id,
 					username: inviter.username,
 				},
-			});
+			};
+			if (room.teamMain) {
+				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, user, extraData);
+			} else {
+				Messages.createUserAddedWithRoomIdAndUser(rid, user, extraData);
+			}
 		} else if (room.prid) {
 			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
 		} else if (room.teamMain) {

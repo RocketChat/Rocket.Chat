@@ -58,7 +58,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Success'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Rooms_added_successfully'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
 		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
