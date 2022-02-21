@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../../app/settings/server';
 import type { IRoom } from '../../../../definition/IRoom';
 import type { IUser } from '../../../../definition/IUser';
@@ -6,6 +8,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import type { AtLeast, ValueOf } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
+import { Subscriptions } from '../../../../app/models/server';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -38,11 +41,30 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	roomName(room: IRoom): string | undefined {
-		if (settings.get('UI_Use_Real_Name') && room.fname) {
-			return room.fname;
+		const subscription = ((): { fname?: string; name?: string } | undefined => {
+			if (room.fname || room.name) {
+				return {
+					fname: room.fname,
+					name: room.name,
+				};
+			}
+
+			if (!room._id) {
+				return undefined;
+			}
+
+			return Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId());
+		})();
+
+		if (!subscription) {
+			return;
 		}
 
-		return room.name;
+		if (settings.get('UI_Use_Real_Name') && room.fname) {
+			return subscription.fname;
+		}
+
+		return subscription.name;
 	},
 
 	isGroupChat(room: IRoom): boolean {

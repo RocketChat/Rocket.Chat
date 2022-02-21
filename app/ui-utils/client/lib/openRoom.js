@@ -36,7 +36,7 @@ export const openRoom = async function (type, name, render = true) {
 		}
 
 		try {
-			const room = roomCoordinator.findRoom(type, name) || (await call('getRoomByTypeAndName', type, name));
+			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') {

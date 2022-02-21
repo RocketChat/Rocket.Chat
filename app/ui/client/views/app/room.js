@@ -946,7 +946,7 @@ Meteor.startup(() => {
 		});
 
 		this.autorun(() => {
-			if (!roomCoordinator.getRouteName().includes(FlowRouter.getRouteName())) {
+			if (!roomCoordinator.isRouteNameKnown(FlowRouter.getRouteName())) {
 				return;
 			}
 
