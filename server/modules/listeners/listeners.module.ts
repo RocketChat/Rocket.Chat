@@ -1,7 +1,6 @@
 import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { EnterpriseSettings, MeteorService } from '../../sdk/index';
-import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { EnterpriseSettings } from '../../sdk/index';
 import { UserStatus } from '../../../definition/UserStatus';
 import { isSettingColor } from '../../../definition/ISetting';
 
@@ -141,21 +140,7 @@ export class ListenersModule {
 			notifications.streamRoles.emitWithoutBroadcast('roles', payload);
 		});
 
-		let autoAssignAgent: IRoutingManagerConfig | undefined;
-		async function getRoutingManagerConfig(): Promise<IRoutingManagerConfig> {
-			if (!autoAssignAgent) {
-				autoAssignAgent = await MeteorService.getRoutingManagerConfig();
-			}
-
-			return autoAssignAgent;
-		}
-
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			const config = await getRoutingManagerConfig();
-			if (!config || config.autoAssignAgent) {
-				return;
-			}
-
 			const type = minimongoChangeMap[clientAction];
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, { _id: inquiry._id, clientAction });
@@ -181,10 +166,6 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (setting._id === 'Livechat_Routing_Method') {
-				autoAssignAgent = undefined;
-			}
-
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (result !== undefined && !(result instanceof Error)) {
