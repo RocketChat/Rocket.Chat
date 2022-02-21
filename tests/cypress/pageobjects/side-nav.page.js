@@ -77,7 +77,7 @@ class SideNav extends Page {
 	}
 
 	get admin() {
-		return browser.element('[data-id="administration"][data-type="open"]');
+		return browser.element('.rcx-option__content:contains("Administration")');
 	}
 
 	get logout() {
