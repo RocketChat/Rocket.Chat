@@ -28,6 +28,8 @@ const login = {
 	password: adminPassword,
 };
 
+const settingUserPrefix = `setting${Date.now()}`;
+
 describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password).then(() => {
@@ -442,8 +444,8 @@ describe('[Api Settings Change]', () => {
 
 		it('register the user', () => {
 			loginPage.registerButton.click();
-			loginPage.nameField.type(`setting${username}`);
-			loginPage.emailField.type(`setting${email}`);
+			loginPage.nameField.type(`${settingUserPrefix}${username}`);
+			loginPage.emailField.type(`${settingUserPrefix}${email}`);
 			loginPage.passwordField.type(password);
 			loginPage.confirmPasswordField.type(password);
 			loginPage.reasonField.type(reason);
@@ -456,21 +458,19 @@ describe('[Api Settings Change]', () => {
 
 		it('login as admin and go to users', () => {
 			checkIfUserIsValid(adminUsername, adminEmail, adminPassword);
-			sideNav.sidebarMenu.click();
+			sideNav.sidebarUserMenu.click();
 			sideNav.admin.click();
-			cy.get('.rcx-box').contains('Info').should('be.visible');
 			admin.usersLink.click();
-			cy.get('.rcx-box').contains('Info').should('not.exist');
-			cy.get('.rc-header__block').contains('Users').should('be.visible');
+			cy.get('h2:contains("Users")').should('be.visible');
 		});
 
 		it('search the user', () => {
 			admin.usersFilter.click();
-			admin.usersFilter.type(`setting${username}`);
+			admin.usersFilter.type(`${settingUserPrefix}${username}`);
 		});
 
 		it('opens the user', () => {
-			const userEl = admin.getUserFromList(`setting${username}`);
+			const userEl = admin.getUserFromList(`${settingUserPrefix}${username}`);
 			userEl.click();
 			flexTab.usersView.should('be.visible');
 		});
@@ -482,12 +482,12 @@ describe('[Api Settings Change]', () => {
 
 		it('it should activate the user', () => {
 			flexTab.usersActivate.click();
+			flexTab.moreActions.click();
 		});
 
 		it('it should show the deactivate btn', () => {
 			flexTab.moreActions.click();
 			flexTab.usersDeactivate.should('be.visible');
-			mainContent.popoverWrapper.click();
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {

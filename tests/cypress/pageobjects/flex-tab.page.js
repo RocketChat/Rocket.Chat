@@ -2,8 +2,12 @@ import Page from './Page';
 import Global from './global';
 
 class FlexTab extends Page {
-	get moreActions() {
+	get headerMoreActions() {
 		return browser.element('.rcx-room-header .rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
+	}
+
+	get moreActions() {
+		return browser.element('.rcx-button-group__item:not(.hidden) .rcx-icon--name-kebab');
 	}
 
 	get sendBtn() {
@@ -332,15 +336,15 @@ class FlexTab extends Page {
 	}
 
 	get usersView() {
-		return browser.element('.rc-user-info-action');
+		return browser.element('.rcx-vertical-bar:contains("User Info")');
 	}
 
 	get usersActivate() {
-		return browser.element('.rc-popover__item[data-id=activate]');
+		return browser.element('.rcx-option__content:contains("Activate")');
 	}
 
 	get usersDeactivate() {
-		return browser.element('.rc-popover__item[data-id=deactivate]');
+		return browser.element('.rcx-option__content:contains("Deactivate")');
 	}
 
 	getUserEl(username) {
@@ -385,7 +389,7 @@ class FlexTab extends Page {
 			this[panel].should(!desiredState ? 'be.visible' : 'not.exist');
 
 			if (more) {
-				this.moreActions.click();
+				this.headerMoreActions.click();
 			}
 
 			this[tab].click();
@@ -394,7 +398,7 @@ class FlexTab extends Page {
 			// on an item, need to click again to change the status to unselected and
 			// allow the next click to open the popover again
 			if (more) {
-				this.moreActions.click();
+				this.headerMoreActions.click();
 			}
 
 			this[panel].should(desiredState ? 'be.visible' : 'not.exist');

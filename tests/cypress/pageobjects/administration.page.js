@@ -106,7 +106,7 @@ class Administration extends Page {
 	}
 
 	get usersFilter() {
-		return browser.element('#users-filter');
+		return browser.element('input[placeholder="Search Users"]');
 	}
 
 	get rolesNewRolesButton() {
@@ -634,8 +634,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
-		browser.element('.user-info').should('be.visible');
-		return browser.element('td').contains(user);
+		return browser.element(`.rcx-table__cell:first-child:contains(${user})`).should('be.visible');
 	}
 
 	adminSaveChanges() {
