@@ -15,24 +15,36 @@ import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-
+import { OtrRoomState } from './OtrRoomState';
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
 		this.peerId = getUidDirectMessage(roomId);
-		this.established = new ReactiveVar(false);
-		this.establishing = new ReactiveVar(false);
+
+		this.state = new ReactiveVar(null);
 
 		this.userOnlineComputation = null;
 
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
+
+		Tracker.autorun(() => {
+			console.log('State changed = ', this.state.get());
+		});
+	}
+
+	setState(nextState) {
+		const currentState = this.state.get();
+		if (currentState === nextState) {
+			return;
+		}
+		this.state.set(nextState);
 	}
 
 	handshake(refresh) {
-		this.establishing.set(true);
+		this.setState(OtrRoomState.ESTABLISHING);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
 			Notifications.notifyUser(this.peerId, 'otr', 'handshake', {
@@ -54,6 +66,7 @@ OTR.Room = class {
 
 	deny() {
 		this.reset();
+		this.setState(OtrRoomState.DECLINED);
 		Notifications.notifyUser(this.peerId, 'otr', 'deny', {
 			roomId: this.roomId,
 			userId: this.userId,
@@ -62,6 +75,7 @@ OTR.Room = class {
 
 	end() {
 		this.reset();
+		this.setState(OtrRoomState.NOT_STARTED);
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {
 			roomId: this.roomId,
 			userId: this.userId,
@@ -69,8 +83,6 @@ OTR.Room = class {
 	}
 
 	reset() {
-		this.establishing.set(false);
-		this.established.set(false);
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
@@ -85,7 +97,7 @@ OTR.Room = class {
 		this.userOnlineComputation = Tracker.autorun(() => {
 			const $room = $(`#chat-window-${this.roomId}`);
 			const $title = $('.rc-header__title', $room);
-			if (this.established.get()) {
+			if (this.state.get() === OtrRoomState.ESTABLISHED) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend("<i class='otr-icon icon-key'></i>");
 				}
@@ -115,6 +127,7 @@ OTR.Room = class {
 				Meteor.call('deleteOldOTRMessages', this.roomId);
 			})
 			.catch((e) => {
+				this.setState(OtrRoomState.ERROR);
 				dispatchToastMessage({ type: 'error', message: e });
 			});
 	}
@@ -192,6 +205,7 @@ OTR.Room = class {
 				return EJSON.stringify(output);
 			})
 			.catch(() => {
+				this.setState(OtrRoomState.ERROR);
 				throw new Meteor.Error('encryption-error', 'Encryption error.');
 			});
 	}
@@ -237,6 +251,7 @@ OTR.Room = class {
 			})
 			.catch((e) => {
 				dispatchToastMessage({ type: 'error', message: e });
+				this.setState(OtrRoomState.ERROR);
 				return message;
 			});
 	}
@@ -245,16 +260,16 @@ OTR.Room = class {
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
-
+				console.log('Handshake');
 				const establishConnection = () => {
-					this.establishing.set(true);
+					this.setState(OtrRoomState.ESTABLISHING);
 					Meteor.clearTimeout(timeout);
 					this.generateKeyPair().then(() => {
 						this.importPublicKey(data.publicKey).then(() => {
 							this.firstPeer = false;
 							goToRoomById(data.roomId);
 							Meteor.defer(() => {
-								this.established.set(true);
+								this.setState(OtrRoomState.ESTABLISHED);
 								this.acknowledge();
 							});
 						});
@@ -263,11 +278,11 @@ OTR.Room = class {
 
 				(async () => {
 					const { username } = await Presence.get(data.userId);
-					if (data.refresh && this.established.get()) {
+					if (data.refresh) {
 						this.reset();
 						establishConnection();
 					} else {
-						if (this.established.get()) {
+						if (this.state.get() === OtrRoomState.ESTABLISHED) {
 							this.reset();
 						}
 
@@ -281,7 +296,11 @@ OTR.Room = class {
 								}),
 								confirmText: TAPi18n.__('Yes'),
 								cancelText: TAPi18n.__('No'),
-								onClose: () => imperativeModal.close,
+								onClose: () => {
+									Meteor.clearTimeout(timeout);
+									this.deny();
+									imperativeModal.close();
+								},
 								onCancel: () => {
 									Meteor.clearTimeout(timeout);
 									this.deny();
@@ -296,7 +315,7 @@ OTR.Room = class {
 					}
 
 					timeout = Meteor.setTimeout(() => {
-						this.establishing.set(false);
+						this.setState(OtrRoomState.TIMEOUT);
 						imperativeModal.close();
 					}, 10000);
 				})();
@@ -304,15 +323,16 @@ OTR.Room = class {
 
 			case 'acknowledge':
 				this.importPublicKey(data.publicKey).then(() => {
-					this.established.set(true);
+					this.setState(OtrRoomState.ESTABLISHED);
 				});
 				break;
 
 			case 'deny':
 				(async () => {
 					const { username } = await Presence.get(this.peerId);
-					if (this.establishing.get()) {
+					if (this.state.get() === OtrRoomState.ESTABLISHING) {
 						this.reset();
+						this.setState(OtrRoomState.DECLINED);
 						imperativeModal.open({
 							component: GenericModal,
 							props: {
@@ -331,8 +351,9 @@ OTR.Room = class {
 				(async () => {
 					const { username } = await Presence.get(this.peerId);
 
-					if (this.established.get()) {
+					if (this.state.get() === OtrRoomState.ESTABLISHED) {
 						this.reset();
+						this.setState(OtrRoomState.NOT_STARTED);
 						imperativeModal.open({
 							component: GenericModal,
 							props: {

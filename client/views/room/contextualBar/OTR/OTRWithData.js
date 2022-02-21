@@ -7,6 +7,7 @@ import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import OTR from './OTR';
 import OTRModal from './OTRModal';
+import { OtrRoomState } from '/app/otr/client/OtrRoomState';
 
 const OTRWithData = ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
@@ -16,7 +17,10 @@ const OTRWithData = ({ rid, tabBar }) => {
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
 
 	const [isEstablished, isEstablishing] = useReactiveValue(
-		useCallback(() => (otr ? [otr.established.get(), otr.establishing.get()] : [false, false]), [otr]),
+		useCallback(
+			() => (otr ? [otr.state.get() === OtrRoomState.ESTABLISHED, otr.state.get() === OtrRoomState.ESTABLISHING] : [false, false]),
+			[otr],
+		),
 	);
 
 	const userStatus = usePresence(otr.peerId)?.status;
@@ -44,7 +48,8 @@ const OTRWithData = ({ rid, tabBar }) => {
 		}
 
 		const timeout = setTimeout(() => {
-			otr.establishing.set(false);
+			// otr.establishing.set(false);
+			otr.state.set(OtrRoomState.TIMEOUT);
 			setModal(<OTRModal onConfirm={closeModal} onCancel={closeModal} />);
 		}, 10000);
 
