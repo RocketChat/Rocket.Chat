@@ -1,5 +1,6 @@
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
+import { pino } from 'pino';
 
 import { api } from '../../../server/sdk/api';
 import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
@@ -90,18 +91,19 @@ const network = new ServiceBroker({
 		options: {
 			level: MOLECULER_LOG_LEVEL,
 			pino: {
-				...(process.env.NODE_ENV !== 'production'
-					? {
-							options: {
+				options: {
+					timestamp: pino.stdTimeFunctions.isoTime,
+					...(process.env.NODE_ENV !== 'production'
+						? {
 								transport: {
 									target: 'pino-pretty',
 									options: {
 										colorize: true,
 									},
 								},
-							},
-					  }
-					: {}),
+						  }
+						: {}),
+				},
 			},
 		},
 	},
