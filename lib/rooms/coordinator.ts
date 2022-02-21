@@ -8,8 +8,6 @@ import type {
 	IRoomTypeServerDirectives,
 	RoomIdentification,
 } from '../../definition/IRoomTypeConfig';
-// import type { IRoom } from '../../definition/IRoom';
-// import type { ISubscription } from '../../definition/ISubscription';
 import type { SettingValue } from '../../definition/ISetting';
 
 export abstract class RoomCoordinator {
