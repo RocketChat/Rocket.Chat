@@ -1,5 +1,5 @@
 import { Random } from 'meteor/random';
-import React, { useMemo, FC, useRef, useCallback, useEffect } from 'react';
+import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
@@ -7,6 +7,7 @@ import { Notifications } from '../../../app/notifications/client';
 import { roomTypes } from '../../../app/utils/client';
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
@@ -17,6 +18,7 @@ export const CallProvider: FC = ({ children }) => {
 	const result = useVoipClient();
 
 	const user = useUser();
+	const homeRoute = useRoute('home');
 
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
@@ -140,6 +142,9 @@ export const CallProvider: FC = ({ children }) => {
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
+	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
+
+	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
 		if (isUseVoipClientResultError(result)) {
@@ -161,6 +166,7 @@ export const CallProvider: FC = ({ children }) => {
 		return {
 			enabled: true,
 			ready: true,
+			openedRoomInfo: roomInfo,
 			registrationInfo,
 			voipClient,
 			actions: {
@@ -184,10 +190,15 @@ export const CallProvider: FC = ({ children }) => {
 					});
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomTypes.openRouteLink(voipRoom.room.t, voipRoom.room);
+					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 				}
 			},
+			closeRoom: async ({ comment, tags }): Promise<void> => {
+				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment, tags }));
+				homeRoute.push({});
+			},
 		};
-	}, [result, user, visitorEndpoint, voipEndpoint]);
+	}, [homeRoute, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}

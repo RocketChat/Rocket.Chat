@@ -100,7 +100,7 @@ export const VoipFooter = ({
 						square
 						success
 						primary
-						onClick={(): void => {
+						onClick={async (): Promise<void> => {
 							callActions.pickUp();
 							openRoom(caller);
 						}}
