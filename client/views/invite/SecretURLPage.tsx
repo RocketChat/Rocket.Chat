@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 

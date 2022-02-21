@@ -261,7 +261,7 @@ Template.loginForm.onCreated(function () {
 
 Template.loginForm.onRendered(function () {
 	const hash = Session.get('hash');
-	if (hash) $('input[name=secretURL]')[0].value=hash;
+	if (hash) $('input[name=secretURL]')[0].value = hash;
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		callbacks.run('loginPageStateChange', this.state.get());
