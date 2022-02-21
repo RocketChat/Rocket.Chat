@@ -10,6 +10,7 @@ import { APIClient } from '../../utils';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
+import { marketplaceAppsMap } from './helpers/marketplaceAppsMap.ts';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -69,14 +70,7 @@ class AppClientOrchestrator {
 
 	getAppsFromMarketplace = async () => {
 		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
-		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt }) => ({
-			...latest,
-			price,
-			pricingPlans,
-			purchaseType,
-			isEnterpriseOnly,
-			modifiedAt,
-		}));
+		return marketplaceAppsMap(appsOverviews);
 	};
 
 	getAppsOnBundle = async (bundleId) => {
