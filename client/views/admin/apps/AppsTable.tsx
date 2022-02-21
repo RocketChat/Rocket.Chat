@@ -100,6 +100,7 @@ const AppsTable: FC<{
 
 	return (
 		<>
+			{/* TODO Divide into two components: Filters and AppsTable */}
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)}>
 				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie='x8' />
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
