@@ -189,13 +189,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
 			.filter((type) => type.directives.condition());
 	}
-
-	// getSortedRouteNames(): Array<string> {
-	// 	return _.sortBy(this.roomTypesOrder, 'order')
-	// 		.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
-	// 		.filter((type) => type.config.route?.name && type.directives.condition())
-	// 		.map((type) => type.config.route?.name as string);
-	// }
 }
 
 export const roomCoordinator = new RoomCoordinatorClient();
