@@ -85,18 +85,24 @@ const network = new ServiceBroker({
 	},
 	cacher: CACHE,
 	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
-	logLevel: MOLECULER_LOG_LEVEL as any,
-	// logLevel: {
-	// 	// "TRACING": "trace",
-	// 	// "TRANS*": "warn",
-	// 	BROKER: 'debug',
-	// 	TRANSIT: 'debug',
-	// 	'**': 'info',
-	// },
 	logger: {
-		type: 'Console',
+		type: 'Pino',
 		options: {
-			formatter: 'short',
+			level: MOLECULER_LOG_LEVEL,
+			pino: {
+				...(process.env.NODE_ENV !== 'production'
+					? {
+							options: {
+								transport: {
+									target: 'pino-pretty',
+									options: {
+										colorize: true,
+									},
+								},
+							},
+					  }
+					: {}),
+			},
 		},
 	},
 	registry: {
