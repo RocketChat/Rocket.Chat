@@ -135,37 +135,14 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, ts, closedAt, department, tags }) => (
-			<Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
-				<Table.Cell withTruncatedText>
-					<Box display='flex' flexDirection='column'>
-						<Box withTruncatedText>{fname}</Box>
-						{tags && (
-							<Box color='hint' display='flex' flex-direction='row'>
-								{tags.map((tag: string) => (
-									<Box
-										style={{
-											marginTop: 4,
-											whiteSpace: 'nowrap',
-											overflow: tag.length > 10 ? 'hidden' : 'visible',
-											textOverflow: 'ellipsis',
-										}}
-										key={tag}
-										mie='x4'
-									>
-										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
-										</Tag>
-									</Box>
-								))}
-							</Box>
-						)}
-					</Box>
-				</Table.Cell>
-				<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(closedAt).from(moment(ts), true)}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(closedAt).format('L LTS')}</Table.Cell>
+		({ _id, fname, callStarted, queue, callDuration }) => (
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={(_id: string): void => onRowClick(_id)} action qa-user-id={_id}>
+				<Table.Cell withTruncatedText>{fname}</Table.Cell>
+				<Table.Cell withTruncatedText>{fname}</Table.Cell>
+				<Table.Cell withTruncatedText>{queue}</Table.Cell>
+				<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
+				<Table.Cell withTruncatedText>{callDuration}</Table.Cell>
+				<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
 			</Table.Row>
 		),
 		[onRowClick],

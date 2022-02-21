@@ -78,6 +78,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				phone: guest.phone,
 			},
 			servedBy: {
 				_id: agent.agentId,

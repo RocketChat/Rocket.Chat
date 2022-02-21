@@ -1,6 +1,7 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
+import { IVisitorPhone } from './ILivechatVisitor';
 
 export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
@@ -189,6 +190,12 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
+	v: {
+		_id?: string;
+		token?: string;
+		status: 'online' | 'busy' | 'away' | 'offline';
+		phone?: IVisitorPhone[] | null;
+	};
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
