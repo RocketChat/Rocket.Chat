@@ -16,7 +16,8 @@ type VoipMessageTypesValues =
 	| 'voip-call-unhold'
 	| 'voip-call-ended'
 	| 'voip-call-duration'
-	| 'voip-call-wrapup';
+	| 'voip-call-wrapup'
+	| 'voip-call-ended-unexpectedly';
 
 type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
 

@@ -16,6 +16,14 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		return this.findOne(query, options);
 	}
 
+	findOpenByAgentId(agentId: string): Cursor<IVoipRoom> {
+		return this.find({
+			't': 'v',
+			'open': true,
+			'servedBy._id': agentId,
+		});
+	}
+
 	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			t: 'v',
