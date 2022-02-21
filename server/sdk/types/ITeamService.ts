@@ -94,7 +94,7 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
-	unsetTeamIdOfRooms(teamId: string): void;
+	unsetTeamIdOfRooms(uid: string, teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
