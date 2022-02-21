@@ -88,7 +88,7 @@ API.v1.addRoute(
 		async get() {
 			const defaultCheckParams = {
 				token: String,
-				agentId: String,
+				agentId: Match.Maybe(String),
 				rid: Match.Maybe(String),
 			};
 			check(this.queryParams, defaultCheckParams);

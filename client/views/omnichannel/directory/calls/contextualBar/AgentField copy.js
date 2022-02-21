@@ -1,45 +1,38 @@
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { roomTypes } from '../../../../../../app/utils/client';
 import UserCard from '../../../../../components/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
+import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
 
-const ContactField = ({ contact, room }) => {
+const AgentField = ({ agent, statusOverride }) => {
 	const t = useTranslation();
-	const { status } = contact;
-	const { fname, t: type } = room;
-	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
-
-	const { value: data, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${contact._id}`);
+	const { username } = agent;
+	const { value, phase: state } = useEndpointData(`users.info?username=${username}`);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
 
-	if (error || !data || !data.visitor) {
-		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
-	}
-
 	const {
-		visitor: { username, name },
-	} = data;
+		user: { name, status },
+	} = value || { user: {} };
 
 	const displayName = name || username;
 
 	return (
 		<Field>
-			<Label>{t('Contact')}</Label>
+			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
-				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+				<UserAvatar size='x40' title={username} username={username} />
+				<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={statusOverride || status} />} />
 				{username && name && (
 					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
 						({username})
@@ -50,4 +43,4 @@ const ContactField = ({ contact, room }) => {
 	);
 };
 
-export default ContactField;
+export default AgentField;

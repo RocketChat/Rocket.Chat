@@ -1,10 +1,9 @@
-import { Table, Tag, Box } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useState, useMemo, useCallback, useEffect, FC, ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, FC, Dispatch, SetStateAction } from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
 import GenericTable from '../../../../components/GenericTable';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -17,8 +16,8 @@ const useQuery = (
 		current,
 	}: {
 		text?: string;
-		itemsPerPage: 25 | 50 | 100;
-		current: number;
+		itemsPerPage?: 25 | 50 | 100;
+		current?: number;
 	},
 	[column, direction]: string[],
 	userIdLoggedIn: string | null,
@@ -43,8 +42,7 @@ const useQuery = (
 	);
 
 const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCallReload }) => {
-	console.log('CallTable');
-	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
 		itemsPerPage: 25,
@@ -67,16 +65,20 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) =>
-		directoryRoute.push({
-			page: 'calls',
-			bar: 'info',
-			id,
-		}),
-	);
+	const onRowClick = useMutableCallback((id, token) => {
+		console.log('onRowClick', id, token);
+		directoryRoute.push(
+			{
+				page: 'calls',
+				bar: 'info',
+				id,
+			},
+			{ token },
+		);
+	});
 
-	const { value: data, reload } = useEndpointData('voip/rooms', query); // TODO: Check the typing for the livecall/rooms endpoint as it seems wrong
-	console.log('data', data);
+	const { value: data, reload } = useEndpointData('voip/rooms', query);
+
 	useEffect(() => {
 		setCallReload?.(() => reload);
 	}, [reload, setCallReload]);
@@ -135,17 +137,17 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, callStarted, queue, callDuration }) => (
-			<Table.Row key={_id} tabIndex={0} role='link' onClick={(_id: string): void => onRowClick(_id)} action qa-user-id={_id}>
+		({ _id, fname, callStarted, queue, callDuration, v }) => (
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{fname}</Table.Cell>
-				<Table.Cell withTruncatedText>{fname}</Table.Cell>
+				<Table.Cell withTruncatedText>{v?.phone?.[0].phoneNumber}</Table.Cell>
 				<Table.Cell withTruncatedText>{queue}</Table.Cell>
 				<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
 				<Table.Cell withTruncatedText>{callDuration}</Table.Cell>
 				<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
 			</Table.Row>
 		),
-		[onRowClick],
+		[onRowClick, t],
 	);
 
 	return (
@@ -156,7 +158,7 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 			total={data?.total}
 			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
+			// renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
 		/>
 	);
 };

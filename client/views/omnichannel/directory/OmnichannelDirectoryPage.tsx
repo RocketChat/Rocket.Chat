@@ -62,7 +62,7 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 						(tab === 'calls' && <CallTab setCallReload={setCallReload} />)}
 				</Page.Content>
 			</Page>
-			<ContextualBar chatReload={chatReload} contactReload={contactReload} />
+			<ContextualBar chatReload={chatReload} contactReload={contactReload} callReload={callReload} />
 		</Page>
 	);
 };

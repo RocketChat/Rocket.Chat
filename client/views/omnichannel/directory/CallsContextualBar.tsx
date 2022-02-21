@@ -1,44 +1,39 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC, useMemo } from 'react';
 
+import { IVoipRoom } from '../../../../definition/IRoom';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute, useRouteParameter, useQueryStringParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { FormSkeleton } from './Skeleton';
 import Call from './calls/Call';
-// import CallInfoDirectory from './calls/contextualBar/CallInfoDirectory';
-// import RoomEditWithData from './calls/contextualBar/RoomEditWithData';
+import { VoipInfo } from './calls/contextualBar/VoipInfo';
 
-const CallsContextualBar: FC<{ callReload?: () => void }> = ({ callReload }) => {
+const CallsContextualBar: FC = () => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
+	const token = useQueryStringParameter('token');
+	console.log('CallsContextualBar', token);
 
 	const t = useTranslation();
-
-	const openInRoom = (): void => {
-		id && directoryRoute.push({ page: 'calls', id, bar: 'view' });
-	};
 
 	const handleCallsVerticalBarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'calls' });
 	};
 
-	const handleCallsVerticalBarBackButtonClick = (): void => {
-		id && directoryRoute.push({ page: 'calls', id, bar: 'info' });
-	};
-
 	const query = useMemo(
 		() => ({
-			roomId: id || '',
+			rid: id || '',
+			token: token || '',
 		}),
-		[id],
+		[id, token],
 	);
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`rooms.info`, query);
+	const { value: data, phase: state, error } = useEndpointData(`voip/room`, query);
 
 	if (bar === 'view' && id) {
 		return <Call rid={id} />;
@@ -56,28 +51,11 @@ const CallsContextualBar: FC<{ callReload?: () => void }> = ({ callReload }) => 
 		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
 
+	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
+
 	return (
 		<VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
-				{bar === 'info' && (
-					<>
-						<VerticalBar.Icon name='info-circled' />
-						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-						<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
-					</>
-				)}
-				{bar === 'edit' && (
-					<>
-						<VerticalBar.Icon name='pencil' />
-						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
-					</>
-				)}
-				<VerticalBar.Close onClick={handleCallsVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
-			{/* {bar === 'info' && <CallInfoDirectory id={id} room={data.room} />}
-			{bar === 'edit' && (
-				<RoomEditWithData id={id} close={handleCallsVerticalBarBackButtonClick} reload={callReload} reloadInfo={reloadInfo} />
-			)} */}
+			{bar === 'info' && <VoipInfo room={room} onClickClose={handleCallsVerticalBarCloseButtonClick} />}
 		</VerticalBar>
 	);
 };
