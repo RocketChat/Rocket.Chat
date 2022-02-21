@@ -35,7 +35,6 @@ import './methods/getAnalyticsOverviewData';
 import './methods/getInitialData';
 import './methods/getNextAgent';
 import './methods/getRoutingConfig';
-import './methods/joinRoom';
 import './methods/loadHistory';
 import './methods/loginByToken';
 import './methods/pageVisited';
