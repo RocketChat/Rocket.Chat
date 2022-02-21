@@ -14,12 +14,6 @@ const VoipExtensionsPage: FC = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	// const handleClick = useMutableCallback(() =>
-	// 	// tagsRoute.push({
-	// 	// 	context: 'new',
-	// 	// }),
-	// );25 | 50 | 100 | undefined
-
 	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
