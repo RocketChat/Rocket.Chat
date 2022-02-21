@@ -12,8 +12,8 @@ export type App = {
 	description: string;
 	categories: string[];
 	version: string;
-	price: string;
-	purchaseType: unknown[];
+	price: number;
+	purchaseType: string;
 	pricingPlans: unknown[];
 	iconFileContent: unknown;
 	installed?: boolean;
