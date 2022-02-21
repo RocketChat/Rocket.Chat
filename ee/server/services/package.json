@@ -56,7 +56,7 @@
 		"@types/fibers": "^3.1.1",
 		"@types/mongodb": "^3.6.19",
 		"@types/node": "^14.17.4",
-		"@types/ws": "^8.2.2",
+		"@types/ws": "^8.2.3",
 		"pino-pretty": "^7.5.0",
 		"pm2": "^5.2.0",
 		"ts-node": "^10.5.0",
