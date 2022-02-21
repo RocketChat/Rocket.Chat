@@ -1,7 +1,7 @@
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server/raw';
-import { RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const subscriptionOptions = {

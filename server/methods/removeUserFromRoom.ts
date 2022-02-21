@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization/server';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
-import { RoomMemberActions } from '../../app/utils/server';
+import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { Team } from '../sdk';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 

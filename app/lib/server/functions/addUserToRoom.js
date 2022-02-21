@@ -5,7 +5,7 @@ import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Team } from '../../../../server/sdk';
-import { RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const addUserToRoom = function (rid, user, inviter, silenced) {

@@ -3,7 +3,8 @@ import { Template } from 'meteor/templating';
 
 import { callbacks } from '../../../lib/callbacks';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
-import { UiTextContext, getUserPreference } from '../../utils';
+import { getUserPreference } from '../../utils';
+import { UiTextContext } from '../../../definition/IRoomTypeConfig';
 import { settings } from '../../settings';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 

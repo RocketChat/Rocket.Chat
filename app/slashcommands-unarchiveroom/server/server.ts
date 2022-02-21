@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { RoomMemberActions } from '../../utils/server';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';

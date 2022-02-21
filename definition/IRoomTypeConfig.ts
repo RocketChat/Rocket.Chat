@@ -17,7 +17,6 @@ export interface IRoomTypeRouteConfig {
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
-// #ToDo: Review all references to these enums
 export const RoomSettingsEnum = {
 	TYPE: 'type',
 	NAME: 'roomName',

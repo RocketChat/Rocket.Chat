@@ -7,7 +7,7 @@ import { Subscriptions, Rooms } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
-import { RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 function getInviteUrl(invite) {

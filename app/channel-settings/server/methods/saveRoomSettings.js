@@ -17,10 +17,10 @@ import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
-import { RoomSettingsEnum } from '../../../utils';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 const fields = [
 	'roomAvatar',
