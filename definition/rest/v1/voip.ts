@@ -23,7 +23,10 @@ export type VoipEndpoints = {
 		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};
 	'voip/room': {
-		GET: (params: { rid?: string; token: string; agentId?: ILivechatAgent['_id'] }) => { room: IVoipRoom; newRoom: boolean };
+		GET: (params: { token: string; agentId: ILivechatAgent['_id'] } | { rid: string; token: string }) => {
+			room: IVoipRoom;
+			newRoom: boolean;
+		};
 	};
 	'voip/rooms': {
 		GET: (params: {
