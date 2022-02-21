@@ -47,6 +47,19 @@ export interface IQueueEvent extends IEventBase {
 	interface: string;
 }
 
+export type ContactStatuses = 'NonQualified' | 'Reachable' | 'Removed';
+
+export interface IContactStatus extends IEventBase {
+	event: 'ContactStatus';
+	privilege: string;
+	systemname: string;
+	uri: string;
+	contactstatus: ContactStatuses;
+	aor: string;
+	endpointname: string;
+	roundtripusec: string;
+}
+
 export interface IAgentConnectEvent extends IQueueEvent {
 	event: 'AgentConnect';
 	holdtime: string;
@@ -95,3 +108,4 @@ export const isIQueueMemberRemovedEvent = (v: any): v is IQueueMemberRemoved => 
 export const isIQueueCallerAbandonEvent = (v: any): v is IQueueCallerAbandon => v?.event === 'QueueCallerAbandon';
 export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Hold';
 export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
+export const isIContactStatusEvent = (v: any): v is IContactStatus => v?.event === 'ContactStatus';

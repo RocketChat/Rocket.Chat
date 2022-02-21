@@ -43,6 +43,8 @@ import {
 	isICallUnHoldEvent,
 	ICallOnHold,
 	ICallUnHold,
+	isIContactStatusEvent,
+	IContactStatus,
 } from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -193,6 +195,17 @@ export class ContinuousMonitor extends Command {
 		this.storePbxEvent(event, event.event);
 	}
 
+	async processContactStatusEvent(event: IContactStatus): Promise<void> {
+		this.logger.debug(`Processing Contact status Event`);
+		this.logger.debug(`Contact status = ${event.contactstatus}`);
+		if (event.contactstatus === 'Removed') {
+			// Room closing logic should be added here for the aor
+			// aor signifies address of record, which should be used for
+			// fetching the room for which serverBy = event.aor
+			this.logger.error(`Contact status Removed = ${event.contactstatus} aor = ${event.aor}`);
+		}
+	}
+
 	async onEvent(event: IEventBase): Promise<void> {
 		this.logger.debug(`Received event ${event.event}`);
 		// Event received when a queue member is notified of a call in queue
@@ -221,6 +234,10 @@ export class ContinuousMonitor extends Command {
 			return this.processHoldUnholdEvents(event);
 		}
 
+		if (isIContactStatusEvent(event)) {
+			return this.processContactStatusEvent(event);
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
@@ -237,6 +254,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('queuecallerabandon', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('hold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -248,6 +266,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('queuecallerabandon', this);
 		this.connection.off('hold', this);
 		this.connection.off('unhold', this);
+		this.connection.off('contactstatus', this);
 	}
 
 	initMonitor(_data: any): boolean {
