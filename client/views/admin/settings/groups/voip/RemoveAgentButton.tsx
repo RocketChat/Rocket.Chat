@@ -8,7 +8,7 @@ import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-const RemoveTagButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
+const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
 	const removeAgent = useEndpoint('DELETE', 'omnichannel/agent/extension');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -18,7 +18,7 @@ const RemoveTagButton: FC<{ username: string; reload: () => void }> = ({ usernam
 		try {
 			await removeAgent({ username });
 		} catch (error) {
-			console.log(error);
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		reload();
 	});
@@ -55,4 +55,4 @@ const RemoveTagButton: FC<{ username: string; reload: () => void }> = ({ usernam
 	);
 };
 
-export default RemoveTagButton;
+export default RemoveAgentButton;

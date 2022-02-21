@@ -14,9 +14,7 @@ type GroupSelectorProps = {
 };
 
 const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
-	console.log('GroupSelector', groupId);
 	const group = useSettingStructure(groupId);
-	console.log('group', groupId);
 
 	if (!group) {
 		return <GroupPage.Skeleton />;

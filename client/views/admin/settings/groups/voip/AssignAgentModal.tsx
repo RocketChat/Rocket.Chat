@@ -16,7 +16,6 @@ type AssignAgentModalParams = {
 const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) => {
 	const t = useTranslation();
 	const [agent, setAgent] = useState('');
-	console.log(agent);
 	const [extension, setExtension] = useState('');
 	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 

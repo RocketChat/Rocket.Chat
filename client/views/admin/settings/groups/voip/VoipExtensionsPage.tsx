@@ -36,8 +36,11 @@ const VoipExtensionsPage: FC = () => {
 				<GenericTable.HeaderCell key='extension' w='x156'>
 					{t('Extension_Number')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key='username' w='x240'>
+				<GenericTable.HeaderCell key='username' w='x160'>
 					{t('Agent_Name')}
+				</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell key='username' w='x120'>
+					{t('Extension_Status')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key='queues' w='x120'>
 					{t('Queues')}
@@ -51,7 +54,8 @@ const VoipExtensionsPage: FC = () => {
 		({ _id, extension, username, state, queues }) => (
 			<Table.Row key={_id} tabIndex={0}>
 				<Table.Cell withTruncatedText>{extension}</Table.Cell>
-				<Table.Cell withTruncatedText>{username || state}</Table.Cell>
+				<Table.Cell withTruncatedText>{username || t('Unassigned')}</Table.Cell>
+				<Table.Cell withTruncatedText>{state}</Table.Cell>
 				<Table.Cell withTruncatedText maxHeight='x36'>
 					<Box display='flex' flexDirection='row' alignItems='center' title={queues?.join(', ')}>
 						{queues?.map(
