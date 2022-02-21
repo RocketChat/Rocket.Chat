@@ -61,8 +61,8 @@ Template.livechatReadOnly.events({
 		event.stopPropagation();
 
 		try {
-			const result = await APIClient.v1.get(`livechat/room.join?roomId=${this.rid}`);
-			if (!result) {
+			const { success } = (await APIClient.v1.get(`livechat/room.join?roomId=${this.rid}`)) || {};
+			if (!success) {
 				throw new Meteor.Error('error-join-room', 'Error joining room');
 			}
 		} catch (error) {

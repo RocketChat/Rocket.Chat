@@ -31,7 +31,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
 	'livechat/room.join': {
-		GET: (params: { roomId: IRoom['_id'] }) => boolean;
+		GET: (params: { roomId: IRoom['_id'] }) => { success: boolean };
 	};
 	'livechat/monitors.list': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{

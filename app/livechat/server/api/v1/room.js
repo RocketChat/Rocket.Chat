@@ -272,7 +272,9 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 				}
 
-				return addUserToRoom(roomId, user);
+				addUserToRoom(roomId, user);
+
+				return API.v1.success();
 			} catch (e) {
 				return API.v1.failure(e);
 			}
