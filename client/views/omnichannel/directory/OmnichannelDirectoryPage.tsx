@@ -33,7 +33,6 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 
 	const [contactReload, setContactReload] = useState();
 	const [chatReload, setChatReload] = useState();
-	const [callReload, setCallReload] = useState();
 
 	const t = useTranslation();
 
@@ -59,10 +58,10 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 				<Page.Content>
 					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
 						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
-						(tab === 'calls' && <CallTab setCallReload={setCallReload} />)}
+						(tab === 'calls' && <CallTab />)}
 				</Page.Content>
 			</Page>
-			<ContextualBar chatReload={chatReload} contactReload={contactReload} callReload={callReload} />
+			<ContextualBar chatReload={chatReload} contactReload={contactReload} />
 		</Page>
 	);
 };

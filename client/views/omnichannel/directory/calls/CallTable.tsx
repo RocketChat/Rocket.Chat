@@ -2,7 +2,7 @@ import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useState, useMemo, useCallback, useEffect, FC, Dispatch, SetStateAction } from 'react';
+import React, { useState, useMemo, useCallback, FC } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
 import { useRoute } from '../../../../contexts/RouterContext';
@@ -41,7 +41,7 @@ const useQuery = (
 		[column, current, direction, itemsPerPage, userIdLoggedIn, text],
 	);
 
-const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCallReload }) => {
+const CallTable: FC = () => {
 	const [params, setParams] = useState<{ text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
@@ -76,11 +76,7 @@ const CallTable: FC<{ setCallReload: Dispatch<SetStateAction<any>> }> = ({ setCa
 		);
 	});
 
-	const { value: data, reload } = useEndpointData('voip/rooms', query);
-
-	useEffect(() => {
-		setCallReload?.(() => reload);
-	}, [reload, setCallReload]);
+	const { value: data } = useEndpointData('voip/rooms', query);
 
 	const header = useMemo(
 		() =>
