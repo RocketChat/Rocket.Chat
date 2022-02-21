@@ -176,6 +176,10 @@ class SideNav extends Page {
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
 		this.spotlightSearch.should('be.visible');
+
+		// Should have focus automatically, but some times it's not happening
+		this.spotlightSearch.click();
+
 		this.spotlightSearch.should('have.focus');
 		this.spotlightSearch.type(channelName);
 		cy.wait(500);
