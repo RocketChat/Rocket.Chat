@@ -108,7 +108,6 @@ Template.loginForm.events({
 				return;
 			}
 			if (state === 'register') {
-				formData.secretURL = FlowRouter.getParam('hash');
 				return Meteor.call('registerUser', formData, function (error) {
 					instance.loading.set(false);
 					if (error != null) {
@@ -261,6 +260,8 @@ Template.loginForm.onCreated(function () {
 });
 
 Template.loginForm.onRendered(function () {
+	const hash = Session.get('hash');
+	if (hash) $('input[name=secretURL]')[0].value=hash;
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
 		callbacks.run('loginPageStateChange', this.state.get());

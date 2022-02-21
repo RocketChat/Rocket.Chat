@@ -15,6 +15,7 @@ const SecretURLPage = (): ReactElement => {
 	const hash = useRouteParameter('hash');
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
+	const setHash = useSessionDispatch('hash');
 
 	const { isLoading } = useQuery(
 		['secretURL', hash],
@@ -33,6 +34,8 @@ const SecretURLPage = (): ReactElement => {
 
 				setLoginDefaultState('register');
 				KonchatNotification.getDesktopPermission();
+				setHash(hash);
+				FlowRouter.go('/home');
 			},
 		},
 	);
