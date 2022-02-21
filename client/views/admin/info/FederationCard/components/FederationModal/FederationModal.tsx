@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Field, FieldGroup, Modal, Select, SelectOptions, Tabs, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldGroup, Modal, Select, SelectOption, Tabs, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { parse as parseDomain, ParsedDomain } from 'psl';
 import React, { FC, ReactElement, useCallback, useState } from 'react';
@@ -37,7 +37,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 	const federationPublicKey = useSetting('FEDERATION_Public_Key') as string;
 
 	// Form
-	const discoveryOptions: SelectOptions = [
+	const discoveryOptions: SelectOption[] = [
 		['dns', 'DNS (recommended)'],
 		['hub', 'HUB'],
 	];

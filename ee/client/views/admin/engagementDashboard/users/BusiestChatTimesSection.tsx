@@ -16,7 +16,7 @@ const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): Re
 	const t = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TimeUnit>('hours');
-	const timeUnitOptions = useMemo<readonly [timeUnit: TimeUnit, label: string][]>(
+	const timeUnitOptions = useMemo<[timeUnit: TimeUnit, label: string][]>(
 		() => [
 			['hours', t('Hours')],
 			['days', t('Days')],
