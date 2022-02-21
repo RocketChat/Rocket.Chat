@@ -85,6 +85,29 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	getRoomName(roomType: string, roomData: IRoom): string {
 		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
 	}
+
+	setRoomFind(roomType: string, roomFind: Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind']): void {
+		const directives = this.getRoomDirectives(roomType);
+		if (!directives) {
+			return;
+		}
+
+		if (directives.roomFind) {
+			throw new Error('Room find for the given type already exists');
+		}
+
+		directives.roomFind = roomFind;
+	}
+
+	getRoomFind(roomType: string): Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind'] | undefined {
+		return this.getRoomDirectives(roomType)?.roomFind;
+	}
+
+	searchableRoomTypes(): Array<string> {
+		return Object.entries(this.roomTypes)
+			.filter(([_identifier, { directives }]) => (directives as IRoomTypeServerDirectives).includeInRoomSearch())
+			.map(([identifier]) => identifier);
+	}
 }
 
 export const roomCoordinator = new RoomCoordinatorServer();

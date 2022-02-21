@@ -62,6 +62,7 @@ export interface IRoomTypeConfig {
 	label?: string;
 	route?: IRoomTypeRouteConfig;
 	customTemplate?: string;
+	notSubscribedTpl?: string;
 	readOnlyTpl?: string;
 }
 
@@ -105,4 +106,5 @@ export interface IRoomTypeServerDirectives {
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
+	roomFind?: (rid: string) => IRoom | undefined;
 }
