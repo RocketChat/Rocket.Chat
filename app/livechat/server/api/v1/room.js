@@ -11,6 +11,8 @@ import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
+import { canAccessRoom } from '../../../../authorization/server';
+import { addUserToRoom } from '../../../../lib/server/functions';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -237,6 +239,42 @@ API.v1.addRoute(
 				room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
 
 				return API.v1.success({ room });
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room.join',
+	{ authRequired: true },
+	{
+		get() {
+			try {
+				check(this.queryParams, { roomId: String });
+
+				const { roomId } = this.queryParams;
+
+				const { user } = this;
+
+				if (!user) {
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
+				}
+
+				const room = LivechatRooms.findOneById(roomId);
+
+				if (!room) {
+					throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+				}
+
+				if (!canAccessRoom(room, user)) {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+				}
+
+				addUserToRoom(roomId, user);
+
+				return API.v1.success();
 			} catch (e) {
 				return API.v1.failure(e);
 			}
