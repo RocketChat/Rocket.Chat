@@ -163,6 +163,9 @@ const network = new ServiceBroker({
 		},
 	},
 	errorRegenerator: new CustomRegenerator(),
+	started(): void {
+		console.log('NetworkBroker started successfully.');
+	},
 });
 
 api.setBroker(new NetworkBroker(network));

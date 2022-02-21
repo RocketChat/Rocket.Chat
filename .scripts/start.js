@@ -128,7 +128,7 @@ async function startMicroservices() {
 	const startService = (name) => {
 		return new Promise((resolve) => {
 			const waitStart = (message) => {
-				if (message.toString().match('started successfully')) {
+				if (message.toString().match('NetworkBroker started successfully')) {
 					return resolve();
 				}
 			};
