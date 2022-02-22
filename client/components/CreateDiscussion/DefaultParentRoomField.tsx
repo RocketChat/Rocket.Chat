@@ -28,14 +28,13 @@ const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: stri
 
 	return (
 		<TextInput
-			value={roomCoordinator.getRoomName(value.room.t, {
+			defaultValue={roomCoordinator.getRoomName(value.room.t, {
 				_id: value.room._id,
 				fname: value.room.fname,
 				name: value.room.name,
 				prid: value.room.prid,
 			})}
 			disabled
-			onChange={(): string => ''}
 		/>
 	);
 };
