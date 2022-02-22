@@ -5,7 +5,6 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { Notifications } from '../../../app/notifications/client';
 import { roomTypes } from '../../../app/utils/client';
-import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -29,7 +28,7 @@ export const CallProvider: FC = ({ children }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [queueCounter, setQueueCounter] = useState('');
-  
+
 	const setModal = useSetModal();
 
 	const openWrapUpModal = useCallback((): void => {
