@@ -4,7 +4,6 @@ import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { Notifications } from '../../../app/notifications/client';
-import { roomTypes } from '../../../app/utils/client';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -12,6 +11,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
 export const CallProvider: FC = ({ children }) => {
@@ -221,7 +221,7 @@ export const CallProvider: FC = ({ children }) => {
 						},
 					});
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
-					voipRoom.room && roomTypes.openRouteLink(voipRoom.room.t, voipRoom.room);
+					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
 					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
 				}
 			},

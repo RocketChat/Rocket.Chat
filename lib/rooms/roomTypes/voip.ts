@@ -1,17 +1,17 @@
 import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
-export function getLivechatRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {
+export function getVoipRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {
 	return {
-		identifier: 'l',
-		order: 5,
-		icon: 'omnichannel',
-		label: 'Omnichannel',
+		identifier: 'v',
+		order: 6,
+		icon: 'phone',
+		label: 'Voip',
 		route: {
-			name: 'live',
-			path: '/live/:id/:tab?/:context?',
+			name: 'voip',
+			path: '/voip/:id/:tab?/:context?',
 			action: ({ id } = {}): void => {
-				return coordinator.openRoom('l', id);
+				return coordinator.openRoom('v', id);
 			},
 			link({ rid }): Record<string, string> {
 				return { id: rid || '' };
@@ -19,6 +19,6 @@ export function getLivechatRoomType(coordinator: RoomCoordinator): IRoomTypeConf
 		},
 
 		notSubscribedTpl: 'livechatNotSubscribed',
-		readOnlyTpl: 'livechatReadOnly',
+		readOnlyTpl: 'ComposerNotAvailablePhoneCalls',
 	};
 }
