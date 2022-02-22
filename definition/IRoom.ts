@@ -189,6 +189,12 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
+	v: {
+		_id?: string;
+		token?: string;
+		status: 'online' | 'busy' | 'away' | 'offline';
+		phone?: string | null;
+	};
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -201,7 +207,7 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
-export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt'> &
+export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
 	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & { serviceTimeDuration?: number };
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

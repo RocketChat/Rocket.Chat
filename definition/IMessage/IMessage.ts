@@ -15,9 +15,15 @@ type VoipMessageTypesValues =
 	| 'voip-call-on-hold'
 	| 'voip-call-unhold'
 	| 'voip-call-ended'
-	| 'voip-call-duration';
+	| 'voip-call-duration'
+	| 'voip-call-wrapup'
+	| 'voip-call-ended-unexpectedly';
 
-type MessageTypesValues =
+type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+
+type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+
+export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
 	| 'ul'
@@ -33,12 +39,15 @@ type MessageTypesValues =
 	| 'room_archived'
 	| 'room_unarchived'
 	| 'room_changed_privacy'
+	| 'room_changed_description'
+	| 'room_changed_announcement'
 	| 'room_changed_avatar'
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close'
-	| VoipMessageTypesValues;
+	| VoipMessageTypesValues
+	| OmnichannelTypesValues
+	| OtrSystemMessages;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -99,3 +108,4 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
+export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;

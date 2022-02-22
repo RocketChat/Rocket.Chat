@@ -49,23 +49,82 @@ export class AMIConnection implements IConnection {
 		this.eventHandlers = new Map<string, CallbackContext[]>();
 	}
 
-	connect(connectionIpOrHostname: string, connectionPort: string, userName: string, password: string): void {
+	/**
+	 * connect: Connects to asterisk
+	 * description: This function initiates a connection to asterisk management interface
+	 * for receiving the various events. These events could be a result of action command sent over
+	 * the socket or an events that asterisk sents over this connection. In the later case, what asterisk
+	 * sends over the socket depends on the way permissions are given to the user in asterisk's
+	 * manager.conf file.
+	 * This code uses a lib https://github.com/pipobscure/NodeJS-AsteriskManager
+	 * The working of this library actually connects in the object creation. i.e
+	 * new Manager(port, connectionIpOrHostname, userName, password, true);
+	 * So it was noticed that if we call isConnected immediately after creating the object,
+	 * it returns false. Eventualy when the connection  and authentication succeeds
+	 * it will be set back to true.
+	 * To avoid this connection we have to explicitly create the Manager with undefined port value.
+	 * When done so, We will have to explicitly call connect and login functions.
+	 * These functions can give a callback where we can resolve the promises
+	 * This way it ensures that the rocket.chat service has a valid connection or an error when this function
+	 * call is over.
+	 *
+	 * @param connectionIpOrHostname
+	 * @param connectionPort
+	 * @param userName
+	 * @param password
+	 */
+	async connect(
+		connectionIpOrHostname: string,
+		connectionPort: string,
+		userName: string,
+		password: string,
+		connectivityCheck = false,
+	): Promise<void> {
 		this.logger.log({ msg: 'connect()' });
-		this.connection = new Manager(connectionPort, connectionIpOrHostname, userName, password, true);
-		/**
-		 * Note : There is no way to release a handler or cleanup the handlers.
-		 * Handlers are released only when the connection is closed.
-		 * Closing the connection and establishing it again for every command is an overhead.
-		 * To avoid that, we have taken a clean, though a bit complex approach.
-		 * We will register for all the manager event.
-		 *
-		 * Each command will register to AMIConnection to receive the events which it is
-		 * interested in. Once the processing is complete, it will unregister.
-		 *
-		 * Handled in this way will avoid disconnection of the connection to cleanup the
-		 * handlers.
-		 */
-		this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
+		this.connection = new Manager(undefined, connectionIpOrHostname, userName, password, true);
+		const returnPromise = new Promise<void>((_resolve, _reject) => {
+			const onError = (error: any): void => {
+				_reject(error);
+				this.logger.error({ msg: 'connect () Connection Error', error });
+			};
+			const onConnect = (): void => {
+				this.logger.debug({ msg: 'connect () Connection Success' });
+			};
+			const onLogin = (error: any): void => {
+				if (error) {
+					_reject(error);
+					this.logger.error({ msg: 'connect () Authentication error', error });
+				} else {
+					/**
+					 * Note : There is no way to release a handler or cleanup the handlers.
+					 * Handlers are released only when the connection is closed.
+					 * Closing the connection and establishing it again for every command is an overhead.
+					 * To avoid that, we have taken a clean, though a bit complex approach.
+					 * We will register for all the manager event.
+					 *
+					 * Each command will register to AMIConnection to receive the events which it is
+					 * interested in. Once the processing is complete, it will unregister.
+					 *
+					 * Handled in this way will avoid disconnection of the connection to cleanup the
+					 * handlers.
+					 *
+					 * Furthermore, we do not want to initiate this when we are checking
+					 * the connectivity.
+					 */
+					if (!connectivityCheck) {
+						this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
+					}
+					this.logger.debug({ msg: 'connect () Authentication Success, Connected' });
+					_resolve();
+				}
+			};
+			this.connection.on('connect', onConnect);
+			this.connection.on('error', onError);
+
+			this.connection.connect(connectionPort, connectionIpOrHostname);
+			this.connection.login(onLogin);
+		});
+		return returnPromise;
 	}
 
 	isConnected(): boolean {

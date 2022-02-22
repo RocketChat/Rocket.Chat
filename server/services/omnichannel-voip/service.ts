@@ -10,12 +10,16 @@ import { IAgentExtensionMap, IRoomCreationResponse } from '../../../definition/I
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
-import { ILivechatVisitor } from '../../../definition/ILivechatVisitor';
+import { ILivechatVisitor, isILivechatVisitor } from '../../../definition/ILivechatVisitor';
 import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isOmnichannelVoipRoom } from '../../../definition/IRoom';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
 import { IVoipMessage } from '../../../definition/IMessage';
+import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
+import { FindVoipRoomsParams } from './internalTypes';
+import { ILivechatAgent } from '../../../definition/ILivechatAgent';
+import { Notifications } from '../../../app/notifications/server';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -34,6 +38,53 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		this.voipRoom = new VoipRoomsRaw(db.collection('rocketchat_room'));
 		this.logger = new Logger('OmnichannelVoipService');
 		this.pbxEvents = new PbxEventsRaw(db.collection('pbx_events'));
+
+		// handle agent disconnections
+		this.onEvent('watch.pbxevents', async ({ data }) => {
+			const extension = data.agentExtension;
+			if (!extension) {
+				return;
+			}
+			switch (data.event) {
+				case 'ContactStatus': {
+					return this.processAgentDisconnect(extension);
+				}
+				case 'Hangup': {
+					return this.processCallerHangup(extension);
+				}
+			}
+		});
+	}
+
+	private async processCallerHangup(extension: string): Promise<void> {
+		const agent = await this.users.findOneByExtension(extension);
+		if (!agent) {
+			return;
+		}
+		const currentRoom = await this.voipRoom.findOneByAgentId(agent._id);
+		if (!currentRoom) {
+			return;
+		}
+		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
+	}
+
+	private async processAgentDisconnect(extension: string): Promise<void> {
+		this.logger.info(`Processing disconnection event for agent with extension ${extension}`);
+		const agent = await this.users.findOneByExtension(extension);
+		if (!agent) {
+			// this should not even be possible, but just in case
+			return;
+		}
+
+		const openRooms = await this.voipRoom.findOpenByAgentId(agent._id).toArray();
+		this.logger.info(`Closing ${openRooms.length} for agent with extension ${extension}`);
+		// In the best scenario, an agent would only have one active voip room
+		// this is to handle the "just in case" scenario of a server and agent failure multiple times
+		// and multiple rooms are left opened for one single agent. Best case this will iterate once
+		for await (const room of openRooms) {
+			await this.handleEvent(VoipClientEvents['VOIP-CALL-ENDED'], room, agent, 'Agent disconnected abruptly');
+			await this.closeRoom(agent, room, agent, 'Agent disconnected abruptly', undefined, 'voip-call-ended-unexpectedly');
+		}
 	}
 
 	private async createVoipRoom(
@@ -51,7 +102,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// Use latest queue caller join event
 		const callStartPbxEvent = await this.pbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0].phoneNumber,
+				phone: guest?.phone?.[0]?.phoneNumber,
 				event: 'QueueCallerJoin',
 			},
 			{ sort: { ts: -1 } },
@@ -76,6 +127,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				phone: guest?.phone?.[0]?.phoneNumber,
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -236,7 +288,15 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return currentOnHoldTime;
 	}
 
-	async closeRoom(visitor: ILivechatVisitor, room: IVoipRoom): Promise<boolean> {
+	// Comment can be used to store wrapup call data
+	async closeRoom(
+		closerParam: ILivechatVisitor | ILivechatAgent,
+		room: IVoipRoom,
+		user: IUser,
+		comment?: string,
+		tags?: string[],
+		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly' = 'voip-call-wrapup',
+	): Promise<boolean> {
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || room.t !== 'v' || !room.open) {
 			return false;
@@ -244,23 +304,29 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		const now = new Date();
 		const { _id: rid } = room;
-		const closer = visitor ? 'visitor' : 'user';
+		const closer = isILivechatVisitor(closerParam) ? 'visitor' : 'user';
 		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
-			callDuration: now.getTime() / 1000,
+			callDuration: now.getTime() - room.ts.getTime(),
 			closer,
 			callTotalHoldTime,
+			tags,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
-		if (visitor) {
-			this.logger.debug(`Closing by visitor ${visitor._id}`);
-			closeData.closedBy = {
-				_id: visitor._id,
-				username: visitor.username,
-			};
-		}
+		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
+		closeData.closedBy = {
+			_id: closerParam._id,
+			username: closerParam.username,
+		};
 
+		const message = {
+			t: sysMessageId,
+			msg: comment,
+			groupable: false,
+		};
+
+		await sendMessage(user, message, room);
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
 	}
@@ -300,6 +366,43 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		});
 	}
 
+	async findVoipRooms({
+		agents,
+		open,
+		createdAt,
+		closedAt,
+		visitorId,
+		tags,
+		queue,
+		options: { offset = 0, count, fields, sort } = {},
+	}: FindVoipRoomsParams): Promise<PaginatedResult<{ rooms: IVoipRoom[] }>> {
+		const cursor = this.voipRoom.findRoomsWithCriteria({
+			agents,
+			open,
+			createdAt,
+			closedAt,
+			tags,
+			queue,
+			visitorId,
+			options: {
+				sort: sort || { ts: -1 },
+				offset,
+				count,
+				fields,
+			},
+		});
+
+		const total = await cursor.count();
+		const rooms = await cursor.toArray();
+
+		return {
+			rooms,
+			count: rooms.length,
+			total,
+			offset,
+		};
+	}
+
 	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {
 		// Fetch agent connected event for started call
 		const agentCalledEvent = await this.pbxEvents.findOne({ callUniqueId: room.callUniqueId, event: 'AgentConnect' });
@@ -328,7 +431,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			groupable: false as const,
 			voipData: {
 				callDuration: Number(room.callDuration) || 0,
-				callStarted: room.callStarted.toISOString(),
+				callStarted: room.callStarted?.toISOString() || new Date().toISOString(),
 			},
 		};
 

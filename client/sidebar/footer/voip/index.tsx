@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import { useCallActions, useCallerInfo, useCallOpenRoom, useQueueCounter } from '../../../contexts/CallContext';
+import { useCallActions, useCallerInfo, useCallOpenRoom, useWrapUpModal, useQueueCounter } from '../../../contexts/CallContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
@@ -10,6 +10,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const callActions = useCallActions();
 	const openRoom = useCallOpenRoom();
 	const queueCounter = useQueueCounter();
+	const openWrapUpCallModal = useWrapUpModal();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
@@ -69,6 +70,7 @@ export const VoipFooter = (): ReactElement | null => {
 			tooltips={tooltips}
 			openRoom={openRoom}
 			callsInQueue={t('Calls_in_queue', { calls: queueCounter })}
+			openWrapUpCallModal={openWrapUpCallModal}
 		/>
 	);
 };
