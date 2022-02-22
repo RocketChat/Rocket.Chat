@@ -72,7 +72,7 @@ const VoipExtensionsPage: FC = () => {
 				{username ? <RemoveAgentButton username={username} reload={reload} /> : null}
 			</Table.Row>
 		),
-		[reload],
+		[reload, t],
 	);
 
 	return (
