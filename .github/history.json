@@ -69992,6 +69992,810 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.5.0-rc.0": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24573",
+          "title": "Chore: Bump Fuselage packages",
+          "userLogin": "tassoevan",
+          "description": "It uses the last stable version of Fuselage packages.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24558",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-02-21Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24572",
+          "title": "[FIX] 2FA via email when logging in using OAuth",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24568",
+          "title": "Chore: Update Apps-Engine",
+          "userLogin": "d-gubert",
+          "milestone": "4.5.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24536",
+          "title": "Chore: roomTypes: Stop mixing client and server code together",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.5.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24529",
+          "title": "[IMPROVE] Replace AutoComplete in UserAutoComplete & UserAutoCompleteMultiple components",
+          "userLogin": "juliajforesti",
+          "description": "This PR replaces a deprecated fuselage's component `AutoComplete` in favor of `Select` and `MultiSelect` which fixes some of UX/UI issues in selecting users\r\n\r\n### before\r\n![Screen Shot 2022-02-19 at 13 33 28](https://user-images.githubusercontent.com/27704687/154809737-8181a06c-4f20-48ea-90f7-01e828b9a452.png)\r\n\r\n### after\r\n![Screen Shot 2022-02-19 at 13 30 58](https://user-images.githubusercontent.com/27704687/154809653-a8ec9a80-c0dd-4a25-9c00-0f96147d79e9.png)",
+          "contributors": [
+            "juliajforesti",
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24513",
+          "title": "Chore: Run tests using microservices deployment on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "24556",
+          "title": "Bump @types/ws from 8.2.2 to 8.2.3 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24501",
+          "title": "Chore: Update fuselage deps to match monolith versions",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24538",
+          "title": "Bump adm-zip from 0.4.14 to 0.5.9",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24454",
+          "title": "[IMPROVE] Purchase Type Filter for marketplace apps and Categories filter anchor refactoring",
+          "userLogin": "rique223",
+          "description": "Implemented a filter by purchase type(free or paid) component for the apps screen of the marketplace. Besides that, new entries on the dictionary, fixed some parts of the App type (purchaseType was typed as unknown and price as string), and created some helpers to work alongside the filter. Will be refactoring the categories filter anchor and then will open this PR for reviews.\r\n\r\nDemo gif:\r\n![purchaseTypeFIlter](https://user-images.githubusercontent.com/43561537/153101228-7b7ebdc3-2d34-420f-aa9d-f7cbc8d4b53f.gif)\r\n\r\nRefactored the categories filter anchor from a plain fuselage select to a select button with dynamic colors.\r\nDemo gif:\r\n![New categories filter anchor(PR)](https://user-images.githubusercontent.com/43561537/153422427-28012b7d-e0ec-45f4-861d-c9368c57ad04.gif)",
+          "contributors": [
+            "rique223",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24475",
+          "title": "[IMPROVE] Skip encryption for slash commands in E2E rooms",
+          "userLogin": "yash-rajpal",
+          "description": "Currently Slash Commands don't work in an E2EE room, as we encrypt the message before slash command is detected by the server, So removed encryption for slash commands in e2e rooms.",
+          "contributors": [
+            "yash-rajpal",
+            "albuquerquefabio",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24304",
+          "title": "Chore: Js to ts slash commands archive",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert Slash Commands archive files to typescript",
+          "contributors": [
+            "eduardofcabrera",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24114",
+          "title": "[NEW] E2E password generator",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "eduardofcabrera",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24553",
+          "title": "[FIX] Omnichannel managers can't join chats in progress",
+          "userLogin": "renatobecker",
+          "milestone": "4.5.0",
+          "contributors": [
+            "renatobecker",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24559",
+          "title": "[FIX] Room context tabs not working in Omnichannel current chats page",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24173",
+          "title": "[FIX] respect `Accounts_Registration_Users_Default_Roles` setting",
+          "userLogin": "debdutdeb",
+          "description": "- Fix `user` role being added as default regardless of the `Accounts_Registration_Users_Default_Roles` setting.",
+          "milestone": "4.5.0",
+          "contributors": [
+            "debdutdeb",
+            "web-flow",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24485",
+          "title": "[FIX] Skip admin info in setup wizard for servers with admin registered",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24537",
+          "title": "Bump pm2 from 5.1.2 to 5.2.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24209",
+          "title": "[IMPROVE] Team system messages feedback",
+          "userLogin": "ostjen",
+          "description": "- Delete some keys that aren't being used (eg: User_left_female).\r\n- Add new Teams' system messages:\r\n    - `added-user-to-team`: **added** @\\user to this Team;\r\n    - `removed-user-from-team`: **removed** @\\user from this Team;\r\n    - `user-converted-to-team`: **converted** #\\room to a Team;\r\n    - `user-converted-to-channel`: **converted** #\\room to a Channel;\r\n    - `user-removed-room-from-team`: **removed** @\\user from this Team;\r\n    - `user-deleted-room-from-team`: **deleted** #\\room from this Team;\r\n    - `user-added-room-to-team`: **deleted** #\\room to this Team;\r\n- Add the corresponding options to hide each new system message and the missing `ujt` and `ult` hide options.",
+          "milestone": "4.5.0",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow",
+            "dougfabris",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "24467",
+          "title": "Chore: Improve PR title validation regex",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "debdutdeb"
+          ]
+        },
+        {
+          "pr": "24058",
+          "title": "Bump date-fns from 2.24.0 to 2.28.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24508",
+          "title": "[FIX] Read receipts showing first messages of the room as read even if not read by everyone",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "24530",
+          "title": "Chore: Remove storybook build job from CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24528",
+          "title": "Bump url-parse from 1.5.3 to 1.5.7",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24333",
+          "title": "Chore: Add description to global OTR setting",
+          "userLogin": "pedrogssouza",
+          "contributors": [
+            "pedrogssouza",
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24382",
+          "title": "[IMPROVE] OTR system messages",
+          "userLogin": "yash-rajpal",
+          "description": "OTR system messages to indicate key refresh and joining chat to users.",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24121",
+          "title": "[IMPROVE] Descriptive tooltip for Encrypted Key on Room Header",
+          "userLogin": "yash-rajpal",
+          "milestone": "4.5.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24522",
+          "title": "Bump express from 4.17.2 to 4.17.3 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24518",
+          "title": "Chore: `twoFactorRequired` signature",
+          "userLogin": "tassoevan",
+          "description": "Improved type checking for decorator `twoFactorRequired`.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24517",
+          "title": "Bump body-parser from 1.19.1 to 1.19.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24441",
+          "title": "[FIX] GDPR action to forget visitor data on request",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24306",
+          "title": "Chore: Convert to typescript the slash commands create files",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert Slash Commands create files to typescript.",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24325",
+          "title": "Chore: Convert to typescript the mute and unmute slash commands files",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert to typescript the mute and unmute slash commands files",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24321",
+          "title": "Chore: Convert to typescript the me slashCommands files",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert to typescript the me slashCommands files",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23512",
+          "title": "Bump sodium-native from 3.2.1 to 3.3.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24311",
+          "title": "Chore: Convert to typescript the slash commands invite files",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert to typescript the slash commands invite files",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24509",
+          "title": "Bump vm2 from 3.9.5 to 3.9.7 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24451",
+          "title": "[IMPROVE] ChatBox Text to File Description",
+          "userLogin": "eduardofcabrera",
+          "description": "The text content from chatbox goes to the file description when drag and drop a file.",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "24461",
+          "title": "Chore: Update Meteor to 2.5.6",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24477",
+          "title": "Chore: Update ws package",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24498",
+          "title": "Bump underscore.string from 3.3.5 to 3.3.6 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24491",
+          "title": "Bump follow-redirects from 1.14.7 to 1.14.8 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24493",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-02-14Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24331",
+          "title": "Chore: Convert to typescript the unarchive slash commands files",
+          "userLogin": "eduardofcabrera",
+          "description": "Convert to typescript the unarchive slash commands files",
+          "contributors": [
+            "eduardofcabrera",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24483",
+          "title": "[IMPROVE] Add tooltips on action buttons of Canned Response message composer",
+          "userLogin": "LucasFASouza",
+          "description": "The tooltips were missing on the action buttons of CR message composer.\r\n\r\n![image](https://user-images.githubusercontent.com/32396925/153620327-91107245-4b47-4d39-a99a-6da6d1cf5734.png)\r\n\r\nUsers can now feel more encouraged to use these actions knowing what they are supposed to do.",
+          "contributors": [
+            "LucasFASouza",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24196",
+          "title": "Chore: Delete unused file (NewAdminInfoPage.js)",
+          "userLogin": "gabriellsh",
+          "description": "Just removing a duplicated/unused file.",
+          "milestone": "4.5.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24388",
+          "title": "[IMPROVE][ENTERPRISE] Improve how micro services are loaded",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24458",
+          "title": "[IMPROVE] Add return button in chats opened from the list of current chats",
+          "userLogin": "LucasFASouza",
+          "description": "The new return button for Omnichannel chats came out with release 3.15  but the feature was only available for chats that were opened from Omnichannel Contact Center.\r\nNow, the same UI/UX is supported for chats opened from Current Chats list.\r\n\r\n![image](https://user-images.githubusercontent.com/32396925/153283190-bd5c9748-c36b-4874-a704-6043afc7e3a1.png)\r\n\r\nThe chat now opens in the Omnichannel settings and has the return button so the user can go back to the Current Chats list.\r\n\r\n![image](https://user-images.githubusercontent.com/32396925/153285591-fad8e4a0-d2ea-4a02-8b2a-15e383b3c876.png)",
+          "contributors": [
+            "LucasFASouza",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24469",
+          "title": "Bump express from 4.17.1 to 4.17.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24472",
+          "title": "Bump cookie from 0.4.1 to 0.4.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24275",
+          "title": "[IMPROVE] Close modal on esc and outside click",
+          "userLogin": "gabriellsh",
+          "description": "This is a QUICK change in order to close modals pressing Esc button and clicking outside of it **intentionally**.",
+          "milestone": "4.5.0",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "24435",
+          "title": "Chore(deps-dev): Bump ts-node from 10.0.0 to 10.5.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24041",
+          "title": "[IMPROVE] Add user to room on \"Click to Join!\" button press",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add user to room on \"Click to Join!\" button press;\r\n- Display the \"Join\" button in discussions inside channels (keeping the behavior consistent with discussions inside groups).",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan",
+            "pierre-lehnen-rc",
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24310",
+          "title": "[FIX] Implement client errors on ddp-streamer",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23963",
+          "title": "Bump body-parser from 1.19.0 to 1.19.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23961",
+          "title": "Bump jaeger-client from 3.18.1 to 3.19.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24466",
+          "title": "[FIX] typo on register server tooltip of setup wizard",
+          "userLogin": "filipemarins",
+          "milestone": "4.5.0",
+          "contributors": [
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "24037",
+          "title": "[FIX] Inconsistent validation of user's access to rooms",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24450",
+          "title": "[FIX] OAuth mismatch redirect_uri error",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24305",
+          "title": "[FIX] Prevent Apps Bridge to remove visitor status from room",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "24453",
+          "title": "Chore: bump fuselage version",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.2",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "24253",
+          "title": "[FIX] Issues on selecting users when importing CSV",
+          "userLogin": "guijun13",
+          "description": "* Fix users selecting by fixing their _id\r\n* Add condition to disable 'Start importing' button if `usersCount`, `channelsCount` and `messageCount` equals 0, or if messageCount is alone\r\n* Remove `disabled={usersCount === 0}` on user Tab",
+          "contributors": [
+            "guijun13",
+            "tassoevan",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24299",
+          "title": "Chore(deps): Bump node-fetch from 2.6.1 to 2.6.7 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24418",
+          "title": "[FIX] Oembed request not respecting payload limit",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24429",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-02-07Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24407",
+          "title": "[FIX] Skip cloud steps for registered servers on setup wizard",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24410",
+          "title": "Chore: Convert JS files to Typescript",
+          "userLogin": "felipe-rod123",
+          "description": "This pull request converts 26 more files from Javascript to Typescript, to check variable types and increase validation on the code.",
+          "contributors": [
+            "felipe-rod123",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24369",
+          "title": "[IMPROVE] Convert tag edit with department data to tsx",
+          "userLogin": "LucasFASouza",
+          "contributors": [
+            "LucasFASouza",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24401",
+          "title": "[FIX] Outgoing webhook without scripts not saving messages",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24334",
+          "title": "[IMPROVE] CloudLoginModal visual consistency",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/151585064-dc6a1e29-9903-4241-8fbd-dfbe6c55fbef.png)\r\n\r\n### after\r\n![Screen Shot 2022-01-28 at 13 32 02](https://user-images.githubusercontent.com/27704687/151585101-75b98502-9aae-4198-bc3e-4956750e5d8b.png)",
+          "milestone": "4.5.0",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24409",
+          "title": "[FIX] Startup errors creating indexes",
+          "userLogin": "sampaiodiego",
+          "description": "Fix `bio` and `prid` startup index creation errors.",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24406",
+          "title": "Chore: Unify ILivechatAgent with ILivechatAgentRecord",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24381",
+          "title": "[FIX] Add ?close to OAuth callback url",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24387",
+          "title": "[FIX] Slash commands previews not working",
+          "userLogin": "ostjen",
+          "milestone": "4.4.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24357",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-01-31Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "24341",
+          "title": "Bump simple-get from 4.0.0 to 4.0.1",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24366",
+          "title": "Chore: Set Docker image tag to latest only when really latest",
+          "userLogin": "debdutdeb",
+          "contributors": [
+            "debdutdeb",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24109",
+          "title": "[IMPROVE] Added a new \"All\" tab which shows all integrations in Integrations",
+          "userLogin": "aswinidev",
+          "milestone": "4.5.0",
+          "contributors": [
+            "aswinidev",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24363",
+          "title": "Merge master into develop & Set version to 4.5.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
