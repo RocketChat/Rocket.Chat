@@ -4,7 +4,7 @@ import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDisposit
 import { FileUpload } from '../../../app/file-upload';
 import { Rooms } from '../../../app/models/server';
 import { Avatars } from '../../../app/models/server/raw';
-import { roomTypes } from '../../../app/utils';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const getRoomAvatar = async (roomId) => {
 	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
@@ -52,7 +52,7 @@ export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , n
 		return FileUpload.get(file, req, res);
 	}
 
-	const roomName = roomTypes.getConfig(room.t).roomName(room);
+	const roomName = roomCoordinator.getRoomDirectives(room.t)?.roomName(room);
 
 	setCacheAndDispositionHeaders(req, res);
 

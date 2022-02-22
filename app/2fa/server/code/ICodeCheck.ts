@@ -4,6 +4,7 @@ export interface IProcessInvalidCodeResult {
 	codeGenerated: boolean;
 	codeCount?: number;
 	codeExpires?: Date[];
+	emailOrUsername?: string;
 }
 
 export interface ICodeCheck {

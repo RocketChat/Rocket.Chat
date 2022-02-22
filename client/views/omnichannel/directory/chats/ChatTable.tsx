@@ -132,7 +132,7 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 
 	const renderRow = useCallback(
 		({ _id, fname, ts, closedAt, department, tags }) => (
-			<Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
+			<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' flexDirection='column'>
 						<Box withTruncatedText>{fname}</Box>
