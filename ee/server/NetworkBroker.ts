@@ -1,7 +1,6 @@
 import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { asyncLocalStorage } from '../../server/sdk';
-import { api } from '../../server/sdk/api';
 import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
@@ -33,8 +32,6 @@ export class NetworkBroker implements IBroker {
 
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
-
-		api.setBroker(this);
 
 		this.metrics = broker.metrics;
 

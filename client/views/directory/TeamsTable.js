@@ -2,7 +2,6 @@ import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import { roomTypes } from '../../../app/utils/client';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
@@ -10,6 +9,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
@@ -85,7 +85,7 @@ function TeamsTable() {
 	const renderRow = useCallback(
 		(team) => {
 			const { _id, ts, t, name, fname, topic, roomsCount } = team;
-			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(team);
+			const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(team);
 
 			return (
 				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
@@ -96,7 +96,7 @@ function TeamsTable() {
 							</Box>
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
-									<Icon name={roomTypes.getIcon(team)} color='hint' />{' '}
+									<Icon name={roomCoordinator.getIcon(team)} color='hint' />{' '}
 									<Box fontScale='p2m' mi='x4'>
 										{fname || name}
 									</Box>

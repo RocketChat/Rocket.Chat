@@ -117,10 +117,14 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		const expireWithDelta = new Date();
 		expireWithDelta.setMinutes(expireWithDelta.getMinutes() - 5);
 
-		const hasValidCode = user.services?.emailCode?.filter(({ expire }) => expire > expireWithDelta);
+		const emails = this.getUserVerifiedEmails(user);
 
+		const emailOrUsername = user.username || emails[0];
+
+		const hasValidCode = user.services?.emailCode?.filter(({ expire }) => expire > expireWithDelta);
 		if (hasValidCode?.length) {
 			return {
+				emailOrUsername,
 				codeGenerated: false,
 				codeCount: hasValidCode.length,
 				codeExpires: hasValidCode.map((i) => i.expire),
@@ -131,6 +135,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 		return {
 			codeGenerated: true,
+			emailOrUsername,
 		};
 	}
 }

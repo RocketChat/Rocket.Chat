@@ -4,7 +4,8 @@ import { Users, Subscriptions } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const useInviteToken = async (userId, token) => {
 	if (!userId) {
@@ -23,7 +24,7 @@ export const useInviteToken = async (userId, token) => {
 
 	const { inviteData, room } = await validateInviteToken(token);
 
-	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.INVITE)) {
 		throw new Meteor.Error('error-room-type-not-allowed', "Can't join room of this type via invite", {
 			method: 'useInviteToken',
 			field: 'token',
