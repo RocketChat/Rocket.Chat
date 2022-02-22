@@ -9,7 +9,9 @@ import { checkIfUserIsValid } from '../../data/checks';
 import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
 import { wait } from '../../data/api-data';
 
-const request = supertest('http://localhost:3000');
+const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
+
+const request = supertest(apiUrl);
 const prefix = '/api/v1/';
 
 function api(path) {

@@ -10,3 +10,5 @@ export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
 
 // `T extends any` is a trick to apply a operator to each member of a union
 export type KeyOfEach<T> = T extends any ? keyof T : never;
+
+export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;

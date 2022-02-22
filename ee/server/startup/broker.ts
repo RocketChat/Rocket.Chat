@@ -1,5 +1,6 @@
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
+import { pino } from 'pino';
 
 import { api } from '../../../server/sdk/api';
 import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
@@ -10,7 +11,7 @@ const {
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
 	SERIALIZER = 'EJSON',
-	MOLECULER_LOG_LEVEL = 'error',
+	MOLECULER_LOG_LEVEL = 'warn',
 	BALANCE_STRATEGY = 'RoundRobin',
 	BALANCE_PREFER_LOCAL = 'false',
 	RETRY_FACTOR = '2',
@@ -85,18 +86,25 @@ const network = new ServiceBroker({
 	},
 	cacher: CACHE,
 	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
-	logLevel: MOLECULER_LOG_LEVEL as any,
-	// logLevel: {
-	// 	// "TRACING": "trace",
-	// 	// "TRANS*": "warn",
-	// 	BROKER: 'debug',
-	// 	TRANSIT: 'debug',
-	// 	'**': 'info',
-	// },
 	logger: {
-		type: 'Console',
+		type: 'Pino',
 		options: {
-			formatter: 'short',
+			level: MOLECULER_LOG_LEVEL,
+			pino: {
+				options: {
+					timestamp: pino.stdTimeFunctions.isoTime,
+					...(process.env.NODE_ENV !== 'production'
+						? {
+								transport: {
+									target: 'pino-pretty',
+									options: {
+										colorize: true,
+									},
+								},
+						  }
+						: {}),
+				},
+			},
 		},
 	},
 	registry: {
@@ -155,6 +163,9 @@ const network = new ServiceBroker({
 		},
 	},
 	errorRegenerator: new CustomRegenerator(),
+	started(): void {
+		console.log('NetworkBroker started successfully.');
+	},
 });
 
 api.setBroker(new NetworkBroker(network));

@@ -6,13 +6,13 @@ import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 're
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
-import { roomTypes } from '../../../../app/utils/client';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
@@ -63,7 +63,7 @@ const ThreadComponent: FC<{
 	onClickBack: (e: unknown) => void;
 }> = ({ mid, jump, room, onClickBack }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
-	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
+	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
 	const openUserInfo = useTabBarOpenUserInfo();
