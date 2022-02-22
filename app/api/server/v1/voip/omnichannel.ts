@@ -5,10 +5,14 @@ import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
+import { IUser } from '../../../../../definition/IUser';
 
 function paginate<T>(array: T[], count = 10, offset = 0): T[] {
 	return array.slice(offset, offset + count);
 }
+
+const isUserAndExtensionParams = (p: any): p is { userId: string; extension: string } => p.userId && p.extension;
+const isUserIdndTypeParams = (p: any): p is { userId: string; type: 'free' | 'allocated' | 'available' } => p.userId && p.type;
 
 API.v1.addRoute(
 	'omnichannel/agent/extension',
@@ -50,28 +54,52 @@ API.v1.addRoute(
 			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
 				return API.v1.unauthorized();
 			}
-			check(this.bodyParams, {
-				username: String,
-				extension: String,
-			});
-			const { username, extension } = this.bodyParams;
-			const user = await Users.findOneByAgentUsername(username, {
-				projection: {
-					_id: 1,
-					username: 1,
-				},
-			});
+			check(
+				this.bodyParams,
+				Match.OneOf(
+					Match.ObjectIncluding({
+						username: String,
+						extension: String,
+					}),
+					Match.ObjectIncluding({
+						userId: String,
+						extension: String,
+					}),
+				),
+			);
+
+			const { extension } = this.bodyParams;
+			let user: IUser | null = null;
+
+			if (!isUserAndExtensionParams(this.bodyParams)) {
+				user = await Users.findOneByAgentUsername(this.bodyParams.username, {
+					projection: {
+						_id: 1,
+						username: 1,
+					},
+				});
+			} else {
+				user = await Users.findOneAgentById(this.bodyParams.userId, {
+					projection: {
+						_id: 1,
+						username: 1,
+					},
+				});
+			}
+
 			if (!user) {
 				return API.v1.notFound();
 			}
+
 			try {
 				await Users.setExtension(user._id, extension);
 				return API.v1.success();
 			} catch (e) {
 				logger.error({ msg: 'omnichannel/agent/extension extension already exists' });
-				API.v1.failure(`extension already exists${extension}`);
+				return API.v1.failure(`extension already exists ${extension}`);
 			}
 		},
+
 		async delete() {
 			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
 				return API.v1.unauthorized();
@@ -106,12 +134,18 @@ API.v1.addRoute(
 		async get() {
 			check(
 				this.queryParams,
-				Match.ObjectIncluding({
-					type: String,
-					username: Match.Maybe(String),
-				}),
+				Match.OneOf(
+					Match.ObjectIncluding({
+						type: Match.OneOf('free', 'allocated', 'available'),
+						userId: String,
+					}),
+					Match.ObjectIncluding({
+						type: Match.OneOf('free', 'allocated', 'available'),
+						username: String,
+					}),
+				),
 			);
-			const { type, username } = this.queryParams;
+			const { type } = this.queryParams;
 			switch ((type as string).toLowerCase()) {
 				case 'free': {
 					const extensions = await LivechatVoip.getFreeExtensions();
@@ -128,12 +162,21 @@ API.v1.addRoute(
 					return API.v1.success({ extensions });
 				}
 				case 'available': {
-					const user = await Users.findOneByAgentUsername(username, {
-						projection: { _id: 1 },
-					});
+					let user: IUser | null = null;
+					if (!isUserIdndTypeParams(this.queryParams)) {
+						user = await Users.findOneByAgentUsername(this.queryParams.username, {
+							projection: { _id: 1 },
+						});
+					} else {
+						user = await Users.findOneAgentById(this.queryParams.userId, {
+							projection: { _id: 1 },
+						});
+					}
+
 					if (!user) {
 						return API.v1.notFound('User not found');
 					}
+
 					const extension = await Users.getVoipExtensionByUserId(user._id, {
 						projection: {
 							_id: 1,

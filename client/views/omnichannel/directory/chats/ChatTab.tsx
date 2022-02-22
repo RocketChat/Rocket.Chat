@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { ReactElement, SetStateAction, Dispatch } from 'react';
 
 import NotAuthorizedPage from '../../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import ChatTable from './ChatTable';
 
-function ChatTab(props) {
+// TODO Check if I need to type the setstateaction params, if I should do:
+// { setChatReload: Dispatch<SetStateAction<(param: () => void) => void>> }
+const ChatTab = (props: { setChatReload: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const hasAccess = usePermission('view-l-room');
 
 	if (hasAccess) {
@@ -12,6 +14,6 @@ function ChatTab(props) {
 	}
 
 	return <NotAuthorizedPage />;
-}
+};
 
 export default ChatTab;
