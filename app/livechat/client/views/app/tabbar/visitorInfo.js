@@ -11,7 +11,7 @@ import UAParser from 'ua-parser-js';
 import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
-import { t, roomTypes } from '../../../../../utils';
+import { t } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
@@ -20,6 +20,7 @@ import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
 import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -55,7 +56,7 @@ Template.visitorInfo.helpers({
 			user.browser = `${ua.getBrowser().name} ${ua.getBrowser().version}`;
 			user.browserIcon = `icon-${ua.getBrowser().name.toLowerCase()}`;
 
-			user.status = roomTypes.getUserStatus('l', this.rid) || 'offline';
+			user.status = roomCoordinator.getRoomDirectives('l')?.getUserStatus(this.rid) || 'offline';
 		}
 		return user;
 	},

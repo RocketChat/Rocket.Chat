@@ -1,47 +1,35 @@
-import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const CloudLoginModal = (): JSX.Element => {
+const CloudLoginModal = (): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const cloudRoute = useRoute('cloud');
 
-	const handleCloseButtonClick = (): void => {
-		setModal(null);
+	const handleCancel = (): void => {
+		setModal(undefined);
 	};
 
-	const handleCancelButtonClick = (): void => {
-		setModal(null);
-	};
-
-	const handleLoginButtonClick = (): void => {
+	const handleLogin = (): void => {
 		cloudRoute.push();
-		setModal(null);
+		setModal(undefined);
 	};
 
 	return (
-		<Modal>
-			<Modal.Header>
-				<Icon color='danger' name='info-circled' size={20} />
-				<Modal.Title>{t('Apps_Marketplace_Login_Required_Title')}</Modal.Title>
-				<Modal.Close onClick={handleCloseButtonClick} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>{t('Apps_Marketplace_Login_Required_Description')}</Modal.Content>
-			<Modal.Footer>
-				<ButtonGroup align='end'>
-					<Button ghost onClick={handleCancelButtonClick}>
-						{t('Cancel')}
-					</Button>
-					<Button primary danger onClick={handleLoginButtonClick}>
-						{t('Login')}
-					</Button>
-				</ButtonGroup>
-			</Modal.Footer>
-		</Modal>
+		<GenericModal
+			variant='warning'
+			confirmText={t('Login')}
+			title={t('Apps_Marketplace_Login_Required_Title')}
+			onClose={handleCancel}
+			onCancel={handleCancel}
+			onConfirm={handleLogin}
+		>
+			{t('Apps_Marketplace_Login_Required_Description')}
+		</GenericModal>
 	);
 };
 
