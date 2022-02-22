@@ -22,7 +22,9 @@ import { Command, CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
-import { ServerType } from '../../../../../definition/IVoipServerConfig';
+import { IManagementConfigData, ServerType } from '../../../../../definition/IVoipServerConfig';
+import { IManagementServerConnectionStatus } from '../../../../../definition/IVoipServerConnectivityStatus';
+import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { getServerConfigDataFromSettings } from '../../lib/Helper';
 
 const version = 'Asterisk Connector 1.0';
@@ -63,7 +65,18 @@ export class CommandHandler {
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
 		}
-		connection.connect(config.host, config.configData.port.toString(), config.configData.username, config.configData.password);
+		try {
+			await connection.connect(
+				config.host,
+				(config.configData as IManagementConfigData).port.toString(),
+				(config.configData as IManagementConfigData).username,
+				(config.configData as IManagementConfigData).password,
+			);
+		} catch (error: any) {
+			this.logger.warn({ msg: 'Management server connection error', error });
+			throw Error(`Management server error in connection ${error.message}`);
+		}
+
 		this.connections.set(commandType, connection);
 		this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
 		this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
@@ -88,6 +101,51 @@ export class CommandHandler {
 	// Get the version string
 	getVersion(): string {
 		return version;
+	}
+
+	async checkManagementConnection(
+		host: string,
+		port: string,
+		userName: string,
+		password: string,
+	): Promise<IManagementServerConnectionStatus> {
+		this.logger.debug({ msg: 'checkManagementConnection()', host, port, userName });
+		const connection = new AMIConnection();
+		try {
+			await connection.connect(host, port, userName, password);
+			if (connection.isConnected()) {
+				// Just a second level of check to ensure that we are actually
+				// connected and authenticated.
+				connection.closeConnection();
+			}
+			this.logger.debug({ msg: 'checkManagementConnection() Connected ' });
+			return {
+				status: 'connected',
+			};
+		} catch (error: any) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
+			throw error;
+		}
+	}
+
+	async checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus> {
+		this.logger.debug({ msg: 'checkCallserverConnection()', websocketUrl });
+		const connection = new WebsocketConnection();
+		try {
+			await connection.connectWithUrl(websocketUrl, protocol);
+			if (connection.isConnected()) {
+				// Just a second level of check to ensure that we are actually
+				// connected and authenticated.
+				connection.closeConnection();
+			}
+			this.logger.debug({ msg: 'checkManagementConnection() Connected ' });
+			return {
+				status: 'connected',
+			};
+		} catch (error: any) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
+			throw error;
+		}
 	}
 
 	stop(): void {
