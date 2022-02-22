@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoom } from '../../../../definition/IRoom';
-import type { IUser } from '../../../../definition/IUser';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '../../../../definition/utils';
+import type { AtLeast } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
@@ -21,7 +20,7 @@ const getCurrentUserId = (): string | undefined => {
 };
 
 roomCoordinator.add(DirectMessageRoomType, {
-	allowRoomSettingChange(_room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(_room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -39,7 +38,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(room: IRoom, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);
@@ -48,7 +47,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(room: IRoom, userId?: string): string | undefined {
+	roomName(room, userId?) {
 		const subscription = ((): { fname?: string; name?: string } | undefined => {
 			if (room.fname || room.name) {
 				return {
@@ -81,16 +80,11 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return subscription.name;
 	},
 
-	isGroupChat(room: IRoom): boolean {
+	isGroupChat(room) {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	getNotificationDetails(
-		room: IRoom,
-		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
-		notificationMessage: string,
-		userId: string,
-	): { title: string | undefined; text: string } {
+	getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
 		if (this.isGroupChat(room)) {
@@ -106,7 +100,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		};
 	},
 
-	includeInDashboard(): boolean {
+	includeInDashboard() {
 		return true;
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);

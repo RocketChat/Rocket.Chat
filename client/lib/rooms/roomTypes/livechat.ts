@@ -5,7 +5,7 @@ import { LivechatInquiry } from '../../../../app/livechat/client/collections/Liv
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IRoom, IOmnichannelRoom } from '../../../../definition/IRoom';
+import type { IOmnichannelRoom } from '../../../../definition/IRoom';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import type { AtLeast, ValueOf } from '../../../../definition/utils';
@@ -15,7 +15,7 @@ import { roomCoordinator } from '../roomCoordinator';
 export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
 
 roomCoordinator.add(LivechatRoomType, {
-	allowRoomSettingChange(_room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(_room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -24,16 +24,17 @@ roomCoordinator.add(LivechatRoomType, {
 		}
 	},
 
-	allowMemberAction(_room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(_room, action) {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 
-	roomName(room: any): string | undefined {
-		return room.name || room.fname || room.label;
+	roomName(room) {
+		return room.name || room.fname || (room as any).label;
 	},
 
-	openCustomProfileTab(instance: any, room: IOmnichannelRoom, username: string): boolean {
-		if (!room?.v || (room.v as any).username !== username) {
+	openCustomProfileTab(instance, room, username) {
+		const omniRoom = room as IOmnichannelRoom;
+		if (!omniRoom?.v || (omniRoom.v as any).username !== username) {
 			return false;
 		}
 
@@ -41,7 +42,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return true;
 	},
 
-	getUiText(context: ValueOf<typeof UiTextContext>): string {
+	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Livechat_Warning';
@@ -52,15 +53,15 @@ roomCoordinator.add(LivechatRoomType, {
 		}
 	},
 
-	condition(): boolean {
+	condition() {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	},
 
-	getAvatarPath(room): string {
+	getAvatarPath(room) {
 		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 
-	getUserStatus(rid: string): string | undefined {
+	getUserStatus(rid) {
 		const room = Session.get(`roomData${rid}`);
 		if (room) {
 			return room.v && room.v.status;
@@ -69,20 +70,20 @@ roomCoordinator.add(LivechatRoomType, {
 		return inquiry?.v?.status;
 	},
 
-	findRoom(identifier: string): IRoom | undefined {
+	findRoom(identifier) {
 		return ChatRoom.findOne({ _id: identifier });
 	},
 
-	isLivechatRoom(): boolean {
+	isLivechatRoom() {
 		return true;
 	},
 
-	canSendMessage(rid: string): boolean {
+	canSendMessage(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1 } });
 		return Boolean(room?.open);
 	},
 
-	readOnly(rid: string, _user): boolean {
+	readOnly(rid, _user) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;

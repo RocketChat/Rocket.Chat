@@ -1,14 +1,12 @@
 import { settings } from '../../../../app/settings/server';
-import type { IRoom } from '../../../../definition/IRoom';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import type { ValueOf } from '../../../../definition/utils';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 
 roomCoordinator.add(PrivateRoomType, {
-	allowRoomSettingChange(room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -26,7 +24,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	allowMemberAction(_room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(_room, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;
@@ -35,7 +33,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	roomName(room: IRoom, _userId?: string): string | undefined {
+	roomName(room, _userId?) {
 		if (room.prid) {
 			return room.fname;
 		}
@@ -46,11 +44,11 @@ roomCoordinator.add(PrivateRoomType, {
 		return room.name;
 	},
 
-	isGroupChat(_room: IRoom): boolean {
+	isGroupChat(_room) {
 		return true;
 	},
 
-	includeInDashboard(): boolean {
+	includeInDashboard() {
 		return true;
 	},
 });
