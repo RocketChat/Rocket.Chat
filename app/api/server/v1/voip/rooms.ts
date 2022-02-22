@@ -219,8 +219,8 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				rid: String,
 				token: String,
+				comment: Match.Maybe(String),
 				tags: Match.Maybe([String]),
-				comment: Match.Maybe([String]),
 			});
 			const { rid, token, comment, tags } = this.bodyParams;
 
@@ -239,7 +239,7 @@ API.v1.addRoute(
 			if (!closeResult) {
 				return API.v1.failure();
 			}
-			return API.v1.success({ rid, comment });
+			return API.v1.success({ rid });
 		},
 	},
 );

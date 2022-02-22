@@ -100,6 +100,11 @@ export interface ICallUnHold extends IQueueEvent {
 	event: 'Unhold';
 }
 
+export interface ICallHangup extends IQueueEvent {
+	'event': 'Hangup';
+	'cause-txt': string; // A description of why the channel was hung up.
+}
+
 export const isIAgentConnectEvent = (v: any): v is IAgentConnectEvent => v?.event === 'AgentConnect';
 export const isIAgentCalledEvent = (v: any): v is IAgentCalledEvent => v?.event === 'AgentCalled';
 export const isIQueueCallerJoinEvent = (v: any): v is IQueueCallerJoinEvent => v?.event === 'QueueCallerJoin';
@@ -109,3 +114,4 @@ export const isIQueueCallerAbandonEvent = (v: any): v is IQueueCallerAbandon => 
 export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Hold';
 export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
 export const isIContactStatusEvent = (v: any): v is IContactStatus => v?.event === 'ContactStatus';
+export const isICallHangupEvent = (v: any): v is ICallHangup => v?.event === 'Hangup';

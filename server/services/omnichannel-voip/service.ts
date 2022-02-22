@@ -19,6 +19,7 @@ import { IVoipMessage } from '../../../definition/IMessage';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
 import { ILivechatAgent } from '../../../definition/ILivechatAgent';
+import { Notifications } from '../../../app/notifications/server';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -44,8 +45,27 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			if (!extension) {
 				return;
 			}
-			await this.processAgentDisconnect(extension);
+			switch (data.event) {
+				case 'ContactStatus': {
+					return this.processAgentDisconnect(extension);
+				}
+				case 'Hangup': {
+					return this.processCallerHangup(extension);
+				}
+			}
 		});
+	}
+
+	private async processCallerHangup(extension: string): Promise<void> {
+		const agent = await this.users.findOneByExtension(extension);
+		if (!agent) {
+			return;
+		}
+		const currentRoom = await this.voipRoom.findOneByAgentId(agent._id);
+		if (!currentRoom) {
+			return;
+		}
+		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
 	}
 
 	private async processAgentDisconnect(extension: string): Promise<void> {
