@@ -40,118 +40,45 @@ export const CallProvider: FC = ({ children }) => {
 		(queue: { queuename: string }): void => {
 			dispatchToastMessage({
 				type: 'success',
-				message: `Received call in ${queue.queuename} `,
+				message: `Received call in queue ${queue.queuename}`,
 				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
+					showDuration: '2000',
+					hideDuration: '500',
+					timeOut: '500',
 				},
 			});
 		},
 		[dispatchToastMessage],
 	);
 
-	const handleAgentConnected = useCallback(
-		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Agent connected ${queue.queuename} queue count = ${queue.queuedcalls} wait-time = ${queue.waittimeinqueue}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
+	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
+		setQueueCounter(queue.queuedcalls);
+	}, []);
 
-			setQueueCounter(queue.queuedcalls);
-		},
-		[dispatchToastMessage],
-	);
+	const handleMemberAdded = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
+		setQueueCounter(queue.queuedcalls);
+	}, []);
 
-	const handleMemberAdded = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Member added to ${queue.queuename} queue count = ${queue.queuedcalls}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
+	const handleMemberRemoved = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
+		setQueueCounter(queue.queuedcalls);
+	}, []);
 
-			setQueueCounter(queue.queuedcalls);
-		},
-		[dispatchToastMessage],
-	);
-
-	const handleMemberRemoved = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Member removed from ${queue.queuename} queue count = ${queue.queuedcalls}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
-
-			setQueueCounter(queue.queuedcalls);
-		},
-		[dispatchToastMessage],
-	);
-
-	const handleCallAbandon = useCallback(
-		(queue: { queuename: string; queuedcallafterabandon: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Customer ababdoned queue ${queue.queuename} queue count = ${queue.queuedcallafterabandon}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
-
-			setQueueCounter(queue.queuedcallafterabandon);
-		},
-		[dispatchToastMessage],
-	);
+	const handleCallAbandon = useCallback((queue: { queuename: string; queuedcallafterabandon: string }): void => {
+		setQueueCounter(queue.queuedcallafterabandon);
+	}, []);
 
 	const handleQueueJoined = useCallback(
 		async (joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): Promise<void> => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Received call in ${joiningDetails.queuename} from customerid ${joiningDetails.callerid.id}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
-
 			setQueueCounter(joiningDetails.queuedcalls);
 		},
-		[dispatchToastMessage],
+		[],
 	);
 
-	// This is a dummy handler, please remove after properly consuming this event
 	const handleCallHangup = useCallback(
-		(event: { roomId: string }) => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Caller hangup for room ${event.roomId}`,
-				options: {
-					showDuration: '6000',
-					hideDuration: '6000',
-					timeOut: '50000',
-				},
-			});
-
+		(_event: { roomId: string }) => {
 			openWrapUpModal();
 		},
-		[dispatchToastMessage, openWrapUpModal],
+		[openWrapUpModal],
 	);
 
 	useEffect(() => {

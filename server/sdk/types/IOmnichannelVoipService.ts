@@ -11,7 +11,6 @@ import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResul
 import { ILivechatAgent } from '../../../definition/ILivechatAgent';
 
 export interface IOmnichannelVoipService {
-	getConfiguration(): any;
 	getFreeExtensions(): Promise<string[]>;
 	getExtensionAllocationDetails(): Promise<IAgentExtensionMap[]>;
 	getNewRoom(

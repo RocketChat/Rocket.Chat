@@ -3148,8 +3148,7 @@ settingsRegistry.addGroup('VoIP', function () {
 		});
 
 		this.section('Server_Configuration', function () {
-			// TODO: Remove default values before deploying
-			this.add('VoIP_Server_Host', 'omni-asterisk.dev.rocket.chat', {
+			this.add('VoIP_Server_Host', 'asterisk.dev.com', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3165,7 +3164,7 @@ settingsRegistry.addGroup('VoIP', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Name', 'OmniAsterisk', {
+			this.add('VoIP_Server_Name', 'Asterisk', {
 				type: 'int',
 				public: true,
 				enableQuery: {
@@ -3173,7 +3172,7 @@ settingsRegistry.addGroup('VoIP', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Websocket_Path', 'wss://omni-asterisk.dev.rocket.chat/ws', {
+			this.add('VoIP_Server_Websocket_Path', 'wss://asterisk.dev.com', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3184,7 +3183,7 @@ settingsRegistry.addGroup('VoIP', function () {
 		});
 
 		this.section('Management_Server', function () {
-			this.add('VoIP_Management_Server_Host', 'omni-asterisk.dev.rocket.chat', {
+			this.add('VoIP_Management_Server_Host', 'asterisk.dev.com', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3202,7 +3201,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Name', 'OmniAsterisk', {
+			this.add('VoIP_Management_Server_Name', 'Asterisk', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3211,7 +3210,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Username', 'manager.rocket.chat', {
+			this.add('VoIP_Management_Server_Username', 'manager.username', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3220,7 +3219,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Password', '1234', {
+			this.add('VoIP_Management_Server_Password', 'secure_password', {
 				type: 'string',
 				public: true,
 				enableQuery: {

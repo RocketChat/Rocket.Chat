@@ -184,10 +184,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return this.users.findUsersInRolesWithQuery(roles, query, options).toArray();
 	}
 
-	getConfiguration(): any {
-		return {};
-	}
-
 	async getFreeExtensions(): Promise<string[]> {
 		const allExtensions = await Voip.getExtensionList();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({

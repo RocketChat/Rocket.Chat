@@ -111,7 +111,6 @@ export class PJSIPEndpoint extends Command {
 			result.endpoints = [];
 			result.endpoints.push(endPoint);
 		}
-		this.logger.debug({ msg: `onEndpointList Data = ${JSON.stringify(endPoint)}` });
 	}
 
 	/**
@@ -171,8 +170,6 @@ export class PJSIPEndpoint extends Command {
 			(result.endpoint as IExtensionDetails).password = event.password;
 			(result.endpoint as IExtensionDetails).authtype = event.authtype;
 		}
-
-		this.logger.debug({ msg: `onEndpointList Data = ${JSON.stringify(result.endpoint)}` });
 	}
 
 	/**
@@ -190,7 +187,6 @@ export class PJSIPEndpoint extends Command {
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onEndpointDetailComplete() Complete', result });
 
 		this.returnResolve({ result: result.endpoint } as IVoipConnectorResult);
 	}
@@ -204,7 +200,6 @@ export class PJSIPEndpoint extends Command {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
 			this.returnReject(`error${error} while executing command`);
 		} else {
-			this.logger.debug({ msg: 'onActionResult()', result });
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
 		}
@@ -252,7 +247,6 @@ export class PJSIPEndpoint extends Command {
 	}
 
 	async executeCommand(data: any): Promise<IVoipConnectorResult> {
-		this.logger.info({ msg: `executeCommand() executing ${this.commandText}` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
 		if (this.commandText === Commands.extension_list.toString()) {

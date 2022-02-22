@@ -1,7 +1,6 @@
 import { Menu, Option, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
-// import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
 import { IRoom } from '../../../../../definition/IRoom';
