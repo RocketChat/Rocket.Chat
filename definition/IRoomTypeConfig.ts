@@ -100,7 +100,7 @@ export interface IRoomTypeServerDirectives {
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
-		userId?: string,
+		userId: string,
 	) => { title: string | undefined; text: string };
 	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
 	includeInRoomSearch: () => boolean;

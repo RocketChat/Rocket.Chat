@@ -44,7 +44,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				room: IRoom,
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
-				userId?: string,
+				userId: string,
 			): { title: string | undefined; text: string } {
 				const title = `#${this.roomName(room, userId)}`;
 				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;

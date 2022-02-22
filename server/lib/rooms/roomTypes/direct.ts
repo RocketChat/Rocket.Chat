@@ -89,7 +89,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
-		userId?: string,
+		userId: string,
 	): { title: string | undefined; text: string } {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 

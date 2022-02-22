@@ -30,7 +30,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return token && rid && LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token);
 	},
 
-	getNotificationDetails(room: IRoom, _sender, notificationMessage: string, userId?) {
+	getNotificationDetails(room: IRoom, _sender, notificationMessage: string, userId) {
 		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
