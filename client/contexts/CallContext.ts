@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { IVoipRoom } from '../../definition/IRoom';
 import { ICallerInfo } from '../../definition/voip/ICallerInfo';
 import { VoIpCallerInfo } from '../../definition/voip/VoIpCallerInfo';
 import { VoIPUser } from '../lib/voip/VoIPUser';
@@ -21,8 +22,9 @@ type CallContextReady = {
 	ready: true;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
+	openedRoomInfo: { v: { token?: string }; rid: string };
 	openWrapUpModal: () => void;
-	openRoom: (caller: ICallerInfo) => void;
+	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
 	closeRoom: (data: { comment: string; tags?: string[] }) => void;
 };
 type CallContextError = {
@@ -138,4 +140,14 @@ export const useWrapUpModal = (): CallContextReady['openWrapUpModal'] => {
 	}
 
 	return context.openWrapUpModal;
+};
+
+export const useOpenedRoomInfo = (): CallContextReady['openedRoomInfo'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useClient only if Calls are enabled and ready');
+	}
+
+	return context.openedRoomInfo;
 };

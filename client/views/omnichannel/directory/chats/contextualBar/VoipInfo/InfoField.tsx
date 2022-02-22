@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 
 type InfoFieldPropsType = {
 	label: string;
-	info: string;
+	info: string | number;
 };
 
 export const InfoField = ({ label, info }: InfoFieldPropsType): ReactElement => (

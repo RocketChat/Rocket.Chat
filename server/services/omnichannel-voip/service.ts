@@ -11,7 +11,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { VoipRoomsRaw } from '../../../app/models/server/raw/VoipRooms';
 import { IUser } from '../../../definition/IUser';
 import { ILivechatVisitor, isILivechatVisitor } from '../../../definition/ILivechatVisitor';
-import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isOmnichannelVoipRoom } from '../../../definition/IRoom';
+import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '../../../definition/IRoom';
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
@@ -436,7 +436,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		};
 
 		if (
-			isOmnichannelVoipRoom(room) &&
+			isVoipRoom(room) &&
 			room.open &&
 			room.callUniqueId &&
 			// Check if call exists by looking if we have pbx events of it
