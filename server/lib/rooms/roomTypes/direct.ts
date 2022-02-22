@@ -93,7 +93,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 	): { title: string | undefined; text: string } {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
-		if (!this.isGroupChat(room)) {
+		if (this.isGroupChat(room)) {
 			return {
 				title: this.roomName(room, userId),
 				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
