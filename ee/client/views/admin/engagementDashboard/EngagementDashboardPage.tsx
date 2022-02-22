@@ -15,7 +15,7 @@ type EngagementDashboardPageProps = {
 const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps): ReactElement => {
 	const t = useTranslation();
 
-	const timezoneOptions = useMemo<readonly [timezone: 'utc' | 'local', label: string][]>(
+	const timezoneOptions = useMemo<[timezone: 'utc' | 'local', label: string][]>(
 		() => [
 			['utc', t('UTC_Timezone')],
 			['local', t('Local_Timezone')],

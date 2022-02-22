@@ -30,7 +30,7 @@ export type ToolboxActionConfig = {
 	order?: number;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team'>;
 	hotkey?: string;
-	action?: (e: MouseEvent<HTMLElement>) => void;
+	action?: (e?: MouseEvent<HTMLElement>) => void;
 	template?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
 };
 
