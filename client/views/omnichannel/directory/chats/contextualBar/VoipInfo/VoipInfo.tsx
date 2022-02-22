@@ -1,22 +1,26 @@
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+// import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import moment from 'moment';
 import React, { ReactElement } from 'react';
 
-import { IRoom } from '../../../../../../../definition/IRoom';
+import { IVoipRoom } from '../../../../../../../definition/IRoom';
 import VerticalBar from '../../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import AgentField from '../AgentField';
 import { InfoField } from './InfoField';
 
 type VoipInfoPropsType = {
-	guest: any;
-	servedBy: IRoom['servedBy'];
+	room: IVoipRoom;
 	onClickClose: () => void;
 	onClickReport: () => void;
 	onClickCall: () => void;
 };
 
-export const VoipInfo = ({ guest, servedBy, onClickClose, onClickReport, onClickCall }: VoipInfoPropsType): ReactElement => {
+export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
+
+	const duration = room.callDuration && moment.duration(room.callDuration / 1000, 'seconds').humanize();
+	const waiting = room.callWaitingTime && moment.duration(room.callWaitingTime / 1000, 'seconds').humanize();
+	const hold = room.callTotalHoldTime && moment.duration(room.callTotalHoldTime, 'seconds').humanize();
 
 	return (
 		<>
@@ -26,18 +30,18 @@ export const VoipInfo = ({ guest, servedBy, onClickClose, onClickReport, onClick
 				<VerticalBar.Close onClick={onClickClose} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<InfoField label={t('Contact')} info={guest.name} />
-				<InfoField label={t('Phone_Number')} info={guest.phone} />
-				<InfoField label={t('Queue')} info={guest.queue} />
-				<InfoField label={t('Last_Call')} info={guest.lastCall} />
-				<InfoField label={t('Waiting_Time')} info={guest.waitingTime} />
-				<InfoField label={t('Talk_Time')} info={guest.talkTime} />
-				<InfoField label={t('Hold_Time')} info={guest.holdTime} />
-
-				<AgentField agent={servedBy} />
+				<InfoField label={t('Contact')} info={room.name || room.fname} />
+				{room.v.phone && <InfoField label={t('Phone_Number')} info={room.v.phone} />}
+				{room.queue && <InfoField label={t('Queue')} info={room.queue} />}
+				{/* {room.lastCall && <InfoField label={t('Last_Call')} info={room.lastCall} />} */}
+				<InfoField label={t('Waiting_Time')} info={waiting} />
+				<InfoField label={t('Talk_Time')} info={duration} />
+				<InfoField label={t('Hold_Time')} info={hold} />
+				<AgentField agent={room.servedBy} />
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch>
+				{/* TODO: Introduce this buttons [Not part of MVP] */}
+				{/* <ButtonGroup stretch>
 					<Button danger onClick={onClickReport}>
 						<Box display='flex' justifyContent='center' fontSize='p2'>
 							<Icon name='ban' size='x20' mie='4px' />
@@ -50,7 +54,7 @@ export const VoipInfo = ({ guest, servedBy, onClickClose, onClickReport, onClick
 							{t('Call')}
 						</Box>
 					</Button>
-				</ButtonGroup>
+				</ButtonGroup> */}
 			</VerticalBar.Footer>
 		</>
 	);

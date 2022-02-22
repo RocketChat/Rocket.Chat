@@ -1,14 +1,10 @@
 import React, { ReactElement } from 'react';
 
-import { useRoom } from '../../../../../room/contexts/RoomContext';
+import { useVoipRoom } from '../../../../../room/contexts/RoomContext';
 import { VoipInfo } from './VoipInfo';
 
 const VoipInfoWithData = ({ tabBar: { close } }: any): ReactElement => {
-	const room = useRoom();
-	console.log(room);
-	const { servedBy } = room;
-
-	const guest = {};
+	const room = useVoipRoom();
 
 	const onClickReport = (): void => {
 		// TODO: report
@@ -18,7 +14,7 @@ const VoipInfoWithData = ({ tabBar: { close } }: any): ReactElement => {
 		// TODO: Call
 	};
 
-	return <VoipInfo servedBy={servedBy} guest={guest} onClickClose={close} onClickReport={onClickReport} onClickCall={onClickCall} />;
+	return <VoipInfo room={room} onClickClose={close} onClickReport={onClickReport} onClickCall={onClickCall} />;
 };
 
 export default VoipInfoWithData;
