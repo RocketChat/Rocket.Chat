@@ -71,13 +71,13 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
-		const hasViewPermission = await roomTypePermission(room.t, user._id);
-
-		const hasSubscriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
-
 		if (!room?._id || !user?._id) {
 			return false;
 		}
+
+		const hasViewPermission = await roomTypePermission(room.t, user._id);
+
+		const hasSubscriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
 
 		if (!hasViewPermission) {
 			return false;
