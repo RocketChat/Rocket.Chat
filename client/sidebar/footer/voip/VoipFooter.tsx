@@ -52,17 +52,7 @@ export const VoipFooter = ({
 			</Box>
 			{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
 				<ButtonGroup medium>
-					<Button
-						disabled={paused}
-						title={tooltips.mute}
-						small
-						square
-						nude
-						onClick={(): void => {
-							dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
-							toggleMic(!muted);
-						}}
-					>
+					<Button disabled={paused} title={tooltips.mute} small square nude onClick={(): void => toggleMic(!muted)}>
 						{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
 					</Button>
 					<Button
@@ -71,7 +61,11 @@ export const VoipFooter = ({
 						square
 						nude
 						onClick={(): void => {
-							dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
+							if (paused) {
+								dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
+							} else {
+								dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
+							}
 							togglePause(!paused);
 						}}
 					>

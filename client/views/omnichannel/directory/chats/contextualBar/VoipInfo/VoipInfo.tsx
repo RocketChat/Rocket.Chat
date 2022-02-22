@@ -21,7 +21,6 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 	const duration = room.callDuration && moment.duration(room.callDuration / 1000, 'seconds').humanize();
 	const waiting = room.callWaitingTime && moment.duration(room.callWaitingTime / 1000, 'seconds').humanize();
 	const hold = room.callTotalHoldTime && moment.duration(room.callTotalHoldTime, 'seconds').humanize();
-	console.log(waiting);
 
 	return (
 		<>
