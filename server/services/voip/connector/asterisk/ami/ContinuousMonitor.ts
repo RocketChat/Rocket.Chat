@@ -162,6 +162,7 @@ export class ContinuousMonitor extends Command {
 				queue: event.queue,
 				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
 				callUniqueId: event.uniqueid,
+				callUniqueIdFallback: event.linkedid,
 				agentExtension: event?.connectedlinenum,
 			});
 		} catch (e) {
@@ -191,6 +192,7 @@ export class ContinuousMonitor extends Command {
 			case 'QueueCallerAbandon': {
 				const { calls } = queueDetails;
 				await this.storePbxEvent(event, 'QueueCallerAbandon');
+				this.logger.debug(`Broadcasting event queue.callabandoned to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
 					api.broadcast('queue.callabandoned', m, event.queue, calls);
 				});
@@ -200,6 +202,7 @@ export class ContinuousMonitor extends Command {
 				const { calls } = queueDetails;
 
 				await this.storePbxEvent(event, 'AgentConnect');
+				this.logger.debug(`Broadcasting event queue.agentconnected to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
 					// event.holdtime signifies wait time in the queue.
 					api.broadcast('queue.agentconnected', m, event.queue, calls, event.holdtime);
@@ -207,7 +210,7 @@ export class ContinuousMonitor extends Command {
 				break;
 			}
 			default:
-				this.logger.error(`Cant process ${event}`);
+				this.logger.error(`Cant process ${event}. No handlers associated with it`);
 		}
 	}
 

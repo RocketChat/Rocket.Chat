@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { Notifications } from '../../../app/notifications/client';
+import { IVoipRoom } from '../../../definition/IRoom';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -211,7 +212,7 @@ export const CallProvider: FC = ({ children }) => {
 					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
 				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
-			openRoom: async (caller): Promise<void> => {
+			openRoom: async (caller): Promise<IVoipRoom['_id']> => {
 				if (user) {
 					const { visitor } = await visitorEndpoint({
 						visitor: {
@@ -223,7 +224,10 @@ export const CallProvider: FC = ({ children }) => {
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
 					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+					return voipRoom.room._id;
 				}
+
+				return '';
 			},
 			closeRoom: async ({ comment, tags }): Promise<void> => {
 				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment, tags }));

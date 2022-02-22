@@ -1,8 +1,10 @@
 import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
+import { IVoipRoom } from '../../../../definition/IRoom';
 import { ICallerInfo } from '../../../../definition/voip/ICallerInfo';
 import { VoIpCallerInfo } from '../../../../definition/voip/VoIpCallerInfo';
+import { VoipClientEvents } from '../../../../definition/voip/VoipClientEvents';
 import { CallActionsType } from '../../../contexts/CallContext';
 
 type VoipFooterPropsType = {
@@ -21,11 +23,12 @@ type VoipFooterPropsType = {
 		acceptCall: string;
 		endCall: string;
 	};
-	openRoom: (caller: ICallerInfo) => void;
-
 	callsInQueue: string;
 
 	openWrapUpCallModal: () => void;
+	openRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
+	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
 };
 
 export const VoipFooter = ({
@@ -42,6 +45,8 @@ export const VoipFooter = ({
 	openRoom,
 	callsInQueue,
 	openWrapUpCallModal,
+	dispatchEvent,
+	openedRoomInfo,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
 		<Box display='flex' justifyContent='center' fontScale='c1' color='white' mbe='14px'>
@@ -56,7 +61,20 @@ export const VoipFooter = ({
 					<Button disabled={paused} title={tooltips.mute} small square nude onClick={(): void => toggleMic(!muted)}>
 						{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
 					</Button>
-					<Button title={tooltips.holdCall} small square nude onClick={(): void => togglePause(!paused)}>
+					<Button
+						title={tooltips.holdCall}
+						small
+						square
+						nude
+						onClick={(): void => {
+							if (paused) {
+								dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
+							} else {
+								dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
+							}
+							togglePause(!paused);
+						}}
+					>
 						{paused ? (
 							<Icon name='pause-unfilled' color='neutral-500' size='x24' />
 						) : (
@@ -89,6 +107,8 @@ export const VoipFooter = ({
 							toggleMic(false);
 							togglePause(false);
 							openWrapUpCallModal();
+							dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ENDED'], rid: openedRoomInfo.rid });
+
 							return callActions.end();
 						}}
 					>
@@ -109,7 +129,8 @@ export const VoipFooter = ({
 						primary
 						onClick={async (): Promise<void> => {
 							callActions.pickUp();
-							openRoom(caller);
+							const rid = await openRoom(caller);
+							dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid });
 						}}
 					>
 						<Icon name='phone' size='x16' />

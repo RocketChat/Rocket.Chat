@@ -105,4 +105,10 @@ export const roomFields = {
 	// fields used by DMs
 	usernames: 1,
 	uids: 1,
+
+	// Voip fields
+	queue: 1,
+	callDuration: 1,
+	callTotalHoldTime: 1,
+	callWaitingTime: 1,
 };

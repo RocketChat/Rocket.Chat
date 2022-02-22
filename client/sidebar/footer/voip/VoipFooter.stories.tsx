@@ -50,6 +50,8 @@ export const Default = (): ReactElement => {
 				openRoom={() => ''}
 				callsInQueue={callsInQueue}
 				openWrapUpCallModal={() => null}
+				dispatchEvent={() => null}
+				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 			/>
 		</Box>
 	);

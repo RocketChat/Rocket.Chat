@@ -220,7 +220,7 @@ export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedB
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
-export const isOmnichannelVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
+export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {
