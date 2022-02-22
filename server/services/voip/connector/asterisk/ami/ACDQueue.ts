@@ -57,7 +57,6 @@ export class ACDQueue extends Command {
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onQueueSummaryComplete() Complete', result });
 		this.returnResolve({ result: result.queueSummary } as IVoipConnectorResult);
 	}
 
@@ -84,7 +83,6 @@ export class ACDQueue extends Command {
 			logestholdtime: event.logestholdtime,
 		};
 		this.result.queueStatus = queue;
-		this.logger.debug({ msg: 'onQueueParams() Complete', result: this.result });
 	}
 
 	/**  Callback for receiving Queue members for queuestatus action.
@@ -138,7 +136,6 @@ export class ACDQueue extends Command {
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onQueueStatusComplete() Complete', result });
 		this.returnResolve({ result: result.queueStatus } as IVoipConnectorResult);
 	}
 
@@ -151,7 +148,6 @@ export class ACDQueue extends Command {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
 			this.returnReject(`error${error} while executing command`);
 		} else {
-			this.logger.info({ msg: 'onActionResult()', result });
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
 		}
@@ -199,7 +195,6 @@ export class ACDQueue extends Command {
 	}
 
 	async executeCommand(data: any): Promise<IVoipConnectorResult> {
-		this.logger.info({ msg: `executeCommand() executing ${this.commandText}` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
 		if (this.commandText === Commands.queue_summary.toString()) {
@@ -212,7 +207,7 @@ export class ACDQueue extends Command {
 				queue: data.queueName,
 			};
 		}
-		this.logger.debug({ msg: `executeCommand() executing AMI command ${JSON.stringify(amiCommand)}`, data });
+		this.logger.debug({ msg: `Executing AMI command ${JSON.stringify(amiCommand)}`, data });
 		const actionResultCallback = this.onActionResult.bind(this);
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);
 		return super.prepareCommandAndExecution(amiCommand, actionResultCallback, eventHandlerSetupCallback);

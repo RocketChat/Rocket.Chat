@@ -40,8 +40,10 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 		// handle agent disconnections
 		this.onEvent('watch.pbxevents', async ({ data }) => {
+			this.logger.debug(`Get event watch.pbxevents on service`);
 			const extension = data.agentExtension;
 			if (!extension) {
+				this.logger.debug(`No agent extension associated with the event. Skipping`);
 				return;
 			}
 			switch (data.event) {
@@ -56,14 +58,18 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	}
 
 	private async processCallerHangup(extension: string): Promise<void> {
+		this.logger.info(`Processing hangup event for call with agent on extension ${extension}`);
 		const agent = await this.users.findOneByExtension(extension);
 		if (!agent) {
+			this.logger.debug(`No agent found with extension ${extension}. Event won't proceed`);
 			return;
 		}
 		const currentRoom = await this.voipRoom.findOneByAgentId(agent._id);
 		if (!currentRoom) {
+			this.logger.debug(`No active call found for agent ${agent._id}`);
 			return;
 		}
+		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
 		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
 	}
 
@@ -71,6 +77,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		this.logger.info(`Processing disconnection event for agent with extension ${extension}`);
 		const agent = await this.users.findOneByExtension(extension);
 		if (!agent) {
+			this.logger.debug(`No agent found with extension ${extension}. Event won't proceed`);
 			// this should not even be possible, but just in case
 			return;
 		}
@@ -157,6 +164,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			},
 			_updatedAt: newRoomAt,
 		};
+
+		this.logger.debug(`Room created for visitor ${_id}`);
 		return (await this.voipRoom.insertOne(room)).insertedId;
 	}
 
@@ -188,7 +197,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			_.pluck(allExtensions.result as IVoipExtensionBase[], 'extension'),
 			_.pluck(allocatedExtensions, 'extension'),
 		) as string[];
-		this.logger.debug({ msg: 'getAvailableExtensions()', found: filtered.length });
 		return filtered;
 	}
 
@@ -198,7 +206,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			roles: 1,
 			extension: 1,
 		});
-		this.logger.debug({ msg: 'getExtensionAllocationDetails() all extension length ', length: allocatedExtensions.length });
 		return allocatedExtensions.map((user: any) => ({
 			_id: user._id,
 			agentName: user.username,
@@ -312,7 +319,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			callTotalHoldTime,
 			tags,
 		};
-		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
 		closeData.closedBy = {
 			_id: closerParam._id,
@@ -331,6 +337,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// For now, this data will be appended as a metric on room closing
 		await this.setCallWaitingQueueTimers(room);
 
+		this.logger.debug(`Room ${room._id} closed and timers set`);
+		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.callDuration})`);
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
 	}
@@ -437,6 +445,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			},
 		};
 
+		this.logger.debug(`Handling event ${event} on room ${room._id}`);
+
 		if (
 			isVoipRoom(room) &&
 			room.open &&
@@ -444,6 +454,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			// Check if call exists by looking if we have pbx events of it
 			(await this.pbxEvents.findOneByUniqueId(room.callUniqueId))
 		) {
+			this.logger.debug(`Room is valid. Sending event ${event}`);
 			await sendMessage(user, message, room);
 		} else {
 			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
