@@ -125,7 +125,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
-			query.onHold = { $ne: true };
 		}
 		if (visitorId && visitorId !== 'undefined') {
 			query['v._id'] = visitorId;
