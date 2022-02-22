@@ -108,8 +108,12 @@ export abstract class RoomCoordinator {
 		return undefined;
 	}
 
-	getRoomTypeConfig(identifier: string): IRoomTypeConfig | undefined {
-		return this.roomTypes[identifier]?.config;
+	getRoomTypeConfig(identifier: string): IRoomTypeConfig {
+		if (!this.roomTypes[identifier]) {
+			throw new Error(`Room type with identifier ${identifier} does not exist.`);
+		}
+
+		return this.roomTypes[identifier].config;
 	}
 
 	getRouteLink(roomType: string, subData: RoomIdentification): string | false {
