@@ -476,17 +476,16 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should show the activate user btn', () => {
-			flexTab.moreActions.click();
+			flexTab.moreActions.click().wait(200);
 			flexTab.usersActivate.should('be.visible');
 		});
 
 		it('it should activate the user', () => {
-			flexTab.usersActivate.click();
-			flexTab.moreActions.click();
+			flexTab.usersActivate.click().wait(200);
 		});
 
 		it('it should show the deactivate btn', () => {
-			flexTab.moreActions.click();
+			flexTab.moreActions.click().wait(200);
 			flexTab.usersDeactivate.should('be.visible');
 		});
 
