@@ -1,4 +1,5 @@
 // import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import moment from 'moment';
 import React, { ReactElement } from 'react';
 
 import { IVoipRoom } from '../../../../../../../definition/IRoom';
@@ -17,6 +18,10 @@ type VoipInfoPropsType = {
 export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
+	const duration = room.callDuration && moment.duration(room.callDuration / 1000, 'seconds');
+	const waiting = room.callWaitingTime && moment.duration(room.callWaitingTime / 1000, 'seconds');
+	const hold = room.callTotalHoldTime && moment.duration(room.callTotalHoldTime, 'seconds');
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -29,9 +34,9 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 				{room.v.phone && <InfoField label={t('Phone_Number')} info={room.v.phone} />}
 				{room.queue && <InfoField label={t('Queue')} info={room.queue} />}
 				{/* {room.lastCall && <InfoField label={t('Last_Call')} info={room.lastCall} />} */}
-				{room.callWaitingTime && <InfoField label={t('Waiting_Time')} info={room.callWaitingTime} />}
-				{room.callDuration && <InfoField label={t('Talk_Time')} info={room.callDuration} />}
-				{room.callTotalHoldTime && <InfoField label={t('Hold_Time')} info={room.callTotalHoldTime} />}
+				{waiting && <InfoField label={t('Waiting_Time')} info={waiting.isValid() && waiting.humanize()} />}
+				{duration && <InfoField label={t('Talk_Time')} info={duration.isValid() && duration.humanize()} />}
+				{hold && <InfoField label={t('Hold_Time')} info={hold.isValid() && hold.humanize()} />}
 				<AgentField agent={room.servedBy} />
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
