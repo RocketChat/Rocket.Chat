@@ -69,6 +69,7 @@ import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
+import { PbxEventsRaw } from './PbxEvents';
 
 const trashCollection = trash.rawCollection();
 
@@ -145,6 +146,7 @@ export const UserDataFiles = new UserDataFilesRaw(db.collection(`${prefix}user_d
 export const Uploads = new UploadsRaw(db.collection(`${prefix}uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${prefix}webdav_accounts`), trashCollection);
 export const VoipRoom = new VoipRoomsRaw(db.collection(`${prefix}room`), trashCollection);
+export const PbxEvent = new PbxEventsRaw(db.collection('pbx_events'), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -173,6 +175,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		PbxEvent,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

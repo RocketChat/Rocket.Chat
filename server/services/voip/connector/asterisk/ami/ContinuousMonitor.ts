@@ -43,6 +43,10 @@ import {
 	isICallUnHoldEvent,
 	ICallOnHold,
 	ICallUnHold,
+	isIContactStatusEvent,
+	IContactStatus,
+	isICallHangupEvent,
+	ICallHangup,
 } from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -129,27 +133,45 @@ export class ContinuousMonitor extends Command {
 		api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
-	async storePbxEvent(event: IQueueEvent, eventName: string): Promise<void> {
+	async storePbxEvent(event: IQueueEvent | IContactStatus, eventName: string): Promise<void> {
 		try {
+			const now = new Date();
 			// store pbx event
+			if (isIContactStatusEvent(event)) {
+				// This event represents when an agent drops a call because of disconnection
+				// May happen for any reason outside of our control, like closing the browswer
+				// Or network/power issues
+				await this.pbxEvents.insertOne({
+					event: eventName,
+					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
+					ts: now,
+					agentExtension: event.aor,
+				});
+
+				return;
+			}
+
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
 			await this.pbxEvents.insertOne({
 				uniqueId: `${eventName}-${event.calleridnum}-${event.queue}-${event.uniqueid}`,
 				event: eventName,
-				ts: new Date(),
+				ts: now,
 				phone: event.calleridnum,
 				queue: event.queue,
 				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
 				callUniqueId: event.uniqueid,
+				agentExtension: event?.connectedlinenum,
 			});
 		} catch (e) {
 			this.logger.debug('Event was handled by other instance');
 		}
 	}
 
-	async processAndBroadcastEventToAllQueueMembers(event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent): Promise<void> {
+	async processAndBroadcastEventToAllQueueMembers(
+		event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent | ICallHangup,
+	): Promise<void> {
 		this.logger.debug(`Broadcasting to memebers, event =  ${event.event}`);
 		const queueDetails = await this.getQueueDetails(event.queue);
 		const members = await this.getMembersFromQueueDetails(queueDetails);
@@ -185,12 +207,25 @@ export class ContinuousMonitor extends Command {
 				break;
 			}
 			default:
-				this.logger.error(`Cant process ${event} `);
+				this.logger.error(`Cant process ${event}`);
 		}
 	}
 
 	async processHoldUnholdEvents(event: ICallOnHold | ICallUnHold): Promise<void> {
-		this.storePbxEvent(event, event.event);
+		return this.storePbxEvent(event, event.event);
+	}
+
+	async processHangupEvents(event: ICallHangup): Promise<void> {
+		return this.storePbxEvent(event, event.event);
+	}
+
+	async processContactStatusEvent(event: IContactStatus): Promise<void> {
+		if (event.contactstatus === 'Removed') {
+			// Room closing logic should be added here for the aor
+			// aor signifies address of record, which should be used for
+			// fetching the room for which serverBy = event.aor
+			return this.storePbxEvent(event, event.event);
+		}
 	}
 
 	async onEvent(event: IEventBase): Promise<void> {
@@ -221,10 +256,18 @@ export class ContinuousMonitor extends Command {
 			return this.processHoldUnholdEvents(event);
 		}
 
+		if (isIContactStatusEvent(event)) {
+			return this.processContactStatusEvent(event);
+		}
+
+		if (isICallHangupEvent(event)) {
+			return this.processHangupEvents(event);
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
-		// this.logger.debug(`Cannot handle event ${event.event}`);
+		this.logger.debug(`Cannot handle event ${event.event}`);
 	}
 
 	setupEventHandlers(): void {
@@ -237,6 +280,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('queuecallerabandon', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('hold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -248,6 +293,8 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('queuecallerabandon', this);
 		this.connection.off('hold', this);
 		this.connection.off('unhold', this);
+		this.connection.off('contactstatus', this);
+		this.connection.off('hangup', this);
 	}
 
 	initMonitor(_data: any): boolean {

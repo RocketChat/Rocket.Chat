@@ -3,7 +3,7 @@ import moment from 'moment';
 import { MessageTypes, IMessageType } from '../../ui-utils/client';
 import { IMessage, isVoipMessage } from '../../../definition/IMessage';
 
-type IMessageFuncReturn = { at: string } | { at: string; time: string } | { comment: string } | { duration: string };
+type IMessageFuncReturn = { at: string } | { at: string; time: string } | { comment: string } | { duration: string } | { reason: string };
 
 const messageTypes: IMessageType[] = [
 	{
@@ -68,6 +68,16 @@ const messageTypes: IMessageType[] = [
 		data(message: IMessage): IMessageFuncReturn {
 			return {
 				at: message.ts.toString(),
+			};
+		},
+	},
+	{
+		id: 'voip-call-ended-unexpectedly',
+		system: true,
+		message: 'Voip_call_ended_unexpectedly',
+		data(message: IMessage): IMessageFuncReturn {
+			return {
+				reason: message.msg,
 			};
 		},
 	},

@@ -47,6 +47,19 @@ export interface IQueueEvent extends IEventBase {
 	interface: string;
 }
 
+export type ContactStatuses = 'NonQualified' | 'Reachable' | 'Removed';
+
+export interface IContactStatus extends IEventBase {
+	event: 'ContactStatus';
+	privilege: string;
+	systemname: string;
+	uri: string;
+	contactstatus: ContactStatuses;
+	aor: string; // this is what we want to use
+	endpointname: string;
+	roundtripusec: string;
+}
+
 export interface IAgentConnectEvent extends IQueueEvent {
 	event: 'AgentConnect';
 	holdtime: string;
@@ -87,6 +100,11 @@ export interface ICallUnHold extends IQueueEvent {
 	event: 'Unhold';
 }
 
+export interface ICallHangup extends IQueueEvent {
+	'event': 'Hangup';
+	'cause-txt': string; // A description of why the channel was hung up.
+}
+
 export const isIAgentConnectEvent = (v: any): v is IAgentConnectEvent => v?.event === 'AgentConnect';
 export const isIAgentCalledEvent = (v: any): v is IAgentCalledEvent => v?.event === 'AgentCalled';
 export const isIQueueCallerJoinEvent = (v: any): v is IQueueCallerJoinEvent => v?.event === 'QueueCallerJoin';
@@ -95,3 +113,5 @@ export const isIQueueMemberRemovedEvent = (v: any): v is IQueueMemberRemoved => 
 export const isIQueueCallerAbandonEvent = (v: any): v is IQueueCallerAbandon => v?.event === 'QueueCallerAbandon';
 export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Hold';
 export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
+export const isIContactStatusEvent = (v: any): v is IContactStatus => v?.event === 'ContactStatus';
+export const isICallHangupEvent = (v: any): v is ICallHangup => v?.event === 'Hangup';

@@ -16,6 +16,22 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		return this.findOne(query, options);
 	}
 
+	findOpenByAgentId(agentId: string): Cursor<IVoipRoom> {
+		return this.find({
+			't': 'v',
+			'open': true,
+			'servedBy._id': agentId,
+		});
+	}
+
+	async findOneByAgentId(agentId: string): Promise<IVoipRoom | null> {
+		return this.findOne({
+			't': 'v',
+			'open': true,
+			'servedBy._id': agentId,
+		});
+	}
+
 	async findOneVoipRoomById(id: string, options: WithoutProjection<FindOneOptions<IVoipRoom>> = {}): Promise<IVoipRoom | null> {
 		const query: FilterQuery<IVoipRoom> = {
 			t: 'v',
@@ -122,7 +138,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		if (visitorId && visitorId !== 'undefined') {
 			query['v._id'] = visitorId;
 		}
-		if (createdAt) {
+		if (createdAt && Object.keys(createdAt).length) {
 			query.ts = {};
 			if (createdAt.start) {
 				query.ts.$gte = new Date(createdAt.start);
@@ -131,7 +147,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 				query.ts.$lte = new Date(createdAt.end);
 			}
 		}
-		if (closedAt) {
+		if (closedAt && Object.keys(closedAt).length) {
 			query.closedAt = {};
 			if (closedAt.start) {
 				query.closedAt.$gte = new Date(closedAt.start);
