@@ -92,7 +92,7 @@ export interface IRoomTypeServerDirectives {
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>) => boolean;
-	roomName: (room: IRoom) => string | undefined;
+	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
 	preventRenaming: () => boolean;
@@ -100,8 +100,9 @@ export interface IRoomTypeServerDirectives {
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,
-		user: AtLeast<IUser, '_id' | 'name' | 'username'>,
+		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
+		userId?: string,
 	) => { title: string | undefined; text: string };
 	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
 	includeInRoomSearch: () => boolean;

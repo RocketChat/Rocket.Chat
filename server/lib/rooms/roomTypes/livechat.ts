@@ -22,7 +22,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 
-	roomName(room: any): string | undefined {
+	roomName(room: any, _userId?: string): string | undefined {
 		return room.name || room.fname || room.label;
 	},
 
@@ -30,8 +30,8 @@ roomCoordinator.add(LivechatRoomType, {
 		return token && rid && LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token);
 	},
 
-	getNotificationDetails(room: IRoom, _user, notificationMessage: string) {
-		const title = `[Omnichannel] ${this.roomName(room)}`;
+	getNotificationDetails(room: IRoom, _sender, notificationMessage: string, userId?) {
+		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
 		return { title, text };

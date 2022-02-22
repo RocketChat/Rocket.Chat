@@ -12,6 +12,14 @@ import { Subscriptions } from '../../../../app/models/server';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
+const getCurrentUserId = (): string | undefined => {
+	try {
+		return Meteor.userId() || undefined;
+	} catch (_e) {
+		//
+	}
+};
+
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 		switch (setting) {
@@ -40,7 +48,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(room: IRoom): string | undefined {
+	roomName(room: IRoom, userId?: string): string | undefined {
 		const subscription = ((): { fname?: string; name?: string } | undefined => {
 			if (room.fname || room.name) {
 				return {
@@ -53,7 +61,13 @@ roomCoordinator.add(DirectMessageRoomType, {
 				return undefined;
 			}
 
-			return Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId());
+			const uid = userId || getCurrentUserId();
+			if (uid) {
+				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid);
+			}
+
+			// If we don't know what user is requesting the roomName, then any subscription will do
+			return Subscriptions.findOne({ rid: room._id });
 		})();
 
 		if (!subscription) {
@@ -73,20 +87,21 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	getNotificationDetails(
 		room: IRoom,
-		user: AtLeast<IUser, '_id' | 'name' | 'username'>,
+		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
+		userId?: string,
 	): { title: string | undefined; text: string } {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
 		if (!this.isGroupChat(room)) {
 			return {
-				title: this.roomName(room),
-				text: `${(useRealName && user.name) || user.username}: ${notificationMessage}`,
+				title: this.roomName(room, userId),
+				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
 			};
 		}
 
 		return {
-			title: (useRealName && user.name) || user.username,
+			title: (useRealName && sender.name) || sender.username,
 			text: notificationMessage,
 		};
 	},

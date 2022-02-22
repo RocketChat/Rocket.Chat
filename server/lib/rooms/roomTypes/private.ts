@@ -35,7 +35,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	roomName(room: IRoom): string | undefined {
+	roomName(room: IRoom, _userId?: string): string | undefined {
 		if (room.prid) {
 			return room.fname;
 		}
