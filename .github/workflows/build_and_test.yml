@@ -254,6 +254,13 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
+      - name: Store cypress test screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-screenshots
+          path: tests/cypress/screenshots
+
   test-ee:
     runs-on: ubuntu-20.04
     needs: build
@@ -357,6 +364,13 @@ jobs:
           Xvfb -screen 0 1024x768x24 :99 &
 
           for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - name: Store cypress test screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-cypress-test-screenshots
+          path: tests/cypress/screenshots
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test

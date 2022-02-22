@@ -94,15 +94,12 @@ describe('[Setup Wizard]', () => {
 		});
 
 		it('it should fill the form', () => {
-			console.log('typing');
 			setupWizard.organizationName.type('Org Name');
-			setupWizard.size.click();
-			cy.get('.rcx-options .rcx-option:first-child').click();
-			cy.wait(100);
-			setupWizard.industry.click();
-			cy.get('.rcx-options .rcx-option:first-child').click();
-			cy.wait(100);
-			setupWizard.country.click();
+			setupWizard.size.click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click().wait(100);
+			setupWizard.industry.click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click().wait(100);
+			setupWizard.country.click().wait(100);
 			cy.get('.rcx-options .rcx-option:first-child').click();
 		});
 
