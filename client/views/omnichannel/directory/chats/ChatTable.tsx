@@ -2,7 +2,7 @@ import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, FC, ReactElement, Dispatch, SetStateAction } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericTable from '../../../../components/GenericTable';
@@ -10,22 +10,45 @@ import { useRoute } from '../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) =>
+const useQuery = (
+	{
+		text,
+		itemsPerPage,
+		current,
+	}: {
+		text?: string;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
+	},
+	[column, direction]: string[],
+	userIdLoggedIn: string | null,
+): {
+	sort: string;
+	open: boolean;
+	roomName: string;
+	agents: string[];
+	count?: number;
+	current?: number;
+} =>
 	useMemo(
 		() => ({
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
 			open: false,
-			roomName: text,
-			agents: [userIdLoggedIn],
+			roomName: text || '',
+			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
 		[column, current, direction, itemsPerPage, userIdLoggedIn, text],
 	);
 
-const ChatTable = ({ setChatReload }) => {
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['closedAt', 'desc']);
+const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setChatReload }) => {
+	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
+		text: '',
+		current: 0,
+		itemsPerPage: 25,
+	});
+	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(['closedAt', 'desc']);
 	const t = useTranslation();
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -51,10 +74,10 @@ const ChatTable = ({ setChatReload }) => {
 		}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload } = useEndpointData('livechat/rooms', query as any); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
 
 	useEffect(() => {
-		setChatReload(() => reload);
+		setChatReload?.(() => reload);
 	}, [reload, setChatReload]);
 
 	const header = useMemo(
@@ -115,7 +138,7 @@ const ChatTable = ({ setChatReload }) => {
 						<Box withTruncatedText>{fname}</Box>
 						{tags && (
 							<Box color='hint' display='flex' flex-direction='row'>
-								{tags.map((tag) => (
+								{tags.map((tag: string) => (
 									<Box
 										style={{
 											marginTop: 4,
@@ -148,11 +171,11 @@ const ChatTable = ({ setChatReload }) => {
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data && data.rooms}
-			total={data && data.total}
+			results={data?.rooms}
+			total={data?.total}
 			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
+			renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
 		/>
 	);
 };

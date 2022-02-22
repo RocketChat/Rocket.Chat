@@ -114,7 +114,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id?: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: string;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
@@ -190,6 +189,12 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
+	v: {
+		_id?: string;
+		token?: string;
+		status: 'online' | 'busy' | 'away' | 'offline';
+		phone?: string | null;
+	};
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {

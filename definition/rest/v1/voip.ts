@@ -38,7 +38,10 @@ export type VoipEndpoints = {
 		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};
 	'voip/room': {
-		GET: (params: { token: string; agentId: ILivechatAgent['_id'] }) => { room: IVoipRoom; newRoom: boolean };
+		GET: (params: { token: string; agentId: ILivechatAgent['_id'] } | { rid: string; token: string }) => {
+			room: IVoipRoom;
+			newRoom: boolean;
+		};
 	};
 	'voip/managementServer/checkConnection': {
 		GET: (params: { host: string; port: string; username: string; password: string }) => IManagementServerConnectionStatus;
@@ -48,13 +51,13 @@ export type VoipEndpoints = {
 	};
 	'voip/rooms': {
 		GET: (params: {
-			agents: string[];
-			open: boolean;
-			createdAt: string;
-			closedAt: string;
-			tags: string[];
-			queue: string;
-			visitorId: string;
+			agents?: string[];
+			open?: boolean;
+			createdAt?: string;
+			closedAt?: string;
+			tags?: string[];
+			queue?: string;
+			visitorId?: string;
 		}) => PaginatedResult<{ rooms: IVoipRoom[] }>;
 	};
 	'voip/room.close': {

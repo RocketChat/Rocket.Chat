@@ -9,10 +9,10 @@ import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 
 type DateParam = { start?: string; end?: string };
-const parseDateParams = (date: string): DateParam => {
+const parseDateParams = (date?: string): DateParam => {
 	return date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
 };
-const validateDateParams = (property: string, date: DateParam): DateParam => {
+const validateDateParams = (property: string, date: DateParam = {}): DateParam => {
 	if (date?.start && isNaN(Date.parse(date.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
@@ -21,10 +21,9 @@ const validateDateParams = (property: string, date: DateParam): DateParam => {
 	}
 	return date;
 };
-const parseAndValidate = (property: string, date: string): DateParam => {
+const parseAndValidate = (property: string, date?: string): DateParam => {
 	return validateDateParams(property, parseDateParams(date));
 };
-
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -88,7 +87,7 @@ API.v1.addRoute(
 		async get() {
 			const defaultCheckParams = {
 				token: String,
-				agentId: String,
+				agentId: Match.Maybe(String),
 				rid: Match.Maybe(String),
 			};
 			check(this.queryParams, defaultCheckParams);
@@ -112,14 +111,14 @@ API.v1.addRoute(
 					return API.v1.failure('agent-not-found');
 				}
 
-				const { username } = agentObj;
-				const agent = { agentId, username };
+				const { username, _id } = agentObj;
+				const agent = { agentId: _id, username };
 				const rid = Random.id();
 
 				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
 			}
 
-			const room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
+			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
 			if (!room) {
 				return API.v1.failure('invalid-room');
 			}
@@ -157,7 +156,7 @@ API.v1.addRoute(
 			return API.v1.success(
 				await LivechatVoip.findVoipRooms({
 					agents,
-					open,
+					open: open === 'true',
 					tags,
 					queue,
 					visitorId,

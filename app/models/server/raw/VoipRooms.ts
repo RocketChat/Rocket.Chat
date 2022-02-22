@@ -88,7 +88,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 					closer,
 					closedBy,
 					closedAt,
-					'metrics.callDuration': callDuration,
+					callDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
 					'v.status': 'offline',
 					...extraData,
@@ -133,7 +133,6 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
-			query.onHold = { $ne: true };
 		}
 		if (visitorId && visitorId !== 'undefined') {
 			query['v._id'] = visitorId;
