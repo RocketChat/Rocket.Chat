@@ -49,11 +49,18 @@ export const VoipInfo = ({ room, onClickClose }: VoipInfoPropsType): ReactElemen
 				{v?.phone && <InfoField label={t('Caller_Id')} info={v?.phone} />}
 				{queue && <InfoField label={t('Queue')} info={queue} />}
 				{callEndedAt && <InfoField label={t('Last_Call')} info={moment(callEndedAt).format('L LTS')} />}
-				{callWaitingTime !== undefined && <InfoField label={t('Waiting_Time')} info={moment.utc(callWaitingTime).format('HH:mm')} />}
-				{callDuration !== undefined && <InfoField label={t('Talk_Time')} info={moment.utc(callDuration).format('HH:mm')} />}
-				{callTotalHoldTime !== undefined && <InfoField label={t('Hold_Time')} info={moment.utc(callTotalHoldTime).format('HH:mm')} />}
+				{callWaitingTime !== undefined && (
+					<InfoField label={t('Waiting_Time')} info={moment.duration(callWaitingTime / 1000, 'seconds').humanize()} />
+				)}
+				{callDuration !== undefined && (
+					<InfoField label={t('Talk_Time')} info={moment.duration(callDuration / 1000, 'seconds').humanize()} />
+				)}
+				{callTotalHoldTime !== undefined && (
+					<InfoField label={t('Hold_Time')} info={moment.duration(callTotalHoldTime, 'seconds').humanize()} />
+				)}
 				{/* <InfoField label={t('Wrap_Up_Note')} info={guest.holdTime} /> */}
 			</VerticalBar.ScrollableContent>
 		</>
 	);
+	moment.duration(callTotalHoldTime / 1000).humanize();
 };

@@ -132,16 +132,19 @@ const CallTable: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, fname, callStarted, queue, callDuration, v }) => (
-			<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
-				<Table.Cell withTruncatedText>{fname}</Table.Cell>
-				<Table.Cell withTruncatedText>{v?.phone}</Table.Cell>
-				<Table.Cell withTruncatedText>{queue}</Table.Cell>
-				<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
-				<Table.Cell withTruncatedText>{callDuration}</Table.Cell>
-				<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
-			</Table.Row>
-		),
+		({ _id, fname, callStarted, queue, callDuration, v }) => {
+			const duration = moment.duration(callDuration / 1000, 'seconds');
+			return (
+				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id, v?.token)} action qa-user-id={_id}>
+					<Table.Cell withTruncatedText>{fname}</Table.Cell>
+					<Table.Cell withTruncatedText>{v?.phone}</Table.Cell>
+					<Table.Cell withTruncatedText>{queue}</Table.Cell>
+					<Table.Cell withTruncatedText>{moment(callStarted).format('L LTS')}</Table.Cell>
+					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
+					<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
+				</Table.Row>
+			)
+		},
 		[onRowClick, t],
 	);
 

@@ -88,7 +88,7 @@ export class VoipRoomsRaw extends BaseRaw<IVoipRoom> {
 					closer,
 					closedBy,
 					closedAt,
-					'metrics.callDuration': callDuration,
+					callDuration,
 					'metrics.serviceTimeDuration': serviceTimeDuration,
 					'v.status': 'offline',
 					...extraData,
