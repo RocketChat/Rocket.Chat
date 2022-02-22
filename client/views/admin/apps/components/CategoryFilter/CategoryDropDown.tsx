@@ -1,12 +1,12 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, FC, useCallback } from 'react';
 
-import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
-import { isValidReference } from '../helpers/isValidReference';
-import { onMouseEventPreventSideEffects } from '../helpers/preventSideEffects';
+import { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import { isValidReference } from '../../helpers/isValidReference';
+import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
+import DropDownListWrapper from '../DropDownListWrapper';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
-import DropDownListWrapper from './DropDownListWrapper';
 
 const CategoryDropDown: FC<{
 	data: CategoryDropDownListProps['groups'];
