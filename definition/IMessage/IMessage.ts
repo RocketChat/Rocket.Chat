@@ -10,6 +10,12 @@ import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
+type MessageUrl = {
+	url: string;
+	meta: Record<string, string>;
+	headers?: { contentLength: string; contentType: string };
+};
+
 type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -71,10 +77,7 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
 
-	urls?: {
-		url: string;
-		meta: Record<string, string>;
-	}[];
+	urls?: MessageUrl[];
 
 	/** @deprecated Deprecated */
 	actionLinks?: {
