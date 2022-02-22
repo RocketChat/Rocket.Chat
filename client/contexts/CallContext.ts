@@ -21,6 +21,7 @@ type CallContextReady = {
 	ready: true;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
+	openWrapUpModal: () => void;
 	openRoom: (caller: ICallerInfo) => void;
 	closeRoom: (data: { comment: string; tags?: string[] }) => void;
 };
@@ -127,4 +128,14 @@ export const useCallClient = (): VoIPUser => {
 		throw new Error('useClient only if Calls are enabled and ready');
 	}
 	return context.voipClient;
+};
+
+export const useWrapUpModal = (): CallContextReady['openWrapUpModal'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useClient only if Calls are enabled and ready');
+	}
+
+	return context.openWrapUpModal;
 };

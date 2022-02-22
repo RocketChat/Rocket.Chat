@@ -6,7 +6,9 @@ import { OutgoingByeRequest } from 'sip.js/lib/core';
 import { Notifications } from '../../../app/notifications/client';
 import { roomTypes } from '../../../app/utils/client';
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
+import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -25,6 +27,12 @@ export const CallProvider: FC = ({ children }) => {
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const setModal = useSetModal();
+
+	const openWrapUpModal = useCallback((): void => {
+		setModal(<WrapUpCallModal />);
+	}, [setModal]);
 
 	const handleAgentCalled = useCallback(
 		(queue: { queuename: string }): void => {
@@ -143,8 +151,10 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '50000',
 				},
 			});
+
+			openWrapUpModal();
 		},
-		[dispatchToastMessage],
+		[dispatchToastMessage, openWrapUpModal],
 	);
 
 	useEffect(() => {
@@ -222,8 +232,9 @@ export const CallProvider: FC = ({ children }) => {
 				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment, tags }));
 				homeRoute.push({});
 			},
+			openWrapUpModal,
 		};
-	}, [homeRoute, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+	}, [homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
