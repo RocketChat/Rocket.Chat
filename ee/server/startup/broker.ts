@@ -7,6 +7,7 @@ import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
 const {
+	MS_NAMESPACE = '',
 	TRANSPORTER = '',
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
@@ -71,6 +72,7 @@ class EJSONSerializer extends Base {
 }
 
 const network = new ServiceBroker({
+	namespace: MS_NAMESPACE,
 	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 	transporter: TRANSPORTER,
 	metrics: {
