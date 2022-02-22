@@ -63,7 +63,7 @@ const ThreadComponent: FC<{
 	onClickBack: (e: unknown) => void;
 }> = ({ mid, jump, room, onClickBack }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
-	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t)?.route?.name as string);
+	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
 	const openUserInfo = useTabBarOpenUserInfo();

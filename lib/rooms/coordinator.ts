@@ -9,6 +9,7 @@ import type {
 	RoomIdentification,
 } from '../../definition/IRoomTypeConfig';
 import type { SettingValue } from '../../definition/ISetting';
+import type { RoomType } from '../../definition/IRoom';
 
 export abstract class RoomCoordinator {
 	roomTypes: Record<string, { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives | IRoomTypeServerDirectives }>;
@@ -108,8 +109,16 @@ export abstract class RoomCoordinator {
 		return undefined;
 	}
 
+	getRoomTypeConfig(identifier: RoomType): IRoomTypeConfig & Pick<Required<IRoomTypeConfig>, 'route'>;
+
+	getRoomTypeConfig(identifier: string): IRoomTypeConfig | undefined;
+
 	getRoomTypeConfig(identifier: string): IRoomTypeConfig | undefined {
-		return this.roomTypes[identifier]?.config;
+		if (!this.roomTypes[identifier]) {
+			throw new Error(`Room type with identifier ${identifier} does not exist.`);
+		}
+
+		return this.roomTypes[identifier].config;
 	}
 
 	getRouteLink(roomType: string, subData: RoomIdentification): string | false {
