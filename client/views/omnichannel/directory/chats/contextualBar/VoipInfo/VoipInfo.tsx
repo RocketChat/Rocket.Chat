@@ -34,9 +34,9 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 				{room.v.phone && <InfoField label={t('Phone_Number')} info={room.v.phone} />}
 				{room.queue && <InfoField label={t('Queue')} info={room.queue} />}
 				{/* {room.lastCall && <InfoField label={t('Last_Call')} info={room.lastCall} />} */}
-				<InfoField label={t('Waiting_Time')} info={waiting} />
-				<InfoField label={t('Talk_Time')} info={duration} />
-				<InfoField label={t('Hold_Time')} info={hold} />
+				<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
+				<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
+				<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
 				<AgentField agent={room.servedBy} />
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

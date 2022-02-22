@@ -162,6 +162,7 @@ export class ContinuousMonitor extends Command {
 				queue: event.queue,
 				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
 				callUniqueId: event.uniqueid,
+				callUniqueIdFallback: event.linkedid,
 				agentExtension: event?.connectedlinenum,
 			});
 		} catch (e) {

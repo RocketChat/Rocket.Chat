@@ -4724,7 +4724,7 @@
   "VoIP_Management_Server_Name": "VoIP Management Server Name",
   "VoIP_Management_Server_Username": "VoIP Management Server Username",
   "VoIP_Management_Server_Password": "VoIP Management Server Password",
-  "Voip_call_started": "Call started at __at__ (queued for __time__)",
+  "Voip_call_started": "Call started at __at__",
   "Voip_call_duration": "Call lasted __duration__",
   "Voip_call_declined": "Call hanged up by agent",
   "Voip_call_on_hold": "Call placed on hold at __at__",

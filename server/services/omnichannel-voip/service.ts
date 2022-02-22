@@ -15,7 +15,6 @@ import { IVoipRoom, IRoomClosingInfo, OmnichannelSourceType, isVoipRoom } from '
 import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { VoipClientEvents } from '../../../definition/voip/VoipClientEvents';
-import { IVoipMessage } from '../../../definition/IMessage';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
 import { ILivechatAgent } from '../../../definition/ILivechatAgent';
@@ -327,6 +326,11 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		};
 
 		await sendMessage(user, message, room);
+		// There's a race condition between receiving the call and receiving the event
+		// Sometimes it happens before the connection on client, sometimes it happens after
+		// For now, this data will be appended as a metric on room closing
+		await this.setCallWaitingQueueTimers(room);
+
 		this.voipRoom.closeByRoomId(rid, closeData);
 		return true;
 	}
@@ -403,9 +407,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		};
 	}
 
-	private async handleCallStartedEvent(user: IUser, message: Partial<IVoipMessage>, room: IVoipRoom): Promise<void> {
+	private async setCallWaitingQueueTimers(room: IVoipRoom): Promise<void> {
 		// Fetch agent connected event for started call
-		const agentCalledEvent = await this.pbxEvents.findOne({ callUniqueId: room.callUniqueId, event: 'AgentConnect' });
+		if (!room.callUniqueId) {
+			return;
+		}
+
+		const agentCalledEvent = await this.pbxEvents.findOneByEvent(room.callUniqueId, 'AgentConnect');
 		// Update room with the agentconnect event information (hold time => time call was in queue)
 		await this.voipRoom.updateOne(
 			{ _id: room._id },
@@ -416,12 +424,6 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				},
 			},
 		);
-
-		if (message.voipData) {
-			message.voipData.callWaitingTime = agentCalledEvent?.holdTime;
-		}
-
-		await sendMessage(user, message, room);
 	}
 
 	async handleEvent(event: VoipClientEvents, room: IVoipRoom, user: IUser, comment?: string): Promise<void> {
@@ -440,15 +442,9 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			room.open &&
 			room.callUniqueId &&
 			// Check if call exists by looking if we have pbx events of it
-			(await this.pbxEvents.findOne({ callUniqueId: room.callUniqueId }))
+			(await this.pbxEvents.findOneByUniqueId(room.callUniqueId))
 		) {
-			switch (event) {
-				case VoipClientEvents['VOIP-CALL-STARTED']:
-					this.handleCallStartedEvent(user, message, room);
-					break;
-				default:
-					await sendMessage(user, message, room);
-			}
+			await sendMessage(user, message, room);
 		} else {
 			this.logger.warn({ msg: 'Invalid room type or event type', type: room.t, event });
 		}

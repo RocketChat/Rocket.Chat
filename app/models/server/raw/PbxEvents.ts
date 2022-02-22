@@ -9,7 +9,14 @@ export class PbxEventsRaw extends BaseRaw<IPbxEvent> {
 	findByEvents(callUniqueId: string, events: string[]): Cursor<IPbxEvent> {
 		return this.find(
 			{
-				callUniqueId,
+				$or: [
+					{
+						callUniqueId,
+					},
+					{
+						callUniqueIdFallback: callUniqueId,
+					},
+				],
 				event: {
 					$in: events,
 				},
@@ -20,5 +27,32 @@ export class PbxEventsRaw extends BaseRaw<IPbxEvent> {
 				},
 			},
 		);
+	}
+
+	findOneByEvent(callUniqueId: string, event: string): Promise<IPbxEvent | null> {
+		return this.findOne({
+			$or: [
+				{
+					callUniqueId,
+				},
+				{
+					callUniqueIdFallback: callUniqueId,
+				},
+			],
+			event,
+		});
+	}
+
+	findOneByUniqueId(callUniqueId: string): Promise<IPbxEvent | null> {
+		return this.findOne({
+			$or: [
+				{
+					callUniqueId,
+				},
+				{
+					callUniqueIdFallback: callUniqueId,
+				},
+			],
+		});
 	}
 }
