@@ -1,13 +1,14 @@
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 
 import type { IRoom, RoomType } from './IRoom';
+import type { ISubscription } from './ISubscription';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { ReadReceipt } from './ReadReceipt';
 import type { ValueOf, AtLeast } from './utils';
 
-export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
+export type RoomIdentification = Partial<ISubscription> | (Partial<IRoom> & { rid?: string });
 
 export interface IRoomTypeRouteConfig {
 	name: string;
