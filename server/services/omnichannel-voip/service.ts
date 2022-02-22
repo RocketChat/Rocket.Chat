@@ -308,7 +308,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		const callTotalHoldTime = await this.calculateOnHoldTimeForRoom(room, now);
 		const closeData: IRoomClosingInfo = {
 			closedAt: now,
-			callDuration: now.getTime() / 1000,
+			callDuration: now.getTime() - room.ts.getTime(),
 			closer,
 			callTotalHoldTime,
 			tags,

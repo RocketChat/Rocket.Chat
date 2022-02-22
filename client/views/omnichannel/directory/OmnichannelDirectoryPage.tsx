@@ -1,5 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
@@ -7,10 +7,11 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import ContextualBar from './ContextualBar';
+import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
-const OmnichannelDirectoryPage = () => {
+const OmnichannelDirectoryPage = (): ReactElement => {
 	const defaultTab = 'contacts';
 
 	const [routeName] = useCurrentRoute();
@@ -28,7 +29,7 @@ const OmnichannelDirectoryPage = () => {
 		}
 	}, [routeName, directoryRoute, tab, defaultTab]);
 
-	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
+	const handleTabClick = useCallback((tab) => (): void => directoryRoute.push({ tab }), [directoryRoute]);
 
 	const [contactReload, setContactReload] = useState();
 	const [chatReload, setChatReload] = useState();
@@ -48,12 +49,16 @@ const OmnichannelDirectoryPage = () => {
 						{t('Contacts')}
 					</Tabs.Item>
 					<Tabs.Item selected={tab === 'chats'} onClick={handleTabClick('chats')}>
-						{t('Chats')}
+						{t('Chats' as 'color')}
+					</Tabs.Item>
+					<Tabs.Item selected={tab === 'calls'} onClick={handleTabClick('calls')}>
+						{t('Calls' as 'color')}
 					</Tabs.Item>
 				</Tabs>
 				<Page.Content>
 					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
-						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />)}
+						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
+						(tab === 'calls' && <CallTab />)}
 				</Page.Content>
 			</Page>
 			<ContextualBar chatReload={chatReload} contactReload={contactReload} />

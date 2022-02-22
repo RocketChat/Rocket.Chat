@@ -13,7 +13,14 @@ export interface IConnection {
 	 * @remarks
 	 * Callback for handling incoming call
 	 */
-	connect(connectionIpOrHostname: string, connectionPort: string, userName: string, password: string): void;
+	connect?(connectionIpOrHostname: string, connectionPort: string, userName: string, password: string): Promise<void>;
+
+	/**
+	 * Called for conneting to the server
+	 * @remarks
+	 * Callback for handling incoming call
+	 */
+	connectWithUrl?(connectionUrl: string, connectionProtocol?: string): Promise<void>;
 	/**
 	 * Called for executing the command to the connection
 	 * @remarks
