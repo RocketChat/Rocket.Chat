@@ -7,7 +7,7 @@ import RoomWithData from '../../../room/Room';
 
 const Chat: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	useEffect(() => {
-		openRoom('l', rid, false);
+		openRoom('v', rid, false);
 	}, [rid]);
 
 	return (

@@ -118,7 +118,7 @@ API.v1.addRoute(
 				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
 			}
 
-			const room = await VoipRoom.findOneOpenByRoomIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
+			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
 			if (!room) {
 				return API.v1.failure('invalid-room');
 			}
@@ -156,7 +156,7 @@ API.v1.addRoute(
 			return API.v1.success(
 				await LivechatVoip.findVoipRooms({
 					agents,
-					open,
+					open: open === 'true',
 					tags,
 					queue,
 					visitorId,
