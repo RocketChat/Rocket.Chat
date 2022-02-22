@@ -29,7 +29,7 @@
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "nyc -r html mocha --config ./.mocharc.js",
 		"testci": "node .scripts/start.js",
-		"testui": "cypress run --project tests",
+		"testui": "cypress run",
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "mocha --config ./.mocharc.js",
 		"testunit-client": "mocha --config ./.mocharc.client.js",
