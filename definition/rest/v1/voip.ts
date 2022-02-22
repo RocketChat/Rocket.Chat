@@ -1,6 +1,6 @@
 import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
-import { IRoom, IVoipRoom } from '../../IRoom';
+import { IVoipRoom } from '../../IRoom';
 import { IUser } from '../../IUser';
 import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
@@ -38,7 +38,7 @@ export type VoipEndpoints = {
 		POST: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	};
 	'voip/room': {
-		GET: (params: { token: string; agentId: ILivechatAgent['_id'] }) => { room: IRoom; newRoom: boolean };
+		GET: (params: { token: string; agentId: ILivechatAgent['_id'] }) => { room: IVoipRoom; newRoom: boolean };
 	};
 	'voip/managementServer/checkConnection': {
 		GET: (params: { host: string; port: string; username: string; password: string }) => IManagementServerConnectionStatus;
@@ -58,6 +58,6 @@ export type VoipEndpoints = {
 		}) => PaginatedResult<{ rooms: IVoipRoom[] }>;
 	};
 	'voip/room.close': {
-		POST: (params: { rid: string; token: string; comment: string; tags: string[] }) => { rid: string; comment: string };
+		POST: (params: { rid: string; token: string; comment: string; tags?: string[] }) => { rid: string };
 	};
 };

@@ -19,6 +19,7 @@ import { IVoipMessage } from '../../../definition/IMessage';
 import { PaginatedResult } from '../../../definition/rest/helpers/PaginatedResult';
 import { FindVoipRoomsParams } from './internalTypes';
 import { ILivechatAgent } from '../../../definition/ILivechatAgent';
+import { Notifications } from '../../../app/notifications/server';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -44,8 +45,27 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			if (!extension) {
 				return;
 			}
-			await this.processAgentDisconnect(extension);
+			switch (data.event) {
+				case 'ContactStatus': {
+					return this.processAgentDisconnect(extension);
+				}
+				case 'Hangup': {
+					return this.processCallerHangup(extension);
+				}
+			}
 		});
+	}
+
+	private async processCallerHangup(extension: string): Promise<void> {
+		const agent = await this.users.findOneByExtension(extension);
+		if (!agent) {
+			return;
+		}
+		const currentRoom = await this.voipRoom.findOneByAgentId(agent._id);
+		if (!currentRoom) {
+			return;
+		}
+		Notifications.notifyUserInThisInstance(agent._id, 'call.callerhangup', { roomId: currentRoom._id });
 	}
 
 	private async processAgentDisconnect(extension: string): Promise<void> {
@@ -82,7 +102,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		// Use latest queue caller join event
 		const callStartPbxEvent = await this.pbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0].phoneNumber,
+				phone: guest?.phone?.[0]?.phoneNumber,
 				event: 'QueueCallerJoin',
 			},
 			{ sort: { ts: -1 } },
@@ -107,6 +127,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				phone: guest?.phone?.[0]?.phoneNumber,
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -410,7 +431,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			groupable: false as const,
 			voipData: {
 				callDuration: Number(room.callDuration) || 0,
-				callStarted: room.callStarted.toISOString(),
+				callStarted: room.callStarted?.toISOString() || new Date().toISOString(),
 			},
 		};
 
