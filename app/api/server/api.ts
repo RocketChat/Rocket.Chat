@@ -7,9 +7,8 @@ import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
 import { Request, Response } from 'express';
-import { Group, Route } from 'meteor/kadira:flow-router';
-import { RateLimitListInstanceCreateOptions } from 'twilio/lib/rest/verify/v2/service/rateLimit';
-import { IApiEndpoint, IApiRequest } from '@rocket.chat/apps-engine/definition/api';
+import { Route } from 'meteor/kadira:flow-router';
+import { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -18,13 +17,10 @@ import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
-import { ISubscription } from '../../../definition/ISubscription';
-import { ISetting } from '../../../definition/ISetting';
-import { SuccessResult, FailureResult } from './api';
+import { SuccessResult, FailureResult, Options } from './api';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
-import { Options } from './api';
 
-const rateLimiterDictionary = {};
+const rateLimiterDictionary = {} as RateLimiter;
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -220,7 +216,7 @@ export class APIClass extends Restivus {
 		};
 	}
 
-	getRateLimiter(route: Route): unknown {
+	getRateLimiter(route: string): unknown {
 		return rateLimiterDictionary[route];
 	}
 
@@ -233,7 +229,7 @@ export class APIClass extends Restivus {
 		);
 	}
 
-	enforceRateLimit(objectForRateLimitMatch: {}, request: Request, response: Response, userId: string): void {
+	enforceRateLimit(objectForRateLimitMatch: RateLimiter, request: Request, response: Response, userId: string): void {
 		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
 			return;
 		}
@@ -288,7 +284,7 @@ export class APIClass extends Restivus {
 		if (!rateLimiterOptions.intervalTimeInMS) {
 			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
 		}
-		const addRateLimitRuleToEveryRoute = (routes: Route[]): void => {
+		const addRateLimitRuleToEveryRoute = (routes: string[]): void => {
 			routes.forEach((route) => {
 				rateLimiterDictionary[route] = {
 					rateLimiter: new RateLimiter(),
@@ -346,14 +342,14 @@ export class APIClass extends Restivus {
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
-	addRoute(routes: Route[], options: IApiEndpoint, endpoints: IApiEndpoint): void {
+	addRoute(routes: Route[], options: Options, endpoints: string[]): void {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
 			endpoints = options;
 			options = {};
 		}
 
-		let shouldVerifyPermissions;
+		let shouldVerifyPermissions: boolean;
 
 		if (!_.isArray(options.permissionsRequired)) {
 			options.permissionsRequired = undefined;
@@ -366,7 +362,7 @@ export class APIClass extends Restivus {
 		if (!_.isArray(routes)) {
 			routes = [routes];
 		}
-		const { version } = this._config;
+		const { version } = (this as any)._config;
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
@@ -375,7 +371,7 @@ export class APIClass extends Restivus {
 				apiVersion: version,
 			});
 		}
-		routes.forEach((route: Route) => {
+		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(endpoints).forEach((method) => {
 				const _options = { ...options };
@@ -390,7 +386,7 @@ export class APIClass extends Restivus {
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				const api = this;
-				endpoints[method].action = function _internalRouteActionHandler() {
+				endpoints[method].action = function _internalRouteActionHandler(): unknown {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
@@ -402,7 +398,7 @@ export class APIClass extends Restivus {
 
 					const startTime = Date.now();
 
-					const log = logger.logger.child({
+					const log = Logger.logger.child({
 						method: this.request.method,
 						url: this.request.url,
 						userId: this.request.headers['x-user-id'],
@@ -423,7 +419,7 @@ export class APIClass extends Restivus {
 
 					const connection = {
 						id: Random.id(),
-						close() {},
+						close(): void {},
 						token: this.token,
 						httpHeaders: this.request.headers,
 						clientAddress: this.requestIp,
@@ -502,7 +498,7 @@ export class APIClass extends Restivus {
 		});
 	}
 
-	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
+	updateRateLimiterDictionaryForRoute(route: string | number, numRequestsAllowed: unknown, intervalTimeInMS: unknown): void {
 		if (rateLimiterDictionary[route]) {
 			rateLimiterDictionary[route].options.numRequestsAllowed =
 				numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
@@ -512,7 +508,7 @@ export class APIClass extends Restivus {
 	}
 
 	_initAuth(): void {
-		const loginCompatibility = (bodyParams, request): unknown => {
+		const loginCompatibility = (bodyParams: {}, request: Request): unknown => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code: bodyCode } = bodyParams;
 			let usernameToLDAPLogin = '';
