@@ -1,6 +1,7 @@
 {
 	"defaultCommandTimeout": 15000,
 	"video": false,
+	"trashAssetsBeforeRuns": false,
 	"projectId": "99zfrs",
 	"fixturesFolder": "tests/cypress/fixtures",
 	"pluginsFile": "tests/cypress/plugins",
