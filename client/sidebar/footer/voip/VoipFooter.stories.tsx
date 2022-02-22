@@ -46,8 +46,10 @@ export const Default = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
-				openRoom={() => null}
+				openRoom={() => ''}
 				openWrapUpCallModal={() => null}
+				dispatchEvent={() => null}
+				openedRoomInfo={{ v: { token: '' }, rid: '' }}
 			/>
 		</Box>
 	);

@@ -5,7 +5,6 @@ import { VoipInfo } from './VoipInfo';
 
 const VoipInfoWithData = ({ tabBar: { close } }: any): ReactElement => {
 	const room = useVoipRoom();
-	console.log(room);
 
 	const onClickReport = (): void => {
 		// TODO: report

@@ -129,7 +129,7 @@ export const VoipFooter = ({
 						primary
 						onClick={async (): Promise<void> => {
 							callActions.pickUp();
-							const rid = openRoom(caller);
+							const rid = await openRoom(caller);
 							dispatchEvent({ event: VoipClientEvents['VOIP-CALL-STARTED'], rid });
 						}}
 					>
