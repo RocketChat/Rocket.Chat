@@ -49,9 +49,9 @@ export const VoipInfo = ({ room, onClickClose }: VoipInfoPropsType): ReactElemen
 				{v?.phone && <InfoField label={t('Caller_Id')} info={v?.phone} />}
 				{queue && <InfoField label={t('Queue')} info={queue} />}
 				{callEndedAt && <InfoField label={t('Last_Call')} info={moment(callEndedAt).format('L LTS')} />}
-				{callWaitingTime && <InfoField label={t('Waiting_Time')} info={callWaitingTime.toString()} />}
-				{callDuration && <InfoField label={t('Talk_Time')} info={callDuration.toString()} />}
-				{callTotalHoldTime && <InfoField label={t('Hold_Time')} info={callTotalHoldTime.toString()} />}
+				{callWaitingTime !== undefined && <InfoField label={t('Waiting_Time')} info={moment.utc(callWaitingTime).format('HH:mm')} />}
+				{callDuration !== undefined && <InfoField label={t('Talk_Time')} info={moment.utc(callDuration).format('HH:mm')} />}
+				{callTotalHoldTime !== undefined && <InfoField label={t('Hold_Time')} info={moment.utc(callTotalHoldTime).format('HH:mm')} />}
 				{/* <InfoField label={t('Wrap_Up_Note')} info={guest.holdTime} /> */}
 			</VerticalBar.ScrollableContent>
 		</>

@@ -108,11 +108,11 @@ const CallTable: FC = () => {
 					{t('Started_At')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
-					key={'talkTime'}
+					key={'callDuration'}
 					direction={sort[1]}
-					active={sort[0] === 'talkTime'}
+					active={sort[0] === 'callDuration'}
 					onClick={onHeaderClick}
-					sort='talkTime'
+					sort='callDuration'
 					w='x120'
 				>
 					{t('Talk_Time')}
