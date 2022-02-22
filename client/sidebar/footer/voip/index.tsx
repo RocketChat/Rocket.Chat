@@ -1,6 +1,14 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import { useCallActions, useCallerInfo, useCallOpenRoom, useWrapUpModal, useQueueCounter } from '../../../contexts/CallContext';
+import {
+	useCallActions,
+	useCallerInfo,
+	useCallOpenRoom,
+	useOpenedRoomInfo,
+	useQueueCounter,
+	useWrapUpModal,
+} from '../../../contexts/CallContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
@@ -8,9 +16,12 @@ export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
+	const dispatchEvent = useEndpoint('POST', 'voip/events');
+
 	const openRoom = useCallOpenRoom();
 	const queueCounter = useQueueCounter();
 	const openWrapUpCallModal = useWrapUpModal();
+	const openedRoomInfo = useOpenedRoomInfo();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);
@@ -71,6 +82,8 @@ export const VoipFooter = (): ReactElement | null => {
 			openRoom={openRoom}
 			callsInQueue={t('Calls_in_queue', { calls: queueCounter })}
 			openWrapUpCallModal={openWrapUpCallModal}
+			dispatchEvent={dispatchEvent}
+			openedRoomInfo={openedRoomInfo}
 		/>
 	);
 };

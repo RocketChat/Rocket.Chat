@@ -319,7 +319,6 @@ export const Livechat = {
 			Livechat.logger.debug('Found matching user by token');
 			userId = user._id;
 		} else if (phone && (existingUser = LivechatVisitors.findOneVisitorByPhone(phone.number))) {
-			console.log(existingUser);
 			Livechat.logger.debug('Found matching user by phone number');
 			userId = existingUser._id;
 			// Don't change token when matching by phone number, use current visitor token

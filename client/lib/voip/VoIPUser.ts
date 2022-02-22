@@ -315,7 +315,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		if (!(sessionDescriptionHandler instanceof SessionDescriptionHandler)) {
 			throw new Error("Session's session description handler not instance of SessionDescriptionHandler.");
 		}
-
 		const options: SessionInviteOptions = {
 			requestDelegate: {
 				onAccept: (): void => {
@@ -493,18 +492,42 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 		// Call state must be in offer_received.
 		if (this._callState === 'OFFER_RECEIVED' && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = 'ANSWER_SENT';
-			const invitationAcceptOptions: InvitationAcceptOptions = {
-				sessionDescriptionHandlerOptions: {
-					constraints: {
-						audio: true,
-						video: !!this.config.enableVideo,
-					},
-				},
-			};
 			// Somethingis wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
 				throw new Error('Session not instance of Invitation.');
 			}
+			/**
+			 * It is important to decide when to add video option to the outgoing offer.
+			 * This would matter when the reinvite goes out (In case of hold/unhold)
+			 * This was added because there were failures in hold-unhold.
+			 * The scenario was that if this client does hold-unhold first, and remote client does
+			 * later, remote client goes in inconsistent state and hold-unhold does not work
+			 * Where as if the remote client does hold-unhold first, this client can do it any number
+			 * of times.
+			 *
+			 * Logic below works as follows
+			 * Local video settings = true, incoming invite has video mline = false -> Any offer = audiovideo/ answer = audioonly
+			 * Local video settings = true, incoming invite has video mline = true -> Any offer = audiovideo/ answer = audiovideo
+			 * Local video settings = false, incoming invite has video mline = false -> Any offer = audioonly/ answer = audioonly
+			 * Local video settings = false, incoming invite has video mline = true -> Any offer = audioonly/ answer = audioonly
+			 *
+			 */
+			let videoInvite = !!this.config.enableVideo;
+
+			const { body } = this.session;
+			if (body && body.indexOf('m=video') === -1) {
+				videoInvite = false;
+			}
+
+			const invitationAcceptOptions: InvitationAcceptOptions = {
+				sessionDescriptionHandlerOptions: {
+					constraints: {
+						audio: true,
+						video: !!this.config.enableVideo && videoInvite,
+					},
+				},
+			};
+
 			return this.session.accept(invitationAcceptOptions);
 		}
 		throw new Error('Something went wront');
