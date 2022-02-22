@@ -165,7 +165,7 @@ export abstract class RoomCoordinator {
 			routeData = config.route.link(subData);
 		} else if (subData?.name) {
 			routeData = {
-				rid: subData.rid || subData._id,
+				rid: subData.rid,
 				name: subData.name,
 			};
 		}
