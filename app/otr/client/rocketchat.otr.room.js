@@ -30,10 +30,6 @@ OTR.Room = class {
 		this.keyPair = null;
 		this.exportedPublicKey = null;
 		this.sessionKey = null;
-
-		Tracker.autorun(() => {
-			console.log('State changed = ', this.state.get());
-		});
 	}
 
 	setState(nextState) {
@@ -261,7 +257,6 @@ OTR.Room = class {
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
-				console.log('Handshake');
 				const establishConnection = () => {
 					this.setState(OtrRoomState.ESTABLISHING);
 					Meteor.clearTimeout(timeout);
