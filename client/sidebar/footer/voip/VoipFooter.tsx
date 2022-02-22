@@ -22,6 +22,9 @@ type VoipFooterPropsType = {
 		endCall: string;
 	};
 	openRoom: (caller: ICallerInfo) => void;
+
+	callsInQueue: string;
+
 	openWrapUpCallModal: () => void;
 };
 
@@ -37,9 +40,13 @@ export const VoipFooter = ({
 	togglePause,
 	tooltips,
 	openRoom,
+	callsInQueue,
 	openWrapUpCallModal,
 }: VoipFooterPropsType): ReactElement => (
 	<SidebarFooter elevated>
+		<Box display='flex' justifyContent='center' fontScale='c1' color='white' mbe='14px'>
+			{callsInQueue}
+		</Box>
 		<Box display='flex' flexDirection='row' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
 			<Box color='neutral-500' fontScale='c2' withTruncatedText>
 				{title}

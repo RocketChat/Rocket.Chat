@@ -63,10 +63,4 @@ export type VoipEndpoints = {
 	'voip/room.close': {
 		POST: (params: { rid: string; token: string; comment: string; tags?: string[] }) => { rid: string };
 	};
-	'voip/managementServer/checkConnection': {
-		GET: (params: { host: string; port: string; username: string; password: string }) => IManagementServerConnectionStatus;
-	};
-	'voip/callServer/checkConnection': {
-		GET: (params: { websocketUrl: string; host: string; port: string; path: string }) => IManagementServerConnectionStatus;
-	};
 };

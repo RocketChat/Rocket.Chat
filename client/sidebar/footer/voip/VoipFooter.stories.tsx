@@ -28,6 +28,7 @@ const tooltips = {
 export const Default = (): ReactElement => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
+	const [callsInQueue] = useState('2');
 
 	return (
 		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
@@ -46,7 +47,8 @@ export const Default = (): ReactElement => {
 				toggleMic={toggleMic}
 				togglePause={togglePause}
 				tooltips={tooltips}
-				openRoom={() => null}
+				openRoom={() => ''}
+				callsInQueue={callsInQueue}
 				openWrapUpCallModal={() => null}
 			/>
 		</Box>
