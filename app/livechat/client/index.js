@@ -1,5 +1,4 @@
 import '../lib/messageTypes';
-import './roomType';
 import './route';
 import './ui';
 import './tabBar';

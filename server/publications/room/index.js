@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { roomTypes } from '../../../app/utils/server';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoom, hasPermission } from '../../../app/authorization/server';
 import { Rooms } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
@@ -45,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		const roomFind = roomTypes.getRoomFind(type);
+		const roomFind = roomCoordinator.getRoomFind(type);
 
 		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
 

@@ -6,13 +6,14 @@ import { Tracker } from 'meteor/tracker';
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { getUserPreference, roomTypes } from '../../../utils/client';
+import { getUserPreference } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../client/lib/utils/handleError';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 const fields = {
 	'name': 1,
@@ -75,7 +76,7 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const replyBroadcast = (e) => {
 		const { username, mid } = e.currentTarget.dataset;
-		roomTypes.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
+		roomCoordinator.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
 	};
 
 	return {

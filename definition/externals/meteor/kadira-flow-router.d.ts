@@ -6,7 +6,7 @@ declare module 'meteor/kadira:flow-router' {
 		queryParams: Record<string, string>;
 	};
 
-	type RouteOptions = {
+	export type RouteOptions = {
 		name: string;
 		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
