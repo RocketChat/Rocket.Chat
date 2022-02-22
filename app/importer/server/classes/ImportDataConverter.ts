@@ -259,7 +259,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username });
+			Meteor.runAsUser(_id, () => saveUserIdentity({ _id, name: userData.name, username: userData.username }));
 		}
 
 		if (userData.importIds.length) {
@@ -532,10 +532,11 @@ export class ImportDataConverter {
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const rid = this.findImportedRoomId(data.rid);
-				if (!rid) {
+				const room = Rooms.findOneByImportId(data.rid);
+				if (!room) {
 					throw new Error('importer-message-unknown-room');
 				}
+				const rid = room._id;
 				if (!rids.includes(rid)) {
 					rids.push(rid);
 				}
@@ -579,7 +580,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					insertMessage(creator, msgObj, rid, true);
+					insertMessage(creator, msgObj, room, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
