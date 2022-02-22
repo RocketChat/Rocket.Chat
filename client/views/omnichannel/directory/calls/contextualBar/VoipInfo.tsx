@@ -62,5 +62,4 @@ export const VoipInfo = ({ room, onClickClose }: VoipInfoPropsType): ReactElemen
 			</VerticalBar.ScrollableContent>
 		</>
 	);
-	moment.duration(callTotalHoldTime / 1000).humanize();
 };

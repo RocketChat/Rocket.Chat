@@ -143,7 +143,7 @@ const CallTable: FC = () => {
 					<Table.Cell withTruncatedText>{duration.isValid() && duration.humanize()}</Table.Cell>
 					<Table.Cell withTruncatedText>{t('Incoming')}</Table.Cell>
 				</Table.Row>
-			)
+			);
 		},
 		[onRowClick, t],
 	);
