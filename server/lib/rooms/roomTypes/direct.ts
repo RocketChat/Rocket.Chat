@@ -63,11 +63,11 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 			const uid = userId || getCurrentUserId();
 			if (uid) {
-				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
+				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { fields: { name: 1, fname: 1 } });
 			}
 
 			// If we don't know what user is requesting the roomName, then any subscription will do
-			return Subscriptions.findOne({ rid: room._id }, { projection: { name: 1, fname: 1 } });
+			return Subscriptions.findOne({ rid: room._id }, { fields: { name: 1, fname: 1 } });
 		})();
 
 		if (!subscription) {
