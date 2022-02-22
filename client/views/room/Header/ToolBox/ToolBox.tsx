@@ -1,7 +1,6 @@
 import { Menu, Option, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactNode, useRef, ComponentProps, FC, ReactElement } from 'react';
-// import tinykeys from 'tinykeys';
+import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
 
 // used to open the menu option by keyboard
 import { IRoom } from '../../../../../definition/IRoom';
@@ -21,7 +20,7 @@ type ToolBoxProps = {
 	room?: IRoom;
 };
 
-const ToolBox: FC<ToolBoxProps> = ({ className }) => {
+const ToolBox = ({ className }: ToolBoxProps): ReactElement => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
@@ -100,7 +99,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					aria-keyshortcuts='alt'
 					tabIndex={-1}
 					options={hiddenActions}
-					renderItem={({ value, ...props }): ReactElement | null => value && hiddenActionRenderers.current[value](props)}
+					renderItem={({ value, ...props }): ReactElement | null => value && (hiddenActionRenderers.current[value](props) as ReactElement)}
 				/>
 			)}
 		</>

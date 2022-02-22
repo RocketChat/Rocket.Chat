@@ -30,11 +30,11 @@ type UnauthorizedResult<T> = {
 	};
 };
 
-type NotFoundResult<T> = {
-	statusCode: 403;
+type NotFoundResult = {
+	statusCode: 404;
 	body: {
 		success: false;
-		error: T | 'Resource not found';
+		error: string;
 	};
 };
 
@@ -96,7 +96,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
-	| UnauthorizedResult<unknown>;
+	| UnauthorizedResult<unknown>
+	| NotFoundResult;
 
 type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
@@ -164,9 +165,9 @@ declare class APIClass<TBasePath extends string = '/'> {
 
 	failure(): FailureResult<void>;
 
-	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
+	notFound(msg?: string): NotFoundResult;
 
-	notFound<T>(msg?: T): NotFoundResult<T>;
+	unauthorized<T>(msg?: T): UnauthorizedResult<T>;
 
 	defaultFieldsToExclude: {
 		joinCode: 0;

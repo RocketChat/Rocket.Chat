@@ -150,6 +150,11 @@ export abstract class RoomCoordinator {
 	}
 
 	getRouteData(roomType: string, subData: RoomIdentification): Record<string, string> | false {
+		if (!subData.rid && (subData as Record<string, string>)._id) {
+			console.warn('Deprecated: RoomCoordinator.getRouteData received a room object');
+			subData.rid = (subData as Record<string, string>)._id;
+		}
+
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config) {
 			return false;
@@ -160,7 +165,7 @@ export abstract class RoomCoordinator {
 			routeData = config.route.link(subData);
 		} else if (subData?.name) {
 			routeData = {
-				rid: subData.rid || subData._id,
+				rid: subData.rid,
 				name: subData.name,
 			};
 		}
