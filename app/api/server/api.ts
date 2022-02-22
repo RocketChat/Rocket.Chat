@@ -342,7 +342,7 @@ export class APIClass extends Restivus {
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
-	addRoute(routes: Route[], options: Options, endpoints: string[]): void {
+	addRoute(routes: string[], options: Options, endpoints: string[]): void {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
 			endpoints = options;
@@ -485,7 +485,7 @@ export class APIClass extends Restivus {
 				};
 
 				if (this.hasHelperMethods()) {
-					for (const [name, helperMethod] of this.getHelperMethods()) {
+					for (const [name, helperMethod] of (this as any).getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
 				}
@@ -645,7 +645,7 @@ export class APIClass extends Restivus {
 			},
 		);
 
-		const logout = function () {
+		const logout = function (): unknown {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -701,11 +701,11 @@ export class APIClass extends Restivus {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args) {
+const getUserAuth = function _getUserAuth(...args: unknown[]): unknown {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
-		user() {
+		user(): unknown {
 			if (this.bodyParams && this.bodyParams.payload) {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
@@ -742,7 +742,7 @@ API = {
 	ApiClass: APIClass,
 };
 
-const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
+const defaultOptionsEndpoint = function _defaultOptionsEndpoint(): void {
 	// check if a pre-flight request
 	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
 		this.done();
@@ -791,7 +791,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	this.done();
 };
 
-const createApi = function _createApi(_api, options = {}) {
+const createApi = function _createApi(_api, options = {}): unknown {
 	_api =
 		_api ||
 		new APIClass(
@@ -810,7 +810,7 @@ const createApi = function _createApi(_api, options = {}) {
 	return _api;
 };
 
-const createApis = function _createApis() {
+const createApis = function _createApis(): void {
 	API.v1 = createApi(API.v1, {
 		version: 'v1',
 	});
