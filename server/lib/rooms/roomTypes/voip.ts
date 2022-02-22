@@ -8,12 +8,12 @@ import { roomCoordinator } from '../roomCoordinator';
 export const VoipRoomType = getVoipRoomType(roomCoordinator);
 
 roomCoordinator.add(VoipRoomType, {
-	roomName(room: any): string | undefined {
+	roomName(room: any, _userId?: string): string | undefined {
 		return room.name || room.fname || room.label;
 	},
 
-	getNotificationDetails(room, _user, notificationMessage: string) {
-		const title = `[Omnichannel] ${this.roomName(room)}`;
+	getNotificationDetails(room, _sender, notificationMessage: string, userId: string) {
+		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
 		return { title, text };
