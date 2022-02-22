@@ -5,6 +5,7 @@ import './visitorStatus';
 import './agentStatus';
 import '../lib/messageTypes';
 import './roomType';
+import './voipRoomType';
 import './hooks/beforeCloseRoom';
 import './hooks/beforeDelegateAgent';
 import './hooks/leadCapture';
