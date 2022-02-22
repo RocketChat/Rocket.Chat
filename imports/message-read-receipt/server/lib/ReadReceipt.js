@@ -4,8 +4,8 @@ import { Random } from 'meteor/random';
 import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
 import { ReadReceipts } from '../../../../app/models/server/raw';
 import { settings } from '../../../../app/settings/server';
-import { roomTypes } from '../../../../app/utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -67,8 +67,7 @@ export const ReadReceipt = {
 			Messages.setAsReadById(message._id);
 		}
 
-		const extraData = roomTypes.getConfig(t).getReadReceiptsExtraData(message);
-
+		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 

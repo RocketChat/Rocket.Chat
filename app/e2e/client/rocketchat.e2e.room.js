@@ -24,10 +24,11 @@ import {
 } from './helper';
 import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
-import { roomTypes, RoomSettingsEnum } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -249,7 +250,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isSupportedRoomType(type) {
-		return roomTypes.getConfig(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
+		return roomCoordinator.getRoomDirectives(type)?.allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
 	async importGroupKey(groupKey) {

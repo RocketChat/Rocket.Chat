@@ -2,13 +2,13 @@ import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -42,7 +42,7 @@ const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) =
 		[text, types, itemsPerPage, current, column, direction],
 	);
 
-const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room));
+const getRoomDisplayName = (room) => (room.t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(room.t, room));
 
 const useDisplayData = (asyncState, sort) =>
 	useMemo(() => {
@@ -178,7 +178,7 @@ function RoomsTable() {
 	const renderRow = useCallback(
 		(room) => {
 			const { _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args } = room;
-			const icon = roomTypes.getIcon(room);
+			const icon = roomCoordinator.getIcon(room);
 			const roomName = getRoomDisplayName(room);
 
 			return (

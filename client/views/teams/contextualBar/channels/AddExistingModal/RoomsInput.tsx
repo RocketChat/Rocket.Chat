@@ -2,11 +2,11 @@ import { AutoComplete, Box, Icon, Option, Options, Chip, AutoCompleteProps } fro
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
-import { roomTypes } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { Serialized } from '../../../../../../definition/Serialized';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
 type RoomsInputProps = {
 	value: Serialized<IRoom>[];
@@ -34,7 +34,7 @@ const useRoomsAutoComplete = (
 		}
 
 		return data.items.map((room: Serialized<IRoom>) => ({
-			label: roomTypes.getRoomName(room.t, room),
+			label: roomCoordinator.getRoomName(room.t, { _id: room._id, name: room.name, fname: room.fname, prid: room.prid }),
 			value: room._id,
 		}));
 	}, [data]);

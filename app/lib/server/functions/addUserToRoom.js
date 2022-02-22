@@ -5,14 +5,18 @@ import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { Team } from '../../../../server/sdk';
-import { RoomMemberActions, roomTypes } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const addUserToRoom = function (rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
-	const roomConfig = roomTypes.getConfig(room.t);
-	if (!roomConfig.allowMemberAction(room, RoomMemberActions.JOIN) && !roomConfig.allowMemberAction(room, RoomMemberActions.INVITE)) {
+	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
+	if (
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN) &&
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE)
+	) {
 		return;
 	}
 
