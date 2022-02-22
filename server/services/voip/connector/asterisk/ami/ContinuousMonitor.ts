@@ -45,6 +45,8 @@ import {
 	ICallUnHold,
 	isIContactStatusEvent,
 	IContactStatus,
+	isICallHangupEvent,
+	ICallHangup,
 } from '../../../../../../definition/voip/IEvents';
 
 export class ContinuousMonitor extends Command {
@@ -160,13 +162,16 @@ export class ContinuousMonitor extends Command {
 				queue: event.queue,
 				holdTime: isIAgentConnectEvent(event) ? event.holdtime : '',
 				callUniqueId: event.uniqueid,
+				agentExtension: event?.connectedlinenum,
 			});
 		} catch (e) {
 			this.logger.debug('Event was handled by other instance');
 		}
 	}
 
-	async processAndBroadcastEventToAllQueueMembers(event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent): Promise<void> {
+	async processAndBroadcastEventToAllQueueMembers(
+		event: IQueueCallerJoinEvent | IQueueCallerAbandon | IAgentConnectEvent | ICallHangup,
+	): Promise<void> {
 		this.logger.debug(`Broadcasting to memebers, event =  ${event.event}`);
 		const queueDetails = await this.getQueueDetails(event.queue);
 		const members = await this.getMembersFromQueueDetails(queueDetails);
@@ -202,23 +207,24 @@ export class ContinuousMonitor extends Command {
 				break;
 			}
 			default:
-				this.logger.error(`Cant process ${event} `);
+				this.logger.error(`Cant process ${event}`);
 		}
 	}
 
 	async processHoldUnholdEvents(event: ICallOnHold | ICallUnHold): Promise<void> {
-		this.storePbxEvent(event, event.event);
+		return this.storePbxEvent(event, event.event);
+	}
+
+	async processHangupEvents(event: ICallHangup): Promise<void> {
+		return this.storePbxEvent(event, event.event);
 	}
 
 	async processContactStatusEvent(event: IContactStatus): Promise<void> {
-		this.logger.debug(`Processing Contact status Event`);
-		this.logger.debug(`Contact status = ${event.contactstatus}`);
 		if (event.contactstatus === 'Removed') {
 			// Room closing logic should be added here for the aor
 			// aor signifies address of record, which should be used for
 			// fetching the room for which serverBy = event.aor
-			this.logger.error(`Contact status Removed = ${event.contactstatus} aor = ${event.aor}`);
-			this.storePbxEvent(event, event.event);
+			return this.storePbxEvent(event, event.event);
 		}
 	}
 
@@ -254,10 +260,14 @@ export class ContinuousMonitor extends Command {
 			return this.processContactStatusEvent(event);
 		}
 
+		if (isICallHangupEvent(event)) {
+			return this.processHangupEvents(event);
+		}
+
 		// Asterisk sends a metric ton of events, some may be useful but others doesn't
 		// We need to check which ones we want to use in future, but until that moment, this log
 		// Will be commented to avoid unnecesary noise. You can uncomment if you want to see all events
-		// this.logger.debug(`Cannot handle event ${event.event}`);
+		this.logger.debug(`Cannot handle event ${event.event}`);
 	}
 
 	setupEventHandlers(): void {
@@ -271,6 +281,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.on('hold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('unhold', new CallbackContext(this.onEvent.bind(this), this));
 		this.connection.on('contactstatus', new CallbackContext(this.onEvent.bind(this), this));
+		this.connection.on('hangup', new CallbackContext(this.onEvent.bind(this), this));
 	}
 
 	resetEventHandlers(): void {
@@ -283,6 +294,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('hold', this);
 		this.connection.off('unhold', this);
 		this.connection.off('contactstatus', this);
+		this.connection.off('hangup', this);
 	}
 
 	initMonitor(_data: any): boolean {
