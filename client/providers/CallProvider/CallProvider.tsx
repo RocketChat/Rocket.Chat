@@ -129,6 +129,22 @@ export const CallProvider: FC = ({ children }) => {
 		[dispatchToastMessage, user?.extension],
 	);
 
+	// This is a dummy handler, please remove after properly consuming this event
+	const handleCallHangup = useCallback(
+		(event: { roomId: string }) => {
+			dispatchToastMessage({
+				type: 'success',
+				message: `Caller hangup for room ${event.roomId}`,
+				options: {
+					showDuration: '6000',
+					hideDuration: '6000',
+					timeOut: '50000',
+				},
+			});
+		},
+		[dispatchToastMessage],
+	);
+
 	useEffect(() => {
 		Notifications.onUser('callerjoined', handleQueueJoined);
 		Notifications.onUser('agentcalled', handleAgentCalled);
@@ -136,7 +152,16 @@ export const CallProvider: FC = ({ children }) => {
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
-	}, [handleAgentCalled, handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected]);
+		Notifications.onUser('call.callerhangup', handleCallHangup);
+	}, [
+		handleAgentCalled,
+		handleQueueJoined,
+		handleMemberAdded,
+		handleMemberRemoved,
+		handleCallAbandon,
+		handleAgentConnected,
+		handleCallHangup,
+	]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');

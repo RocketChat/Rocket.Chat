@@ -412,7 +412,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		// For now, we just care about insertions here
 		if (clientAction === 'inserted') {
 			const data = eventData ?? (await PbxEvent.findOneById(id));
-			if (!data || data.event !== 'ContactStatus') {
+			if (!data || !['ContactStatus', 'Hangup'].includes(data.event)) {
 				// For now, we'll only care about agent connect/disconnect events
 				// Other events are not handled by watchers but by service
 				return;
