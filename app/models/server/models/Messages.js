@@ -471,6 +471,16 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findStarredByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
 	findPinnedByRoom(roomId, options) {
 		const query = {
 			t: { $ne: 'rm' },
@@ -487,6 +497,34 @@ export class Messages extends Base {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findStarred(options) {
+		const query = {
+			_hidden: { $ne: true },
+			starred: { $ne: null },
+		};
+
+		return this.find(query, options);
+	}
+
+	findPinned(options) {
+		const query = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findSnippet(options) {
+		const query = {
+			_hidden: { $ne: true },
+			snippeted: true,
 		};
 
 		return this.find(query, options);

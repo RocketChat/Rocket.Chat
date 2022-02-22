@@ -112,6 +112,14 @@ export const statistics = {
 			0,
 		);
 
+		statistics.totalAutoJoinChannelInTeams = _.reduce(
+			statistics.teams.teamStats,
+			function (num, team) {
+				return num + team.totalDefaultRooms;
+			},
+			0,
+		);
+
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
@@ -272,6 +280,58 @@ export const statistics = {
 		await Analytics.resetSeatRequestCount();
 
 		const engagement = await engagementMetrics.get();
+
+		statistics.totalRoomsWithSnippet = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithSnippet(num, room) {
+				const { _id } = room;
+				const snippetMessages = Messages.findSnippetedByRoom(_id).fetch().length;
+				if (snippetMessages > 0) {
+					return num + 1;
+				}
+				return num + 0;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithStarred = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room) {
+				const { _id } = room;
+				const starredMessages = Messages.findStarredByRoom(_id).fetch().length;
+				if (starredMessages > 0) {
+					return num + 1;
+				}
+				return num + 0;
+			},
+			0,
+		);
+
+		statistics.totalRoomsWithPinned = _.reduce(
+			Rooms.find({}).fetch(),
+			function _roomsWithPinned(num, room) {
+				const { _id } = room;
+				const pinnedMessages = Messages.findPinnedByRoom(_id).fetch().length;
+				if (pinnedMessages > 0) {
+					return num + 1;
+				}
+				return num + 0;
+			},
+			0,
+		);
+
+		statistics.totalSnippet = Messages.findSnippet().count();
+		statistics.totalStarrred = Messages.findStarred().count();
+		statistics.totalPinned = Messages.findPinned().count();
+
+		console.log(
+			statistics.totalRoomsWithSnippet,
+			statistics.totalRoomsWithStarred,
+			statistics.totalRoomsWithPinned,
+			statistics.totalSnippet,
+			statistics.totalStarrred,
+			statistics.totalPinned,
+		);
 		console.log(engagement);
 
 		return statistics;
