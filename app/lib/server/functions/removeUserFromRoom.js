@@ -29,9 +29,15 @@ export const removeUserFromRoom = function (rid, user, options = {}) {
 		if (subscription) {
 			const removedUser = user;
 			if (options.byUser) {
-				Messages.createUserRemovedWithRoomIdAndUser(rid, user, {
+				const extraData = {
 					u: options.byUser,
-				});
+				};
+
+				if (room.teamMain) {
+					Messages.createUserRemovedFromTeamWithRoomIdAndUser(rid, user, extraData);
+				} else {
+					Messages.createUserRemovedWithRoomIdAndUser(rid, user, extraData);
+				}
 			} else if (room.teamMain) {
 				Messages.createUserLeaveTeamWithRoomIdAndUser(rid, removedUser);
 			} else {

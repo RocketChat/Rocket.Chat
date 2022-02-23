@@ -41,6 +41,7 @@ export class AppRoomsConverter {
 				_id: visitor._id,
 				username: visitor.username,
 				token: visitor.token,
+				status: visitor.status || 'online',
 			};
 		}
 

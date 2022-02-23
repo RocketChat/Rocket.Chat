@@ -10,7 +10,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference } from '../../../../utils/client';
+import { t, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import { RoomHistoryManager, RoomManager, readMessage } from '../../../../ui-utils/client';
@@ -26,10 +26,11 @@ import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
+import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 
 export const chatMessages = {};
 
-const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+const userCanDrop = (_id) => !roomCoordinator.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -247,7 +248,7 @@ Template.roomOld.helpers({
 	},
 
 	chatNowLink() {
-		return roomTypes.getRouteLink('d', { name: this.username });
+		return roomCoordinator.getRouteLink('d', { name: this.username });
 	},
 
 	announcement() {
@@ -658,7 +659,7 @@ Meteor.startup(() => {
 				return c.stop();
 			}
 
-			if (roomTypes.getConfig(room.t).isGroupChat(room)) {
+			if (roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
 				return;
 			}
 			const usernames = Array.from(new Set(room.usernames));
@@ -940,17 +941,12 @@ Meteor.startup(() => {
 
 			if (room?.t === 'l') {
 				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
-				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+				roomCoordinator.getRoomDirectives(room.t)?.openCustomProfileTab(this, room, room.v.username);
 			}
 		});
 
 		this.autorun(() => {
-			if (
-				!Object.values(roomTypes.roomTypes)
-					.map(({ route }) => route && route.name)
-					.filter(Boolean)
-					.includes(FlowRouter.getRouteName())
-			) {
+			if (!roomCoordinator.isRouteNameKnown(FlowRouter.getRouteName())) {
 				return;
 			}
 

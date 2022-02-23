@@ -8,6 +8,7 @@ import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const baseName = 'rocketchat_';
 
@@ -32,7 +33,7 @@ export class BaseDbWatch extends EventEmitter {
 		super();
 		this.collectionName = collectionName;
 
-		if (!process.env.DISABLE_DB_WATCH) {
+		if (!isRunningMs()) {
 			this.initDbWatch();
 		}
 	}

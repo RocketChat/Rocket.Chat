@@ -12,8 +12,8 @@ export type App = {
 	description: string;
 	categories: string[];
 	version: string;
-	price: string;
-	purchaseType: unknown[];
+	price: number;
+	purchaseType: string;
 	pricingPlans: unknown[];
 	iconFileContent: unknown;
 	installed?: boolean;
@@ -31,5 +31,6 @@ export type App = {
 		warnings: { [key: string]: string };
 	};
 	marketplace: unknown;
+	modifiedAt: string;
 	permissions: unknown[];
 };
