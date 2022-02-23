@@ -7,17 +7,16 @@ import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
-import type { IRoom } from '../../../../definition/IRoom';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '../../../../definition/utils';
+import type { AtLeast } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 roomCoordinator.add(DirectMessageRoomType, {
-	allowRoomSettingChange(_room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(_room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -35,7 +34,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(room, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);
@@ -44,7 +43,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(roomData): string | undefined {
+	roomName(roomData) {
 		const subscription = ((): { fname?: string; name?: string } | undefined => {
 			if (roomData.fname || roomData.name) {
 				return {
@@ -71,11 +70,11 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return subscription.name;
 	},
 
-	isGroupChat(room: Partial<IRoom>): boolean {
+	isGroupChat(room) {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	getUiText(context: ValueOf<typeof UiTextContext>): string {
+	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Private_Warning';
@@ -86,12 +85,12 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	condition(): boolean {
+	condition() {
 		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 		return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	},
 
-	getAvatarPath(room): string {
+	getAvatarPath(room) {
 		if (!room) {
 			return '';
 		}
@@ -117,7 +116,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return getUserAvatarURL(room.name || this.roomName(room));
 	},
 
-	getIcon(room: Partial<IRoom>): string | undefined {
+	getIcon(room) {
 		if (this.isGroupChat(room)) {
 			return 'balloon';
 		}
@@ -125,7 +124,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return DirectMessageRoomType.icon;
 	},
 
-	getUserStatus(roomId: string): string | undefined {
+	getUserStatus(roomId) {
 		const subscription = Subscriptions.findOne({ rid: roomId });
 		if (!subscription) {
 			return;
@@ -134,7 +133,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return Session.get(`user_${subscription.name}_status`);
 	},
 
-	findRoom(identifier: string): IRoom | undefined {
+	findRoom(identifier) {
 		if (!hasPermission('view-d-room')) {
 			return;
 		}
