@@ -196,7 +196,6 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 				{oembedIsEnabled && message.urls && (
 					<Box width={oembedWidth}>
-						{/* <MessageBlock mid={message._id} blocks={convertOembedToUiKit(message.urls)} appId rid={message.rid} /> */}
 						<OEmbedList urls={message.urls} />
 					</Box>
 				)}
