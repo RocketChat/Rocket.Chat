@@ -263,7 +263,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
+			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
 		}
 	}
 
