@@ -3,67 +3,67 @@ import type { IUser } from '../../../definition/IUser';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import { ITwoFactorOptions } from '../../2fa/server/code';
 
-type SuccessResult<T> = {
-	statusCode: 200;
-	body: T extends object ? { success: true } & T : T;
-};
+// type SuccessResult<T> = {
+// 	statusCode: 200;
+// 	body: T extends object ? { success: true } & T : T;
+// };
 
-type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
-	statusCode: 400;
-	body: T extends object
-		? { success: false } & T
-		: {
-				success: false;
-				error: T;
-				stack: TStack;
-				errorType: TErrorType;
-				details: TErrorDetails;
-		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
-				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
-};
+// type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
+// 	statusCode: 400;
+// 	body: T extends object
+// 		? { success: false } & T
+// 		: {
+// 				success: false;
+// 				error: T;
+// 				stack: TStack;
+// 				errorType: TErrorType;
+// 				details: TErrorDetails;
+// 		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
+// 				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
+// };
 
-type UnauthorizedResult<T> = {
-	statusCode: 403;
-	body: {
-		success: false;
-		error: T | 'unauthorized';
-	};
-};
+// type UnauthorizedResult<T> = {
+// 	statusCode: 403;
+// 	body: {
+// 		success: false;
+// 		error: T | 'unauthorized';
+// 	};
+// };
 
-type NotFoundResult<T> = {
-	statusCode: 403;
-	body: {
-		success: false;
-		error: T | 'Resource not found';
-	};
-};
+// type NotFoundResult<T> = {
+// 	statusCode: 403;
+// 	body: {
+// 		success: false;
+// 		error: T | 'Resource not found';
+// 	};
+// };
 
-export type NonEnterpriseTwoFactorOptions = {
-	authRequired: true;
-	forceTwoFactorAuthenticationForNonEnterprise: true;
-	twoFactorRequired: true;
-	permissionsRequired?: string[];
-	twoFactorOptions: ITwoFactorOptions;
-};
+// export type NonEnterpriseTwoFactorOptions = {
+// 	authRequired: true;
+// 	forceTwoFactorAuthenticationForNonEnterprise: true;
+// 	twoFactorRequired: true;
+// 	permissionsRequired?: string[];
+// 	twoFactorOptions: ITwoFactorOptions;
+// };
 
-type Options =
-	| {
-			permissionsRequired?: string[];
-			authRequired?: boolean;
-			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-	  }
-	| {
-			authRequired: true;
-			twoFactorRequired: true;
-			twoFactorOptions?: ITwoFactorOptions;
-	  };
+// type Options =
+// 	| {
+// 			permissionsRequired?: string[];
+// 			authRequired?: boolean;
+// 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
+// 	  }
+// 	| {
+// 			authRequired: true;
+// 			twoFactorRequired: true;
+// 			twoFactorOptions?: ITwoFactorOptions;
+// 	  };
 
-type Request = {
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-	url: string;
-	headers: Record<string, string>;
-	body: any;
-};
+// type Request = {
+// 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+// 	url: string;
+// 	headers: Record<string, string>;
+// 	body: any;
+// };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	urlParams: UrlParams<TPathPattern>;
@@ -149,9 +149,9 @@ declare class APIClass<TBasePath extends string = '/'> {
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
 
-	success<T>(result: T): SuccessResult<T>;
+	// success<T>(result: T): SuccessResult<T>;
 
-	success(): SuccessResult<void>;
+	// success(): SuccessResult<void>;
 
 	failure<T, TErrorType extends string, TStack extends string, TErrorDetails>(
 		result: T,

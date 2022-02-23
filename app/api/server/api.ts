@@ -1,26 +1,38 @@
+/* eslint-disable @typescript-eslint/camelcase */
+import { ServerResponse } from 'http';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
-import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
-import { RateLimiter } from 'meteor/rate-limit';
-import { Request, Response } from 'express';
-import { Route } from 'meteor/kadira:flow-router';
-import { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api';
+import { IncomingMessage } from 'connect';
+import { Route, RouteOptions } from 'meteor/kadira:flow-router';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission, hasAllPermission } from '../../authorization/server';
+import { hasPermission, hasAllP
+
+
+	export function _setAccountData(id: string, arg1: string, token: any) {
+		throw new Error('Function not implemented.');
+	}
+export function _setAccountData(id: string, arg1: string, token: any) {
+	throw new Error('Function not implemented.');
+}
+ermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
-import { checkCodeForUser } from '../../2fa/server/code';
-import { SuccessResult, FailureResult, Options } from './api';
+import { checkCodeForUser, ITwoFactorOptions } from '../../2fa/server/code';
+import { RateLimiter } from '../../lib/server';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 
-const rateLimiterDictionary = {} as RateLimiter;
+const logger = new Logger('API');
+
+const rateLimiterDictionary = {} as typeof RateLimiter;
+
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
@@ -29,7 +41,53 @@ let prometheusAPIUserAgent = false;
 
 export let API = {};
 
-const getRequestIP = (req: Request): string | string[] | null => {
+type SuccessResult<T> = {
+	statusCode: 200;
+	body: T extends object ? { success: true } & T : T;
+};
+
+type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
+	statusCode: 400;
+	body: T extends object
+		? { success: false } & T
+		: {
+				success: false;
+				error: T;
+				stack: TStack;
+				errorType: TErrorType;
+				details: TErrorDetails;
+		  } & (undefined extends TErrorType ? {} : { errorType: TErrorType }) &
+				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
+};
+
+type Options =
+	| {
+			permissionsRequired?: string[];
+			authRequired?: boolean;
+			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
+	  }
+	| {
+			authRequired: true;
+			twoFactorRequired: true;
+			twoFactorOptions?: ITwoFactorOptions;
+	  };
+
+export type NonEnterpriseTwoFactorOptions = {
+	authRequired: true;
+	forceTwoFactorAuthenticationForNonEnterprise: true;
+	twoFactorRequired: true;
+	permissionsRequired?: string[];
+	twoFactorOptions: ITwoFactorOptions;
+};
+
+type Request = {
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+	url: string;
+	headers: Record<string, string>;
+	body: unknown;
+};
+
+const getRequestIP = (req: IncomingMessage): unknown => {
 	const socket = req.socket || req.connection;
 	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
 	let forwardedFor = req.headers['x-forwarded-for'];
@@ -55,7 +113,49 @@ const getRequestIP = (req: Request): string | string[] | null => {
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
-export class APIClass extends Restivus {
+export class APIClass<TBasePath extends string = '/'> {
+	/* Class members declarations: */
+	apiPath: string;
+
+	authMethods: string[];
+
+	fieldSeparator: string;
+
+	defaultFieldsToExclude: {
+		joinCode: number;
+		members: number;
+		importIds: number;
+		e2e: number;
+	};
+
+	defaultLimitedUserFieldsToExclude: {
+		avatarOrigin: number;
+		emails: number;
+		phone: number;
+		statusConnection: number;
+		createdAt: number;
+		lastLogin: number;
+		services: number;
+		requirePasswordChange: number;
+		requirePasswordChangeReason: number;
+		roles: number;
+		statusDefault: number;
+		_updatedAt: number;
+		settings: number;
+	};
+
+	limitedUserFieldsToExclude: unknown;
+
+	limitedUserFieldsToExcludeIfIsPrivilegedUser: {
+		services: number;
+	};
+
+	_config: {
+		version: string;
+	};
+
+	_routes: Route[];
+
 	constructor(properties: {
 		apiPath: string;
 		useDefaultAuth?: boolean;
@@ -63,17 +163,16 @@ export class APIClass extends Restivus {
 		defaultOptionsEndpoint?: () => void;
 		auth?: { token: string; user(): unknown };
 	}) {
-		super(properties);
-		(this as any).apiPath = properties.apiPath;
-		(this as any).authMethods = [];
-		(this as any).fieldSeparator = '.';
-		(this as any).defaultFieldsToExclude = {
+		this.apiPath = properties.apiPath;
+		this.authMethods = [];
+		this.fieldSeparator = '.';
+		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			members: 0,
 			importIds: 0,
 			e2e: 0,
 		};
-		(this as any).defaultLimitedUserFieldsToExclude = {
+		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
 			phone: 0,
@@ -88,19 +187,19 @@ export class APIClass extends Restivus {
 			_updatedAt: 0,
 			settings: 0,
 		};
-		(this as any).limitedUserFieldsToExclude = (this as any).defaultLimitedUserFieldsToExclude;
-		(this as any).limitedUserFieldsToExcludeIfIsPrivilegedUser = {
+		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
+		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
 		};
 	}
 
-	setLimitedCustomFields(customFields: Record<string, number>[]): void {
-		const nonPublicFieds = customFields.reduce((acc, customField) => {
+	setLimitedCustomFields(customFields: undefined[]): void {
+		const nonPublicFieds = customFields.reduce((acc: Record<string, number>, customField) => {
 			acc[`customFields.${customField}`] = 0;
 			return acc;
 		}, {});
-		(this as any).limitedUserFieldsToExclude = {
-			...(this as any).defaultLimitedUserFieldsToExclude,
+		this.limitedUserFieldsToExclude = {
+			...this.defaultLimitedUserFieldsToExclude,
 			...nonPublicFieds,
 		};
 	}
@@ -118,12 +217,14 @@ export class APIClass extends Restivus {
 	}
 
 	addAuthMethod(method: string): void {
-		(this as any).authMethods.push(method);
+		this.authMethods.push(method);
 	}
 
-	shouldAddRateLimitToRoute(options: typeof defaultRateLimiterOptions): boolean {
-		const { version } = (this as any)._config;
+	shouldAddRateLimitToRoute(options: RouteOptions): boolean {
+		const { version } = this._config;
+
 		const rateLimiterOptions = options;
+
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
 			Boolean(version) &&
@@ -132,47 +233,15 @@ export class APIClass extends Restivus {
 		);
 	}
 
-	success(result: SuccessResult = {}): {} {
-		if (_.isObject(result)) {
-			result.success = true;
-		}
-
-		result = {
-			statusCode: 200,
-			body: result,
-		};
-
+	success<T>(result: SuccessResult<T>): SuccessResult<T> {
+		// The SuccessResult<T> type definition handles the result.body and result.sucess
 		return result;
 	}
 
-	failure(result: FailureResult, errorType: undefined, stack: undefined, error: Meteor.Error): unknown {
-		if (_.isObject(result)) {
-			result.success = false;
-		} else {
-			result = {
-				success: false,
-				error: result,
-				stack,
-			};
-
-			if (errorType) {
-				result.errorType = errorType;
-			}
-
-			if (error?.details) {
-				try {
-					result.details = JSON.parse(error.details);
-				} catch (e) {
-					result.details = error.details;
-				}
-			}
-		}
-
-		result = {
-			statusCode: 400,
-			body: result,
-		};
-
+	failure<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined>(
+		result: FailureResult<T, TStack, TErrorType, TErrorDetails>,
+	): FailureResult<T, TStack, TErrorType, TErrorDetails> {
+		// The FailureResult<T> type definition handles the body.sucess, error, stack, errorType and error.details
 		return result;
 	}
 
@@ -217,10 +286,10 @@ export class APIClass extends Restivus {
 	}
 
 	getRateLimiter(route: string): unknown {
-		return rateLimiterDictionary[route];
+		return (rateLimiterDictionary as any)[route];
 	}
 
-	shouldVerifyRateLimit(route: PropertyKey, userId: string): unknown {
+	shouldVerifyRateLimit(route: string, userId: string): boolean {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get('API_Enable_Rate_Limiter') === true &&
@@ -229,15 +298,15 @@ export class APIClass extends Restivus {
 		);
 	}
 
-	enforceRateLimit(objectForRateLimitMatch: RateLimiter, request: Request, response: Response, userId: string): void {
+	enforceRateLimit(objectForRateLimitMatch: any, _request: IncomingMessage, response: ServerResponse, userId: string): void {
 		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
 			return;
 		}
 
-		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		(rateLimiterDictionary as any)[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+		const attemptResult = (rateLimiterDictionary as any)[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Limit', (rateLimiterDictionary as any)[objectForRateLimitMatch.route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 
@@ -254,8 +323,8 @@ export class APIClass extends Restivus {
 	}
 
 	reloadRoutesToRefreshRateLimiter(): void {
-		const { version } = (this as any)._config;
-		(this as any)._routes.forEach((route: RateLimiter) => {
+		const { version } = this._config;
+		this._routes.forEach((route) => {
 			if (this.shouldAddRateLimitToRoute(route.options)) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
@@ -273,10 +342,10 @@ export class APIClass extends Restivus {
 		endpoints,
 		apiVersion,
 	}: {
-		routes: Route[];
+		routes: string[];
 		rateLimiterOptions: typeof defaultRateLimiterOptions;
 		endpoints: string[];
-		apiVersion: undefined;
+		apiVersion: string | undefined;
 	}): void {
 		if (!rateLimiterOptions.numRequestsAllowed) {
 			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
@@ -286,22 +355,22 @@ export class APIClass extends Restivus {
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]): void => {
 			routes.forEach((route) => {
-				rateLimiterDictionary[route] = {
-					rateLimiter: new RateLimiter(),
+				(rateLimiterDictionary as any)[route] = {
+					rateLimiter: {} as typeof RateLimiter,
 					options: rateLimiterOptions,
 				};
 				const rateLimitRule = {
-					IPAddr: (input: string): string => input,
+					IPAddr: (input: unknown): unknown => input,
 					route,
 				};
-				rateLimiterDictionary[route].rateLimiter.addRule(
+				(rateLimiterDictionary as any)[route].rateLimiter.addRule(
 					rateLimitRule,
 					rateLimiterOptions.numRequestsAllowed,
 					rateLimiterOptions.intervalTimeInMS,
 				);
 			});
 		};
-		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
+		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion as undefined)).map(addRateLimitRuleToEveryRoute);
 	}
 
 	processTwoFactor({
@@ -314,35 +383,35 @@ export class APIClass extends Restivus {
 		userId: string;
 		request: Request;
 		invocation: { twoFactorChecked: boolean };
-		options: Options;
+		options: NonEnterpriseTwoFactorOptions;
 		connection: IMethodConnection;
 	}): void {
 		if (!options.twoFactorRequired) {
 			return;
 		}
-		const code = request.headers['x-2fa-code'] as string | undefined;
-		const method = request.headers['x-2fa-method'] as string | undefined;
+		const code = request.headers['x-2fa-code'];
+		const method = request.headers['x-2fa-method'];
 
 		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
 
-	getFullRouteName(route: Route, method: unknown, apiVersion = null): string {
-		let prefix = `/${(this as any).apiPath || ''}`;
+	getFullRouteName(route: string, method: string, apiVersion = null): string {
+		let prefix = `/${this.apiPath || ''}`;
 		if (apiVersion) {
 			prefix += `${apiVersion}/`;
 		}
 		return `${prefix}${route}${method}`;
 	}
 
-	namedRoutes(route: Route, endpoints: string[], apiVersion: undefined): string[] {
+	namedRoutes(route: string, endpoints: string[], apiVersion = null): string[] {
 		const routeActions = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
 
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
-	addRoute(routes: string[], options: Options, endpoints: string[]): void {
+	addRoute(routes: string[], options: NonEnterpriseTwoFactorOptions, endpoints: string[]): void {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
 			endpoints = options;
@@ -362,7 +431,7 @@ export class APIClass extends Restivus {
 		if (!_.isArray(routes)) {
 			routes = [routes];
 		}
-		const { version } = (this as any)._config;
+		const { version } = this._config;
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
@@ -398,7 +467,7 @@ export class APIClass extends Restivus {
 
 					const startTime = Date.now();
 
-					const log = Logger.logger.child({
+					const log = logger.logger.child({
 						method: this.request.method,
 						url: this.request.url,
 						userId: this.request.headers['x-user-id'],
@@ -440,9 +509,6 @@ export class APIClass extends Restivus {
 							userId: this.userId,
 						});
 
-						Accounts._accountData[connection.id] = {
-							connection,
-						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
 						api.processTwoFactor({
@@ -485,20 +551,20 @@ export class APIClass extends Restivus {
 				};
 
 				if (this.hasHelperMethods()) {
-					for (const [name, helperMethod] of (this as any).getHelperMethods()) {
+					for (const [name, helperMethod] of this.getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
 				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
-				endpoints[method].logger = Logger;
+				endpoints[method].logger = logger;
 			});
 
 			super.addRoute(route, options, endpoints);
 		});
 	}
 
-	updateRateLimiterDictionaryForRoute(route: string | number, numRequestsAllowed: unknown, intervalTimeInMS: unknown): void {
+	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
 		if (rateLimiterDictionary[route]) {
 			rateLimiterDictionary[route].options.numRequestsAllowed =
 				numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
@@ -507,8 +573,8 @@ export class APIClass extends Restivus {
 		}
 	}
 
-	_initAuth(): void {
-		const loginCompatibility = (bodyParams: {}, request: Request): unknown => {
+	_initAuth() {
+		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code: bodyCode } = bodyParams;
 			let usernameToLDAPLogin = '';
@@ -645,7 +711,7 @@ export class APIClass extends Restivus {
 			},
 		);
 
-		const logout = function (): unknown {
+		const logout = function () {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -701,7 +767,7 @@ export class APIClass extends Restivus {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args: unknown[]): unknown {
+const getUserAuth = function _getUserAuth(...args) {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
@@ -742,7 +808,7 @@ API = {
 	ApiClass: APIClass,
 };
 
-const defaultOptionsEndpoint = function _defaultOptionsEndpoint(): void {
+const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	// check if a pre-flight request
 	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
 		this.done();
@@ -791,7 +857,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint(): void {
 	this.done();
 };
 
-const createApi = function _createApi(_api, options = {}): unknown {
+const createApi = function _createApi(_api, options = {}) {
 	_api =
 		_api ||
 		new APIClass(
@@ -810,7 +876,7 @@ const createApi = function _createApi(_api, options = {}): unknown {
 	return _api;
 };
 
-const createApis = function _createApis(): void {
+const createApis = function _createApis() {
 	API.v1 = createApi(API.v1, {
 		version: 'v1',
 	});

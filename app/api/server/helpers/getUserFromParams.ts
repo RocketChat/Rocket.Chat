@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../../models/server';
-import { API } from '../api.js';
+import { API } from '../api';
 
 (API as any).helperMethods.set('getUserFromParams', function _getUserFromParams(this: any) {
 	const doesntExist = { _doesntExist: true };
