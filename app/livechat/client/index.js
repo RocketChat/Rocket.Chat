@@ -1,5 +1,6 @@
 import '../lib/messageTypes';
 import './route';
+import './voip';
 import './ui';
 import './tabBar';
 import './startup/notifyUnreadRooms';
