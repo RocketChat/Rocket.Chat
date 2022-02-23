@@ -252,21 +252,21 @@ jobs:
         run: |
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
-          for i in $(seq 1 3); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && sleep 1; done; (exit $s)
+          for i in $(seq 1 3); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: cypress-test-screenshots
-          path: tests/cypress/screenshots
+          path: tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: cypress-test-videos
-          path: tests/cypress/videos
+          path: tests/cypress/videos*
 
   test-ee:
     runs-on: ubuntu-20.04
@@ -370,21 +370,21 @@ jobs:
           echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
           Xvfb -screen 0 1024x768x24 :99 &
 
-          for i in $(seq 1 3); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && sleep 1; done; (exit $s)
+          for i in $(seq 1 3); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci -- --enterprise --test=testui && s=0 && break || s=$? && ([ ! -w tests/cypress/screenshots ] || mv tests/cypress/screenshots tests/cypress/screenshots-$i) && ([ ! -w tests/cypress/videos ] || mv tests/cypress/videos tests/cypress/videos-$i) && sleep 1; done; (exit $s)
 
       - name: Store cypress test screenshots
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-screenshots
-          path: tests/cypress/screenshots
+          path: tests/cypress/screenshots*
 
       - name: Store cypress test videos
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ee-cypress-test-videos
-          path: tests/cypress/videos
+          path: tests/cypress/videos*
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test
