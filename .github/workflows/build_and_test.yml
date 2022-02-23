@@ -261,6 +261,13 @@ jobs:
           name: cypress-test-screenshots
           path: tests/cypress/screenshots
 
+      - name: Store cypress test videos
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-test-videos
+          path: tests/cypress/videos
+
   test-ee:
     runs-on: ubuntu-20.04
     needs: build
@@ -371,6 +378,13 @@ jobs:
         with:
           name: ee-cypress-test-screenshots
           path: tests/cypress/screenshots
+
+      - name: Store cypress test videos
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: ee-cypress-test-videos
+          path: tests/cypress/videos
   #   notification:
   #     runs-on: ubuntu-20.04
   #     needs: test

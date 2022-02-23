@@ -1,10 +1,11 @@
 {
 	"defaultCommandTimeout": 15000,
-	"video": false,
+	"video": true,
 	"trashAssetsBeforeRuns": false,
 	"retries": 2,
 	"projectId": "99zfrs",
 	"screenshotsFolder": "tests/cypress/screenshots",
+	"videosFolder": "tests/cypress/videos",
 	"fixturesFolder": "tests/cypress/fixtures",
 	"pluginsFile": "tests/cypress/plugins",
 	"supportFile": "tests/cypress/support",
