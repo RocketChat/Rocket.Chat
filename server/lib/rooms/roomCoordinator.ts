@@ -19,7 +19,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>): boolean {
 				return false;
 			},
-			roomName(_room: IRoom): string {
+			roomName(_room: IRoom, _userId?: string): string {
 				return '';
 			},
 			isGroupChat(_room: IRoom): boolean {
@@ -42,11 +42,12 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			},
 			getNotificationDetails(
 				room: IRoom,
-				user: AtLeast<IUser, '_id' | 'name' | 'username'>,
+				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
+				userId: string,
 			): { title: string | undefined; text: string } {
-				const title = `#${this.roomName(room)}`;
-				const name = settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username;
+				const title = `#${this.roomName(room, userId)}`;
+				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
 
 				const text = `${name}: ${notificationMessage}`;
 
@@ -82,8 +83,8 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		return Object.keys(this.roomTypes).filter((key) => (this.roomTypes[key].directives as IRoomTypeServerDirectives).includeInDashboard());
 	}
 
-	getRoomName(roomType: string, roomData: IRoom): string {
-		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
+	getRoomName(roomType: string, roomData: IRoom, userId?: string): string {
+		return this.getRoomDirectives(roomType)?.roomName(roomData, userId) ?? '';
 	}
 
 	setRoomFind(roomType: string, roomFind: Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind']): void {
