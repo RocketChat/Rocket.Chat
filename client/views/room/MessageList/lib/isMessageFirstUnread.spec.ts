@@ -21,7 +21,7 @@ const baseMessage = {
 	urls: [],
 };
 
-describe.only('isMessageFirstUnread', () => {
+describe('isMessageFirstUnread', () => {
 	it('should return true if the message is unread', () => {
 		const message: IMessage = {
 			...baseMessage,
