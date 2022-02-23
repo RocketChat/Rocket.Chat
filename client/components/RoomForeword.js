@@ -6,12 +6,17 @@ import { getUserAvatarURL } from '../../app/utils/client';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUser } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
+import { VoipRoomForeword } from './voip/room/VoipRoomForeword';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
 
 	const user = useUser();
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
+
+	if (room?.t === 'v') {
+		return <VoipRoomForeword room={room} />;
+	}
 
 	if (room?.t !== 'd') {
 		return <>{t('Start_of_conversation')}</>;

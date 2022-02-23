@@ -30,6 +30,7 @@ const fullFields = {
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
 	roles: 1,
+	extension: 1,
 };
 
 let publicCustomFields = {};

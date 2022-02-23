@@ -1,6 +1,7 @@
 import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
+import { canAccessRoomVoip } from './canAccessRoomVoip';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
 import { TEAM_TYPE, ITeam } from '../../../definition/ITeam';
@@ -76,6 +77,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 
 	canAccessRoomLivechat,
 	canAccessRoomTokenpass,
+	canAccessRoomVoip,
 ];
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
