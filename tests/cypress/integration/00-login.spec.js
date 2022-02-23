@@ -96,11 +96,14 @@ describe('[Setup Wizard]', () => {
 		it('it should fill the form', () => {
 			setupWizard.organizationName.type('Org Name');
 			setupWizard.size.click().wait(100);
-			cy.get('.rcx-options .rcx-option:first-child').click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
 			setupWizard.industry.click().wait(100);
-			cy.get('.rcx-options .rcx-option:first-child').click().wait(100);
+			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
 			setupWizard.country.click().wait(100);
 			cy.get('.rcx-options .rcx-option:first-child').click();
+			cy.get('.rcx-options').should('not.exist');
 		});
 
 		after(() => {
