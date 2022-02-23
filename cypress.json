@@ -4,6 +4,7 @@
 	"trashAssetsBeforeRuns": false,
 	"retries": 2,
 	"projectId": "99zfrs",
+	"screenshotsFolder": "tests/cypress/screenshots",
 	"fixturesFolder": "tests/cypress/fixtures",
 	"pluginsFile": "tests/cypress/plugins",
 	"supportFile": "tests/cypress/support",
