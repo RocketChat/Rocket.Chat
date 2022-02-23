@@ -2,7 +2,6 @@ import { hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IRoom } from '../../../../definition/IRoom';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import type { AtLeast } from '../../../../definition/utils';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
@@ -11,27 +10,27 @@ import { roomCoordinator } from '../roomCoordinator';
 export const VoipRoomType = getVoipRoomType(roomCoordinator);
 
 roomCoordinator.add(VoipRoomType, {
-	roomName(room: any): string | undefined {
-		return room.name || room.fname || room.label;
+	roomName(room) {
+		return room.name || room.fname || (room as any).label;
 	},
 
-	condition(): boolean {
+	condition() {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	},
 
-	getAvatarPath(room): string {
+	getAvatarPath(room) {
 		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 
-	findRoom(identifier: string): IRoom | undefined {
+	findRoom(identifier) {
 		return ChatRoom.findOne({ _id: identifier });
 	},
 
-	canSendMessage(_rid: string): boolean {
+	canSendMessage(_rid) {
 		return false;
 	},
 
-	readOnly(_rid: string, _user): boolean {
+	readOnly(_rid, _user) {
 		return true;
 	},
 } as AtLeast<IRoomTypeClientDirectives, 'roomName'>);
