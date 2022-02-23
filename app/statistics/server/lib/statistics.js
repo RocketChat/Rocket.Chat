@@ -324,7 +324,36 @@ export const statistics = {
 		statistics.totalStarrred = Messages.findStarred().count();
 		statistics.totalPinned = Messages.findPinned().count();
 
+		statistics.totalE2ERooms = Rooms.findByE2E().count();
+
+		statistics.totalE2EMessages = _.reduce(
+			Rooms.findByE2E().fetch(),
+			function _e2eMessages(num, room) {
+				const { _id } = room;
+				const e2eMessages = Messages.findE2EByRoom(_id).fetch().length;
+				return num + e2eMessages;
+			},
+			0,
+		);
+
+		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
+		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
+
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.homeTitle = settings.get('Layout_Home_Title');
+		statistics.homeBody = settings.get('Layout_Home_Body').split('\n')[0];
+
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
+
 		console.log(
+			statistics.totalEmailInvitation,
+			statistics.showHomeButton,
+			statistics.homeTitle,
+			statistics.homeBody,
+			statistics.totalUserEmail2fa,
+			statistics.totalUserTOTP,
+			statistics.totalE2ERooms,
+			statistics.totalE2EMessages,
 			statistics.totalRoomsWithSnippet,
 			statistics.totalRoomsWithStarred,
 			statistics.totalRoomsWithPinned,

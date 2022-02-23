@@ -1722,6 +1722,22 @@ Find users to send a message by email if:
 		return this.find(query, options);
 	}
 
+	findActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
+	findActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
+		return this.find(query, options);
+	}
+
 	updateCustomFieldsById(userId, customFields) {
 		return this.update(userId, {
 			$set: {

@@ -461,6 +461,15 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findE2EByRoom(roomId, options) {
+		const query = {
+			_hidden: { $ne: true },
+			rid: roomId,
+			t: 'e2e',
+		};
+		return this.find(query, options);
+	}
+
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			'_hidden': { $ne: true },
