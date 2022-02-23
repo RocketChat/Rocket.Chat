@@ -70796,6 +70796,197 @@
           ]
         }
       ]
+    },
+    "4.4.1": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24432",
+          "title": "Release 4.4.1",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "sampaiodiego",
+            "pierre-lehnen-rc",
+            "dougfabris",
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24387",
+          "title": "[FIX] Slash commands previews not working",
+          "userLogin": "ostjen",
+          "milestone": "4.4.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24381",
+          "title": "[FIX] Add ?close to OAuth callback url",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24409",
+          "title": "[FIX] Startup errors creating indexes",
+          "userLogin": "sampaiodiego",
+          "description": "Fix `bio` and `prid` startup index creation errors.",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24401",
+          "title": "[FIX] Outgoing webhook without scripts not saving messages",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24407",
+          "title": "[FIX] Skip cloud steps for registered servers on setup wizard",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24418",
+          "title": "[FIX] Oembed request not respecting payload limit",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.4.2": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24459",
+          "title": "Release 4.4.2",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "dougfabris",
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24450",
+          "title": "[FIX] OAuth mismatch redirect_uri error",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24453",
+          "title": "Chore: bump fuselage version",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.2",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
+    },
+    "4.5.0-rc.1": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24581",
+          "title": "Regression: Add support to namespace within micro services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24583",
+          "title": "Regression: Error when trying to load name of dm rooms for avatars and notifications",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24567",
+          "title": "[NEW] Marketplace sort filter",
+          "userLogin": "ujorgeleite",
+          "description": "Implemented a sort filter for the marketplace screen. This component sorts the marketplace apps list in 4 ways, alphabetical order(A-Z), inverse alphabetical order(Z-A), most recently updated(MRU), and least recent updated(LRU). Besides that, I've generalized some components and types to increase code reusability, renamed some helpers as well as deleted some useless ones, and inserted the necessary new translations on the English i18n dictionary.\r\nDemo gif:\r\n![Marketplace sort filter](https://user-images.githubusercontent.com/43561537/155033709-e07a6306-a85a-4f7f-9624-b53ba5dd7fa9.gif)",
+          "milestone": "4.5.0",
+          "contributors": [
+            "rique223",
+            "ujorgeleite"
+          ]
+        },
+        {
+          "pr": "23102",
+          "title": "[NEW] VoIP Support for Omnichannel",
+          "userLogin": "KevLehman",
+          "description": "- Created VoipService to manage VoIP connections and PBX connection\r\n- Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)\r\n- Created Basic interfaces to support new services and new model\r\n- Created Endpoints for management interfaces\r\n- Implemented asterisk connector on VoIP service\r\n- Created UI components to show calls incoming and to allow answering/rejecting calls\r\n- Added new settings to control call server/management server connection values\r\n- Added endpoints to associate Omnichannel Agents with PBX Extensions\r\n- Added support for event listening on server side, to get metadata about calls being received/ongoing\r\n- Created new pages to update settings & to see user-extension association\r\n- Created new page to see ongoing calls (and past calls)\r\n- Added support for remote hangup/hold on calls\r\n- Implemented call metrics calculation (hold time, waiting time, talk time)\r\n- Show a notificaiton when call is received",
+          "milestone": "4.5.0",
+          "contributors": [
+            "KevLehman",
+            "amolghode1981",
+            "web-flow",
+            "tiagoevanp",
+            "murtaza98",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24562",
+          "title": "Regression: Fix room not getting created due to null visitor status",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
