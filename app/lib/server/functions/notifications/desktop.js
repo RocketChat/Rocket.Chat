@@ -13,7 +13,7 @@ import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator
  * @param {string} notificationMessage The message text to send on notification body
  */
 export function notifyDesktopUser({ userId, user, message, room, duration, notificationMessage }) {
-	const { title, text } = roomCoordinator.getRoomDirectives(room.t)?.getNotificationDetails(room, user, notificationMessage);
+	const { title, text } = roomCoordinator.getRoomDirectives(room.t)?.getNotificationDetails(room, user, notificationMessage, userId);
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	Notifications.notifyUser(userId, 'notification', {

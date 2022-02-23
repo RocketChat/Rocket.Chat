@@ -5,3 +5,4 @@ import './livechat';
 import './private';
 import './public';
 import './unread';
+import './voip';

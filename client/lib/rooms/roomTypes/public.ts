@@ -5,17 +5,16 @@ import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import type { IRoom } from '../../../../definition/IRoom';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '../../../../definition/utils';
+import type { AtLeast } from '../../../../definition/utils';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
-	allowRoomSettingChange(room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return Boolean(room.broadcast);
@@ -31,7 +30,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(_room, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;
@@ -40,7 +39,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string | undefined {
+	roomName(roomData) {
 		if (roomData.prid) {
 			return roomData.fname;
 		}
@@ -50,11 +49,11 @@ roomCoordinator.add(PublicRoomType, {
 		return roomData.name;
 	},
 
-	isGroupChat(_room: Partial<IRoom>): boolean {
+	isGroupChat(_room) {
 		return true;
 	},
 
-	getUiText(context: ValueOf<typeof UiTextContext>): string {
+	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
 				return 'Hide_Room_Warning';
@@ -65,18 +64,18 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	condition(): boolean {
+	condition() {
 		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 		return (
 			groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
 		);
 	},
 
-	getAvatarPath(room): string {
+	getAvatarPath(room) {
 		return getAvatarURL({ roomId: room._id, cache: room.avatarETag }) as string;
 	},
 
-	getIcon(room: Partial<IRoom>): string | undefined {
+	getIcon(room) {
 		if (room.prid) {
 			return 'discussion';
 		}
@@ -87,7 +86,7 @@ roomCoordinator.add(PublicRoomType, {
 		return PublicRoomType.icon;
 	},
 
-	findRoom(identifier: string): IRoom | undefined {
+	findRoom(identifier) {
 		const query = {
 			t: 'c',
 			name: identifier,
@@ -96,7 +95,7 @@ roomCoordinator.add(PublicRoomType, {
 		return ChatRoom.findOne(query);
 	},
 
-	showJoinLink(roomId: string): boolean {
+	showJoinLink(roomId) {
 		return !!ChatRoom.findOne({ _id: roomId, t: 'c' });
 	},
 } as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>);
