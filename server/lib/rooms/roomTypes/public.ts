@@ -1,15 +1,14 @@
 import { settings } from '../../../../app/settings/server';
-import type { IRoom, RoomType } from '../../../../definition/IRoom';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '../../../../definition/utils';
+import type { AtLeast } from '../../../../definition/utils';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
-	allowRoomSettingChange(room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return Boolean(room.broadcast);
@@ -25,7 +24,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(_room, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;
@@ -34,7 +33,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room: IRoom): string | undefined {
+	roomName(room, _userId?) {
 		if (room.prid) {
 			return room.fname;
 		}
@@ -44,19 +43,19 @@ roomCoordinator.add(PublicRoomType, {
 		return room.name;
 	},
 
-	isGroupChat(_room: IRoom): boolean {
+	isGroupChat(_room) {
 		return true;
 	},
 
-	includeInDashboard(): boolean {
+	includeInDashboard() {
 		return true;
 	},
 
-	getDiscussionType(): RoomType {
+	getDiscussionType() {
 		return 'c';
 	},
 
-	includeInRoomSearch(): boolean {
+	includeInRoomSearch() {
 		return true;
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
