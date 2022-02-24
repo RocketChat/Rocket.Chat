@@ -42,6 +42,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
+		if (!hasPermission('view-p-room')) {
+			return null;
+		}
 		const query = {
 			t: 'p',
 			name: identifier,

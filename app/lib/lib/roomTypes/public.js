@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { openRoom } from '../../../ui-utils';
 import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';
-import { hasAtLeastOnePermission } from '../../../authorization';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
@@ -42,6 +42,9 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
+		if (!hasPermission('view-c-room')) {
+			return null;
+		}
 		const query = {
 			t: 'c',
 			name: identifier,
