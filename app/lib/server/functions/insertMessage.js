@@ -2,7 +2,6 @@ import { Match, check } from 'meteor/check';
 
 import { Markdown } from '../../../markdown/server';
 import { Messages } from '../../../models';
-import { callbacks } from '../../../../lib/callbacks';
 
 const objectMaybeIncluding = (types) =>
 	Match.Where((value) => {
@@ -87,11 +86,10 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const insertMessage = function (user, message, room, upsert = false) {
-	if (!user || !message || !room || !room._id) {
+export const insertMessage = function (user, message, rid, upsert = false) {
+	if (!user || !message || !rid) {
 		return false;
 	}
-	const rid = room._id;
 
 	check(
 		message,
@@ -145,7 +143,6 @@ export const insertMessage = function (user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
@@ -160,7 +157,6 @@ export const insertMessage = function (user, message, room, upsert = false) {
 	} else {
 		message._id = Messages.insert(message);
 	}
-	callbacks.runAsync('afterSaveMessage', message, room);
 
 	return message;
 };

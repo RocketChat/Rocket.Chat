@@ -32,7 +32,7 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [channel.id, channel.name],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: 'c',
@@ -59,7 +59,7 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [channel.id, channel.name],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: 'p',
@@ -88,7 +88,7 @@ export class SlackImporter extends Base {
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
 				},
-				importIds: [channel.id, channel.name],
+				importIds: [channel.id],
 				name: channel.name,
 				users: this._replaceSlackUserIds(channel.members),
 				t: channel.members.length > maxUsers ? 'p' : 'd',
@@ -134,7 +134,7 @@ export class SlackImporter extends Base {
 		for (const user of data) {
 			const newUser = {
 				emails: [],
-				importIds: [user.id, user.name],
+				importIds: [user.id],
 				username: user.name,
 				name: user.profile.real_name,
 				utcOffset: user.tz_offset && user.tz_offset / 3600,

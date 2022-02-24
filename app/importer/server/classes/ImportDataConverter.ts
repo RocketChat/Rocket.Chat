@@ -263,7 +263,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username || userData.username);
+			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
 		}
 	}
 
@@ -532,11 +532,10 @@ export class ImportDataConverter {
 					throw new Error('importer-message-unknown-user');
 				}
 
-				const room = Rooms.findOneByImportId(data.rid);
-				if (!room) {
+				const rid = this.findImportedRoomId(data.rid);
+				if (!rid) {
 					throw new Error('importer-message-unknown-room');
 				}
-				const rid = room._id;
 				if (!rids.includes(rid)) {
 					rids.push(rid);
 				}
@@ -580,7 +579,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					insertMessage(creator, msgObj, room, true);
+					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);
