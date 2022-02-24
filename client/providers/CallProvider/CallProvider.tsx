@@ -84,14 +84,21 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
+		const callNotificationEvents: Promise<() => void>[] = [];
+
 		if (voipEnabled) {
-			Notifications.onUser('callerjoined', handleQueueJoined);
-			Notifications.onUser('agentcalled', handleAgentCalled);
-			Notifications.onUser('agentconnected', handleAgentConnected);
-			Notifications.onUser('queuememberadded', handleMemberAdded);
-			Notifications.onUser('queuememberremoved', handleMemberRemoved);
-			Notifications.onUser('callabandoned', handleCallAbandon);
-			Notifications.onUser('call.callerhangup', handleCallHangup);
+			callNotificationEvents.push(Notifications.onUser('callerjoined', handleQueueJoined));
+			callNotificationEvents.push(Notifications.onUser('agentcalled', handleAgentCalled));
+			callNotificationEvents.push(Notifications.onUser('agentconnected', handleAgentConnected));
+			callNotificationEvents.push(Notifications.onUser('queuememberadded', handleMemberAdded));
+			callNotificationEvents.push(Notifications.onUser('queuememberremoved', handleMemberRemoved));
+			callNotificationEvents.push(Notifications.onUser('callabandoned', handleCallAbandon));
+			callNotificationEvents.push(Notifications.onUser('call.callerhangup', handleCallHangup));
+		} else {
+			callNotificationEvents.forEach(async (event) => {
+				(await event)();
+			});
+			callNotificationEvents.length = 0;
 		}
 	}, [
 		handleAgentCalled,
