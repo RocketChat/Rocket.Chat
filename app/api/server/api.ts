@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { ServerResponse } from 'http';
+import { Server, ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -9,25 +9,21 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { IncomingMessage } from 'connect';
 import { Route, RouteOptions } from 'meteor/kadira:flow-router';
+import { IHttpRequest } from '@rocket.chat/apps-engine/definition/accessors';
 
+import { ITwoFactorOptions, checkCodeForUser } from '../../2fa/server/code';
+import { IMethodConnection } from '../../../definition/IMethodThisType';
+import type { IUser } from '../../../definition/IUser';
+import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission, hasAllP
-
-
-	export function _setAccountData(id: string, arg1: string, token: any) {
-		throw new Error('Function not implemented.');
-	}
-export function _setAccountData(id: string, arg1: string, token: any) {
-	throw new Error('Function not implemented.');
-}
-ermission } from '../../authorization/server';
+import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
-import { checkCodeForUser, ITwoFactorOptions } from '../../2fa/server/code';
 import { RateLimiter } from '../../lib/server';
-import { IMethodConnection } from '../../../definition/IMethodThisType';
+import { MethodInvocation } from '../../2fa/server/MethodInvocationOverride';
+import { SettingValue } from '../../../definition/ISetting';
 
 const logger = new Logger('API');
 
@@ -39,7 +35,12 @@ export const defaultRateLimiterOptions = {
 };
 let prometheusAPIUserAgent = false;
 
-export let API = {};
+// export let API = {};
+
+export declare const API: {
+	v1: APIClass<'/v1'>;
+	default: APIClass;
+};
 
 type SuccessResult<T> = {
 	statusCode: 200;
@@ -60,17 +61,22 @@ type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails 
 				(undefined extends TErrorDetails ? {} : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
-type Options =
-	| {
-			permissionsRequired?: string[];
-			authRequired?: boolean;
-			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-	  }
-	| {
-			authRequired: true;
-			twoFactorRequired: true;
-			twoFactorOptions?: ITwoFactorOptions;
-	  };
+type UnauthorizedResult<T> = {
+	statusCode: 403;
+	body: {
+		success: false;
+		error: T | 'unauthorized';
+	};
+};
+
+type Options = {
+	permissionsRequired?: string[];
+	authRequired?: boolean;
+	forceTwoFactorAuthenticationForNonEnterprise?: boolean;
+
+	twoFactorRequired: boolean;
+	twoFactorOptions?: ITwoFactorOptions;
+};
 
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
@@ -85,6 +91,53 @@ type Request = {
 	url: string;
 	headers: Record<string, string>;
 	body: unknown;
+};
+
+type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	urlParams: UrlParams<TPathPattern>;
+	// TODO make it unsafe
+	queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
+	// TODO make it unsafe
+	bodyParams: TMethod extends 'GET' ? Record<string, unknown> : Partial<OperationParams<TMethod, TPathPattern>>;
+	request: Request;
+	requestParams(): OperationParams<TMethod, TPathPattern>;
+	getPaginationItems(): {
+		offset: number;
+		count: number;
+	};
+	parseJsonQuery(): {
+		sort: Record<string, unknown>;
+		fields: Record<string, unknown>;
+		query: Record<string, unknown>;
+	};
+	getUserFromParams(): IUser;
+} & (TOptions extends { authRequired: true }
+	? {
+			user: IUser;
+			userId: string;
+	  }
+	: {
+			user: null;
+			userId: null;
+	  });
+
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+	| SuccessResult<OperationResult<TMethod, TPathPattern>>
+	| FailureResult<unknown, unknown, unknown, unknown>
+	| UnauthorizedResult<unknown>;
+
+type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
+	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
+
+type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
+	| Action<TMethod, TPathPattern, TEndpointOptions>
+	| ({
+			action: Action<TMethod, TPathPattern, TEndpointOptions>;
+	  } & { twoFactorRequired: boolean });
+
+type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}> = {
+	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
 };
 
 const getRequestIP = (req: IncomingMessage): unknown => {
@@ -152,6 +205,7 @@ export class APIClass<TBasePath extends string = '/'> {
 
 	_config: {
 		version: string;
+		onLoggedIn: Server;
 	};
 
 	_routes: Route[];
@@ -193,7 +247,7 @@ export class APIClass<TBasePath extends string = '/'> {
 		};
 	}
 
-	setLimitedCustomFields(customFields: undefined[]): void {
+	setLimitedCustomFields(customFields: string[]): void {
 		const nonPublicFieds = customFields.reduce((acc: Record<string, number>, customField) => {
 			acc[`customFields.${customField}`] = 0;
 			return acc;
@@ -208,11 +262,11 @@ export class APIClass<TBasePath extends string = '/'> {
 		return (API as any).helperMethods.size !== 0;
 	}
 
-	getHelperMethods(): unknown {
+	getHelperMethods(): string[] {
 		return (API as any).helperMethods;
 	}
 
-	getHelperMethod(name: string): unknown {
+	getHelperMethod(name: string): string[] {
 		return (API as any).helperMethods.get(name);
 	}
 
@@ -220,7 +274,7 @@ export class APIClass<TBasePath extends string = '/'> {
 		this.authMethods.push(method);
 	}
 
-	shouldAddRateLimitToRoute(options: RouteOptions): boolean {
+	shouldAddRateLimitToRoute(options: Options): boolean {
 		const { version } = this._config;
 
 		const rateLimiterOptions = options;
@@ -328,7 +382,8 @@ export class APIClass<TBasePath extends string = '/'> {
 			if (this.shouldAddRateLimitToRoute(route.options)) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
-					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
+					// rateLimiterOptions: route.options || defaultRateLimiterOptions,
+					rateLimiterOptions: defaultRateLimiterOptions,
 					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
 					apiVersion: version,
 				});
@@ -383,7 +438,7 @@ export class APIClass<TBasePath extends string = '/'> {
 		userId: string;
 		request: Request;
 		invocation: { twoFactorChecked: boolean };
-		options: NonEnterpriseTwoFactorOptions;
+		options: Options;
 		connection: IMethodConnection;
 	}): void {
 		if (!options.twoFactorRequired) {
@@ -411,11 +466,33 @@ export class APIClass<TBasePath extends string = '/'> {
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
-	addRoute(routes: string[], options: NonEnterpriseTwoFactorOptions, endpoints: string[]): void {
+	// addRoute<TSubPathPattern extends string>(
+	// 	subpath: TSubPathPattern,
+	// 	operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
+	// ): void;
+
+	// addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>>(
+	// 	subpaths: TSubPathPattern[],
+	// 	operations: Operations<TPathPattern>,
+	// ): void;
+
+	// addRoute<TSubPathPattern extends string, TOptions extends Options>(
+	// 	subpath: TSubPathPattern,
+	// 	options: TOptions,
+	// 	operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>,
+	// ): void;
+
+	// addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>, TOptions extends Options>(
+	// 	subpaths: TSubPathPattern[],
+	// 	options: TOptions,
+	// 	operations: Operations<TPathPattern, TOptions>,
+	// ): void;
+
+	addRoute(routes: string[], options: Options, endpoints: string[]): void {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
-			endpoints = options;
-			options = {};
+			// endpoints = options;
+			options = {} as Options;
 		}
 
 		let shouldVerifyPermissions: boolean;
@@ -435,7 +512,8 @@ export class APIClass<TBasePath extends string = '/'> {
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
-				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
+				// rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
+				rateLimiterOptions: defaultRateLimiterOptions,
 				endpoints,
 				apiVersion: version,
 			});
@@ -486,12 +564,13 @@ export class APIClass<TBasePath extends string = '/'> {
 
 					let result;
 
-					const connection = {
+					const connection: IMethodConnection = {
 						id: Random.id(),
-						close(): void {},
-						token: this.token,
-						httpHeaders: this.request.headers,
+						close,
+						onClose: close,
+						// token: this.token,
 						clientAddress: this.requestIp,
+						httpHeaders: this.request.headers,
 					};
 
 					try {
@@ -503,7 +582,7 @@ export class APIClass<TBasePath extends string = '/'> {
 							});
 						}
 
-						const invocation = new DDPCommon.MethodInvocation({
+						const invocation = new MethodInvocation({
 							connection,
 							isSimulation: false,
 							userId: this.userId,
@@ -564,7 +643,7 @@ export class APIClass<TBasePath extends string = '/'> {
 		});
 	}
 
-	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
+	updateRateLimiterDictionaryForRoute(route: string, numRequestsAllowed: number, intervalTimeInMS: SettingValue): void {
 		if (rateLimiterDictionary[route]) {
 			rateLimiterDictionary[route].options.numRequestsAllowed =
 				numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
@@ -573,8 +652,8 @@ export class APIClass<TBasePath extends string = '/'> {
 		}
 	}
 
-	_initAuth() {
-		const loginCompatibility = (bodyParams, request) => {
+	_initAuth(this: APIClass): void {
+		const loginCompatibility = (bodyParams: ActionThis['bodyParams'], request: Request): unknown => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code: bodyCode } = bodyParams;
 			let usernameToLDAPLogin = '';
@@ -590,6 +669,7 @@ export class APIClass<TBasePath extends string = '/'> {
 			const code = bodyCode || request.headers['x-2fa-code'];
 
 			const auth = {
+				user,
 				password,
 			};
 
@@ -637,19 +717,20 @@ export class APIClass<TBasePath extends string = '/'> {
 			return auth;
 		};
 
-		const self = this;
+		const self = this as IHttpRequest;
 
 		this.addRoute(
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				post(this: ActionThis) {
 					const args = loginCompatibility(this.bodyParams, this.request);
 					const getUserInfo = self.getHelperMethod('getUserInfo');
 
-					const invocation = new DDPCommon.MethodInvocation({
+					const invocation = new MethodInvocation({
 						connection: {
-							close() {},
+							// eslint-disable-next-line @typescript-eslint/no-empty-function
+							close(): void {},
 							httpHeaders: this.request.headers,
 							clientAddress: getRequestIP(this.request),
 						},
@@ -711,7 +792,7 @@ export class APIClass<TBasePath extends string = '/'> {
 			},
 		);
 
-		const logout = function () {
+		const logout = function (this: ActionThis): unknown {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -767,7 +848,7 @@ export class APIClass<TBasePath extends string = '/'> {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args) {
+const getUserAuth = function _getUserAuth(...args: undefined[]): ActionThis {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
@@ -808,7 +889,7 @@ API = {
 	ApiClass: APIClass,
 };
 
-const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
+const defaultOptionsEndpoint = function _defaultOptionsEndpoint(this: APIClass.ActionThis): void {
 	// check if a pre-flight request
 	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
 		this.done();
@@ -857,7 +938,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	this.done();
 };
 
-const createApi = function _createApi(_api, options = {}) {
+const createApi = function _createApi(_api: APIClass<'/'>, options = {}): APIClass {
 	_api =
 		_api ||
 		new APIClass(
@@ -876,7 +957,7 @@ const createApi = function _createApi(_api, options = {}) {
 	return _api;
 };
 
-const createApis = function _createApis() {
+const createApis = function _createApis(): void {
 	API.v1 = createApi(API.v1, {
 		version: 'v1',
 	});
