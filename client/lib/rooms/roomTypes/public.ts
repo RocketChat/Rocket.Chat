@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -87,6 +87,9 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	findRoom(identifier) {
+		if (!hasPermission('view-c-room')) {
+			return null;
+		}
 		const query = {
 			t: 'c',
 			name: identifier,

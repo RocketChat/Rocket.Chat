@@ -23,6 +23,9 @@ roomCoordinator.add(VoipRoomType, {
 	},
 
 	findRoom(identifier) {
+		if (!hasPermission('view-l-room')) {
+			return null;
+		}
 		return ChatRoom.findOne({ _id: identifier });
 	},
 

@@ -71,6 +71,9 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	findRoom(identifier) {
+		if (!hasPermission('view-l-room')) {
+			return null;
+		}
 		return ChatRoom.findOne({ _id: identifier });
 	},
 
