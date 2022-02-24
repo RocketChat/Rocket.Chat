@@ -10,7 +10,7 @@ export function getOplogInfo() {
 	return { oplogEnabled, mongo };
 }
 
-function fallbackMongoInfo() {
+function fallbackMongoInfo(originalError) {
 	let mongoVersion;
 	let mongoStorageEngine;
 
@@ -20,6 +20,16 @@ function fallbackMongoInfo() {
 		const { version } = Promise.await(mongo.db.command({ buildinfo: 1 }));
 		mongoVersion = version;
 		mongoStorageEngine = 'unknown';
+		console.warn('=== Error getting MongoDB info ===');
+		console.warn(originalError && originalError.toString());
+		console.warn('----------------------------------');
+		console.warn("Please make sure your mongodb user has the role clusterMonitor on the database 'admin'");
+		console.warn('You can add it via mongo shell running the following command replacing');
+		console.warn("the string YOUR_USER by the correct user's name:");
+		console.warn('');
+		console.warn('   db.runCommand({ grantRolesToUser: "YOUR_USER" , roles: [{role: "clusterMonitor", db: "admin"}]})');
+		console.warn('');
+		console.warn('==================================');
 	} catch (e) {
 		console.error('=== Error getting MongoDB info ===');
 		console.error(e && e.toString());
@@ -50,7 +60,7 @@ export function getMongoInfo() {
 		mongoVersion = version;
 		mongoStorageEngine = storageEngine.name;
 	} catch (e) {
-		return fallbackMongoInfo();
+		return fallbackMongoInfo(e);
 	}
 
 	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
