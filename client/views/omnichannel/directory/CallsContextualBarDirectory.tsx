@@ -11,7 +11,7 @@ import { FormSkeleton } from './Skeleton';
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
 
-const CallsContextualBar: FC = () => {
+const CallsContextualBarDirectory: FC = () => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
@@ -59,4 +59,4 @@ const CallsContextualBar: FC = () => {
 	);
 };
 
-export default CallsContextualBar;
+export default CallsContextualBarDirectory;
