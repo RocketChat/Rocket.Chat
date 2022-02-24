@@ -6,7 +6,7 @@ import admin from '../pageobjects/administration.page';
 import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 
-describe('[User Preferences]', () => {
+describe.skip('[User Preferences]', () => {
 	describe('default', () => {
 		before(() => {
 			checkIfUserIsValid(username, email, password);
