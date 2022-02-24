@@ -17,22 +17,21 @@ async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
 
-const roomTypePermission = async (roomType: RoomType, uid: string): Promise<boolean> => {
-	let permission = false;
+const roomViewPermission = async (roomType: RoomType, uid: string): Promise<boolean> => {
 	if (roomType === 'c') {
-		permission = await Authorization.hasPermission(uid, 'view-c-room');
+		return Authorization.hasPermission(uid, 'view-c-room');
 	}
 	if (roomType === 'p') {
-		permission = await Authorization.hasPermission(uid, 'view-p-room');
+		return Authorization.hasPermission(uid, 'view-p-room');
 	}
 	if (roomType === 'd') {
-		permission = await Authorization.hasPermission(uid, 'view-d-room');
+		return Authorization.hasPermission(uid, 'view-d-room');
 	}
 	if (roomType === 'l') {
-		permission = await Authorization.hasPermission(uid, 'view-l-room');
+		return Authorization.hasPermission(uid, 'view-l-room');
 	}
 
-	return permission;
+	return false;
 };
 
 const roomAccessValidators: RoomAccessValidator[] = [
@@ -114,7 +113,9 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
+			if (await roomViewPermission(room.t, user._id)) {
 			return true;
+			}
 		}
 	}
 
