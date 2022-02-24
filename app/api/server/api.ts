@@ -973,7 +973,7 @@ settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
 	createApis();
 });
 
-settings.watch('Accounts_CustomFields', (value) => {
+settings.watch('Accounts_CustomFields', (value: string) => {
 	if (!value) {
 		return API.v1.setLimitedCustomFields([]);
 	}
@@ -996,6 +996,6 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.watch('Prometheus_API_User_Agent', (value) => {
+settings.watch('Prometheus_API_User_Agent', (value: boolean) => {
 	prometheusAPIUserAgent = value;
 });
