@@ -17,7 +17,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
 export const CallProvider: FC = ({ children }) => {
-	const enabled = useSetting('VoIP_Enabled') as boolean;
+	const voipEnabled = useSetting('VoIP_Enabled');
 
 	const result = useVoipClient();
 
@@ -84,7 +84,7 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		if (enabled) {
+		if (voipEnabled) {
 			Notifications.onUser('callerjoined', handleQueueJoined);
 			Notifications.onUser('agentcalled', handleAgentCalled);
 			Notifications.onUser('agentconnected', handleAgentConnected);
@@ -101,7 +101,7 @@ export const CallProvider: FC = ({ children }) => {
 		handleCallAbandon,
 		handleAgentConnected,
 		handleCallHangup,
-		enabled,
+		voipEnabled,
 	]);
 
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
@@ -111,7 +111,7 @@ export const CallProvider: FC = ({ children }) => {
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
-		if (!enabled) {
+		if (!voipEnabled) {
 			return {
 				enabled: false,
 				ready: false,
@@ -174,7 +174,8 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [enabled, result, roomInfo, queueCounter, openWrapUpModal, user, visitorEndpoint, voipEndpoint, voipCloseRoomEndpoint, homeRoute]);
+	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
