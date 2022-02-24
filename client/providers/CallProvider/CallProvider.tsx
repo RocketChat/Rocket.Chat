@@ -10,12 +10,15 @@ import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
 export const CallProvider: FC = ({ children }) => {
+	const voipEnabled = useSetting('VoIP_Enabled');
+
 	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
 
@@ -106,6 +109,13 @@ export const CallProvider: FC = ({ children }) => {
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
+		if (!voipEnabled) {
+			return {
+				enabled: false,
+				ready: false,
+			};
+		}
+
 		if (isUseVoipClientResultError(result)) {
 			return {
 				enabled: true,
@@ -162,7 +172,7 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [queueCounter, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
