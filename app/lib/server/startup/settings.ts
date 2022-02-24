@@ -3145,6 +3145,10 @@ settingsRegistry.addGroup('VoIP', function () {
 			type: 'boolean',
 			public: true,
 			alert: 'Experimental_Feature_Alert',
+			enableQuery: {
+				_id: 'Livechat_enabled',
+				value: true,
+			},
 		});
 
 		this.section('Server_Configuration', function () {
