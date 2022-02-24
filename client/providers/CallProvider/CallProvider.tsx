@@ -85,24 +85,27 @@ export const CallProvider: FC = ({ children }) => {
 		[openWrapUpModal],
 	);
 
-	useEffect(async () => {
-		await Promise.all(
-			callNotificationEvents.map(async (event) => {
-				(await event)();
-			}),
-		);
+	useEffect(() => {
+		const addNotificationsCallbacks = async (): Promise<void> => {
+			await Promise.all(
+				callNotificationEvents.map(async (event) => {
+					(await event)();
+				}),
+			);
+			callNotificationEvents.length = 0;
 
-		callNotificationEvents.length = 0;
+			if (voipEnabled) {
+				callNotificationEvents.push(Notifications.onUser('callerjoined', handleQueueJoined));
+				callNotificationEvents.push(Notifications.onUser('agentcalled', handleAgentCalled));
+				callNotificationEvents.push(Notifications.onUser('agentconnected', handleAgentConnected));
+				callNotificationEvents.push(Notifications.onUser('queuememberadded', handleMemberAdded));
+				callNotificationEvents.push(Notifications.onUser('queuememberremoved', handleMemberRemoved));
+				callNotificationEvents.push(Notifications.onUser('callabandoned', handleCallAbandon));
+				callNotificationEvents.push(Notifications.onUser('call.callerhangup', handleCallHangup));
+			}
+		};
 
-		if (voipEnabled) {
-			callNotificationEvents.push(Notifications.onUser('callerjoined', handleQueueJoined));
-			callNotificationEvents.push(Notifications.onUser('agentcalled', handleAgentCalled));
-			callNotificationEvents.push(Notifications.onUser('agentconnected', handleAgentConnected));
-			callNotificationEvents.push(Notifications.onUser('queuememberadded', handleMemberAdded));
-			callNotificationEvents.push(Notifications.onUser('queuememberremoved', handleMemberRemoved));
-			callNotificationEvents.push(Notifications.onUser('callabandoned', handleCallAbandon));
-			callNotificationEvents.push(Notifications.onUser('call.callerhangup', handleCallHangup));
-		}
+		addNotificationsCallbacks();
 	}, [
 		handleAgentCalled,
 		handleQueueJoined,
