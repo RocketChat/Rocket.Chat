@@ -85,8 +85,8 @@ export const CallProvider: FC = ({ children }) => {
 		[openWrapUpModal],
 	);
 
-	useEffect(() => {
-		Promise.all(
+	useEffect(async () => {
+		await Promise.all(
 			callNotificationEvents.map(async (event) => {
 				(await event)();
 			}),
