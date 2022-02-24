@@ -86,9 +86,11 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		callNotificationEvents.forEach(async (event) => {
-			(await event)();
-		});
+		Promise.all(
+			callNotificationEvents.map(async (event) => {
+				(await event)();
+			}),
+		);
 
 		callNotificationEvents.length = 0;
 
