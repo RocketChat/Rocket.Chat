@@ -58,6 +58,11 @@ export default class Stream {
 	 */
 
 	init(rmElement: HTMLMediaElement): void {
+		if (this.renderingMediaElement) {
+			// Someone already has setup the stream and initializing it once again
+			// Clear the existing stream object
+			this.renderingMediaElement.srcObject == null;
+		}
 		this.renderingMediaElement = rmElement;
 	}
 	/**
