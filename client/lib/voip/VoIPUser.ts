@@ -241,7 +241,6 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 
 		this.remoteStream = new Stream(remoteStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
-
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
 			this.remoteStream.onTrackAdded(this.onTrackAdded.bind(this));
@@ -614,5 +613,18 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	/* CallEventDelegate implementation end */
 	isReady(): boolean {
 		return this.state.isReady;
+	}
+
+	/**
+	 * This function allows to change the media renderer media elements.
+	 */
+	switchMediaRenderer(mediaRenderer: IMediaStreamRenderer): void {
+		if (this.remoteStream) {
+			this.mediaStreamRendered = mediaRenderer;
+			this.remoteStream.init(mediaRenderer.remoteMediaElement);
+			this.remoteStream.onTrackAdded(this.onTrackAdded.bind(this));
+			this.remoteStream.onTrackRemoved(this.onTrackRemoved.bind(this));
+			this.remoteStream.play();
+		}
 	}
 }
