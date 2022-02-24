@@ -2,14 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../settings';
-import { Rooms } from '../../models';
+import { Settings, Rooms } from '../../models';
 import { validateName } from '../../lib/server/functions/validateName';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
 
-	if (settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (!Settings.findOneById('UI_Allow_room_names_with_special_chars').value) {
 		const cleanName = limax(displayName);
 		if (options.allowDuplicates !== true) {
 			const room = Rooms.findOneByDisplayName(displayName);
@@ -36,7 +35,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 		nameValidation = new RegExp(options.nameValidationRegex);
 	} else {
 		try {
-			nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
+			nameValidation = new RegExp(`^${Settings.findOneById('UTF8_Channel_Names_Validation').value}$`);
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
@@ -52,7 +51,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	if (options.allowDuplicates !== true) {
 		const room = Rooms.findOneByName(slugifiedName);
 		if (room && room._id !== rid) {
-			if (settings.get('UI_Allow_room_names_with_special_chars')) {
+			if (Settings.findOneById('UI_Allow_room_names_with_special_chars').value) {
 				let tmpName = slugifiedName;
 				let next = 0;
 				while (Rooms.findOneByNameAndNotId(tmpName, rid)) {
