@@ -16,7 +16,7 @@ addAction('voip-room-info', {
 	id: 'voip-room-info',
 	title: 'Call_Information',
 	icon: 'info-circled',
-	template: lazy(() => import('../../../client/views/omnichannel/directory/chats/contextualBar/VoipInfo')),
+	template: lazy(() => import('../../../client/views/omnichannel/directory/calls/contextualBar/CallsContextualBarRoom')),
 	order: 0,
 });
 

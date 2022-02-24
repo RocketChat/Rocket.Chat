@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import { useRouteParameter } from '../../../contexts/RouterContext';
-import CallsContextualBar from './CallsContextualBar';
+import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
@@ -24,7 +24,7 @@ const ContextualBar: FC<ContextualBarProps> = ({ contactReload, chatReload }) =>
 		case 'chats':
 			return <ChatsContextualBar chatReload={chatReload} />;
 		case 'calls':
-			return <CallsContextualBar />;
+			return <CallsContextualBarDirectory />;
 		default:
 			return null;
 	}
