@@ -74,13 +74,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return false;
 		}
 
-		const hasViewPermission = await roomTypePermission(room.t, user._id);
-
 		const hasSubscriptions = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
-
-		if (!hasViewPermission) {
-			return false;
-		}
 
 		if (hasSubscriptions) {
 			return true;
@@ -110,11 +104,10 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 	// if (!room || !user) {
 	// 	return false;
 	// }
-
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
 			if (await roomViewPermission(room.t, user._id)) {
-			return true;
+				return true;
 			}
 		}
 	}
