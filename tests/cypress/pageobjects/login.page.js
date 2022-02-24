@@ -74,6 +74,7 @@ class LoginPage extends Page {
 	}
 
 	open() {
+		localStorage.clear();
 		super.open('');
 		cy.wait(500);
 	}
