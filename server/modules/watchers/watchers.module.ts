@@ -34,7 +34,9 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
+import { PbxEventsRaw } from '../../../app/models/server/raw/PbxEvents';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
+import { IPbxEvent } from '../../../definition/IPbxEvent';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -52,6 +54,7 @@ interface IModelsParam {
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
 	EmailInbox: EmailInboxRaw;
+	PbxEvent: PbxEventsRaw;
 }
 
 interface IChange<T> {
@@ -100,6 +103,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		PbxEvent,
 	} = models;
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
@@ -402,5 +406,19 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.emailInbox', { clientAction, data, id });
+	});
+
+	watch<IPbxEvent>(PbxEvent, async ({ clientAction, id, data: eventData }) => {
+		// For now, we just care about insertions here
+		if (clientAction === 'inserted') {
+			const data = eventData ?? (await PbxEvent.findOneById(id));
+			if (!data || !['ContactStatus', 'Hangup'].includes(data.event)) {
+				// For now, we'll only care about agent connect/disconnect events
+				// Other events are not handled by watchers but by service
+				return;
+			}
+
+			broadcast('watch.pbxevents', { clientAction, data, id });
+		}
 	});
 }

@@ -3,13 +3,13 @@ import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup }
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
-import { roomTypes } from '../../../../../app/utils/client';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useUserRoom } from '../../hooks/useUserRoom';
 
 const clickable = css`
@@ -20,7 +20,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
-	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
+	const roomName = room && room.t && roomCoordinator.getRoomName(room.t, room);
 
 	const [selectedMessages, setSelected] = useState([]);
 
@@ -68,14 +68,8 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (toUsers.includes(value)) {
-				return;
-			}
-			return handleToUsers([...toUsers, value]);
-		}
-		handleToUsers(toUsers.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value) => {
+		handleToUsers(value);
 	});
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');

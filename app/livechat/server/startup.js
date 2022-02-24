@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { roomTypes } from '../../utils';
+import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { LivechatRooms } from '../../models';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
@@ -16,7 +16,7 @@ import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 
 Meteor.startup(async () => {
-	roomTypes.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
+	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	callbacks.add(
 		'beforeLeaveRoom',
