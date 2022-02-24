@@ -34,6 +34,7 @@ export const useFilesList = (
 	const roomTypes = {
 		c: 'channels.files',
 		l: 'channels.files',
+		v: 'channels.files',
 		d: 'im.files',
 		p: 'groups.files',
 	} as const;

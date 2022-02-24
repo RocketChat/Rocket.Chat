@@ -3138,3 +3138,99 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
+
+settingsRegistry.addGroup('VoIP', function () {
+	this.with({ tab: 'Server_Configuration' }, function () {
+		this.add('VoIP_Enabled', false, {
+			type: 'boolean',
+			public: true,
+			alert: 'Experimental_Feature_Alert',
+			enableQuery: {
+				_id: 'Livechat_enabled',
+				value: true,
+			},
+		});
+
+		this.section('Server_Configuration', function () {
+			this.add('VoIP_Server_Host', 'asterisk.dev.com', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Websocket_Port', 443, {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Name', 'Asterisk', {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Server_Websocket_Path', 'wss://asterisk.dev.com', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+		});
+
+		this.section('Management_Server', function () {
+			this.add('VoIP_Management_Server_Host', 'asterisk.dev.com', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Port', 5038, {
+				type: 'int',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Name', 'Asterisk', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Username', 'manager.username', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('VoIP_Management_Server_Password', 'secure_password', {
+				type: 'string',
+				public: true,
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+		});
+	});
+});
