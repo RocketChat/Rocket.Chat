@@ -28,7 +28,7 @@ const roomViewPermission = async (roomType: RoomType, uid: string): Promise<bool
 	if (roomType === 'd') {
 		return Authorization.hasPermission(uid, 'view-d-room');
 	}
-	if (roomType === 'l') {
+	if (roomType === 'l' || roomType === 'v') {
 		return Authorization.hasPermission(uid, 'view-l-room');
 	}
 
