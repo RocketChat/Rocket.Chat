@@ -16,6 +16,7 @@ import { UiKitCoreApp } from './uikit-core-app/service';
 import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
 import { isRunningMs } from '../lib/isRunningMs';
+import { settings } from '../../app/settings/server';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -29,10 +30,22 @@ api.registerService(new MeteorService());
 api.registerService(new NPSService(db));
 api.registerService(new RoomService(db));
 api.registerService(new SAUMonitorService());
-api.registerService(new VoipService(db));
-api.registerService(new OmnichannelVoipService(db));
 api.registerService(new TeamService(db));
 api.registerService(new UiKitCoreApp());
+
+let voipServiceInstance: VoipService;
+let omnichannelVoipServiceInstance: OmnichannelVoipService;
+settings.watch('VoIP_Enabled', (value) => {
+	if (value) {
+		voipServiceInstance = new VoipService(db);
+		omnichannelVoipServiceInstance = new OmnichannelVoipService(db);
+		api.registerService(voipServiceInstance);
+		api.registerService(omnichannelVoipServiceInstance);
+	} else {
+		voipServiceInstance && api.destroyService(voipServiceInstance);
+		omnichannelVoipServiceInstance && api.destroyService(omnichannelVoipServiceInstance);
+	}
+});
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
