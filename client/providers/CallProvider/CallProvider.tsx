@@ -3,23 +3,21 @@ import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 're
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import { Notifications } from '../../../app/notifications/client';
 import { IVoipRoom } from '../../../definition/IRoom';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useEndpoint } from '../../contexts/ServerContext';
+import { useEndpoint, useStream } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
-const callNotificationEvents: Promise<() => void>[] = [];
-
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	const result = useVoipClient();
 
@@ -86,36 +84,53 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		const addNotificationsCallbacks = async (): Promise<void> => {
-			await Promise.all(
-				callNotificationEvents.map(async (event) => {
-					(await event)();
-				}),
-			);
-			callNotificationEvents.length = 0;
+		if (voipEnabled) {
+			const unsubscribeFromCallerJoined = subscribeToNotifyUser('callerjoiner', handleQueueJoined);
+			return unsubscribeFromCallerJoined;
+		}
+	}, [handleQueueJoined, subscribeToNotifyUser, voipEnabled]);
 
-			if (voipEnabled) {
-				callNotificationEvents.push(Notifications.onUser('callerjoined', handleQueueJoined));
-				callNotificationEvents.push(Notifications.onUser('agentcalled', handleAgentCalled));
-				callNotificationEvents.push(Notifications.onUser('agentconnected', handleAgentConnected));
-				callNotificationEvents.push(Notifications.onUser('queuememberadded', handleMemberAdded));
-				callNotificationEvents.push(Notifications.onUser('queuememberremoved', handleMemberRemoved));
-				callNotificationEvents.push(Notifications.onUser('callabandoned', handleCallAbandon));
-				callNotificationEvents.push(Notifications.onUser('call.callerhangup', handleCallHangup));
-			}
-		};
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromAgentCalled = subscribeToNotifyUser('agentcalled', handleAgentCalled);
+			return unsubscribeFromAgentCalled;
+		}
+	}, [handleAgentCalled, subscribeToNotifyUser, voipEnabled]);
 
-		addNotificationsCallbacks();
-	}, [
-		handleAgentCalled,
-		handleQueueJoined,
-		handleMemberAdded,
-		handleMemberRemoved,
-		handleCallAbandon,
-		handleAgentConnected,
-		handleCallHangup,
-		voipEnabled,
-	]);
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromAgentConnected = subscribeToNotifyUser('agentconnected', handleAgentConnected);
+			return unsubscribeFromAgentConnected;
+		}
+	}, [handleAgentConnected, subscribeToNotifyUser, voipEnabled]);
+
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromMemberAdded = subscribeToNotifyUser('queuememberadded', handleMemberAdded);
+			return unsubscribeFromMemberAdded;
+		}
+	}, [handleMemberAdded, subscribeToNotifyUser, voipEnabled]);
+
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromMemberRemoved = subscribeToNotifyUser('queuememberremoved', handleMemberRemoved);
+			return unsubscribeFromMemberRemoved;
+		}
+	}, [handleMemberRemoved, subscribeToNotifyUser, voipEnabled]);
+
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromCallAbandon = subscribeToNotifyUser('callabandoned', handleCallAbandon);
+			return unsubscribeFromCallAbandon;
+		}
+	}, [handleCallAbandon, subscribeToNotifyUser, voipEnabled]);
+
+	useEffect(() => {
+		if (voipEnabled) {
+			const unsubscribeFromCallHangup = subscribeToNotifyUser('call.callerhangup', handleCallHangup);
+			return unsubscribeFromCallHangup;
+		}
+	}, [handleCallHangup, subscribeToNotifyUser, voipEnabled]);
 
 	useEffect(() => {
 		if (isUseVoipClientResultError(result)) {
