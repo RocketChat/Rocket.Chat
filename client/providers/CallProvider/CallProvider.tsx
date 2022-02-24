@@ -16,6 +16,8 @@ import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
+const callNotificationEvents: Promise<() => void>[] = [];
+
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
 
@@ -84,7 +86,11 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		const callNotificationEvents: Promise<() => void>[] = [];
+		callNotificationEvents.forEach(async (event) => {
+			(await event)();
+		});
+
+		callNotificationEvents.length = 0;
 
 		if (voipEnabled) {
 			callNotificationEvents.push(Notifications.onUser('callerjoined', handleQueueJoined));
@@ -94,11 +100,6 @@ export const CallProvider: FC = ({ children }) => {
 			callNotificationEvents.push(Notifications.onUser('queuememberremoved', handleMemberRemoved));
 			callNotificationEvents.push(Notifications.onUser('callabandoned', handleCallAbandon));
 			callNotificationEvents.push(Notifications.onUser('call.callerhangup', handleCallHangup));
-		} else {
-			callNotificationEvents.forEach(async (event) => {
-				(await event)();
-			});
-			callNotificationEvents.length = 0;
 		}
 	}, [
 		handleAgentCalled,
