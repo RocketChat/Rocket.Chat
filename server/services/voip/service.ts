@@ -40,7 +40,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			try {
 				if (value) {
 					this.logger.info('Starting VoIP service');
-					await this.commandHandler.initConnection(CommandType.AMI);
+					Promise.await(this.commandHandler.initConnection(CommandType.AMI));
 					this.logger.info('VoIP service started');
 				} else {
 					this.logger.info('Stopping VoIP service');
