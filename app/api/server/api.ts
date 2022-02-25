@@ -69,14 +69,17 @@ type UnauthorizedResult<T> = {
 	};
 };
 
-type Options = {
-	permissionsRequired?: string[];
-	authRequired?: boolean;
-	forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-
-	twoFactorRequired: boolean;
-	twoFactorOptions?: ITwoFactorOptions;
-};
+type Options =
+	| {
+			permissionsRequired?: string[];
+			authRequired?: boolean;
+			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
+	  }
+	| {
+			authRequired: true;
+			twoFactorRequired: true;
+			twoFactorOptions?: ITwoFactorOptions;
+	  };
 
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
@@ -166,7 +169,7 @@ const getRequestIP = (req: IncomingMessage): unknown => {
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
-export class APIClass<TBasePath extends string = '/'> {
+export class APIClass<TBasePath extends string = '/'> extends Restivus {
 	/* Class members declarations: */
 	apiPath: string;
 
@@ -217,6 +220,7 @@ export class APIClass<TBasePath extends string = '/'> {
 		defaultOptionsEndpoint?: () => void;
 		auth?: { token: string; user(): unknown };
 	}) {
+		super(properties);
 		this.apiPath = properties.apiPath;
 		this.authMethods = [];
 		this.fieldSeparator = '.';
@@ -259,15 +263,15 @@ export class APIClass<TBasePath extends string = '/'> {
 	}
 
 	hasHelperMethods(): boolean {
-		return (API as any).helperMethods.size !== 0;
+		return API.helperMethods.size !== 0;
 	}
 
 	getHelperMethods(): string[] {
-		return (API as any).helperMethods;
+		return API.helperMethods;
 	}
 
 	getHelperMethod(name: string): string[] {
-		return (API as any).helperMethods.get(name);
+		return API.helperMethods.get(name);
 	}
 
 	addAuthMethod(method: string): void {
