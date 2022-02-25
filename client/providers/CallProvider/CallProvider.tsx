@@ -19,7 +19,7 @@ import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
-const newCallSound = (user: IUser): void => {
+const startRingback = (user: IUser): void => {
 	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
 	CustomSounds.play('telephone', {
 		volume: Number((audioVolume / 100).toPrecision(2)),
@@ -27,7 +27,7 @@ const newCallSound = (user: IUser): void => {
 	});
 };
 
-const stopCallSound = (): void => {
+const stopRingback = (): void => {
 	CustomSounds.pause('telephone');
 	CustomSounds.remove('telephone');
 };
@@ -197,9 +197,9 @@ export const CallProvider: FC = ({ children }) => {
 
 		const { registrationInfo, voipClient } = result;
 
-		voipClient.on('incomingcall', () => user && newCallSound(user));
-		voipClient.on('callestablished', () => stopCallSound());
-		voipClient.on('callterminated', () => stopCallSound());
+		voipClient.on('incomingcall', () => user && startRingback(user));
+		voipClient.on('callestablished', () => stopRingback());
+		voipClient.on('callterminated', () => stopRingback());
 
 		return {
 			enabled: true,
