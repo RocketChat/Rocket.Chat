@@ -88,7 +88,7 @@ export const CallProvider: FC = ({ children }) => {
 			return;
 		}
 
-		const unsubscribeFromCallerJoined = subscribeToNotifyUser(`${user._id}/callerjoiner`, handleQueueJoined);
+		const unsubscribeFromCallerJoined = subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
 		return unsubscribeFromCallerJoined;
 	}, [handleQueueJoined, subscribeToNotifyUser, user, voipEnabled]);
 
