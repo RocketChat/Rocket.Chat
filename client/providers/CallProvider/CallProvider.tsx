@@ -3,17 +3,32 @@ import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 're
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { CustomSounds } from '../../../app/custom-sounds/client';
+import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint, useStream } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
+
+const startRingback = (user: IUser): void => {
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
+	CustomSounds.play('telephone', {
+		volume: Number((audioVolume / 100).toPrecision(2)),
+		loop: true,
+	});
+};
+
+const stopRingback = (): void => {
+	CustomSounds.pause('telephone');
+	CustomSounds.remove('telephone');
+};
 
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -28,8 +43,6 @@ export const CallProvider: FC = ({ children }) => {
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const [queueCounter, setQueueCounter] = useState('');
 
 	const setModal = useSetModal();
@@ -37,21 +50,6 @@ export const CallProvider: FC = ({ children }) => {
 	const openWrapUpModal = useCallback((): void => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
-
-	const handleAgentCalled = useCallback(
-		(queue: { queuename: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Received call in queue ${queue.queuename}`,
-				options: {
-					showDuration: '2000',
-					hideDuration: '500',
-					timeOut: '500',
-				},
-			});
-		},
-		[dispatchToastMessage],
-	);
 
 	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
 		setQueueCounter(queue.queuedcalls);
@@ -91,15 +89,6 @@ export const CallProvider: FC = ({ children }) => {
 		const unsubscribeFromCallerJoined = subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
 		return unsubscribeFromCallerJoined;
 	}, [handleQueueJoined, subscribeToNotifyUser, user, voipEnabled]);
-
-	useEffect(() => {
-		if (!voipEnabled || !user) {
-			return;
-		}
-
-		const unsubscribeFromAgentCalled = subscribeToNotifyUser(`${user._id}/agentcalled`, handleAgentCalled);
-		return unsubscribeFromAgentCalled;
-	}, [handleAgentCalled, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
 		if (!voipEnabled || !user) {
@@ -224,6 +213,10 @@ export const CallProvider: FC = ({ children }) => {
 		}
 
 		const { registrationInfo, voipClient } = result;
+
+		voipClient.on('incomingcall', () => user && startRingback(user));
+		voipClient.on('callestablished', () => stopRingback());
+		voipClient.on('callterminated', () => stopRingback());
 
 		return {
 			enabled: true,

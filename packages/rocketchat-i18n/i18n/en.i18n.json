@@ -4729,7 +4729,7 @@
   "VoIP_Management_Server_Name": "Server Name",
   "VoIP_Management_Server_Username": "Username",
   "VoIP_Management_Server_Password": "Password",
-  "Voip_call_started": "Call started at __at__",
+  "Voip_call_started": "Call started at",
   "Voip_call_duration": "Call lasted __duration__",
   "Voip_call_declined": "Call hanged up by agent",
   "Voip_call_on_hold": "Call placed on hold at",
