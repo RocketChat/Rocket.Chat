@@ -18,7 +18,7 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 	return useCallback(
 		async (params) => {
 			try {
-				const data = await sendData(params);
+				const data = await sendData(params as any);
 
 				if (successMessage) {
 					dispatchToastMessage({ type: 'success', message: successMessage });
@@ -26,7 +26,7 @@ export const useEndpointActionExperimental = <TMethod extends Method, TPath exte
 
 				return data;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: String(error) });
 				// return { success: false };
 				throw error;
 			}
