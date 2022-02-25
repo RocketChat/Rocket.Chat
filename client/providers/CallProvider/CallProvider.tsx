@@ -84,53 +84,67 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromCallerJoined = subscribeToNotifyUser('callerjoiner', handleQueueJoined);
-			return unsubscribeFromCallerJoined;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleQueueJoined, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromCallerJoined = subscribeToNotifyUser(`${user._id}/callerjoiner`, handleQueueJoined);
+		return unsubscribeFromCallerJoined;
+	}, [handleQueueJoined, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromAgentCalled = subscribeToNotifyUser('agentcalled', handleAgentCalled);
-			return unsubscribeFromAgentCalled;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleAgentCalled, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromAgentCalled = subscribeToNotifyUser(`${user._id}/agentcalled`, handleAgentCalled);
+		return unsubscribeFromAgentCalled;
+	}, [handleAgentCalled, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromAgentConnected = subscribeToNotifyUser('agentconnected', handleAgentConnected);
-			return unsubscribeFromAgentConnected;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleAgentConnected, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromAgentConnected = subscribeToNotifyUser(`${user._id}/agentconnected`, handleAgentConnected);
+		return unsubscribeFromAgentConnected;
+	}, [handleAgentConnected, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromMemberAdded = subscribeToNotifyUser('queuememberadded', handleMemberAdded);
-			return unsubscribeFromMemberAdded;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleMemberAdded, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromMemberAdded = subscribeToNotifyUser(`${user._id}/queuememberadded`, handleMemberAdded);
+		return unsubscribeFromMemberAdded;
+	}, [handleMemberAdded, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromMemberRemoved = subscribeToNotifyUser('queuememberremoved', handleMemberRemoved);
-			return unsubscribeFromMemberRemoved;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleMemberRemoved, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromMemberRemoved = subscribeToNotifyUser(`${user._id}/queuememberremoved`, handleMemberRemoved);
+		return unsubscribeFromMemberRemoved;
+	}, [handleMemberRemoved, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromCallAbandon = subscribeToNotifyUser('callabandoned', handleCallAbandon);
-			return unsubscribeFromCallAbandon;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleCallAbandon, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromCallAbandon = subscribeToNotifyUser(`${user._id}/callabandoned`, handleCallAbandon);
+		return unsubscribeFromCallAbandon;
+	}, [handleCallAbandon, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		if (voipEnabled) {
-			const unsubscribeFromCallHangup = subscribeToNotifyUser('call.callerhangup', handleCallHangup);
-			return unsubscribeFromCallHangup;
+		if (!voipEnabled || !user) {
+			return;
 		}
-	}, [handleCallHangup, subscribeToNotifyUser, voipEnabled]);
+
+		const unsubscribeFromCallHangup = subscribeToNotifyUser(`${user._id}/call.callerhangup`, handleCallHangup);
+		return unsubscribeFromCallHangup;
+	}, [handleCallHangup, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
 		if (isUseVoipClientResultError(result)) {
