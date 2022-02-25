@@ -4737,6 +4737,8 @@
   "Voip_call_ended": "Call ended at",
   "Voip_call_ended_unexpectedly": "Call ended unexpectedly: __reason__",
   "Voip_call_wrapup": "Call wrapup notes added: __comment__",
+  "VoIP_JWT_Secret": "VoIP JWT Secret",
+  "VoIP_JWT_Secret_description": "This allows you to set a secret key for sharing extension details from server to client as JWT instead of plain text. If you don't setup this, extension registration details will be sent as plain text",
   "Chat_opened_by_visitor": "Chat opened by the visitor",
   "Wait_activation_warning": "Before you can login, your account must be manually activated by an administrator.",
   "Waiting_queue": "Waiting queue",
