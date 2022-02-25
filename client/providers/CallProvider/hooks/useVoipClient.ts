@@ -1,4 +1,5 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
 import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
@@ -23,6 +24,8 @@ export const isUseVoipClientResultError = (result: UseVoipClientResult): result 
 export const isUseVoipClientResultLoading = (result: UseVoipClientResult): result is UseVoipClientResultLoading =>
 	!result || !Object.keys(result).length;
 
+const isSignedResponse = (data: any): data is { result: string } => typeof data?.result === 'string';
+
 export const useVoipClient = (): UseVoipClientResult => {
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
 	const user = useUser();
@@ -37,16 +40,25 @@ export const useVoipClient = (): UseVoipClientResult => {
 		}
 		registrationInfo({ id: user._id }).then(
 			(data) => {
+				let parsedData: IRegistrationInfo;
+				if (isSignedResponse(data)) {
+					const result = KJUR.jws.JWS.parse(data.result);
+					parsedData = (result.payloadObj as any)?.context as IRegistrationInfo;
+				} else {
+					parsedData = data;
+				}
+
 				const {
 					extensionDetails: { extension, password },
 					host,
 					callServerConfig: { websocketPath },
-				} = data;
+				} = parsedData;
+
 				let client: VoIPUser;
 				(async (): Promise<void> => {
 					try {
 						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
-						setResult({ voipClient: client, registrationInfo: data });
+						setResult({ voipClient: client, registrationInfo: parsedData });
 					} catch (e) {
 						setResult({ error: e as Error });
 					}
