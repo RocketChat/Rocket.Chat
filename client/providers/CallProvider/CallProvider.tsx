@@ -10,12 +10,15 @@ import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
 
 export const CallProvider: FC = ({ children }) => {
+	const voipEnabled = useSetting('VoIP_Enabled');
+
 	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
 
@@ -99,6 +102,55 @@ export const CallProvider: FC = ({ children }) => {
 		handleCallHangup,
 	]);
 
+	useEffect(() => {
+		if (isUseVoipClientResultError(result)) {
+			return;
+		}
+
+		if (isUseVoipClientResultLoading(result)) {
+			return;
+		}
+		/**
+		 * This code may need a revisit when we handle callinqueue differently.
+		 * Check clickup taks for more details
+		 * https://app.clickup.com/t/22hy1k4
+		 * When customer called a queue (Either using skype or using internal number), call would get established
+		 * customer would hear agent's voice but agent would not hear anything from customer.
+		 * This issue was observed on unstable. It was found to be incosistent to reproduce.
+		 * On some developer env, it would happen randomly. On Safari it did not happen if
+		 * user refreshes before taking every call.
+		 *
+		 * The reason behind this was as soon as agent accepts a call, queueCounter would change.
+		 * This change will trigger re-rendering of media and creation of audio element.
+		 * This audio element gets used by voipClient to render the remote audio.
+		 * Because the re-render happend, it would hold a stale reference.
+		 *
+		 * If the dom is inspected, audio element just before body is usually created by this class.
+		 * this audio element.srcObject contains null value. In working case, it should display
+		 * valid stream object.
+		 *
+		 * Reason for inconsistecies :
+		 * This element is utilised in VoIPUser::setupRemoteMedia
+		 * This function is called when webRTC receives a remote track event. i.e when the webrtc's peer connection
+		 * starts receiving media. This event call back depends on several factors. How does asterisk setup streams.
+		 * How does it creates a bridge which patches up the agent and customer (Media is flowing thru asterisk).
+		 * When it works in de-environment, it was observed that the audio element in dom and the audio element hold
+		 * by VoIPUser is different. Nonetheless, this stale audio element holds valid media stream, which is being played.
+		 * Hence sometimes the audio is heard.
+		 *
+		 * Ideally call component once gets stable, should not get rerendered. Queue, Room creation are the parameters
+		 * which should be independent and should not control the call component.
+		 *
+		 * Solution :
+		 * Either make the audio elemenent rendered independent of rest of the DOM.
+		 * or implement useEffect. This useEffect will reset the rendering elements with the latest audio tag.
+		 *
+		 * Note : If this code gets refactor, revisit the line below to check if this call is needed.
+		 *
+		 */
+		remoteAudioMediaRef.current && result.voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
+	});
+
 	const visitorEndpoint = useEndpoint('POST', 'livechat/visitor');
 	const voipEndpoint = useEndpoint('GET', 'voip/room');
 	const voipCloseRoomEndpoint = useEndpoint('POST', 'voip/room.close');
@@ -106,6 +158,13 @@ export const CallProvider: FC = ({ children }) => {
 	const [roomInfo, setRoomInfo] = useState<{ v: { token?: string }; rid: string }>();
 
 	const contextValue: CallContextValue = useMemo(() => {
+		if (!voipEnabled) {
+			return {
+				enabled: false,
+				ready: false,
+			};
+		}
+
 		if (isUseVoipClientResultError(result)) {
 			return {
 				enabled: true,
@@ -162,7 +221,7 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [queueCounter, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}

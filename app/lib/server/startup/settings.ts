@@ -3139,16 +3139,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 	});
 });
 
-settingsRegistry.addGroup('VoIP', function () {
+settingsRegistry.addGroup('Call_Center', function () {
 	this.with({ tab: 'Server_Configuration' }, function () {
 		this.add('VoIP_Enabled', false, {
 			type: 'boolean',
 			public: true,
 			alert: 'Experimental_Feature_Alert',
+			enableQuery: {
+				_id: 'Livechat_enabled',
+				value: true,
+			},
 		});
 
 		this.section('Server_Configuration', function () {
-			this.add('VoIP_Server_Host', 'asterisk.dev.com', {
+			this.add('VoIP_Server_Host', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3156,7 +3160,7 @@ settingsRegistry.addGroup('VoIP', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Websocket_Port', 443, {
+			this.add('VoIP_Server_Websocket_Port', 0, {
 				type: 'int',
 				public: true,
 				enableQuery: {
@@ -3164,7 +3168,7 @@ settingsRegistry.addGroup('VoIP', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Name', 'Asterisk', {
+			this.add('VoIP_Server_Name', '', {
 				type: 'int',
 				public: true,
 				enableQuery: {
@@ -3172,7 +3176,7 @@ settingsRegistry.addGroup('VoIP', function () {
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Websocket_Path', 'wss://asterisk.dev.com', {
+			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3183,7 +3187,7 @@ settingsRegistry.addGroup('VoIP', function () {
 		});
 
 		this.section('Management_Server', function () {
-			this.add('VoIP_Management_Server_Host', 'asterisk.dev.com', {
+			this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3192,7 +3196,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Port', 5038, {
+			this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
 				enableQuery: {
@@ -3201,7 +3205,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Name', 'Asterisk', {
+			this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3210,7 +3214,7 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Username', 'manager.username', {
+			this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
 				enableQuery: {
@@ -3219,8 +3223,8 @@ settingsRegistry.addGroup('VoIP', function () {
 				},
 			});
 
-			this.add('VoIP_Management_Server_Password', 'secure_password', {
-				type: 'string',
+			this.add('VoIP_Management_Server_Password', '', {
+				type: 'password',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',
