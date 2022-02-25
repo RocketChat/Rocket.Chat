@@ -63,7 +63,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
 					{(lastMessage || tags) && (
 						<InfoPanel.Field>
-							<InfoPanel.Label>{!lastMessage && tags ? t('Tags') : t('Wrap_Up_Note')}</InfoPanel.Label>
+							<InfoPanel.Label>{!lastMessage && tags ? t('Tags') : t('Wrap_Up_Notes')}</InfoPanel.Label>
 							<InfoPanel.Text>{lastMessage?.msg}</InfoPanel.Text>
 							<InfoPanel.Text>
 								{tags?.map((tag: string) => (
@@ -75,8 +75,6 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 						</InfoPanel.Field>
 					)}
 				</InfoPanel>
-
-				{/* <InfoField label={t('Wrap_Up_Note')} info={guest.holdTime} /> */}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				{/* TODO: Introduce this buttons [Not part of MVP] */}
