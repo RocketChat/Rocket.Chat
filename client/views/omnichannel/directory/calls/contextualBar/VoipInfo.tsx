@@ -1,4 +1,4 @@
-import { Box, Icon, Chip } from '@rocket.chat/fuselage';
+import { Box, Field, Icon, Label, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement } from 'react';
 
@@ -9,6 +9,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import InfoPanel from '../../../../InfoPanel';
+import Info from '../../../components/Info';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
 
@@ -63,16 +64,18 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
 					<InfoField label={t('Wrap_Up_Note')} info={(closingComment?.length && closingComment) || t('Not_Available')} />
 					{tags && tags.length > 0 && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Tags')}</InfoPanel.Label>
-							<InfoPanel.Text>
-								{tags.map((tag: string) => (
-									<Chip mie='x4' key={tag} value={tag}>
-										{tag}
-									</Chip>
+						<Field>
+							<Label>{t('Tags')}</Label>
+							<Info>
+								{tags.map((tag) => (
+									<Box key={tag} mie='x4' display='inline'>
+										<Tag style={{ display: 'inline' }} disabled>
+											{tag}
+										</Tag>
+									</Box>
 								))}
-							</InfoPanel.Text>
-						</InfoPanel.Field>
+							</Info>
+						</Field>
 					)}
 				</InfoPanel>
 			</VerticalBar.ScrollableContent>
