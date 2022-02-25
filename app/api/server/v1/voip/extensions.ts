@@ -1,7 +1,6 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
-import { hasPermission } from '../../../../authorization/server/index';
 import { Users } from '../../../../models/server/raw/index';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
@@ -12,7 +11,7 @@ import { logger } from './logger';
 // Get the connector version and type
 API.v1.addRoute(
 	'connector.getVersion',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			const version = await Voip.getConnectorVersion();
@@ -24,7 +23,7 @@ API.v1.addRoute(
 // Get the extensions available on the call server
 API.v1.addRoute(
 	'connector.extension.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			const list = await Voip.getExtensionList();
@@ -40,7 +39,7 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'connector.extension.getDetails',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			check(
@@ -60,7 +59,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByExtension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			check(
@@ -84,7 +83,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByUserId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-agent-extension-association'] },
 	{
 		async get() {
 			check(
@@ -93,10 +92,12 @@ API.v1.addRoute(
 					id: String,
 				}),
 			);
-			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
+			const { id } = this.requestParams();
+
+			if (id !== this.userId) {
 				return API.v1.unauthorized();
 			}
-			const { id } = this.requestParams();
+
 			const { extension } =
 				(await Users.getVoipExtensionByUserId(id, {
 					projection: {
