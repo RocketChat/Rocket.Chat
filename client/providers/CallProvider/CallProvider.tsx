@@ -14,7 +14,6 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
@@ -45,8 +44,6 @@ export const CallProvider: FC = ({ children }) => {
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const [queueCounter, setQueueCounter] = useState('');
 
 	const setModal = useSetModal();
@@ -54,21 +51,6 @@ export const CallProvider: FC = ({ children }) => {
 	const openWrapUpModal = useCallback((): void => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
-
-	const handleAgentCalled = useCallback(
-		(queue: { queuename: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Received call in queue ${queue.queuename}`,
-				options: {
-					showDuration: '2000',
-					hideDuration: '500',
-					timeOut: '500',
-				},
-			});
-		},
-		[dispatchToastMessage],
-	);
 
 	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
 		setQueueCounter(queue.queuedcalls);
@@ -102,21 +84,12 @@ export const CallProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		Notifications.onUser('callerjoined', handleQueueJoined);
-		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('agentconnected', handleAgentConnected);
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
 		Notifications.onUser('call.callerhangup', handleCallHangup);
-	}, [
-		handleAgentCalled,
-		handleQueueJoined,
-		handleMemberAdded,
-		handleMemberRemoved,
-		handleCallAbandon,
-		handleAgentConnected,
-		handleCallHangup,
-	]);
+	}, [handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected, handleCallHangup]);
 
 	useEffect(() => {
 		if (isUseVoipClientResultError(result)) {
