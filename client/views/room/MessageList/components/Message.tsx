@@ -47,10 +47,10 @@ import {
 	useReactToMessage,
 	useUserHasReacted,
 } from '../contexts/MessageListContext';
-import { convertOembedToUiKit } from '../lib/convertOembeddedToUikit';
 import { MessageIndicators } from './MessageIndicators';
 import { MessageReaction } from './MessageReaction';
 import Toolbox from './Toolbox';
+import OEmbedList from './UrlPreview';
 
 const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
 	message,
@@ -196,7 +196,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 				{oembedIsEnabled && message.urls && (
 					<Box width={oembedWidth}>
-						<MessageBlock mid={message._id} blocks={convertOembedToUiKit(message.urls)} appId rid={message.rid} />
+						<OEmbedList urls={message.urls} />
 					</Box>
 				)}
 			</MessageContainer>
