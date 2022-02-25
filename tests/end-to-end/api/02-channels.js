@@ -281,6 +281,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('[/channels.files]', () => {
+		before(() => updateSetting('VoIP_Enabled', true));
 		const createVoipRoom = async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
 			const visitor = await createVisitor();
