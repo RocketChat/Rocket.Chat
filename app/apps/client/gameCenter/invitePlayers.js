@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { AutoComplete } from '../../../meteor-autocomplete/client';
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { ChatRoom } from '../../../models/client';
 import { modal } from '../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -84,7 +84,7 @@ Template.InvitePlayers.events({
 		try {
 			const result = await callWithErrorHandling('createPrivateGroup', privateGroupName, users);
 
-			roomTypes.openRouteLink(result.t, result);
+			roomCoordinator.openRouteLink(result.t, result);
 
 			// This ensures the message is only sent after the
 			// user has been redirected to the new room, preventing a

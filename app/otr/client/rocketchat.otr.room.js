@@ -16,6 +16,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { OtrRoomState } from './OtrRoomState';
+import { otrSystemMessages } from '../lib/constants';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -24,6 +25,8 @@ OTR.Room = class {
 		this.peerId = getUidDirectMessage(roomId);
 
 		this.state = new ReactiveVar(null);
+
+		this.isFirstOTR = true;
 
 		this.userOnlineComputation = null;
 
@@ -51,6 +54,10 @@ OTR.Room = class {
 				refresh,
 			});
 		});
+		if (refresh) {
+			Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+			this.isFirstOTR = false;
+		}
 	}
 
 	acknowledge() {
@@ -71,6 +78,7 @@ OTR.Room = class {
 	}
 
 	end() {
+		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {
@@ -267,6 +275,9 @@ OTR.Room = class {
 							Meteor.defer(() => {
 								this.setState(OtrRoomState.ESTABLISHED);
 								this.acknowledge();
+								if (data.refresh) {
+									Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								}
 							});
 						});
 					});
@@ -321,6 +332,10 @@ OTR.Room = class {
 				this.importPublicKey(data.publicKey).then(() => {
 					this.setState(OtrRoomState.ESTABLISHED);
 				});
+				if (this.isFirstOTR) {
+					Meteor.call('sendSystemMessages', this.roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+				}
+				this.isFirstOTR = false;
 				break;
 
 			case 'deny':
