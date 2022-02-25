@@ -16,7 +16,7 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const [tab, setTab] = useState(tabs[0]);
 	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);
-	const sections = useEditableSettingsGroupSections('VoIP', tab);
+	const sections = useEditableSettingsGroupSections('Call_Center', tab);
 
 	if (!tab && tabs[0]) {
 		setTab(tabs[0]);

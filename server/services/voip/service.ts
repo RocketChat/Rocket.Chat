@@ -16,7 +16,7 @@ import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
-import { getServerConfigDataFromSettings } from './lib/Helper';
+import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
@@ -30,12 +30,24 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		super();
 
 		this.logger = new Logger('VoIPService');
-		this.commandHandler = new CommandHandler(db);
-		try {
-			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
-		} catch (error) {
-			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
+		if (!voipEnabled()) {
+			this.logger.warn({ msg: 'Voip is not enabled. Cant start the service' });
+			return;
 		}
+		this.commandHandler = new CommandHandler(db);
+		this.init();
+	}
+
+	async init(): Promise<void> {
+		this.logger.info('Starting VoIP service');
+		await this.commandHandler.initConnection(CommandType.AMI);
+		this.logger.info('VoIP service started');
+	}
+
+	async stop(): Promise<void> {
+		this.logger.info('Stopping VoIP service');
+		await this.commandHandler.stop();
+		this.logger.info('VoIP service stopped');
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
