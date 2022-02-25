@@ -55,9 +55,9 @@ export class AMIConnection implements IConnection {
 	// "Print extended voip connection logs" which will control classes' logging behavior
 	private printLogs = false;
 
-	totalReconnectionAttemts = 5;
+	totalReconnectionAttempts = 5;
 
-	currentReconnectionAttemt = 0;
+	currentReconnectionAttempt = 0;
 
 	// Starting with 5 seconds of backoff time. increases with the attempts.
 	initialBackoffDurationMS = 5000;
@@ -87,16 +87,16 @@ export class AMIConnection implements IConnection {
 		this.logger.debug({
 			msg: 'reconnect ()',
 			initialBackoffDurationMS: this.initialBackoffDurationMS,
-			currentReconnectionAttemt: this.currentReconnectionAttemt,
+			currentReconnectionAttempt: this.currentReconnectionAttempt,
 		});
-		if (this.currentReconnectionAttemt === this.totalReconnectionAttemts) {
+		if (this.currentReconnectionAttempt === this.totalReconnectionAttempts) {
 			this.logger.info({ msg: 'reconnect () Not attempting to reconnect' });
 			// We have exhausted the reconnection attempts or we have authentication error
 			// We dont want to retry anymore
 			this.connectionState = 'ERROR';
 			return;
 		}
-		const backoffTime = this.initialBackoffDurationMS + this.initialBackoffDurationMS * this.currentReconnectionAttemt;
+		const backoffTime = this.initialBackoffDurationMS + this.initialBackoffDurationMS * this.currentReconnectionAttempt;
 		setTimeout(async () => {
 			try {
 				await this.attemptConnection();
@@ -104,14 +104,14 @@ export class AMIConnection implements IConnection {
 				this.logger.error({ msg: 'reconnect () attemptConnection() has thrown error', error });
 			}
 		}, backoffTime);
-		this.currentReconnectionAttemt += 1;
+		this.currentReconnectionAttempt += 1;
 	}
 
 	onManagerError(reject: any, error: unknown): void {
 		this.logger.error({ msg: 'onManagerError () Connection Error', error });
 		this.cleanup();
 		this.connectionState = 'ERROR';
-		if (this.currentReconnectionAttemt === this.totalReconnectionAttemts) {
+		if (this.currentReconnectionAttempt === this.totalReconnectionAttempts) {
 			this.logger.error({ msg: 'onManagerError () reconnection attempts exhausted. Please check connection settings' });
 			reject(error);
 		} else {
@@ -132,7 +132,7 @@ export class AMIConnection implements IConnection {
 			reject(error);
 		} else {
 			this.connectionState = 'AUTHENTICATED';
-			this.currentReconnectionAttemt = 0;
+			this.currentReconnectionAttempt = 0;
 			/**
 			 * Note : There is no way to release a handler or cleanup the handlers.
 			 * Handlers are released only when the connection is closed.
