@@ -314,6 +314,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			closer,
 			callTotalHoldTime,
 			tags,
+			closingComment: comment,
 		};
 		this.logger.debug(`Closing room ${room._id} by ${closer} ${closerParam._id}`);
 		closeData.closedBy = {

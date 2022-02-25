@@ -156,7 +156,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags?: any;
+	tags?: string[];
 	closedAt?: Date;
 	metrics?: any;
 	waitingResponse: any;
@@ -203,6 +203,9 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 		status: 'online' | 'busy' | 'away' | 'offline';
 		phone?: string | null;
 	};
+
+	// Wrap up comment from the agent
+	closingComment?: string;
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -216,7 +219,7 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 }
 
 export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
-	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & { serviceTimeDuration?: number };
+	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & { serviceTimeDuration?: number; closingComment?: string };
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 

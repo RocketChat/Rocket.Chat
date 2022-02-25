@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Field, Icon, Label, Tag } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement } from 'react';
 
@@ -9,6 +9,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import InfoPanel from '../../../../InfoPanel';
+import Info from '../../../components/Info';
 import AgentField from '../../chats/contextualBar/AgentField';
 import { InfoField } from './InfoField';
 
@@ -22,7 +23,7 @@ type VoipInfoPropsType = {
 export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */ }: VoipInfoPropsType): ReactElement => {
 	const t = useTranslation();
 
-	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, callEndedAt, callWaitingTime } = room;
+	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, callEndedAt, callWaitingTime, tags, closingComment } = room;
 	const duration = callDuration && moment.duration(callDuration / 1000, 'seconds').humanize();
 	const waiting = callWaitingTime && moment.duration(callWaitingTime / 1000, 'seconds').humanize();
 	const hold = callTotalHoldTime && moment.duration(callTotalHoldTime, 'seconds').humanize();
@@ -61,6 +62,21 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
 					<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
+					{tags && tags.length > 0 && (
+						<Field>
+							<Label>{t('Tags')}</Label>
+							<Info>
+								{tags.map((tag) => (
+									<Box key={tag} mie='x4' display='inline'>
+										<Tag style={{ display: 'inline' }} disabled>
+											{tag}
+										</Tag>
+									</Box>
+								))}
+							</Info>
+						</Field>
+					)}
+					{closingComment && closingComment.trim().length > 0 && <InfoField label={t('Wrap_Up_Note')} info={closingComment} />}
 				</InfoPanel>
 
 				{/* <InfoField label={t('Wrap_Up_Note')} info={guest.holdTime} /> */}
