@@ -68,11 +68,13 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
 						{shouldShowTags && (
 							<InfoPanel.Text>
-								{tags?.map((tag: string) => (
-									<Chip mie='x4' key={tag} value={tag}>
-										{tag}
-									</Chip>
-								))}
+								<Box display='flex' flexDirection='row' alignItems='center'>
+									{tags?.map((tag: string) => (
+										<Chip mie='x4' key={tag} value={tag}>
+											{tag}
+										</Chip>
+									))}
+								</Box>
 							</InfoPanel.Text>
 						)}
 					</InfoPanel.Field>
