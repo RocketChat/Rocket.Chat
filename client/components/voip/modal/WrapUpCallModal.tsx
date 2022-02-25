@@ -19,7 +19,9 @@ export const WrapUpCallModal = (): ReactElement => {
 	const closeModal = (): void => setModal(null);
 	const t = useTranslation();
 
-	const { register, handleSubmit, setValue } = useForm<WrapUpCallPayload>();
+	const { register, handleSubmit, setValue, watch } = useForm<WrapUpCallPayload>();
+
+	const tags = watch('tags');
 
 	useEffect(() => {
 		register('tags');
@@ -53,7 +55,7 @@ export const WrapUpCallModal = (): ReactElement => {
 					</Field.Row>
 					<Field.Hint>{t('These_notes_will_be_available_in_the_call_summary')}</Field.Hint>
 				</Field>
-				<Tags handler={handleTags as () => void} />
+				<Tags tags={tags} handler={handleTags as () => void} />
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
