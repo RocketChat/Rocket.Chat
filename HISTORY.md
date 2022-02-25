@@ -1,6 +1,46 @@
 
 # 4.5.0 (Under Release Candidate Process)
 
+## 4.5.0-rc.2
+`2022-02-25  ·  6 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Admin Sidebar colors inverted. ([#24609](https://github.com/RocketChat/Rocket.Chat/pull/24609))
+
+- Regression: Bunch of settings fixes for VoIP ([#24594](https://github.com/RocketChat/Rocket.Chat/pull/24594))
+
+- Regression: Fix time format on Voip system messages ([#24603](https://github.com/RocketChat/Rocket.Chat/pull/24603))
+
+- Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
+
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+
+  The audio was not rendered because of re-rendering of react element based on
+  queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
+  because after accepting call, queueCounter changes or a room gets created.
+  The audio element gets recreated. But VoIP user probably holds the old one.
+  The behaviour is not predictable when such case happens. If everything gets cleanly setup,
+  even if the audio element goes headless, it still continues to play the remote audio.
+  But in other cases, it is unreferenced the one on dom has its srcObject as null.
+  This causes no audio.
+
+  This fix provides a way to re-initialise the rendering elements in VoIP user
+  and calls this function on useEffect() if the re-render has happen.
+
+- Regression: VoIP service button displayed when VoIP is disabled ([#24598](https://github.com/RocketChat/Rocket.Chat/pull/24598))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@murtaza98](https://github.com/murtaza98)
+
 ## 4.5.0-rc.1
 `2022-02-22  ·  2 🎉  ·  3 🔍  ·  9 👩‍💻👨‍💻`
 

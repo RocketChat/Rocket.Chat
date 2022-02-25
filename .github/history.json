@@ -70987,6 +70987,76 @@
           ]
         }
       ]
+    },
+    "4.5.0-rc.2": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24594",
+          "title": "Regression: Bunch of settings fixes for VoIP",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24609",
+          "title": "Regression: Admin Sidebar colors inverted.",
+          "userLogin": "gabriellsh",
+          "milestone": "4.5.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24602",
+          "title": "Regression: No audio when call comes from Skype/IP phone",
+          "userLogin": "amolghode1981",
+          "description": "The audio was not rendered because of re-rendering of react element based on\r\nqueueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted\r\nbecause after accepting call, queueCounter changes or a room gets created.\r\nThe audio element gets recreated. But VoIP user probably holds the old one.\r\nThe behaviour is not predictable when such case happens. If everything gets cleanly setup,\r\neven if the audio element goes headless, it still continues to play the remote audio.\r\nBut in other cases, it is unreferenced the one on dom has its srcObject as null.\r\nThis causes no audio.\r\n\r\nThis fix provides a way to re-initialise the rendering elements in VoIP user\r\nand calls this function on useEffect() if the re-render has happen.",
+          "milestone": "4.5.0",
+          "contributors": [
+            "amolghode1981"
+          ]
+        },
+        {
+          "pr": "24596",
+          "title": "Regression: Fixes in Voice Contextual Bar and Directory",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24603",
+          "title": "Regression: Fix time format on Voip system messages",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24598",
+          "title": "Regression: VoIP service button displayed when VoIP is disabled",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
