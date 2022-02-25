@@ -34,6 +34,11 @@ export const WrapUpCallModal = (): ReactElement => {
 		closeModal();
 	};
 
+	const onCancel = (): void => {
+		closeRoom({});
+		closeModal();
+	};
+
 	return (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
@@ -52,7 +57,7 @@ export const WrapUpCallModal = (): ReactElement => {
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button ghost onClick={closeModal}>
+					<Button ghost onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button type='submit' primary>
