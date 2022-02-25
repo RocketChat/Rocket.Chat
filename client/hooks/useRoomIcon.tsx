@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import { IRoom, isDirectMessageRoom } from '../../definition/IRoom';
+import { ISubscription } from '../../definition/ISubscription';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
@@ -10,7 +11,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: string } | null => {
+export const useRoomIcon = (room: Partial<IRoom> & Partial<ISubscription>): ReactNode | { name: string; color?: string } | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -23,9 +24,17 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		if (room.uids && room.uids.length > 2) {
 			return { name: 'balloon' };
 		}
+
 		if (room.uids && room.uids.length > 0) {
-			return <ReactiveUserStatus uid={room.uids.find((uid) => uid !== room.u._id) || room.u._id} />;
+			const uid = room.uids.find((uid) => uid !== room.u?._id) || room.u?._id;
+
+			if (!uid) {
+				return null;
+			}
+
+			return <ReactiveUserStatus uid={uid} />;
 		}
+
 		return { name: 'at' };
 	}
 
