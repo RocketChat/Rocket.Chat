@@ -150,5 +150,8 @@ export class CommandHandler {
 
 	stop(): void {
 		this.continuousMonitor.cleanMonitor();
+		for (const connection of this.connections.values()) {
+			connection.closeConnection();
+		}
 	}
 }
