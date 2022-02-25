@@ -66,10 +66,8 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '500',
 				},
 			});
-
-			user && newCallSound(user);
 		},
-		[dispatchToastMessage, user],
+		[dispatchToastMessage],
 	);
 
 	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
@@ -85,7 +83,6 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const handleCallAbandon = useCallback((queue: { queuename: string; queuedcallafterabandon: string }): void => {
-		stopCallSound();
 		setQueueCounter(queue.queuedcallafterabandon);
 	}, []);
 
@@ -200,6 +197,10 @@ export const CallProvider: FC = ({ children }) => {
 
 		const { registrationInfo, voipClient } = result;
 
+		voipClient.on('incomingcall', () => user && newCallSound(user));
+		voipClient.on('callestablished', () => stopCallSound());
+		voipClient.on('callterminated', () => stopCallSound());
+
 		return {
 			enabled: true,
 			ready: true,
@@ -213,14 +214,9 @@ export const CallProvider: FC = ({ children }) => {
 				pause: (): Promise<void> => voipClient.holdCall(true), // voipClient.pause()
 				resume: (): Promise<void> => voipClient.holdCall(false), // voipClient.resume()
 				end: (): Promise<OutgoingByeRequest | void> => voipClient.endCall(),
-				pickUp: async (): Promise<void | null> => {
-					stopCallSound();
-					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current });
-				},
-				reject: (): Promise<void> => {
-					stopCallSound();
-					return voipClient.rejectCall();
-				},
+				pickUp: async (): Promise<void | null> =>
+					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
+				reject: (): Promise<void> => voipClient.rejectCall(),
 			},
 			openRoom: async (caller): Promise<IVoipRoom['_id']> => {
 				if (user) {
