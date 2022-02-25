@@ -63,22 +63,19 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
 					<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
-					{shouldShowWrapup ||
-						(shouldShowTags && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{!shouldShowWrapup && shouldShowTags ? t('Tags') : t('Wrap_Up_Notes')}</InfoPanel.Label>
-								{shouldShowWrapup && <InfoPanel.Text>{lastMessage?.msg}</InfoPanel.Text>}
-								{shouldShowTags && (
-									<InfoPanel.Text>
-										{tags?.map((tag: string) => (
-											<Chip mie='x4' key={tag} value={tag}>
-												{tag}
-											</Chip>
-										))}
-									</InfoPanel.Text>
-								)}
-							</InfoPanel.Field>
-						))}
+					<InfoPanel.Field>
+						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
+						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+						{shouldShowTags && (
+							<InfoPanel.Text>
+								{tags?.map((tag: string) => (
+									<Chip mie='x4' key={tag} value={tag}>
+										{tag}
+									</Chip>
+								))}
+							</InfoPanel.Text>
+						)}
+					</InfoPanel.Field>
 				</InfoPanel>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
