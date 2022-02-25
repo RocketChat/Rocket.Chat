@@ -16,4 +16,6 @@ export interface IVoipService {
 	checkManagementConnection(host: string, port: string, userName: string, password: string): Promise<IManagementServerConnectionStatus>;
 	checkCallserverConnection(websocketUrl: string, protocol?: string): Promise<IManagementServerConnectionStatus>;
 	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]>;
+	init(): Promise<void>;
+	stop(): Promise<void>;
 }
