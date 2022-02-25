@@ -3,8 +3,11 @@ import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 're
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { CustomSounds } from '../../../app/custom-sounds/client';
 import { Notifications } from '../../../app/notifications/client';
+import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -15,6 +18,19 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
+
+const startRingback = (user: IUser): void => {
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
+	CustomSounds.play('telephone', {
+		volume: Number((audioVolume / 100).toPrecision(2)),
+		loop: true,
+	});
+};
+
+const stopRingback = (): void => {
+	CustomSounds.pause('telephone');
+	CustomSounds.remove('telephone');
+};
 
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -180,6 +196,10 @@ export const CallProvider: FC = ({ children }) => {
 		}
 
 		const { registrationInfo, voipClient } = result;
+
+		voipClient.on('incomingcall', () => user && startRingback(user));
+		voipClient.on('callestablished', () => stopRingback());
+		voipClient.on('callterminated', () => stopRingback());
 
 		return {
 			enabled: true,
