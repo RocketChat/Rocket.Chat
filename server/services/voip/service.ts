@@ -16,7 +16,7 @@ import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
 import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
-import { getServerConfigDataFromSettings } from './lib/Helper';
+import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
@@ -30,6 +30,10 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		super();
 
 		this.logger = new Logger('VoIPService');
+		if (!voipEnabled()) {
+			this.logger.warn({ msg: 'Voip is not enabled. Cant start the service' });
+			return;
+		}
 		this.commandHandler = new CommandHandler(db);
 		try {
 			Promise.await(this.commandHandler.initConnection(CommandType.AMI));

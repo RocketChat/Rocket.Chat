@@ -94,6 +94,10 @@ export class CommandHandler {
 	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
 		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
 		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
+		const connection = this.connections.get(command.type) as IConnection;
+		if (!connection || !connection.isConnected()) {
+			throw Error('Connection error');
+		}
 		command.connection = this.connections.get(command.type) as IConnection;
 		return command.executeCommand(commandData);
 	}

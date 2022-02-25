@@ -31,8 +31,20 @@ function makeLoggerDummy(logger: Logger): Logger {
 	return logger;
 }
 
+type ConnectionState = 'UNKNOWN' | 'AUTHENTICATED' | 'ERROR';
+
 export class AMIConnection implements IConnection {
 	connection: typeof Manager | undefined;
+
+	connectionState: ConnectionState;
+
+	connectionIpOrHostname: string;
+
+	connectionPort: string;
+
+	userName: string;
+
+	password: string;
 
 	eventHandlers: Map<string, any>;
 
@@ -43,10 +55,135 @@ export class AMIConnection implements IConnection {
 	// "Print extended voip connection logs" which will control classes' logging behavior
 	private printLogs = false;
 
+	totalReconnectionAttemts = 5;
+
+	currentReconnectionAttemt = 0;
+
+	// Starting with 5 seconds of backoff time. increases with the attempts.
+	initialBackoffDurationMS = 5000;
+
+	nearEndDisconnect = false;
+
+	// if it is a test connection
+	// Reconnectivity logic should not be applied.
+	connectivityCheck = false;
+
 	constructor() {
 		const logger = new Logger('AMIConnection');
 		this.logger = this.printLogs ? logger : makeLoggerDummy(logger);
 		this.eventHandlers = new Map<string, CallbackContext[]>();
+		this.connectionState = 'UNKNOWN';
+	}
+
+	cleanup(): void {
+		if (!this.connection) {
+			return;
+		}
+		this.connection.removeAllListeners();
+		this.connection = null;
+	}
+
+	reconnect(): void {
+		this.logger.debug({
+			msg: 'reconnect ()',
+			initialBackoffDurationMS: this.initialBackoffDurationMS,
+			currentReconnectionAttemt: this.currentReconnectionAttemt,
+		});
+		if (this.currentReconnectionAttemt === this.totalReconnectionAttemts) {
+			this.logger.info({ msg: 'reconnect () Not attempting to reconnect' });
+			// We have exhausted the reconnection attempts or we have authentication error
+			// We dont want to retry anymore
+			this.connectionState = 'ERROR';
+			return;
+		}
+		const backoffTime = this.initialBackoffDurationMS + this.initialBackoffDurationMS * this.currentReconnectionAttemt;
+		setTimeout(async () => {
+			try {
+				await this.attemptConnection();
+			} catch (error: unknown) {
+				this.logger.error({ msg: 'reconnect () attemptConnection() has thrown error', error });
+			}
+		}, backoffTime);
+		this.currentReconnectionAttemt += 1;
+	}
+
+	onManagerError(reject: any, error: unknown): void {
+		this.logger.error({ msg: 'onManagerError () Connection Error', error });
+		this.cleanup();
+		this.connectionState = 'ERROR';
+		if (this.currentReconnectionAttemt === this.totalReconnectionAttemts) {
+			this.logger.error({ msg: 'onManagerError () reconnection attempts exhausted. Please check connection settings' });
+			reject(error);
+		} else {
+			this.reconnect();
+		}
+	}
+
+	onManagerConnect(_resolve: any, _reject: any): void {
+		this.logger.debug({ msg: 'onManagerConnect () Connection Success' });
+		this.connection.login(this.onManagerLogin.bind(this, _resolve, _reject));
+	}
+
+	onManagerLogin(resolve: any, reject: any, error: unknown): void {
+		if (error) {
+			this.logger.error({ msg: 'onManagerLogin () Authentication Error. Not going to reattempt. Fix the credentaials' });
+			// Do not reattempt if we have login failure
+			this.cleanup();
+			reject(error);
+		} else {
+			this.connectionState = 'AUTHENTICATED';
+			this.currentReconnectionAttemt = 0;
+			/**
+			 * Note : There is no way to release a handler or cleanup the handlers.
+			 * Handlers are released only when the connection is closed.
+			 * Closing the connection and establishing it again for every command is an overhead.
+			 * To avoid that, we have taken a clean, though a bit complex approach.
+			 * We will register for all the manager event.
+			 *
+			 * Each command will register to AMIConnection to receive the events which it is
+			 * interested in. Once the processing is complete, it will unregister.
+			 *
+			 * Handled in this way will avoid disconnection of the connection to cleanup the
+			 * handlers.
+			 *
+			 * Furthermore, we do not want to initiate this when we are checking
+			 * the connectivity.
+			 */
+			if (!this.connectivityCheck) {
+				this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
+			}
+			this.logger.debug({ msg: 'onManagerLogin () Authentication Success, Connected' });
+			resolve();
+		}
+	}
+
+	onManagerClose(hadError: unknown): void {
+		this.logger.error({ msg: 'onManagerClose ()', hadError });
+		this.cleanup();
+		if (!this.nearEndDisconnect) {
+			this.reconnect();
+		}
+	}
+
+	onManagerTimeout(): void {
+		this.logger.debug({ msg: 'onManagerTimeout ()' });
+		this.cleanup();
+	}
+
+	async attemptConnection(): Promise<void> {
+		this.connectionState = 'UNKNOWN';
+		this.connection = new Manager(undefined, this.connectionIpOrHostname, this.userName, this.password, true);
+
+		const returnPromise = new Promise<void>((_resolve, _reject) => {
+			this.connection.on('connect', this.onManagerConnect.bind(this, _resolve, _reject));
+			this.connection.on('error', this.onManagerError.bind(this, _reject));
+
+			this.connection.on('close', this.onManagerClose.bind(this));
+			this.connection.on('timeout', this.onManagerTimeout.bind(this));
+
+			this.connection.connect(this.connectionPort, this.connectionIpOrHostname);
+		});
+		return returnPromise;
 	}
 
 	/**
@@ -81,50 +218,12 @@ export class AMIConnection implements IConnection {
 		connectivityCheck = false,
 	): Promise<void> {
 		this.logger.log({ msg: 'connect()' });
-		this.connection = new Manager(undefined, connectionIpOrHostname, userName, password, true);
-		const returnPromise = new Promise<void>((_resolve, _reject) => {
-			const onError = (error: any): void => {
-				_reject(error);
-				this.logger.error({ msg: 'connect () Connection Error', error });
-			};
-			const onConnect = (): void => {
-				this.logger.debug({ msg: 'connect () Connection Success' });
-			};
-			const onLogin = (error: any): void => {
-				if (error) {
-					_reject(error);
-					this.logger.error({ msg: 'connect () Authentication error', error });
-				} else {
-					/**
-					 * Note : There is no way to release a handler or cleanup the handlers.
-					 * Handlers are released only when the connection is closed.
-					 * Closing the connection and establishing it again for every command is an overhead.
-					 * To avoid that, we have taken a clean, though a bit complex approach.
-					 * We will register for all the manager event.
-					 *
-					 * Each command will register to AMIConnection to receive the events which it is
-					 * interested in. Once the processing is complete, it will unregister.
-					 *
-					 * Handled in this way will avoid disconnection of the connection to cleanup the
-					 * handlers.
-					 *
-					 * Furthermore, we do not want to initiate this when we are checking
-					 * the connectivity.
-					 */
-					if (!connectivityCheck) {
-						this.connection.on('managerevent', this.eventHandlerCallback.bind(this));
-					}
-					this.logger.debug({ msg: 'connect () Authentication Success, Connected' });
-					_resolve();
-				}
-			};
-			this.connection.on('connect', onConnect);
-			this.connection.on('error', onError);
-
-			this.connection.connect(connectionPort, connectionIpOrHostname);
-			this.connection.login(onLogin);
-		});
-		return returnPromise;
+		this.connectionIpOrHostname = connectionIpOrHostname;
+		this.connectionPort = connectionPort;
+		this.userName = userName;
+		this.password = password;
+		this.connectivityCheck = connectivityCheck;
+		await this.attemptConnection();
 	}
 
 	isConnected(): boolean {
@@ -136,6 +235,10 @@ export class AMIConnection implements IConnection {
 
 	// Executes an action on asterisk and returns the result.
 	executeCommand(action: object, actionResultCallback: any): void {
+		if (this.connectionState !== 'AUTHENTICATED' || (this.connection && !this.connection.isConnected())) {
+			this.logger.warn({ msg: 'executeCommand() Cant execute command at this moment. Connection is not active' });
+			throw Error('Cant execute command at this moment. Connection is not active');
+		}
 		this.logger.info({ msg: 'executeCommand()' });
 		this.connection.action(action, actionResultCallback);
 	}
@@ -145,7 +248,6 @@ export class AMIConnection implements IConnection {
 			this.logger.info({ msg: `No event handler set for ${event.event}` });
 			return;
 		}
-
 		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
 		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${handlers.length}` });
 		/* Go thru all the available handlers  and call each one of them if the actionid matches */
@@ -197,6 +299,8 @@ export class AMIConnection implements IConnection {
 
 	closeConnection(): void {
 		this.logger.info({ msg: 'closeConnection()' });
+		this.nearEndDisconnect = true;
 		this.connection.disconnect();
+		this.cleanup();
 	}
 }
