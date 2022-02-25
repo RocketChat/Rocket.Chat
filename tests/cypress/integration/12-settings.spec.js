@@ -466,7 +466,7 @@ describe('[Api Settings Change]', () => {
 
 		it('search the user', () => {
 			admin.usersFilter.click();
-			admin.usersFilter.type(`${settingUserPrefix}${username}`);
+			admin.usersFilter.type(`${settingUserPrefix}${username}`).wait(1000);
 		});
 
 		it('opens the user', () => {
