@@ -3,8 +3,11 @@ import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 're
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { CustomSounds } from '../../../app/custom-sounds/client';
 import { Notifications } from '../../../app/notifications/client';
+import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -15,6 +18,19 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
+
+const newCallSound = (user: IUser): void => {
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
+	CustomSounds.play('telephone', {
+		volume: Number((audioVolume / 100).toPrecision(2)),
+		loop: true,
+	});
+};
+
+const stopCallSound = (): void => {
+	CustomSounds.pause('telephone');
+	CustomSounds.remove('telephone');
+};
 
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -50,8 +66,10 @@ export const CallProvider: FC = ({ children }) => {
 					timeOut: '500',
 				},
 			});
+
+			user && newCallSound(user);
 		},
-		[dispatchToastMessage],
+		[dispatchToastMessage, user],
 	);
 
 	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
@@ -67,6 +85,7 @@ export const CallProvider: FC = ({ children }) => {
 	}, []);
 
 	const handleCallAbandon = useCallback((queue: { queuename: string; queuedcallafterabandon: string }): void => {
+		stopCallSound();
 		setQueueCounter(queue.queuedcallafterabandon);
 	}, []);
 
@@ -194,9 +213,14 @@ export const CallProvider: FC = ({ children }) => {
 				pause: (): Promise<void> => voipClient.holdCall(true), // voipClient.pause()
 				resume: (): Promise<void> => voipClient.holdCall(false), // voipClient.resume()
 				end: (): Promise<OutgoingByeRequest | void> => voipClient.endCall(),
-				pickUp: async (): Promise<void | null> =>
-					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current }),
-				reject: (): Promise<void> => voipClient.rejectCall(),
+				pickUp: async (): Promise<void | null> => {
+					stopCallSound();
+					remoteAudioMediaRef.current && voipClient.acceptCall({ remoteMediaElement: remoteAudioMediaRef.current });
+				},
+				reject: (): Promise<void> => {
+					stopCallSound();
+					return voipClient.rejectCall();
+				},
 			},
 			openRoom: async (caller): Promise<IVoipRoom['_id']> => {
 				if (user) {
