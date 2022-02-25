@@ -18,6 +18,7 @@ import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from 
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
 import { getServerConfigDataFromSettings } from './lib/Helper';
 import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
+import { settings } from '../../../app/settings/server';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
@@ -31,11 +32,25 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 		this.logger = new Logger('VoIPService');
 		this.commandHandler = new CommandHandler(db);
-		try {
-			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
-		} catch (error) {
-			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
-		}
+		this.init();
+	}
+
+	private async init(): Promise<void> {
+		settings.watch('VoIP_Enabled', (value) => {
+			try {
+				if (value) {
+					this.logger.info('Starting VoIP service');
+					Promise.await(this.commandHandler.initConnection(CommandType.AMI));
+					this.logger.info('VoIP service started');
+				} else {
+					this.logger.info('Stopping VoIP service');
+					Promise.await(this.commandHandler.stop());
+					this.logger.info('VoIP service stopped');
+				}
+			} catch (error) {
+				this.logger.error({ msg: `Error while ${value ? 'initializing' : 'destroying'} the connector.`, err: error });
+			}
+		});
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
