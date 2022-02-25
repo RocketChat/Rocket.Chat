@@ -337,7 +337,7 @@ API.v1.addRoute(
 				this.queryParams,
 				Match.ObjectIncluding({
 					userId: String,
-					canUserDelete: Match.Maybe(Boolean),
+					canUserDelete: Match.Maybe(String),
 				}),
 			);
 
@@ -356,7 +356,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete ?? false, {
+			const { records, total } = await Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete === 'true', {
 				offset,
 				count,
 			});
