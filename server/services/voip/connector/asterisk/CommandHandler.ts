@@ -54,7 +54,7 @@ export class CommandHandler {
 		}
 		if (!config) {
 			this.logger.warn('Management server configuration not found');
-			throw Error('Management server configuration not found');
+			return;
 		}
 		/**
 		 * If we have the same type of connection already established, close it
@@ -72,15 +72,13 @@ export class CommandHandler {
 				(config.configData as IManagementConfigData).username,
 				(config.configData as IManagementConfigData).password,
 			);
+			this.connections.set(commandType, connection);
+			this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
+			this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
+			this.continuousMonitor.initMonitor({});
 		} catch (error: any) {
-			this.logger.warn({ msg: 'Management server connection error', error });
-			throw Error(`Management server error in connection ${error.message}`);
+			this.logger.error({ msg: 'Management server connection error', error });
 		}
-
-		this.connections.set(commandType, connection);
-		this.continuousMonitor = CommandFactory.getCommandObject(Commands.event_stream, this.db);
-		this.continuousMonitor.connection = this.connections.get(this.continuousMonitor.type) as IConnection;
-		this.continuousMonitor.initMonitor({});
 	}
 
 	/* Executes |commandToExecute| on a particular command object
@@ -94,6 +92,10 @@ export class CommandHandler {
 	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
 		this.logger.debug({ msg: `executeCommand() executing ${Commands[commandToExecute]}` });
 		const command = CommandFactory.getCommandObject(commandToExecute, this.db);
+		const connection = this.connections.get(command.type) as IConnection;
+		if (!connection || !connection.isConnected()) {
+			throw Error('Connection error');
+		}
 		command.connection = this.connections.get(command.type) as IConnection;
 		return command.executeCommand(commandData);
 	}

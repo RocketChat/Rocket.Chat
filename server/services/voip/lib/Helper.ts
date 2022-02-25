@@ -31,3 +31,7 @@ export function getServerConfigDataFromSettings(type: ServerType): IVoipCallServ
 		}
 	}
 }
+
+export function voipEnabled(): boolean {
+	return settings.get<boolean>('VoIP_Enabled');
+}
