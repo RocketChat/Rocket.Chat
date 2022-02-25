@@ -12,10 +12,10 @@ const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 			onDismiss?.();
 		};
 
-		window.addEventListener('keyup', closeOnEsc);
+		window.addEventListener('keydown', closeOnEsc);
 
 		return (): void => {
-			window.removeEventListener('keyup', closeOnEsc);
+			window.removeEventListener('keydown', closeOnEsc);
 		};
 	}, [onDismiss]);
 };
