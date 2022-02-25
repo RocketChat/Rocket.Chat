@@ -11,7 +11,7 @@ import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type VoipEndpoints = {
 	'connector.extension.getRegistrationInfoByUserId': {
-		GET: (params: { id: string }) => IRegistrationInfo;
+		GET: (params: { id: string }) => IRegistrationInfo | { result: string };
 	};
 	'voip/queues.getSummary': {
 		GET: () => { summary: IQueueSummary[] };
