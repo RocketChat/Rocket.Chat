@@ -23,6 +23,7 @@ import {
 import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
 import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 
+import { IQueueMembershipSubscription } from '../../../definition/IVoipExtension';
 import { CallStates } from '../../../definition/voip/CallStates';
 import { ICallerInfo } from '../../../definition/voip/ICallerInfo';
 import { Operation } from '../../../definition/voip/Operations';
@@ -30,7 +31,9 @@ import { UserState } from '../../../definition/voip/UserState';
 import { IMediaStreamRenderer, VoIPUserConfiguration } from '../../../definition/voip/VoIPUserConfiguration';
 import { VoIpCallerInfo, IState } from '../../../definition/voip/VoIpCallerInfo';
 import { VoipEvents } from '../../../definition/voip/VoipEvents';
+import { WorkflowTypes } from '../../../definition/voip/WorkflowTypes';
 import { toggleMediaStreamTracks } from './Helper';
+import { QueueAggregator } from './QueueAggregator';
 import Stream from './Stream';
 
 export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDelegate {
@@ -58,6 +61,10 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	private _userState: UserState = UserState.IDLE;
 
 	private _held = false;
+
+	private mode: WorkflowTypes;
+
+	private queueInfo?: QueueAggregator;
 
 	get callState(): CallStates {
 		return this._callState;
@@ -626,5 +633,23 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 			this.remoteStream.onTrackRemoved(this.onTrackRemoved.bind(this));
 			this.remoteStream.play();
 		}
+	}
+
+	setWorkflowMode(mode: WorkflowTypes): void {
+		this.mode = mode;
+		if (mode === WorkflowTypes.CONTACT_CENTER_USER) {
+			this.queueInfo = new QueueAggregator();
+		}
+	}
+
+	setMembershipSubscription(subscription: IQueueMembershipSubscription): void {
+		if (this.mode !== WorkflowTypes.CONTACT_CENTER_USER) {
+			return;
+		}
+		this.queueInfo?.setMembership(subscription);
+	}
+
+	getAggregator(): QueueAggregator | undefined {
+		return this.queueInfo;
 	}
 }
