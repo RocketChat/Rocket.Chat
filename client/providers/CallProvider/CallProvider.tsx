@@ -40,6 +40,8 @@ export const CallProvider: FC = ({ children }) => {
 	const user = useUser();
 	const homeRoute = useRoute('home');
 
+	const agentAvailable = user?.statusVoip === 'available';
+
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
@@ -177,6 +179,7 @@ export const CallProvider: FC = ({ children }) => {
 		return {
 			enabled: true,
 			ready: true,
+			agentRegistered: agentAvailable,
 			openedRoomInfo: roomInfo,
 			registrationInfo,
 			voipClient,
@@ -214,7 +217,19 @@ export const CallProvider: FC = ({ children }) => {
 			},
 			openWrapUpModal,
 		};
-	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+	}, [
+		voipEnabled,
+		result,
+		agentAvailable,
+		roomInfo,
+		queueCounter,
+		openWrapUpModal,
+		user,
+		visitorEndpoint,
+		voipEndpoint,
+		voipCloseRoomEndpoint,
+		homeRoute,
+	]);
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}

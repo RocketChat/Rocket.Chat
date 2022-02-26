@@ -1,14 +1,20 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState, useRef } from 'react';
 
-import { useCallClient } from '../../../contexts/CallContext';
+import { useCallClient, useIsAgentRegistered } from '../../../contexts/CallContext';
+import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 export const OmnichannelCallToggleReady = (): ReactElement => {
-	const [agentEnabled, setAgentEnabled] = useState(false); // TODO: get from AgentInfo
+	const ref = useRef({
+		lastRegisterStatus: false,
+	});
+	const changeAgentStatus = useMethod('livechat:changeVoipStatus');
+
+	const [agentEnabled, setAgentEnabled] = useState(useIsAgentRegistered); // TODO: get from AgentInfo
 	const t = useTranslation();
-	const [registered, setRegistered] = useState(false);
+	const [registered, setRegistered] = useState(ref.current.lastRegisterStatus);
 
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
@@ -23,9 +29,11 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 		// voipClient.setVoipCallStatus(!registered);
 		if (agentEnabled) {
 			setAgentEnabled(false);
+			changeAgentStatus(false);
 			voipClient.unregister();
 			return;
 		}
+		changeAgentStatus(true);
 		setAgentEnabled(true);
 		voipClient.register();
 	});
@@ -36,6 +44,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 
 	const onUnregistered = useMutableCallback((): void => {
 		setRegistered(!registered);
+		ref.current.lastRegisterStatus = registered;
 		voipClient.off('unregistered', onUnregistered);
 		voipClient.off('registrationerror', onUnregistrationError);
 	});
@@ -46,6 +55,7 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 
 	const onRegistered = useMutableCallback((): void => {
 		setRegistered(!registered);
+		ref.current.lastRegisterStatus = registered;
 		voipClient.off('registered', onRegistered);
 		voipClient.off('registrationerror', onRegistrationError);
 	});

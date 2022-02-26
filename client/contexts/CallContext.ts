@@ -20,6 +20,7 @@ type CallContextEnabled = {
 type CallContextReady = {
 	enabled: true;
 	ready: true;
+	agentRegistered: boolean;
 	voipClient: VoIPUser;
 	actions: CallActionsType;
 	queueCounter: number;
@@ -161,4 +162,14 @@ export const useOpenedRoomInfo = (): CallContextReady['openedRoomInfo'] => {
 	}
 
 	return context.openedRoomInfo;
+};
+
+export const useIsAgentRegistered = (): CallContextReady['agentRegistered'] => {
+	const context = useContext(CallContext);
+
+	if (!isCallContextReady(context)) {
+		throw new Error('useClient only if Calls are enabled and ready');
+	}
+
+	return context.agentRegistered;
 };
