@@ -71057,6 +71057,114 @@
           ]
         }
       ]
+    },
+    "4.5.0-rc.3": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24630",
+          "title": "Regression: Fix double value on holdTime and empty msg on last message",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24624",
+          "title": "Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.0",
+          "contributors": [
+            "amolghode1981",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24601",
+          "title": "Regression: Prevent connect to asterisk when VoIP is disabled",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24626",
+          "title": "Regression: Encode registration info as JWT when signing key is provided",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24625",
+          "title": "Regression: Fix time fields and wrap up in Voip Room Contexual bar",
+          "userLogin": "MartinSchoeler",
+          "milestone": "4.5.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "24592",
+          "title": "Regression: Fix in-correct room status shown to agents",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24619",
+          "title": "Regression: Do not show toast on incoming voip calls",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24616",
+          "title": "Regression: Fix incoming voip call ringtone is not ringing",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24610",
+          "title": "Regression: Mark all rooms as read modal closing instantly.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "24615",
+          "title": "Regression: Fix translation for call started message",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
