@@ -275,7 +275,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		if (events.length === 1 && events[0].event === 'Hold') {
 			// if the only event is a hold event, the call was ended while on hold
 			// hold time = room.closedAt - event.ts
-			return (closedAt.getTime() - events[0].ts.getTime()) / 1000;
+			return closedAt.getTime() - events[0].ts.getTime();
 		}
 
 		let currentOnHoldTime = 0;
@@ -284,7 +284,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			const onHold = events[i].ts;
 			const unHold = events[i + 1]?.ts || closedAt;
 
-			currentOnHoldTime += (unHold.getTime() - onHold.getTime()) / 1000;
+			currentOnHoldTime += unHold.getTime() - onHold.getTime();
 		}
 
 		return currentOnHoldTime;
