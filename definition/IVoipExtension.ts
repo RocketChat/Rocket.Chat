@@ -1,3 +1,4 @@
+import { IQueueSummary } from './ACDQueues';
 import { IUser } from './IUser';
 import { ICallServerConfigData } from './IVoipServerConfig';
 
@@ -34,6 +35,11 @@ export interface IQueueMembershipDetails {
 	extension: string;
 	queueCount: number;
 	callWaitingCount: number;
+}
+
+export interface IQueueMembershipSubscription {
+	queues: IQueueSummary[];
+	extension: string;
 }
 
 export const isIQueueMembershipDetails = (obj: any): obj is IQueueMembershipDetails =>

@@ -2,7 +2,7 @@ import { IQueueSummary } from '../../ACDQueues';
 import { ILivechatAgent } from '../../ILivechatAgent';
 import { IVoipRoom } from '../../IRoom';
 import { IUser } from '../../IUser';
-import { IQueueMembershipDetails, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
+import { IQueueMembershipDetails, IQueueMembershipSubscription, IVoipExtensionWithAgentInfo } from '../../IVoipExtension';
 import { IManagementServerConnectionStatus } from '../../IVoipServerConnectivityStatus';
 import { IRegistrationInfo } from '../../voip/IRegistrationInfo';
 import { VoipClientEvents } from '../../voip/VoipClientEvents';
@@ -18,6 +18,9 @@ export type VoipEndpoints = {
 	};
 	'voip/queues.getQueuedCallsForThisExtension': {
 		GET: (params: { extension: string }) => IQueueMembershipDetails;
+	};
+	'voip/queues.getMembershipSubscription': {
+		GET: (params: { extension: string }) => IQueueMembershipSubscription;
 	};
 	'omnichannel/extensions': {
 		GET: (params: PaginatedRequest) => PaginatedResult & { extensions: IVoipExtensionWithAgentInfo[] };
