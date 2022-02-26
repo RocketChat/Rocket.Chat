@@ -3150,10 +3150,17 @@ settingsRegistry.addGroup('Call_Center', function () {
 				value: true,
 			},
 		});
-
+		this.add('VoIP_JWT_Secret', '', {
+			type: 'password',
+			i18nDescription: 'VoIP_JWT_Secret_description',
+			enableQuery: {
+				_id: 'VoIP_Enabled',
+				value: true,
+			},
+		});
 		this.section('Server_Configuration', function () {
 			this.add('VoIP_Server_Host', '', {
-				type: 'string',
+				type: 'password',
 				public: true,
 				enableQuery: {
 					_id: 'VoIP_Enabled',

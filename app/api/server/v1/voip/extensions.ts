@@ -1,15 +1,17 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
-import { hasPermission } from '../../../../authorization/server/index';
 import { Users } from '../../../../models/server/raw/index';
 import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
+import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
+import { settings } from '../../../../settings/server';
+import { logger } from './logger';
 
 // Get the connector version and type
 API.v1.addRoute(
 	'connector.getVersion',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			const version = await Voip.getConnectorVersion();
@@ -21,7 +23,7 @@ API.v1.addRoute(
 // Get the extensions available on the call server
 API.v1.addRoute(
 	'connector.extension.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			const list = await Voip.getExtensionList();
@@ -37,7 +39,7 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'connector.extension.getDetails',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			check(
@@ -57,7 +59,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByExtension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
 			check(
@@ -67,14 +69,21 @@ API.v1.addRoute(
 				}),
 			);
 			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
-			return API.v1.success({ ...endpointDetails.result });
+			const encKey = settings.get('VoIP_JWT_Secret');
+			if (!encKey) {
+				logger.warn('No JWT keys set. Sending registration info as plain text');
+				return API.v1.success({ ...endpointDetails.result });
+			}
+
+			const result = generateJWT(endpointDetails.result, encKey);
+			return API.v1.success({ result });
 		},
 	},
 );
 
 API.v1.addRoute(
 	'connector.extension.getRegistrationInfoByUserId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-agent-extension-association'] },
 	{
 		async get() {
 			check(
@@ -83,10 +92,12 @@ API.v1.addRoute(
 					id: String,
 				}),
 			);
-			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
+			const { id } = this.requestParams();
+
+			if (id !== this.userId) {
 				return API.v1.unauthorized();
 			}
-			const { id } = this.requestParams();
+
 			const { extension } =
 				(await Users.getVoipExtensionByUserId(id, {
 					projection: {
@@ -99,8 +110,16 @@ API.v1.addRoute(
 			if (!extension) {
 				return API.v1.notFound('Extension not found');
 			}
+
 			const endpointDetails = await Voip.getRegistrationInfo({ extension });
-			return API.v1.success({ ...endpointDetails.result });
+			const encKey = settings.get('VoIP_JWT_Secret');
+			if (!encKey) {
+				logger.warn('No JWT keys set. Sending registration info as plain text');
+				return API.v1.success({ ...endpointDetails.result });
+			}
+
+			const result = generateJWT(endpointDetails.result, encKey);
+			return API.v1.success({ result });
 		},
 	},
 );
