@@ -634,7 +634,7 @@ class Administration extends Page {
 	}
 
 	getUserFromList(user) {
-		return browser.element(`.rcx-table__cell:first-child:contains(${user})`).should('be.visible');
+		return browser.element(`.rcx-table__cell:first-child:contains(${user}) figure`).should('be.visible');
 	}
 
 	adminSaveChanges() {

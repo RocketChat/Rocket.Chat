@@ -466,12 +466,12 @@ describe('[Api Settings Change]', () => {
 
 		it('search the user', () => {
 			admin.usersFilter.click();
-			admin.usersFilter.type(`${settingUserPrefix}${username}`).wait(1000);
+			admin.usersFilter.type(`${settingUserPrefix}${username}`);
+			cy.wait(1000);
 		});
 
 		it('opens the user', () => {
-			const userEl = admin.getUserFromList(`${settingUserPrefix}${username}`);
-			userEl.click();
+			admin.getUserFromList(`${settingUserPrefix}${username}`).click().wait(100);
 			flexTab.usersView.should('be.visible');
 		});
 
