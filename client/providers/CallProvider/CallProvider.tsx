@@ -253,7 +253,7 @@ export const CallProvider: FC = ({ children }) => {
 				return '';
 			},
 			closeRoom: async ({ comment, tags }): Promise<void> => {
-				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment, tags }));
+				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment: comment || '', tags }));
 				homeRoute.push({});
 			},
 			openWrapUpModal,
