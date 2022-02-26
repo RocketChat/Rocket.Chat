@@ -32,6 +32,7 @@ export const getDefaultUserFields = (): DefaultUserFields => ({
 	'services.totp.enabled': 1,
 	'services.email2fa.enabled': 1,
 	'statusLivechat': 1,
+	'statusVoip': 1,
 	'banners': 1,
 	'oauth.authorizedClients': 1,
 	'_updatedAt': 1,

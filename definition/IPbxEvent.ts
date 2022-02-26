@@ -14,4 +14,5 @@ export interface IPbxEvent extends IRocketChatRecord {
 	// new uniqueId for events
 	callUniqueIdFallback?: string;
 	agentExtension?: string;
+	contactStatus?: 'Reachable' | 'Removed' | 'NonQualified';
 }

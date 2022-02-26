@@ -48,7 +48,10 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			}
 			switch (data.event) {
 				case 'ContactStatus': {
-					return this.processAgentDisconnect(extension);
+					if (data.contactStatus === 'Removed') {
+						return this.processAgentDisconnect(extension);
+					}
+					return this.processAgentStatusAvailable(extension);
 				}
 				case 'Hangup': {
 					return this.processCallerHangup(extension);
@@ -91,6 +94,14 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			await this.handleEvent(VoipClientEvents['VOIP-CALL-ENDED'], room, agent, 'Agent disconnected abruptly');
 			await this.closeRoom(agent, room, agent, 'Agent disconnected abruptly', undefined, 'voip-call-ended-unexpectedly');
 		}
+
+		this.logger.debug(`Changing connection status change for ext ${extension}. Status = not-available`);
+		await this.users.setVoipStatus(extension, 'not-available');
+	}
+
+	private async processAgentStatusAvailable(extension: string): Promise<void> {
+		this.logger.debug(`Changing connection status change for ext ${extension}. Status = available`);
+		await this.users.setVoipStatus(extension, 'available');
 	}
 
 	private async createVoipRoom(

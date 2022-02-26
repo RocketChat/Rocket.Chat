@@ -146,6 +146,7 @@ export class ContinuousMonitor extends Command {
 					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
 					ts: now,
 					agentExtension: event.aor,
+					contactStatus: event.contactstatus,
 				});
 
 				return;
@@ -223,7 +224,7 @@ export class ContinuousMonitor extends Command {
 	}
 
 	async processContactStatusEvent(event: IContactStatus): Promise<void> {
-		if (event.contactstatus === 'Removed') {
+		if (event.contactstatus === 'Removed' || event.contactstatus === 'Reachable') {
 			// Room closing logic should be added here for the aor
 			// aor signifies address of record, which should be used for
 			// fetching the room for which serverBy = event.aor

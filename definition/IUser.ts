@@ -125,6 +125,8 @@ export interface IUser extends IRocketChatRecord {
 	};
 	_updatedAt: Date;
 	statusLivechat?: string;
+	statusVoip?: string;
+
 	e2e?: {
 		private_key: string;
 		public_key: string;

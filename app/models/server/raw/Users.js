@@ -967,4 +967,17 @@ export class UsersRaw extends BaseRaw {
 		};
 		return this.update(query, update);
 	}
+
+	setVoipStatus(extension, status) {
+		const query = {
+			extension,
+		};
+		const update = {
+			$set: {
+				statusVoip: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
