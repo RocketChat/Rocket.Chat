@@ -1,6 +1,6 @@
 import { Box, Icon, Chip } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { IVoipRoom } from '../../../../../../definition/IRoom';
 import UserCard from '../../../../../components/UserCard';
@@ -28,6 +28,8 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 	const hold = callTotalHoldTime && moment.utc(callTotalHoldTime).format('HH:mm:ss');
 	const endedAt = callEndedAt && moment(callEndedAt).format('LLL');
 	const phoneNumber = Array.isArray(v?.phone) ? v?.phone[0]?.phoneNumber : v?.phone;
+	const shouldShowWrapup = useMemo(() => lastMessage?.t === 'voip-call-wrapup' && lastMessage?.msg, [lastMessage]);
+	const shouldShowTags = useMemo(() => tags && tags.length > 0, [tags]);
 
 	return (
 		<>
@@ -61,19 +63,21 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport, onClickCall */
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
 					<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
-					{(lastMessage || tags) && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{!lastMessage && tags ? t('Tags') : t('Wrap_Up_Notes')}</InfoPanel.Label>
-							<InfoPanel.Text>{lastMessage?.msg}</InfoPanel.Text>
+					<InfoPanel.Field>
+						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
+						<InfoPanel.Text>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+						{shouldShowTags && (
 							<InfoPanel.Text>
-								{tags?.map((tag: string) => (
-									<Chip mie='x4' key={tag} value={tag}>
-										{tag}
-									</Chip>
-								))}
+								<Box display='flex' flexDirection='row' alignItems='center'>
+									{tags?.map((tag: string) => (
+										<Chip mie='x4' key={tag} value={tag}>
+											{tag}
+										</Chip>
+									))}
+								</Box>
 							</InfoPanel.Text>
-						</InfoPanel.Field>
-					)}
+						)}
+					</InfoPanel.Field>
 				</InfoPanel>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
