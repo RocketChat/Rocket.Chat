@@ -2,7 +2,6 @@ import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import { roomTypes } from '../../../app/utils/client';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
@@ -10,6 +9,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
@@ -43,13 +43,7 @@ function TeamsTable() {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'name'}
-					direction={sort[1]}
-					active={sort[0] === 'name'}
-					onClick={onHeaderClick}
-					sort='name'
-				>
+				<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'channelsCount'} style={{ width: '100px' }}>
@@ -91,17 +85,10 @@ function TeamsTable() {
 	const renderRow = useCallback(
 		(team) => {
 			const { _id, ts, t, name, fname, topic, roomsCount } = team;
-			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(team);
+			const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(team);
 
 			return (
-				<Table.Row
-					key={_id}
-					onKeyDown={onClick(name, t)}
-					onClick={onClick(name, t)}
-					tabIndex={0}
-					role='link'
-					action
-				>
+				<Table.Row key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
 					<Table.Cell>
 						<Box display='flex'>
 							<Box flexGrow={0}>
@@ -109,29 +96,21 @@ function TeamsTable() {
 							</Box>
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
-									<Icon name={roomTypes.getIcon(team)} color='hint' />{' '}
-									<Box fontScale='p4' mi='x4'>
+									<Icon name={roomCoordinator.getIcon(team)} color='hint' />{' '}
+									<Box fontScale='p2m' mi='x4'>
 										{fname || name}
 									</Box>
 									<RoomTags room={team} style={style} />
 								</Box>
-								{topic && (
-									<MarkdownText
-										variant='inlineWithoutBreaks'
-										fontScale='p3'
-										color='hint'
-										style={style}
-										content={topic}
-									/>
-								)}
+								{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' style={style} content={topic} />}
 							</Box>
 						</Box>
 					</Table.Cell>
-					<Table.Cell fontScale='p3' color='hint' style={style}>
+					<Table.Cell fontScale='p2' color='hint' style={style}>
 						{roomsCount}
 					</Table.Cell>
 					{mediaQuery && (
-						<Table.Cell fontScale='p3' color='hint' style={style}>
+						<Table.Cell fontScale='p2' color='hint' style={style}>
 							{formatDate(ts)}
 						</Table.Cell>
 					)}
@@ -145,12 +124,7 @@ function TeamsTable() {
 		<GenericTable
 			header={header}
 			renderFilter={({ onChange, ...props }) => (
-				<FilterByText
-					placeholder={t('Teams_Search_teams')}
-					inputRef={refAutoFocus}
-					onChange={onChange}
-					{...props}
-				/>
+				<FilterByText placeholder={t('Teams_Search_teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />
 			)}
 			renderRow={renderRow}
 			results={data.result}

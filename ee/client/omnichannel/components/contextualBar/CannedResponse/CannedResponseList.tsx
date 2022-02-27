@@ -1,14 +1,6 @@
 import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, {
-	Dispatch,
-	FC,
-	FormEventHandler,
-	memo,
-	MouseEvent,
-	ReactElement,
-	SetStateAction,
-} from 'react';
+import React, { Dispatch, FC, FormEventHandler, memo, MouseEvent, ReactElement, SetStateAction } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
@@ -52,7 +44,7 @@ const CannedResponseList: FC<{
 	reload,
 }) => {
 	const t = useTranslation();
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const cannedId = useTabContext();
 
@@ -78,13 +70,7 @@ const CannedResponseList: FC<{
 								addon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -94,11 +80,7 @@ const CannedResponseList: FC<{
 						<Virtuoso
 							style={{ width: inlineSize }}
 							totalCount={itemCount}
-							endReached={
-								loading
-									? undefined
-									: (start): void => loadMoreItems(start, Math.min(25, itemCount - start))
-							}
+							endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
 							overscan={25}
 							data={cannedItems}
 							components={{

@@ -42,7 +42,7 @@ export class CROWD {
 
 		this.options = {
 			crowd: {
-				base: !/\/$/.test(url) ? url += '/' : url,
+				base: !/\/$/.test(url) ? (url += '/') : url,
 			},
 			application: {
 				name: settings.get('CROWD_APP_USERNAME'),
@@ -150,10 +150,12 @@ export class CROWD {
 		const user = {
 			username: self.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
-			emails: [{
-				address: crowdUser.email,
-				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
-			}],
+			emails: [
+				{
+					address: crowdUser.email,
+					verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
+				},
+			],
 			crowd: true,
 		};
 
@@ -187,7 +189,7 @@ export class CROWD {
 
 		logger.info('Sync started...');
 
-		users.forEach(function(user) {
+		users.forEach(function (user) {
 			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info('Syncing user', crowd_username);
 
@@ -202,12 +204,12 @@ export class CROWD {
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
+				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
 						logger.info('Removing user:', crowd_username);
-						Meteor.defer(function() {
+						Meteor.defer(function () {
 							Promise.await(deleteUser(user._id));
 							logger.info('User removed:', crowd_username);
 						});
@@ -276,7 +278,7 @@ export class CROWD {
 	}
 }
 
-Accounts.registerLoginHandler('crowd', function(loginRequest) {
+Accounts.registerLoginHandler('crowd', function (loginRequest) {
 	if (!loginRequest.crowd) {
 		return undefined;
 	}
@@ -291,13 +293,13 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		const crowd = new CROWD();
 		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-		if (user && (user.crowd === false)) {
-			logger.debug(`User ${ loginRequest.username } is not a valid crowd user, falling back`);
+		if (user && user.crowd === false) {
+			logger.debug(`User ${loginRequest.username} is not a valid crowd user, falling back`);
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 		}
 
 		if (!user) {
-			logger.debug(`User ${ loginRequest.username } is not allowd to access Rocket.Chat`);
+			logger.debug(`User ${loginRequest.username} is not allowd to access Rocket.Chat`);
 			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 
@@ -307,7 +309,6 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		logger.error('Crowd user not authenticated due to an error');
 	}
 });
-
 
 const jobName = 'CROWD_Sync';
 
@@ -338,11 +339,15 @@ Meteor.methods({
 	crowd_test_connection() {
 		const user = Meteor.user();
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'crowd_test_connection',
+			});
 		}
 
 		if (!hasRole(user._id, 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_test_connection' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'crowd_test_connection',
+			});
 		}
 
 		if (settings.get('CROWD_Enable') !== true) {
@@ -358,7 +363,9 @@ Meteor.methods({
 				params: [],
 			};
 		} catch (error) {
-			logger.error('Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd');
+			logger.error(
+				'Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd',
+			);
 			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
 		}
 	},
@@ -369,7 +376,9 @@ Meteor.methods({
 		}
 
 		if (!hasRole(user._id, 'admin')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_sync_users' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'crowd_sync_users',
+			});
 		}
 
 		try {
@@ -380,7 +389,7 @@ Meteor.methods({
 			const actual = Math.ceil((stopTime - startTime) / 1000);
 
 			return {
-				message: `User data synced in ${ actual } seconds`,
+				message: `User data synced in ${actual} seconds`,
 				params: [],
 			};
 		} catch (error) {

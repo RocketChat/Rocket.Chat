@@ -38,14 +38,8 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	const { users, name, description, type, readOnly, broadcast, encrypted } = values;
 	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value) => {
+		handleUsers(value);
 	});
 
 	const onChangeType = useMutableCallback((value) => {
@@ -87,20 +81,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 
 		onClose();
 		reload();
-	}, [
-		broadcast,
-		createChannel,
-		createPrivateChannel,
-		description,
-		encrypted,
-		name,
-		onClose,
-		readOnly,
-		teamId,
-		type,
-		users,
-		reload,
-	]);
+	}, [broadcast, createChannel, createPrivateChannel, description, encrypted, name, onClose, readOnly, teamId, type, users, reload]);
 
 	return (
 		<CreateChannel

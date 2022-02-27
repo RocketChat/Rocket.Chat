@@ -13,13 +13,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent } from 'react';
 
-import {
-	triggerBlockAction,
-	triggerCancel,
-	triggerSubmitView,
-	on,
-	off,
-} from '../../../../../app/ui-message/client/ActionManager';
+import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { App } from '../../../admin/apps/types';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import Apps from './Apps';
@@ -56,9 +50,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			}
 
 			if (
-				((block as IActionsBlock).elements as IInputElement[])?.filter((element) =>
-					filterInputFields({ element } as IInputBlock),
-				).length
+				((block as IActionsBlock).elements as IInputElement[])?.filter((element) => filterInputFields({ element } as IInputBlock)).length
 			) {
 				return true;
 			}
@@ -72,14 +64,11 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 				return [element.actionId, { value: element.initialValue, blockId } as FieldState];
 			}
 
-			const { elements, blockId }: { elements: IBlockElement[]; blockId?: string } =
-				block as IActionsBlock;
+			const { elements, blockId }: { elements: IBlockElement[]; blockId?: string } = block as IActionsBlock;
 
 			return elements
 				.filter((element) => filterInputFields({ element } as IInputBlock))
-				.map((element) =>
-					mapElementToState({ element, blockId } as IInputBlock),
-				) as InputFieldStateTuple[];
+				.map((element) => mapElementToState({ element, blockId } as IInputBlock)) as InputFieldStateTuple[];
 		};
 
 		return view.blocks
@@ -100,10 +89,12 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 
 const AppsWithData = ({
 	viewId,
+	roomId,
 	payload,
 	appInfo,
 }: {
 	viewId: string;
+	roomId: string;
 	payload: IUIKitContextualBarInteraction;
 	appInfo: App;
 }): JSX.Element => {
@@ -115,10 +106,7 @@ const AppsWithData = ({
 	const [values, updateValues] = useValues(view);
 
 	useEffect(() => {
-		const handleUpdate = ({
-			type,
-			...data
-		}: IUIKitContextualBarInteraction | IUIKitErrorInteraction): void => {
+		const handleUpdate = ({ type, ...data }: IUIKitContextualBarInteraction | IUIKitErrorInteraction): void => {
 			if (type === 'errors') {
 				const { errors } = data as Omit<IUIKitErrorInteraction, 'type'>;
 				setState((state: ViewState) => ({ ...state, errors }));
@@ -136,14 +124,11 @@ const AppsWithData = ({
 	}, [state, viewId]);
 
 	const groupStateByBlockId = (obj: InputFieldStateObject): InputFieldStateByBlockId =>
-		Object.entries(obj).reduce(
-			(obj: InputFieldStateByBlockId, [key, { blockId, value }]: InputFieldStateTuple) => {
-				obj[blockId] = obj[blockId] || {};
-				obj[blockId][key] = value;
-				return obj;
-			},
-			{} as InputFieldStateByBlockId,
-		);
+		Object.entries(obj).reduce((obj: InputFieldStateByBlockId, [key, { blockId, value }]: InputFieldStateTuple) => {
+			obj[blockId] = obj[blockId] || {};
+			obj[blockId][key] = value;
+			return obj;
+		}, {} as InputFieldStateByBlockId);
 
 	const prevent = (e: SyntheticEvent): void => {
 		if (e) {
@@ -162,6 +147,7 @@ const AppsWithData = ({
 				},
 				actionId,
 				appId,
+				rid: roomId,
 				value,
 				blockId,
 			}),
@@ -225,13 +211,7 @@ const AppsWithData = ({
 
 	return (
 		<kitContext.Provider value={context}>
-			<Apps
-				onClose={handleClose}
-				onCancel={handleCancel}
-				onSubmit={handleSubmit}
-				view={view}
-				appInfo={{ name: appName, id: appId }}
-			/>
+			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appInfo={{ name: appName, id: appId }} />
 		</kitContext.Provider>
 	);
 };

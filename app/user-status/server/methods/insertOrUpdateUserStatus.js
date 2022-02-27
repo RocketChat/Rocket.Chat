@@ -12,7 +12,10 @@ Meteor.methods({
 		}
 
 		if (!s.trim(userStatusData.name)) {
-			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUserStatus', field: 'Name' });
+			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
+				method: 'insertOrUpdateUserStatus',
+				field: 'Name',
+			});
 		}
 
 		// allow all characters except >, <, &, ", '
@@ -20,7 +23,11 @@ Meteor.methods({
 		const nameValidation = /[><&"']/;
 
 		if (nameValidation.test(userStatusData.name)) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ userStatusData.name } is not a valid name`, { method: 'insertOrUpdateUserStatus', input: userStatusData.name, field: 'Name' });
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.name} is not a valid name`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.name,
+				field: 'Name',
+			});
 		}
 
 		let matchingResults = [];
@@ -32,12 +39,18 @@ Meteor.methods({
 		}
 
 		if (matchingResults.length > 0) {
-			throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', { method: 'insertOrUpdateUserStatus' });
+			throw new Meteor.Error('Custom_User_Status_Error_Name_Already_In_Use', 'The custom user status name is already in use', {
+				method: 'insertOrUpdateUserStatus',
+			});
 		}
 
 		const validStatusTypes = ['online', 'away', 'busy', 'offline'];
 		if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
-			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ userStatusData.statusType } is not a valid status type`, { method: 'insertOrUpdateUserStatus', input: userStatusData.statusType, field: 'StatusType' });
+			throw new Meteor.Error('error-input-is-not-a-valid-field', `${userStatusData.statusType} is not a valid status type`, {
+				method: 'insertOrUpdateUserStatus',
+				input: userStatusData.statusType,
+				field: 'StatusType',
+			});
 		}
 
 		if (!userStatusData._id) {

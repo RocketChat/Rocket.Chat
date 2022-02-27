@@ -1,6 +1,5 @@
 import { HTTP } from 'meteor/http';
 
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
@@ -32,7 +31,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 
 	let authTokenResult;
 	try {
-		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
+		authTokenResult = HTTP.post(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			params: {
 				client_id,
@@ -44,7 +43,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');

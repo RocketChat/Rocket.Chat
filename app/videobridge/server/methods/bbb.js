@@ -8,7 +8,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { Rooms, Users } from '../../../models/server';
 import { saveStreamingOptions } from '../../../channel-settings/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoom, canAccessRoomId } from '../../../authorization/server';
 import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({
@@ -20,7 +20,7 @@ const parseString = Meteor.wrapAsync(parser.parseString);
 const getBBBAPI = () => {
 	const url = settings.get('bigbluebutton_server');
 	const secret = settings.get('bigbluebutton_sharedSecret');
-	const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
+	const api = new BigBlueButtonApi(`${url}/bigbluebutton/api`, secret);
 	return { api, url };
 };
 
@@ -75,7 +75,7 @@ Meteor.methods({
 		if (doc.response.returncode[0]) {
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
-				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`),
+				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${meetingID}`),
 			});
 
 			const hookResult = HTTP.get(hookApi);
@@ -97,7 +97,7 @@ Meteor.methods({
 					fullName: user.username,
 					userID: user._id,
 					joinViaHtml5: true,
-					avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
+					avatarURL: Meteor.absoluteUrl(`avatar/${user.username}`),
 					// clientURL: `${ url }/html5client/join`,
 				}),
 			};
@@ -115,7 +115,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'bbbEnd' });
 		}
 
-		if (!canAccessRoom({ _id: rid }, { _id: this.userId })) {
+		if (!canAccessRoomId(rid, this.userId)) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
@@ -144,40 +144,44 @@ Meteor.methods({
 	},
 });
 
-API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
-	post() {
-		// TODO check checksum
-		const event = JSON.parse(this.bodyParams.event)[0];
-		const eventType = event.data.id;
-		const meetingID = event.data.attributes.meeting['external-meeting-id'];
-		const rid = meetingID.replace(settings.get('uniqueID'), '');
+API.v1.addRoute(
+	'videoconference.bbb.update/:id',
+	{ authRequired: false },
+	{
+		post() {
+			// TODO check checksum
+			const event = JSON.parse(this.bodyParams.event)[0];
+			const eventType = event.data.id;
+			const meetingID = event.data.attributes.meeting['external-meeting-id'];
+			const rid = meetingID.replace(settings.get('uniqueID'), '');
 
-		SystemLogger.debug(eventType, rid);
+			SystemLogger.debug(eventType, rid);
 
-		if (eventType === 'meeting-ended') {
-			saveStreamingOptions(rid, {});
-		}
+			if (eventType === 'meeting-ended') {
+				saveStreamingOptions(rid, {});
+			}
 
-		// if (eventType === 'user-left') {
-		// 	const { api } = getBBBAPI();
+			// if (eventType === 'user-left') {
+			// 	const { api } = getBBBAPI();
 
-		// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
-		// 		meetingID
-		// 	});
+			// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
+			// 		meetingID
+			// 	});
 
-		// 	const getMeetingInfoResult = HTTP.get(getMeetingInfoApi);
+			// 	const getMeetingInfoResult = HTTP.get(getMeetingInfoApi);
 
-		// 	if (getMeetingInfoResult.statusCode !== 200) {
-		// 		// TODO improve error logging
-		// 		SystemLogger.error({ getMeetingInfoResult });
-		// 	}
+			// 	if (getMeetingInfoResult.statusCode !== 200) {
+			// 		// TODO improve error logging
+			// 		SystemLogger.error({ getMeetingInfoResult });
+			// 	}
 
-		// 	const doc = parseString(getMeetingInfoResult.content);
+			// 	const doc = parseString(getMeetingInfoResult.content);
 
-		// 	if (doc.response.returncode[0]) {
-		// 		const participantCount = parseInt(doc.response.participantCount[0]);
-		// 		SystemLogger.debug(participantCount);
-		// 	}
-		// }
+			// 	if (doc.response.returncode[0]) {
+			// 		const participantCount = parseInt(doc.response.participantCount[0]);
+			// 		SystemLogger.debug(participantCount);
+			// 	}
+			// }
+		},
 	},
-});
+);

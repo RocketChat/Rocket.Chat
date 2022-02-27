@@ -24,10 +24,7 @@ const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }) => {
 
 	commitRef.current.userPreference = commit;
 
-	const onChangeIdleTimeLimit = useCallback(
-		(e) => handleIdleTimeLimit(Number(e.currentTarget.value)),
-		[handleIdleTimeLimit],
-	);
+	const onChangeIdleTimeLimit = useCallback((e) => handleIdleTimeLimit(Number(e.currentTarget.value)), [handleIdleTimeLimit]);
 
 	return (
 		<Accordion.Item title={t('User_Presence')} {...props}>

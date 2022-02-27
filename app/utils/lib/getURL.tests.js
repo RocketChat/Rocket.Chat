@@ -24,9 +24,9 @@ const testPaths = (o, _processPath) => {
 
 const getCloudUrl = (_site_url, path) => {
 	path = s.ltrim(path, '/');
-	const url = `https://go.rocket.chat/?host=${ encodeURIComponent(_site_url.replace(/https?:\/\//, '')) }&path=${ encodeURIComponent(path) }`;
+	const url = `https://go.rocket.chat/?host=${encodeURIComponent(_site_url.replace(/https?:\/\//, ''))}&path=${encodeURIComponent(path)}`;
 	if (_site_url.includes('http://')) {
-		return `${ url }&secure=no`;
+		return `${url}&secure=no`;
 	}
 	return url;
 };

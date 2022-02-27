@@ -40,11 +40,7 @@ const registerLazyComponentRoute = (
 	const enabled = new ReactiveVar(ready ? true : undefined);
 	let computation: Tracker.Computation | undefined;
 
-	const handleEnter = (
-		_context: unknown,
-		_redirect: (pathDef: string) => void,
-		stop: () => void,
-	): void => {
+	const handleEnter = (_context: unknown, _redirect: (pathDef: string) => void, stop: () => void): void => {
 		const _enabled = Tracker.nonreactive(() => enabled.get());
 		if (_enabled === false) {
 			stop();
@@ -80,7 +76,7 @@ const registerLazyComponentRoute = (
 					props: () => ({ renderRoute }),
 				},
 			);
-			appLayout.render('main', { center });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 
@@ -133,7 +129,7 @@ export const createRouteGroup = (
 			const center = createTemplateForComponent(`${name}-index`, importRouter, {
 				attachment: 'at-parent',
 			});
-			appLayout.render('main', { center });
+			appLayout.renderMainLayout({ center });
 		},
 	});
 

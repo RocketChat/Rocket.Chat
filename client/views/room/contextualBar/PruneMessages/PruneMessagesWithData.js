@@ -14,9 +14,7 @@ import PruneMessages from './PruneMessages';
 const getTimeZoneOffset = function () {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
-	return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${
-		absOffset % 60
-	}`.slice(-2)}`;
+	return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${absOffset % 60}`.slice(-2)}`;
 };
 
 const initialValues = {
@@ -52,18 +50,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 	const [counter, setCounter] = useState(0);
 
 	const { values, handlers, reset } = useForm(initialValues);
-	const {
-		newerDate,
-		newerTime,
-		olderDate,
-		olderTime,
-		users,
-		inclusive,
-		pinned,
-		discussion,
-		threads,
-		attached,
-	} = values;
+	const { newerDate, newerTime, olderDate, olderTime, users, inclusive, pinned, discussion, threads, attached } = values;
 
 	const {
 		handleNewerDate,
@@ -78,14 +65,8 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 		handleAttached,
 	} = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value) => {
+		handleUsers(value);
 	});
 
 	const handlePrune = useMutableCallback(async () => {
@@ -126,13 +107,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 
 	const handleModal = () => {
 		setModal(
-			<GenericModal
-				variant='danger'
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={handlePrune}
-				confirmText={t('Yes_prune_them')}
-			>
+			<GenericModal variant='danger' onClose={closeModal} onCancel={closeModal} onConfirm={handlePrune} confirmText={t('Yes_prune_them')}>
 				{t('Prune_Modal')}
 			</GenericModal>,
 		);
@@ -162,12 +137,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 			setCallOutText(
 				t('Prune_Warning_between', {
 					postProcess: 'sprintf',
-					sprintf: [
-						filesOrMessages,
-						name,
-						moment(fromDate).format('L LT'),
-						moment(toDate).format('L LT'),
-					],
+					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
 				}) +
 					exceptPinned +
 					ifFrom,

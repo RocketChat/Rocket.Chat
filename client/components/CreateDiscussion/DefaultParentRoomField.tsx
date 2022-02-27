@@ -1,16 +1,12 @@
 import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
 import React, { useMemo, ReactElement } from 'react';
 
-import { roomTypes } from '../../../app/utils/client/lib/roomTypes';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-const DefaultParentRoomField = ({
-	defaultParentRoom,
-}: {
-	defaultParentRoom: string;
-}): ReactElement => {
+const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
 		'rooms.info',
@@ -32,9 +28,13 @@ const DefaultParentRoomField = ({
 
 	return (
 		<TextInput
-			value={roomTypes.getRoomName(value.room.t, value.room)}
+			defaultValue={roomCoordinator.getRoomName(value.room.t, {
+				_id: value.room._id,
+				fname: value.room.fname,
+				name: value.room.name,
+				prid: value.room.prid,
+			})}
 			disabled
-			onChange={(): string => ''}
 		/>
 	);
 };

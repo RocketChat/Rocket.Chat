@@ -1,4 +1,3 @@
-
 import { Permissions, Roles } from '../../../../app/models/server/raw';
 
 export const createPermissions = async (): Promise<void> => {
@@ -17,5 +16,7 @@ export const createPermissions = async (): Promise<void> => {
 		Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
+		Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]),
+		Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]),
 	]);
 };

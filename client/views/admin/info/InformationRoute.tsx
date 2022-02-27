@@ -21,9 +21,7 @@ const InformationRoute = (): ReactElement => {
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
 	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(
-		() => (): void => undefined,
-	);
+	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', 'statistics');
 	const getInstances = useMethod('instances/get');
 
@@ -35,10 +33,7 @@ const InformationRoute = (): ReactElement => {
 			setError(false);
 
 			try {
-				const [statistics, instances] = await Promise.all([
-					getStatistics({ refresh }),
-					getInstances(),
-				]);
+				const [statistics, instances] = await Promise.all([getStatistics({ refresh }), getInstances()]);
 
 				if (didCancel) {
 					return;

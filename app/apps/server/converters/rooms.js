@@ -41,6 +41,7 @@ export class AppRoomsConverter {
 				_id: visitor._id,
 				username: visitor.username,
 				token: visitor.token,
+				status: visitor.status || 'online',
 			};
 		}
 
@@ -69,7 +70,7 @@ export class AppRoomsConverter {
 		}
 
 		const newRoom = {
-			...room.id && { _id: room.id },
+			...(room.id && { _id: room.id }),
 			fname: room.displayName,
 			name: room.slugifiedName,
 			t: room.type,
@@ -93,12 +94,12 @@ export class AppRoomsConverter {
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
-			...room._USERNAMES && { _USERNAMES: room._USERNAMES },
-			...room.source && {
+			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
+			...(room.source && {
 				source: {
 					...room.source,
 				},
-			},
+			}),
 		};
 
 		return Object.assign(newRoom, room._unmappedProperties_);

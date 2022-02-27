@@ -27,7 +27,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 }) => {
 	const t = useTranslation();
 
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { values, handlers } = useForm({
 		email: emailDefault || '',
@@ -76,7 +76,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 				<Modal.Title>{t('Transcript')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content fontScale='p3'>
+			<Modal.Content fontScale='p2'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<Field marginBlock='x15'>
 					<Field.Label>{t('Email')}*</Field.Label>

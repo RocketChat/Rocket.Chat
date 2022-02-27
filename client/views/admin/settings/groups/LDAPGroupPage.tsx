@@ -31,10 +31,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		),
 	);
 
-	const changed = useMemo(
-		() => editableSettings.some(({ changed }) => changed),
-		[editableSettings],
-	);
+	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
 
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
@@ -124,21 +121,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 			{...group}
 			headerButtons={
 				<>
-					<Button
-						children={t('Test_Connection')}
-						disabled={!ldapEnabled || changed}
-						onClick={handleTestConnectionButtonClick}
-					/>
-					<Button
-						children={t('Test_LDAP_Search')}
-						disabled={!ldapEnabled || changed}
-						onClick={handleSearchTestButtonClick}
-					/>
-					<Button
-						children={t('LDAP_Sync_Now')}
-						disabled={!ldapEnabled || changed}
-						onClick={handleSyncNowButtonClick}
-					/>
+					<Button children={t('Test_Connection')} disabled={!ldapEnabled || changed} onClick={handleTestConnectionButtonClick} />
+					<Button children={t('Test_LDAP_Search')} disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick} />
+					<Button children={t('LDAP_Sync_Now')} disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick} />
 					<Button is='a' href='https://go.rocket.chat/i/ldap-docs' target='_blank'>
 						{t('LDAP_Documentation')}
 					</Button>

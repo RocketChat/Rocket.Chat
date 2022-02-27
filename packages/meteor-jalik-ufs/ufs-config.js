@@ -33,16 +33,19 @@ import { StorePermissions } from './ufs-store-permissions';
 export class Config {
 	constructor(options) {
 		// Default options
-		options = _.extend({
-			defaultStorePermissions: null,
-			https: false,
-			simulateReadDelay: 0,
-			simulateUploadSpeed: 0,
-			simulateWriteDelay: 0,
-			storesPath: 'ufs',
-			tmpDir: '/tmp/ufs',
-			tmpDirPermissions: '0700',
-		}, options);
+		options = _.extend(
+			{
+				defaultStorePermissions: null,
+				https: false,
+				simulateReadDelay: 0,
+				simulateUploadSpeed: 0,
+				simulateWriteDelay: 0,
+				storesPath: 'ufs',
+				tmpDir: '/tmp/ufs',
+				tmpDirPermissions: '0700',
+			},
+			options,
+		);
 
 		// Check options
 		if (options.defaultStorePermissions && !(options.defaultStorePermissions instanceof StorePermissions)) {
@@ -71,44 +74,44 @@ export class Config {
 		}
 
 		/**
-     * Default store permissions
-     * @type {UploadFS.StorePermissions}
-     */
+		 * Default store permissions
+		 * @type {UploadFS.StorePermissions}
+		 */
 		this.defaultStorePermissions = options.defaultStorePermissions;
 		/**
-     * Use or not secured protocol in URLS
-     * @type {boolean}
-     */
+		 * Use or not secured protocol in URLS
+		 * @type {boolean}
+		 */
 		this.https = options.https;
 		/**
-     * The simulation read delay
-     * @type {Number}
-     */
+		 * The simulation read delay
+		 * @type {Number}
+		 */
 		this.simulateReadDelay = parseInt(options.simulateReadDelay);
 		/**
-     * The simulation upload speed
-     * @type {Number}
-     */
+		 * The simulation upload speed
+		 * @type {Number}
+		 */
 		this.simulateUploadSpeed = parseInt(options.simulateUploadSpeed);
 		/**
-     * The simulation write delay
-     * @type {Number}
-     */
+		 * The simulation write delay
+		 * @type {Number}
+		 */
 		this.simulateWriteDelay = parseInt(options.simulateWriteDelay);
 		/**
-     * The URL root path of stores
-     * @type {string}
-     */
+		 * The URL root path of stores
+		 * @type {string}
+		 */
 		this.storesPath = options.storesPath;
 		/**
-     * The temporary directory of uploading files
-     * @type {string}
-     */
+		 * The temporary directory of uploading files
+		 * @type {string}
+		 */
 		this.tmpDir = options.tmpDir;
 		/**
-     * The permissions of the temporary directory
-     * @type {string}
-     */
+		 * The permissions of the temporary directory
+		 * @type {string}
+		 */
 		this.tmpDirPermissions = options.tmpDirPermissions;
 	}
 }

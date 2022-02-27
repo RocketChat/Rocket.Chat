@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Select, SelectOptions } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, SelectOption } from '@rocket.chat/fuselage';
 import React, { FC, FormEvent, memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
@@ -23,7 +23,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	...props
 }) => {
 	const t = useTranslation();
-	const sharingList: SelectOptions = [
+	const sharingList: SelectOption[] = [
 		['', t('All')],
 		['user', t('Private')],
 		['global', t('Public')],
@@ -35,21 +35,10 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	}, []);
 
 	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={handleFormSubmit}
-			display='flex'
-			flexDirection='row'
-			{...props}
-		>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Box mb='x4'>{t('Search')}</Box>
-				<TextInput
-					addon={<Icon name='magnifier' size='x20' />}
-					onChange={setShortcut}
-					value={shortcutValue}
-				/>
+				<TextInput addon={<Icon name='magnifier' size='x20' />} onChange={setShortcut} value={shortcutValue} />
 			</Box>
 
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>

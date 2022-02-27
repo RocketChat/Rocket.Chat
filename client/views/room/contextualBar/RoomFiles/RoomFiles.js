@@ -66,13 +66,7 @@ function RoomFiles({
 								onChange={setText}
 								addon={<Icon name='magnifier' size='x20' />}
 							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
+							<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 						</Margins>
 					</Box>
 				</Box>
@@ -96,9 +90,7 @@ function RoomFiles({
 							width: '100%',
 						}}
 						totalCount={total}
-						endReached={
-							loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
-						}
+						endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={50}
 						data={filesItems}
 						components={{ Scroller: ScrollableContentWrapper }}

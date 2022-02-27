@@ -28,19 +28,9 @@ const RoomAutoComplete = (props) => {
 			{...props}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }) => (
-				<Option
-					label={label.name}
-					avatar={<Avatar value={value} room={{ _id: value, ...label }} />}
-				/>
-			)}
+			renderSelected={({ value, label }) => <Option label={label.name} avatar={<Avatar value={value} room={{ _id: value, ...label }} />} />}
 			renderItem={({ value, label, ...props }) => (
-				<Option
-					key={value}
-					{...props}
-					label={label.name}
-					avatar={<Avatar value={value} {...label} />}
-				/>
+				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
 			)}
 			options={options}
 		/>

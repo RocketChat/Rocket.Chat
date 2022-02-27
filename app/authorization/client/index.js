@@ -4,11 +4,4 @@ import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 import './requiresPermission.html';
 import './startup';
 
-export {
-	hasAllPermission,
-	hasAtLeastOnePermission,
-	hasRole,
-	hasPermission,
-	userHasAllPermission,
-	AuthorizationUtils,
-};
+export { hasAllPermission, hasAtLeastOnePermission, hasRole, hasPermission, userHasAllPermission, AuthorizationUtils };

@@ -7,24 +7,19 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
-import { Users, Settings } from '../../../models/server';
+import { callbacks } from '../../../../lib/callbacks';
+import { Settings, Users } from '../../../models/server';
 import { Roles, Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../authorization/server';
-import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
-import {
-	isValidAttemptByUser,
-	isValidLoginAttemptByIp,
-} from '../lib/restrictLoginAttempts';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
+import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 
-
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
-
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
@@ -32,7 +27,7 @@ Meteor.startup(() => {
 
 		Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
-		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+		Accounts.emailTemplates.from = `${settings.get('Site_Name')} <${settings.get('From_Email')}>`;
 	});
 });
 
@@ -41,11 +36,13 @@ Accounts.emailTemplates.userToActivate = {
 		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
 		const siteName = settings.get('Site_Name');
 
-		return `[${ siteName }] ${ subject }`;
+		return `[${siteName}] ${subject}`;
 	},
 
 	html(options = {}) {
-		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
+		const email = options.reason
+			? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default'
+			: 'Accounts_Admin_Email_Approval_Needed_Default';
 
 		return Mailer.replace(TAPi18n.__(email), {
 			name: escapeHTML(options.name),
@@ -59,17 +56,17 @@ Accounts.emailTemplates.userActivated = {
 	subject({ active, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
-		const subject = `Accounts_Email_${ action }_Subject`;
+		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
-		return `[${ siteName }] ${ TAPi18n.__(subject) }`;
+		return `[${siteName}] ${TAPi18n.__(subject)}`;
 	},
 
 	html({ active, name, username }) {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return Mailer.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
+		return Mailer.replace(TAPi18n.__(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
 		});
 	},
@@ -90,37 +87,41 @@ Meteor.startup(() => {
 	});
 });
 
-Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
+Accounts.emailTemplates.verifyEmail.html = function (userModel, url) {
 	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
 };
 
-Accounts.emailTemplates.verifyEmail.subject = function() {
+Accounts.emailTemplates.verifyEmail.subject = function () {
 	const subject = settings.get('Verification_Email_Subject');
 	return Mailer.replace(subject || '');
 };
 
-Accounts.urls.resetPassword = function(token) {
-	return Meteor.absoluteUrl(`reset-password/${ token }`);
+Accounts.urls.resetPassword = function (token) {
+	return Meteor.absoluteUrl(`reset-password/${token}`);
 };
 
-Accounts.emailTemplates.resetPassword.subject = function(userModel) {
+Accounts.emailTemplates.resetPassword.subject = function (userModel) {
 	return Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
 		name: userModel.name,
 	});
 };
 
-Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
-	return Mailer.replacekey(Mailer.replace(resetPasswordTemplate, {
-		name: userModel.name,
-	}), 'Forgot_Password_Url', url);
+Accounts.emailTemplates.resetPassword.html = function (userModel, url) {
+	return Mailer.replacekey(
+		Mailer.replace(resetPasswordTemplate, {
+			name: userModel.name,
+		}),
+		'Forgot_Password_Url',
+		url,
+	);
 };
 
-Accounts.emailTemplates.enrollAccount.subject = function(user) {
+Accounts.emailTemplates.enrollAccount.subject = function (user) {
 	const subject = settings.get('Accounts_Enrollment_Email_Subject');
 	return Mailer.replace(subject, user);
 };
 
-Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
+Accounts.emailTemplates.enrollAccount.html = function (user = {} /* , url*/) {
 	return Mailer.replace(enrollAccountTemplate, {
 		name: escapeHTML(user.name),
 		email: user.emails && user.emails[0] && escapeHTML(user.emails[0].address),
@@ -133,10 +134,10 @@ const getLinkedInName = ({ firstName, lastName }) => {
 
 	// LinkedIn new format
 	if (preferredLocale && firstNameLocalized && preferredLocale.language && preferredLocale.country) {
-		const locale = `${ preferredLocale.language }_${ preferredLocale.country }`;
+		const locale = `${preferredLocale.language}_${preferredLocale.country}`;
 
 		if (firstNameLocalized[locale] && lastNameLocalized[locale]) {
-			return `${ firstNameLocalized[locale] } ${ lastNameLocalized[locale] }`;
+			return `${firstNameLocalized[locale]} ${lastNameLocalized[locale]}`;
 		}
 		if (firstNameLocalized[locale]) {
 			return firstNameLocalized[locale];
@@ -147,10 +148,10 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	if (!lastName) {
 		return firstName;
 	}
-	return `${ firstName } ${ lastName }`;
+	return `${firstName} ${lastName}`;
 };
 
-Accounts.onCreateUser(function(options, user = {}) {
+Accounts.onCreateUser(function (options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
@@ -176,10 +177,12 @@ Accounts.onCreateUser(function(options, user = {}) {
 			}
 
 			if (!user.emails && service.email) {
-				user.emails = [{
-					address: service.email,
-					verified,
-				}];
+				user.emails = [
+					{
+						address: service.email,
+						verified,
+					},
+				];
 			}
 		}
 	}
@@ -190,7 +193,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 		Promise.await(usersInRole.toArray()).forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
-					destinations.push(`${ adminUser.name }<${ email.address }>`);
+					destinations.push(`${adminUser.name}<${email.address}>`);
 				});
 			}
 		});
@@ -209,9 +212,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 	return user;
 });
 
-Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, options, user) {
-	const noRoles = !user?.hasOwnProperty('globalRoles');
-
+Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc, options, user) {
 	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
@@ -249,22 +250,22 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-			Meteor.runAsUser(_id, function() {
+			Meteor.runAsUser(_id, function () {
 				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
 			});
 		}
 
 		if (user.type !== 'visitor') {
-			Meteor.defer(function() {
+			Meteor.defer(function () {
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = getAvatarSuggestionForUser(user);
+			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
-					Meteor.runAsUser(_id, function() {
+					Meteor.runAsUser(_id, function () {
 						return Meteor.call('setAvatarFromService', avatarData.blob, '', service);
 					});
 					return true;
@@ -275,23 +276,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		}
 	}
 
-	if (noRoles || roles.length === 0) {
-		const hasAdmin = Users.findOne({
-			roles: 'admin',
-			type: 'user',
-		}, {
-			fields: {
-				_id: 1,
-			},
-		});
-
-		if (hasAdmin) {
-			roles.push('user');
-		} else {
-			roles.push('admin');
-			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-			}
+	/**
+	 * if settings shows setup wizard to be pending
+	 * and no admin's been found,
+	 * and existing role list doesn't include admin
+	 * create this user admin.
+	 * count this as the completion of setup wizard step 1.
+	 */
+	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
+	if (!roles.includes('admin') && !hasAdmin) {
+		roles.push('admin');
+		if (settings.get('Show_Setup_Wizard') === 'pending') {
+			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
@@ -300,7 +296,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	return _id;
 });
 
-Accounts.validateLoginAttempt(function(login) {
+Accounts.validateLoginAttempt(function (login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
 	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
@@ -351,26 +347,30 @@ Accounts.validateLoginAttempt(function(login) {
 	login = callbacks.run('onValidateLogin', login);
 
 	Users.updateLastLoginById(login.user._id);
-	Meteor.defer(function() {
+	Meteor.defer(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
 
 	return true;
 });
 
-Accounts.validateNewUser(function(user) {
+Accounts.validateNewUser(function (user) {
 	if (user.type === 'visitor') {
 		return true;
 	}
 
-	if (settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false && settings.get('LDAP_Enable') === false && !(user.services && user.services.password)) {
+	if (
+		settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false &&
+		settings.get('LDAP_Enable') === false &&
+		!(user.services && user.services.password)
+	) {
 		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
 	}
 
 	return true;
 });
 
-Accounts.validateNewUser(function(user) {
+Accounts.validateNewUser(function (user) {
 	if (user.type === 'visitor') {
 		return true;
 	}
@@ -384,7 +384,7 @@ Accounts.validateNewUser(function(user) {
 
 	if (user.emails && user.emails.length > 0) {
 		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${ escapeRegExp(domain) }$`));
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 
 		if (inWhiteList === false) {
 			throw new Meteor.Error('error-invalid-domain');

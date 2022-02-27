@@ -26,9 +26,9 @@ export interface IServiceContext {
 
 export interface IServiceClass {
 	getName(): string;
-	onNodeConnected?({ node, reconnected }: {node: IBrokerNode; reconnected: boolean}): void;
-	onNodeUpdated?({ node }: {node: IBrokerNode }): void;
-	onNodeDisconnected?({ node, unexpected }: {node: IBrokerNode; unexpected: boolean}): Promise<void>;
+	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
+	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
+	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 
@@ -71,4 +71,12 @@ export abstract class ServiceClass implements IServiceClass {
 	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
 		this.events.emit(event, ...args);
 	}
+}
+
+/**
+ * An internal service is a service that is registered only on monolith node.
+ * Services that run on their own node should use @ServiceClass instead.
+ */
+export abstract class ServiceClassInternal extends ServiceClass {
+	protected internal = true;
 }

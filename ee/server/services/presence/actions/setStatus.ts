@@ -9,7 +9,7 @@ export async function setStatus(uid: string, statusDefault: UserStatus, statusTe
 	const query = { _id: uid };
 
 	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const userSessions = (await UserSession.findOne(query)) || { connections: [] };
 
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
@@ -17,19 +17,20 @@ export async function setStatus(uid: string, statusDefault: UserStatus, statusTe
 		statusDefault,
 		status,
 		statusConnection,
-		...typeof statusText !== 'undefined' ? {
-			// TODO logic duplicated from Rocket.Chat core
-			statusText: String(statusText || '').trim().substr(0, 120),
-		} : {},
+		...(typeof statusText !== 'undefined'
+			? {
+					// TODO logic duplicated from Rocket.Chat core
+					statusText: String(statusText || '')
+						.trim()
+						.substr(0, 120),
+			  }
+			: {}),
 	};
 
 	const User = await getCollection(Collections.User);
-	const result = await User.updateOne(
-		query,
-		{
-			$set: update,
-		},
-	);
+	const result = await User.updateOne(query, {
+		$set: update,
+	});
 
 	if (result.modifiedCount > 0) {
 		const user = await User.findOne<IUser>(query, { projection: { username: 1 } });
@@ -43,7 +44,7 @@ export async function setStatus(uid: string, statusDefault: UserStatus, statusTe
 
 export async function setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
 	const query = {
-		_id: uid,
+		'_id': uid,
 		'connections.id': session,
 	};
 

@@ -5,8 +5,8 @@ import { settingsRegistry } from '../../settings/server';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
-Meteor.startup(function() {
-	settingsRegistry.addGroup('Omnichannel', function() {
+Meteor.startup(function () {
+	settingsRegistry.addGroup('Omnichannel', function () {
 		this.add('Livechat_enabled', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -335,13 +335,17 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_lead_phone_regex', '((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))', {
-			type: 'string',
-			group: 'Omnichannel',
-			section: 'CRM_Integration',
-			i18nLabel: 'Lead_capture_phone_regex',
-			enableQuery: omnichannelEnabledQuery,
-		});
+		this.add(
+			'Livechat_lead_phone_regex',
+			'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+			{
+				type: 'string',
+				group: 'Omnichannel',
+				section: 'CRM_Integration',
+				i18nLabel: 'Lead_capture_phone_regex',
+				enableQuery: omnichannelEnabledQuery,
+			},
+		);
 
 		this.add('Livechat_history_monitor_type', 'url', {
 			type: 'select',
@@ -364,8 +368,8 @@ Meteor.startup(function() {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		settingsRegistry.addGroup('Omnichannel', function() {
-			this.section('Business_Hours', function() {
+		settingsRegistry.addGroup('Omnichannel', function () {
+			this.section('Business_Hours', function () {
 				this.add('Livechat_enable_business_hours', false, {
 					type: 'boolean',
 					group: 'Omnichannel',
@@ -563,7 +567,7 @@ Meteor.startup(function() {
 			alert: 'Force_visitor_to_accept_data_processing_consent_enabled_alert',
 			i18nLabel: 'Force_visitor_to_accept_data_processing_consent',
 			i18nDescription: 'Force_visitor_to_accept_data_processing_consent_description',
-			enableQuery: omnichannelEnabledQuery,
+			enableQuery: [omnichannelEnabledQuery, { _id: 'Livechat_Allow_collect_and_store_HTTP_header_informations', value: true }],
 		});
 
 		this.add('Livechat_data_processing_consent_text', '', {
@@ -574,7 +578,11 @@ Meteor.startup(function() {
 			public: true,
 			i18nLabel: 'Data_processing_consent_text',
 			i18nDescription: 'Data_processing_consent_text_description',
-			enableQuery: [{ _id: 'Livechat_force_accept_data_processing_consent', value: true }, omnichannelEnabledQuery],
+			enableQuery: [
+				{ _id: 'Livechat_force_accept_data_processing_consent', value: true },
+				{ _id: 'Livechat_Allow_collect_and_store_HTTP_header_informations', value: true },
+				omnichannelEnabledQuery,
+			],
 		});
 
 		this.add('Livechat_agent_leave_action', 'none', {
@@ -628,7 +636,8 @@ Meteor.startup(function() {
 			],
 			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 			i18nLabel: 'Call_provider',
-			alert: 'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
+			alert:
+				'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});

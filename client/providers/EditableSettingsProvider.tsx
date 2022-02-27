@@ -5,11 +5,7 @@ import { FilterQuery } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
 import { SettingId, GroupId, ISetting, TabId } from '../../definition/ISetting';
-import {
-	EditableSettingsContext,
-	IEditableSetting,
-	EditableSettingsContextValue,
-} from '../contexts/EditableSettingsContext';
+import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../contexts/EditableSettingsContext';
 import { useSettings, SettingsContextQuery } from '../contexts/SettingsContext';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
@@ -19,13 +15,8 @@ type EditableSettingsProviderProps = {
 	readonly query: SettingsContextQuery;
 };
 
-const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({
-	children,
-	query = defaultQuery,
-}) => {
-	const settingsCollectionRef = useRef<Mongo.Collection<IEditableSetting>>(
-		null,
-	) as MutableRefObject<Mongo.Collection<IEditableSetting>>;
+const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({ children, query = defaultQuery }) => {
+	const settingsCollectionRef = useRef<Mongo.Collection<IEditableSetting>>(null) as MutableRefObject<Mongo.Collection<IEditableSetting>>;
 	const persistedSettings = useSettings(query);
 
 	const getSettingsCollection = useMutableCallback(() => {
@@ -68,9 +59,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 			return {
 				...editableSetting,
-				disabled:
-					editableSetting.blocked ||
-					!validateSettingQueries(editableSetting.enableQuery, settingsCollection),
+				disabled: editableSetting.blocked || !validateSettingQueries(editableSetting.enableQuery, settingsCollection),
 				invisible: !validateSettingQueries(editableSetting.displayQuery, settingsCollection),
 			};
 		});

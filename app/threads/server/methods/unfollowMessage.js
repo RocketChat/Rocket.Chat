@@ -4,11 +4,11 @@ import { check } from 'meteor/check';
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomId } from '../../../authorization/server';
 import { unfollow } from '../functions';
 
 Meteor.methods({
-	'unfollowMessage'({ mid }) {
+	unfollowMessage({ mid }) {
 		check(mid, String);
 
 		const uid = Meteor.userId();
@@ -22,10 +22,12 @@ Meteor.methods({
 
 		const message = Messages.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'unfollowMessage' });
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+				method: 'unfollowMessage',
+			});
 		}
 
-		if (!canAccessRoom({ _id: message.rid }, { _id: uid })) {
+		if (!canAccessRoomId(message.rid, uid)) {
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
@@ -34,5 +36,7 @@ Meteor.methods({
 });
 
 RateLimiter.limitMethod('unfollowMessage', 5, 5000, {
-	userId() { return true; },
+	userId() {
+		return true;
+	},
 });

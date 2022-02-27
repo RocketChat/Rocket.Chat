@@ -6,13 +6,13 @@ import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 're
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
-import { roomTypes } from '../../../../app/utils/client';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
 import ThreadSkeleton from './ThreadSkeleton';
@@ -21,9 +21,7 @@ import ThreadView from './ThreadView';
 const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() =>
-		Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })),
-	);
+	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
@@ -42,11 +40,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 			}
 
 			setMessage((prevMsg) => {
-				if (
-					!prevMsg ||
-					prevMsg._id !== msg._id ||
-					prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()
-				) {
+				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
 					return msg;
 				}
 
@@ -69,7 +63,7 @@ const ThreadComponent: FC<{
 	onClickBack: (e: unknown) => void;
 }> = ({ mid, jump, room, onClickBack }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
-	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
+	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
 	const openUserInfo = useTabBarOpenUserInfo();
@@ -77,10 +71,7 @@ const ThreadComponent: FC<{
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
-	const headerTitle = useMemo(
-		() => (threadMessage ? normalizeThreadTitle(threadMessage) : null),
-		[threadMessage],
-	);
+	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
 	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 

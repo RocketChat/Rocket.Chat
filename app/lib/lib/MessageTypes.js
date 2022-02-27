@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
-Meteor.startup(function() {
+Meteor.startup(function () {
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -27,6 +27,16 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'added-user-to-team',
+		system: true,
+		message: 'Added__username__to_team',
+		data(message) {
+			return {
+				user_added: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'ru',
 		system: true,
 		message: 'User_removed_by',
@@ -34,6 +44,16 @@ Meteor.startup(function() {
 			return {
 				user_removed: message.msg,
 				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'removed-user-from-team',
+		system: true,
+		message: 'Removed__username__from_team',
+		data(message) {
+			return {
+				user_removed: message.msg,
 			};
 		},
 	});
@@ -54,6 +74,56 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_left: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'user-converted-to-team',
+		system: true,
+		message: 'Converted__roomName__to_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'user-converted-to-channel',
+		system: true,
+		message: 'Converted__roomName__to_channel',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'user-removed-room-from-team',
+		system: true,
+		message: 'Removed__roomName__from_this_team',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'user-deleted-room-from-team',
+		system: true,
+		message: 'Deleted__roomName__',
+		data(message) {
+			return {
+				roomName: message.msg,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'user-added-room-to-team',
+		system: true,
+		message: 'added__roomName__to_team',
+		data(message) {
+			return {
+				roomName: message.msg,
 			};
 		},
 	});
@@ -245,40 +315,68 @@ export const MessageTypesValues = [
 	{
 		key: 'uj',
 		i18nLabel: 'Message_HideType_uj',
-	}, {
+	},
+	{
+		key: 'ujt',
+		i18nLabel: 'Message_HideType_ujt',
+	},
+	{
 		key: 'ul',
 		i18nLabel: 'Message_HideType_ul',
-	}, {
+	},
+	{
+		key: 'ult',
+		i18nLabel: 'Message_HideType_ult',
+	},
+	{
 		key: 'ru',
 		i18nLabel: 'Message_HideType_ru',
-	}, {
+	},
+	{
+		key: 'removed-user-from-team',
+		i18nLabel: 'Message_HideType_removed_user_from_team',
+	},
+	{
 		key: 'au',
 		i18nLabel: 'Message_HideType_au',
-	}, {
+	},
+	{
+		key: 'added-user-to-team',
+		i18nLabel: 'Message_HideType_added_user_to_team',
+	},
+	{
 		key: 'mute_unmute',
 		i18nLabel: 'Message_HideType_mute_unmute',
-	}, {
+	},
+	{
 		key: 'r',
 		i18nLabel: 'Message_HideType_r',
-	}, {
+	},
+	{
 		key: 'ut',
 		i18nLabel: 'Message_HideType_ut',
-	}, {
+	},
+	{
 		key: 'wm',
 		i18nLabel: 'Message_HideType_wm',
-	}, {
+	},
+	{
 		key: 'rm',
 		i18nLabel: 'Message_HideType_rm',
-	}, {
+	},
+	{
 		key: 'subscription-role-added',
 		i18nLabel: 'Message_HideType_subscription_role_added',
-	}, {
+	},
+	{
 		key: 'subscription-role-removed',
 		i18nLabel: 'Message_HideType_subscription_role_removed',
-	}, {
+	},
+	{
 		key: 'room_archived',
 		i18nLabel: 'Message_HideType_room_archived',
-	}, {
+	},
+	{
 		key: 'room_unarchived',
 		i18nLabel: 'Message_HideType_room_unarchived',
 	},
@@ -317,5 +415,25 @@ export const MessageTypesValues = [
 	{
 		key: 'room-allowed-reacting',
 		i18nLabel: 'Message_HideType_room_allowed_reacting',
+	},
+	{
+		key: 'user-added-room-to-team',
+		i18nLabel: 'Message_HideType_user_added_room_to_team',
+	},
+	{
+		key: 'user-converted-to-channel',
+		i18nLabel: 'Message_HideType_user_converted_to_channel',
+	},
+	{
+		key: 'user-converted-to-team',
+		i18nLabel: 'Message_HideType_user_converted_to_team',
+	},
+	{
+		key: 'user-deleted-room-from-team',
+		i18nLabel: 'Message_HideType_user_deleted_room_from_team',
+	},
+	{
+		key: 'user-removed-room-from-team',
+		i18nLabel: 'Message_HideType_user_removed_room_from_team',
 	},
 ];

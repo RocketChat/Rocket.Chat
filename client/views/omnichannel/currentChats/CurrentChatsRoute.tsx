@@ -1,14 +1,15 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import React, { useMemo, useCallback, useState, FC } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import Chat from '../directory/chats/Chat';
 import CurrentChatsPage from './CurrentChatsPage';
 import RemoveChatButton from './RemoveChatButton';
 
@@ -61,14 +62,10 @@ const useQuery: useQueryType = (
 		if (from || to) {
 			query.createdAt = JSON.stringify({
 				...(from && {
-					start: moment(new Date(from))
-						.set({ hour: 0, minutes: 0, seconds: 0 })
-						.format('YYYY-MM-DDTHH:mm:ss'),
+					start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
 				}),
 				...(to && {
-					end: moment(new Date(to))
-						.set({ hour: 23, minutes: 59, seconds: 59 })
-						.format('YYYY-MM-DDTHH:mm:ss'),
+					end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
 				}),
 			});
 		}
@@ -93,25 +90,14 @@ const useQuery: useQueryType = (
 		}
 
 		return query;
-	}, [
-		guest,
-		column,
-		direction,
-		itemsPerPage,
-		current,
-		from,
-		to,
-		status,
-		servedBy,
-		department,
-		tags,
-		customFields,
-	]);
+	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
 
 const CurrentChatsRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const directoryRoute = useRoute('omnichannel-current-chats');
+	const id = useRouteParameter('id');
 
 	const [params, setParams] = useState({
 		guest: '',
@@ -143,9 +129,7 @@ const CurrentChatsRoute: FC = () => {
 	});
 
 	const onRowClick = useMutableCallback((_id) => {
-		FlowRouter.go('live', { id: _id });
-		// routing this way causes a 404 that only goes away with a refresh, need to fix in review
-		// livechatRoomRoute.push({ id: _id });
+		directoryRoute.push({ id: _id });
 	});
 
 	const { value: data, reload } = useEndpointData('livechat/rooms', query);
@@ -153,13 +137,7 @@ const CurrentChatsRoute: FC = () => {
 	const header = useMemo(
 		() =>
 			[
-				<GenericTable.HeaderCell
-					key={'fname'}
-					direction={sort[1]}
-					active={sort[0] === 'fname'}
-					onClick={onHeaderClick}
-					sort='fname'
-				>
+				<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname'>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -180,32 +158,13 @@ const CurrentChatsRoute: FC = () => {
 				>
 					{t('Served_By')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'ts'}
-					direction={sort[1]}
-					active={sort[0] === 'ts'}
-					onClick={onHeaderClick}
-					sort='ts'
-				>
+				<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts'>
 					{t('Started_At')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'lm'}
-					direction={sort[1]}
-					active={sort[0] === 'lm'}
-					onClick={onHeaderClick}
-					sort='lm'
-				>
+				<GenericTable.HeaderCell key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='lm'>
 					{t('Last_Message')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'open'}
-					direction={sort[1]}
-					active={sort[0] === 'open'}
-					onClick={onHeaderClick}
-					sort='open'
-					w='x100'
-				>
+				<GenericTable.HeaderCell key={'open'} direction={sort[1]} active={sort[0] === 'open'} onClick={onHeaderClick} sort='open' w='x100'>
 					{t('Status')}
 				</GenericTable.HeaderCell>,
 				canRemoveClosedChats && (
@@ -225,14 +184,7 @@ const CurrentChatsRoute: FC = () => {
 			};
 
 			return (
-				<Table.Row
-					key={_id}
-					tabIndex={0}
-					role='link'
-					onClick={(): void => onRowClick(_id)}
-					action
-					qa-user-id={_id}
-				>
+				<Table.Row key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-user-id={_id}>
 					<Table.Cell withTruncatedText>{fname}</Table.Cell>
 					<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 					<Table.Cell withTruncatedText>{servedBy?.username}</Table.Cell>
@@ -250,7 +202,9 @@ const CurrentChatsRoute: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return (
+	return id ? (
+		<Chat rid={id} />
+	) : (
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}

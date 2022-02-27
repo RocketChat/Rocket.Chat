@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Icon, Table } from '@rocket.chat/fuselage';
+import type { MomentInput } from 'moment';
 import React, { useCallback, FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -6,7 +7,7 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type AccountTokensRowProps = {
 	bypassTwoFactor: unknown;
-	createdAt: unknown;
+	createdAt: MomentInput;
 	isMedium: boolean;
 	lastTokenPart: string;
 	name: string;
@@ -30,7 +31,7 @@ const AccountTokensRow: FC<AccountTokensRowProps> = ({
 
 	return (
 		<Table.Row key={name} tabIndex={0} role='link' action qa-token-name={name}>
-			<Table.Cell withTruncatedText color='default' fontScale='p4'>
+			<Table.Cell withTruncatedText color='default' fontScale='p2m'>
 				{name}
 			</Table.Cell>
 			{isMedium && <Table.Cell withTruncatedText>{formatDateAndTime(createdAt)}</Table.Cell>}
