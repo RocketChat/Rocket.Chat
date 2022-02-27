@@ -1,15 +1,13 @@
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 
 import type { IRoom, RoomType } from './IRoom';
-import type { ISubscription } from './ISubscription';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { ReadReceipt } from './ReadReceipt';
 import type { ValueOf, AtLeast } from './utils';
 
-export type RoomIdentification = Partial<ISubscription> | (Partial<IRoom> & { rid?: string });
-
+export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
@@ -92,7 +90,7 @@ export interface IRoomTypeServerDirectives {
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>) => boolean;
-	roomName: (room: IRoom) => string | undefined;
+	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
 	preventRenaming: () => boolean;
@@ -100,8 +98,9 @@ export interface IRoomTypeServerDirectives {
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,
-		user: AtLeast<IUser, '_id' | 'name' | 'username'>,
+		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
+		userId: string,
 	) => { title: string | undefined; text: string };
 	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
 	includeInRoomSearch: () => boolean;

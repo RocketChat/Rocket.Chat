@@ -2,18 +2,25 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoom } from '../../../../definition/IRoom';
-import type { IUser } from '../../../../definition/IUser';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import type { AtLeast, ValueOf } from '../../../../definition/utils';
+import type { AtLeast } from '../../../../definition/utils';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
+const getCurrentUserId = (): string | undefined => {
+	try {
+		return Meteor.userId() || undefined;
+	} catch (_e) {
+		//
+	}
+};
+
 roomCoordinator.add(DirectMessageRoomType, {
-	allowRoomSettingChange(_room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(_room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -31,7 +38,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: IRoom, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(room: IRoom, action) {
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return !this.isGroupChat(room);
@@ -40,7 +47,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(room: IRoom): string | undefined {
+	roomName(room, userId?) {
 		const subscription = ((): { fname?: string; name?: string } | undefined => {
 			if (room.fname || room.name) {
 				return {
@@ -53,7 +60,13 @@ roomCoordinator.add(DirectMessageRoomType, {
 				return undefined;
 			}
 
-			return Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId());
+			const uid = userId || getCurrentUserId();
+			if (uid) {
+				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { fields: { name: 1, fname: 1 } });
+			}
+
+			// If we don't know what user is requesting the roomName, then any subscription will do
+			return Subscriptions.findOne({ rid: room._id }, { fields: { name: 1, fname: 1 } });
 		})();
 
 		if (!subscription) {
@@ -67,31 +80,27 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return subscription.name;
 	},
 
-	isGroupChat(room: IRoom): boolean {
+	isGroupChat(room) {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	getNotificationDetails(
-		room: IRoom,
-		user: AtLeast<IUser, '_id' | 'name' | 'username'>,
-		notificationMessage: string,
-	): { title: string | undefined; text: string } {
+	getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
-		if (!this.isGroupChat(room)) {
+		if (this.isGroupChat(room)) {
 			return {
-				title: this.roomName(room),
-				text: `${(useRealName && user.name) || user.username}: ${notificationMessage}`,
+				title: this.roomName(room, userId),
+				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
 			};
 		}
 
 		return {
-			title: (useRealName && user.name) || user.username,
+			title: (useRealName && sender.name) || sender.username,
 			text: notificationMessage,
 		};
 	},
 
-	includeInDashboard(): boolean {
+	includeInDashboard() {
 		return true;
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
