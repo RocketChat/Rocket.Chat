@@ -13,6 +13,9 @@ import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { TeamService } from './team/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
+import { OmnichannelVoipService } from './omnichannel-voip/service';
+import { VoipService } from './voip/service';
+import { isRunningMs } from '../lib/isRunningMs';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -26,12 +29,13 @@ api.registerService(new MeteorService());
 api.registerService(new NPSService(db));
 api.registerService(new RoomService(db));
 api.registerService(new SAUMonitorService());
+api.registerService(new VoipService(db));
+api.registerService(new OmnichannelVoipService(db));
 api.registerService(new TeamService(db));
 api.registerService(new UiKitCoreApp());
 
-// if TRANSPORTER env var it means the process is running in micro services mode
-// in that case we don't need to register services that will run separately
-if (!process.env.TRANSPORTER?.match(/^(?:nats|TCP)/)) {
+// if the process is running in micro services mode we don't need to register services that will run separately
+if (!isRunningMs()) {
 	(async (): Promise<void> => {
 		const { Authorization } = await import('./authorization/service');
 
