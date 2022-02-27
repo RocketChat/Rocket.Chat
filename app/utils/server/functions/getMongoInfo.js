@@ -62,7 +62,7 @@ export function getMongoInfo() {
 		console.warn('For the moment we use another method to find out the version of your MongoDB, but we recommend');
 		console.warn('to adjust the role of your user, because this situation can lead to unexpected behavior.');
 		console.warn('==================================');
-		return fallbackMongoInfo(e);
+		return fallbackMongoInfo();
 	}
 
 	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
