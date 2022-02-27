@@ -1,6 +1,6 @@
 {
-	"defaultCommandTimeout": 15000,
-	"video": true,
+	"defaultCommandTimeout": 10000,
+	"video": false,
 	"trashAssetsBeforeRuns": false,
 	"retries": 2,
 	"projectId": "99zfrs",

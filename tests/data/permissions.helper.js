@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-const delay = typeof cy !== 'undefined' ? 2000 : 100;
+const delay = typeof cy !== 'undefined' ? 1000 : 100;
 
 export const updatePermission = (permission, roles) =>
 	new Promise((resolve) => {
