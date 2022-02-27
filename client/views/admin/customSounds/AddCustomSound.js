@@ -57,10 +57,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 				return soundId;
 			}
 			validation.forEach((error) => {
-				throw new Error({
-					type: 'error',
-					message: t('error-the-field-is-required', { field: t(error) }),
-				});
+				throw new Error(t('error-the-field-is-required', { field: t(error) }));
 			});
 		},
 		[dispatchToastMessage, insertOrUpdateSound, t, uploadCustomSound],
@@ -73,7 +70,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			goToNew(result)();
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error.message });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 
