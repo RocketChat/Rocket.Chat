@@ -187,8 +187,9 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
+	const data = selectedMethod.processInvalidCode(user);
+
 	if (!code) {
-		const data = selectedMethod.processInvalidCode(user);
 		const availableMethods = getAvailableMethodNames(user);
 
 		throw new Meteor.Error('totp-required', 'TOTP Required', {
@@ -199,9 +200,11 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 	}
 
 	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);
-
 	if (!valid) {
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: selectedMethod.name });
+		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
+			method: selectedMethod.name,
+			...data,
+		});
 	}
 
 	if (options.disableRememberMe !== true && connection) {

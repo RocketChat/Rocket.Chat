@@ -4,21 +4,21 @@ import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings/client';
 import { RoomManager, RoomHistoryManager } from '../../../ui-utils/client';
-import { roomTypes } from '../../../utils/client';
 import { hasAllPermission } from '../../../authorization/client';
 import './messageBoxNotSubscribed.html';
 import { call } from '../../../../client/lib/utils/call';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
-		return roomTypes.getNotSubscribedTpl(this.rid);
+		return roomCoordinator.getRoomTypeConfigById(this.rid)?.notSubscribedTpl;
 	},
 	canJoinRoom() {
-		return Meteor.userId() && roomTypes.verifyShowJoinLink(this.rid);
+		return Meteor.userId() && roomCoordinator.getRoomDirectivesById(this.rid)?.showJoinLink(this.rid);
 	},
 	roomName() {
 		const room = Session.get(`roomData${this.rid}`);
-		return roomTypes.getRoomName(room.t, room);
+		return roomCoordinator.getRoomName(room.t, room);
 	},
 	isJoinCodeRequired() {
 		const room = Session.get(`roomData${this.rid}`);

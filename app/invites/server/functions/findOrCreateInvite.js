@@ -7,7 +7,8 @@ import { Subscriptions, Rooms } from '../../../models/server';
 import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
-import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 function getInviteUrl(invite) {
 	const { _id } = invite;
@@ -51,7 +52,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 	}
 
 	const room = Rooms.findOneById(invite.rid);
-	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.INVITE)) {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', {
 			method: 'findOrCreateInvite',
 		});
