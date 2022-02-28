@@ -11,7 +11,6 @@ import React, { FC, memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import { IMessage } from '../../../../../definition/IMessage';
-// import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -30,7 +29,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	return (
 		<MessageSystemTemplate>
 			<MessageSystemLeftContainer>
-				<UserAvatar username={message.u.username} name={message.u.name} size='x18' />
+				<UserAvatar username={message.u.username} size='x18' />
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>

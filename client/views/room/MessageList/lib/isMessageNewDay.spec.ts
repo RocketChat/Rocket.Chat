@@ -26,7 +26,7 @@ describe('isMessageNewDay', () => {
 		};
 		const message2 = {
 			...baseMessage,
-			createdAt: new Date('2021-10-28T00:00:00.000Z'),
+			ts: new Date('2021-10-28T00:00:00.000Z'),
 		};
 		expect(isMessageNewDay(message, message2)).to.be.true;
 	});

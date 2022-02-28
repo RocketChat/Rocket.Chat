@@ -12,9 +12,9 @@ import Message from './components/Message';
 import MessageSystem from './components/MessageSystem';
 import { ThreadMessage } from './components/ThreadMessage';
 import { useMessages } from './hooks/useMessages';
+import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { isMessageUnread } from './lib/isMessageUnread';
 import { MessageListProvider } from './providers/MessageListProvider';
 
 export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
@@ -28,19 +28,19 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 				{messages.map((message, index, arr) => {
 					const previous = arr[index - 1];
 
-					const newDay = isMessageNewDay(message, previous);
-					const sequential = isMessageSequential(message, previous);
-					const unread = isMessageUnread(subscription, message, previous);
+					const isNewDay = isMessageNewDay(message, previous);
+					const isSequential = isMessageSequential(message, previous);
+					const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
 
-					const shouldShowDivider = newDay || unread;
+					const shouldShowDivider = isNewDay || isFirstUnread;
 
-					const shouldShowAsSequential = sequential && !newDay;
+					const shouldShowAsSequential = isSequential && !isNewDay;
 
 					return (
 						<Fragment key={message._id}>
 							{shouldShowDivider && (
-								<MessageDivider unreadLabel={unread ? t('Unread_Messages').toLowerCase() : undefined}>
-									{newDay && format(message.ts)}
+								<MessageDivider unreadLabel={isFirstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+									{isNewDay && format(message.ts)}
 								</MessageDivider>
 							)}
 
@@ -49,8 +49,8 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 									<ThreadMessage
 										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
-										data-unread={unread}
-										data-sequential={sequential}
+										data-unread={isFirstUnread}
+										data-sequential={isSequential}
 										sequential={shouldShowAsSequential}
 										message={message}
 									/>
@@ -58,8 +58,8 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 									<Message
 										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
-										data-unread={unread}
-										data-sequential={sequential}
+										data-unread={isFirstUnread}
+										data-sequential={isSequential}
 										sequential={shouldShowAsSequential}
 										message={message}
 										subscription={subscription}
