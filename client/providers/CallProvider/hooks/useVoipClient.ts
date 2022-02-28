@@ -3,6 +3,7 @@ import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
 import { IRegistrationInfo } from '../../../../definition/voip/IRegistrationInfo';
+import { WorkflowTypes } from '../../../../definition/voip/WorkflowTypes';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useUser } from '../../../contexts/UserContext';
 import { SimpleVoipUser } from '../../../lib/voip/SimpleVoipUser';
@@ -28,6 +29,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 
 export const useVoipClient = (): UseVoipClientResult => {
 	const registrationInfo = useEndpoint('GET', 'connector.extension.getRegistrationInfoByUserId');
+	const membership = useEndpoint('GET', 'voip/queues.getMembershipSubscription');
 	const user = useUser();
 	const iceServers = useWebRtcServers();
 
@@ -57,7 +59,12 @@ export const useVoipClient = (): UseVoipClientResult => {
 				let client: VoIPUser;
 				(async (): Promise<void> => {
 					try {
+						const subscription = await membership({ extension });
 						client = await SimpleVoipUser.create(extension, password, host, websocketPath, iceServers, 'video');
+						// Today we are hardcoding workflow mode.
+						// In futue, this should be read from configuration
+						client.setWorkflowMode(WorkflowTypes.CONTACT_CENTER_USER);
+						client.setMembershipSubscription(subscription);
 						setResult({ voipClient: client, registrationInfo: parsedData });
 					} catch (e) {
 						setResult({ error: e as Error });
@@ -72,7 +79,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 			// client?.disconnect();
 			// TODO how to close the client? before creating a new one?
 		};
-	}, [user, iceServers, registrationInfo, setResult]);
+	}, [user, iceServers, registrationInfo, setResult, membership]);
 
 	return result;
 };

@@ -271,8 +271,8 @@ export class ListenersModule {
 		service.onEvent('banner.enabled', (bannerId): void => {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
-		service.onEvent('queue.agentcalled', (userId, queuename): void => {
-			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename });
+		service.onEvent('queue.agentcalled', (userId, queuename, callerId): void => {
+			notifications.notifyUserInThisInstance(userId, 'agentcalled', { queuename, callerId });
 		});
 		service.onEvent('queue.agentconnected', (userId, queuename: string, queuedcalls: string, waittimeinqueue: string): void => {
 			notifications.notifyUserInThisInstance(userId, 'agentconnected', { queuename, queuedcalls, waittimeinqueue });
