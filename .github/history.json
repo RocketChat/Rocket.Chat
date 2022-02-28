@@ -71225,6 +71225,38 @@
           ]
         }
       ]
+    },
+    "4.5.0-rc.5": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24649",
+          "title": "Regression: Refresh server connection when MI server settings change",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "24648",
+          "title": "Regression: Prevent button from losing state when rerendering",
+          "userLogin": "KevLehman",
+          "milestone": "4.5.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
     }
   }
 }
