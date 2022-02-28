@@ -151,6 +151,11 @@ export class CommandHandler {
 	}
 
 	stop(): void {
+		if (!this.continuousMonitor) {
+			// service is already stopped or was never initialized
+			return;
+		}
+
 		this.continuousMonitor.cleanMonitor();
 		for (const connection of this.connections.values()) {
 			connection.closeConnection();
