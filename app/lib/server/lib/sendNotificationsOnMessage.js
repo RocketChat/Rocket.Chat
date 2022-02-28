@@ -5,7 +5,6 @@ import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Subscriptions, Users } from '../../../models/server';
-import { roomTypes } from '../../../utils';
 import {
 	callJoinRoom,
 	messageContainsHighlight,
@@ -17,6 +16,7 @@ import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobi
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 let TroubleshootDisableNotifications;
 
@@ -217,7 +217,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return;
 	}
 
-	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
+	const sender = roomCoordinator.getRoomDirectives(room.t)?.getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}

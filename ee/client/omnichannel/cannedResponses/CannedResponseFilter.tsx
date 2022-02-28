@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Select, SelectOptions } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, SelectOption } from '@rocket.chat/fuselage';
 import React, { FC, FormEvent, memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
@@ -23,7 +23,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	...props
 }) => {
 	const t = useTranslation();
-	const sharingList: SelectOptions = [
+	const sharingList: SelectOption[] = [
 		['', t('All')],
 		['user', t('Private')],
 		['global', t('Public')],

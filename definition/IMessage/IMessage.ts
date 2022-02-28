@@ -1,4 +1,4 @@
-import Icons from '@rocket.chat/icons';
+import type Icons from '@rocket.chat/icons';
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
@@ -16,7 +16,21 @@ type MessageUrl = {
 	headers?: { contentLength: string; contentType: string };
 };
 
-type MessageTypesValues =
+type VoipMessageTypesValues =
+	| 'voip-call-started'
+	| 'voip-call-declined'
+	| 'voip-call-on-hold'
+	| 'voip-call-unhold'
+	| 'voip-call-ended'
+	| 'voip-call-duration'
+	| 'voip-call-wrapup'
+	| 'voip-call-ended-unexpectedly';
+
+type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
+
+type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+
+export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
 	| 'ul'
@@ -32,11 +46,15 @@ type MessageTypesValues =
 	| 'room_archived'
 	| 'room_unarchived'
 	| 'room_changed_privacy'
+	| 'room_changed_description'
+	| 'room_changed_announcement'
 	| 'room_changed_avatar'
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
-	| 'livechat-close';
+	| VoipMessageTypesValues
+	| OmnichannelTypesValues
+	| OtrSystemMessages;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -81,7 +99,7 @@ export interface IMessage extends IRocketChatRecord {
 
 	/** @deprecated Deprecated */
 	actionLinks?: {
-		icon: keyof Icons;
+		icon: keyof typeof Icons;
 		i18nLabel: unknown;
 		label: string;
 		method_id: string;
@@ -159,6 +177,14 @@ export interface IMessageReactionsNormalized extends IMessage {
 
 export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
 	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
+export type IVoipMessage = IMessage & {
+	voipData: {
+		callDuration?: number;
+		callStarted?: string;
+		callWaitingTime?: string;
+	};
+};
+
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
@@ -168,3 +194,4 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
+export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;

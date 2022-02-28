@@ -5,9 +5,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { roomTypes } from '../../../utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {
@@ -34,7 +34,7 @@ Meteor.startup(function () {
 						replies = parentMessage.replies || [];
 					}
 				}
-				const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 				if (isLivechatRoom) {
 					return false;
 				}

@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
@@ -42,7 +42,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			roomTypes.openRouteLink(
+			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
 				{
@@ -93,7 +93,7 @@ Meteor.startup(async function () {
 			if (subscription == null) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
@@ -192,7 +192,7 @@ Meteor.startup(async function () {
 			if (!subscription) {
 				return false;
 			}
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
@@ -233,7 +233,7 @@ Meteor.startup(async function () {
 						return false;
 					}
 
-					if (!inputValue.trim()) {
+					if (typeof inputValue === 'string' && !inputValue.trim()) {
 						modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 						return false;
 					}
@@ -251,7 +251,7 @@ Meteor.startup(async function () {
 			);
 		},
 		condition({ subscription, room }) {
-			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}

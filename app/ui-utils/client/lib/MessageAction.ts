@@ -6,7 +6,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Icon } from '@rocket.chat/fuselage';
 
-import { roomTypes } from '../../../utils/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
@@ -178,7 +178,7 @@ export const MessageAction = new (class {
 		}
 
 		const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
+		const roomURL = roomCoordinator.getURL(roomData.t, subData || roomData);
 		return `${roomURL}?msg=${msgId}`;
 	}
 })();

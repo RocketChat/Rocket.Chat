@@ -1,11 +1,11 @@
 import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { UserAction } from '../../../../app/ui';
-import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import RoomSkeleton from '../Room/RoomSkeleton';
 import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
@@ -34,7 +34,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 			subscribed,
 			rid,
 			getMore,
-			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
+			room: { ...room, name: roomCoordinator.getRoomName(room.t, room) },
 		};
 	}, [room, rid, subscribed, getMore]);
 

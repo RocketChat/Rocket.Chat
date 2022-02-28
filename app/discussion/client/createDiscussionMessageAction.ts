@@ -5,9 +5,9 @@ import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
 import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { roomTypes } from '../../utils/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(function () {
 	Tracker.autorun(() => {
@@ -49,7 +49,7 @@ Meteor.startup(function () {
 				if (!subscription) {
 					return false;
 				}
-				const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 				if (isLivechatRoom) {
 					return false;
 				}

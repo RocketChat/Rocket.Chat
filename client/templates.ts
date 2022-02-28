@@ -168,3 +168,7 @@ createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
 createTemplateForComponent('roomNotFound', () => import('./views/room/Room/RoomNotFound'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
 });
+
+createTemplateForComponent('ComposerNotAvailablePhoneCalls', () => import('./components/voip/composer/template'), {
+	renderContainerView: () => HTML.DIV({ style: 'display: flex; height: 100%; width: 100%' }),
+});

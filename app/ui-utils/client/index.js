@@ -14,7 +14,7 @@ export { mainReady } from './lib/mainReady';
 export { IframeLogin, iframeLogin } from './lib/IframeLogin';
 export { popout } from './lib/popout';
 export { messageProperties } from '../lib/MessageProperties';
-export { MessageTypes } from '../lib/MessageTypes';
+export { MessageTypes, MessageType } from '../lib/MessageTypes';
 export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
 export * from './lib/collapseArrow';

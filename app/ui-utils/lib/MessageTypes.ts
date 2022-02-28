@@ -1,8 +1,8 @@
-import { IMessage } from '../../../definition/IMessage';
+import { IMessage, MessageTypesValues } from '../../../definition/IMessage';
 import { TranslationKey } from '../../../client/contexts/TranslationContext';
 
-type MessageType = {
-	id: string;
+export type MessageType = {
+	id: MessageTypesValues;
 	system?: boolean;
 	/* deprecated */
 	render?: (message: IMessage) => string;
@@ -11,9 +11,8 @@ type MessageType = {
 	message: TranslationKey;
 	data?: (message: IMessage) => Record<string, string>;
 };
-
 class MessageTypesClass {
-	private types = new Map<string, MessageType>();
+	private types = new Map<MessageTypesValues, MessageType>();
 
 	registerType(options: MessageType): MessageType {
 		if ('render' in options) {
@@ -27,12 +26,12 @@ class MessageTypesClass {
 	}
 
 	getType(message: IMessage): MessageType | undefined {
-		return message && message.t && this.types.get(message.t);
+		return message?.t && this.types.get(message.t);
 	}
 
 	isSystemMessage(message: IMessage): boolean {
 		const type = this.getType(message);
-		return Boolean(type && type.system);
+		return Boolean(type?.system);
 	}
 }
 export const MessageTypes = new MessageTypesClass();
