@@ -1,0 +1,73 @@
+version: "3.7"
+
+volumes:
+  mongodb_data: { driver: local }
+  traefik: { driver: local }
+
+services:
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:${RELEASE:-latest}
+    restart: on-failure
+    labels:
+      traefik.enable: 'true'
+      traefik.routers.rocketchat.rule: Host(`${DOMAIN?passing an FQDN is must}`)
+      traefik.http.routers.rocketchat.tls: 'true'
+      traefik.http.routers.rocketchat.entrypoints: https
+      traefik.http.routers.rocketchat.tls.certresolver: le
+    environment:
+      MONGO_URL: "${MONGO_URL:-\
+        mongodb://${MONGODB_USERNAME:-rocketchat}:${MONGODB_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongo}:\
+          ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
+          ${MONGODB_DATABASE:-rocketchat}?replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
+      MONGO_OPLOG_URL: "${MONGO_OPLOG_URL:\
+        -mongodb://${MONGODB_ROOT_USER:-root}:${MONGODB_ROOT_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongo}:\
+          ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
+          local?authSource=admin&replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
+      ROOT_URL: ${ROOT_URL:-http://${BIND_IP:-localhost}:${HOST_PORT:-3000}}
+      PORT: ${PORT:-3000}
+    depends_on: [mongodb]
+    expose: [${PORT:-3000}]
+
+  mongodb:
+    image: docker.io/bitnami/mongodb:${MONGODB_VERSION:-4.4}
+    restart: on-failure
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+      # using the long format to avoid docker automatically creating the source on host
+      - type: bind
+        source: ./user_set_role_cluster_admin.sh
+        target: /docker-entrypoint-initdb.d/user_set_role_cluster_admin.sh
+        read_only: true
+    environment:
+      BITNAMI_DEBUG: 'true'
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
+      MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
+      MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongodb}
+      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}
+      MONGODB_ADVERTISED_HOSTNAME: ${MONGODB_ADVERTISED_HOSTNAME:-mongodb}
+      MONGODB_ENABLE_JOURNAL: ${MONGODB_ENABLE_JOURNAL:-true}
+      ALLOW_EMPTY_PASSWORD: ${ALLOW_EMPTY_PASSWORD:-no}
+      MONGODB_ROOT_USER: ${MONGODB_ROOT_USER:-root}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD?must pass root user password}
+      MONGODB_USERNAME: ${MONGODB_USERNAME:-rocketchat}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD?must pass database user password}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-rocketchat}
+      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY?must pass a key; key length >=5}
+
+  traefik:
+    image: docker.io/traefik:v2.6.1
+    command:
+      - --api.insecure=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.https.address=:443
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${LETSENCRYPT_EMAIL?need email for cert expiry notiications}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - traefik:/letsencrypt:rw
+      - /run/docker.sock:/var/run/docker.sock:ro
