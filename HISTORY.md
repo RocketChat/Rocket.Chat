@@ -1,6 +1,38 @@
 
 # 4.5.0 (Under Release Candidate Process)
 
+## 4.5.0-rc.4
+`2022-02-28  ·  5 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
+
+  - Fix `Mentioned room not found` error when importing rooms from Slack;  
+  - Fix `Forbidden` error when setting avatars for users imported from Slack (on user import/creation);  
+  - Fix incorrect message count on imported rooms;  
+  - Fix missing username on messages imported from Slack;
+
+- Regression: Extension List panel UI not aligned with designs ([#24645](https://github.com/RocketChat/Rocket.Chat/pull/24645))
+
+- Regression: Fix wrong tab name for VoIP settings ([#24647](https://github.com/RocketChat/Rocket.Chat/pull/24647))
+
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+
+- Regression: Server crashing if Voip credentials are invalid ([#24646](https://github.com/RocketChat/Rocket.Chat/pull/24646))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+
 ## 4.5.0-rc.3
 `2022-02-26  ·  10 🔍  ·  5 👩‍💻👨‍💻`
 
