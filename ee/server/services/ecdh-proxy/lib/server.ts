@@ -5,7 +5,6 @@ import { Readable } from 'stream';
 import WebSocket from 'ws';
 import cookie from 'cookie';
 import express, { Request, Response } from 'express';
-// eslint-disable-next-line import/no-unresolved
 import cookieParser from 'cookie-parser';
 import mem from 'mem';
 
