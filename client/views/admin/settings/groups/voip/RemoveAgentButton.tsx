@@ -17,7 +17,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeAgent({ username });
-		} catch (error) {
+		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		reload();
@@ -29,7 +29,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
-			} catch (error) {
+			} catch (error: any) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal();
@@ -48,7 +48,7 @@ const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ usern
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Button small ghost title={t('Remove_Association')} onClick={handleDelete}>
 				<Icon name='trash' size='x16' />
 			</Button>
 		</Table.Cell>

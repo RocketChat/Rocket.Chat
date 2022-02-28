@@ -52,27 +52,87 @@ export const CallProvider: FC = ({ children }) => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
 
-	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleAgentConnected = useCallback(
+		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callPickedup(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
-	const handleMemberAdded = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleAgentCalled = useCallback(
+		(queueInfo: { queuename: string; callerId: { id: string; name: string } }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callRinging(queueInfo);
+			}
+		},
+		[result],
+	);
 
-	const handleMemberRemoved = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleMemberAdded = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.memberAdded(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
-	const handleCallAbandon = useCallback((queue: { queuename: string; queuedcallafterabandon: string }): void => {
-		setQueueCounter(queue.queuedcallafterabandon);
-	}, []);
+	const handleMemberRemoved = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.memberRemoved(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
+
+	const handleCallAbandon = useCallback(
+		(queue: { queuename: string; queuedcallafterabandon: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.queueAbandoned(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
 	const handleQueueJoined = useCallback(
 		async (joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): Promise<void> => {
-			setQueueCounter(joiningDetails.queuedcalls);
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.queueJoined(joiningDetails);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
 		},
-		[],
+		[result],
 	);
 
 	const handleCallHangup = useCallback(
@@ -84,12 +144,22 @@ export const CallProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		Notifications.onUser('callerjoined', handleQueueJoined);
+		Notifications.onUser('agentcalled', handleAgentCalled);
 		Notifications.onUser('agentconnected', handleAgentConnected);
 		Notifications.onUser('queuememberadded', handleMemberAdded);
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
 		Notifications.onUser('call.callerhangup', handleCallHangup);
-	}, [handleQueueJoined, handleMemberAdded, handleMemberRemoved, handleCallAbandon, handleAgentConnected, handleCallHangup]);
+		Notifications.onUser('call.callerhangup', handleCallHangup);
+	}, [
+		handleQueueJoined,
+		handleMemberAdded,
+		handleMemberRemoved,
+		handleCallAbandon,
+		handleAgentConnected,
+		handleCallHangup,
+		handleAgentCalled,
+	]);
 
 	useEffect(() => {
 		if (isUseVoipClientResultError(result)) {
@@ -203,14 +273,21 @@ export const CallProvider: FC = ({ children }) => {
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
 					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+					const queueAggregator = result.voipClient.getAggregator();
+					if (queueAggregator) {
+						queueAggregator.callStarted();
+					}
 					return voipRoom.room._id;
 				}
-
 				return '';
 			},
 			closeRoom: async ({ comment, tags }): Promise<void> => {
 				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment: comment || '', tags }));
 				homeRoute.push({});
+				const queueAggregator = result.voipClient.getAggregator();
+				if (queueAggregator) {
+					queueAggregator.callEnded();
+				}
 			},
 			openWrapUpModal,
 		};

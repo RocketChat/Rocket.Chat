@@ -10,6 +10,7 @@ export interface IVoipService {
 	getConnectorVersion(): string;
 	getQueueSummary(): Promise<IVoipConnectorResult>;
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
+	getQueueMembership(requestParams: any): Promise<IVoipConnectorResult>;
 	getExtensionList(): Promise<IVoipConnectorResult>;
 	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
 	getRegistrationInfo(requestParams: any): Promise<{ result: IRegistrationInfo }>; // TODO: Check the reason behind IVoipConnectorResult
