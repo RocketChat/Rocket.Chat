@@ -17,6 +17,15 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	} as const;
 	const voipClient = useCallClient();
 
+	useEffect(() => {
+		let agentEnabled = false;
+		const state = voipClient.getRegistrarState();
+		if (state === 'registered') {
+			agentEnabled = true;
+		}
+		setAgentEnabled(agentEnabled);
+		setRegistered(agentEnabled);
+	}, [voipClient]);
 	// TODO: move registration flow to context provider
 	const handleVoipCallStatusChange = useMutableCallback((): void => {
 		// TODO: backend set voip call status
@@ -31,23 +40,21 @@ export const OmnichannelCallToggleReady = (): ReactElement => {
 	});
 
 	const onUnregistrationError = useMutableCallback((): void => {
-		voipClient.off('unregistrationerror', onUnregistrationError);
+		setRegistered(false);
+		setAgentEnabled(false);
 	});
 
 	const onUnregistered = useMutableCallback((): void => {
 		setRegistered(!registered);
-		voipClient.off('unregistered', onUnregistered);
-		voipClient.off('registrationerror', onUnregistrationError);
 	});
 
 	const onRegistrationError = useMutableCallback((): void => {
-		voipClient.off('registrationerror', onRegistrationError);
+		setRegistered(false);
+		setAgentEnabled(false);
 	});
 
 	const onRegistered = useMutableCallback((): void => {
 		setRegistered(!registered);
-		voipClient.off('registered', onRegistered);
-		voipClient.off('registrationerror', onRegistrationError);
 	});
 
 	useEffect(() => {

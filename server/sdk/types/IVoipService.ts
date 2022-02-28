@@ -19,4 +19,5 @@ export interface IVoipService {
 	cachedQueueDetails(): () => Promise<{ name: string; members: string[] }[]>;
 	init(): Promise<void>;
 	stop(): Promise<void>;
+	refresh(): Promise<void>;
 }
