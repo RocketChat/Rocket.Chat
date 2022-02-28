@@ -9,11 +9,11 @@ services:
     restart: on-failure
     environment:
       MONGO_URL: "${MONGO_URL:-\
-        mongodb://${MONGODB_USERNAME:-rocketchat}:${MONGODB_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongo}:\
+        mongodb://${MONGODB_USERNAME:-rocketchat}:${MONGODB_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:\
           ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
           ${MONGODB_DATABASE:-rocketchat}?replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
       MONGO_OPLOG_URL: "${MONGO_OPLOG_URL:\
-        -mongodb://${MONGODB_ROOT_USER:-root}:${MONGODB_ROOT_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongo}:\
+        -mongodb://${MONGODB_ROOT_USER:-root}:${MONGODB_ROOT_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:\
           ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
           local?authSource=admin&replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
       ROOT_URL: ${ROOT_URL:-http://${BIND_IP:-localhost}:${HOST_PORT:-3000}}
