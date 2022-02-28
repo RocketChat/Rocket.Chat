@@ -233,7 +233,7 @@ Meteor.startup(async function () {
 						return false;
 					}
 
-					if (!inputValue.trim()) {
+					if (typeof inputValue === 'string' && !inputValue.trim()) {
 						modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 						return false;
 					}

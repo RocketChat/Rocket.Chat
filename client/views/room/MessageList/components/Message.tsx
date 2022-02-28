@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Box,
 	Message as MessageTemplate,
@@ -14,6 +15,7 @@ import {
 	MessageReactions,
 	MessageStatusPrivateIndicator,
 	MessageReactionAction,
+	Icon,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
@@ -26,6 +28,7 @@ import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useSetting } from '../../../../contexts/SettingsContext';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
@@ -76,6 +79,8 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 
 	const openEmojiPicker = useOpenEmojiPicker(message);
 
+	const isReadReceiptEnabled = useSetting('Message_Read_Receipt_Enabled');
+
 	const showRoles = useMessageListShowRoles();
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -119,7 +124,10 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 							{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
 						</MessageRoles>
 						<MessageTimestamp data-time={message.ts.toISOString()}>{formatters.messageHeader(message.ts)}</MessageTimestamp>
-						{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
+						{message.private && (
+							// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
+							<MessageStatusPrivateIndicator name='message'>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>
+						)}
 						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
@@ -197,6 +205,18 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{oembedIsEnabled && message.urls && (
 					<Box width={oembedWidth}>
 						<OEmbedList urls={message.urls} />
+					</Box>
+				)}
+
+				{isReadReceiptEnabled && (
+					<Box
+						position='absolute'
+						className={css`
+							top: 2px;
+							right: 0.5rem;
+						`}
+					>
+						<Icon name='check' size='x11' color='primary' />
 					</Box>
 				)}
 			</MessageContainer>
