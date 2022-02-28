@@ -534,6 +534,9 @@ export class SlackImporter extends Base {
 	}
 
 	_replaceSlackUserIds(members) {
+		if (!members?.length) {
+			return [];
+		}
 		return members.map((userId) => this._replaceSlackUserId(userId));
 	}
 
