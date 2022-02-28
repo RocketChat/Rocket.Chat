@@ -18,6 +18,7 @@ import {
 	Sessions,
 	Integrations,
 	Uploads,
+	Invites,
 } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
@@ -25,7 +26,6 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { engagementMetrics } from '../functions/getEngagementStats';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -279,8 +279,6 @@ export const statistics = {
 		statistics.enterprise = getEnterpriseStatistics();
 		await Analytics.resetSeatRequestCount();
 
-		const engagement = await engagementMetrics.get();
-
 		statistics.totalRoomsWithSnippet = _.reduce(
 			Rooms.find({}).fetch(),
 			function _roomsWithSnippet(num, room) {
@@ -289,7 +287,7 @@ export const statistics = {
 				if (snippetMessages > 0) {
 					return num + 1;
 				}
-				return num + 0;
+				return num;
 			},
 			0,
 		);
@@ -302,7 +300,7 @@ export const statistics = {
 				if (starredMessages > 0) {
 					return num + 1;
 				}
-				return num + 0;
+				return num;
 			},
 			0,
 		);
@@ -315,7 +313,7 @@ export const statistics = {
 				if (pinnedMessages > 0) {
 					return num + 1;
 				}
-				return num + 0;
+				return num;
 			},
 			0,
 		);
@@ -336,6 +334,16 @@ export const statistics = {
 			0,
 		);
 
+		statistics.OTRDm = Rooms.find({ createdOTR: true }).count();
+
+		statistics.totalOTR = settings.get('OTR_Count');
+
+		statistics.totalEngagementDashboard = settings.get('Engagement_Dashboard_Load_Count');
+		statistics.totalAuditApply = settings.get('Message_Auditing_Apply_Count');
+		statistics.totalAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
+		statistics.totalJoinJitsiButton = settings.get('Jits_Click_To_Join_Count');
+		statistics.totalSlashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+
 		statistics.totalUserTOTP = Users.findActiveUsersTOTPEnable().count();
 		statistics.totalUserEmail2fa = Users.findActiveUsersEmail2faEnable().count();
 
@@ -345,7 +353,35 @@ export const statistics = {
 
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
+		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
+		statistics.customCSS = settings.get('theme-custom-css').split('\n').length;
+
+		statistics.customScript = _.reduce(
+			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
+			function _custonScript(num, setting) {
+				const script = settings.get(setting);
+				if (script !== '//Add your script') {
+					return num + script.split('\n').length;
+				}
+				return num;
+			},
+			0,
+		);
+
+		statistics.tabInvites = await Invites.find().count();
+
 		console.log(
+			statistics.totalSlashCommandsJitsi,
+			statistics.totalJoinJitsiButton,
+			statistics.totalAuditApply,
+			statistics.totalAuditLoad,
+			statistics.totalEngagementDashboard,
+			statistics.logoChange,
+			statistics.customCSS,
+			statistics.customScript,
+			statistics.tabInvites,
+			statistics.totalOTR,
+			statistics.OTRDm,
 			statistics.totalEmailInvitation,
 			statistics.showHomeButton,
 			statistics.homeTitle,
@@ -361,7 +397,6 @@ export const statistics = {
 			statistics.totalStarrred,
 			statistics.totalPinned,
 		);
-		console.log(engagement);
 
 		return statistics;
 	},

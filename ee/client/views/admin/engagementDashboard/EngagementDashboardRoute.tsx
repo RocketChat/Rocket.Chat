@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useEffect } from 'react';
 
 import NotAuthorizedPage from '../../../../../client/components/NotAuthorizedPage';
@@ -32,6 +33,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		return <NotAuthorizedPage />;
 	}
 
+	Meteor.call('engagemendDashboardCount');
 	return <EngagementDashboardPage tab={tab} onSelectTab={(tab): void => engagementDashboardRoute.push({ tab })} />;
 };
 

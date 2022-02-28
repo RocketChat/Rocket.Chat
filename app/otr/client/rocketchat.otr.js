@@ -36,7 +36,6 @@ class OTRClass {
 			return;
 		}
 
-		console.log(this.instancesByRoomId, 'teste');
 		this.instancesByRoomId[roomId] = new OTR.Room(Meteor.userId(), roomId); // eslint-disable-line no-use-before-define
 		return this.instancesByRoomId[roomId];
 	}

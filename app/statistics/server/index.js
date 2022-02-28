@@ -1,4 +1,5 @@
 import './methods/getStatistics';
+import './methods/slashCommandsStats';
 import './startup/monitor';
 
 export { statistics } from './lib/statistics';

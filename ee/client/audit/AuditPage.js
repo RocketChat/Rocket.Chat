@@ -1,4 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import React, { useRef, useState } from 'react';
 
 import { useTranslation } from '../../../client/contexts/TranslationContext';
@@ -89,6 +90,8 @@ const AuditPage = () => {
 			users,
 			rid,
 		});
+
+		Meteor.call('messageAuditingApplyCount');
 	});
 
 	return (

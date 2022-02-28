@@ -8,6 +8,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
 import { hasPermission } from '../../../../app/authorization/server';
+import { messageAuditingLoadCount } from '../../settings/server/auditMessages';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 
@@ -124,6 +125,8 @@ Meteor.methods({
 			u: user,
 			fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent },
 		});
+
+		messageAuditingLoadCount();
 
 		return messages;
 	},

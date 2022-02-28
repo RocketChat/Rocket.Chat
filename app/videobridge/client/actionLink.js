@@ -7,6 +7,8 @@ import { Rooms } from '../../models';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 actionLinks.register('joinJitsiCall', function (message, params, instance) {
+	Meteor.call('jitsiClickToJoinCount');
+
 	const rid = Session.get('openedRoom');
 	if (!rid) {
 		return;
