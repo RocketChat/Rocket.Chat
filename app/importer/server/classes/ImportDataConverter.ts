@@ -463,9 +463,12 @@ export class ImportDataConverter {
 			const data = this.findImportedUser(importId);
 
 			if (!data) {
-				throw new Error('importer-message-mentioned-user-not-found');
+				this._logger.warn(`Mentioned user not found: ${importId}`);
+				continue;
 			}
+
 			if (!data.username) {
+				this._logger.debug(importId);
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
@@ -480,6 +483,31 @@ export class ImportDataConverter {
 		return result;
 	}
 
+	getMentionedChannelData(importId: string): IMentionedChannel | undefined {
+		// loading the name will also store the id on the cache if it's missing, so this won't run two queries
+		const name = this.findImportedRoomName(importId);
+		const _id = this.findImportedRoomId(importId);
+
+		if (name && _id) {
+			return {
+				name,
+				_id,
+			};
+		}
+
+		// If the importId was not found, check if we have a room with that name
+		const room = Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
+		if (room) {
+			this.addRoomToCache(importId, room._id);
+			this.addRoomNameToCache(importId, room.name);
+
+			return {
+				name: room.name,
+				_id: room._id,
+			};
+		}
+	}
+
 	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
 		const { channels } = message;
 		if (!channels) {
@@ -488,9 +516,7 @@ export class ImportDataConverter {
 
 		const result: Array<IMentionedChannel> = [];
 		for (const importId of channels) {
-			// loading the name will also store the id on the cache if it's missing, so this won't run two queries
-			const name = this.findImportedRoomName(importId);
-			const _id = this.findImportedRoomId(importId);
+			const { name, _id } = this.getMentionedChannelData(importId) || {};
 
 			if (!_id || !name) {
 				this._logger.warn(`Mentioned room not found: ${importId}`);
