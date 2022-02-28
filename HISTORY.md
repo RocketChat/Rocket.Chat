@@ -1,6 +1,23 @@
 
 # 4.5.0 (Under Release Candidate Process)
 
+## 4.5.0-rc.5
+`2022-02-28  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Prevent button from losing state when rerendering ([#24648](https://github.com/RocketChat/Rocket.Chat/pull/24648))
+
+- Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+
 ## 4.5.0-rc.4
 `2022-02-28  ·  5 🔍  ·  5 👩‍💻👨‍💻`
 
