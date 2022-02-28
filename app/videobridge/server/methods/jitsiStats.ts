@@ -9,7 +9,6 @@ export function jitsiSlashCommandsCount(): void {
 		return;
 	}
 	Settings.updateValueById('Jitsi_Start_SlashCommands_Count', slashCount + 1);
-	console.log(settings.get('Jitsi_Start_SlashCommands_Count'));
 }
 
 Meteor.methods({
@@ -19,6 +18,5 @@ Meteor.methods({
 			return;
 		}
 		Settings.updateValueById('Jits_Click_To_Join_Count', clickCount + 1);
-		console.log(settings.get('Jits_Click_To_Join_Count'));
 	},
 });

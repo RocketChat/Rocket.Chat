@@ -159,6 +159,7 @@ export class AppCommandsBridge extends CommandBridge {
 		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params), threadId, triggerId);
 
 		Promise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));

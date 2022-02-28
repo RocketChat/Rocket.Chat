@@ -11,11 +11,8 @@ Meteor.methods({
 				return;
 			}
 			Settings.updateValueById('OTR_Count', otrCount + 1);
-			console.log(settings.get('OTR_Count'));
 
 			Rooms.update({ _id: rid }, { $set: { createdOTR: true } });
-			const room = Rooms.findById(rid).fetch();
-			console.log(room);
 		}
 	},
 });
