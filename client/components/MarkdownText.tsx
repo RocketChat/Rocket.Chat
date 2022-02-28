@@ -31,6 +31,7 @@ const listItemMarked = (text: string): string => {
 	const cleanText = text.replace(/<p.*?>|<\/p>/gi, '');
 	return `<li>${cleanText}</li>`;
 };
+const horizontalRuleMarked = (): string => '';
 
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
@@ -38,11 +39,13 @@ documentRenderer.listitem = listItemMarked;
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
 inlineRenderer.listitem = listItemMarked;
+inlineRenderer.hr = horizontalRuleMarked;
 
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;
 inlineWithoutBreaks.br = brMarked;
 inlineWithoutBreaks.listitem = listItemMarked;
+inlineWithoutBreaks.hr = horizontalRuleMarked;
 
 const defaultOptions = {
 	gfm: true,
@@ -109,12 +112,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
 	return __html ? (
-		<Box
-			dangerouslySetInnerHTML={{ __html }}
-			withTruncatedText={withTruncatedText}
-			withRichContent={withRichContent}
-			{...props}
-		/>
+		<Box dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} />
 	) : null;
 };
 

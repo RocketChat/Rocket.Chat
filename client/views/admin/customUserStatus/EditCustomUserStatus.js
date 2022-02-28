@@ -47,17 +47,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [
-		saveStatus,
-		_id,
-		previousName,
-		previousStatusType,
-		name,
-		statusType,
-		dispatchToastMessage,
-		t,
-		onChange,
-	]);
+	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleClose = () => {
@@ -85,12 +75,7 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		};
 
 		setModal(() => (
-			<GenericModal
-				variant='danger'
-				onConfirm={handleDelete}
-				onCancel={handleCancel}
-				confirmText={t('Delete')}
-			>
+			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_User_Status_Delete_Warning')}
 			</GenericModal>
 		));
@@ -108,22 +93,13 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Presence')}</Field.Label>
 				<Field.Row>
-					<Select
-						value={statusType}
-						onChange={(value) => setStatusType(value)}
-						placeholder={t('Presence')}
-						options={presenceOptions}
-					/>
+					<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions} />
 				</Field.Row>
 			</Field>
 			<Field>

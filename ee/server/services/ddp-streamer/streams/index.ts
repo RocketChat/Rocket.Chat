@@ -12,14 +12,16 @@ import { SettingsRaw } from '../../../../../app/models/server/raw/Settings';
 
 const notifications = new NotificationsModule(Stream);
 
-getConnection()
-	.then((db) => {
-		notifications.configure({
-			Rooms: new RoomsRaw(db.collection<IRoom>(Collections.Rooms)),
-			Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions)),
-			Users: new UsersRaw(db.collection<IUser>(Collections.User)),
-			Settings: new SettingsRaw(db.collection<ISetting>(Collections.Settings)),
-		});
+getConnection().then((db) => {
+	const Users = new UsersRaw(db.collection<IUser>(Collections.User));
+	notifications.configure({
+		Rooms: new RoomsRaw(db.collection<IRoom>(Collections.Rooms)),
+		Subscriptions: new SubscriptionsRaw(db.collection<ISubscription>(Collections.Subscriptions), {
+			Users,
+		}),
+		Users,
+		Settings: new SettingsRaw(db.collection<ISetting>(Collections.Settings)),
 	});
+});
 
 export default notifications;

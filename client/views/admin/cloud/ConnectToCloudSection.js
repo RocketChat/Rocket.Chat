@@ -50,24 +50,13 @@ function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 				<p>{t('Cloud_registration_required_description')}</p>
 			</Box>
 			<ButtonGroup>
-				<Button
-					primary
-					disabled={isConnecting || !hasAcceptedTerms}
-					minHeight='x40'
-					onClick={handleRegisterButtonClick}
-				>
-					{isConnecting ? (
-						<Throbber is='span' inheritColor />
-					) : (
-						t('Cloud_registration_required_link_text')
-					)}
+				<Button primary disabled={isConnecting || !hasAcceptedTerms} minHeight='x40' onClick={handleRegisterButtonClick}>
+					{isConnecting ? <Throbber is='span' inheritColor /> : t('Cloud_registration_required_link_text')}
 				</Button>
 			</ButtonGroup>
 			{!hasAcceptedTerms && (
 				<Box mb='x12'>
-					<Callout type='warning'>
-						{t('Cloud_Service_Agree_PrivacyTerms_Login_Disabled_Warning')}
-					</Callout>
+					<Callout type='warning'>{t('Cloud_Service_Agree_PrivacyTerms_Login_Disabled_Warning')}</Callout>
 				</Box>
 			)}
 		</Box>

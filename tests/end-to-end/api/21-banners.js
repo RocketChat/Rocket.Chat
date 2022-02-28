@@ -2,14 +2,15 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe('banners', function() {
+describe('banners', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	describe('[/banners.getNew]', () => {
 		it('should fail if not logged in', (done) => {
-			request.get(api('banners.getNew'))
+			request
+				.get(api('banners.getNew'))
 				.query({
 					platform: 'web',
 				})
@@ -22,18 +23,19 @@ describe('banners', function() {
 		});
 
 		it('should fail if missing platform key', (done) => {
-			request.get(api('banners.getNew'))
+			request
+				.get(api('banners.getNew'))
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Match error: Missing key \'platform\'');
 				})
 				.end(done);
 		});
 
 		it('should fail if platform param is unknown', (done) => {
-			request.get(api('banners.getNew'))
+			request
+				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
 					platform: 'unknownPlatform',
@@ -41,14 +43,13 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Platform is unknown. [error-unknown-platform]');
-					expect(res.body).to.have.property('errorType', 'error-unknown-platform');
 				})
 				.end(done);
 		});
 
 		it('should fail if platform param is empty', (done) => {
-			request.get(api('banners.getNew'))
+			request
+				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
 					platform: '',
@@ -56,14 +57,13 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The required "platform" param is missing. [error-missing-param]');
-					expect(res.body).to.have.property('errorType', 'error-missing-param');
 				})
 				.end(done);
 		});
 
 		it('should return banners if platform param is valid', (done) => {
-			request.get(api('banners.getNew'))
+			request
+				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
 					platform: 'web',
@@ -79,7 +79,8 @@ describe('banners', function() {
 
 	describe('[/banners.dismiss]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(api('banners.dismiss'))
+			request
+				.post(api('banners.dismiss'))
 				.send({
 					bannerId: '123',
 				})
@@ -92,19 +93,21 @@ describe('banners', function() {
 		});
 
 		it('should fail if missing bannerId key', (done) => {
-			request.post(api('banners.dismiss'))
+			request
+				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Match error: Missing key \'bannerId\'');
+					expect(res.body).to.have.property('error', "Match error: Missing key 'bannerId'");
 				})
 				.end(done);
 		});
 
 		it('should fail if missing bannerId is empty', (done) => {
-			request.post(api('banners.dismiss'))
+			request
+				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({
 					bannerId: '',
@@ -112,14 +115,13 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The required "bannerId" param is missing. [error-missing-param]');
-					expect(res.body).to.have.property('errorType', 'error-missing-param');
 				})
 				.end(done);
 		});
 
 		it('should fail if missing bannerId is invalid', (done) => {
-			request.post(api('banners.dismiss'))
+			request
+				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({
 					bannerId: '123',

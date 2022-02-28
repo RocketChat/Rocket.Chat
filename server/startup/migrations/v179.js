@@ -14,10 +14,7 @@ const getIds = (_id) => {
 
 	// DM with rocket.cat
 	if (_id.match(/rocket\.cat/)) {
-		return [
-			'rocket.cat',
-			_id.replace('rocket.cat', ''),
-		];
+		return ['rocket.cat', _id.replace('rocket.cat', '')];
 	}
 
 	const total = _id.length;
@@ -37,9 +34,12 @@ const getIds = (_id) => {
 async function migrateDMs(models, total, current) {
 	const { roomCollection } = models;
 
-	console.log(`DM rooms schema migration ${ current }/${ total }`);
+	console.log(`DM rooms schema migration ${current}/${total}`);
 
-	const items = await roomCollection.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } }).limit(batchSize).toArray();
+	const items = await roomCollection
+		.find({ t: 'd', uids: { $exists: false } }, { fields: { _id: 1 } })
+		.limit(batchSize)
+		.toArray();
 
 	const actions = items.map((room) => ({
 		updateOne: {

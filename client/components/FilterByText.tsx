@@ -6,21 +6,19 @@ import { useTranslation } from '../contexts/TranslationContext';
 type FilterByTextProps = {
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
-	displayButton: boolean;
-	textButton: string;
-	onButtonClick: () => void;
-	inputRef: () => void;
+	inputRef?: () => void;
 };
 
-const FilterByText: FC<FilterByTextProps> = ({
-	placeholder,
-	onChange: setFilter,
-	displayButton: display = false,
-	textButton = '',
-	onButtonClick,
-	inputRef,
-	...props
-}) => {
+type FilterByTextPropsWithButton = FilterByTextProps & {
+	displayButton: true;
+	textButton: string;
+	onButtonClick: () => void;
+};
+
+const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
+	'displayButton' in props && props.displayButton === true;
+
+const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -38,14 +36,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	}, []);
 
 	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={handleFormSubmit}
-			display='flex'
-			flexDirection='row'
-			{...props}
-		>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
 			<TextInput
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}
@@ -53,11 +44,15 @@ const FilterByText: FC<FilterByTextProps> = ({
 				onChange={handleInputChange}
 				value={text}
 			/>
-			<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>
-				{textButton}
-			</Button>
+			{isFilterByTextPropsWithButton(props) ? (
+				<Button onClick={props.onButtonClick} mis='x8' primary>
+					{props.textButton}
+				</Button>
+			) : (
+				children && <Box mis='x8'>{children} </Box>
+			)}
 		</Box>
 	);
 };
 
-export default memo(FilterByText);
+export default memo<FC<FilterByTextProps>>(FilterByText);

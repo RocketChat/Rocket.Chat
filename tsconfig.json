@@ -31,7 +31,7 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"preserveSymlinks": true,
+		"preserveSymlinks": true
 
 		// "sourceMap": true,
 		// "declaration": true,
@@ -42,8 +42,12 @@
 	"exclude": [
 		"./.meteor/**",
 		"./packages/**",
-		"./imports/client",
+		"./imports/client**",
+		"**/dist/**",
 		// "./ee/server/services/**"
-		// "node_modules"
-	]
+		"node_modules"
+	],
+	"ts-node": {
+		"files": true
+	}
 }

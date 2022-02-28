@@ -2,8 +2,9 @@ import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/Internal
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 
 import { AppServerOrchestrator } from '../orchestrator';
-import { Subscriptions, Settings } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 import { ISubscription } from '../../../../definition/ISubscription';
+import { Settings } from '../../../models/server/raw';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function
@@ -30,7 +31,7 @@ export class AppInternalBridge extends InternalBridge {
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {
-		const publicKeySetting = Settings.findById('Cloud_Workspace_PublicKey').fetch()[0];
+		const publicKeySetting = await Settings.findOneById('Cloud_Workspace_PublicKey');
 
 		return this.orch.getConverters()?.get('settings').convertToApp(publicKeySetting);
 	}

@@ -10,9 +10,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { UiKitPayload, UIKitActionEvent } from '../../../definition/UIKit';
 
-const useUIKitHandleAction = <S extends UiKitPayload>(
-	state: S,
-): ((event: UIKitActionEvent) => Promise<void>) =>
+const useUIKitHandleAction = <S extends UiKitPayload>(state: S): ((event: UIKitActionEvent) => Promise<void>) =>
 	useMutableCallback(async ({ blockId, value, appId, actionId }) => {
 		if (!appId) {
 			throw new Error('useUIKitHandleAction - invalid appId');

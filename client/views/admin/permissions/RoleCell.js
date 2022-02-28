@@ -4,15 +4,7 @@ import React, { useState, memo } from 'react';
 
 import { AuthorizationUtils } from '../../../../app/authorization/lib';
 
-const RoleCell = ({
-	grantedRoles = [],
-	_id,
-	name,
-	description,
-	onChange,
-	lineHovered,
-	permissionId,
-}) => {
+const RoleCell = ({ grantedRoles = [], _id, name, description, onChange, lineHovered, permissionId }) => {
 	const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));
 	const [loading, setLoading] = useState(false);
 

@@ -52,7 +52,8 @@
 		}
 	}
 
-	&__action {
+	&__activity {
+		position: absolute;
 		top: 4px;
 		left: 0;
 

@@ -33,11 +33,13 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
-export type ILoginUsername = {
-	username: string;
-} | {
-	email: string;
-}
+export type ILoginUsername =
+	| {
+			username: string;
+	  }
+	| {
+			email: string;
+	  };
 export type LoginUsername = string | ILoginUsername;
 
 export interface IUserServices {
@@ -94,16 +96,9 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	scope?: string;
+	// scope?: string;
+	scope: 'Users' | 'Subscriptions';
 	_id: string;
-}
-
-export interface IDailyActiveUsers {
-	usersList: string[];
-	users: number;
-	day: number;
-	month: number;
-	year: number;
 }
 
 export interface IUser extends IRocketChatRecord {
@@ -143,19 +138,24 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 }
 
+export interface IRegisterUser extends IUser {
+	username: string;
+	name: string;
+}
+export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+
 export type IUserDataEvent = {
 	id: unknown;
-}
-& (
-	({
-		type: 'inserted';
-	} & IUser)
+} & (
 	| ({
-		type: 'removed';
-	})
-	| ({
-		type: 'updated';
-		diff: Partial<IUser>;
-		unset: Record<keyof IUser, boolean | 0 | 1>;
-	})
-)
+			type: 'inserted';
+	  } & IUser)
+	| {
+			type: 'removed';
+	  }
+	| {
+			type: 'updated';
+			diff: Partial<IUser>;
+			unset: Record<keyof IUser, boolean | 0 | 1>;
+	  }
+);

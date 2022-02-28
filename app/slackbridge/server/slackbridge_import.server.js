@@ -22,10 +22,14 @@ function SlackBridgeImport(command, params, item) {
 		rid: item.rid,
 		u: { username: 'rocket.cat' },
 		ts: new Date(),
-		msg: TAPi18n.__('SlackBridge_start', {
-			postProcess: 'sprintf',
-			sprintf: [user.username, channel],
-		}, user.language),
+		msg: TAPi18n.__(
+			'SlackBridge_start',
+			{
+				postProcess: 'sprintf',
+				sprintf: [user.username, channel],
+			},
+			user.language,
+		),
 	});
 
 	try {
@@ -37,10 +41,14 @@ function SlackBridgeImport(command, params, item) {
 						rid: item.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__('SlackBridge_error', {
-							postProcess: 'sprintf',
-							sprintf: [channel, error.message],
-						}, user.language),
+						msg: TAPi18n.__(
+							'SlackBridge_error',
+							{
+								postProcess: 'sprintf',
+								sprintf: [channel, error.message],
+							},
+							user.language,
+						),
 					});
 				} else {
 					msgStream.emit(item.rid, {
@@ -48,10 +56,14 @@ function SlackBridgeImport(command, params, item) {
 						rid: item.rid,
 						u: { username: 'rocket.cat' },
 						ts: new Date(),
-						msg: TAPi18n.__('SlackBridge_finish', {
-							postProcess: 'sprintf',
-							sprintf: [channel],
-						}, user.language),
+						msg: TAPi18n.__(
+							'SlackBridge_finish',
+							{
+								postProcess: 'sprintf',
+								sprintf: [channel],
+							},
+							user.language,
+						),
 					});
 				}
 			});
@@ -62,10 +74,14 @@ function SlackBridgeImport(command, params, item) {
 			rid: item.rid,
 			u: { username: 'rocket.cat' },
 			ts: new Date(),
-			msg: TAPi18n.__('SlackBridge_error', {
-				postProcess: 'sprintf',
-				sprintf: [channel, error.message],
-			}, user.language),
+			msg: TAPi18n.__(
+				'SlackBridge_error',
+				{
+					postProcess: 'sprintf',
+					sprintf: [channel, error.message],
+				},
+				user.language,
+			),
 		});
 		throw error;
 	}

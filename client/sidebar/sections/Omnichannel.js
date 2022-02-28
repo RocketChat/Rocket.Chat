@@ -2,12 +2,10 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import {
-	useOmnichannelShowQueueLink,
-	useOmnichannelAgentAvailable,
-	useOmnichannelQueueLink,
-	useOmnichannelDirectoryLink,
-} from '../../contexts/OmnichannelContext';
+import { hasPermission } from '../../../app/authorization/client';
+import { useLayout } from '../../contexts/LayoutContext';
+import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable } from '../../contexts/OmnichannelContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -17,8 +15,9 @@ const OmnichannelSection = (props) => {
 	const t = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
-	const queueLink = useOmnichannelQueueLink();
-	const directoryLink = useOmnichannelDirectoryLink();
+	const { sidebar } = useLayout();
+	const directoryRoute = useRoute('omnichannel-directory');
+	const queueListRoute = useRoute('livechat-queue');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const icon = {
@@ -41,15 +40,28 @@ const OmnichannelSection = (props) => {
 		}
 	});
 
+	const handleRoute = useMutableCallback((route) => {
+		sidebar.toggle();
+
+		switch (route) {
+			case 'directory':
+				directoryRoute.push({});
+				break;
+			case 'queue':
+				queueListRoute.push({});
+				break;
+		}
+	});
+
 	return (
 		<Sidebar.TopBar.ToolBox {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
-				{showOmnichannelQueueLink && (
-					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
-				)}
+				{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} onClick={() => handleRoute('queue')} />}
 				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
-				<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+				{hasPermission(['view-omnichannel-contact-center']) && (
+					<Sidebar.TopBar.Action {...directoryIcon} onClick={() => handleRoute('directory')} />
+				)}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);

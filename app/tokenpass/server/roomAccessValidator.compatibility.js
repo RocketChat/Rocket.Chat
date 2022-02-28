@@ -10,7 +10,7 @@ export function validateTokenAccess(userData, roomData) {
 }
 
 export const validators = [
-	function(room, user) {
+	function (room, user) {
 		const userData = Users.getTokenBalancesByUserId(user._id);
 
 		return validateTokenAccess(userData, room);

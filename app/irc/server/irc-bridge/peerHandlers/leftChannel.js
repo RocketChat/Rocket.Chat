@@ -7,15 +7,15 @@ export default function handleLeftChannel(args) {
 	});
 
 	if (!user) {
-		throw new Error(`Could not find a user with nick ${ args.nick }`);
+		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
 	const room = Rooms.findOneByName(args.roomName);
 
 	if (!room) {
-		throw new Error(`Could not find a room with name ${ args.roomName }`);
+		throw new Error(`Could not find a room with name ${args.roomName}`);
 	}
 
-	this.log(`${ user.username } left room ${ room.name }`);
+	this.log(`${user.username} left room ${room.name}`);
 	removeUserFromRoom(room._id, user);
 }

@@ -45,17 +45,9 @@ const ContactContextualBar = ({ contactReload }) => {
 				)}
 				<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{bar === 'new' && (
-				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />
-			)}
+			{bar === 'new' && <ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
 			{bar === 'info' && <ContactInfo reload={contactReload} id={id} />}
-			{bar === 'edit' && (
-				<ContactEditWithData
-					id={id}
-					reload={contactReload}
-					close={handleContactsVerticalBarBackButtonClick}
-				/>
-			)}
+			{bar === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleContactsVerticalBarBackButtonClick} />}
 		</VerticalBar>
 	);
 };

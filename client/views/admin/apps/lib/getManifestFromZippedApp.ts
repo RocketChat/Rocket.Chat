@@ -6,8 +6,7 @@ type AppManifestSchema = { [key: string]: string };
 async function fileToUint8Array(file: File): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
-		fileReader.onload = (e): void =>
-			resolve(new Uint8Array((e.target as any).result as Uint8Array));
+		fileReader.onload = (e): void => resolve(new Uint8Array((e.target as any).result as Uint8Array));
 		fileReader.onerror = (e): void => reject(e);
 		fileReader.readAsArrayBuffer(file);
 	});

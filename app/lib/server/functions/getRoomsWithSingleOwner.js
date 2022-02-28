@@ -2,16 +2,14 @@ import { subscriptionHasRole } from '../../../authorization/server';
 import { Users, Subscriptions } from '../../../models/server';
 
 export function shouldRemoveOrChangeOwner(subscribedRooms) {
-	return subscribedRooms
-		.some(({ shouldBeRemoved, shouldChangeOwner }) => shouldBeRemoved || shouldChangeOwner);
+	return subscribedRooms.some(({ shouldBeRemoved, shouldChangeOwner }) => shouldBeRemoved || shouldChangeOwner);
 }
 
 export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = true, roomIds = []) {
 	const subscribedRooms = [];
 
-	const cursor = roomIds.length > 0
-		? Subscriptions.findByUserIdAndRoomIds(userId, roomIds)
-		: Subscriptions.findByUserIdExceptType(userId, 'd');
+	const cursor =
+		roomIds.length > 0 ? Subscriptions.findByUserIdAndRoomIds(userId, roomIds) : Subscriptions.findByUserIdExceptType(userId, 'd');
 
 	// Iterate through all the rooms the user is subscribed to, to check if he is the last owner of any of them.
 	cursor.forEach((subscription) => {

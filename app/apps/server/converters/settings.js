@@ -1,14 +1,14 @@
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
-import { Settings } from '../../../models';
+import { Settings } from '../../../models/server/raw';
 
 export class AppSettingsConverter {
 	constructor(orch) {
 		this.orch = orch;
 	}
 
-	convertById(settingId) {
-		const setting = Settings.findOneNotHiddenById(settingId);
+	async convertById(settingId) {
+		const setting = await Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { callbacks } from '../../../app/callbacks/client';
 import { Users } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
+import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

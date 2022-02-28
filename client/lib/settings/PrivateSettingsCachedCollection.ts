@@ -10,14 +10,11 @@ export class PrivateSettingsCachedCollection extends CachedCollection {
 	}
 
 	async setupListener(): Promise<void> {
-		Notifications.onLogged(
-			this.eventName,
-			async (t: string, { _id, ...record }: { _id: string }) => {
-				this.log('record received', t, { _id, ...record });
-				this.collection.upsert({ _id }, record);
-				this.sync();
-			},
-		);
+		Notifications.onLogged(this.eventName, async (t: string, { _id, ...record }: { _id: string }) => {
+			this.log('record received', t, { _id, ...record });
+			this.collection.upsert({ _id }, record);
+			this.sync();
+		});
 	}
 
 	static instance: PrivateSettingsCachedCollection;

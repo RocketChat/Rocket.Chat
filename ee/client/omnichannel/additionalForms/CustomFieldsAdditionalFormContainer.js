@@ -38,15 +38,7 @@ const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, class
 		onChange({ data: values, hasError, hasUnsavedChanges });
 	}, [hasError, hasUnsavedChanges, onChange, values]);
 
-	return (
-		<CustomFieldsAdditionalForm
-			values={values}
-			handlers={handlers}
-			state={state}
-			className={className}
-			errors={errors}
-		/>
-	);
+	return <CustomFieldsAdditionalForm values={values} handlers={handlers} state={state} className={className} errors={errors} />;
 };
 
 export default CustomFieldsAdditionalFormContainer;

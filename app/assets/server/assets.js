@@ -7,12 +7,12 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
-
+import { Settings } from '../../models/server';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -25,8 +25,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 		wizard: {
 			step: 3,
@@ -35,12 +33,9 @@ const assets = {
 	},
 	background: {
 		label: 'login background (svg, png, jpg)',
-		defaultUrl: undefined,
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_ico: {
@@ -49,8 +44,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['ico'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon: {
@@ -59,8 +52,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_16: {
@@ -179,13 +170,11 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 };
 
-export const RocketChatAssets = new class {
+export const RocketChatAssets = new (class {
 	get mime() {
 		return mime;
 	}
@@ -203,7 +192,7 @@ export const RocketChatAssets = new class {
 
 		const extension = mime.extension(contentType);
 		if (assets[asset].constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${ contentType }`, {
+			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
 				errorTitle: 'error-invalid-file-type',
 			});
@@ -226,18 +215,21 @@ export const RocketChatAssets = new class {
 		RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on('end', Meteor.bindEnvironment(function() {
-			return Meteor.setTimeout(function() {
-				const key = `Assets_${ asset }`;
-				const value = {
-					url: `assets/${ asset }.${ extension }`,
-					defaultUrl: assets[asset].defaultUrl,
-				};
+		ws.on(
+			'end',
+			Meteor.bindEnvironment(function () {
+				return Meteor.setTimeout(function () {
+					const key = `Assets_${asset}`;
+					const value = {
+						url: `assets/${asset}.${extension}`,
+						defaultUrl: assets[asset].defaultUrl,
+					};
 
-				settings.updateById(key, value);
-				return RocketChatAssets.processAsset(key, value);
-			}, 200);
-		}));
+					Settings.updateValueById(key, value);
+					return RocketChatAssets.processAsset(key, value);
+				}, 200);
+			}),
+		);
 
 		rs.pipe(ws);
 	}
@@ -250,12 +242,12 @@ export const RocketChatAssets = new class {
 		}
 
 		RocketChatAssetsInstance.deleteFile(asset);
-		const key = `Assets_${ asset }`;
+		const key = `Assets_${asset}`;
 		const value = {
 			defaultUrl: assets[asset].defaultUrl,
 		};
 
-		settings.updateById(key, value);
+		Settings.updateValueById(key, value);
 		RocketChatAssets.processAsset(key, value);
 	}
 
@@ -292,14 +284,14 @@ export const RocketChatAssets = new class {
 		const extension = settingValue.url.split('.').pop();
 
 		assetValue.cache = {
-			path: `assets/${ assetKey }.${ extension }`,
+			path: `assets/${assetKey}.${extension}`,
 			cacheable: false,
 			sourceMapUrl: undefined,
 			where: 'client',
 			type: 'asset',
 			content: file.buffer,
 			extension,
-			url: `/assets/${ assetKey }.${ extension }?${ hash }`,
+			url: `/assets/${assetKey}.${extension}?${hash}`,
 			size: file.length,
 			uploadDate: file.uploadDate,
 			contentType: file.contentType,
@@ -315,36 +307,40 @@ export const RocketChatAssets = new class {
 
 		return getURL(url, options);
 	}
-}();
+})();
 
-settings.addGroup('Assets');
+settingsRegistry.addGroup('Assets');
 
-settings.add('Assets_SvgFavicon_Enable', true, {
+settingsRegistry.add('Assets_SvgFavicon_Enable', true, {
 	type: 'boolean',
 	group: 'Assets',
 	i18nLabel: 'Enable_Svg_Favicon',
 });
 
 function addAssetToSetting(asset, value) {
-	const key = `Assets_${ asset }`;
+	const key = `Assets_${asset}`;
 
-	settings.add(key, {
-		defaultUrl: value.defaultUrl,
-	}, {
-		type: 'asset',
-		group: 'Assets',
-		fileConstraints: value.constraints,
-		i18nLabel: value.label,
-		asset,
-		public: true,
-		wizard: value.wizard,
-	});
+	settingsRegistry.add(
+		key,
+		{
+			defaultUrl: value.defaultUrl,
+		},
+		{
+			type: 'asset',
+			group: 'Assets',
+			fileConstraints: value.constraints,
+			i18nLabel: value.label,
+			asset,
+			public: true,
+			wizard: value.wizard,
+		},
+	);
 
 	const currentValue = settings.get(key);
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
 		currentValue.defaultUrl = assets[asset].defaultUrl;
-		settings.updateById(key, currentValue);
+		Settings.updateValueById(key, currentValue);
 	}
 }
 
@@ -353,10 +349,10 @@ for (const key of Object.keys(assets)) {
 	addAssetToSetting(key, value);
 }
 
-settings.get(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
+settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
-Meteor.startup(function() {
-	return Meteor.setTimeout(function() {
+Meteor.startup(function () {
+	return Meteor.setTimeout(function () {
 		return process.emit('message', {
 			refresh: 'client',
 		});
@@ -365,7 +361,7 @@ Meteor.startup(function() {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
+WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride) {
 	for (const key of Object.keys(assets)) {
 		const value = assets[key];
 		if (!value.cache && !value.defaultUrl) {
@@ -387,12 +383,12 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 		} else {
 			const extension = value.defaultUrl.split('.').pop();
 			cache = {
-				path: `assets/${ key }.${ extension }`,
+				path: `assets/${key}.${extension}`,
 				cacheable: false,
 				sourceMapUrl: undefined,
 				where: 'client',
 				type: 'asset',
-				url: `/assets/${ key }.${ extension }?v3`,
+				url: `/assets/${key}.${extension}?v3`,
 				hash: 'v3',
 			};
 		}
@@ -468,57 +464,62 @@ Meteor.methods({
 	},
 });
 
-WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res, next) {
-	const params = {
-		asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
-	};
+WebApp.connectHandlers.use(
+	'/assets/',
+	Meteor.bindEnvironment(function (req, res, next) {
+		const params = {
+			asset: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')).replace(/\.[^.]*$/, ''),
+		};
 
-	const file = assets[params.asset] && assets[params.asset].cache;
+		const file = assets[params.asset] && assets[params.asset].cache;
 
-	const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
+		const format = req.url.replace(/.*\.([a-z]+)(?:$|\?.*)/i, '$1');
 
-	if (assets[params.asset] && Array.isArray(assets[params.asset].constraints.extensions) && !assets[params.asset].constraints.extensions.includes(format)) {
-		res.writeHead(403);
-		return res.end();
-	}
-	if (!file) {
-		const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
-		if (defaultUrl) {
-			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
-			req.url = `/${ assetUrl }`;
-			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
-		} else {
-			res.writeHead(404);
-			res.end();
+		if (
+			assets[params.asset] &&
+			Array.isArray(assets[params.asset].constraints.extensions) &&
+			!assets[params.asset].constraints.extensions.includes(format)
+		) {
+			res.writeHead(403);
+			return res.end();
 		}
+		if (!file) {
+			const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
+			if (defaultUrl) {
+				const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
+				req.url = `/${assetUrl}`;
+				WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFilesByArch, req, res, next);
+			} else {
+				res.writeHead(404);
+				res.end();
+			}
 
-		return;
-	}
-
-	const reqModifiedHeader = req.headers['if-modified-since'];
-	if (reqModifiedHeader) {
-		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
-			res.setHeader('Last-Modified', reqModifiedHeader);
-			res.writeHead(304);
-			res.end();
 			return;
 		}
-	}
 
-	res.setHeader('Cache-Control', 'public, max-age=0');
-	res.setHeader('Expires', '-1');
+		const reqModifiedHeader = req.headers['if-modified-since'];
+		if (reqModifiedHeader) {
+			if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
+				res.end();
+				return;
+			}
+		}
 
-	if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
-		res.setHeader('Content-Type', `image/${ format }`);
-		sharp(file.content)
-			.toFormat(format)
-			.pipe(res);
-		return;
-	}
+		res.setHeader('Cache-Control', 'public, max-age=0');
+		res.setHeader('Expires', '-1');
 
-	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
-	res.setHeader('Content-Type', file.contentType);
-	res.setHeader('Content-Length', file.size);
-	res.writeHead(200);
-	res.end(file.content);
-}));
+		if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
+			res.setHeader('Content-Type', `image/${format}`);
+			sharp(file.content).toFormat(format).pipe(res);
+			return;
+		}
+
+		res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
+		res.setHeader('Content-Type', file.contentType);
+		res.setHeader('Content-Length', file.size);
+		res.writeHead(200);
+		res.end(file.content);
+	}),
+);

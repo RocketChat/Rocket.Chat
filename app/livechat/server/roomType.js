@@ -2,7 +2,6 @@ import { LivechatRooms, LivechatVisitors } from '../../models';
 import { roomTypes } from '../../utils';
 import LivechatRoomType from '../lib/LivechatRoomType';
 
-
 class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {
 		return LivechatVisitors.findOneById(senderId);
@@ -17,7 +16,7 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	 * @return {object} Notification details
 	 */
 	getNotificationDetails(room, user, notificationMessage) {
-		const title = `[Omnichannel] ${ this.roomName(room) }`;
+		const title = `[Omnichannel] ${this.roomName(room)}`;
 		const text = notificationMessage;
 
 		return { title, text };

@@ -1,9 +1,4 @@
-export const getLocalePercentage = (
-	locale: string,
-	total: number,
-	fraction: number,
-	decimalCount = 2,
-): string => {
+export const getLocalePercentage = (locale: string, total: number, fraction: number, decimalCount = 2): string => {
 	const option = {
 		style: 'percent',
 		minimumFractionDigits: decimalCount,

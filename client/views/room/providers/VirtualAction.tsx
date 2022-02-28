@@ -39,8 +39,7 @@ const VirtualAction = ({
 
 	const group = getGroup(room);
 
-	const visible =
-		config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
+	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
 		handleChange((list: Store<ToolboxAction>) => {

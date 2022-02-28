@@ -82,11 +82,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						placeholder={t('Name')}
-					/>
+					<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
 				</Field.Row>
 			</Field>
 			<Field>

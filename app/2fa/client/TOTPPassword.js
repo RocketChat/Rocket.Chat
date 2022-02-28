@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import toastr from 'toastr';
 
-import { Utils2fa } from './lib/2fa';
 import { t } from '../../utils';
-import { process2faReturn } from './callWithTwoFactorRequired';
+import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
+import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
-Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
+Meteor.loginWithPasswordAndTOTP = function (selector, password, code, callback) {
 	if (typeof selector === 'string') {
 		if (selector.indexOf('@') === -1) {
 			selector = { username: selector };
@@ -16,18 +16,20 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	}
 
 	Accounts.callLoginMethod({
-		methodArguments: [{
-			totp: {
-				login: {
-					user: selector,
-					password: Accounts._hashPassword(password),
+		methodArguments: [
+			{
+				totp: {
+					login: {
+						user: selector,
+						password: Accounts._hashPassword(password),
+					},
+					code,
 				},
-				code,
 			},
-		}],
+		],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}
@@ -37,7 +39,7 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 
 const { loginWithPassword } = Meteor;
 
-Meteor.loginWithPassword = function(email, password, cb) {
+Meteor.loginWithPassword = function (email, password, cb) {
 	loginWithPassword(email, password, (error) => {
 		process2faReturn({
 			error,
@@ -45,12 +47,16 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			emailOrUsername: email,
 			onCode: (code) => {
 				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
-					if (error && error.error === 'totp-invalid') {
-						toastr.error(t('Invalid_two_factor_code'));
+					if (isTotpInvalidError(error)) {
+						dispatchToastMessage({
+							type: 'error',
+							message: t('Invalid_two_factor_code'),
+						});
 						cb();
-					} else {
-						cb(error);
+						return;
 					}
+
+					cb(error);
 				});
 			},
 		});
