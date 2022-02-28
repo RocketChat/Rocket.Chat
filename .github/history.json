@@ -71165,6 +71165,66 @@
           ]
         }
       ]
+    },
+    "4.5.0-rc.4": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.31.0-alpha.5979",
+      "mongo_versions": [
+        "'3.6'",
+        "'4.0'",
+        "'4.2'",
+        "'4.4'",
+        "'5.0'"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24585",
+          "title": "Regression: Error setting user avatars and mentioning rooms on Slack Import",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix `Mentioned room not found` error when importing rooms from Slack;\r\n- Fix `Forbidden` error when setting avatars for users imported from Slack (on user import/creation);\r\n- Fix incorrect message count on imported rooms;\r\n- Fix missing username on messages imported from Slack;",
+          "contributors": [
+            "matheusbsilva137",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "24647",
+          "title": "Regression: Fix wrong tab name for VoIP settings",
+          "userLogin": "renatobecker",
+          "milestone": "4.5.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "24646",
+          "title": "Regression: Server crashing if Voip credentials are invalid",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24645",
+          "title": "Regression: Extension List panel UI not aligned with designs",
+          "userLogin": "murtaza98",
+          "milestone": "4.5.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "24635",
+          "title": "Regression: Queue counter aggregator for incoming/hanged calls",
+          "userLogin": "amolghode1981",
+          "milestone": "4.5.0",
+          "contributors": [
+            "amolghode1981"
+          ]
+        }
+      ]
     }
   }
 }
