@@ -18,6 +18,7 @@ export interface IVoipExtensionWithAgentInfo extends IVoipExtensionBase {
 	queues?: string[];
 	userId?: IUser['_id'];
 	username?: IUser['username'];
+	name?: IUser['name'];
 }
 
 export const isIVoipExtensionBase = (obj: any): obj is IVoipExtensionBase =>

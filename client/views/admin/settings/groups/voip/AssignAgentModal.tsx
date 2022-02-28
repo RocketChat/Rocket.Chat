@@ -11,12 +11,13 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 type AssignAgentModalParams = {
 	closeModal: () => void;
 	reload: () => void;
+	existingExtension?: string;
 };
 
-const AssignAgentModal: FC<AssignAgentModalParams> = ({ closeModal, reload }) => {
+const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, closeModal, reload }) => {
 	const t = useTranslation();
 	const [agent, setAgent] = useState('');
-	const [extension, setExtension] = useState('');
+	const [extension, setExtension] = useState(existingExtension || '');
 	const query = useMemo(() => ({ type: 'available' as const, userId: agent }), [agent]);
 
 	const assignAgent = useEndpoint('POST', 'omnichannel/agent/extension');
