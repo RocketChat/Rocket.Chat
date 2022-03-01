@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Subscriptions, Rooms } from '../../app/models/server';
-import { canAccessRoom, hasPermission } from '../../app/authorization/server';
+import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
@@ -18,7 +18,7 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		const room = Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}
