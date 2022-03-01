@@ -1,6 +1,21 @@
 
 # 4.5.0 (Under Release Candidate Process)
 
+## 4.5.0-rc.6
+`2022-02-28  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Apps-Engine ([#24651](https://github.com/RocketChat/Rocket.Chat/pull/24651))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+
 ## 4.5.0-rc.5
 `2022-02-28  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
