@@ -17,6 +17,9 @@ import { PaginatedResult } from '../helpers/PaginatedResult';
 type booleanString = 'true' | 'false';
 
 export type OmnichannelEndpoints = {
+	'livechat/room': {
+		GET: (params: { token: string; rid?: string; agentId?: string }) => { room: IOmnichannelRoom; newRoom: boolean };
+	};
 	'livechat/appearance': {
 		GET: () => {
 			appearance: ISetting[];
@@ -41,6 +44,12 @@ export type OmnichannelEndpoints = {
 	};
 	'livechat/room.join': {
 		GET: (params: { roomId: IRoom['_id'] }) => boolean;
+	};
+	'livechat/room.survey': {
+		POST: (params: { rid: string; token: string; data: { name: string; value: string }[] }) => {
+			rid: string;
+			data: { [k: string]: string };
+		};
 	};
 	'livechat/monitors.list': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
@@ -401,23 +410,12 @@ export type OmnichannelEndpoints = {
 		} | void;
 	};
 
-	'livechat/room': {
-		GET: (params: { token: string; rid?: string; agentId?: string }) => { room: IOmnichannelRoom; newRoom?: boolean };
-	};
-
 	'livechat/room.close': {
 		POST: (params: { rid: string; token: string }) => { rid: string; comment: string };
 	};
 
 	'livechat/room.transfer': {
 		POST: (params: { rid: string; token: string; department: string }) => { room: IOmnichannelRoom };
-	};
-
-	'livechat/room.survey': {
-		POST: (params: { rid: string; token: string; data: [name: string, value: string] }) => {
-			rid: string;
-			data: { [k: string]: string };
-		};
 	};
 
 	'livechat/room.visitor': {

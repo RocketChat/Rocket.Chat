@@ -244,17 +244,17 @@ API.v1.addRoute(
 			const { user } = this;
 
 			if (!user) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
+				throw new Error('error-invalid-user');
 			}
 
 			const room = LivechatRooms.findOneById(roomId);
 
 			if (!room) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+				throw new Error('error-invalid-room');
 			}
 
 			if (!canAccessRoom(room, user)) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+				throw new Error('error-not-allowed');
 			}
 
 			addUserToRoom(roomId, user);
