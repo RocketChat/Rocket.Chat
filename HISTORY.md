@@ -1,155 +1,17 @@
 
-# 4.5.0 (Under Release Candidate Process)
+# 4.5.0
+`2022-02-28  ·  3 🎉  ·  15 🚀  ·  19 🐛  ·  72 🔍  ·  30 👩‍💻👨‍💻`
 
-## 4.5.0-rc.7
-`2022-02-28  ·  `
-
-## 4.5.0-rc.6
-`2022-02-28  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Chore: Update Apps-Engine ([#24651](https://github.com/RocketChat/Rocket.Chat/pull/24651))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-
-## 4.5.0-rc.5
-`2022-02-28  ·  2 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Prevent button from losing state when rerendering ([#24648](https://github.com/RocketChat/Rocket.Chat/pull/24648))
-
-- Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-
-## 4.5.0-rc.4
-`2022-02-28  ·  5 🔍  ·  5 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
-
-  - Fix `Mentioned room not found` error when importing rooms from Slack;  
-  - Fix `Forbidden` error when setting avatars for users imported from Slack (on user import/creation);  
-  - Fix incorrect message count on imported rooms;  
-  - Fix missing username on messages imported from Slack;
-
-- Regression: Extension List panel UI not aligned with designs ([#24645](https://github.com/RocketChat/Rocket.Chat/pull/24645))
-
-- Regression: Fix wrong tab name for VoIP settings ([#24647](https://github.com/RocketChat/Rocket.Chat/pull/24647))
-
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
-
-- Regression: Server crashing if Voip credentials are invalid ([#24646](https://github.com/RocketChat/Rocket.Chat/pull/24646))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@renatobecker](https://github.com/renatobecker)
-
-## 4.5.0-rc.3
-`2022-02-26  ·  10 🔍  ·  5 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Do not show toast on incoming voip calls ([#24619](https://github.com/RocketChat/Rocket.Chat/pull/24619))
-
-- Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
-
-- Regression: Fix double value on holdTime and empty msg on last message ([#24630](https://github.com/RocketChat/Rocket.Chat/pull/24630))
-
-- Regression: Fix in-correct room status shown to agents ([#24592](https://github.com/RocketChat/Rocket.Chat/pull/24592))
-
-- Regression: Fix incoming voip call ringtone is not ringing ([#24616](https://github.com/RocketChat/Rocket.Chat/pull/24616))
-
-- Regression: Fix time fields and wrap up in Voip Room Contexual bar ([#24625](https://github.com/RocketChat/Rocket.Chat/pull/24625))
-
-- Regression: Fix translation for call started message ([#24615](https://github.com/RocketChat/Rocket.Chat/pull/24615))
-
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
-
-- Regression: Mark all rooms as read modal closing instantly. ([#24610](https://github.com/RocketChat/Rocket.Chat/pull/24610))
-
-- Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@murtaza98](https://github.com/murtaza98)
-
-## 4.5.0-rc.2
-`2022-02-25  ·  6 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Admin Sidebar colors inverted. ([#24609](https://github.com/RocketChat/Rocket.Chat/pull/24609))
-
-- Regression: Bunch of settings fixes for VoIP ([#24594](https://github.com/RocketChat/Rocket.Chat/pull/24594))
-
-- Regression: Fix time format on Voip system messages ([#24603](https://github.com/RocketChat/Rocket.Chat/pull/24603))
-
-- Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
-
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
-
-  The audio was not rendered because of re-rendering of react element based on
-  queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
-  because after accepting call, queueCounter changes or a room gets created.
-  The audio element gets recreated. But VoIP user probably holds the old one.
-  The behaviour is not predictable when such case happens. If everything gets cleanly setup,
-  even if the audio element goes headless, it still continues to play the remote audio.
-  But in other cases, it is unreferenced the one on dom has its srcObject as null.
-  This causes no audio.
-
-  This fix provides a way to re-initialise the rendering elements in VoIP user
-  and calls this function on useEffect() if the re-render has happen.
-
-- Regression: VoIP service button displayed when VoIP is disabled ([#24598](https://github.com/RocketChat/Rocket.Chat/pull/24598))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@murtaza98](https://github.com/murtaza98)
-
-## 4.5.0-rc.1
-`2022-02-22  ·  2 🎉  ·  3 🔍  ·  9 👩‍💻👨‍💻`
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `&#x27;3.6&#x27;, &#x27;4.0&#x27;, &#x27;4.2&#x27;, &#x27;4.4&#x27;, &#x27;5.0&#x27;`
+- Apps-Engine: `1.31.0`
 
 ### 🎉 New features
 
+
+- E2E password generator ([#24114](https://github.com/RocketChat/Rocket.Chat/pull/24114))
 
 - Marketplace sort filter ([#24567](https://github.com/RocketChat/Rocket.Chat/pull/24567))
 
@@ -173,38 +35,6 @@
   - Added support for remote hangup/hold on calls  
   - Implemented call metrics calculation (hold time, waiting time, talk time)  
   - Show a notificaiton when call is received
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add support to namespace within micro services ([#24581](https://github.com/RocketChat/Rocket.Chat/pull/24581))
-
-- Regression: Error when trying to load name of dm rooms for avatars and notifications ([#24583](https://github.com/RocketChat/Rocket.Chat/pull/24583))
-
-- Regression: Fix room not getting created due to null visitor status ([#24562](https://github.com/RocketChat/Rocket.Chat/pull/24562))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@murtaza98](https://github.com/murtaza98)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rique223](https://github.com/rique223)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-- [@ujorgeleite](https://github.com/ujorgeleite)
-
-## 4.5.0-rc.0
-`2022-02-22  ·  1 🎉  ·  15 🚀  ·  19 🐛  ·  45 🔍  ·  27 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- E2E password generator ([#24114](https://github.com/RocketChat/Rocket.Chat/pull/24114))
 
 ### 🚀 Improvements
 
@@ -442,6 +272,8 @@
 
 - Chore: Update Apps-Engine ([#24568](https://github.com/RocketChat/Rocket.Chat/pull/24568))
 
+- Chore: Update Apps-Engine ([#24651](https://github.com/RocketChat/Rocket.Chat/pull/24651))
+
 - Chore: Update fuselage deps to match monolith versions ([#24501](https://github.com/RocketChat/Rocket.Chat/pull/24501))
 
 - Chore: Update Meteor to 2.5.6 ([#24461](https://github.com/RocketChat/Rocket.Chat/pull/24461))
@@ -462,6 +294,75 @@
 
 - Merge master into develop & Set version to 4.5.0-develop ([#24363](https://github.com/RocketChat/Rocket.Chat/pull/24363))
 
+- Regression: Add support to namespace within micro services ([#24581](https://github.com/RocketChat/Rocket.Chat/pull/24581))
+
+- Regression: Admin Sidebar colors inverted. ([#24609](https://github.com/RocketChat/Rocket.Chat/pull/24609))
+
+- Regression: Bunch of settings fixes for VoIP ([#24594](https://github.com/RocketChat/Rocket.Chat/pull/24594))
+
+- Regression: Do not show toast on incoming voip calls ([#24619](https://github.com/RocketChat/Rocket.Chat/pull/24619))
+
+- Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
+
+- Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
+
+  - Fix `Mentioned room not found` error when importing rooms from Slack;  
+  - Fix `Forbidden` error when setting avatars for users imported from Slack (on user import/creation);  
+  - Fix incorrect message count on imported rooms;  
+  - Fix missing username on messages imported from Slack;
+
+- Regression: Error when trying to load name of dm rooms for avatars and notifications ([#24583](https://github.com/RocketChat/Rocket.Chat/pull/24583))
+
+- Regression: Extension List panel UI not aligned with designs ([#24645](https://github.com/RocketChat/Rocket.Chat/pull/24645))
+
+- Regression: Fix double value on holdTime and empty msg on last message ([#24630](https://github.com/RocketChat/Rocket.Chat/pull/24630))
+
+- Regression: Fix in-correct room status shown to agents ([#24592](https://github.com/RocketChat/Rocket.Chat/pull/24592))
+
+- Regression: Fix incoming voip call ringtone is not ringing ([#24616](https://github.com/RocketChat/Rocket.Chat/pull/24616))
+
+- Regression: Fix room not getting created due to null visitor status ([#24562](https://github.com/RocketChat/Rocket.Chat/pull/24562))
+
+- Regression: Fix time fields and wrap up in Voip Room Contexual bar ([#24625](https://github.com/RocketChat/Rocket.Chat/pull/24625))
+
+- Regression: Fix time format on Voip system messages ([#24603](https://github.com/RocketChat/Rocket.Chat/pull/24603))
+
+- Regression: Fix translation for call started message ([#24615](https://github.com/RocketChat/Rocket.Chat/pull/24615))
+
+- Regression: Fix wrong tab name for VoIP settings ([#24647](https://github.com/RocketChat/Rocket.Chat/pull/24647))
+
+- Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
+
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+
+- Regression: Mark all rooms as read modal closing instantly. ([#24610](https://github.com/RocketChat/Rocket.Chat/pull/24610))
+
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+
+  The audio was not rendered because of re-rendering of react element based on
+  queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
+  because after accepting call, queueCounter changes or a room gets created.
+  The audio element gets recreated. But VoIP user probably holds the old one.
+  The behaviour is not predictable when such case happens. If everything gets cleanly setup,
+  even if the audio element goes headless, it still continues to play the remote audio.
+  But in other cases, it is unreferenced the one on dom has its srcObject as null.
+  This causes no audio.
+
+  This fix provides a way to re-initialise the rendering elements in VoIP user
+  and calls this function on useEffect() if the re-render has happen.
+
+- Regression: Prevent button from losing state when rerendering ([#24648](https://github.com/RocketChat/Rocket.Chat/pull/24648))
+
+- Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
+
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+
+- Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
+
+- Regression: Server crashing if Voip credentials are invalid ([#24646](https://github.com/RocketChat/Rocket.Chat/pull/24646))
+
+- Regression: VoIP service button displayed when VoIP is disabled ([#24598](https://github.com/RocketChat/Rocket.Chat/pull/24598))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
@@ -473,7 +374,9 @@
 
 - [@KevLehman](https://github.com/KevLehman)
 - [@LucasFASouza](https://github.com/LucasFASouza)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -495,6 +398,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+- [@ujorgeleite](https://github.com/ujorgeleite)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.2
