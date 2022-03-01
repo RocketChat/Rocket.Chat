@@ -23,7 +23,7 @@ services:
         -mongodb://${MONGODB_ROOT_USER:-root}:${MONGODB_ROOT_PASSWORD}@${MONGODB_ADVERTISED_HOSTNAME:-mongodb}:\
           ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}/\
           local?authSource=admin&replicaSet=${MONGODB_REPLICA_SET_NAME:-rs0}}"
-      ROOT_URL: ${ROOT_URL:-http://${BIND_IP:-localhost}:${HOST_PORT:-3000}}
+      ROOT_URL: ${ROOT_URL:-https://${DOMAIN}}
       PORT: ${PORT:-3000}
     depends_on: [mongodb]
     expose: [${PORT:-3000}]
