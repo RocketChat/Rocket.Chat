@@ -1,15 +1,19 @@
-import { Modal } from '@rocket.chat/fuselage';
-import React, { useState, useMemo, memo, FC, ComponentProps, ReactNode } from 'react';
+import React, { useState, useMemo, memo, ReactNode, useCallback, ReactElement } from 'react';
 
 import { modal } from '../../app/ui-utils/client/lib/modal';
-import ModalPortal from '../components/ModalPortal';
+import ModalBackdrop from '../components/modal/ModalBackdrop';
+import ModalPortal from '../components/modal/ModalPortal';
 import { ModalContext } from '../contexts/ModalContext';
 import { useImperativeModal } from '../views/hooks/useImperativeModal';
 
-const ModalProvider: FC = ({ children }) => {
+type ModalProviderProps = {
+	children?: ReactNode;
+};
+
+const ModalProvider = ({ children }: ModalProviderProps): ReactElement => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
 
-	const contextValue = useMemo<ComponentProps<typeof ModalContext.Provider>['value']>(
+	const contextValue = useMemo(
 		() =>
 			Object.assign(modal, {
 				setModal: setCurrentModal,
@@ -19,12 +23,14 @@ const ModalProvider: FC = ({ children }) => {
 
 	useImperativeModal(setCurrentModal);
 
+	const handleDismiss = useCallback(() => setCurrentModal(null), [setCurrentModal]);
+
 	return (
 		<ModalContext.Provider value={contextValue}>
 			{children}
 			{currentModal && (
 				<ModalPortal>
-					<Modal.Backdrop zIndex={9999}>{currentModal}</Modal.Backdrop>
+					<ModalBackdrop onDismiss={handleDismiss}>{currentModal}</ModalBackdrop>
 				</ModalPortal>
 			)}
 		</ModalContext.Provider>

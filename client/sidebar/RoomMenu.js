@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { roomTypes, UiTextContext } from '../../app/utils/client';
+import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
@@ -14,6 +14,7 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUserSubscription } from '../contexts/UserContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields = {
@@ -72,7 +73,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal
@@ -96,7 +97,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();
