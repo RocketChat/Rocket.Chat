@@ -1,10 +1,10 @@
 import { Template } from 'meteor/templating';
 
-import { roomTypes } from '../../../utils';
 import './messagePopupChannel.html';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Template.messagePopupChannel.helpers({
 	channelIcon() {
-		return roomTypes.getIcon(this);
+		return roomCoordinator.getIcon(this);
 	},
 });

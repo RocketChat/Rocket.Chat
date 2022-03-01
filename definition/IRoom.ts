@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-export type RoomType = 'c' | 'd' | 'p' | 'l';
+export type RoomType = 'c' | 'd' | 'p' | 'l' | 'v';
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
@@ -15,7 +15,6 @@ interface IRequestTranscript {
 }
 
 export interface IRoom extends IRocketChatRecord {
-	metrics: any;
 	_id: RoomID;
 	t: RoomType;
 	name?: string;
@@ -25,7 +24,7 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
-	topic: any;
+	topic?: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids: Array<string>;
@@ -33,7 +32,7 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	jitsiTimeout: Date;
+	jitsiTimeout?: Date;
 	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
@@ -68,9 +67,17 @@ export interface IRoom extends IRocketChatRecord {
 
 	sysMes?: string[];
 	muted?: string[];
+	unmuted?: string[];
 
 	usernames?: string[];
 	ts?: Date;
+
+	cl?: boolean;
+	ro?: boolean;
+	favorite?: boolean;
+	archived?: boolean;
+	announcement?: string;
+	description?: string;
 }
 
 export interface ICreatedRoom extends IRoom {
@@ -109,8 +116,8 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
-	t: 'l';
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+	t: 'l' | 'v';
 	v: {
 		_id?: string;
 		token?: string;
@@ -151,9 +158,9 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags: any;
-	closedAt: any;
-	metrics: any;
+	tags?: any;
+	closedAt?: Date;
+	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
@@ -163,17 +170,47 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	ts: Date;
 	label?: string;
 	crmData?: unknown;
-	closer?: 'visitor' | 'user';
-	closedBy?: {
-		_id: string;
-		username: string;
-	};
 	isWaitingResponse?: boolean;
 
 	facebook?: {
 		page: {
 			id: string;
 		};
+	};
+
+	// optional keys for closed rooms
+	closer?: 'user' | 'visitor';
+	closedBy?: {
+		_id: string;
+		username: IUser['username'];
+	};
+}
+
+export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
+	t: 'l';
+}
+
+export interface IVoipRoom extends IOmnichannelGenericRoom {
+	t: 'v';
+	// The timestamp when call was started
+	callStarted: Date;
+	// The amount of time the call lasted, in milliseconds
+	callDuration?: number;
+	// The amount of time call was in queue in milliseconds
+	callWaitingTime?: number;
+	// The time when call was ended
+	callEndedAt?: Date;
+	// The total of hold time for call (calculated at closing time) in seconds
+	callTotalHoldTime?: number;
+	// The pbx queue the call belongs to
+	queue: string;
+	// The ID assigned to the call (opaque ID)
+	callUniqueId?: string;
+	v: {
+		_id?: string;
+		token?: string;
+		status: 'online' | 'busy' | 'away' | 'offline';
+		phone?: string | null;
 	};
 }
 
@@ -187,7 +224,12 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
+export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
+	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & { serviceTimeDuration?: number };
+
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
+
+export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {

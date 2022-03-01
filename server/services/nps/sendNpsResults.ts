@@ -27,7 +27,7 @@ export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(nps
 			data,
 		});
 	} catch (e) {
-		SystemLogger.error(e);
+		SystemLogger.error(e as Error);
 		return false;
 	}
 });

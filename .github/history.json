@@ -69992,6 +69992,122 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.4.1": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24432",
+          "title": "Release 4.4.1",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "sampaiodiego",
+            "pierre-lehnen-rc",
+            "dougfabris",
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24387",
+          "title": "[FIX] Slash commands previews not working",
+          "userLogin": "ostjen",
+          "milestone": "4.4.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "24381",
+          "title": "[FIX] Add ?close to OAuth callback url",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24409",
+          "title": "[FIX] Startup errors creating indexes",
+          "userLogin": "sampaiodiego",
+          "description": "Fix `bio` and `prid` startup index creation errors.",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24401",
+          "title": "[FIX] Outgoing webhook without scripts not saving messages",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24407",
+          "title": "[FIX] Skip cloud steps for registered servers on setup wizard",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "24418",
+          "title": "[FIX] Oembed request not respecting payload limit",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.4.2": {
+      "node_version": "14.18.2",
+      "npm_version": "6.14.15",
+      "apps_engine_version": "1.30.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "24450",
+          "title": "[FIX] OAuth mismatch redirect_uri error",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "24453",
+          "title": "Chore: bump fuselage version",
+          "userLogin": "dougfabris",
+          "milestone": "4.4.2",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }

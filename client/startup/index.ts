@@ -31,3 +31,4 @@ import './userRoles';
 import './userSetUtcOffset';
 import './usersObserve';
 import './userStatusManuallySet';
+import '../lib/rooms/roomTypes';

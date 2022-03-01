@@ -19,3 +19,5 @@ export type Jsonify<T> = T extends Date
 			[k in keyof T]: Jsonify<T[k]>;
 	  }
 	: T;
+
+export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
