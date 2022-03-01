@@ -23,37 +23,40 @@ describe('[Resolution]', () => {
 		});
 
 		it('it should close the sidenav', () => {
-			mainContent.mainContent.getLocation().its('x').should('be.equal', 0);
-			sideNav.sideNavBar.getLocation().its('x').should('not.be.equal', 0);
+			mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
+			sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('not.be.equal', 0);
 		});
 
 		describe('moving elements:', () => {
 			beforeEach(() => {
+				cy.wait(150);
 				sideNav.sideNavBar
 					.getLocation()
 					.its('x')
 					.then((x) => {
 						if (x !== 0) {
-							sideNav.burgerBtn.click();
+							cy.wait(150);
+							sideNav.burgerBtn.click({ force: true });
 							cy.wait(500);
 						}
 					});
 			});
 
 			it('it should open de sidenav', () => {
-				mainContent.mainContent.getLocation().its('x').should('be.equal', 0);
-				sideNav.sideNavBar.getLocation().its('x').should('be.equal', 0);
+				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
+				sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('be.equal', 0);
 			});
 
 			it('it should not close sidebar on pressing the sidebar item menu', () => {
 				sideNav.firstSidebarItemMenu.click();
-				mainContent.mainContent.getLocation().its('x').should('be.equal', 0);
-				sideNav.sideNavBar.getLocation().its('x').should('be.equal', 0);
+				mainContent.mainContent.should('be.visible').getLocation().its('x').should('be.equal', 0);
+				sideNav.sideNavBar.should('be.visible').getLocation().its('x').should('be.equal', 0);
 				sideNav.firstSidebarItemMenu.click();
 			});
 
 			it('it should close the sidenav when open general channel', () => {
 				sideNav.openChannel('general');
+				cy.wait(500);
 				sideNav.sideNavBar.getLocation().its('x').should('not.be.equal', 0);
 			});
 
