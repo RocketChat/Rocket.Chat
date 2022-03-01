@@ -4,8 +4,9 @@ import type keys from '../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 export interface IMessageType {
 	id: MessageTypesValues;
 	system: boolean;
-	message: keyof typeof keys;
+	message?: keyof typeof keys;
 	data?: (message: IMessage) => any;
+	render?: (message: IMessage) => any;
 }
 
 type MessageTypes = {

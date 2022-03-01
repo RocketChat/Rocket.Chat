@@ -18,7 +18,7 @@ type ParsedDays = {
 };
 
 const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage): number =>
-	moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
+	moment(new Date(room?.closedAt || new Date())).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
 
 const parseDays = (acc: ParsedDays, day: IBusinessHourWorkHour): ParsedDays => {
 	acc[day.day] = {
@@ -47,7 +47,7 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 	}
 
 	let totalSeconds = 0;
-	const endOfConversation = moment(new Date(room.closedAt));
+	const endOfConversation = moment(new Date(room?.closedAt || new Date()));
 	const startOfInactivity = moment(new Date(agentLastMessage.ts));
 	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
 	const inactivityDay = moment(new Date(agentLastMessage.ts));

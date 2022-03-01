@@ -20,7 +20,16 @@ type VoipMessageTypesValues =
 	| 'voip-call-wrapup'
 	| 'voip-call-ended-unexpectedly';
 
-type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close' | 'livechat_navigation_history';
+type OmnichannelTypesValues =
+	| 'livechat_transfer_history_fallback'
+	| 'livechat-close'
+	| 'livechat_navigation_history'
+	| 'livechat_transfer_history'
+	| 'livechat_transcript_history'
+	| 'livechat_video_call'
+	| 'livechat_webrtc_video_call'
+	| 'omnichannel_placed_chat_on_hold'
+	| 'omnichannel_on_hold_chat_resumed';
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 

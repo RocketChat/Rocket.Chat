@@ -92,6 +92,7 @@ MessageTypes.registerType({
 
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
+	system: true,
 	render(message: IOmnichannelSystemMessage) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
 			return TAPi18n.__('WebRTC_call_ended_message', {

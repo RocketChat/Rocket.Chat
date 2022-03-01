@@ -142,8 +142,8 @@ export type OmnichannelEndpoints = {
 			open: string;
 			roomName: string;
 			onhold: string;
-			createdAt: { start?: string; end?: string } | string;
-			closedAt: { start?: string; end?: string } | string;
+			createdAt: string;
+			closedAt: string;
 			guest: string;
 			fname: string;
 			servedBy: string[];

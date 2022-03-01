@@ -6,17 +6,20 @@ import { findRooms } from '../../../server/api/lib/rooms';
 import { typedJsonParse } from '../../../../../lib/typedJsonParse';
 
 type DateParam = { start?: string; end?: string };
-
-const validateDateParams = (property: string, date: DateParam | string): DateParam => {
-	const parsedDate = date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
-
-	if (parsedDate?.start && isNaN(Date.parse(parsedDate.start))) {
+const parseDateParams = (date?: string): DateParam => {
+	return date && typeof date === 'string' ? typedJsonParse<DateParam>(date) : {};
+};
+const validateDateParams = (property: string, date: DateParam = {}): DateParam => {
+	if (date?.start && isNaN(Date.parse(date.start))) {
 		throw new Error(`The "${property}.start" query parameter must be a valid date.`);
 	}
-	if (parsedDate?.end && isNaN(Date.parse(parsedDate.end))) {
+	if (date?.end && isNaN(Date.parse(date.end))) {
 		throw new Error(`The "${property}.end" query parameter must be a valid date.`);
 	}
-	return parsedDate;
+	return date;
+};
+const parseAndValidate = (property: string, date?: string): DateParam => {
+	return validateDateParams(property, parseDateParams(date));
 };
 
 API.v1.addRoute(
@@ -51,8 +54,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const createdAt = validateDateParams('createdAt', createdAtParam);
-			const closedAt = validateDateParams('closedAt', closedAtParam);
+			const createdAt = parseAndValidate('createdAt', createdAtParam);
+			const closedAt = parseAndValidate('closedAt', closedAtParam);
 
 			if (customFields) {
 				customFields = JSON.parse(customFields);

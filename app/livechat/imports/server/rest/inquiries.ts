@@ -3,8 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ILivechatInquiryRecord, LivechatInquiryStatus } from '../../../../../definition/IInquiry';
 import { Users, LivechatInquiry } from '../../../../models/server/raw/index';
 import LivechatDepartment from '../../../../models/server/models/LivechatDepartment';
-// @ts-expect-error
-import { hasPermission } from '../../../../authorization';
+import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 
