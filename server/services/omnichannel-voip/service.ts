@@ -361,6 +361,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			extension: 1,
 			_id: 1,
 			username: 1,
+			name: 1,
 		});
 
 		return (extensions as unknown as IVoipExtensionBase[]).map((ext) => {
@@ -368,6 +369,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return {
 				userId: user?._id,
 				username: user?.username,
+				name: user?.name,
 				queues: this.getQueuesForExt(ext.extension, summary),
 				...ext,
 			};

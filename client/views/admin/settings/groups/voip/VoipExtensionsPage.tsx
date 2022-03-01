@@ -4,9 +4,11 @@ import React, { FC, useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../../components/GenericTable';
 import Page from '../../../../../components/Page';
+import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import AssignAgentButton from './AssignAgentButton';
 import AssignAgentModal from './AssignAgentModal';
 import RemoveAgentButton from './RemoveAgentButton';
 
@@ -51,10 +53,25 @@ const VoipExtensionsPage: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, extension, username, state, queues }) => (
+		({ _id, extension, username, name, state, queues }) => (
 			<Table.Row key={_id} tabIndex={0}>
 				<Table.Cell withTruncatedText>{extension}</Table.Cell>
-				<Table.Cell withTruncatedText>{username || t('Unassigned')}</Table.Cell>
+				<Table.Cell withTruncatedText>
+					{username ? (
+						<Box display='flex' alignItems='center'>
+							<UserAvatar size={'x28'} username={username} />
+							<Box display='flex' mi='x8'>
+								<Box display='flex' flexDirection='column' alignSelf='center'>
+									<Box fontScale='p2m' color='default'>
+										{name || username}
+									</Box>
+								</Box>
+							</Box>
+						</Box>
+					) : (
+						t('Free')
+					)}
+				</Table.Cell>
 				<Table.Cell withTruncatedText>{state}</Table.Cell>
 				<Table.Cell withTruncatedText maxHeight='x36'>
 					<Box display='flex' flexDirection='row' alignItems='center' title={queues?.join(', ')}>
@@ -69,7 +86,7 @@ const VoipExtensionsPage: FC = () => {
 						{queues?.length > 2 && `+${(queues.length - 2).toString()}`}
 					</Box>
 				</Table.Cell>
-				{username ? <RemoveAgentButton username={username} reload={reload} /> : null}
+				{username ? <RemoveAgentButton username={username} reload={reload} /> : <AssignAgentButton extension={extension} reload={reload} />}
 			</Table.Row>
 		),
 		[reload, t],

@@ -652,4 +652,8 @@ export class VoIPUser extends Emitter<VoipEvents> implements OutgoingRequestDele
 	getAggregator(): QueueAggregator | undefined {
 		return this.queueInfo;
 	}
+
+	getRegistrarState(): string | undefined {
+		return this.registerer?.state.toString().toLocaleLowerCase();
+	}
 }

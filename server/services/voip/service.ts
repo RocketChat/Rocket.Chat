@@ -47,14 +47,28 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async init(): Promise<void> {
 		this.logger.info('Starting VoIP service');
-		await this.commandHandler.initConnection(CommandType.AMI);
-		this.logger.info('VoIP service started');
+		try {
+			await this.commandHandler.initConnection(CommandType.AMI);
+			this.logger.info('VoIP service started');
+		} catch (err) {
+			this.logger.error({ msg: 'Error initializing VOIP service', err });
+		}
 	}
 
 	async stop(): Promise<void> {
 		this.logger.info('Stopping VoIP service');
-		await this.commandHandler.stop();
-		this.logger.info('VoIP service stopped');
+		try {
+			this.commandHandler.stop();
+			this.logger.info('VoIP service stopped');
+		} catch (err) {
+			this.logger.error({ msg: 'Error stopping VoIP service', err });
+		}
+	}
+
+	async refresh(): Promise<void> {
+		this.logger.info('Restarting VoIP service due to settings changes');
+		await this.stop();
+		await this.init();
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
