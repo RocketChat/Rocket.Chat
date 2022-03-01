@@ -27,6 +27,7 @@ import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomMan
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
+import { e2e } from '../../../../e2e/client/rocketchat.e2e';
 
 export const chatMessages = {};
 
@@ -245,6 +246,10 @@ Template.roomOld.helpers({
 				statusDisplay: leader.statusText || t(leader.status || 'offline'),
 			};
 		}
+	},
+
+	e2eRoom() {
+		return Template.instance().state.get('e2eRoom');
 	},
 
 	chatNowLink() {
@@ -682,6 +687,13 @@ Meteor.startup(() => {
 				autoTranslate: subscription && subscription.autoTranslate,
 				autoTranslateLanguage: subscription && subscription.autoTranslateLanguage,
 			});
+		});
+
+		this.autorun(async () => {
+			console.log('rid = ', rid);
+			const e2eRoom = await e2e.getInstanceByRoomId(rid);
+			console.log('E2e = ', e2eRoom);
+			this.state.set('e2eRoom', e2eRoom);
 		});
 
 		this.showUsersOffline = new ReactiveVar(false);

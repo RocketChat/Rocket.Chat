@@ -296,7 +296,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	async requestPassword() {
+	async requestPassword(requestedByUser) {
 		return new Promise((resolve) => {
 			const showModal = () => {
 				imperativeModal.open({
@@ -330,6 +330,10 @@ class E2E extends Emitter {
 				});
 			};
 
+			if (requestedByUser) {
+				showModal();
+			}
+
 			if (failedToDecodeKey) {
 				showModal();
 			} else {
@@ -338,8 +342,8 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decodePrivateKey(private_key) {
-		const password = await this.requestPassword();
+	async decodePrivateKey(private_key, requestedByUser = false) {
+		const password = await this.requestPassword(requestedByUser);
 
 		const masterKey = await this.getMasterKey(password);
 

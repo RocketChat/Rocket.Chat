@@ -6,6 +6,7 @@
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
 						{{> RoomAnnouncement announcement=announcement announcementDetails=announcementDetails }}
+						{{> E2ERoomBanner e2eRoom=e2eRoom }}
 					{{/unless}}
 					<div class="container-bars {{containerBarsShow unreadData uploading}}">
 						{{#with unreadData}}

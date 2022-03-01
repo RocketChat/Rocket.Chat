@@ -128,6 +128,8 @@ createTemplateForComponent('channelFilesList', () => import('./views/room/contex
 
 createTemplateForComponent('RoomAnnouncement', () => import('./views/room/Announcement'));
 
+createTemplateForComponent('E2ERoomBanner', () => import('./views/room/Banners/E2ERoomBanner'));
+
 createTemplateForComponent('PruneMessages', () => import('./views/room/contextualBar/PruneMessages'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
