@@ -3103,7 +3103,7 @@
   "New_chat_in_queue": "Neuer Chat in der Warteschlange",
   "New_chat_priority": "Priorität geändert: __user__ hat die Priorität in __priority__ geändert",
   "New_chat_transfer": "Neue Chatübertragung: __transfer__",
-  "New_chat_transfer_fallback": "An die Ersatzabteilung weitergeleitet: __fallback_",
+  "New_chat_transfer_fallback": "An die Ersatzabteilung weitergeleitet: __fallback__",
   "New_Contact": "Neuer Kontakt",
   "New_Custom_Field": "Neues benutzerdefiniertes Feld",
   "New_Department": "Neue Abteilung",
