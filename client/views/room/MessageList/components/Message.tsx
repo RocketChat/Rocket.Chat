@@ -11,7 +11,7 @@ import {
 	MessageRole,
 	MessageRoles,
 	MessageTimestamp,
-	MessageUsername,
+MessageUsername,
 	MessageReactions,
 	MessageStatusPrivateIndicator,
 	MessageReactionAction,
@@ -24,9 +24,9 @@ import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageActions from '../../../../components/Message/MessageActions';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
-import Broadcast from '../../../../components/Message/Metrics/Broadcast';
-import Discussion from '../../../../components/Message/Metrics/Discussion';
-import Thread from '../../../../components/Message/Metrics/Thread';
+import BroadcastMetric from '../../../../components/Message/Metrics/Broadcast';
+import DiscussionMetric from '../../../../components/Message/Metrics/Discussion';
+import ThreadMetric from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { TranslationKey, useTranslation } from '../../../../contexts/TranslationContext';
@@ -41,6 +41,7 @@ import {
 	useMessageOembedMaxWidth,
 	useMessageRunActionLink,
 } from '../../contexts/MessageContext';
+import { useIsEditingMessage } from '../contexts/MessageEditingContext';
 import {
 	useMessageListShowRoles,
 	useMessageListShowUsername,
@@ -54,6 +55,8 @@ import { MessageIndicators } from './MessageIndicators';
 import { MessageReaction } from './MessageReaction';
 import Toolbox from './Toolbox';
 import OEmbedList from './UrlPreview';
+
+const style = { backgroundColor: 'var(--message-box-editing-color)' };
 
 const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
 	message,
@@ -87,10 +90,12 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 
+	const isEditingMessage = useIsEditingMessage(message._id);
+
 	const mineUid = useUserId();
 
 	return (
-		<MessageTemplate {...props}>
+		<MessageTemplate {...props} data-id={message._id} style={isEditingMessage ? style : undefined}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
 				{sequential && <MessageIndicators message={message} />}
@@ -175,7 +180,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{isThreadMainMessage(message) && (
-					<Thread
+					<ThreadMetric
 						openThread={openThread(message._id)}
 						counter={message.tcount}
 						following={Boolean(mineUid && message?.replies.indexOf(mineUid) > -1)}
@@ -190,7 +195,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{isDiscussionMessage(message) && (
-					<Discussion
+					<DiscussionMetric
 						count={message.dcount}
 						drid={message.drid}
 						lm={message.dlm}
@@ -200,7 +205,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				)}
 
 				{message.location && <MessageLocation location={message.location} />}
-				{broadcast && user.username && <Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
+				{broadcast && user.username && <BroadcastMetric replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />}
 
 				{oembedIsEnabled && message.urls && (
 					<Box width={oembedWidth}>

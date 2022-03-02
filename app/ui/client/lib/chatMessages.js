@@ -26,6 +26,7 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
+import { setEditingMessage, clearEditingMessage } from '../../../../client/views/room/MessageList/providers/messageEditingSubscription';
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -171,7 +172,7 @@ export class ChatMessages {
 	}
 
 	edit(element, isEditingTheNextOne) {
-		const message = this.collection.findOne(element.dataset.id);
+		const message = this.collection.findOne(element.dataset.id); // message ID
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -181,7 +182,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (element.classList.contains('system')) {
+		if (element.classList.contains('system')) { // da pra trazer da message
 			return;
 		}
 
@@ -209,7 +210,8 @@ export class ChatMessages {
 		this.editing.element = element;
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
-		element.classList.add('editing');
+		setEditingMessage(message._id);
+		// element.classList.add('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			messageBoxState.set(this.input, message.attachments[0].description);
@@ -234,6 +236,7 @@ export class ChatMessages {
 		this.editing.element.classList.remove('editing');
 		delete this.editing.id;
 		delete this.editing.element;
+		clearEditingMessage();
 
 		messageBoxState.set(this.input, this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
