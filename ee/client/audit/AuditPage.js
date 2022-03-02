@@ -38,14 +38,8 @@ const AuditPage = () => {
 
 	const { handleMsg, handleType, handleVisitor, handleAgent, handleUsers, handleRid, handleDateRange } = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value) => {
+		handleUsers(value);
 	});
 
 	const apply = useMutableCallback(() => {

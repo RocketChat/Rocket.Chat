@@ -1,8 +1,8 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
-import { roomTypes } from '../../../app/utils/client';
 import { ReactiveUserStatus } from '../../components/UserStatus';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
@@ -11,7 +11,7 @@ const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, use
 			<ReactiveUserStatus uid={item._id} />
 		</Sidebar.Item.Icon>
 	);
-	const href = roomTypes.getRouteLink(item.t, item);
+	const href = roomCoordinator.getRouteLink(item.t, item);
 
 	return (
 		<SideBarItemTemplate
