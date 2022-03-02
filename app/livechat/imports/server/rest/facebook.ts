@@ -12,6 +12,14 @@ import { Livechat } from '../../../server/lib/Livechat';
  * @apiName Facebook
  * @apiGroup Livechat
  *
+ * @apiParam {String} mid Facebook message id
+ * @apiParam {String} page Facebook pages id
+ * @apiParam {String} token Facebook user's token
+ * @apiParam {String} first_name Facebook user's first name
+ * @apiParam {String} last_name Facebook user's last name
+ * @apiParam {String} [text] Facebook message text
+ * @apiParam {String} [attachments] Facebook message attachments
+ *
  */
 API.v1.addRoute('livechat/facebook', {
 	post() {
