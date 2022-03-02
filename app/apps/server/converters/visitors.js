@@ -51,7 +51,7 @@ export class AppVisitorsConverter {
 			token: visitor.token,
 			phone: visitor.phone,
 			livechatData: visitor.livechatData,
-			status: visitor.status,
+			status: visitor.status || 'online',
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
 		};

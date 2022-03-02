@@ -1,6 +1,6 @@
 import { Box, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState, memo } from 'react';
+import React, { ReactElement, useState, memo } from 'react';
 
 import { IUser } from '../../../definition/IUser';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
@@ -8,26 +8,18 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-type Username = IUser['username'];
-
 type CreateDirectMessageProps = {
 	onClose: () => void;
 };
 
-const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
+const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps): ReactElement => {
 	const t = useTranslation();
-	const [users, setUsers] = useState<Array<Username>>([]);
+	const [users, setUsers] = useState<Array<IUser['username']>>([]);
 
 	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
 
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return setUsers([...users, value]);
-		}
-		setUsers(users.filter((current) => current !== value));
+	const onChangeUsers = useMutableCallback((value: IUser['username'][]) => {
+		setUsers(value);
 	});
 
 	const onCreate = useMutableCallback(async () => {

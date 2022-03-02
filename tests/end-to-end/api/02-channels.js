@@ -5,6 +5,7 @@ import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
+import { createVisitor } from '../../data/livechat/rooms';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
 function getRoomInfo(roomId) {
@@ -280,6 +281,17 @@ describe('[Channels]', function () {
 	});
 
 	describe('[/channels.files]', () => {
+		before(() => updateSetting('VoIP_Enabled', true));
+		const createVoipRoom = async () => {
+			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
+			const visitor = await createVisitor();
+			const roomResponse = await createRoom({
+				token: visitor.token,
+				type: 'v',
+				agentId: testUser._id,
+			});
+			return roomResponse.body.room;
+		};
 		it('should fail if invalid channel', (done) => {
 			request
 				.get(api('channels.files'))
@@ -294,6 +306,22 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				})
 				.end(done);
+		});
+
+		it('should fail for room type v', async () => {
+			const { _id } = await createVoipRoom();
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: _id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
 		});
 
 		it('should succeed when searching by roomId', (done) => {
