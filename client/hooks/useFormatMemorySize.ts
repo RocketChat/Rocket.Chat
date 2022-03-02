@@ -21,4 +21,4 @@ const formatMemorySize = (memorySize: number): string | null => {
 	return `${s.numberFormat(memorySize / divider, decimalDigits)} ${units[order]}`;
 };
 
-export const useFormatMemorySize = (): unknown => formatMemorySize;
+export const useFormatMemorySize = (): ((memorySize: number) => string | null) => formatMemorySize;

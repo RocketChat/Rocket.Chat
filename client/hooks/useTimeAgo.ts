@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { useCallback } from 'react';
 
-export const useTimeAgo = (): unknown =>
+export const useTimeAgo = (): ((time: any) => string) =>
 	useCallback((time) => moment(time).calendar(null, { sameDay: 'LT', lastWeek: 'dddd LT', sameElse: 'LL' }), []);
 
 export const useShortTimeAgo = (): unknown =>
