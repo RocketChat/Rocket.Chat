@@ -4771,7 +4771,7 @@
   "WebRTC_monitor_call_from_%s": "Anruf von %s überwachen",
   "WebRTC_Servers": "STUN/TURN-Server",
   "WebRTC_Servers_Description": "Kommaseparierte Liste von STUN- und TURN-Servern.<br/>Benutzernamen, Passwörter und Ports sind in diesen Formaten erlaubt: `username:password@stun:host:port` oder `username:password@turn:host:port",
-  "WebRTC_call_ended_message": "<i class=\"icon-phone\"></i>Anruf beendet um  __endTime_, Anrufdauer __callDuration__",
+  "WebRTC_call_ended_message": "<i class=\"icon-phone\"></i>Anruf beendet um  __endTime__, Anrufdauer __callDuration__",
   "WebRTC_call_declined_message": "<i class=\"icon-phone\"></i>Anruf abgelehnt",
   "Website": "Webseite",
   "Wednesday": "Mittwoch",
