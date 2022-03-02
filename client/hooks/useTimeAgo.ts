@@ -12,7 +12,16 @@ export const useShortTimeAgo = (): unknown =>
 				lastDay: '[Yesterday]',
 				lastWeek: 'dddd',
 				sameElse(now) {
-					if (this.isBefore(now, 'year')) {
+					/* 
+					Using only this.isBefore():
+
+					ERRORS:
+						Cannot invoke an object which is possibly 'undefined'.
+						This expression is not callable.
+						Not all constituents of type 'CalendarSpecVal' are callable.
+						Type 'string' has no call signatures.
+					*/
+					if ((this as unknown as moment.Moment).isBefore(now, 'year')) {
 						return 'LL';
 					}
 					return 'MMM Do';
