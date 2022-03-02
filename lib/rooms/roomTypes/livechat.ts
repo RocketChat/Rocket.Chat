@@ -14,7 +14,7 @@ export function getLivechatRoomType(coordinator: RoomCoordinator): IRoomTypeConf
 				return coordinator.openRoom('l', id);
 			},
 			link({ rid }): Record<string, string> {
-				return { id: rid as string };
+				return { id: rid || '' };
 			},
 		},
 

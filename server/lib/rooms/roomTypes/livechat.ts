@@ -1,5 +1,4 @@
 import { LivechatRooms, LivechatVisitors } from '../../../../app/models/server';
-import type { IRoom } from '../../../../definition/IRoom';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import type { AtLeast, ValueOf } from '../../../../definition/utils';
@@ -9,7 +8,7 @@ import { roomCoordinator } from '../roomCoordinator';
 export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
 
 roomCoordinator.add(LivechatRoomType, {
-	allowRoomSettingChange(_room, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+	allowRoomSettingChange(_room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
@@ -18,20 +17,20 @@ roomCoordinator.add(LivechatRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action: ValueOf<typeof RoomMemberActions>): boolean {
+	allowMemberAction(_room, action) {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 
-	roomName(room: any): string | undefined {
-		return room.name || room.fname || room.label;
+	roomName(room, _userId?) {
+		return room.name || room.fname || (room as any).label;
 	},
 
-	canAccessUploadedFile({ rc_token: token, rc_rid: rid }): boolean {
+	canAccessUploadedFile({ rc_token: token, rc_rid: rid }) {
 		return token && rid && LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token);
 	},
 
-	getNotificationDetails(room: IRoom, _user, notificationMessage: string) {
-		const title = `[Omnichannel] ${this.roomName(room)}`;
+	getNotificationDetails(room, _sender, notificationMessage, userId) {
+		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
 		return { title, text };
@@ -41,8 +40,8 @@ roomCoordinator.add(LivechatRoomType, {
 		return LivechatVisitors.findOneById(senderId);
 	},
 
-	getReadReceiptsExtraData(message: any) {
-		const { token } = message;
+	getReadReceiptsExtraData(message) {
+		const { token } = message as any;
 		return { token };
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'roomName'>);

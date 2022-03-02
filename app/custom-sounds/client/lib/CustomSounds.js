@@ -33,6 +33,12 @@ class CustomSoundsClass {
 			extension: 'mp3',
 			src: getURL('sounds/seasons.mp3'),
 		});
+		this.add({
+			_id: 'telephone',
+			name: 'Telephone',
+			extension: 'mp3',
+			src: getURL('sounds/telephone.mp3'),
+		});
 	}
 
 	add(sound) {
