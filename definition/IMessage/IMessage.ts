@@ -21,7 +21,7 @@ type VoipMessageTypesValues =
 
 type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-close';
 
-type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+type OtrMessageTypeValues = 'otr' | 'otr-ack' | 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
@@ -47,7 +47,7 @@ export type MessageTypesValues =
 	| 'room_e2e_disabled'
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
-	| OtrSystemMessages;
+	| OtrMessageTypeValues;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
