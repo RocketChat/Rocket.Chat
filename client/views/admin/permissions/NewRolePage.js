@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -15,7 +15,7 @@ const NewRolePage = () => {
 	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers } = useForm({
+	const { values, handlers, reset } = useForm({
 		name: '',
 		description: '',
 		scope: 'Users',
@@ -44,11 +44,16 @@ const NewRolePage = () => {
 				</Box>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch w='full'>
-					<Button primary onClick={handleSave}>
-						{t('Save')}
-					</Button>
-				</ButtonGroup>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' stretch w='full'>
+					<Margins inlineEnd='x4'>
+						<Button flexGrow={1} type='reset' onClick={reset}>
+							{t('Reset')}
+						</Button>
+						<Button flexGrow={1} primary onClick={handleSave}>
+							{t('Save')}
+						</Button>
+					</Margins>
+				</Box>
 			</VerticalBar.Footer>
 		</>
 	);
