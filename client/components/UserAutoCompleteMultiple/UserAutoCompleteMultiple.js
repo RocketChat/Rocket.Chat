@@ -1,6 +1,6 @@
 import { MultiSelectFiltered, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip, CheckBox } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -12,6 +12,7 @@ const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
+	const [labelData, setLabelData] = useState({});
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data, phase } = useEndpointData(
 		'users.autocomplete',
@@ -19,7 +20,10 @@ const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
 	);
 	const options = useMemo(() => (data && data.items.map((user) => [valueIsId ? user._id : user.username, user.name])) || [], [data]);
 
-	const labelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
+	useEffect(() => {
+		const newLabelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
+		setLabelData({ ...labelData, ...newLabelData });
+	}, [data]);
 
 	const renderItem = ({ value, label, selected, ...props }) => {
 		const username = valueIsId ? labelData[value] : value;
