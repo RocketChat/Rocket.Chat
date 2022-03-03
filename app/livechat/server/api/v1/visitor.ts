@@ -8,6 +8,7 @@ import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { ILivechatVisitorDTO } from '../../../../../definition/ILivechatVisitor';
 import { IRoom } from '../../../../../definition/IRoom';
+import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/visitor', {
 	async post() {
@@ -37,13 +38,15 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = Livechat.registerGuest(guest);
+		const visitorId = Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
 
-		let visitor = await VisitorsRaw.getVisitorByToken(token, {});
+		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = LivechatRooms.findOpenByVisitorToken(token);
+		const cursor = LivechatRooms.findOpenByVisitorToken(visitor?.token);
 		cursor.forEach((room: IRoom) => {
-			Livechat.saveRoomInfo(room, visitor);
+			if (visitor) {
+				Livechat.saveRoomInfo(room, visitor);
+			}
 		});
 
 		if (customFields && customFields instanceof Array) {
@@ -104,7 +107,8 @@ API.v1.addRoute('livechat/visitor/:token', {
 			},
 		}).fetch();
 
-		if (rooms?.length) {
+		// if gdpr is enabled, bypass rooms check
+		if (rooms?.length && !settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 

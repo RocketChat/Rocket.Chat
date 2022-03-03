@@ -27,7 +27,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 }) => {
 	const t = useTranslation();
 
-	const inputRef = useAutoFocus(true);
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { values, handlers } = useForm({
 		email: emailDefault || '',

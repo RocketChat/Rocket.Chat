@@ -567,7 +567,7 @@ Meteor.startup(function () {
 			alert: 'Force_visitor_to_accept_data_processing_consent_enabled_alert',
 			i18nLabel: 'Force_visitor_to_accept_data_processing_consent',
 			i18nDescription: 'Force_visitor_to_accept_data_processing_consent_description',
-			enableQuery: omnichannelEnabledQuery,
+			enableQuery: [omnichannelEnabledQuery, { _id: 'Livechat_Allow_collect_and_store_HTTP_header_informations', value: true }],
 		});
 
 		this.add('Livechat_data_processing_consent_text', '', {
@@ -578,7 +578,11 @@ Meteor.startup(function () {
 			public: true,
 			i18nLabel: 'Data_processing_consent_text',
 			i18nDescription: 'Data_processing_consent_text_description',
-			enableQuery: [{ _id: 'Livechat_force_accept_data_processing_consent', value: true }, omnichannelEnabledQuery],
+			enableQuery: [
+				{ _id: 'Livechat_force_accept_data_processing_consent', value: true },
+				{ _id: 'Livechat_Allow_collect_and_store_HTTP_header_informations', value: true },
+				omnichannelEnabledQuery,
+			],
 		});
 
 		this.add('Livechat_agent_leave_action', 'none', {
