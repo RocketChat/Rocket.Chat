@@ -97,7 +97,7 @@
 		"@types/marked": "^1.2.2",
 		"@types/meteor": "1.4.81",
 		"@types/mkdirp": "^1.0.1",
-		"@types/mocha": "^8.2.3",
+		"@types/mocha": "^9.1.0",
 		"@types/mock-require": "^2.0.1",
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.6.10",
