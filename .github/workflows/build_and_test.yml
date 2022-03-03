@@ -30,11 +30,11 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Free disk space
         run: |
@@ -189,7 +189,7 @@ jobs:
           cd -
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -202,7 +202,7 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache cypress
         id: cache-cypress
@@ -299,7 +299,7 @@ jobs:
           cd -
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -312,7 +312,7 @@ jobs:
           docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
           docker exec mongo mongo --eval 'rs.status()'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Cache cypress
         id: cache-cypress
@@ -408,7 +408,7 @@ jobs:
         release: ['official', 'preview']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -447,7 +447,7 @@ jobs:
           key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 
@@ -532,7 +532,7 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -617,7 +617,7 @@ jobs:
       IMAGE_NAME: 'rocketchat/rocket.chat'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -729,10 +729,10 @@ jobs:
         service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Use Node.js 14.18.3
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.18.3'
 
