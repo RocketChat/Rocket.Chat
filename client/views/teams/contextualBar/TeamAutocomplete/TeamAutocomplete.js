@@ -1,9 +1,13 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState } from 'react';
+import { SelectFiltered, Option } from '@rocket.chat/fuselage';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Avatar from './Avatar';
 
+const findOption = (options, value) => {
+	const option = options?.find((option) => option.teamId === value);
+	return option && { name: option.name, avatarETag: option.avatarETag, type: option.t, _id: option._id };
+};
 const TeamAutocomplete = (props) => {
 	const [filter, setFilter] = useState('');
 
@@ -12,29 +16,34 @@ const TeamAutocomplete = (props) => {
 		useMemo(() => ({ name: filter }), [filter]),
 	);
 
-	const options = useMemo(
-		() =>
-			(data &&
-				data.teams.map(({ name, teamId, _id, avatarETag, t }) => ({
-					value: teamId,
-					label: { name, avatarETag, type: t, _id },
-				}))) ||
-			[],
-		[data],
-	);
+	useEffect(() => {
+		console.log(filter);
+	}, [filter]);
+	const options = useMemo(() => (data && data.teams.map(({ name, teamId }) => [teamId, name])) || [], [data]);
+
+	const renderItem = ({ value, label, ...props }) => {
+		const item = findOption(data?.teams, value);
+		return <Option key={value} {...props} label={label} avatar={<Avatar {...item} />} />;
+	};
+
+	const renderSelected = ({ value, label }) => {
+		const item = findOption(data?.teams, value);
+		return (
+			<>
+				<Avatar size='x20' {...item} test='selected' /> {label}
+			</>
+		);
+	};
 
 	return (
-		<AutoComplete
+		<SelectFiltered
 			{...props}
+			options={options}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ label }) => (
-				<>
-					<Avatar size='x20' {...label} test='selected' /> {label.name}
-				</>
-			)}
-			renderItem={({ value, label, ...props }) => <Option key={value} {...props} label={label.name} avatar={<Avatar {...label} />} />}
-			options={options}
+			renderSelected={renderSelected}
+			renderItem={renderItem}
+			addonIcon='magnifier'
 		/>
 	);
 };
