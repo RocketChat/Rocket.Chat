@@ -2,7 +2,8 @@ import type { IUser } from '../../../definition/IUser';
 import type { IRole } from '../../../definition/IRole';
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
-import { addUserRolesAsync, removeUserFromRolesAsync } from '../../../app/authorization/server';
+import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
 import { Users } from '../../../app/models/server/raw';
 import { canAddNewUser } from '../../app/license/server/license';
 

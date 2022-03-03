@@ -6,7 +6,7 @@ import type { IRoom } from '../../../definition/IRoom';
 import { Users, Roles } from '../../../app/models/server/raw';
 // import { ensureArray } from '../../../lib/utils/arrayUtils';
 
-export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope: IRoom['_id']): Promise<boolean> => {
+export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> => {
 	if (!userId || !roleIds) {
 		return false;
 	}
