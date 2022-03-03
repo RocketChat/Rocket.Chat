@@ -7,35 +7,43 @@ import UserAvatar from '../avatar/UserAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const UserAutoCompleteMultiple = (props) => {
+const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
-	const options = useMemo(() => (data && data.items.map((user) => [user.username, user.name])) || [], [data]);
+	const options = useMemo(() => (data && data.items.map((user) => [valueIsId ? user._id : user.username, user.name])) || [], [data]);
 
-	const renderItem = ({ value, label, selected, ...props }) => (
-		<Option key={value} {...props}>
-			<OptionAvatar>
-				<UserAvatar username={value} size='x20' />
-			</OptionAvatar>
-			<OptionContent>
-				{label} <OptionDescription>({value})</OptionDescription>
-			</OptionContent>
-			<CheckBox checked={selected} />
-		</Option>
-	);
+	const labelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
 
-	const renderSelected = ({ value, onMouseDown }) => (
-		<Chip {...props} key={value} value={value} onClick={onMouseDown} margin='x4'>
-			<UserAvatar size='x20' username={value} />
-			<Box is='span' margin='none' mis='x4'>
-				{value}
-			</Box>
-		</Chip>
-	);
+	const renderItem = ({ value, label, selected, ...props }) => {
+		const username = valueIsId ? labelData[value] : value;
+		return (
+			<Option key={value} {...props}>
+				<OptionAvatar>
+					<UserAvatar username={username} size='x20' />
+				</OptionAvatar>
+				<OptionContent>
+					{label} <OptionDescription>({username})</OptionDescription>
+				</OptionContent>
+				<CheckBox checked={selected} />
+			</Option>
+		);
+	};
+
+	const renderSelected = ({ value, onMouseDown }) => {
+		const username = valueIsId ? labelData[value] : value;
+		return (
+			<Chip {...props} key={value} value={value} onClick={onMouseDown} margin='x4'>
+				<UserAvatar size='x20' username={username} />
+				<Box is='span' margin='none' mis='x4'>
+					{username}
+				</Box>
+			</Chip>
+		);
+	};
 
 	return (
 		<MultiSelectFiltered
