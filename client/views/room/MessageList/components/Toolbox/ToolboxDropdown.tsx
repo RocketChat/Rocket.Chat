@@ -13,12 +13,10 @@ const style = css`
 	right: 0;
 `;
 export const ToolboxDropdown = <R extends HTMLElement>({
-	onClose,
 	reference,
 	children,
 }: {
 	reference: React.RefObject<R>;
-	onClose: () => void;
 	children: ReactNode;
 }): ReactElement => {
 	const { isMobile } = useLayout();
@@ -27,8 +25,8 @@ export const ToolboxDropdown = <R extends HTMLElement>({
 	const DropdownTemplate = isMobile ? ToolboxDropdownMobile : ToolboxDropdownDesktop;
 	return (
 		<>
-			<Box onClick={onClose} className={style} position='fixed' />
-			<DropdownTemplate onClose={onClose} ref={target} reference={reference}>
+			<Box className={style} position='fixed' />
+			<DropdownTemplate ref={target} reference={reference}>
 				{children}
 			</DropdownTemplate>
 		</>

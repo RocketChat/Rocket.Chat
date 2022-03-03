@@ -30,14 +30,9 @@ export const MessageActionMenu: FC<{
 	};
 
 	return (
-		<MessageToolboxItem ref={ref} icon='kebab' onClick={(): void => setVisible(true)}>
+		<MessageToolboxItem ref={ref} icon='kebab' onClick={(): void => setVisible(!visible)}>
 			{visible && (
-				<ToolboxDropdown
-					reference={ref}
-					onClose={(): void => {
-						setVisible(false);
-					}}
-				>
+				<ToolboxDropdown reference={ref}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (
