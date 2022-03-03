@@ -23,7 +23,7 @@ import DepartmentField from './DepartmentField';
 import PriorityField from './PriorityField';
 import VisitorClientInfo from './VisitorClientInfo';
 
-function ChatInfoDirectory({ id, route, room }) {
+function ChatInfoDirectory({ id, route = undefined, room }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();

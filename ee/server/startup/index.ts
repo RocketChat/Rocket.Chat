@@ -1,10 +1,9 @@
 import './engagementDashboard';
 import './seatsCap';
 import './services';
+import { isRunningMs } from '../../../server/lib/isRunningMs';
 
-const { TRANSPORTER = '' } = process.env;
-
-// only starts network broker if transporter properly configured
-if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
+// only starts network broker if running in micro services mode
+if (isRunningMs()) {
 	require('./broker');
 }
