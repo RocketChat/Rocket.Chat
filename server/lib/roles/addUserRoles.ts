@@ -18,22 +18,22 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_i
 		});
 	}
 
-	if (!Array.isArray(roleIds)) {
-		// TODO: remove this check
-		roleIds = [roleIds];
-	}
+	// if (!Array.isArray(roleIds)) {
+	// 	// TODO: remove this check
+	// 	roleIds = [roleIds];
+	// }
 
 	const options = {
 		projection: {
-			name: 1,
+			_id: 1,
 		},
 	};
 
-	const existingRoles = await Roles.findByNames<Pick<IRole, '_id' | 'name'>>(roleIds, options).toArray();
-	const existingRoleNames = _.pluck(existingRoles, 'name');
-	const invalidRoleNames = _.difference(roleNames, existingRoleNames);
+	const existingRoles = await Roles.findByNames<Pick<IRole, '_id'>>(roleIds, options).toArray();
+	const existingRoleIds = _.pluck(existingRoles, '_id');
+	const invalidRoleIds = _.difference(roleIds, existingRoleIds);
 
-	for (const role of invalidRoleNames) {
+	for (const role of invalidRoleIds) {
 		if (!role) {
 			continue;
 		}
@@ -46,7 +46,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_i
 		});
 	}
 
-	await Roles.addUserRoles(userId, roleNames, scope);
+	await Roles.addUserRoles(userId, roleIds, scope);
 	return true;
 };
 

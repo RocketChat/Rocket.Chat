@@ -17,29 +17,28 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IR
 		});
 	}
 
-	if (!Array.isArray(roleids)) {
-		// TODO: remove this check
-		roleIds = [roleIds];
-	}
+	// if (!Array.isArray(roleids)) {
+	// 	// TODO: remove this check
+	// 	roleIds = [roleIds];
+	// }
 
 	const options = {
 		projection: {
-			name: 1,
+			_id: 1,
 		},
 	};
 
-// Decidir ainda o que fazer aqui
-	const existingRoles = await Roles.findAllExceptNames<Pick<IRole, '_id' | 'name'>>(roleNames, options).toArray();
-	const existingRoleNames = _.pluck(existingRoles, 'name');
-	const invalidRoleNames = _.difference(roleNames, existingRoleNames);
+	const existingRoles = await Roles.findAllExceptIds<Pick<IRole, '_id'>>(roleIds, options).toArray();
+	const existingRoleIds = _.pluck(existingRoles, '_id');
+	const invalidRoleIds = _.difference(roleIds, existingRoleIds);
 
-	if (invalidRoleNames.length) {
+	if (invalidRoleIds.length) {
 		throw new DetailedError('error-invalid-role', 'Invalid role', {
 			function: 'RocketChat.authz.removeUserFromRoles',
 		});
 	}
 
-	await Roles.removeUserRoles(userId, roleNames, scope);
+	await Roles.removeUserRoles(userId, roleIds, scope);
 	return true;
 };
 

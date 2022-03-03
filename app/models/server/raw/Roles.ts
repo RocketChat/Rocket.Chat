@@ -170,10 +170,10 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
 	}
 
-	findAllExceptNames<P>(names: IRole['name'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
+	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
 		const query: FilterQuery<IRole> = {
-			name: {
-				$nin: names,
+			_id: {
+				$nin: ids,
 			},
 		};
 
