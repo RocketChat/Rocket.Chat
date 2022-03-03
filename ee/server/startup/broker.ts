@@ -1,16 +1,18 @@
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
+import { pino } from 'pino';
 
 import { api } from '../../../server/sdk/api';
 import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
 const {
+	MS_NAMESPACE = '',
 	TRANSPORTER = '',
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
 	SERIALIZER = 'EJSON',
-	MOLECULER_LOG_LEVEL = 'error',
+	MOLECULER_LOG_LEVEL = 'warn',
 	BALANCE_STRATEGY = 'RoundRobin',
 	BALANCE_PREFER_LOCAL = 'false',
 	RETRY_FACTOR = '2',
@@ -70,6 +72,7 @@ class EJSONSerializer extends Base {
 }
 
 const network = new ServiceBroker({
+	namespace: MS_NAMESPACE,
 	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 	transporter: TRANSPORTER,
 	metrics: {
@@ -85,18 +88,25 @@ const network = new ServiceBroker({
 	},
 	cacher: CACHE,
 	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
-	logLevel: MOLECULER_LOG_LEVEL as any,
-	// logLevel: {
-	// 	// "TRACING": "trace",
-	// 	// "TRANS*": "warn",
-	// 	BROKER: 'debug',
-	// 	TRANSIT: 'debug',
-	// 	'**': 'info',
-	// },
 	logger: {
-		type: 'Console',
+		type: 'Pino',
 		options: {
-			formatter: 'short',
+			level: MOLECULER_LOG_LEVEL,
+			pino: {
+				options: {
+					timestamp: pino.stdTimeFunctions.isoTime,
+					...(process.env.NODE_ENV !== 'production'
+						? {
+								transport: {
+									target: 'pino-pretty',
+									options: {
+										colorize: true,
+									},
+								},
+						  }
+						: {}),
+				},
+			},
 		},
 	},
 	registry: {
@@ -155,6 +165,9 @@ const network = new ServiceBroker({
 		},
 	},
 	errorRegenerator: new CustomRegenerator(),
+	started(): void {
+		console.log('NetworkBroker started successfully.');
+	},
 });
 
 api.setBroker(new NetworkBroker(network));
