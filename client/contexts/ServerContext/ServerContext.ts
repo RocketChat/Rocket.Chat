@@ -66,7 +66,10 @@ export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMetho
 ): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
 	const { callEndpoint } = useContext(ServerContext);
 
-	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);
+	return useCallback(
+		(params) => callEndpoint(method, path, params as Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>),
+		[callEndpoint, path, method],
+	);
 };
 
 export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {
