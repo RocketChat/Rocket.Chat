@@ -1,5 +1,5 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -35,8 +35,7 @@ const SettingsDisplay: FC<SettingsDisplayProps> = ({ settings, setHasUnsavedChan
 
 	return (
 		<>
-			<Divider />
-			<Box display='flex' flexDirection='column'>
+			<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
 				<Box fontScale='h4' mb='x12'>
 					{t('Settings')}
 				</Box>
