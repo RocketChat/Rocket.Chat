@@ -4,6 +4,7 @@ import { DetailedError } from '../../../lib/utils/DetailedError';
 import type { IRole, IUser } from '../../../definition/IUser';
 import type { IRoom } from '../../../definition/IRoom';
 import { Users, Roles } from '../../../app/models/server/raw';
+// import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_id'][], scope: IRoom['_id']): Promise<boolean> => {
 	if (!userId || !roleIds) {
@@ -17,10 +18,8 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roleIds: IR
 		});
 	}
 
-	// if (!Array.isArray(roleids)) {
-	// 	// TODO: remove this check
-	// 	roleIds = [roleIds];
-	// }
+	// // TODO: remove this check
+	// roleIds = ensureArray(roleIds);
 
 	const options = {
 		projection: {
