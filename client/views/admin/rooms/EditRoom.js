@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
@@ -33,7 +33,7 @@ const getInitialValues = (room) => ({
 function EditRoom({ room, onChange, onReload }) {
 	const t = useTranslation();
 
-	const [deleted, setDeleted] = useState(false);
+	const [deleting, setDeleting] = useState(false);
 
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -119,17 +119,23 @@ function EditRoom({ room, onChange, onReload }) {
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
 	});
 
-	const deleteRoom = useMethod('eraseRoom');
+	const eraseRoom = useMethod('eraseRoom');
 
 	const handleDelete = useMutableCallback(() => {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
-			await deleteRoom(room._id);
-			dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-			onCancel();
-			setDeleted(true);
-			onReload();
-			roomsRoute.push({});
+			try {
+				setDeleting(true);
+				setModal(undefined);
+				await eraseRoom(room._id);
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				roomsRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				onReload();
+				setDeleting(false);
+			}
 		};
 
 		setModal(
@@ -141,7 +147,6 @@ function EditRoom({ room, onChange, onReload }) {
 
 	return (
 		<VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
-			{deleted && <Callout type='danger' title={t('Room_has_been_deleted')}></Callout>}
 			{room.t !== 'd' && (
 				<Box pbe='x24' display='flex' justifyContent='center'>
 					<RoomAvatarEditor roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
@@ -150,7 +155,7 @@ function EditRoom({ room, onChange, onReload }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput disabled={deleted || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
+					<TextInput disabled={deleting || !canViewName} value={roomName} onChange={handleRoomName} flexGrow={1} />
 				</Field.Row>
 			</Field>
 			{room.t !== 'd' && (
@@ -165,7 +170,7 @@ function EditRoom({ room, onChange, onReload }) {
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleted} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
+								<TextAreaInput rows={4} disabled={deleting} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -173,7 +178,7 @@ function EditRoom({ room, onChange, onReload }) {
 						<Field>
 							<Field.Label>{t('Announcement')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleted} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
+								<TextAreaInput rows={4} disabled={deleting} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -181,7 +186,7 @@ function EditRoom({ room, onChange, onReload }) {
 						<Field>
 							<Field.Label>{t('Topic')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleted} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
+								<TextAreaInput rows={4} disabled={deleting} value={roomTopic} onChange={handleRoomTopic} flexGrow={1} />
 							</Field.Row>
 						</Field>
 					)}
@@ -189,7 +194,7 @@ function EditRoom({ room, onChange, onReload }) {
 						<Field>
 							<Field.Row>
 								<Field.Label>{t('Private')}</Field.Label>
-								<ToggleSwitch disabled={deleted} checked={roomType === 'p'} onChange={changeRoomType} />
+								<ToggleSwitch disabled={deleting} checked={roomType === 'p'} onChange={changeRoomType} />
 							</Field.Row>
 							<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
 						</Field>
@@ -199,7 +204,7 @@ function EditRoom({ room, onChange, onReload }) {
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('Read_only')}</Field.Label>
-									<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleReadOnly} />
+									<ToggleSwitch disabled={deleting} checked={readOnly} onChange={handleReadOnly} />
 								</Box>
 							</Field.Row>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -210,7 +215,7 @@ function EditRoom({ room, onChange, onReload }) {
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
-									<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived} />
+									<ToggleSwitch disabled={deleting} checked={archived} onChange={handleArchived} />
 								</Box>
 							</Field.Row>
 						</Field>
@@ -221,7 +226,7 @@ function EditRoom({ room, onChange, onReload }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Default')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={isDefault} onChange={handleIsDefault} />
+						<ToggleSwitch disabled={deleting} checked={isDefault} onChange={handleIsDefault} />
 					</Box>
 				</Field.Row>
 			</Field>
@@ -229,7 +234,7 @@ function EditRoom({ room, onChange, onReload }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Favorite')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={favorite} onChange={handleFavorite} />
+						<ToggleSwitch disabled={deleting} checked={favorite} onChange={handleFavorite} />
 					</Box>
 				</Field.Row>
 			</Field>
@@ -237,7 +242,7 @@ function EditRoom({ room, onChange, onReload }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Featured')}</Field.Label>
-						<ToggleSwitch disabled={deleted} checked={featured} onChange={handleFeatured} />
+						<ToggleSwitch disabled={deleting} checked={featured} onChange={handleFeatured} />
 					</Box>
 				</Field.Row>
 			</Field>
@@ -245,10 +250,10 @@ function EditRoom({ room, onChange, onReload }) {
 				<Field.Row>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 						<ButtonGroup stretch flexGrow={1}>
-							<Button type='reset' disabled={!hasUnsavedChanges || deleted} onClick={reset}>
+							<Button type='reset' disabled={!hasUnsavedChanges || deleting} onClick={reset}>
 								{t('Reset')}
 							</Button>
-							<Button flexGrow={1} disabled={!hasUnsavedChanges || deleted} onClick={handleSave}>
+							<Button flexGrow={1} disabled={!hasUnsavedChanges || deleting} onClick={handleSave}>
 								{t('Save')}
 							</Button>
 						</ButtonGroup>
@@ -257,7 +262,7 @@ function EditRoom({ room, onChange, onReload }) {
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button primary flexGrow={1} danger disabled={deleted || !canDelete} onClick={handleDelete}>
+					<Button primary flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>
