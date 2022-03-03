@@ -5,9 +5,6 @@ import React, { FC } from 'react';
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
-import AppMenu from './AppMenu';
-import AppStatus from './AppStatus';
-import PriceDisplay from './PriceDisplay';
 import { App } from './types';
 
 type AppDetailsPageContentProps = {
@@ -18,45 +15,14 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 	const t = useTranslation();
 
 	const {
-		iconFileData = '',
-		name,
-		author: { name: authorName, homepage, support },
+		author: { homepage, support },
 		description,
 		categories = [],
-		version,
-		price,
-		purchaseType,
-		pricingPlans,
-		iconFileContent,
-		installed,
 		bundledIn,
 	} = app;
 
 	return (
-		<>
-			<Box display='flex' flexDirection='row' mbe='x20' w='full'>
-				<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
-				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
-					<Box fontScale='h2'>{name}</Box>
-					<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
-						<Box fontScale='p2m' mie='x4'>
-							{t('By_author', { author: authorName })}
-						</Box>
-						|<Box mis='x4'>{t('Version_version', { version })}</Box>
-					</Box>
-					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-						<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' marginInline='neg-x8'>
-							<AppStatus app={app} marginInline='x8' />
-							{!installed && (
-								<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
-							)}
-						</Box>
-						{installed && <AppMenu app={app} />}
-					</Box>
-				</Box>
-			</Box>
-			<Divider />
-
+		<Box maxWidth='x640' w='full' marginInline='auto'>
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
@@ -144,7 +110,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 					</Box>
 				</>
 			)}
-		</>
+		</Box>
 	);
 };
 
