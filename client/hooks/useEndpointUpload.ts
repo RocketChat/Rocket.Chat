@@ -14,13 +14,13 @@ export const useEndpointUpload = (
 	return useCallback(
 		async (...args) => {
 			try {
-				let data = sendData(params, ...args);
-				const promise = data instanceof Promise ? data : data.promise;
+				let data = sendData(params, [...args]);
+				const promise = data instanceof Promise ? data : (data as any).promise;
 
 				data = await promise;
 
-				if (!data.success) {
-					throw new Error(data.status);
+				if (!(data as any).success) {
+					throw new Error((data as any).status);
 				}
 
 				successMessage && dispatchToastMessage({ type: 'success', message: successMessage });
