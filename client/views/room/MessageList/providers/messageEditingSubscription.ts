@@ -1,13 +1,23 @@
-import { IMessage } from '../../../../../definition/IMessage';
-// import { IRoom } from '../../../../../definition/IRoom';
+import { Subscription, Unsubscribe } from 'use-subscription';
 
-const createMessageEditingSubscription = () => {
-	let updateCb = () => {};
+import { IMessage } from '../../../../../definition/IMessage';
+
+type SetEditingFn = (_id: IMessage['_id']) => void;
+type ClearEditingFn = (_id: IMessage['_id']) => void;
+
+type MessageEditingSubscription = {
+	subscription: Subscription<IMessage['_id'] | undefined>;
+	setEditing: SetEditingFn;
+	clearEditing: ClearEditingFn;
+};
+
+const createMessageEditingSubscription = (): MessageEditingSubscription => {
+	let updateCb: Unsubscribe = () => undefined;
 
 	let editingMessageId: IMessage['_id'] | undefined;
 
-	const subscription = {
-		subscribe: (cb: () => void): (() => void) => {
+	const subscription: Subscription<typeof editingMessageId> = {
+		subscribe: (cb) => {
 			updateCb = cb;
 			return (): void => {
 				updateCb = (): void => undefined;
@@ -29,39 +39,6 @@ const createMessageEditingSubscription = () => {
 
 	return { subscription, setEditing, clearEditing };
 };
-
-// const createMessageEditingSubscriptionFactory = () => {
-// 	const subscriptions = new Map<IRoom['_id'], MessageEditingSubscriptionType>();
-
-// 	const createMessageEditingSubscription = (rid: IRoom['_id']) => {
-// 		let updateCb = () => {};
-
-// 		let editingMessageId: IMessage['_id'] | undefined;
-
-// 		const subscribe = (cb: () => void): (() => void) => {
-// 			updateCb = cb;
-// 			return (): void => {
-// 				updateCb = (): void => undefined;
-// 			};
-// 		};
-
-// 		const getCurrentValue = (): typeof editingMessageId => editingMessageId;
-
-// 		const setEditing = (_id: IMessage['_id']): void => {
-// 			editingMessageId = _id;
-// 			updateCb();
-// 		};
-
-// 		const clearEditing = (): void => {
-// 			editingMessageId = undefined;
-// 			updateCb();
-// 		};
-
-// 		return { subscribe, getCurrentValue, setEditing, clearEditing };
-// 	};
-
-// 	return [subscriptions, createMessageEditingSubscription];
-// };
 
 export const {
 	subscription: messageEditingSubscription,

@@ -172,7 +172,7 @@ export class ChatMessages {
 	}
 
 	edit(element, isEditingTheNextOne) {
-		const message = this.collection.findOne(element.dataset.id); // message ID
+		const message = this.collection.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -182,7 +182,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (element.classList.contains('system')) { // da pra trazer da message
+		if (element.classList.contains('system')) {
 			return;
 		}
 
@@ -211,7 +211,6 @@ export class ChatMessages {
 		this.editing.id = message._id;
 		this.input.parentElement.classList.add('editing');
 		setEditingMessage(message._id);
-		// element.classList.add('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			messageBoxState.set(this.input, message.attachments[0].description);

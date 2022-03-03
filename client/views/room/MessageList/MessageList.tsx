@@ -58,6 +58,8 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 										/>
 									) : (
 										<Message
+											id={message._id}
+											data-id={message._id}
 											data-system-message={Boolean(message.t)}
 											data-mid={message._id}
 											data-unread={isFirstUnread}

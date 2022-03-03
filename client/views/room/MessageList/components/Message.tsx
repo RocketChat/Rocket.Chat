@@ -11,7 +11,7 @@ import {
 	MessageRole,
 	MessageRoles,
 	MessageTimestamp,
-MessageUsername,
+	MessageUsername,
 	MessageReactions,
 	MessageStatusPrivateIndicator,
 	MessageReactionAction,
@@ -58,7 +58,7 @@ import OEmbedList from './UrlPreview';
 
 const style = { backgroundColor: 'var(--message-box-editing-color)' };
 
-const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
+const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription; id: IMessage['_id'] }> = ({
 	message,
 	sequential,
 	subscription,
@@ -95,7 +95,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	const mineUid = useUserId();
 
 	return (
-		<MessageTemplate {...props} data-id={message._id} style={isEditingMessage ? style : undefined}>
+		<MessageTemplate {...props} style={isEditingMessage ? style : undefined}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
 				{sequential && <MessageIndicators message={message} />}
