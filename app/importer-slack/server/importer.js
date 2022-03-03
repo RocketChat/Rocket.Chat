@@ -144,7 +144,6 @@ export class SlackImporter extends Base {
 				statusText: user.profile.status_text || undefined,
 				bio: user.profile.title || undefined,
 				type: 'user',
-				origin: USER_ORIGIN.SLACK_IMPORT,
 			};
 
 			if (user.profile.email) {

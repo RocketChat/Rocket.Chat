@@ -374,7 +374,7 @@ export const statistics = {
 		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
 		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
 
-		console.log(Users.find().fetch(), 'start');
+		console.log(Users.find().fetch(), 'jjjjjjj');
 
 		console.log(
 			statistics.usersCreatedADM,
