@@ -2,15 +2,18 @@ import { MultiSelectFiltered, Box, Option, OptionAvatar, OptionContent, OptionDe
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../lib/asyncState';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
 const UserAutoCompleteMultiple = (props) => {
+	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: data } = useEndpointData(
+	const { value: data, phase } = useEndpointData(
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
@@ -46,6 +49,7 @@ const UserAutoCompleteMultiple = (props) => {
 			renderSelected={renderSelected}
 			renderItem={renderItem}
 			addonIcon='magnifier'
+			customEmpty={phase === AsyncStatePhase.LOADING ? t('Loading') : t('None')} // TODO: add proper empty state
 		/>
 	);
 };
