@@ -40,7 +40,7 @@ Meteor.methods({
 		const channelsSelection = input.channels.map(
 			(channel) => new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import),
 		);
-
+		console.log(usersSelection);
 		const selection = new Selection(importer.name, usersSelection, channelsSelection);
 		return importer.instance.startImport(selection);
 	},

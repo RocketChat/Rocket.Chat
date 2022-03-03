@@ -1317,6 +1317,14 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		},
 	);
+	this.add('Message_Auditing_Panel_Load_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
+	this.add('Message_Auditing_Apply_Count', 0, {
+		type: 'int',
+		hidden: true,
+	});
 });
 
 settingsRegistry.addGroup('Meta', function () {

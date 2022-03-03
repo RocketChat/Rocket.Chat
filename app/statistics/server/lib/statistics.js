@@ -26,6 +26,7 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team, Analytics } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { USER_ORIGIN } from '../../../../definition/IUser';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -370,7 +371,13 @@ export const statistics = {
 
 		statistics.tabInvites = await Invites.find().count();
 
+		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
+		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
+
+		console.log(Users.find().fetch(), 'start');
+
 		console.log(
+			statistics.usersCreatedADM,
 			statistics.totalSlashCommandsJitsi,
 			statistics.totalJoinJitsiButton,
 			statistics.totalAuditApply,

@@ -404,6 +404,10 @@ export const saveUser = function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
+	if (userData.origin) {
+		updateUser.$set.origin = userData.origin;
+	}
+
 	Meteor.users.update({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
