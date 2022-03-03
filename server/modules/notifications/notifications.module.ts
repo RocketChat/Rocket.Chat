@@ -293,8 +293,14 @@ export class NotificationsModule {
 			return false;
 		});
 
-		this.streamUser.allowWrite(async function (eventName) {
+		this.streamUser.allowWrite(async function (eventName, ...args) {
+			const [item] = args;
 			const [, e] = eventName.split('/');
+			if (e === 'otr' && (item === 'handshake' || item === 'acknowledge')) {
+				const isEnable = await Settings.getValueById('OTR_Enable');
+
+				return isEnable === 'true';
+			}
 			if (e === 'webrtc') {
 				return true;
 			}
@@ -304,6 +310,10 @@ export class NotificationsModule {
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId, e] = eventName.split('/');
 
+			if (e === 'otr') {
+				const isEnable = await Settings.getValueById('OTR_Enable');
+				return isEnable === 'true';
+			}
 			if (e === 'webrtc') {
 				return true;
 			}
