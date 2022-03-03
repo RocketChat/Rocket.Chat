@@ -10,9 +10,6 @@ import { Client } from './Client';
 import { IPacket } from './types/IPacket';
 import { MeteorService } from '../../../../server/sdk';
 import { isMeteorError, MeteorError } from '../../../../server/sdk/errors';
-import { Logger } from '../../../../server/lib/logger/Logger';
-
-const logger = new Logger('DDP-Streamer');
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
@@ -20,13 +17,14 @@ type Methods = {
 	[k: string]: MethodFn;
 };
 
-const handleInternalException = (err: unknown, msg: string): MeteorError => {
+const handleInternalException = (err: unknown, _msg: string): MeteorError => {
 	if (err instanceof MeteorError) {
 		return err;
 	}
 
 	// default errors are logged to the console and redacted from the client
-	logger.error({ msg, err });
+	// TODO switch to using the logger (ideally broker.logger)
+	// console.log(String(err.stack));
 
 	return new MeteorError(500, 'Internal server error');
 };

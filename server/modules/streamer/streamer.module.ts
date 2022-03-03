@@ -174,12 +174,10 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		if (eventName.length === 0) {
-			publication.stop();
 			throw new Error('invalid-event-name');
 		}
 
 		if ((await this.isReadAllowed(publication, eventName, args)) !== true) {
-			publication.stop();
 			throw new Error('not-allowed');
 		}
 
