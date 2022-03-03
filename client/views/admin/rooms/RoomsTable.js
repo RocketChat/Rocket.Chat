@@ -51,14 +51,14 @@ const useDisplayData = (asyncState, sort) =>
 		return value.rooms;
 	}, [asyncState, sort]);
 
-function RoomsTable({ asyncState, params, onChangeParams, sort, onChangeSort }) {
+function RoomsTable({ endpointData, params, onChangeParams, sort, onChangeSort }) {
 	const t = useTranslation();
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const routeName = 'admin-rooms';
 
-	const { value: data = {} } = asyncState;
+	const { value: data = {} } = endpointData;
 
 	const router = useRoute(routeName);
 
@@ -84,7 +84,7 @@ function RoomsTable({ asyncState, params, onChangeParams, sort, onChangeSort }) 
 		[sort, onChangeSort],
 	);
 
-	const displayData = useDisplayData(asyncState, sort);
+	const displayData = useDisplayData(endpointData, sort);
 
 	const header = useMemo(
 		() =>

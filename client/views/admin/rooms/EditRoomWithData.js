@@ -33,7 +33,16 @@ function EditRoomWithData({ rid, onReload }) {
 		return error.message;
 	}
 
-	return <EditRoom room={{ type: data.t, ...data }} onChange={reload} onReload={onReload} />;
+	const handleChange = () => {
+		reload();
+		onReload();
+	};
+
+	const handleDelete = () => {
+		onReload();
+	};
+
+	return <EditRoom room={{ type: data.t, ...data }} onChange={handleChange} onDelete={handleDelete} />;
 }
 
 export default EditRoomWithData;

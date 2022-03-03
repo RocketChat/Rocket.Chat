@@ -30,7 +30,7 @@ const getInitialValues = (room) => ({
 	roomAvatar: undefined,
 });
 
-function EditRoom({ room, onChange, onReload }) {
+function EditRoom({ room, onChange, onDelete }) {
 	const t = useTranslation();
 
 	const [deleting, setDeleting] = useState(false);
@@ -132,9 +132,9 @@ function EditRoom({ room, onChange, onReload }) {
 				roomsRoute.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				onReload();
 				setDeleting(false);
+			} finally {
+				onDelete();
 			}
 		};
 

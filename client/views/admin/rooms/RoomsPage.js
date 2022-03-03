@@ -48,14 +48,14 @@ export function RoomsPage() {
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const asyncState = useEndpointData('rooms.adminRooms', query);
-	const { reload } = asyncState;
+	const endpointData = useEndpointData('rooms.adminRooms', query);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Rooms')} />
 				<Page.Content>
-					<RoomsTable asyncState={asyncState} params={params} onChangeParams={setParams} sort={sort} onChangeSort={setSort} />
+					<RoomsTable endpointData={endpointData} params={params} onChangeParams={setParams} sort={sort} onChangeSort={setSort} />
 				</Page.Content>
 			</Page>
 			{context && (
@@ -65,7 +65,7 @@ export function RoomsPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					<EditRoomContextBar rid={id} onReload={reload} />
+					<EditRoomContextBar rid={id} onReload={endpointData.reload} />
 				</VerticalBar>
 			)}
 		</Page>
