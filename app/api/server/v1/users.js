@@ -49,7 +49,6 @@ API.v1.addRoute(
 				sendWelcomeEmail: Match.Maybe(Boolean),
 				verified: Match.Maybe(Boolean),
 				customFields: Match.Maybe(Object),
-				// origin: Match.Maybe(String),
 			});
 
 			// New change made by pull request #5152

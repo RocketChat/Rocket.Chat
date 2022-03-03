@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { RawImports, Base, ProgressStep, Selection, SelectionUser } from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { Users } from '../../models';
-import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
@@ -150,7 +149,7 @@ export class SlackUsersImporter extends Base {
 							Meteor.runAsUser(userId, () => {
 								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
 								Users.setName(userId, u.name);
-								Users.update({ _id: userId }, { $addToSet: { importIds: u.user_id }, $set: { origin: USER_ORIGIN.SLACK_USER_IMPORT } });
+								Users.update({ _id: userId }, { $addToSet: { importIds: u.user_id } });
 								Users.setEmail(userId, u.email);
 								Users.setEmailVerified(userId, u.email);
 								u.rocketId = userId;

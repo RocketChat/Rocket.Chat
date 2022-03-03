@@ -5,7 +5,6 @@ import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { USER_ORIGIN } from '../../../definition/IUser';
 
 export class SlackImporter extends Base {
 	parseData(data) {

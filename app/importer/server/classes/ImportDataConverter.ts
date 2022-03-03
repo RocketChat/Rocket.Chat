@@ -282,7 +282,6 @@ export class ImportDataConverter {
 			  });
 
 		const user = Users.findOneById(userId, {});
-		Users.update({ _id: userId }, { origin: userData.origin });
 
 		addUserToDefaultChannels(user, true);
 		return user;
