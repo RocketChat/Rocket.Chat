@@ -1,5 +1,5 @@
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-import { roomTypes } from '../../../utils';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const attachMessage = function (message, room) {
 	const {
@@ -13,7 +13,7 @@ export const attachMessage = function (message, room) {
 		text: msg,
 		author_name: username,
 		author_icon: getUserAvatarURL(username),
-		message_link: `${roomTypes.getRouteLink(room.t, room)}?msg=${_id}`,
+		message_link: `${roomCoordinator.getRouteLink(room.t, room)}?msg=${_id}`,
 		attachments,
 		ts,
 	};

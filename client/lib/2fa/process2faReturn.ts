@@ -11,7 +11,9 @@ type TwoFactorMethod = typeof twoFactorMethods[number];
 
 const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
-const hasRequiredTwoFactorMethod = (error: Meteor.Error): error is Meteor.Error & { details: { method: TwoFactorMethod } } => {
+const hasRequiredTwoFactorMethod = (
+	error: Meteor.Error,
+): error is Meteor.Error & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
 	const details = error.details as unknown;
 
 	return (
@@ -54,7 +56,7 @@ export function process2faReturn({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername ?? Meteor.user()?.username,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
 	};
 
 	assertModalProps(props);

@@ -58,6 +58,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ extension: 1 }, { sparse: true, unique: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 
 		const collectionObj = this.model.rawCollection();
@@ -763,6 +764,12 @@ export class Users extends Base {
 				},
 			],
 		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByRolesAndType(roles, type, options) {
+		const query = { roles, type };
 
 		return this.findOne(query, options);
 	}

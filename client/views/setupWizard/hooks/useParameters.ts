@@ -1,48 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useQuery, UseQueryResult } from 'react-query';
 
 import { ISetting } from '../../../../definition/ISetting';
 import { useMethod } from '../../../contexts/ServerContext';
 
-export const useParameters = (): {
-	loaded: boolean;
-	settings: Array<ISetting>;
-	skipCloudRegistration: boolean;
-} => {
-	const [loaded, setLoaded] = useState<boolean>(false);
-	const [settings, setSettings] = useState<Array<ISetting>>([]);
-	const [skipCloudRegistration, setSkipCloudRegistration] = useState<boolean>(false);
+type SetupWizardParameters = {
+	settings: ISetting[];
+	serverAlreadyRegistered: boolean;
+	hasAdmin: boolean;
+};
+
+export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }> => {
 	const getSetupWizardParameters = useMethod('getSetupWizardParameters');
 
-	useEffect(() => {
-		let mounted = true;
-		const requestParameters = async (): Promise<void> => {
-			try {
-				const { setupWizardSettings = [], serverAlreadyRegistered = false } = (await getSetupWizardParameters()) || {};
-
-				if (!mounted) {
-					return;
-				}
-
-				setLoaded(true);
-				setSettings(setupWizardSettings);
-				setSkipCloudRegistration(serverAlreadyRegistered);
-			} catch (error) {
-				setLoaded(false);
-				setSettings([]);
-				setSkipCloudRegistration(false);
-			}
-		};
-
-		requestParameters();
-
-		return (): void => {
-			mounted = false;
-		};
-	}, [getSetupWizardParameters]);
-
-	return {
-		loaded,
-		settings,
-		skipCloudRegistration,
-	};
+	return useQuery(['setupWizard/parameters'], getSetupWizardParameters, {
+		initialData: {
+			settings: [],
+			serverAlreadyRegistered: false,
+			hasAdmin: false,
+		},
+	}) as Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }>;
 };
