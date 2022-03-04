@@ -9,7 +9,7 @@ import UserAvatar from '../avatar/UserAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
+const UserAutoCompleteMultiple = ({ valueIsId = true, ...props }) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const [labelData, setLabelData] = useState({});
