@@ -35,7 +35,7 @@ export class UsersRaw extends BaseRaw {
 
 	/**
 	 * @param {IRole['_id'][]} roles list of role ids
-	 * @param {string} scope the value for the role scope (room id)
+	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
 	findUsersInRoles(roles, scope, options) {

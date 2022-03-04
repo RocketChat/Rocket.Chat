@@ -44,7 +44,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		}
 
 		for await (const roleId of roles) {
-			const role = await this.findOne({ _id: roleId }, { scope: 1 } as FindOneOptions<IRole>);
+			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 			if (!role) {
 				process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
@@ -74,7 +74,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		}
 
 		for await (const roleName of roles) {
-			const role = await this.findOne({ name: roleName }, { scope: 1 } as FindOneOptions<IRole>);
+			const role = await this.findOne<Pick<IRole, '_id' | 'scope'>>({ name: roleName }, { projection: { scope: 1 } });
 
 			if (!role) {
 				continue;
@@ -107,7 +107,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.removeUserRoles: roles should be an array');
 		}
 		for await (const roleName of roles) {
-			const role = await this.findOne({ name: roleName }, { scope: 1 } as FindOneOptions<IRole>);
+			const role = await this.findOne<Pick<IRole, '_id' | 'scope'>>({ name: roleName }, { projection: { scope: 1 } });
 
 			if (!role) {
 				continue;
@@ -170,6 +170,16 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
 	}
 
+	findInIds<P>(ids: IRole['_id'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
+		const query: FilterQuery<IRole> = {
+			name: {
+				$in: ids,
+			},
+		};
+
+		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole>;
+	}
+
 	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOneOptions<IRole>): P extends Pick<IRole, '_id'> ? Cursor<P> : Cursor<IRole> {
 		const query: FilterQuery<IRole> = {
 			_id: {
@@ -220,7 +230,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
 		}
 
-		const role = await this.findOneById(roleId, { scope: 1 });
+		const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 		if (!role) {
 			throw new Error('RolesRaw.findUsersInRole: role not found');
@@ -231,7 +241,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 				return this.models.Subscriptions.findUsersInRoles([role._id], scope, options);
 			case 'Users':
 			default:
-				return this.models.Users.findUsersInRoles([role._id], options);
+				return this.models.Users.findUsersInRoles([role._id], null, options);
 		}
 	}
 
