@@ -2,36 +2,32 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { getRoles } from './getRoles';
-import { Users } from '../../../models/server';
 import { IRole, IUser } from '../../../../definition/IUser';
-import { Roles } from '../../../models/server/raw';
+import { Users, Roles } from '../../../models/server/raw';
 
-export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean => {
+export const addUserRolesAsync = async (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): Promise<boolean> => {
 	if (!userId || !roleNames) {
 		return false;
 	}
 
-	const user = Users.db.findOneById(userId);
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.authz.addUserRoles',
 		});
 	}
 
-	if (!Array.isArray(roleNames)) {
-		// TODO: remove this check
-		roleNames = [roleNames];
-	}
-
 	const existingRoleNames = _.pluck(getRoles(), '_id');
 	const invalidRoleNames = _.difference(roleNames, existingRoleNames);
 
 	if (!_.isEmpty(invalidRoleNames)) {
-		for (const role of invalidRoleNames) {
-			Promise.await(Roles.createOrUpdate(role));
+		for await (const role of invalidRoleNames) {
+			await Roles.createOrUpdate(role);
 		}
 	}
 
-	Promise.await(Roles.addUserRoles(userId, roleNames, scope));
-	return true;
+	return Roles.addUserRoles(userId, roleNames, scope);
 };
+
+export const addUserRoles = (userId: IUser['_id'], roleNames: IRole['name'][], scope?: string): boolean =>
+	Promise.await(addUserRolesAsync(userId, roleNames, scope));
