@@ -4,6 +4,7 @@ import { Rooms } from '../../../models';
 import { Invites } from '../../../models/server/raw';
 
 export const validateInviteToken = async (token) => {
+	console.log('EI GURIS');
 	if (!token || typeof token !== 'string') {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
 			method: 'validateInviteToken',

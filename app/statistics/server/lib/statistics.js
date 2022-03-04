@@ -284,7 +284,7 @@ export const statistics = {
 			Rooms.find({}).fetch(),
 			function _roomsWithSnippet(num, room) {
 				const { _id } = room;
-				const snippetMessages = Messages.findSnippetedByRoom(_id).fetch().length;
+				const snippetMessages = Messages.findSnippetedByRoom(_id).count();
 				if (snippetMessages > 0) {
 					return num + 1;
 				}
@@ -297,7 +297,7 @@ export const statistics = {
 			Rooms.find({}).fetch(),
 			function _roomsWithPinned(num, room) {
 				const { _id } = room;
-				const starredMessages = Messages.findStarredByRoom(_id).fetch().length;
+				const starredMessages = Messages.findStarredByRoom(_id).count();
 				if (starredMessages > 0) {
 					return num + 1;
 				}
@@ -310,7 +310,7 @@ export const statistics = {
 			Rooms.find({}).fetch(),
 			function _roomsWithPinned(num, room) {
 				const { _id } = room;
-				const pinnedMessages = Messages.findPinnedByRoom(_id).fetch().length;
+				const pinnedMessages = Messages.findPinnedByRoom(_id).count();
 				if (pinnedMessages > 0) {
 					return num + 1;
 				}
@@ -324,21 +324,17 @@ export const statistics = {
 		statistics.totalPinned = Messages.findPinned().count();
 
 		statistics.totalE2ERooms = Rooms.findByE2E().count();
-
 		statistics.totalE2EMessages = _.reduce(
 			Rooms.findByE2E().fetch(),
 			function _e2eMessages(num, room) {
 				const { _id } = room;
-				const e2eMessages = Messages.findE2EByRoom(_id).fetch().length;
+				const e2eMessages = Messages.findE2EByRoom(_id).count();
 				return num + e2eMessages;
 			},
 			0,
 		);
-
-		statistics.OTRDm = Rooms.find({ createdOTR: true }).count();
-
+		statistics.totalOTRDm = Rooms.find({ createdOTR: true }).count();
 		statistics.totalOTR = settings.get('OTR_Count');
-
 		statistics.totalEngagementDashboard = settings.get('Engagement_Dashboard_Load_Count');
 		statistics.totalAuditApply = settings.get('Message_Auditing_Apply_Count');
 		statistics.totalAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
@@ -351,12 +347,8 @@ export const statistics = {
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.homeTitle = settings.get('Layout_Home_Title');
 		statistics.homeBody = settings.get('Layout_Home_Body').split('\n')[0];
-
-		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.customCSS = settings.get('theme-custom-css').split('\n').length;
-
 		statistics.customScript = _.reduce(
 			['Custom_Script_On_Logout', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In'],
 			function _custonScript(num, setting) {
@@ -370,40 +362,13 @@ export const statistics = {
 		);
 
 		statistics.tabInvites = await Invites.find().count();
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 
 		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.ADMIN_ADD }).count();
-		statistics.usersCreatedADM = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
-
-		console.log(Users.find().fetch(), 'jjjjjjj');
-
-		console.log(
-			statistics.usersCreatedADM,
-			statistics.totalSlashCommandsJitsi,
-			statistics.totalJoinJitsiButton,
-			statistics.totalAuditApply,
-			statistics.totalAuditLoad,
-			statistics.totalEngagementDashboard,
-			statistics.logoChange,
-			statistics.customCSS,
-			statistics.customScript,
-			statistics.tabInvites,
-			statistics.totalOTR,
-			statistics.OTRDm,
-			statistics.totalEmailInvitation,
-			statistics.showHomeButton,
-			statistics.homeTitle,
-			statistics.homeBody,
-			statistics.totalUserEmail2fa,
-			statistics.totalUserTOTP,
-			statistics.totalE2ERooms,
-			statistics.totalE2EMessages,
-			statistics.totalRoomsWithSnippet,
-			statistics.totalRoomsWithStarred,
-			statistics.totalRoomsWithPinned,
-			statistics.totalSnippet,
-			statistics.totalStarrred,
-			statistics.totalPinned,
-		);
+		statistics.usersCreatedSlackImport = await Users.find({ origin: USER_ORIGIN.SLACK_IMPORT }).count();
+		statistics.usersCreatedSlackUser = await Users.find({ origin: USER_ORIGIN.SLACK_USER_IMPORT }).count();
+		statistics.usersCreatedCSVImport = await Users.find({ origin: USER_ORIGIN.CSV_IMPORT }).count();
+		statistics.usersCreatedHiptext = await Users.find({ origin: USER_ORIGIN.HIPTEXT_IMPORT }).count();
 
 		return statistics;
 	},

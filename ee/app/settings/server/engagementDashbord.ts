@@ -1,14 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Settings } from '../../../../app/models/server';
-import { settingsRegistry, settings } from '../../../../app/settings/server';
-
-settingsRegistry.addGroup('Engagement_Dashboard', function () {
-	this.add('Engagement_Dashboard_Load_Count', 0, {
-		type: 'int',
-		hidden: true,
-	});
-});
+import { settings } from '../../../../app/settings/server';
 
 Meteor.methods({
 	engagemendDashboardCount() {
