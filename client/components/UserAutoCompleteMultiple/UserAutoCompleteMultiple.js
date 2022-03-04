@@ -9,7 +9,7 @@ import UserAvatar from '../avatar/UserAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
+const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const [labelData, setLabelData] = useState({});
@@ -51,6 +51,10 @@ const UserAutoCompleteMultiple = ({ valueIsId, ...props }) => {
 			</Chip>
 		);
 	};
+
+	useEffect(() => {
+		console.log(options);
+	}, [renderSelected]);
 
 	return (
 		<MultiSelectFiltered
