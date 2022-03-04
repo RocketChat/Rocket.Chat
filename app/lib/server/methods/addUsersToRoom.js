@@ -84,6 +84,9 @@ Meteor.methods({
 						user.language,
 					),
 				});
+				throw new Meteor.Error('Error user exists already', 'User exists already', {
+					method: 'addUsersToRoom',
+				});
 			}
 		});
 
