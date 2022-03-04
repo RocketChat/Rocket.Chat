@@ -7,6 +7,7 @@ function getCustomOAuthServices(): Record<
 		enabled: boolean;
 		mergeRoles: boolean;
 		users: number;
+		createdUsers: number;
 	}
 > {
 	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
