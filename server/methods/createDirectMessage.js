@@ -7,8 +7,8 @@ import { Users, Rooms } from '../../app/models/server';
 import { createRoom, RateLimiter } from '../../app/lib/server';
 import { addUser } from '../../app/federation/server/functions/addUser';
 
-export function createDirectMessage(usernames, userId, excludeSelf = false) {
-	check(usernames, [String]);
+export function createDirectMessage(usernamesOrIds, userId, excludeSelf = false) {
+	check(usernamesOrIds, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
 
@@ -25,20 +25,24 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
+	if (
+		settings.get('Message_AllowDirectMessagesToYourself') === false &&
+		usernamesOrIds.length === 1 &&
+		(me.username === usernamesOrIds[0] || me._id === usernamesOrIds[0])
+	) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const users = usernames
-		.filter((username) => username !== me.username)
-		.map((username) => {
-			let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = usernamesOrIds
+		.filter((idOrUsername) => idOrUsername !== me.username || idOrUsername !== me._id)
+		.map((idOrUsername) => {
+			let to = Users.findOneByIdOrCaseIgnoredUsername(idOrUsername);
 
-			// If the username does have an `@`, but does not exist locally, we create it first
-			if (!to && username.indexOf('@') !== -1) {
-				to = Promise.await(addUser(username));
+			// If the username starts with an `@`, but does not exist locally, we create it first
+			if (!to && idOrUsername.indexOf('@') === 0) {
+				to = Promise.await(addUser(idOrUsername));
 			}
 
 			if (!to) {
@@ -92,8 +96,8 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 }
 
 Meteor.methods({
-	createDirectMessage(...usernames) {
-		return createDirectMessage(usernames, Meteor.userId());
+	createDirectMessage(...usernamesOrIds) {
+		return createDirectMessage(usernamesOrIds, Meteor.userId());
 	},
 });
 

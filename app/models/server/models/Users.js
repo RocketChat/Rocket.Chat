@@ -768,6 +768,21 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByIdOrCaseIgnoredUsername(idOrUsername, options) {
+		const query = {
+			$or: [
+				{
+					_id: idOrUsername,
+				},
+				{
+					username: new RegExp(`^${escapeRegExp(idOrUsername)}$`, 'i'),
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByRolesAndType(roles, type, options) {
 		const query = { roles, type };
 
