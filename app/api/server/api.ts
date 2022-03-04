@@ -3,18 +3,17 @@ import { Server, ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { IncomingMessage } from 'connect';
-import { Route, RouteOptions } from 'meteor/kadira:flow-router';
+import { Route } from 'meteor/kadira:flow-router';
 import { IHttpRequest } from '@rocket.chat/apps-engine/definition/accessors';
 
 import { ITwoFactorOptions, checkCodeForUser } from '../../2fa/server/code';
 import { IMethodConnection } from '../../../definition/IMethodThisType';
 import type { IUser } from '../../../definition/IUser';
-import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
+import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -22,7 +21,6 @@ import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { RateLimiter } from '../../lib/server';
-import { MethodInvocation } from '../../2fa/server/MethodInvocationOverride';
 import { SettingValue } from '../../../definition/ISetting';
 
 const logger = new Logger('API');
@@ -97,7 +95,7 @@ type Request = {
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
-	urlParams: UrlParams<TPathPattern>;
+	urlParams: UrlParams<string>;
 	// TODO make it unsafe
 	queryParams: TMethod extends 'GET' ? Partial<OperationParams<TMethod, TPathPattern>> : Record<string, string>;
 	// TODO make it unsafe
@@ -129,19 +127,19 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>;
 
-type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
-	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
-	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
+// type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+// 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
+// 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
 
-type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
-	| Action<TMethod, TPathPattern, TEndpointOptions>
-	| ({
-			action: Action<TMethod, TPathPattern, TEndpointOptions>;
-	  } & { twoFactorRequired: boolean });
+// type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
+// 	| Action<TMethod, TPathPattern, TEndpointOptions>
+// 	| ({
+// 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
+// 	  } & { twoFactorRequired: boolean });
 
-type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}> = {
-	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
-};
+// type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}> = {
+// 	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
+// };
 
 const getRequestIP = (req: IncomingMessage): unknown => {
 	const socket = req.socket || req.connection;
