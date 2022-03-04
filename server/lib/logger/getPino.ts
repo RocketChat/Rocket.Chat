@@ -21,7 +21,6 @@ const mainPino = pino({
 		subscription: 35,
 		startup: 51,
 	},
-	name: '',
 	level: 'warn',
 	timestamp: pino.stdTimeFunctions.isoTime,
 	...(process.env.NODE_ENV !== 'production'

@@ -14,9 +14,14 @@ import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { IVoipConnectorResult } from '../../../definition/IVoipConnectorResult';
-import { IQueueMembershipDetails, IRegistrationInfo, isIExtensionDetails } from '../../../definition/IVoipExtension';
+import {
+	IQueueMembershipDetails,
+	IQueueMembershipSubscription,
+	IRegistrationInfo,
+	isIExtensionDetails,
+} from '../../../definition/IVoipExtension';
 import { IQueueDetails, IQueueSummary } from '../../../definition/ACDQueues';
-import { getServerConfigDataFromSettings } from './lib/Helper';
+import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 import { IManagementServerConnectionStatus } from '../../../definition/IVoipServerConnectivityStatus';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
@@ -31,11 +36,39 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 		this.logger = new Logger('VoIPService');
 		this.commandHandler = new CommandHandler(db);
-		try {
-			Promise.await(this.commandHandler.initConnection(CommandType.AMI));
-		} catch (error) {
-			this.logger.error({ msg: `Error while initialising the connector. error = ${error}` });
+		if (!voipEnabled()) {
+			this.logger.warn({ msg: 'Voip is not enabled. Cant start the service' });
+			return;
 		}
+		// Init from constructor if we already have
+		// voip enabled by default while starting the server
+		this.init();
+	}
+
+	async init(): Promise<void> {
+		this.logger.info('Starting VoIP service');
+		try {
+			await this.commandHandler.initConnection(CommandType.AMI);
+			this.logger.info('VoIP service started');
+		} catch (err) {
+			this.logger.error({ msg: 'Error initializing VOIP service', err });
+		}
+	}
+
+	async stop(): Promise<void> {
+		this.logger.info('Stopping VoIP service');
+		try {
+			this.commandHandler.stop();
+			this.logger.info('VoIP service stopped');
+		} catch (err) {
+			this.logger.error({ msg: 'Error stopping VoIP service', err });
+		}
+	}
+
+	async refresh(): Promise<void> {
+		this.logger.info('Restarting VoIP service due to settings changes');
+		await this.stop();
+		await this.init();
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
@@ -110,6 +143,36 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			membershipDetails.queueCount++;
 		}
 
+		return { result: membershipDetails };
+	}
+
+	async getQueueMembership({ extension }: { extension: string }): Promise<IVoipConnectorResult> {
+		const membershipDetails: IQueueMembershipSubscription = {
+			queues: [],
+			extension,
+		};
+		const queueSummary = (await this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+
+		for await (const queue of queueSummary.result as IQueueSummary[]) {
+			const queueDetails = (await this.commandHandler.executeCommand(Commands.queue_details, {
+				queueName: queue.name,
+			})) as IVoipConnectorResult;
+
+			const details = queueDetails.result as IQueueDetails;
+
+			if (!details.members || !details.members.length) {
+				// Go to the next queue if queue does not have any
+				// memmbers.
+				continue;
+			}
+			const isAMember = details.members.some((element) => element.name.endsWith(extension));
+			if (!isAMember) {
+				// Current extension is not a member of queue in question.
+				// continue with next queue.
+				continue;
+			}
+			membershipDetails.queues.push(queue);
+		}
 		return { result: membershipDetails };
 	}
 

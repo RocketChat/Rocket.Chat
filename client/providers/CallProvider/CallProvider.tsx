@@ -3,18 +3,33 @@ import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 're
 import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { CustomSounds } from '../../../app/custom-sounds/client';
 import { Notifications } from '../../../app/notifications/client';
+import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isUseVoipClientResultError, isUseVoipClientResultLoading, useVoipClient } from './hooks/useVoipClient';
+
+const startRingback = (user: IUser): void => {
+	const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
+	CustomSounds.play('telephone', {
+		volume: Number((audioVolume / 100).toPrecision(2)),
+		loop: true,
+	});
+};
+
+const stopRingback = (): void => {
+	CustomSounds.pause('telephone');
+	CustomSounds.remove('telephone');
+};
 
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -29,8 +44,6 @@ export const CallProvider: FC = ({ children }) => {
 
 	const AudioTagPortal: FC = ({ children }) => useMemo(() => createPortal(children, document.body), [children]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const [queueCounter, setQueueCounter] = useState('');
 
 	const setModal = useSetModal();
@@ -39,42 +52,87 @@ export const CallProvider: FC = ({ children }) => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
 
-	const handleAgentCalled = useCallback(
-		(queue: { queuename: string }): void => {
-			dispatchToastMessage({
-				type: 'success',
-				message: `Received call in queue ${queue.queuename}`,
-				options: {
-					showDuration: '2000',
-					hideDuration: '500',
-					timeOut: '500',
-				},
-			});
+	const handleAgentConnected = useCallback(
+		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callPickedup(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
 		},
-		[dispatchToastMessage],
+		[result],
 	);
 
-	const handleAgentConnected = useCallback((queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleAgentCalled = useCallback(
+		(queueInfo: { queuename: string; callerId: { id: string; name: string } }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.callRinging(queueInfo);
+			}
+		},
+		[result],
+	);
 
-	const handleMemberAdded = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleMemberAdded = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.memberAdded(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
-	const handleMemberRemoved = useCallback((queue: { queuename: string; queuedcalls: string }): void => {
-		setQueueCounter(queue.queuedcalls);
-	}, []);
+	const handleMemberRemoved = useCallback(
+		(queue: { queuename: string; queuedcalls: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.memberRemoved(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
-	const handleCallAbandon = useCallback((queue: { queuename: string; queuedcallafterabandon: string }): void => {
-		setQueueCounter(queue.queuedcallafterabandon);
-	}, []);
+	const handleCallAbandon = useCallback(
+		(queue: { queuename: string; queuedcallafterabandon: string }): void => {
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.queueAbandoned(queue);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
+		},
+		[result],
+	);
 
 	const handleQueueJoined = useCallback(
 		async (joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): Promise<void> => {
-			setQueueCounter(joiningDetails.queuedcalls);
+			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+				return;
+			}
+			const queueAggregator = result.voipClient.getAggregator();
+			if (queueAggregator) {
+				queueAggregator.queueJoined(joiningDetails);
+				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+			}
 		},
-		[],
+		[result],
 	);
 
 	const handleCallHangup = useCallback(
@@ -92,14 +150,15 @@ export const CallProvider: FC = ({ children }) => {
 		Notifications.onUser('queuememberremoved', handleMemberRemoved);
 		Notifications.onUser('callabandoned', handleCallAbandon);
 		Notifications.onUser('call.callerhangup', handleCallHangup);
+		Notifications.onUser('call.callerhangup', handleCallHangup);
 	}, [
-		handleAgentCalled,
 		handleQueueJoined,
 		handleMemberAdded,
 		handleMemberRemoved,
 		handleCallAbandon,
 		handleAgentConnected,
 		handleCallHangup,
+		handleAgentCalled,
 	]);
 
 	useEffect(() => {
@@ -181,6 +240,10 @@ export const CallProvider: FC = ({ children }) => {
 
 		const { registrationInfo, voipClient } = result;
 
+		voipClient.on('incomingcall', () => user && startRingback(user));
+		voipClient.on('callestablished', () => stopRingback());
+		voipClient.on('callterminated', () => stopRingback());
+
 		return {
 			enabled: true,
 			ready: true,
@@ -210,14 +273,21 @@ export const CallProvider: FC = ({ children }) => {
 					const voipRoom = visitor && (await voipEndpoint({ token: visitor.token, agentId: user._id }));
 					voipRoom.room && roomCoordinator.openRouteLink(voipRoom.room.t, { rid: voipRoom.room._id, name: voipRoom.room.name });
 					voipRoom.room && setRoomInfo({ v: { token: voipRoom.room.v.token }, rid: voipRoom.room._id });
+					const queueAggregator = result.voipClient.getAggregator();
+					if (queueAggregator) {
+						queueAggregator.callStarted();
+					}
 					return voipRoom.room._id;
 				}
-
 				return '';
 			},
 			closeRoom: async ({ comment, tags }): Promise<void> => {
-				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment, tags }));
+				roomInfo && (await voipCloseRoomEndpoint({ rid: roomInfo.rid, token: roomInfo.v.token || '', comment: comment || '', tags }));
 				homeRoute.push({});
+				const queueAggregator = result.voipClient.getAggregator();
+				if (queueAggregator) {
+					queueAggregator.callEnded();
+				}
 			},
 			openWrapUpModal,
 		};

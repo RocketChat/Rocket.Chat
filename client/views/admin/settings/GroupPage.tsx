@@ -144,7 +144,6 @@ const GroupPage: FC<GroupPageProps> = ({
 	if (!_id) {
 		return <Page>{children}</Page>;
 	}
-	console.log('CHILDREN', children);
 
 	// The settings
 	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;

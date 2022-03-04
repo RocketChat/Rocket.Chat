@@ -32,7 +32,7 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 		return <LDAPGroupPage {...group} />;
 	}
 
-	if (groupId === 'VoIP') {
+	if (groupId === 'Call_Center') {
 		return <VoipGroupPage {...group} />;
 	}
 
