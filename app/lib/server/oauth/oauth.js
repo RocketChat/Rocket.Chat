@@ -51,7 +51,5 @@ Accounts.registerLoginHandler(function (options) {
 
 	const oauthResult = service.handleAccessTokenRequest(options);
 
-	console.log(oauthResult, 'vai');
-
 	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
 });

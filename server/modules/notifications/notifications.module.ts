@@ -304,6 +304,7 @@ export class NotificationsModule {
 		});
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId, e] = eventName.split('/');
+
 			if (e === 'webrtc') {
 				return true;
 			}
