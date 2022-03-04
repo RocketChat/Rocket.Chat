@@ -30,6 +30,17 @@ type OmnichannelTypesValues = 'livechat_transfer_history_fallback' | 'livechat-c
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
+type TeamMessageTypes =
+	| 'removed-user-from-team'
+	| 'added-user-to-team'
+	| 'ult'
+	| 'user-converted-to-team'
+	| 'user-converted-to-channel'
+	| 'user-removed-room-from-team'
+	| 'user-deleted-room-from-team'
+	| 'user-added-room-to-team'
+	| 'ujt';
+
 export type MessageTypesValues =
 	| 'e2e'
 	| 'uj'
@@ -43,8 +54,8 @@ export type MessageTypesValues =
 	| 'rm'
 	| 'subscription-role-added'
 	| 'subscription-role-removed'
-	| 'room_archived'
-	| 'room_unarchived'
+	| 'room-archived'
+	| 'room-unarchived'
 	| 'room_changed_privacy'
 	| 'room_changed_description'
 	| 'room_changed_announcement'
@@ -52,6 +63,13 @@ export type MessageTypesValues =
 	| 'room_changed_topic'
 	| 'room_e2e_enabled'
 	| 'room_e2e_disabled'
+	| 'user-muted'
+	| 'user-unmuted'
+	| 'room-removed-read-only'
+	| 'room-set-read-only'
+	| 'room-allowed-reacting'
+	| 'room-disallowed-reacting'
+	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
 	| OtrSystemMessages;
