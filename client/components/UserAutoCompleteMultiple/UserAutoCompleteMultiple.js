@@ -52,10 +52,6 @@ const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
 		);
 	};
 
-	useEffect(() => {
-		console.log(options);
-	}, [renderSelected]);
-
 	return (
 		<MultiSelectFiltered
 			{...props}
