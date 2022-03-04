@@ -9,6 +9,10 @@ on:
     branches:
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
 env:
   CI: true
   MONGO_URL: mongodb://localhost:27017
