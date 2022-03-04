@@ -142,13 +142,13 @@ export class ChatMessages {
 	toPrevMessage() {
 		const { element } = this.editing;
 		if (!element) {
-			const messages = Array.from(this.wrapper.querySelectorAll('.own:not(.system)'));
+			const messages = Array.from(this.wrapper.querySelectorAll('[data-own="true"]'));
 			const message = messages.pop();
 			return message && this.edit(message, false);
 		}
 
 		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
-			if (previous.matches('.own:not(.system)')) {
+			if (previous.matches('[data-own="true"]')) {
 				return this.edit(previous, false);
 			}
 		}
@@ -160,7 +160,7 @@ export class ChatMessages {
 		if (element) {
 			let next;
 			for (next = element.nextElementSibling; next; next = next.nextElementSibling) {
-				if (next.matches('.own:not(.system)')) {
+				if (next.matches('[data-own="true"]')) {
 					break;
 				}
 			}
@@ -182,7 +182,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (element.classList.contains('system')) {
+		if (MessageTypes.isSystemMessage(message)) {
 			return;
 		}
 
