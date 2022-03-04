@@ -29,5 +29,17 @@ Cypress.on('uncaught:exception', (error) => {
 	return false;
 });
 
+// Disable CSS animations
+// Cypress.on('window:load', (win) => {
+// 	win.document.querySelector('head').insertAdjacentHTML(
+// 		'beforeend',
+// 		`
+// 		  <style>
+// 			* { transition-duration: 0.001s !important; animation-duration: 0.001s !important;}
+// 		  </style>
+// 		`,
+// 	);
+// });
+
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
