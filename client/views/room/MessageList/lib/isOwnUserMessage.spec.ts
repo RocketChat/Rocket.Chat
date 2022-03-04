@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { IMessage } from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
-import { isUserMessage } from './isUserMessage';
+import { isOwnUserMessage } from './isOwnUserMessage';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
@@ -33,7 +33,7 @@ describe('isUserMessage', () => {
 			},
 		} as ISubscription;
 
-		expect(isUserMessage(message, subscription)).to.be.true;
+		expect(isOwnUserMessage(message, subscription)).to.be.true;
 	});
 
 	it('should return false if the message is not from user', () => {
@@ -47,7 +47,7 @@ describe('isUserMessage', () => {
 			},
 		} as ISubscription;
 
-		expect(isUserMessage(message, subscription)).to.be.false;
+		expect(isOwnUserMessage(message, subscription)).to.be.false;
 	});
 
 	it('should return false if there is no subscription', () => {
@@ -55,6 +55,6 @@ describe('isUserMessage', () => {
 			...baseMessage,
 		};
 
-		expect(isUserMessage(message, undefined)).to.be.false;
+		expect(isOwnUserMessage(message, undefined)).to.be.false;
 	});
 });

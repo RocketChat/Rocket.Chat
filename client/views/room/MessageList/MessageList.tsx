@@ -15,7 +15,7 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { isUserMessage } from './lib/isUserMessage';
+import { isOwnUserMessage } from './lib/isOwnUserMessage';
 import MessageEditingProvider from './providers/MessageEditingProvider';
 import { MessageListProvider } from './providers/MessageListProvider';
 
@@ -34,7 +34,7 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 						const isNewDay = isMessageNewDay(message, previous);
 						const isSequential = isMessageSequential(message, previous);
 						const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
-						const isUserOwnMessage = isUserMessage(message, subscription);
+						const isUserOwnMessage = isOwnUserMessage(message, subscription);
 						const shouldShowDivider = isNewDay || isFirstUnread;
 
 						const shouldShowAsSequential = isSequential && !isNewDay;
