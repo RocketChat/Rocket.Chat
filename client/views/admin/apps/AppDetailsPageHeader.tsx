@@ -36,7 +36,7 @@ const AppDetailsPageHeader: FC<AppDetailsPageHeaderProps> = ({ app }) => {
 							<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} marginInline='x8' />
 						)}
 					</Box>
-					{installed && <AppMenu app={data} />}
+					{installed && <AppMenu app={app} />}
 				</Box>
 			</Box>
 		</Box>

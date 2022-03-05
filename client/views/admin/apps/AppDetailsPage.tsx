@@ -100,6 +100,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const { shouldSelectDetails, shouldSelectLogs, shouldSelectSettings } = selectedTab;
 
+	const shouldRunEventFunction = (flag: boolean, callback: MouseEventHandler<HTMLElement>): MouseEventHandler<HTMLElement> | undefined => {
+		if (flag) return callback;
+	};
+
 	const isSettingsTabSelected = Boolean(shouldSelectSettings && Object.values(settings).length);
 	const isSettingsTabEnabled = Boolean(Object.values(settings).length);
 
@@ -137,7 +141,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									{t('Logs')}
 								</Tabs.Item>
 								<Tabs.Item
-									onClick={isSettingsTabEnabled ? selectTab : (): boolean => false}
+									onClick={shouldRunEventFunction(isSettingsTabEnabled, selectTab)}
 									selected={shouldSelectSettings}
 									disabled={!isSettingsTabEnabled}
 								>
