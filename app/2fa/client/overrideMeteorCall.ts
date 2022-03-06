@@ -20,7 +20,7 @@ const callWithTotp =
 				(error as { toastrShowed?: true }).toastrShowed = true;
 				dispatchToastMessage({
 					type: 'error',
-					message: t('Invalid_two_factor_code'),
+					message: t('Invalid_password'),
 				});
 				callback(error);
 				return;

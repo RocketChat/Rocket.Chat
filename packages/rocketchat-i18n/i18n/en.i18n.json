@@ -2338,6 +2338,7 @@
   "Invalid_secret_URL_message": "The URL provided is invalid.",
   "Invalid_setting_s": "Invalid setting: %s",
   "Invalid_two_factor_code": "Invalid two factor code",
+  "Invalid_password": "Invalid password",
   "Invalid_username": "The username entered is invalid",
   "invisible": "invisible",
   "Invisible": "Invisible",
