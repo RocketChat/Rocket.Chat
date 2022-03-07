@@ -4,7 +4,6 @@ import { createPortal } from 'react-dom';
 import { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
-import { Notifications } from '../../../app/notifications/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { IVoipRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
@@ -12,7 +11,7 @@ import { WrapUpCallModal } from '../../components/voip/modal/WrapUpCallModal';
 import { CallContext, CallContextValue } from '../../contexts/CallContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useEndpoint } from '../../contexts/ServerContext';
+import { useEndpoint, useStream } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUser } from '../../contexts/UserContext';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -33,8 +32,8 @@ const stopRingback = (): void => {
 
 export const CallProvider: FC = ({ children }) => {
 	const voipEnabled = useSetting('VoIP_Enabled');
+	const subscribeToNotifyUser = useStream('notify-user');
 
-	// TODO: Test Settings and return false if its disabled (based on the settings)
 	const result = useVoipClient();
 
 	const user = useUser();
@@ -52,114 +51,131 @@ export const CallProvider: FC = ({ children }) => {
 		setModal(<WrapUpCallModal />);
 	}, [setModal]);
 
-	const handleAgentConnected = useCallback(
-		(queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.callPickedup(queue);
-				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
-			}
-		},
-		[result],
-	);
+	useEffect(() => {
+		if (!voipEnabled || !user) {
+			return;
+		}
 
-	const handleAgentCalled = useCallback(
-		(queueInfo: { queuename: string; callerId: { id: string; name: string } }): void => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.callRinging(queueInfo);
-			}
-		},
-		[result],
-	);
+		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+			return;
+		}
 
-	const handleMemberAdded = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.memberAdded(queue);
-				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
-			}
-		},
-		[result],
-	);
+		const queueAggregator = result.voipClient.getAggregator();
+		if (!queueAggregator) {
+			return;
+		}
 
-	const handleMemberRemoved = useCallback(
-		(queue: { queuename: string; queuedcalls: string }): void => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.memberRemoved(queue);
-				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
-			}
-		},
-		[result],
-	);
+		const handleQueueJoined = async (joiningDetails: {
+			queuename: string;
+			callerid: { id: string };
+			queuedcalls: string;
+		}): Promise<void> => {
+			queueAggregator.queueJoined(joiningDetails);
+			setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+		};
 
-	const handleCallAbandon = useCallback(
-		(queue: { queuename: string; queuedcallafterabandon: string }): void => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.queueAbandoned(queue);
-				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
-			}
-		},
-		[result],
-	);
-
-	const handleQueueJoined = useCallback(
-		async (joiningDetails: { queuename: string; callerid: { id: string }; queuedcalls: string }): Promise<void> => {
-			if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
-				return;
-			}
-			const queueAggregator = result.voipClient.getAggregator();
-			if (queueAggregator) {
-				queueAggregator.queueJoined(joiningDetails);
-				setQueueCounter(queueAggregator.getCallWaitingCount().toString());
-			}
-		},
-		[result],
-	);
-
-	const handleCallHangup = useCallback(
-		(_event: { roomId: string }) => {
-			openWrapUpModal();
-		},
-		[openWrapUpModal],
-	);
+		return subscribeToNotifyUser(`${user._id}/callerjoined`, handleQueueJoined);
+	}, [result, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
-		Notifications.onUser('callerjoined', handleQueueJoined);
-		Notifications.onUser('agentcalled', handleAgentCalled);
-		Notifications.onUser('agentconnected', handleAgentConnected);
-		Notifications.onUser('queuememberadded', handleMemberAdded);
-		Notifications.onUser('queuememberremoved', handleMemberRemoved);
-		Notifications.onUser('callabandoned', handleCallAbandon);
-		Notifications.onUser('call.callerhangup', handleCallHangup);
-		Notifications.onUser('call.callerhangup', handleCallHangup);
-	}, [
-		handleQueueJoined,
-		handleMemberAdded,
-		handleMemberRemoved,
-		handleCallAbandon,
-		handleAgentConnected,
-		handleCallHangup,
-		handleAgentCalled,
-	]);
+		if (!voipEnabled || !user) {
+			return;
+		}
+
+		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+			return;
+		}
+
+		const queueAggregator = result.voipClient.getAggregator();
+		if (!queueAggregator) {
+			return;
+		}
+
+		const handleAgentConnected = (queue: { queuename: string; queuedcalls: string; waittimeinqueue: string }): void => {
+			queueAggregator.callPickedup(queue);
+			setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+		};
+
+		return subscribeToNotifyUser(`${user._id}/agentconnected`, handleAgentConnected);
+	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user) {
+			return;
+		}
+
+		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+			return;
+		}
+
+		const queueAggregator = result.voipClient.getAggregator();
+		if (!queueAggregator) {
+			return;
+		}
+
+		const handleMemberAdded = (queue: { queuename: string; queuedcalls: string }): void => {
+			queueAggregator.memberAdded(queue);
+			setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+		};
+
+		return subscribeToNotifyUser(`${user._id}/queuememberadded`, handleMemberAdded);
+	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user) {
+			return;
+		}
+
+		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+			return;
+		}
+
+		const queueAggregator = result.voipClient.getAggregator();
+		if (!queueAggregator) {
+			return;
+		}
+
+		const handleMemberRemoved = (queue: { queuename: string; queuedcalls: string }): void => {
+			queueAggregator.memberRemoved(queue);
+			setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+		};
+
+		return subscribeToNotifyUser(`${user._id}/queuememberremoved`, handleMemberRemoved);
+	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user) {
+			return;
+		}
+
+		if (isUseVoipClientResultError(result) || isUseVoipClientResultLoading(result)) {
+			return;
+		}
+
+		const queueAggregator = result.voipClient.getAggregator();
+		if (!queueAggregator) {
+			return;
+		}
+
+		const handleCallAbandon = (queue: { queuename: string; queuedcallafterabandon: string }): void => {
+			queueAggregator.queueAbandoned(queue);
+			setQueueCounter(queueAggregator.getCallWaitingCount().toString());
+		};
+
+		return subscribeToNotifyUser(`${user._id}/callabandoned`, handleCallAbandon);
+	}, [result, subscribeToNotifyUser, user, voipEnabled]);
+
+	useEffect(() => {
+		if (!voipEnabled || !user) {
+			return;
+		}
+
+		const handleCallHangup = (_event: { roomId: string }): void => {
+			openWrapUpModal();
+		};
+
+		return subscribeToNotifyUser(`${user._id}/call.callerhangup`, handleCallHangup);
+	}, [openWrapUpModal, result, subscribeToNotifyUser, user, voipEnabled]);
 
 	useEffect(() => {
 		if (isUseVoipClientResultError(result)) {
@@ -169,7 +185,8 @@ export const CallProvider: FC = ({ children }) => {
 		if (isUseVoipClientResultLoading(result)) {
 			return;
 		}
-		/**
+
+		/*
 		 * This code may need a revisit when we handle callinqueue differently.
 		 * Check clickup taks for more details
 		 * https://app.clickup.com/t/22hy1k4
@@ -231,6 +248,7 @@ export const CallProvider: FC = ({ children }) => {
 				error: result.error,
 			};
 		}
+
 		if (isUseVoipClientResultLoading(result)) {
 			return {
 				enabled: true,
@@ -292,6 +310,7 @@ export const CallProvider: FC = ({ children }) => {
 			openWrapUpModal,
 		};
 	}, [queueCounter, voipEnabled, homeRoute, openWrapUpModal, result, roomInfo, user, visitorEndpoint, voipCloseRoomEndpoint, voipEndpoint]);
+
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
