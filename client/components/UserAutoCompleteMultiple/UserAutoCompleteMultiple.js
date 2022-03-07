@@ -18,7 +18,10 @@ const UserAutoCompleteMultiple = ({ valueIsId = false, ...props }) => {
 		'users.autocomplete',
 		useMemo(() => query(debouncedFilter), [debouncedFilter]),
 	);
-	const options = useMemo(() => (data && data.items.map((user) => [valueIsId ? user._id : user.username, user.name])) || [], [data, valueIsId]);
+	const options = useMemo(
+		() => (data && data.items.map((user) => [valueIsId ? user._id : user.username, user.name])) || [],
+		[data, valueIsId],
+	);
 
 	useEffect(() => {
 		const newLabelData = Object.fromEntries((data && data.items.map((user) => [user._id, user.username])) || []);
