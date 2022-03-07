@@ -24,7 +24,7 @@ OTR.Room = class {
 		this.roomId = roomId;
 		this.peerId = getUidDirectMessage(roomId);
 
-		this.state = new ReactiveVar(null);
+		this.state = new ReactiveVar(OtrRoomState.NOT_STARTED);
 
 		this.isFirstOTR = true;
 
@@ -340,20 +340,9 @@ OTR.Room = class {
 
 			case 'deny':
 				(async () => {
-					const { username } = await Presence.get(this.peerId);
 					if (this.state.get() === OtrRoomState.ESTABLISHING) {
 						this.reset();
 						this.setState(OtrRoomState.DECLINED);
-						imperativeModal.open({
-							component: GenericModal,
-							props: {
-								variant: 'warning',
-								title: TAPi18n.__('OTR'),
-								children: TAPi18n.__('Username_denied_the_OTR_session', { username }),
-								onClose: imperativeModal.close,
-								onConfirm: imperativeModal.close,
-							},
-						});
 					}
 				})();
 				break;

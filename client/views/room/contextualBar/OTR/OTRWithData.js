@@ -3,27 +3,22 @@ import React, { useEffect, useMemo, useCallback } from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
-import { useSetModal } from '../../../../contexts/ModalContext';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import OTR from './OTR';
-import OTRModal from './OTRModal';
 
 const OTRWithData = ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 
-	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
 
-	const [isEstablished, isEstablishing] = useReactiveValue(
-		useCallback(
-			() => (otr ? [otr.state.get() === OtrRoomState.ESTABLISHED, otr.state.get() === OtrRoomState.ESTABLISHING] : [false, false]),
-			[otr],
-		),
-	);
+	const otrState = useReactiveValue(useCallback(() => (otr ? otr.state.get() : OtrRoomState.ERROR), [otr]));
 
-	const userStatus = usePresence(otr.peerId)?.status;
+	const peerUserPresence = usePresence(otr.peerId);
+
+	const userStatus = peerUserPresence?.status;
+
+	const peerUsername = peerUserPresence?.username;
 
 	const isOnline = !['offline', 'loading'].includes(userStatus);
 
@@ -39,32 +34,26 @@ const OTRWithData = ({ rid, tabBar }) => {
 	};
 
 	useEffect(() => {
-		if (isEstablished) {
-			return closeModal();
-		}
-
-		if (!isEstablishing) {
+		if (otrState !== OtrRoomState.ESTABLISHING) {
 			return;
 		}
 
 		const timeout = setTimeout(() => {
-			// otr.establishing.set(false);
 			otr.state.set(OtrRoomState.TIMEOUT);
-			setModal(<OTRModal onConfirm={closeModal} onCancel={closeModal} />);
 		}, 10000);
 
 		return () => clearTimeout(timeout);
-	}, [closeModal, isEstablished, isEstablishing, setModal, otr]);
+	}, [otr, otrState]);
 
 	return (
 		<OTR
 			isOnline={isOnline}
-			isEstablishing={isEstablishing}
-			isEstablished={isEstablished}
 			onClickClose={onClickClose}
 			onClickStart={handleStart}
 			onClickEnd={handleEnd}
 			onClickRefresh={handleReset}
+			otrState={otrState}
+			peerUsername={peerUsername}
 		/>
 	);
 };
