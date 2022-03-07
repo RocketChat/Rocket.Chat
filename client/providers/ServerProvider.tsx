@@ -33,7 +33,7 @@ const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 
 	switch (method) {
 		case 'GET':
-			return api.get(endpointPath, params as undefined);
+			return api.get(endpointPath, params);
 
 		case 'POST':
 			return api.post(endpointPath, {}, params);

@@ -18,11 +18,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 	return useCallback(async () => {
 		try {
-			const data = await sendData(
-				params as void extends OperationParams<TMethod, MatchPathPattern<TPath>>
-					? OperationParams<TMethod, MatchPathPattern<TPath>> & void
-					: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
-			);
+			const data = await sendData(params);
 
 			if (successMessage) {
 				dispatchToastMessage({ type: 'success', message: successMessage });

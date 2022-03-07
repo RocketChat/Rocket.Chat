@@ -13,7 +13,8 @@ import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods({
 	updateMessage(message) {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return false;
 		}
 
@@ -26,11 +27,14 @@ Meteor.methods({
 			return;
 		}
 		if (originalMessage?.u?._id) {
-			editOwn = originalMessage.u._id === Meteor.userId();
+			editOwn = originalMessage.u._id === uid;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const me = Meteor.users.findOne(Meteor.userId()!);
+		const me = Meteor.users.findOne(uid);
+
+		if (!me) {
+			return false;
+		}
 
 		if (!(hasPermission || (editAllowed && editOwn))) {
 			dispatchToastMessage({
@@ -62,8 +66,8 @@ Meteor.methods({
 			}
 
 			message.editedBy = {
-				_id: Meteor.userId(),
-				username: me?.username,
+				_id: uid,
+				username: me.username,
 			};
 
 			message = callbacks.run('beforeSaveMessage', message);
@@ -81,7 +85,7 @@ Meteor.methods({
 			ChatMessage.update(
 				{
 					'_id': message._id,
-					'u._id': Meteor.userId(),
+					'u._id': uid,
 				},
 				{ $set: messageObject },
 			);

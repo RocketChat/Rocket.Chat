@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { useCallback } from 'react';
 
-export const useTimeAgo = (): ((time: any) => string) =>
+export const useTimeAgo = (): ((time: Date | number | string) => string) =>
 	useCallback((time) => moment(time).calendar(null, { sameDay: 'LT', lastWeek: 'dddd LT', sameElse: 'LL' }), []);
 
-export const useShortTimeAgo = (): unknown =>
+export const useShortTimeAgo = (): ((time: Date | string | number) => string) =>
 	useCallback(
 		(time) =>
 			moment(time).calendar(null, {
@@ -12,7 +12,7 @@ export const useShortTimeAgo = (): unknown =>
 				lastDay: '[Yesterday]',
 				lastWeek: 'dddd',
 				sameElse(now) {
-					/* 
+					/*
 					Using only this.isBefore():
 
 					ERRORS:
