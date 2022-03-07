@@ -67,6 +67,7 @@ OTR.Room = class {
 	}
 
 	end() {
+		Meteor.call('otrEnded', this.roomId);
 		this.isFirstOTR = true;
 		this.reset();
 		Notifications.notifyUser(this.peerId, 'otr', 'end', {

@@ -10,7 +10,7 @@ import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { SystemLogger } from '../../lib/logger/system';
-import { otrStats } from '../../../app/otr/server/otrStats';
+// import { otrStats } from '../../../app/otr/server/otrStats';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -311,17 +311,17 @@ export class NotificationsModule {
 
 			return this.userId != null && this.userId === userId;
 		});
-		this.streamUser.allowEmit(async function (eventName, ...args) {
-			const [, e] = eventName.split('/');
-			if (e === 'otr') {
-				const [type, data] = args;
-				if (type === 'acknowledge' && data?.roomId) {
-					otrStats(data.roomId);
-				}
-			}
+		// this.streamUser.allowEmit(async function (eventName, ...args) {
+		// 	const [, e] = eventName.split('/');
+		//	if (e === 'otr') {
+		//		const [type, data] = args;
+		//		if (type === 'acknowledge' && data?.roomId) {
+		//			otrStats(data.roomId);
+		//		}
+		//	}
 
-			return true;
-		});
+		//	return true;
+		// });
 
 		this.streamImporters.allowRead('all');
 		this.streamImporters.allowEmit('all');
